@@ -10,6 +10,19 @@
   height: 24px;
   padding-top: 1px;
 }
+
 .vh-left {
   margin-left: 1px;
+}
+
+#hearing-monitor-container {
+  margin-bottom: 25px;
+}
+
+.panel-wrap {
+  left: 0;
+  position: fixed;
+  vertical-align: top;
+  z-index: 99999;
+  max-width: 300px;
 }

@@ -1,7 +1,10 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
+using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 
@@ -12,7 +15,35 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_map_all_participants()
         {
-            var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(2).Build().ToList();
+            var participants = new List<ParticipantSummaryResponse>()
+            {
+                Builder<ParticipantSummaryResponse>.CreateNew()
+                    .With(x => x.User_role = UserRole.Judge)
+                    .With(x => x.Case_group = "Judge")
+                    .With(x => x.Status = ParticipantState.Available)
+                    .With(x => x.Id = Guid.NewGuid())
+                    .Build(),
+                Builder<ParticipantSummaryResponse>.CreateNew()
+                    .With(x => x.User_role = UserRole.Individual)
+                    .With(x => x.Case_group = "Applicant")
+                    .With(x => x.Status = ParticipantState.Joining)
+                    .With(x => x.Id = Guid.NewGuid()).Build(),
+                Builder<ParticipantSummaryResponse>.CreateNew()
+                    .With(x => x.User_role = UserRole.Representative)
+                    .With(x => x.Case_group = "Applicant")
+                    .With(x => x.Status = ParticipantState.Available)
+                    .With(x => x.Id = Guid.NewGuid()).Build(),
+                Builder<ParticipantSummaryResponse>.CreateNew()
+                    .With(x => x.User_role = UserRole.Individual)
+                    .With(x => x.Case_group = "Defendant")
+                    .With(x => x.Status = ParticipantState.Available)
+                    .With(x => x.Id = Guid.NewGuid()).Build(),
+                Builder<ParticipantSummaryResponse>.CreateNew().
+                    With(x => x.User_role = UserRole.Representative)
+                    .With(x => x.Case_group = "Defendant")
+                    .With(x => x.Status = ParticipantState.InConsultation)
+                    .With(x => x.Id = Guid.NewGuid()).Build()
+            };
 
             var response = ParticipantForUserResponseMapper.MapParticipants(participants);
 
@@ -26,6 +57,25 @@ namespace VideoWeb.UnitTests.Mappings
                 response[index].Status.ToString().Should().BeEquivalentTo(participant.Status.ToString());
                 response[index].Representee.Should().BeEquivalentTo(participant.Representee);
                 response[index].CaseTypeGroup.Should().BeEquivalentTo(participant.Case_group);
+                response[index].PexipDisplayName.Should().NotBeNullOrWhiteSpace();
+            }
+            
+            var tiledNames = response.Select(x => x.PexipDisplayName).ToList();
+
+            foreach (var participantResponse in response)
+            {
+                var position = participantResponse.PexipDisplayName.Split(';');
+                if (participantResponse.Role == Role.Judge)
+                {
+                    participantResponse.PexipDisplayName.StartsWith("T0").Should().BeTrue();
+                }
+
+                if (position[0].StartsWith("T"))
+                {
+                    tiledNames.Count(x => x.StartsWith(position[0])).Should().Be(1);
+
+                }
+             
             }
         }
     }

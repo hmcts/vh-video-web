@@ -18,7 +18,6 @@ namespace VideoWeb.AcceptanceTests.Data
         public int DelayedStartTime { get; set; } = 0;
         public HearingDetailsResponse Hearing { get; set; }
         public List<ParticipantResponse> HearingParticipants { get; set; }
-        public bool JudgeInIframe { get; set; } = false;
         public Guid NewConferenceId { get; set; }
         public Guid NewHearingId { get; set; }
         public ParticipantDetailsResponse Participant { get; set; }

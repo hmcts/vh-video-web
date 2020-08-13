@@ -6,6 +6,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from '../../shared/models/hearing';
 import { UnreadMessagesComponentBase } from '../unread-messages-shared/unread-message-base.component';
+import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-bus.service';
 
 @Component({
     selector: 'app-unread-messages',
@@ -18,7 +19,12 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
     messagesSubscription$: Subscription = new Subscription();
     unreadMessages: UnreadAdminMessageResponse[];
 
-    constructor(private videoWebService: VideoWebService, protected eventsService: EventsService, protected logger: Logger) {
+    constructor(
+        private videoWebService: VideoWebService,
+        protected eventsService: EventsService,
+        protected logger: Logger,
+        private eventbus: EventBusService
+    ) {
         super(eventsService, logger);
     }
 
@@ -54,6 +60,10 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
             const messageCount = this.unreadMessages.find(x => x.participant_username.toLowerCase() === participantUsername.toLowerCase());
             messageCount.number_of_unread_messages++;
         }
+    }
+
+    openImChat() {
+        this.eventbus.emit(new EmitEvent(VHEventType.ConferenceImClicked, null));
     }
 
     ngOnDestroy(): void {

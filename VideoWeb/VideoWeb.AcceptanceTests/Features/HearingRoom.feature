@@ -4,14 +4,13 @@ Feature: Hearing Room
 	As a registered user
 	I want to be able to access the video hearing room and interact with the controls
 
-@VIH-4610 @VIH-4615 @HearingTest @Smoketest-Extended @DisableLogging
+@VIH-4610 @VIH-4615 @HearingTest @Smoketest-Extended
 Scenario: Clerk pauses and closes hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Clerk user has progressed to the Waiting Room page for the existing hearing
 	Then the participant status for Individual01 is displayed as Connected
 	When the Clerk starts the hearing
-	Then the user is on the Countdown page
-	When the countdown finishes
+	And the countdown finishes
   Then the hearing status changed to InSession
 	And the Clerk is on the Hearing Room page for 20 seconds
 	When the Clerk clicks pause
@@ -33,7 +32,7 @@ Scenario: Clerk pauses and closes hearing
 	Then the user is on the Hearing List page
 	And the hearing status changed to Closed
 
-@HearingTest @Smoketest-Extended @DisableLogging
+@HearingTest @Smoketest-Extended
 Scenario: Two participants join hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
@@ -52,7 +51,7 @@ Scenario: Two participants join hearing
 	When in Individual01's browser
 	Then the participants waiting room displays the closed status
 
-@HearingTest @Smoketest-Extended @DisableLogging
+@HearingTest @Smoketest-Extended
 Scenario: Four participants join hearing
 	Given the Individual01 user has progressed to the Waiting Room page
 	And the Representative01 user has progressed to the Waiting Room page for the existing hearing
@@ -75,7 +74,7 @@ Scenario: Four participants join hearing
 	When in Individual01's browser
 	Then the participants waiting room displays the closed status
 
-  @HearingTest @Smoketest-Extended @Smoketest-Prod @DisableLogging @AudioRecording
+  @HearingTest @Smoketest-Extended @Smoketest-Prod @AudioRecording
 Scenario: Audio Recording
   Given I have a hearing with audio recording enabled
   And the Individual01 user has progressed to the Waiting Room page for the existing hearing
@@ -88,7 +87,7 @@ Scenario: Audio Recording
 	And the hearing status changed to Closed
   And an audio recording of the hearing has been created
 
-@HearingTest @Smoketest-Extended @DisableLogging
+@HearingTest @Smoketest-Extended
 Scenario: VHO Monitors Hearing
   Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	Then the VHO can see the Clerk status is Unavailable
@@ -115,7 +114,7 @@ Scenario: VHO Monitors Hearing
   And the VHO can see the status of participant Individual01 is Available
   And the VHO can see that Individual01 is in the Waiting Room
 
-@HearingTest @Smoketest-Extended @DisableLogging
+@HearingTest @Smoketest-Extended
 Scenario: Observer and Panel Member join hearing
   Given I have a hearing with an Observer and Panel Member
 	And the Observer user has progressed to the Waiting Room page for the existing hearing

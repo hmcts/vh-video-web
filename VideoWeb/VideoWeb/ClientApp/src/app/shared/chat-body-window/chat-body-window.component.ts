@@ -11,6 +11,8 @@ export class ChatBodyWindowComponent {
     @Input() messagesReceived: InstantMessage[];
     @Input() pendingMessages: InstantMessage[];
 
+    retryMessages: InstantMessage[] = [];
+
     constructor(private eventsService: EventsService) {}
 
     get allMessages(): InstantMessage[] {
@@ -18,6 +20,10 @@ export class ChatBodyWindowComponent {
     }
 
     async retry(instantMessage: InstantMessage) {
+        if (this.retryMessages.findIndex(x => x.id === instantMessage.id) > -1) {
+            return;
+        }
+        this.retryMessages.push(instantMessage);
         await this.eventsService.sendMessage(instantMessage);
     }
 

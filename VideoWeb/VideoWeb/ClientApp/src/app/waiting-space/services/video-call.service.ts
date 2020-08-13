@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+import { ApiClient } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
@@ -16,9 +17,9 @@ export class VideoCallService {
     private onParticipantUpdatedSubject = new Subject<ParticipantUpdated>();
     private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
 
-    pexipAPI: any;
+    pexipAPI: PexipClient;
 
-    constructor(private logger: Logger, private userMediaService: UserMediaService) {}
+    constructor(private logger: Logger, private userMediaService: UserMediaService, private apiClient: ApiClient) {}
 
     /**
      * This will initialise the pexip client and initalise the call with
@@ -47,7 +48,12 @@ export class VideoCallService {
 
         this.pexipAPI.onParticipantUpdate = function (participantUpdate) {
             self.onParticipantUpdatedSubject.next(
-                new ParticipantUpdated(participantUpdate.is_muted, participantUpdate.buzz_time, participantUpdate.display_name)
+                new ParticipantUpdated(
+                    participantUpdate.is_muted,
+                    participantUpdate.buzz_time,
+                    participantUpdate.display_name,
+                    participantUpdate.uuid
+                )
             );
         };
 
@@ -130,6 +136,14 @@ export class VideoCallService {
         return this.pexipAPI.muteAudio();
     }
 
+    muteParticipant(participantId: string, mute: boolean) {
+        this.pexipAPI.setParticipantMute(participantId, mute);
+    }
+
+    muteAllParticipants(mute: boolean) {
+        this.pexipAPI.setMuteAllGuests(mute);
+    }
+
     enableH264(enable: boolean) {
         this.pexipAPI.h264_enabled = enable;
     }
@@ -140,5 +154,33 @@ export class VideoCallService {
 
     lowerHand() {
         this.pexipAPI.clearBuzz();
+    }
+
+    lowerHandById(uuid: string) {
+        this.pexipAPI.clearBuzz(uuid);
+    }
+
+    lowerAllHands() {
+        this.pexipAPI.clearAllBuzz();
+    }
+
+    async startHearing(conferenceId: string) {
+        await this.apiClient.startOrResumeVideoHearing(conferenceId).toPromise();
+    }
+
+    async pauseHearing(conferenceId: string) {
+        await this.apiClient.pauseVideoHearing(conferenceId).toPromise();
+    }
+
+    async endHearing(conferenceId: string) {
+        await this.apiClient.endVideoHearing(conferenceId).toPromise();
+    }
+
+    /**
+     * Request technical assistance (this will suspend a video hearing)
+     * @param conferenceId the id of the conferece
+     */
+    async requestTechnicalAssistance(conferenceId: string) {
+        await this.apiClient.requestTechnicalAssistance(conferenceId).toPromise();
     }
 }

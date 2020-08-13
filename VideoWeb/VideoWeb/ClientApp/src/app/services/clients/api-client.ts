@@ -187,6 +187,286 @@ export class ApiClient {
     }
 
     /**
+     * Start or resume a video hearing
+     * @param conferenceId conference id
+     * @return Success
+     */
+    startOrResumeVideoHearing(conferenceId: string): Observable<void> {
+        let url_ = this.baseUrl + '/conferences/{conferenceId}/start';
+        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({})
+        };
+
+        return this.http
+            .request('post', url_, options_)
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processStartOrResumeVideoHearing(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processStartOrResumeVideoHearing(<any>response_);
+                        } catch (e) {
+                            return <Observable<void>>(<any>_observableThrow(e));
+                        }
+                    } else return <Observable<void>>(<any>_observableThrow(response_));
+                })
+            );
+    }
+
+    protected processStartOrResumeVideoHearing(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 202) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return _observableOf<void>(<any>null);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * Pause a video hearing
+     * @param conferenceId conference id
+     * @return Success
+     */
+    pauseVideoHearing(conferenceId: string): Observable<void> {
+        let url_ = this.baseUrl + '/conferences/{conferenceId}/pause';
+        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({})
+        };
+
+        return this.http
+            .request('post', url_, options_)
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processPauseVideoHearing(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processPauseVideoHearing(<any>response_);
+                        } catch (e) {
+                            return <Observable<void>>(<any>_observableThrow(e));
+                        }
+                    } else return <Observable<void>>(<any>_observableThrow(response_));
+                })
+            );
+    }
+
+    protected processPauseVideoHearing(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 202) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return _observableOf<void>(<any>null);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * End a video hearing
+     * @param conferenceId conference id
+     * @return Success
+     */
+    endVideoHearing(conferenceId: string): Observable<void> {
+        let url_ = this.baseUrl + '/conferences/{conferenceId}/end';
+        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({})
+        };
+
+        return this.http
+            .request('post', url_, options_)
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processEndVideoHearing(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processEndVideoHearing(<any>response_);
+                        } catch (e) {
+                            return <Observable<void>>(<any>_observableThrow(e));
+                        }
+                    } else return <Observable<void>>(<any>_observableThrow(response_));
+                })
+            );
+    }
+
+    protected processEndVideoHearing(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 202) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return _observableOf<void>(<any>null);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * Request technical assistance (suspend a hearing)
+     * @param conferenceId conference id
+     * @return Success
+     */
+    requestTechnicalAssistance(conferenceId: string): Observable<void> {
+        let url_ = this.baseUrl + '/conferences/{conferenceId}/technicalassistance';
+        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({})
+        };
+
+        return this.http
+            .request('post', url_, options_)
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processRequestTechnicalAssistance(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processRequestTechnicalAssistance(<any>response_);
+                        } catch (e) {
+                            return <Observable<void>>(<any>_observableThrow(e));
+                        }
+                    } else return <Observable<void>>(<any>_observableThrow(response_));
+                })
+            );
+    }
+
+    protected processRequestTechnicalAssistance(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 202) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return _observableOf<void>(<any>null);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
      * Get conferences today for a judge or a clerk
      * @return Success
      */
@@ -2010,6 +2290,91 @@ export class ApiClient {
     }
 
     /**
+     * @return Success
+     */
+    getParticipantsByConferenceId(conferenceId: string): Observable<ParticipantForUserResponse[]> {
+        let url_ = this.baseUrl + '/conferences/{conferenceId}/participants';
+        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({
+                Accept: 'application/json'
+            })
+        };
+
+        return this.http
+            .request('get', url_, options_)
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processGetParticipantsByConferenceId(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processGetParticipantsByConferenceId(<any>response_);
+                        } catch (e) {
+                            return <Observable<ParticipantForUserResponse[]>>(<any>_observableThrow(e));
+                        }
+                    } else return <Observable<ParticipantForUserResponse[]>>(<any>_observableThrow(response_));
+                })
+            );
+    }
+
+    protected processGetParticipantsByConferenceId(response: HttpResponseBase): Observable<ParticipantForUserResponse[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result200: any = null;
+                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    if (Array.isArray(resultData200)) {
+                        result200 = [] as any;
+                        for (let item of resultData200) result200!.push(ParticipantForUserResponse.fromJS(item));
+                    }
+                    return _observableOf(result200);
+                })
+            );
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result404: any = null;
+                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result404 = ProblemDetails.fromJS(resultData404);
+                    return throwException('Not Found', status, _responseText, _headers, result404);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<ParticipantForUserResponse[]>(<any>null);
+    }
+
+    /**
      * Get profile for logged in user
      * @return Success
      */
@@ -3121,6 +3486,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     /** The representee (if participant is a representative) */
     representee?: string | undefined;
     case_type_group?: string | undefined;
+    pexip_display_name?: string | undefined;
 
     constructor(data?: IParticipantForUserResponse) {
         if (data) {
@@ -3141,6 +3507,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
             this.status = _data['status'];
             this.representee = _data['representee'];
             this.case_type_group = _data['case_type_group'];
+            this.pexip_display_name = _data['pexip_display_name'];
         }
     }
 
@@ -3162,6 +3529,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
         data['status'] = this.status;
         data['representee'] = this.representee;
         data['case_type_group'] = this.case_type_group;
+        data['pexip_display_name'] = this.pexip_display_name;
         return data;
     }
 }
@@ -3181,6 +3549,7 @@ export interface IParticipantForUserResponse {
     /** The representee (if participant is a representative) */
     representee?: string | undefined;
     case_type_group?: string | undefined;
+    pexip_display_name?: string | undefined;
 }
 
 export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerResponse {
@@ -3362,7 +3731,6 @@ export class ConferenceResponseVho implements IConferenceResponseVho {
     case_name?: string | undefined;
     /** The current conference Status */
     status?: ConferenceStatus;
-    judge_i_frame_uri?: string | undefined;
     admin_i_frame_uri?: string | undefined;
     participant_uri?: string | undefined;
     pexip_node_uri?: string | undefined;
@@ -3388,7 +3756,6 @@ export class ConferenceResponseVho implements IConferenceResponseVho {
             this.case_number = _data['case_number'];
             this.case_name = _data['case_name'];
             this.status = _data['status'];
-            this.judge_i_frame_uri = _data['judge_i_frame_uri'];
             this.admin_i_frame_uri = _data['admin_i_frame_uri'];
             this.participant_uri = _data['participant_uri'];
             this.pexip_node_uri = _data['pexip_node_uri'];
@@ -3417,7 +3784,6 @@ export class ConferenceResponseVho implements IConferenceResponseVho {
         data['case_number'] = this.case_number;
         data['case_name'] = this.case_name;
         data['status'] = this.status;
-        data['judge_i_frame_uri'] = this.judge_i_frame_uri;
         data['admin_i_frame_uri'] = this.admin_i_frame_uri;
         data['participant_uri'] = this.participant_uri;
         data['pexip_node_uri'] = this.pexip_node_uri;
@@ -3442,7 +3808,6 @@ export interface IConferenceResponseVho {
     case_name?: string | undefined;
     /** The current conference Status */
     status?: ConferenceStatus;
-    judge_i_frame_uri?: string | undefined;
     admin_i_frame_uri?: string | undefined;
     participant_uri?: string | undefined;
     pexip_node_uri?: string | undefined;
@@ -3552,7 +3917,6 @@ export class ConferenceResponse implements IConferenceResponse {
     case_name?: string | undefined;
     /** The current conference Status */
     status?: ConferenceStatus;
-    judge_i_frame_uri?: string | undefined;
     participant_uri?: string | undefined;
     pexip_node_uri?: string | undefined;
     pexip_self_test_node_uri?: string | undefined;
@@ -3580,7 +3944,6 @@ export class ConferenceResponse implements IConferenceResponse {
             this.case_number = _data['case_number'];
             this.case_name = _data['case_name'];
             this.status = _data['status'];
-            this.judge_i_frame_uri = _data['judge_i_frame_uri'];
             this.participant_uri = _data['participant_uri'];
             this.pexip_node_uri = _data['pexip_node_uri'];
             this.pexip_self_test_node_uri = _data['pexip_self_test_node_uri'];
@@ -3611,7 +3974,6 @@ export class ConferenceResponse implements IConferenceResponse {
         data['case_number'] = this.case_number;
         data['case_name'] = this.case_name;
         data['status'] = this.status;
-        data['judge_i_frame_uri'] = this.judge_i_frame_uri;
         data['participant_uri'] = this.participant_uri;
         data['pexip_node_uri'] = this.pexip_node_uri;
         data['pexip_self_test_node_uri'] = this.pexip_self_test_node_uri;
@@ -3638,7 +4000,6 @@ export interface IConferenceResponse {
     case_name?: string | undefined;
     /** The current conference Status */
     status?: ConferenceStatus;
-    judge_i_frame_uri?: string | undefined;
     participant_uri?: string | undefined;
     pexip_node_uri?: string | undefined;
     pexip_self_test_node_uri?: string | undefined;
@@ -4006,10 +4367,50 @@ export interface IHealthCheck {
     data?: { [key: string]: any } | undefined;
 }
 
+export class ApplicationVersion implements IApplicationVersion {
+    file_version?: string | undefined;
+    information_version?: string | undefined;
+
+    constructor(data?: IApplicationVersion) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.file_version = _data['file_version'];
+            this.information_version = _data['information_version'];
+        }
+    }
+
+    static fromJS(data: any): ApplicationVersion {
+        data = typeof data === 'object' ? data : {};
+        let result = new ApplicationVersion();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['file_version'] = this.file_version;
+        data['information_version'] = this.information_version;
+        return data;
+    }
+}
+
+export interface IApplicationVersion {
+    file_version?: string | undefined;
+    information_version?: string | undefined;
+}
+
 export class HealthCheckResponse implements IHealthCheckResponse {
     bookings_api_health?: HealthCheck | undefined;
     user_api_health?: HealthCheck | undefined;
     video_api_health?: HealthCheck | undefined;
+    app_version?: ApplicationVersion | undefined;
 
     constructor(data?: IHealthCheckResponse) {
         if (data) {
@@ -4024,6 +4425,7 @@ export class HealthCheckResponse implements IHealthCheckResponse {
             this.bookings_api_health = _data['bookings_api_health'] ? HealthCheck.fromJS(_data['bookings_api_health']) : <any>undefined;
             this.user_api_health = _data['user_api_health'] ? HealthCheck.fromJS(_data['user_api_health']) : <any>undefined;
             this.video_api_health = _data['video_api_health'] ? HealthCheck.fromJS(_data['video_api_health']) : <any>undefined;
+            this.app_version = _data['app_version'] ? ApplicationVersion.fromJS(_data['app_version']) : <any>undefined;
         }
     }
 
@@ -4039,6 +4441,7 @@ export class HealthCheckResponse implements IHealthCheckResponse {
         data['bookings_api_health'] = this.bookings_api_health ? this.bookings_api_health.toJSON() : <any>undefined;
         data['user_api_health'] = this.user_api_health ? this.user_api_health.toJSON() : <any>undefined;
         data['video_api_health'] = this.video_api_health ? this.video_api_health.toJSON() : <any>undefined;
+        data['app_version'] = this.app_version ? this.app_version.toJSON() : <any>undefined;
         return data;
     }
 }
@@ -4047,6 +4450,7 @@ export interface IHealthCheckResponse {
     bookings_api_health?: HealthCheck | undefined;
     user_api_health?: HealthCheck | undefined;
     video_api_health?: HealthCheck | undefined;
+    app_version?: ApplicationVersion | undefined;
 }
 
 export class ChatResponse implements IChatResponse {
@@ -4209,14 +4613,14 @@ export enum EventType {
     Close = 'Close',
     Leave = 'Leave',
     Consultation = 'Consultation',
-    JudgeAvailable = 'JudgeAvailable',
     MediaPermissionDenied = 'MediaPermissionDenied',
     ParticipantJoining = 'ParticipantJoining',
     SelfTestFailed = 'SelfTestFailed',
     Suspend = 'Suspend',
     VhoCall = 'VhoCall',
-    JudgeUnavailable = 'JudgeUnavailable',
-    ParticipantNotSignedIn = 'ParticipantNotSignedIn'
+    ParticipantNotSignedIn = 'ParticipantNotSignedIn',
+    Start = 'Start',
+    CountdownFinished = 'CountdownFinished'
 }
 
 export class AddMediaEventRequest implements IAddMediaEventRequest {

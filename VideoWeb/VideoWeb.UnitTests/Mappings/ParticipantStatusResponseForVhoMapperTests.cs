@@ -14,7 +14,7 @@ namespace VideoWeb.UnitTests.Mappings
 {
     public class ParticipantStatusResponseForVhoMapperTests
     {
-        
+
         [Test]
         public void Should_map_all_properties()
         {
@@ -29,25 +29,19 @@ namespace VideoWeb.UnitTests.Mappings
             {
                 judge1, judge2, judge3
             };
-            
-            var bookingParticipants = new List<ParticipantResponse>
-            {
-                new ParticipantResponse{Id = judge1.RefId, First_name = "judge1", Last_name = "judge1", Contact_email = "judge1", Telephone_number = "judge1"},
-                new ParticipantResponse{Id = judge2.RefId, First_name = "judge2", Last_name = "judge2", Contact_email = "judge2", Telephone_number = "judge2"},
-                new ParticipantResponse{Id = judge3.RefId, First_name = "judge3", Last_name = "judge3", Contact_email = "judge3", Telephone_number = "judge3"}
-            };
-            
+
             var judgesInHearings = new List<JudgeInHearingResponse>
             {
-                new JudgeInHearingResponse{ Id = judge3DifferentHearing.Id, Username = judge3.Username, Status = ParticipantState.InHearing }
+                new JudgeInHearingResponse
+                    {Id = judge3DifferentHearing.Id, Username = judge3.Username, Status = ParticipantState.InHearing}
             };
 
             var results = ParticipantStatusResponseForVhoMapper
-                .MapParticipantsTo(conference, bookingParticipants, judgesInHearings).ToList();
-            
-            AssertResponseItem(results.ElementAt(0), conference.Participants[0], conferenceId, bookingParticipants[0], false);
-            AssertResponseItem(results.ElementAt(1), conference.Participants[1], conferenceId, bookingParticipants[1], false);
-            AssertResponseItem(results.ElementAt(2), conference.Participants[2], conferenceId, bookingParticipants[2], true);
+                .MapParticipantsTo(conference, judgesInHearings).ToList();
+
+            AssertResponseItem(results.ElementAt(0), conference.Participants[0], conferenceId, false);
+            AssertResponseItem(results.ElementAt(1), conference.Participants[1], conferenceId, false);
+            AssertResponseItem(results.ElementAt(2), conference.Participants[2], conferenceId, true);
         }
 
         [Test]
@@ -65,58 +59,19 @@ namespace VideoWeb.UnitTests.Mappings
                 judge1, judge2, judge3
             };
 
-            var bookingParticipants = new List<ParticipantResponse>
-            {
-                new ParticipantResponse{Id = Guid.NewGuid(), First_name = "judge1", Last_name = "judge1", Contact_email = "judge1", Telephone_number = "judge1"},
-            };
-
             var judgesInHearings = new List<JudgeInHearingResponse>
             {
                 new JudgeInHearingResponse{ Id = judge3DifferentHearing.Id, Username = judge3.Username, Status = ParticipantState.InHearing }
             };
 
             var results = ParticipantStatusResponseForVhoMapper
-                .MapParticipantsTo(conference, bookingParticipants, judgesInHearings).ToList();
+                .MapParticipantsTo(conference, judgesInHearings).ToList();
 
             AssertResponseItemWithNoBookingParticipants(results.ElementAt(0), conference.Participants[0], conferenceId, false);
         }
-
-        [Test]
-        public void Should_throw_exception_if_have_two_participants_with_the_same_id()
-        {
-            var conferenceId = Guid.NewGuid();
-            var conference = CreateValidConference(conferenceId);
-
-            var judge1 = CreateParticipant("judge1");
-            var judge2 = CreateParticipant("judge2");
-            var judge3 = CreateParticipant("judge3");
-            var judge3DifferentHearing = CreateParticipant("judge3");
-            conference.Participants = new List<Participant>
-            {
-                judge1, judge2, judge3
-            };
-            
-            var bookingParticipants = new List<ParticipantResponse>
-            {
-                new ParticipantResponse{Id = judge1.RefId, First_name = "judge1", Last_name = "judge1", Contact_email = "judge1", Telephone_number = "judge1"},
-                new ParticipantResponse{Id = judge2.RefId, First_name = "judge2", Last_name = "judge2", Contact_email = "judge2", Telephone_number = "judge2"},
-                new ParticipantResponse{Id = judge3.RefId, First_name = "judge3", Last_name = "judge3", Contact_email = "judge3", Telephone_number = "judge3"}
-            };
-            
-            var judgesInHearings = new List<JudgeInHearingResponse>
-            {
-                new JudgeInHearingResponse{ Id = judge3DifferentHearing.Id, Username = judge3.Username, Status = ParticipantState.InHearing }
-            };
-
-            bookingParticipants[0].Id = judge1.RefId;
-            bookingParticipants[1].Id = judge1.RefId;
-
-            Assert.Throws<InvalidOperationException>(() =>
-                ParticipantStatusResponseForVhoMapper.MapParticipantsTo(conference, bookingParticipants, judgesInHearings));
-        }
         
         private static void AssertResponseItem(ParticipantContactDetailsResponseVho response, Participant participant, 
-            Guid conferenceId, ParticipantResponse bookingParticipant, bool isInAnotherHearing)
+            Guid conferenceId, bool isInAnotherHearing)
         {
             response.Id.Should().Be(participant.Id);
             response.ConferenceId.Should().Be(conferenceId);
@@ -125,12 +80,12 @@ namespace VideoWeb.UnitTests.Mappings
             response.Username.Should().Be(participant.Username);
             response.CaseTypeGroup.Should().Be(participant.CaseTypeGroup);
             response.RefId.Should().Be(participant.RefId);
-            response.FirstName.Should().Be(bookingParticipant.First_name);
-            response.LastName.Should().Be(bookingParticipant.Last_name);
+            response.FirstName.Should().Be(participant.FirstName);
+            response.LastName.Should().Be(participant.LastName);
             response.DisplayName.Should().Be(participant.DisplayName);
             response.Status.Should().Be(participant.ParticipantStatus);
-            response.ContactEmail.Should().Be(bookingParticipant.Contact_email);
-            response.ContactTelephone.Should().Be(bookingParticipant.Telephone_number);
+            response.ContactEmail.Should().Be(participant.ContactEmail);
+            response.ContactTelephone.Should().Be(participant.ContactTelephone);
             response.HearingVenueName.Should().Be("MyVenue");
             response.JudgeInAnotherHearing.Should().Be(isInAnotherHearing);
         }
@@ -145,12 +100,12 @@ namespace VideoWeb.UnitTests.Mappings
             response.Username.Should().Be(participant.Username);
             response.CaseTypeGroup.Should().Be(participant.CaseTypeGroup);
             response.RefId.Should().Be(participant.RefId);
-            response.FirstName.Should().BeNullOrEmpty();
-            response.LastName.Should().BeNullOrEmpty();
+            response.FirstName.Should().Be(participant.FirstName);
+            response.LastName.Should().Be(participant.LastName);
             response.DisplayName.Should().Be(participant.DisplayName);
             response.Status.Should().Be(participant.ParticipantStatus);
-            response.ContactEmail.Should().BeNullOrEmpty();
-            response.ContactTelephone.Should().BeNullOrEmpty();
+            response.ContactEmail.Should().Be(participant.ContactEmail);
+            response.ContactTelephone.Should().Be(participant.ContactTelephone);
             response.HearingVenueName.Should().Be("MyVenue");
             response.JudgeInAnotherHearing.Should().Be(isInAnotherHearing);
         }

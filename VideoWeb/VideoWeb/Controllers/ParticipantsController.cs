@@ -30,16 +30,14 @@ namespace VideoWeb.Controllers
         private readonly IEventHandlerFactory _eventHandlerFactory;
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<ParticipantsController> _logger;
-        private readonly IBookingsApiClient _bookingsApiClient;
 
         public ParticipantsController(IVideoApiClient videoApiClient, IEventHandlerFactory eventHandlerFactory,
-            IConferenceCache conferenceCache, ILogger<ParticipantsController> logger, IBookingsApiClient bookingsApiClient)
+            IConferenceCache conferenceCache, ILogger<ParticipantsController> logger)
         {
             _videoApiClient = videoApiClient;
             _eventHandlerFactory = eventHandlerFactory;
             _conferenceCache = conferenceCache;
             _logger = logger;
-            _bookingsApiClient = bookingsApiClient;
         }
 
         [HttpGet("{conferenceId}/participants/{participantId}/selftestresult")]
@@ -207,10 +205,9 @@ namespace VideoWeb.Controllers
                 });
 
                 _logger.LogTrace($"Retrieving booking participants for hearing ${conference.HearingId}");
-                var bookingParticipants = await _bookingsApiClient.GetAllParticipantsInHearingAsync(conference.HearingId);
                 var judgesInHearingsToday = await _videoApiClient.GetJudgesInHearingsTodayAsync();
 
-                var response = ParticipantStatusResponseForVhoMapper.MapParticipantsTo(conference, bookingParticipants, judgesInHearingsToday);
+                var response = ParticipantStatusResponseForVhoMapper.MapParticipantsTo(conference, judgesInHearingsToday);
 
                 return Ok(response);
 
@@ -228,5 +225,24 @@ namespace VideoWeb.Controllers
                 return StatusCode(ex.StatusCode, ex.Response);
             }
         }
+
+        [HttpGet("{conferenceId}/participants")]
+        [SwaggerOperation(OperationId = "GetParticipantsByConferenceId")]
+        [ProducesResponseType(typeof(List<ParticipantForUserResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetParticipantsByConferenceIdAsync(Guid conferenceId)
+        {
+            try
+            {
+                var response = await _videoApiClient.GetParticipantsByConferenceIdAsync(conferenceId);
+                var participants = ParticipantForUserResponseMapper.MapParticipants(response);
+                return Ok(participants);
+            }
+            catch (VideoApiException e)
+            {
+                return StatusCode(e.StatusCode, e.Response);
+            }
+        }
+
     }
 }

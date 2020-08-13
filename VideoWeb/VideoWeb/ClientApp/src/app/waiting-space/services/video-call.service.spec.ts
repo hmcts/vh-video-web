@@ -4,16 +4,27 @@ import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { VideoCallService } from './video-call.service';
+import { Guid } from 'guid-typescript';
+import { ApiClient } from 'src/app/services/clients/api-client';
+import { of } from 'rxjs';
 
 describe('VideoCallService', () => {
     let service: VideoCallService;
+    let apiClient: jasmine.SpyObj<ApiClient>;
     const logger: Logger = new MockLogger();
     let userMediaService: jasmine.SpyObj<UserMediaService>;
     const testData = new MediaDeviceTestData();
     let preferredCamera: UserMediaDevice;
     let preferredMicrophone: UserMediaDevice;
-    let pexipSpy: any;
+    let pexipSpy: jasmine.SpyObj<PexipClient>;
     beforeAll(() => {
+        apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
+            'startOrResumeVideoHearing',
+            'pauseVideoHearing',
+            'endVideoHearing',
+            'requestTechnicalAssistance'
+        ]);
+
         userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
             'getListOfVideoDevices',
             'getListOfMicrophoneDevices',
@@ -31,9 +42,20 @@ describe('VideoCallService', () => {
         userMediaService.getPreferredMicrophone.and.resolveTo(preferredMicrophone);
     });
 
-    beforeEach(() => {
-        pexipSpy = jasmine.createSpyObj('pexipAPI', ['connect', 'makeCall', 'muteAudio', 'disconnect', 'setBuzz', 'clearBuzz']);
-        service = new VideoCallService(logger, userMediaService);
+    beforeEach(async () => {
+        pexipSpy = jasmine.createSpyObj<PexipClient>('PexipClient', [
+            'connect',
+            'makeCall',
+            'muteAudio',
+            'disconnect',
+            'setBuzz',
+            'clearBuzz',
+            'setParticipantMute',
+            'setMuteAllGuests',
+            'clearAllBuzz'
+        ]);
+        service = new VideoCallService(logger, userMediaService, apiClient);
+        await service.setupClient();
     });
 
     it('should init pexip and set pexip client', async () => {
@@ -119,5 +141,43 @@ describe('VideoCallService', () => {
         service.pexipAPI = pexipSpy;
         service.lowerHand();
         expect(pexipSpy.clearBuzz).toHaveBeenCalledTimes(1);
+    });
+    it('should clear buzz when hand is lowered for participant uuid', () => {
+        service.pexipAPI = pexipSpy;
+        const uuid = '12345';
+        service.lowerHandById(uuid);
+        expect(pexipSpy.clearBuzz).toHaveBeenCalledWith(uuid);
+    });
+    it('should clear all buzz when hand is lowered for all participants', () => {
+        service.pexipAPI = pexipSpy;
+        service.lowerAllHands();
+        expect(pexipSpy.clearAllBuzz).toHaveBeenCalledTimes(1);
+    });
+    it('should make api start call on start hearing', async () => {
+        apiClient.startOrResumeVideoHearing.and.returnValue(of());
+        const conferenceId = Guid.create().toString();
+        await service.startHearing(conferenceId);
+        expect(apiClient.startOrResumeVideoHearing).toHaveBeenCalledWith(conferenceId);
+    });
+
+    it('should make api start call on pause hearing', async () => {
+        apiClient.pauseVideoHearing.and.returnValue(of());
+        const conferenceId = Guid.create().toString();
+        await service.pauseHearing(conferenceId);
+        expect(apiClient.pauseVideoHearing).toHaveBeenCalledWith(conferenceId);
+    });
+
+    it('should make api start call on end hearing', async () => {
+        apiClient.endVideoHearing.and.returnValue(of());
+        const conferenceId = Guid.create().toString();
+        await service.endHearing(conferenceId);
+        expect(apiClient.endVideoHearing).toHaveBeenCalledWith(conferenceId);
+    });
+
+    it('should make api start call on request for technical assistance', async () => {
+        apiClient.requestTechnicalAssistance.and.returnValue(of());
+        const conferenceId = Guid.create().toString();
+        await service.requestTechnicalAssistance(conferenceId);
+        expect(apiClient.requestTechnicalAssistance).toHaveBeenCalledWith(conferenceId);
     });
 });

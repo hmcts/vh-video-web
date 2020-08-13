@@ -59,6 +59,23 @@ describe('ChatBodyWindowComponent', () => {
         await component.retry(im);
         expect(eventsService.sendMessage).toHaveBeenCalledWith(im);
     });
+    it('should not send message on retry if it was already send', async () => {
+        const im = new InstantMessage({
+            conferenceId: Guid.create().toString(),
+            id: Guid.create().toString(),
+            to: 'test@to.com',
+            from: 'other@from.com',
+            from_display_name: 'You',
+            message: 'i have sent',
+            is_user: true,
+            timestamp: new Date(new Date().toUTCString())
+        });
+        component.retryMessages.push(im);
+        eventsService.sendMessage.calls.reset();
+
+        await component.retry(im);
+        expect(eventsService.sendMessage).toHaveBeenCalledTimes(0);
+    });
 
     it('should return false if message is in received list', () => {
         component.messagesReceived = [imReceived];

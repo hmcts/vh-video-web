@@ -198,4 +198,61 @@ describe('ParticipantChatComponent', () => {
         expect(lastArg.to).toBe(component.DEFAULT_ADMIN_USERNAME);
         expect(component.disableScrollDown).toBeFalse();
     });
+
+    it('should display chat window when message is received', () => {
+        const adminUsername = 'admin@user.com';
+        component.showChat = false;
+        component.unreadMessageCount = 0;
+        const message: InstantMessage = new InstantMessage({
+            conferenceId: conference.id,
+            from: adminUsername,
+            from_display_name: 'Admin Test',
+            to: conference.participants[1].username,
+            id: Guid.create().toString(),
+            is_user: false,
+            message: 'test auto',
+            timestamp: new Date()
+        });
+        component.handleIncomingOtherMessage(message);
+        expect(component.showChat).toBeTruthy();
+    });
+
+    it('should open window on load when user has unread messages', fakeAsync(() => {
+        const message1 = new InstantMessage({
+            conferenceId: conference.id,
+            id: Guid.create().toString(),
+            from: 'admin@test.com',
+            to: judgeUsername,
+            from_display_name: 'Admin',
+            message: 'test message from vho',
+            timestamp: new Date()
+        });
+        const chatHistory = [message1];
+        videoWebService.getConferenceChatHistory.and.resolveTo(chatHistory);
+
+        component.ngOnInit();
+        tick();
+
+        expect(component.showChat).toBeTruthy();
+    }));
+
+    it('should not open window in load when user does not have unread messages', fakeAsync(() => {
+        const message1 = new InstantMessage({
+            conferenceId: conference.id,
+            id: Guid.create().toString(),
+            from: judgeUsername,
+            to: 'admin@test.com',
+            from_display_name: judgeTestProfile.display_name,
+            message: 'test message from vho',
+            timestamp: new Date(),
+            is_user: true
+        });
+        const chatHistory = [message1];
+        videoWebService.getConferenceChatHistory.and.resolveTo(chatHistory);
+
+        component.ngOnInit();
+        tick();
+
+        expect(component.showChat).toBeFalsy();
+    }));
 });

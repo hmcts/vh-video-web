@@ -50,9 +50,7 @@ export class ParticipantChatComponent extends ChatBaseComponent implements OnIni
         this.loading = true;
         this.setupChatSubscription().then(sub => (this.chatHubSubscription = sub));
         this.retrieveChatForConference(this.adalService.userInfo.userName.toLowerCase()).then(messages => {
-            this.unreadMessageCount = this.getCountSinceUsersLastMessage(messages);
-            this.loading = false;
-            this.messages = messages;
+            this.handleChatHistoryResponse(messages);
         });
     }
 
@@ -60,6 +58,15 @@ export class ParticipantChatComponent extends ChatBaseComponent implements OnIni
         if (this.showChat) {
             this.resetUnreadMessageCount();
             this.scrollToBottom();
+        }
+    }
+
+    handleChatHistoryResponse(messages: InstantMessage[]) {
+        this.unreadMessageCount = this.getCountSinceUsersLastMessage(messages);
+        this.loading = false;
+        this.messages = messages;
+        if (this.unreadMessageCount > 0) {
+            this.toggleChatDisplay();
         }
     }
 
@@ -93,6 +100,10 @@ export class ParticipantChatComponent extends ChatBaseComponent implements OnIni
     handleIncomingOtherMessage(message: InstantMessage) {
         if (!this.showChat && !message.is_user) {
             this.unreadMessageCount++;
+        }
+
+        if (!this.showChat) {
+            this.toggleChatDisplay();
         }
     }
 

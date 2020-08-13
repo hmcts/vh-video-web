@@ -55,4 +55,5 @@ export class UnreadMessagesParticipantComponent extends UnreadMessagesComponentB
             this.unreadMessages.number_of_unread_messages++;
         }
     }
+    openImChat() {}
 }

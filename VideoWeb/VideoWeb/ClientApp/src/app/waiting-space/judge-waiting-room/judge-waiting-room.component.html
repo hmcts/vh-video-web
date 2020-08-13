@@ -2,6 +2,35 @@
   <p class="govuk-body">Loading please wait...</p>
 </div>
 
+<!-- contains the in-hearing participant list and incoming video -->
+<div id="video-container" class="govuk-grid-row" *ngIf="showVideo">
+  <div class="panel-wrap">
+    <app-participants-panel></app-participants-panel>
+  </div>
+
+  <div class="hearing-video">
+    <!-- hearing video-->
+    <div *ngIf="!isAdminConsultation" class="govuk-grid-row">
+      <div class="video-background"></div>
+      <div class="govuk-grid-column-one-half">
+        <video id="incomingFeed" [srcObject]="this.stream" autoplay height="auto">
+          Your browser does not support Video
+        </video>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-container *ngIf="connected && showVideo">
+  <app-hearing-controls
+    [participant]="participant"
+    [isPrivateConsultation]="isAdminConsultation"
+    [outgoingStream]="outgoingStream"
+    [conferenceId]="conference.id"
+    [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
+  ></app-hearing-controls>
+</ng-container>
+
 <div *ngIf="!loadingData && conference">
   <a id="back-to-hearing-list-link" href="javascript:void(0)" (click)="goToJudgeHearingList()" class="govuk-back-link">
     Return to video hearing list
@@ -13,7 +42,13 @@
     </button>
   </div>
 
-  <table class="govuk-table vh-fullwidth">
+  <table class="govuk-table vh-fullwidth" aria-describedby="Details of the hearing">
+    <thead class="govuk-table__head no-mass">
+      <tr class="govuk-table__row">
+        <th scope="col" class="govuk-table__header">Hearing</th>
+        <th scope="col" class="govuk-table__header">Date</th>
+      </tr>
+    </thead>
     <tbody class="govuk-table__body">
       <tr class="govuk-table__row">
         <td class="govuk-table__cell hearing-details-col1-width">
@@ -68,24 +103,35 @@
     </p>
 
     <div>
-      <button *ngIf="isNotStarted()" type="submit" class="govuk-button govuk-button--start" (click)="goToHearingPage()">
+      <button
+        [disabled]="!connected"
+        *ngIf="isNotStarted()"
+        type="submit"
+        class="govuk-button govuk-button--start"
+        (click)="startHearing()"
+      >
         Start video hearing
       </button>
       <button
+        [disabled]="!connected"
         *ngIf="hearingPaused() || hearingSuspended()"
         type="submit"
         class="govuk-button govuk-button--start"
-        (click)="goToHearingPage()"
+        (click)="startHearing()"
       >
         Resume video hearing
       </button>
     </div>
+
+    <div *ngIf="isSupportedBrowserForNetworkHealth && !showVideo" id="hearing-monitor-container">
+      <app-participant-network-health [participant]="participant"></app-participant-network-health>
+    </div>
   </div>
 
-  <div class="govuk-grid-column-one-third">
+  <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': showVideo }">
     <app-judge-participant-status-list aria-label="list of participants in hearing" [conference]="conference">
     </app-judge-participant-status-list>
   </div>
 </div>
 
-<app-participant-chat *ngIf="!loadingData && conference" [hearing]="hearing"></app-participant-chat>
+<app-participant-chat *ngIf="hearing && !showVideo" [hearing]="hearing"></app-participant-chat>

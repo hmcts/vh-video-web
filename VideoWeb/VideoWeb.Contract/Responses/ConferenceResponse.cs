@@ -44,11 +44,6 @@ namespace VideoWeb.Contract.Responses
         public ConferenceStatus Status { get; set; }
         
         /// <summary>
-        /// The uri of the Judge iFrame
-        /// </summary>
-        public string JudgeIFrameUri { get; set; }
-        
-        /// <summary>
         /// The participant meeting room uri
         /// </summary>
         public string ParticipantUri { get; set; }

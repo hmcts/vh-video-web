@@ -87,7 +87,6 @@ namespace VideoWeb.UnitTests.Mappings
             caseTypeGroups[2].Should().Be("None");
 
             response.AdminIFrameUri.Should().Be(meetingRoom.Admin_uri);
-            response.JudgeIFrameUri.Should().Be(meetingRoom.Judge_uri);
             response.ParticipantUri.Should().Be(meetingRoom.Participant_uri);
             response.PexipNodeUri.Should().Be(meetingRoom.Pexip_node);
         }
@@ -118,7 +117,6 @@ namespace VideoWeb.UnitTests.Mappings
             response.Status.Should().Be(expectedConferenceStatus);
 
             response.AdminIFrameUri.Should().Be(meetingRoom.Admin_uri);
-            response.JudgeIFrameUri.Should().Be(meetingRoom.Judge_uri);
             response.ParticipantUri.Should().Be(meetingRoom.Participant_uri);
             response.PexipNodeUri.Should().Be(meetingRoom.Pexip_node);
         }
@@ -147,7 +145,6 @@ namespace VideoWeb.UnitTests.Mappings
             response.Status.Should().Be(expectedConferenceStatus);
 
             response.AdminIFrameUri.Should().Be(meetingRoom.Admin_uri);
-            response.JudgeIFrameUri.Should().Be(meetingRoom.Judge_uri);
             response.ParticipantUri.Should().Be(meetingRoom.Participant_uri);
             response.PexipNodeUri.Should().Be(meetingRoom.Pexip_node);
         }
@@ -189,7 +186,6 @@ namespace VideoWeb.UnitTests.Mappings
             response.ScheduledDuration.Should().Be(conference.Scheduled_duration);
 
             response.AdminIFrameUri.Should().Be(meetingRoom.Admin_uri);
-            response.JudgeIFrameUri.Should().Be(meetingRoom.Judge_uri);
             response.ParticipantUri.Should().Be(meetingRoom.Participant_uri);
             response.PexipNodeUri.Should().Be(meetingRoom.Pexip_node);
         }

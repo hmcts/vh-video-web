@@ -15,7 +15,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         private LeaveEventHandler _eventHandler;
 
         [Test]
-        public async Task Should_send_available_message_to_participants_and_service_bus_when_participant_joins()
+        public async Task Should_send_available_message_to_participants_and_service_bus_when_participant_leaves()
         {
             _eventHandler = new LeaveEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
                 VideoApiClientMock.Object);
@@ -39,33 +39,6 @@ namespace VideoWeb.UnitTests.EventHandlers
             EventHubClientMock.Verify(
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
                     ParticipantState.Disconnected), Times.Exactly(participantCount));
-        }
-        
-        [Test]
-        public async Task Should_send_not_signed_in_messages_to_participants_and_service_bus_on_participant_leave()
-        {
-            _eventHandler = new LeaveEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
-
-            var conference = TestConference;
-            var participantForEvent = conference.Participants.First(x => x.Role == Role.Judge);
-            var participantCount = conference.Participants.Count + 1; // plus one for admin
-
-            var callbackEvent = new CallbackEvent
-            {
-                EventType = EventType.Leave,
-                EventId = Guid.NewGuid().ToString(),
-                ConferenceId = conference.Id,
-                ParticipantId = participantForEvent.Id,
-                TimeStampUtc = DateTime.UtcNow,
-                Reason = "Automated"
-            };
-
-            await _eventHandler.HandleAsync(callbackEvent);
-
-            EventHubClientMock.Verify(
-                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
-                    ParticipantState.NotSignedIn), Times.Exactly(participantCount));
         }
     }
 }

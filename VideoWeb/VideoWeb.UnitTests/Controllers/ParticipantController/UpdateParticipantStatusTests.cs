@@ -12,7 +12,6 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
@@ -30,7 +29,6 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         private Conference _testConference;
         private Mock<IConferenceCache> _conferenceCacheMock;
         private Mock<ILogger<ParticipantsController>> _mockLogger;
-        private Mock<IBookingsApiClient> _bookingsApiClientMock;
 
         [SetUp]
         public void Setup()
@@ -40,7 +38,6 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             _eventHandlerFactoryMock = new Mock<IEventHandlerFactory>();
             _eventHandlerMock = new Mock<IEventHandler>();
             _mockLogger = new Mock<ILogger<ParticipantsController>>();
-            _bookingsApiClientMock = new Mock<IBookingsApiClient>();
 
             _eventHandlerFactoryMock.Setup(x => x.Get(It.IsAny<EventHubEventType>())).Returns(_eventHandlerMock.Object);
             
@@ -57,7 +54,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             };
             
             _controller = new ParticipantsController(_videoApiClientMock.Object, _eventHandlerFactoryMock.Object, 
-                _conferenceCacheMock.Object, _mockLogger.Object, _bookingsApiClientMock.Object)
+                _conferenceCacheMock.Object, _mockLogger.Object)
             {
                 ControllerContext = context
             };
@@ -73,7 +70,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var conferenceId = _testConference.Id;
             var request = new UpdateParticipantStatusEventRequest
             {
-                EventType = EventType.JudgeAvailable
+                EventType = EventType.Joined
             };
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
@@ -94,7 +91,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var conferenceId = _testConference.Id;
             var request = new UpdateParticipantStatusEventRequest
             {
-                EventType = EventType.JudgeAvailable
+                EventType = EventType.Joined
             };
             _videoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
@@ -114,7 +111,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var conferenceId = _testConference.Id;
             var request = new UpdateParticipantStatusEventRequest
             {
-                EventType = EventType.JudgeAvailable
+                EventType = EventType.Joined
             };
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id", null, default, null);

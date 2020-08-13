@@ -1,0 +1,57 @@
+.main-container {
+  position: fixed;
+  bottom: 1%;
+  left: 0;
+  z-index: 200;
+  width: 100vw;
+}
+
+.judge-controls-container {
+  text-align: center;
+}
+
+#outgoingFeedVideo {
+  bottom: 5.5vh;
+  width: 259px;
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg); /* Safari and Chrome */
+  -moz-transform: rotateY(180deg); /* Firefox */
+}
+
+.microphoneIcon {
+  height: 18px;
+}
+
+.reduce-margin {
+  margin-bottom: 2px;
+}
+
+#muteButton .govuk-button:focus {
+  background-color: govuk-colour('green');
+}
+
+#unmuteButton .govuk-button--warning:focus {
+  background-color: govuk-colour('red');
+}
+
+.hand {
+  margin-left: 1vw;
+}
+
+#toggle-hand-button .govuk-button:focus {
+  background-color: govuk-colour('green');
+  color: govuk-colour('white');
+}
+
+#toggle-handup-button .govuk-button--warning:focus {
+  background-color: govuk-colour('red');
+  color: govuk-colour('white');
+}
+
+.remote-container {
+  margin-left: -1vw;
+}
+
+.button-spacing {
+  margin-right: 10px;
+}
