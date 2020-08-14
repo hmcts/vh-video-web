@@ -3,10 +3,10 @@
 .panel-container {
   background: govuk-colour('black');
   color: govuk-colour('white') !important;
-  width: 300px;
+  width: 215px;
   min-height: 100px;
   max-height: 50%;
-  padding-right: 10px;
+  padding-right: 3px;
   position: relative;
   z-index: 101;
   -webkit-box-shadow: -3px 0px 5px 0px rgba(0, 0, 0, 0.2);
@@ -23,12 +23,12 @@
 
 .panel-icon {
   height: 25px;
-  margin: 8px 8px;
+  margin: 5px 5px;
   cursor: pointer;
 }
 
 .cell-icon {
-  width: 33px;
+  width: 31px;
   display: inline-block;
 }
 
@@ -42,7 +42,11 @@
 
 .vh-name {
   display: inline-block;
-  width: 210px;
+  width: 135px;
+  overflow-wrap: break-word;
+  font-size: 80%;
+  float: left;
+  margin-left: 5px;
 }
 
 .vh-twidth {
@@ -53,6 +57,7 @@
   background: govuk-colour('dark-grey');
   color: govuk-color('white');
   white-space: normal;
+  font-size: 85%;
 }
 
 .muted {
@@ -89,16 +94,9 @@
   margin-left: 5px;
 }
 
-.vh-panel-name {
-  font-weight: bold;
-  font-size: 90%;
-  float: left;
-  margin-left: 5px;
-}
-
 .vh-mr {
-  margin-right: 20px;
-  margin-left: 10px;
+  margin-right: 5px;
+  margin-left: 5px;
 }
 
 .vh-mr-icon {
@@ -138,10 +136,20 @@
   border: 1px solid #1d70b8;
 }
 
+.top-name-icon {
+  background-color: #333;
+  border: 1px solid #333;
+}
+
 .top-btn {
   background-color: #333;
   border: 1px solid #333;
   font-size: 19px;
+}
+
+.tooltip-collapse-name {
+  margin-left: 5%;
+  margin-top: -60%;
 }
 
 .tooltip-expand-hand {
