@@ -29,18 +29,35 @@
 
     <div class="govuk-table table-br" summary="Judge hearing participants panel">
       <div class="govuk-table_body">
-        <div class="govuk-table_row vh-line" *ngFor="let participant of participants; let i = index">
+        <div class="govuk-table_row vh-line tooltip" *ngFor="let participant of participants; let i = index">
+          <div *ngIf="!expandPanel && !cursorOnIconMute && !cursorOnIconHand">
+            <span>
+              <span class="top top-name govuk-body-s--white tooltip-collapse-name">
+                {{ participant.displayName }}
+              </span>
+            </span>
+          </div>
+
           <div *ngIf="isParticipantInHearing(participant)">
             <div class="govuk-table_cell govuk-body-s--white vh-name" *ngIf="expandPanel">
-              <span class="govuk-!-margin-bottom-3 govuk-!-margin-top-2 vh-panel-name">
+              <span class="govuk-!-margin-bottom-3 govuk-!-margin-top-2">
                 {{ participant.displayName }}
               </span>
             </div>
+
             <div class="govuk-table_cell cell-icon">
-              <span> </span>
               <span class="tooltip">
-                <span class="top top-name govuk-body-s--white" [ngClass]="{ 'tooltip-collapse': !expandPanel }">
-                  {{ participant.displayName }}
+                <span
+                  *ngIf="cursorOnIconMute"
+                  class="top top-name-icon govuk-body-s--white"
+                  [ngClass]="{ 'tooltip-collapse': !expandPanel }"
+                >
+                  <span *ngIf="expandPanel; else collapseMute">
+                    {{ participant.isMuted ? 'Unmute' : 'Mute' }}
+                  </span>
+                  <ng-template #collapseMute>
+                    {{ participant.isMuted ? 'Unmute ' + participant.displayName : 'Mute ' + participant.displayName }}
+                  </ng-template>
                 </span>
 
                 <img
@@ -48,19 +65,27 @@
                   class="panel-icon"
                   [alt]="participant.isMuted ? 'Microphone muted icon' : 'Microphone on icon'"
                   (click)="toggleMuteParticipant(participant)"
+                  (mouseover)="cursorOnIconMute = true"
+                  (mouseout)="cursorOnIconMute = false"
                 />
               </span>
             </div>
             <div class="govuk-table_cell cell-icon">
               <span *ngIf="participant.handRaised" class="tooltip">
-                <span class="top top-name govuk-body-s--white" [ngClass]="expandPanel ? 'tooltip-expand-hand' : 'tooltip-collapse-hand'">
-                  Lower hand {{ participant.displayName }}</span
+                <span
+                  *ngIf="cursorOnIconHand"
+                  class="top top-name-icon govuk-body-s--white"
+                  [ngClass]="expandPanel ? 'tooltip-expand-hand' : 'tooltip-collapse-hand'"
                 >
+                  {{ expandPanel ? 'Lower hand' : 'Lower hand ' + participant.displayName }}
+                </span>
                 <img
                   src="/assets/images/hand-yellow.png"
                   class="panel-icon"
                   alt="Hand on icon"
                   (click)="lowerParticipantHand(participant.participantId)"
+                  (mouseover)="cursorOnIconHand = true"
+                  (mouseout)="cursorOnIconHand = false"
                 />
               </span>
             </div>
