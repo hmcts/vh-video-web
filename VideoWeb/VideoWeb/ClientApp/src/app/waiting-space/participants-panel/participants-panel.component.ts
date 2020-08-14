@@ -20,6 +20,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     expandPanel = true;
     isMuteAll = false;
     conferenceId: string;
+    cursorOnIconMute = false;
+    cursorOnIconHand = false;
 
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
