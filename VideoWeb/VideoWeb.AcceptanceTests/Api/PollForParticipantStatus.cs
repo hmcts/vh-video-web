@@ -50,7 +50,7 @@ namespace VideoWeb.AcceptanceTests.Api
             for (var i = 0; i < _maxRetries; i++)
             {
                 var response = _videoApi.GetConferenceByConferenceId(_conferenceId);
-                var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
+                var conference = RequestHelper.Deserialise<ConferenceDetailsResponse>(response.Content);
                 conference.Should().NotBeNull();
                 var participant = conference.Participants.Find(x => x.Username.ToLower().Equals(_username.ToLower()));
                 actualState = participant.Current_status;

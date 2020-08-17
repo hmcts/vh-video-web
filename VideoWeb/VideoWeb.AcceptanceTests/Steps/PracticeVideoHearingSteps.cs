@@ -81,7 +81,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var videoApiManager = new VideoApiManager(_c.VideoWebConfig.VhServices.VideoApiUrl, _c.Tokens.VideoApiBearerToken);
             var response = videoApiManager.PollForSelfTestScoreResponse(_c.Test.NewConferenceId, participantId);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var selfScore = RequestHelper.DeserialiseSnakeCaseJsonToResponse<TestCallScoreResponse>(response.Content);
+            var selfScore = RequestHelper.Deserialise<TestCallScoreResponse>(response.Content);
             selfScore.Score.ToString().Should().ContainAny("Good", "Okay", "Bad");
         }
 

@@ -19,7 +19,7 @@ namespace VideoWeb.Common.Helpers
             });
         }
         
-        public static T DeserialiseSnakeCaseJsonToResponse<T>(string response)
+        public static T Deserialise<T>(string response)
         {
             var contractResolver = new DefaultContractResolver
             {
