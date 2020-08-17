@@ -22,6 +22,7 @@ import { NotificationSoundsService } from './services/notification-sounds.servic
 import { VideoCallService } from './services/video-call.service';
 import { WaitingSpaceRoutingModule } from './waiting-space-routing.module';
 import { ParticipantsPanelComponent } from './participants-panel/participants-panel.component';
+import { ParticipantAlertComponent } from './participant-alert/participant-alert.component';
 
 @NgModule({
     imports: [SharedModule, WaitingSpaceRoutingModule],
@@ -44,7 +45,8 @@ import { ParticipantsPanelComponent } from './participants-panel/participants-pa
         ParticipantNetworkHealthComponent,
         WaitingRoomMonitorComponent,
         HearingControlsComponent,
-        ParticipantsPanelComponent
+        ParticipantsPanelComponent,
+        ParticipantAlertComponent
     ],
     providers: [VideoCallService, NotificationSoundsService]
 })

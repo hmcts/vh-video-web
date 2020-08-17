@@ -42,7 +42,7 @@
 
 .vh-name {
   display: inline-block;
-  width: 135px;
+  width: 50%;
   overflow-wrap: break-word;
   font-size: 80%;
   float: left;
@@ -175,4 +175,14 @@
 
 .tooltip:hover .top {
   display: block;
+}
+.disconnected {
+  @include govuk-font(16, $weight: 'bold', $tabular: false, $line-height: false);
+  color: govuk-colour('red');
+  margin: 4px 4px;
+}
+
+.tooltip-collapse-alert {
+  transform: translate(-15%, -70%);
+  min-width: 75px;
 }

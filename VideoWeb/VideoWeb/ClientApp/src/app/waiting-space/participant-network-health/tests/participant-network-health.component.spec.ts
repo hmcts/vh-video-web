@@ -79,4 +79,19 @@ describe('ParticipantNetworkHealthComponent', () => {
         component.participant.status = ParticipantStatus.Available;
         expect(component.isVideoOn).toBeFalsy();
     });
+
+    it('should return isDisconnected false when participant is in hearing', () => {
+        component.participant.status = ParticipantStatus.InHearing;
+        expect(component.isDisconnected).toBeFalsy();
+    });
+
+    it('should return isDisconnected false when participant is waiting room', () => {
+        component.participant.status = ParticipantStatus.Available;
+        expect(component.isDisconnected).toBeFalsy();
+    });
+
+    it('should return isDisconnected true when participant is disconnected', () => {
+        component.participant.status = ParticipantStatus.Disconnected;
+        expect(component.isDisconnected).toBeTruthy();
+    });
 });
