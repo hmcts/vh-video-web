@@ -130,7 +130,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenAnAudioRecordingOfTheHearingHasBeenCreated()
         {
             var response = _c.Apis.VideoApi.GetAudioRecordingLink(_c.Test.NewHearingId);
-            var audioLink = RequestHelper.DeserialiseSnakeCaseJsonToResponse<AudioRecordingResponse>(response.Content);
+            var audioLink = RequestHelper.Deserialise<AudioRecordingResponse>(response.Content);
             audioLink.Should().NotBeNull();
             audioLink.Audio_file_link.ToLower().Should().Contain(_c.Test.NewHearingId.ToString().ToLower());
         }

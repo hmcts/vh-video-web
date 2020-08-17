@@ -58,7 +58,7 @@ namespace VideoWeb.AcceptanceTests.Api
             for (var i = 0; i < _maxRetries; i++)
             {
                 var response = _videoApi.GetConferenceByConferenceId(_conferenceId);
-                var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
+                var conference = RequestHelper.Deserialise<ConferenceDetailsResponse>(response.Content);
                 conference.Should().NotBeNull();
 
                 if (_expectTheParticipantToExist)
