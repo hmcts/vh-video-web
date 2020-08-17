@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using AcceptanceTests.Common.Api.Hearings;
@@ -206,7 +207,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private Guid GetClerkParticipantId()
         {
-            return _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(Role.Judge.ToString())).Id;
+            return _c.Test.ConferenceParticipants.First(x => x.User_role.ToString().Equals(Role.Judge.ToString())).Id;
         }
 
         private IRestResponse SendEventToVideoApi(CallbackEvent request)
