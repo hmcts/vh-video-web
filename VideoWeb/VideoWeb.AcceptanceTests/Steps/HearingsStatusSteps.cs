@@ -63,7 +63,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenTheClosedDateAttributeShouldBePopulated()
         {
             var response = _c.Apis.VideoApi.GetConferenceByConferenceId(_c.Test.Conference.Id);
-            var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
+            var conference = RequestHelper.Deserialise<ConferenceDetailsResponse>(response.Content);
             conference.Closed_date_time?.Date.Should().Be(DateTime.Now.Date);
         }
 

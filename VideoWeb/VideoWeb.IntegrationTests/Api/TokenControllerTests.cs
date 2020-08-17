@@ -19,7 +19,7 @@ namespace VideoWeb.IntegrationTests.Api
             var receiveStream = responseMessage.Content.ReadAsStreamAsync().Result;
             var readStream = new StreamReader(receiveStream, Encoding.UTF8);
             var json = readStream.ReadToEnd();
-            var tokenResponse = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<TokenResponse>(json);
+            var tokenResponse = ApiRequestHelper.Deserialise<TokenResponse>(json);
 
             responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
             tokenResponse.Should().NotBeNull();
@@ -41,7 +41,7 @@ namespace VideoWeb.IntegrationTests.Api
             var receiveStream = responseMessage.Content.ReadAsStreamAsync().Result;
             var readStream = new StreamReader(receiveStream, Encoding.UTF8);
             var json = readStream.ReadToEnd();
-            var tokenResponse = ApiRequestHelper.DeserialiseSnakeCaseJsonToResponse<TokenResponse>(json);
+            var tokenResponse = ApiRequestHelper.Deserialise<TokenResponse>(json);
 
             responseMessage.StatusCode.Should().Be(HttpStatusCode.OK);
             tokenResponse.Should().NotBeNull();

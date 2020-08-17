@@ -33,7 +33,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         private void ClearHearingsForUser(BookingsApiManager bookingsApi)
         {
             var response = bookingsApi.GetHearingsForUsername(_username);
-            var hearings = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingDetailsResponse>>(response.Content);
+            var hearings = RequestHelper.Deserialise<List<HearingDetailsResponse>>(response.Content);
             if (hearings == null) return;
             foreach (var hearing in hearings)
             {
@@ -49,7 +49,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         private void ClearClosedConferencesForUser(BookingsApiManager bookingsApi, VideoApiManager videoApi)
         {
             var response = videoApi.GetConferencesForTodayJudge(_username);
-            var todaysConferences = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ConferenceForAdminResponse>>(response.Content);
+            var todaysConferences = RequestHelper.Deserialise<List<ConferenceForAdminResponse>>(response.Content);
             if (todaysConferences == null) return;
 
             foreach (var conference in todaysConferences)
@@ -67,7 +67,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         private static Guid GetTheHearingIdFromTheConference(VideoApiManager videoApi, Guid conferenceId)
         {
             var response = videoApi.GetConferenceByConferenceId(conferenceId);
-            var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
+            var conference = RequestHelper.Deserialise<ConferenceDetailsResponse>(response.Content);
             return conference?.Hearing_id ?? Guid.Empty;
         }
 
