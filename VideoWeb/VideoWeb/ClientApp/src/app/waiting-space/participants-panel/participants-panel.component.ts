@@ -20,6 +20,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     expandPanel = true;
     isMuteAll = false;
     conferenceId: string;
+    cursorOnIconMute = false;
+    cursorOnIconHand = false;
 
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
@@ -87,12 +89,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         participant.pexipId = updatedParticipant.uuid;
         participant.isMuted = updatedParticipant.isRemoteMuted;
         participant.handRaised = updatedParticipant.handRaised;
-        this.checkParticipantMuteAllStatus();
-    }
-
-    checkParticipantMuteAllStatus() {
-        const numberOfMutedParticipants = this.participants.filter(x => x.isMuted).length;
-        this.isMuteAll = numberOfMutedParticipants > 0;
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
@@ -132,13 +128,23 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     toggleMuteParticipant(participant: ParticipantPanelModel) {
-        const numberOfMutedParticipants = this.participants.filter(x => x.isMuted).length;
+        const hearingParticipants = this.participants.filter(x => x.status === ParticipantStatus.InHearing);
+        const mutedParticipants = hearingParticipants.filter(x => x.isMuted);
         const p = this.participants.find(x => x.participantId === participant.participantId);
+
+        console.log(hearingParticipants);
+        console.log(mutedParticipants);
+        console.log(p);
         this.videoCallService.muteParticipant(p.pexipId, !p.isMuted);
 
         // check if last person to be unmuted manually
-        if (numberOfMutedParticipants === 1 && this.isMuteAll) {
+        if (mutedParticipants.length === 1 && this.isMuteAll) {
             this.videoCallService.muteAllParticipants(false);
+        }
+
+        // mute conference if last person manually muted
+        if (mutedParticipants.length === hearingParticipants.length - 1) {
+            this.videoCallService.muteAllParticipants(true);
         }
     }
 

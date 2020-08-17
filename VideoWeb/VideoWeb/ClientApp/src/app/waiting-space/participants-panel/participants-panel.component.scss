@@ -3,17 +3,18 @@
 .panel-container {
   background: govuk-colour('black');
   color: govuk-colour('white') !important;
-  width: 300px;
+  width: 215px;
   min-height: 100px;
   max-height: 50%;
-  padding-right: 10px;
+  padding-right: 3px;
   position: relative;
-  z-index: 100;
+  z-index: 101;
   -webkit-box-shadow: -3px 0px 5px 0px rgba(0, 0, 0, 0.2);
   box-shadow: -3px 0px 5px 0px rgba(0, 0, 0, 0.2);
   opacity: 0.8;
   overflow-y: auto;
   overflow-x: hidden;
+  overflow: visible;
 }
 
 .table-br {
@@ -22,12 +23,12 @@
 
 .panel-icon {
   height: 25px;
-  margin: 8px 8px;
+  margin: 5px 5px;
   cursor: pointer;
 }
 
 .cell-icon {
-  width: 33px;
+  width: 31px;
   display: inline-block;
 }
 
@@ -41,7 +42,11 @@
 
 .vh-name {
   display: inline-block;
-  width: 60%;
+  width: 50%;
+  overflow-wrap: break-word;
+  font-size: 80%;
+  float: left;
+  margin-left: 5px;
 }
 
 .vh-twidth {
@@ -52,6 +57,7 @@
   background: govuk-colour('dark-grey');
   color: govuk-color('white');
   white-space: normal;
+  font-size: 85%;
 }
 
 .muted {
@@ -88,16 +94,9 @@
   margin-left: 5px;
 }
 
-.vh-panel-name {
-  font-weight: bold;
-  font-size: 90%;
-  float: left;
-  margin-left: 5px;
-}
-
 .vh-mr {
-  margin-right: 20px;
-  margin-left: 10px;
+  margin-right: 5px;
+  margin-left: 5px;
 }
 
 .vh-mr-icon {
@@ -112,7 +111,6 @@
 .tooltip {
   display: inline-block;
   position: relative;
-  border-bottom: 1px dotted #666;
   text-align: left;
 }
 
@@ -122,37 +120,57 @@
   margin-top: -130%;
   padding: 5px;
   color: govuk-colour('white');
-  background-color: govuk-colour('black');
-  font-weight: normal;
-  font-size: 13px;
-  border-radius: 4px;
-  border: 1px solid govuk-colour('dark-grey');
   position: absolute;
-  z-index: 9999;
+  z-index: 111;
   display: none;
   overflow-wrap: normal;
+  white-space: nowrap;
   font-family: sans-serif;
+  opacity: 0.88;
+  border-radius: 2px;
+  box-shadow: 0 7px 11px 0px rgba(0, 0, 0, 0.3);
+}
+
+.top-name {
+  background-color: #1d70b8;
+  border: 1px solid #1d70b8;
+}
+
+.top-name-icon {
+  background-color: #333;
+  border: 1px solid #333;
+}
+
+.top-btn {
+  background-color: #333;
+  border: 1px solid #333;
+  font-size: 19px;
+}
+
+.tooltip-collapse-name {
+  margin-left: 5%;
+  margin-top: -60%;
 }
 
 .tooltip-expand-hand {
   margin-left: -65%;
-  margin-top: -200%;
+  margin-top: -100%;
 }
 
 .tooltip-collapse {
   margin-left: 0;
-  margin-top: -130%;
+  margin-top: -100%;
 }
 
 .tooltip-collapse-hand {
   min-width: 75px;
   margin-left: -65%;
-  margin-top: -160%;
+  margin-top: -100%;
 }
 
 .tooltip-collapse-btn {
   margin-left: 0;
-  margin-top: -130%;
+  margin-top: -100%;
 }
 
 .tooltip:hover .top {

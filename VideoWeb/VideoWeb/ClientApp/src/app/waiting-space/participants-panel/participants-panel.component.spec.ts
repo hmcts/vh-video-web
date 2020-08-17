@@ -29,7 +29,17 @@ describe('ParticipantsPanelComponent', () => {
         component = new ParticipantsPanelComponent(videoWebServiceSpy, activatedRoute, videocallService, eventService, logger);
         component.participants = participants
             .filter(x => x.role !== Role.Judge)
-            .map(x => new ParticipantPanelModel(x.id, x.display_name, x.role, x.case_type_group, x.status, x.pexip_display_name));
+            .map(
+                x =>
+                    new ParticipantPanelModel(
+                        x.id,
+                        x.display_name,
+                        x.role,
+                        x.case_type_group,
+                        ParticipantStatus.InHearing,
+                        x.pexip_display_name
+                    )
+            );
     });
 
     afterEach(() => {
@@ -143,15 +153,6 @@ describe('ParticipantsPanelComponent', () => {
         expect(result.handRaised).toBeTruthy();
     });
 
-    it('should display unmute all when at least one participant is muted', () => {
-        component.setupVideoCallSubscribers();
-        const pat = component.participants.filter(x => x.role !== Role.Judge)[0];
-        const payload = new ParticipantUpdated('YES', 1, pat.pexipDisplayName, Guid.create().toString());
-
-        onParticipantUpdatedMock.next(payload);
-        expect(component.isMuteAll).toBeTruthy();
-    });
-
     it('should not process video call participant updates not in list', () => {
         component.setupVideoCallSubscribers();
         const pat = component.participants.filter(x => x.role !== Role.Judge)[1];
@@ -199,6 +200,21 @@ describe('ParticipantsPanelComponent', () => {
         component.toggleMuteParticipant(pat);
 
         expect(videocallService.muteAllParticipants).toHaveBeenCalledWith(false);
+    });
+
+    it('should mute conference when last participant is muted manually', () => {
+        const lastParticipant = component.participants[component.participants.length - 1];
+        for (let index = 0; index < component.participants.length - 1; index++) {
+            component.participants[index].isMuted = true;
+        }
+
+        videocallService.muteAllParticipants.calls.reset();
+        component.isMuteAll = true;
+        lastParticipant.isMuted = false;
+
+        component.toggleMuteParticipant(lastParticipant);
+
+        expect(videocallService.muteAllParticipants).toHaveBeenCalledWith(true);
     });
 
     it('should not unmute conference when second last participant is unmuted after a conference mute', () => {
