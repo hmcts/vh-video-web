@@ -25,3 +25,21 @@
   vertical-align: top;
   z-index: 999;
 }
+.panel-l {
+    left: 80px;
+}
+
+.panel-s {
+    left: 25px !important;
+}
+
+.incomingFeed {
+    position: fixed;
+    top: 0;
+    min-width: 100%;
+    min-height: 80vh;
+    max-width: 100%;
+    max-height: 90vh;
+    z-index: 100;
+}
+

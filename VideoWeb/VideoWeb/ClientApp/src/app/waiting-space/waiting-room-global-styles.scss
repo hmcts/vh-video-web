@@ -1,7 +1,8 @@
+
 #incomingFeed,
 #incomingFeedPrivate {
   position: fixed;
-  left: 25px;
+  left: 0;
   top: 0;
   min-width: 100%;
   min-height: 80vh;
@@ -9,6 +10,7 @@
   max-height: 90vh;
   z-index: 100;
 }
+
 
 #hearing-monitor-div {
   z-index: 100;
@@ -31,3 +33,4 @@
 .no-mass {
   display: none;
 }
+

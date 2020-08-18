@@ -13,6 +13,7 @@ import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-map
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
+import { EventBusService, VHEventType } from 'src/app/services/event-bus.service';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -24,6 +25,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     isRecording: boolean;
     continueWithNoRecording = false;
     showAudioRecordingAlert = false;
+    expanedPanel = true;
 
     constructor(
         protected route: ActivatedRoute,
@@ -36,7 +38,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         protected videoCallService: VideoCallService,
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
-        private audioRecordingService: AudioRecordingService
+        private audioRecordingService: AudioRecordingService,
+        private eventBusService: EventBusService
     ) {
         super(
             route,
@@ -59,6 +62,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         this.getConference().then(() => {
             this.startEventHubSubscribers();
             this.getJwtokenAndConnectToPexip();
+            this.eventBusSubscribers();
         });
     }
 
@@ -74,6 +78,13 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         clearTimeout(this.callbackTimeout);
         clearInterval(this.audioRecordingInterval);
         this.disconnect();
+    }
+
+    eventBusSubscribers() {
+        this.eventBusService.on<boolean>(VHEventType.ExpandCollapseJudgePanel, isExpaned => {
+            this.expanedPanel = isExpaned;
+            console.log('GET EVENT COLLAPSE OR EXPANDED');
+        });
     }
 
     updateShowVideo(): void {

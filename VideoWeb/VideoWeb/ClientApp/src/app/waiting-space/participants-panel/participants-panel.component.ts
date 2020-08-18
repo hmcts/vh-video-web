@@ -9,6 +9,7 @@ import { ParticipantPanelModel } from '../models/participant-panel-model';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-bus.service';
 
 @Component({
     selector: 'app-participants-panel',
@@ -21,7 +22,10 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     isMuteAll = false;
     conferenceId: string;
     cursorOnIconMute = false;
+    cursorOnIconUnmute = false;
     cursorOnIconHand = false;
+    cursorOnMuteAll = false;
+    cursorOnLowerHandAll = false;
 
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
@@ -31,7 +35,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private route: ActivatedRoute,
         private videoCallService: VideoCallService,
         private eventService: EventsService,
-        private logger: Logger
+        private logger: Logger,
+        private eventBusService: EventBusService
     ) {}
 
     get muteAllToggleText() {
@@ -107,6 +112,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                 const participant = this.mapParticipant(x);
                 this.participants.push(participant);
             });
+           this.testData();
             this.participants.sort((x, z) => {
                 return x.orderInTheList === z.orderInTheList ? 0 : +(x.orderInTheList > z.orderInTheList) || -1;
             });
@@ -121,6 +127,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     toggleCollapseExpand() {
         this.expandPanel = !this.expandPanel;
+        this.eventBusService.emit(new EmitEvent(VHEventType.ExpandCollapseJudgePanel, this.expandPanel));
     }
 
     toggleMuteAll() {
@@ -166,5 +173,15 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             participant.status,
             participant.pexip_display_name
         );
+    }
+
+    testData() {
+        for (var i = 0; i < 10; i++) {
+            const part = new ParticipantPanelModel('12345', 'Mr Stiven Stivenson'+i, Role.Individual, 'Observer', ParticipantStatus.InHearing, 'pexipname');
+            part.orderInTheList = 3;
+
+            this.participants.push(part);
+        }
+
     }
 }
