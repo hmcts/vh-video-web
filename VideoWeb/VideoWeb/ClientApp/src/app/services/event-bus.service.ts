@@ -40,6 +40,5 @@ export enum VHEventType {
     TaskCompleted = 'TaskCompleted',
     PageRefreshed = 'PageRefreshed',
     ApplyCourtAccountFilter = 'ApplyCourtAccountFilter',
-    ConferenceImClicked = 'ConferenceImClicked',
-    ExpandCollapseJudgePanel = 'ExpandCollapseJudgePanel'
+    ConferenceImClicked = 'ConferenceImClicked'
 }

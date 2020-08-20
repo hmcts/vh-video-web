@@ -1,6 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewChecked } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription} from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantForUserResponse, Role, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
@@ -9,35 +9,33 @@ import { ParticipantPanelModel } from '../models/participant-panel-model';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-bus.service';
 
 @Component({
     selector: 'app-participants-panel',
     templateUrl: './participants-panel.component.html',
     styleUrls: ['./participants-panel.component.scss']
 })
-export class ParticipantsPanelComponent implements OnInit, OnDestroy {
+export class ParticipantsPanelComponent implements OnInit, AfterViewChecked, OnDestroy {
     participants: ParticipantPanelModel[] = [];
-    expandPanel = true;
     isMuteAll = false;
     conferenceId: string;
-    cursorOnIconMute = false;
-    cursorOnIconUnmute = false;
-    cursorOnIconHand = false;
-    cursorOnMuteAll = false;
-    cursorOnLowerHandAll = false;
 
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
 
+    firstElement: HTMLElement;
+    lastElement: HTMLElement;
+
+    isScrolling = 0;
+    
     constructor(
         private videoWebService: VideoWebService,
         private route: ActivatedRoute,
         private videoCallService: VideoCallService,
         private eventService: EventsService,
-        private logger: Logger,
-        private eventBusService: EventBusService
-    ) {}
+        private logger: Logger
+    ) {
+    }
 
     get muteAllToggleText() {
         if (this.isMuteAll) {
@@ -53,6 +51,16 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             this.setupVideoCallSubscribers();
             this.setupEventhubSubscribers();
         });
+    }
+
+    ngAfterViewChecked() {
+        if (!this.firstElement || !this.lastElement) {
+            this.firstElement = document.querySelector('#panel_participant_0');
+            this.lastElement = document.querySelector('#panel_participant_' + (this.participants.length - 1));
+            console.log('ELEMENTS ARE SET:' + this.lastElement)
+            console.log('ELEMENTS ARE SET:' + this.lastElement)
+            this.setScrollingIndicator();
+        }
     }
 
     ngOnDestroy(): void {
@@ -112,7 +120,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                 const participant = this.mapParticipant(x);
                 this.participants.push(participant);
             });
-           this.testData();
+            this.testData();
             this.participants.sort((x, z) => {
                 return x.orderInTheList === z.orderInTheList ? 0 : +(x.orderInTheList > z.orderInTheList) || -1;
             });
@@ -123,11 +131,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     isParticipantInHearing(participant: ParticipantPanelModel): boolean {
         return participant.status === ParticipantStatus.InHearing;
-    }
-
-    toggleCollapseExpand() {
-        this.expandPanel = !this.expandPanel;
-        this.eventBusService.emit(new EmitEvent(VHEventType.ExpandCollapseJudgePanel, this.expandPanel));
     }
 
     toggleMuteAll() {
@@ -175,9 +178,30 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         );
     }
 
+    onScroll() {
+        this.setScrollingIndicator();
+    }
+
+    isItemOfListVisible(element: HTMLElement) {
+        const position = element.getBoundingClientRect();
+
+        // return true if element is fully visiable in screen
+        return (position.top >= 0 && position.bottom <= window.innerHeight);
+    }
+
+    setScrollingIndicator() {
+        if (this.isItemOfListVisible(this.lastElement) && this.isItemOfListVisible(this.firstElement)) {
+            this.isScrolling = 0; //no scrolling
+        } else if (this.isItemOfListVisible(this.firstElement)) {
+            this.isScrolling = 1; // scrolling to bottom
+        } else {
+            this.isScrolling = 2; // scrolling to top
+        }
+    }
+
     testData() {
-        for (var i = 0; i < 10; i++) {
-            const part = new ParticipantPanelModel('12345', 'Mr Stiven Stivenson'+i, Role.Individual, 'Observer', ParticipantStatus.InHearing, 'pexipname');
+        for (var i = 0; i < 17; i++) {
+            const part = new ParticipantPanelModel('12345', 'Mr Stiven Stivenson' + i, Role.Individual, 'Observer', ParticipantStatus.InHearing, 'pexipname');
             part.orderInTheList = 3;
 
             this.participants.push(part);

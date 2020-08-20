@@ -6,7 +6,7 @@
   max-width: 350px;
   min-width: 180px;
   min-height: 100px;
-  max-height: 600px;
+  max-height: 90vh;
   padding-right: 3px;
   position: relative;
   z-index: 120;
@@ -14,39 +14,39 @@
   box-shadow: -3px 0px 5px 0px rgba(0, 0, 0, 0.2);
   opacity: 0.8;
   overflow: visible;
+  resize:vertical;
+  bottom: 1%;
  }
 
 .panel-container-list {
-    overflow-y: auto;
     overflow-x: hidden;
-    max-height: 400px;
-    min-height: 120px;
+    overflow: scroll;
+    max-height: 88vh;
 }
 
+::-webkit-scrollbar {
+    width: 0px; /* Remove scrollbar space */
+    background: transparent; /* Optional: just make scrollbar invisible */
+}
 
 .table-br {
   border-color: govuk-colour('dark-grey') !important;
 }
 
 .panel-icon {
-  height: 25px;
-  cursor: pointer;
-  padding-left:8px;
-  margin-top:10px;
+    height: 25px;
+    cursor: pointer;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-top: 10px;
 }
 
 .cell-icon {
   width: 35px;
   display: inline-block;
   align-content:center;
-}
-
-.icon-op:hover {
-  opacity: 1;
-}
-
-.icon-op {
-  opacity: 0.5;
+  margin-right:5px;
+  margin-top:5px;
 }
 
 .row-pad{
@@ -57,22 +57,16 @@
     display: inline-block;
     width: 135px;
     overflow-wrap: break-word;
-    font-size: 80%;
     float: left;
     margin: 10px 0px 10px 3px;
     text-align:left !important;
     padding-left:5px;
 }
 
-.vh-twidth {
-  width: 100px;
-}
-
 .grey-btn {
   background: govuk-colour('dark-grey');
   color: govuk-color('white');
   white-space: normal;
-  font-size:95%;
 }
 
 .muted {
@@ -99,28 +93,9 @@
   border-color: govuk-colour('red') !important;
 }
 
-.vh-expand {
-  float: right;
-  margin-right: 5px;
-}
-
-.vh-collapse {
-  float: left;
-  margin-left: 5px;
-}
-
 .vh-mr {
   margin-right: 5px;
   margin-left: 5px;
-}
-
-.vh-mr-icon {
-  margin-right: 5px;
-  margin-left: 5px;
-}
-
-.vh-th {
-  visibility: collapse;
 }
 
 .tooltip {
@@ -130,9 +105,6 @@
 }
 
 .top {
-  margin-left: 0;
-  margin-left: -60%;
-  margin-top: -130%;
   padding: 5px;
   color: govuk-colour('white');
   position: absolute;
@@ -142,12 +114,6 @@
   opacity: 0.88;
   border-radius: 2px;
   box-shadow: 0 7px 11px 0px rgba(0, 0, 0, 0.3);
-  font-size:85%;
-}
-
-.top-name {
-  background-color: #1d70b8;
-  border: 1px solid #1d70b8;
   font-size:85%;
 }
 
@@ -163,40 +129,25 @@
   font-size: 19px;
 }
 
-/*tool-tip for display name*/
-.tooltip-collapse-name {
-  margin-left: 5%;
-  margin-top: -5%;
-}
-
-
 /*tool-tip for expanded panel and raise hand*/
-.tooltip-expand-hand {
-  margin-left: 45%;
-  margin-top: -3%;
+.tooltip-hand {
+  margin-left: -220%;
+  margin-top: 2%;
 }
 
 /*tool-tip mute*/
-.tooltip-expand-mute {
-  margin-left: 55%;
-  margin-top: -2%;
+.tooltip-mute {
+  margin-left: -110%;
+  margin-top: 2%;
 }
 
-.tooltip-collapse-mute {
-    margin-left: 20%;
+/*tool-tip unmute*/
+.tooltip-unmute {
+    margin-left: -170%;
     margin-top: 2%;
-}
-
-.tooltip-collapse-hand {
-  margin-left: 2%;
-  margin-top: 5%;
-}
-
-.tooltip-collapse-btn {
-  margin-left: 0;
-  margin-top: -12%;
 }
 
 .tooltip:hover .top {
   display: inline-block;
 }
+

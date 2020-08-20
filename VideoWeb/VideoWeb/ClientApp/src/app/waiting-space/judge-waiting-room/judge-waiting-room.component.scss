@@ -20,6 +20,7 @@
 }
 
 .panel-wrap {
+top:0;
   left: 0;
   position: fixed;
   vertical-align: top;
@@ -36,9 +37,10 @@
 .incomingFeed {
     position: fixed;
     top: 0;
-    min-width: 100%;
+    left:5%;
+    min-width: 96%;
     min-height: 80vh;
-    max-width: 100%;
+    max-width: 96%;
     max-height: 90vh;
     z-index: 100;
 }

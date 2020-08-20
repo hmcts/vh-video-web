@@ -4,35 +4,39 @@
 
 <!-- contains the in-hearing participant list and incoming video -->
 <div id="video-container" class="govuk-grid-row" *ngIf="showVideo">
-    <div class="govuk-grid-column-one-quarter" style="overflow:hidden;">
+    <div class="govuk-grid-column-one-quarter" style="width:300px;">
         <div class="panel-wrap">
           <app-participants-panel></app-participants-panel>
         </div>
     </div>
-    <div class="govuk-grid-column-three-quarters" style="float: right;">
+    <div class="govuk-grid-column-three-quarters" style="float: right; left:300px;">
         <div class="hearing-video">
             <!-- hearing video-->
             <div *ngIf="!isAdminConsultation">
                 <div class="video-background"></div>
-                    <video id="incomingFeedJudge" [srcObject]="this.stream" autoplay height="auto"
-                           class="incomingFeed"
-                           [ngClass]="{ 'panel-s': !expanedPanel, 'panel-l': expanedPanel}">
-                        Your browser does not support Video
-                    </video>
-                </div>
+                <video id="incomingFeedJudge" [srcObject]="this.stream" autoplay height="auto"
+                       class="incomingFeed">
+                       <!--[ngClass]="{ 'panel-s': !expanedPanel, 'panel-l': expanedPanel}">-->
+                    Your browser does not support Video
+                </video>
             </div>
+        </div>
+        <ng-container *ngIf="connected">
+            <app-hearing-controls [participant]="participant"
+                                  [isPrivateConsultation]="isAdminConsultation"
+                                  [outgoingStream]="outgoingStream"
+                                  [conferenceId]="conference.id"
+                                  [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"></app-hearing-controls>
+        </ng-container>
     </div>
 </div>
-<!--<div style="z-index: 9999;">
-<app-participants-panel></app-participants-panel>-->
-<!--</div>-->
-<ng-container *ngIf="connected && showVideo">
+<!--<ng-container *ngIf="connected && showVideo">
     <app-hearing-controls [participant]="participant"
                           [isPrivateConsultation]="isAdminConsultation"
                           [outgoingStream]="outgoingStream"
                           [conferenceId]="conference.id"
                           [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"></app-hearing-controls>
-</ng-container>
+</ng-container>-->
 
 <div *ngIf="!loadingData && conference">
     <a id="back-to-hearing-list-link" href="javascript:void(0)" (click)="goToJudgeHearingList()" class="govuk-back-link">
