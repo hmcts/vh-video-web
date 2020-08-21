@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Helpers;
@@ -36,7 +37,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser.Key]);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.SwitchTo().Frame(AdminPanelPage.AdminIframeId);
-            var participant = _c.Test.ConferenceParticipants.Find(x => x.Name.ToLower().Contains(user.ToLower()));
+            var participant = _c.Test.ConferenceParticipants.First(x => x.Name.ToLower().Contains(user.ToLower()));
             _browsers[_c.CurrentUser.Key].Click(AdminPanelPage.ParticipantInIframe(participant.Display_name));
             Thread.Sleep(TimeSpan.FromSeconds(SecondsDelayBeforeCallingTheParticipant));
             _browsers[_c.CurrentUser.Key].Click(AdminPanelPage.VhoPrivateConsultationLink(participant.Id));

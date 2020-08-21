@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Helpers;
-using RestSharp;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.AcceptanceTests.Api
