@@ -162,7 +162,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var hearingResponse = _c.Apis.BookingsApi.CreateHearing(request);
             hearingResponse.StatusCode.Should().Be(HttpStatusCode.Created, $"Hearing not created with error '{hearingResponse.Content}'");
-            var hearing = RequestHelper.DeserialiseSnakeCaseJsonToResponse<HearingDetailsResponse>(hearingResponse.Content);
+            var hearing = RequestHelper.Deserialise<HearingDetailsResponse>(hearingResponse.Content);
             hearing.Should().NotBeNull();
             _c.Test.Hearing = hearing;
             _c.Test.NewHearingId = hearing.Id;
@@ -191,7 +191,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             response.StatusCode.Should().Be(HttpStatusCode.NoContent, $"Conference not created with error '{response.Content}'");
             response = _c.Apis.VideoApi.PollForConferenceResponse(_c.Test.NewHearingId);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
+            var conference = RequestHelper.Deserialise<ConferenceDetailsResponse>(response.Content);
             AssertConferenceDetailsResponse.ForConference(conference);
             _c.Test.Conference = conference;
             _c.Test.Conferences.Add(conference);

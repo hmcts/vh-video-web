@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
@@ -15,11 +15,13 @@ namespace VideoWeb.UnitTests.Hub
     public class SendHeartbeatTests : EventHubBaseTests
     {
         [Test]
-        public async Task Should_send_heartbeat_to_vhofficers_group()
+        public async Task Should_send_heartbeat_to_vhofficers_group_and_judges()
         {
             var participantUsername = "individual@test.com";
             var conference = InitConference(participantUsername);
             var participant = conference.Participants.First(x => x.Username == participantUsername);
+            var judge = conference.Participants.First(x => x.Role == Role.Judge);
+            var judgeName = judge.Username;
             
             var conferenceId = conference.Id;
             var participantId = participant.Id;
@@ -36,8 +38,10 @@ namespace VideoWeb.UnitTests.Hub
             
             var mockAdminClient = new Mock<IEventHubClient>();
             var mockParticipantClient = new Mock<IEventHubClient>();
+            var mockJudgeClient = new Mock<IEventHubClient>();
             EventHubClientMock.Setup(x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName)).Returns(mockAdminClient.Object);
             EventHubClientMock.Setup(x => x.Group(participantUsername.ToLowerInvariant())).Returns(mockParticipantClient.Object);
+            EventHubClientMock.Setup(x => x.Group(judgeName.ToLowerInvariant())).Returns(mockJudgeClient.Object);
             HeartbeatMapper.Setup(x => x.MapToHealth(heartbeat)).Returns(HeartbeatHealth.Good);
             var addHeartbeatRequest = new AddHeartbeatRequest
             {
@@ -64,14 +68,86 @@ namespace VideoWeb.UnitTests.Hub
                 ), 
                 Times.Once
             );
-            
+
+            mockJudgeClient.Verify
+            (
+                x => x.ReceiveHeartbeat
+                (
+                    conferenceId, participantId, HeartbeatHealth.Good, heartbeat.BrowserName, heartbeat.BrowserVersion
+                ),
+                Times.Once
+            );
+
             VideoApiClientMock.Verify
             (
                 x => x.SaveHeartbeatDataForParticipantAsync(conferenceId, participantId, addHeartbeatRequest), 
                 Times.Once
             );
         }
-        
+
+        [Test]
+        public async Task Should_send_heartbeat_to_vhofficers_group_from_judge()
+        {
+            var participantUsername = "individual@test.com";
+            var conference = InitConference(participantUsername);
+            var participant = conference.Participants.First(x => x.Username == participantUsername);
+            var judge = conference.Participants.First(x => x.Role == Role.Judge);
+            var judgeUserName = judge.Username;
+
+            var conferenceId = conference.Id;
+            var participantId = participant.Id;
+            var judgeId = judge.Id;
+            var heartbeat = new Heartbeat
+            {
+                BrowserName = "test_browser", BrowserVersion = "1",
+                IncomingAudioPercentageLostRecent = 10.3m
+            };
+
+            ConferenceCacheMock.Setup(cache =>
+                    cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+                .ReturnsAsync(conference);
+
+            var mockAdminClient = new Mock<IEventHubClient>();
+            var mockParticipantClient = new Mock<IEventHubClient>();
+            var mockJudgeClient = new Mock<IEventHubClient>();
+            EventHubClientMock.Setup(x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName)).Returns(mockAdminClient.Object);
+            EventHubClientMock.Setup(x => x.Group(participantUsername.ToLowerInvariant())).Returns(mockParticipantClient.Object);
+            EventHubClientMock.Setup(x => x.Group(judgeUserName.ToLowerInvariant())).Returns(mockJudgeClient.Object);
+            HeartbeatMapper.Setup(x => x.MapToHealth(heartbeat)).Returns(HeartbeatHealth.Good);
+            var addHeartbeatRequest = new AddHeartbeatRequest
+            {
+                Browser_name = heartbeat.BrowserName, Browser_version = heartbeat.BrowserVersion,
+                Incoming_audio_percentage_lost_recent = 10.3
+            };
+            HeartbeatMapper.Setup(x => x.MapToRequest(heartbeat)).Returns(addHeartbeatRequest);
+            await Hub.SendHeartbeat(conferenceId, judgeId, heartbeat);
+
+            mockAdminClient.Verify
+            (
+                x => x.ReceiveHeartbeat
+                (
+                    conferenceId, judgeId, HeartbeatHealth.Good, heartbeat.BrowserName, heartbeat.BrowserVersion
+                ),
+                Times.Once
+            );
+
+            mockParticipantClient.Verify
+            (
+                x => x.ReceiveHeartbeat
+                (
+                    conferenceId, judgeId, HeartbeatHealth.Good, heartbeat.BrowserName, heartbeat.BrowserVersion
+                ),
+                Times.Never
+            );
+
+            VideoApiClientMock.Verify
+            (
+                x => x.SaveHeartbeatDataForParticipantAsync(conferenceId, judgeId, addHeartbeatRequest),
+                Times.Once
+            );
+        }
+
         [Test]
         public async Task Should_throw_error_on_send_heartbeat()
         {

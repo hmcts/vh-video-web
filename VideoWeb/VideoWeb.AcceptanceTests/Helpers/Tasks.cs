@@ -14,7 +14,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
         {
             var response = context.Apis.VideoApi.GetTasks(context.Test.NewConferenceId);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var tasks = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<TaskResponse>>(response.Content);
+            var tasks = RequestHelper.Deserialise<List<TaskResponse>>(response.Content);
             var taskType = EventTypeToTaskTypeMapper(eventType);
             if (tasks.Any(x => x.Body.Contains(taskType)))
             {
@@ -37,7 +37,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
         {
             var response = context.Apis.VideoApi.GetTasks(context.Test.NewConferenceId);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var tasks = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<TaskResponse>>(response.Content);
+            var tasks = RequestHelper.Deserialise<List<TaskResponse>>(response.Content);
             tasks.Count.Should().Be(0);
         }
     }

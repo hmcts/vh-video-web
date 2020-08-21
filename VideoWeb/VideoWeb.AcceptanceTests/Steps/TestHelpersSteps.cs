@@ -25,7 +25,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             judgeUsername.Should().Contain("@");
             judgeUsername.ToLower().Should().ContainAny("automation", "manual", "performance", "test");
             var response = _c.Apis.BookingsApi.GetHearingsForUsername(judgeUsername);
-            var hearings = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<HearingDetailsResponse>>(response.Content);
+            var hearings = RequestHelper.Deserialise<List<HearingDetailsResponse>>(response.Content);
             if (hearings == null) return;
             foreach (var hearing in hearings)
             {
@@ -47,7 +47,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private void RemoveWithCaseNameOrNumber(string partialString, int limit)
         {
             var response = _c.Apis.BookingsApi.GetHearingsByAnyCaseType(limit);
-            var bookings = RequestHelper.DeserialiseSnakeCaseJsonToResponse<BookingsResponse>(response.Content);
+            var bookings = RequestHelper.Deserialise<BookingsResponse>(response.Content);
             var hearings = GetListOfAllHearings(bookings);
             foreach (var hearing in hearings)
             {
@@ -79,7 +79,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             caseName.ToLower().Should().Contain("test");
             var response = _c.Apis.VideoApi.GetConferencesForTodayVho();
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var conferences = RequestHelper.DeserialiseSnakeCaseJsonToResponse<List<ConferenceForAdminResponse>>(response.Content);
+            var conferences = RequestHelper.Deserialise<List<ConferenceForAdminResponse>>(response.Content);
             foreach (var deleteConference in from conference in conferences where conference.Case_name.ToLower().Contains(caseName.ToLower()) select _c.Apis.VideoApi.DeleteConference(conference.Id))
             {
                 deleteConference.StatusCode.Should().Be(HttpStatusCode.NoContent);

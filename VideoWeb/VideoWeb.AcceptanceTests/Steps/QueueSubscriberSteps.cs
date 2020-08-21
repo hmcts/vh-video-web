@@ -139,7 +139,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .Should().BeTrue("Participant added");
 
             var response = _c.Apis.VideoApi.GetConferenceByConferenceId(_c.Test.NewConferenceId);
-            var conference =  RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
+            var conference =  RequestHelper.Deserialise<ConferenceDetailsResponse>(response.Content);
             conference.Participants.Count.Should().Be(_c.Test.HearingParticipants.Count + 1);
             new AssertParticipantFromAccount().User(_addedUser).Matches(conference.Participants);
         }
@@ -159,7 +159,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .IsRemoved().Poll().Should().BeTrue("Participant deleted");
 
             var response = _c.Apis.VideoApi.GetConferenceByConferenceId(_c.Test.NewConferenceId);
-            var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
+            var conference = RequestHelper.Deserialise<ConferenceDetailsResponse>(response.Content);
             conference.Participants.Any(x => x.Ref_id.Equals(_deletedUser.Id)).Should().BeFalse();
             conference.Participants.Count.Should().Be(_c.Test.HearingParticipants.Count - 1);
         }

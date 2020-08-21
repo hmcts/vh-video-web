@@ -289,4 +289,20 @@ describe('ParticipantsPanelComponent', () => {
         component.setScrollingIndicator();
         expect(component.isScrolling).toBe(0);
     });
+    it('should return true when participant is disconnected', () => {
+        const pat = new ParticipantPanelModel('1111', 'test run', Role.Individual, 'group1', ParticipantStatus.Disconnected, 'pexipName');
+        expect(component.isParticipantDisconnected(pat)).toBeTruthy();
+    });
+    it('should return false when participant is not disconnected', () => {
+        const pat = new ParticipantPanelModel('1111', 'test run', Role.Individual, 'group1', ParticipantStatus.InHearing, 'pexipName');
+        expect(component.isParticipantDisconnected(pat)).toBeFalsy();
+    });
+    it('should map the participant panel model to the participant response model', () => {
+        const ppm = new ParticipantPanelModel('1111', 'test run', Role.Individual, 'group1', ParticipantStatus.InHearing, 'pexipName');
+        const pr = component.mapParticipantToParticipantResponse(ppm);
+        expect(pr.id).toBe(ppm.participantId);
+        expect(pr.role).toBe(ppm.role);
+        expect(pr.status).toBe(ppm.status);
+        expect(pr.display_name).toBe(ppm.displayName);
+    });
 });

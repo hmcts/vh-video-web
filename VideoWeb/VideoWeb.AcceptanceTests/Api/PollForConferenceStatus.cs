@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Helpers;
-using RestSharp;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.AcceptanceTests.Api
@@ -46,7 +45,7 @@ namespace VideoWeb.AcceptanceTests.Api
             for (var i = 0; i < _maxRetries; i++)
             {
                 var response = _videoApi.GetConferenceByConferenceId(_conferenceId);
-                var conference = RequestHelper.DeserialiseSnakeCaseJsonToResponse<ConferenceDetailsResponse>(response.Content);
+                var conference = RequestHelper.Deserialise<ConferenceDetailsResponse>(response.Content);
                 if (conference != null)
                 {
                     actualState = conference.Current_status;
