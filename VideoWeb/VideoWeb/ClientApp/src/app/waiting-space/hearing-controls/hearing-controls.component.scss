@@ -1,20 +1,19 @@
-
 @mixin all-main-container {
-    position: fixed;
-    bottom: 1%;
-    z-index: 200;
+  position: fixed;
+  bottom: 1%;
+  z-index: 200;
 }
 
 .main-container {
-    @include all-main-container;
+  @include all-main-container;
   left: 0;
   width: 100vw;
 }
 
-.main-container-judge{
-    @include all-main-container;
-    left:300px;
-    width:100%;
+.main-container-judge {
+  @include all-main-container;
+  left: 300px;
+  width: 100%;
 }
 
 .judge-controls-container {

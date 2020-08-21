@@ -1,63 +1,65 @@
 <div class="panel-container">
-
-    <div class="govuk-table table-br panel-container-list" (scroll)="onScroll()" summary="Judge hearing participants panel" id="panelList">
-
-        <div class="govuk-grid-row vh-line row-pad" *ngFor="let participant of participants; let i = index">
-
-            <div>
-
-                <div class="govuk-table_cell govuk-body-s--white vh-name" id="panel_participant_{{i}}">
-                    {{ participant.displayName }}
-                </div>
-
-
-                <div class="govuk-table_cell cell-icon">
-                    <span class="tooltip">
-                        <span class="top top-name-icon govuk-body-s--white tooltip-mute"
-                              [ngClass]="participant.isMuted ? 'tooltip-unmute' : 'tooltip-mute'">
-                            {{participant.isMuted ? 'Unmute' : 'Mute' }}
-                        </span>
-
-                        <img [src]="participant.isMuted ? '/assets/images/mute-mic-red.png' : '/assets/images/mic.png'"
-                             class="panel-icon"
-                             [alt]="participant.isMuted ? 'Microphone muted icon' : 'Microphone on icon'"
-                             (click)="toggleMuteParticipant(participant)" />
-                    </span>
-                </div>
-
-                <div class="govuk-table_cell cell-icon" *ngIf="participant.handRaised">
-                    <span class="tooltip">
-                        <span class="top top-name-icon govuk-body-s--white tooltip-hand">
-                            Lower hand
-                        </span>
-                        <img src="/assets/images/hand-yellow.png"
-                             class="panel-icon"
-                             alt="Hand on icon"
-                             (click)="lowerParticipantHand(participant.participantId)" />
-                    </span>
-
-                </div>
-            </div>
+  <div class="govuk-table table-br panel-container-list" (scroll)="onScroll()" summary="Judge hearing participants panel" id="panelList">
+    <div class="govuk-grid-row vh-line row-pad" *ngFor="let participant of participants; let i = index">
+      <div>
+        <div class="govuk-table_cell govuk-body-s--white vh-name" id="panel_participant_{{ i }}">
+          {{ participant.displayName }}
         </div>
-    </div>
-    <div>
-        <span *ngIf="isScrolling===1" style="margin-left:20px;">
-        <img src="/assets/images/IM-close-arrow.png" width="30" height="30" alt="chevron scroll down" style="opacity:0.5;" />
-        </span>
-        <span *ngIf="isScrolling===2" style="margin-left:20px;"><img src="/assets/images/IM-open-arrow.png" style="opacity:0.3;" width="30" height="30" alt="chevron scroll up" /></span>
 
-    </div>
+        <div class="govuk-table_cell cell-icon" *ngIf="isParticipantInHearing(participant)">
+          <span class="tooltip">
+            <span
+              class="top top-name-icon govuk-body-s--white tooltip-mute"
+              [ngClass]="participant.isMuted ? 'tooltip-unmute' : 'tooltip-mute'"
+            >
+              {{ participant.isMuted ? 'Unmute' : 'Mute' }}
+            </span>
 
-    <div class="govuk-grid-row govuk-!-margin-bottom-1">
-
-        <div class="govuk-grid-column-full govuk-!-margin-top-2 govuk-!-margin-bottom-3">
-            <button data-prevent-double-click="true"
-                    class="govuk-button grey-btn vh-mr"
-                    [ngClass]="{ muted: isMuteAll }"
-                    (click)="toggleMuteAll()">
-                {{ muteAllToggleText }}
-            </button>
-            <button class="govuk-button grey-btn" (click)="lowerAllHands()">Lower all hands</button>
+            <img
+              [src]="participant.isMuted ? '/assets/images/mute-mic-red.png' : '/assets/images/mic.png'"
+              class="panel-icon"
+              [alt]="participant.isMuted ? 'Microphone muted icon' : 'Microphone on icon'"
+              (click)="toggleMuteParticipant(participant)"
+            />
+          </span>
         </div>
+
+        <div class="govuk-table_cell cell-icon" *ngIf="participant.handRaised">
+          <span class="tooltip">
+            <span class="top top-name-icon govuk-body-s--white tooltip-hand">
+              Lower hand
+            </span>
+            <img
+              src="/assets/images/hand-yellow.png"
+              class="panel-icon"
+              alt="Hand on icon"
+              (click)="lowerParticipantHand(participant.participantId)"
+            />
+          </span>
+        </div>
+      </div>
     </div>
+  </div>
+  <div class="govuk-grid-row scroll-shevrons">
+    <span *ngIf="isScrolling === 1">
+      <img src="/assets/images/IM-close-arrow.png" class="scroll-icon" alt="chevron scroll down" (click)="scrollDown()" />
+    </span>
+    <span *ngIf="isScrolling === 2">
+      <img src="/assets/images/IM-open-arrow.png" class="scroll-icon" alt="chevron scroll up" (click)="scrollUp()" />
+    </span>
+  </div>
+
+  <div class="govuk-grid-row govuk-!-margin-bottom-1">
+    <div class="govuk-grid-column-full govuk-!-margin-top-2 govuk-!-margin-bottom-3">
+      <button
+        data-prevent-double-click="true"
+        class="govuk-button grey-btn vh-mr"
+        [ngClass]="{ muted: isMuteAll }"
+        (click)="toggleMuteAll()"
+      >
+        {{ muteAllToggleText }}
+      </button>
+      <button class="govuk-button grey-btn" (click)="lowerAllHands()">Lower all hands</button>
+    </div>
+  </div>
 </div>

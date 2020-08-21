@@ -14,53 +14,65 @@
   box-shadow: -3px 0px 5px 0px rgba(0, 0, 0, 0.2);
   opacity: 0.8;
   overflow: visible;
-  resize:vertical;
-  bottom: 1%;
- }
+  resize: vertical;
+  bottom: 10px;
+}
 
 .panel-container-list {
-    overflow-x: hidden;
-    overflow: scroll;
-    max-height: 88vh;
+  overflow-x: hidden;
+  overflow: scroll;
+  max-height: 87vh;
 }
 
 ::-webkit-scrollbar {
-    width: 0px; /* Remove scrollbar space */
-    background: transparent; /* Optional: just make scrollbar invisible */
+  width: 0px; /* Remove scrollbar space */
+  background: transparent; /* Optional: just make scrollbar invisible */
 }
 
 .table-br {
   border-color: govuk-colour('dark-grey') !important;
 }
 
+.scroll-icon {
+  height: 20px;
+  width: 30px;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.scroll-shevrons {
+  margin-left: 110px;
+  top: 0;
+}
+
 .panel-icon {
-    height: 25px;
-    cursor: pointer;
-    padding-left: 5px;
-    padding-right: 5px;
-    margin-top: 10px;
+  height: 25px;
+  cursor: pointer;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-top: 10px;
 }
 
 .cell-icon {
   width: 35px;
   display: inline-block;
-  align-content:center;
-  margin-right:5px;
-  margin-top:5px;
+  align-content: center;
+  margin-right: 5px;
+  margin-top: 5px;
 }
 
-.row-pad{
-    padding:10px;
+.row-pad {
+  padding: 10px;
 }
 
 .vh-name {
-    display: inline-block;
-    width: 135px;
-    overflow-wrap: break-word;
-    float: left;
-    margin: 10px 0px 10px 3px;
-    text-align:left !important;
-    padding-left:5px;
+  display: inline-block;
+  width: 135px;
+  overflow-wrap: break-word;
+  float: left;
+  margin: 10px 0px 10px 3px;
+  text-align: left !important;
+  padding-left: 5px;
 }
 
 .grey-btn {
@@ -99,7 +111,7 @@
 }
 
 .tooltip {
-  display:block;
+  display: block;
   position: relative;
   text-align: left;
 }
@@ -114,19 +126,13 @@
   opacity: 0.88;
   border-radius: 2px;
   box-shadow: 0 7px 11px 0px rgba(0, 0, 0, 0.3);
-  font-size:85%;
+  font-size: 85%;
 }
 
 .top-name-icon {
-    background-color: #333;
-    border: 1px solid #333;
-    font-size: 85%;
-}
-
-.top-btn {
   background-color: #333;
   border: 1px solid #333;
-  font-size: 19px;
+  font-size: 85%;
 }
 
 /*tool-tip for expanded panel and raise hand*/
@@ -143,11 +149,10 @@
 
 /*tool-tip unmute*/
 .tooltip-unmute {
-    margin-left: -170%;
-    margin-top: 2%;
+  margin-left: -170%;
+  margin-top: 2%;
 }
 
 .tooltip:hover .top {
   display: inline-block;
 }
-

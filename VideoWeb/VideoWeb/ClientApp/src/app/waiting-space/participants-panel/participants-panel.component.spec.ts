@@ -74,12 +74,6 @@ describe('ParticipantsPanelComponent', () => {
         expect(logger.error).toHaveBeenCalled();
     });
 
-    it('should toggle collaps or expand panel', () => {
-        const currentValue = component.expandPanel;
-        component.toggleCollapseExpand();
-        expect(component.expandPanel).toBe(!currentValue);
-    });
-
     it('should mute on toggle and change text to mute all ', () => {
         component.isMuteAll = false;
         expect(component.muteAllToggleText).toBe('Mute all');
@@ -238,5 +232,61 @@ describe('ParticipantsPanelComponent', () => {
         pat.handRaised = true;
         component.lowerParticipantHand(pat.participantId);
         expect(videocallService.lowerHandById).toHaveBeenCalledWith(pat.pexipId);
+    });
+    it('should scroll up to first participant', () => {
+        const dummyElement = document.createElement('div');
+        spyOn(dummyElement, 'scrollIntoView').and.callThrough();
+        component.firstElement = dummyElement;
+        component.scrollUp();
+        expect(dummyElement.scrollIntoView).toHaveBeenCalled();
+    });
+    it('should scroll down to last participant', () => {
+        const dummyElement = document.createElement('div');
+        spyOn(dummyElement, 'scrollIntoView').and.callThrough();
+        component.lastElement = dummyElement;
+        component.scrollDown();
+        expect(dummyElement.scrollIntoView).toHaveBeenCalled();
+    });
+    it('should indicate the participant is not visible on screen', () => {
+        const dummyElement = document.createElement('div');
+        spyOn(dummyElement, 'getBoundingClientRect').and.returnValue(new DOMRect(-15, -15, 0, 0));
+        component.lastElement = dummyElement;
+        expect(component.isItemOfListVisible(component.lastElement)).toBeFalsy();
+    });
+    it('should indicate the participant is visible on screen', () => {
+        const dummyElement = document.createElement('div');
+        spyOn(dummyElement, 'getBoundingClientRect').and.returnValue(new DOMRect(0, 10, 0, 0));
+        component.lastElement = dummyElement;
+        expect(component.isItemOfListVisible(component.lastElement)).toBeTruthy();
+    });
+    it('should indicate the scroll down is avaliable', () => {
+        const dummyElementUp = document.createElement('div');
+        spyOn(dummyElementUp, 'getBoundingClientRect').and.returnValue(new DOMRect(0, 10, 0, 0));
+        component.firstElement = dummyElementUp;
+        const dummyElementDown = document.createElement('div');
+        spyOn(dummyElementDown, 'getBoundingClientRect').and.returnValue(new DOMRect(-15, -15, 0, 0));
+        component.lastElement = dummyElementDown;
+        component.onScroll();
+        expect(component.isScrolling).toBe(1);
+    });
+    it('should indicate the scroll up is avaliable', () => {
+        const dummyElementUp = document.createElement('div');
+        spyOn(dummyElementUp, 'getBoundingClientRect').and.returnValue(new DOMRect(-15, -10, 0, 0));
+        component.firstElement = dummyElementUp;
+        const dummyElementDown = document.createElement('div');
+        spyOn(dummyElementDown, 'getBoundingClientRect').and.returnValue(new DOMRect(10, 10, 0, 0));
+        component.lastElement = dummyElementDown;
+        component.onScroll();
+        expect(component.isScrolling).toBe(2);
+    });
+    it('should indicate the scrolling is not required', () => {
+        const dummyElementUp = document.createElement('div');
+        spyOn(dummyElementUp, 'getBoundingClientRect').and.returnValue(new DOMRect(10, 10, 0, 0));
+        component.firstElement = dummyElementUp;
+        const dummyElementDown = document.createElement('div');
+        spyOn(dummyElementDown, 'getBoundingClientRect').and.returnValue(new DOMRect(10, 10, 0, 0));
+        component.lastElement = dummyElementDown;
+        component.setScrollingIndicator();
+        expect(component.isScrolling).toBe(0);
     });
 });

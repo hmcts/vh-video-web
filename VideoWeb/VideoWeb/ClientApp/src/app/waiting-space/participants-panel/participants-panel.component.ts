@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, AfterViewChecked } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription} from 'rxjs';
+import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantForUserResponse, Role, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
@@ -27,15 +27,14 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewChecked, OnD
     lastElement: HTMLElement;
 
     isScrolling = 0;
-    
+
     constructor(
         private videoWebService: VideoWebService,
         private route: ActivatedRoute,
         private videoCallService: VideoCallService,
         private eventService: EventsService,
         private logger: Logger
-    ) {
-    }
+    ) {}
 
     get muteAllToggleText() {
         if (this.isMuteAll) {
@@ -57,8 +56,6 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewChecked, OnD
         if (!this.firstElement || !this.lastElement) {
             this.firstElement = document.querySelector('#panel_participant_0');
             this.lastElement = document.querySelector('#panel_participant_' + (this.participants.length - 1));
-            console.log('ELEMENTS ARE SET:' + this.lastElement)
-            console.log('ELEMENTS ARE SET:' + this.lastElement)
             this.setScrollingIndicator();
         }
     }
@@ -120,7 +117,6 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewChecked, OnD
                 const participant = this.mapParticipant(x);
                 this.participants.push(participant);
             });
-            this.testData();
             this.participants.sort((x, z) => {
                 return x.orderInTheList === z.orderInTheList ? 0 : +(x.orderInTheList > z.orderInTheList) || -1;
             });
@@ -182,30 +178,28 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewChecked, OnD
         this.setScrollingIndicator();
     }
 
+    scrollUp() {
+        this.firstElement.scrollIntoView();
+    }
+
+    scrollDown() {
+        this.lastElement.scrollIntoView();
+    }
+
     isItemOfListVisible(element: HTMLElement) {
         const position = element.getBoundingClientRect();
 
         // return true if element is fully visiable in screen
-        return (position.top >= 0 && position.bottom <= window.innerHeight);
+        return position.top >= 0 && position.bottom <= window.innerHeight;
     }
 
     setScrollingIndicator() {
         if (this.isItemOfListVisible(this.lastElement) && this.isItemOfListVisible(this.firstElement)) {
-            this.isScrolling = 0; //no scrolling
+            this.isScrolling = 0; // no scrolling
         } else if (this.isItemOfListVisible(this.firstElement)) {
             this.isScrolling = 1; // scrolling to bottom
         } else {
             this.isScrolling = 2; // scrolling to top
         }
-    }
-
-    testData() {
-        for (var i = 0; i < 17; i++) {
-            const part = new ParticipantPanelModel('12345', 'Mr Stiven Stivenson' + i, Role.Individual, 'Observer', ParticipantStatus.InHearing, 'pexipname');
-            part.orderInTheList = 3;
-
-            this.participants.push(part);
-        }
-
     }
 }

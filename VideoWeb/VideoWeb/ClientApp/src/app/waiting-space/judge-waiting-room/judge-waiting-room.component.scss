@@ -20,28 +20,20 @@
 }
 
 .panel-wrap {
-top:0;
+  top: 0;
   left: 0;
   position: fixed;
   vertical-align: top;
   z-index: 999;
 }
-.panel-l {
-    left: 80px;
-}
-
-.panel-s {
-    left: 25px !important;
-}
 
 .incomingFeed {
-    position: fixed;
-    top: 0;
-    left:5%;
-    min-width: 96%;
-    min-height: 80vh;
-    max-width: 96%;
-    max-height: 90vh;
-    z-index: 100;
+  position: fixed;
+  top: 0;
+  left: 8%;
+  min-width: 95%;
+  min-height: 80vh;
+  max-width: 96%;
+  max-height: 90vh;
+  z-index: 100;
 }
-
