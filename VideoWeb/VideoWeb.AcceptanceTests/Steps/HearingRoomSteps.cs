@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using AcceptanceTests.Common.Api.Helpers;
 using AcceptanceTests.Common.Driver.Drivers;
-using AcceptanceTests.Common.Driver.Enums;
 using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.Test.Helpers;
 using FluentAssertions;
@@ -14,14 +13,13 @@ using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.Services.Video;
 using AudioRecordingResponse = VideoWeb.Services.Video.AudioRecordingResponse;
 
-
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
     public sealed class HearingRoomSteps : ISteps
     {
         private const int CountdownDuration = 30;
-        private const int ExtraTimeAfterTheCountdown = 30;
+        private const int ExtraTimeAfterTheCountdown = 10;
         private const int PauseCloseTransferDuration = 15;
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _c;
@@ -39,18 +37,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             Thread.Sleep(TimeSpan.FromSeconds(CountdownDuration));
             Thread.Sleep(TimeSpan.FromSeconds(ExtraTimeAfterTheCountdown));
-            StartOrResumeHearing();
             new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser.Key]).Feed(HearingRoomPage.ClerkIncomingVideo);
         }
 
         [When(@"the Clerk clicks pause")]
         public void WhenTheUserClicksPause()
         {
-            if (_c.VideoWebConfig.TestConfig.TargetBrowser != TargetBrowser.Firefox)
-            {
-                StartOrResumeHearing();
-            }
-
             _browsers[_c.CurrentUser.Key].Click(HearingRoomPage.PauseButton);
             Thread.Sleep(TimeSpan.FromSeconds(PauseCloseTransferDuration));
         }
@@ -58,11 +50,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the Clerk clicks close")]
         public void WhenTheUserClicksClose()
         {
-            if (_c.VideoWebConfig.TestConfig.TargetBrowser != TargetBrowser.Firefox)
-            {
-                StartOrResumeHearing();
-            }
-            
             _browsers[_c.CurrentUser.Key].Click(HearingRoomPage.CloseButton);
             Thread.Sleep(TimeSpan.FromSeconds(PauseCloseTransferDuration));
         }
@@ -86,7 +73,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the hearing controls are visible")]
         public void ThenTheHearingControlsAreVisible()
         {
-            StartOrResumeHearing();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.ToggleSelfView).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.PauseButton).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.CloseButton).Displayed.Should().BeTrue();
@@ -96,7 +82,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the user can see themselves and toggle the view off and on")]
         public void ThenTheUserCanSeeThemselvesAndToggleTheViewOffAndOn()
         {
-            StartOrResumeHearing();
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(HearingRoomPage.SelfView).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser.Key].Click(HearingRoomPage.ToggleSelfView);
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(HearingRoomPage.SelfView).Should().BeTrue();
@@ -107,14 +92,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the participant is back in the hearing")]
         public void ThenTheParticipantIsBackInTheHearing()
         {
-            SwitchToParticipantContent();
             new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser.Key]).Feed(HearingRoomPage.ParticipantIncomingVideo);
         }
 
         [Then(@"the Clerk can see the participants")]
         public void ThenTheClerkCanSeeTheOtherParticipants()
         {
-            StartOrResumeHearing();
             new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser.Key]).Feed(HearingRoomPage.ClerkIncomingVideo);
         }
 
@@ -122,7 +105,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenParticipantsCanSeeTheOtherParticipants(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            SwitchToParticipantContent();
             new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser.Key]).Feed(HearingRoomPage.ParticipantIncomingVideo);
         }
 
@@ -157,28 +139,12 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         public void ProgressToNextPage()
         {
-            StartOrResumeHearing();
             WhenTheUserClicksClose();
-        }
-
-        private void StartOrResumeHearing()
-        {
-            if (_browsers[_c.CurrentUser.Key].IsDisplayed(HearingRoomPage.PauseButton)) return;
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.StartVideoHearingButton).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Click(ClerkWaitingRoomPage.StartVideoHearingButton);
         }
 
         private void SwitchToTheVhoIframe()
         {
             _browsers[_c.CurrentUser.Key].Driver.SwitchTo().Frame(AdminPanelPage.AdminIframeId);
-        }
-
-        private void SwitchToParticipantContent()
-        {
-            if (!_browsers[_c.CurrentUser.Key].IsDisplayed(HearingRoomPage.ParticipantIncomingVideo))
-            {
-                SwitchToDefaultContent();
-            }
         }
 
         private void SwitchToDefaultContent()

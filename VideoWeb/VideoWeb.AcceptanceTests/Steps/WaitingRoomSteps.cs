@@ -18,6 +18,7 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public sealed class WaitingRoomSteps : ISteps
     {
+        private const int ExtraTimeAfterReachingWaitingRoom = 3;
         private const int ExtraTimeInWaitingRoomAfterThePause = 10;
         private readonly Dictionary<string, UserBrowser> _browsers;
         private readonly TestContext _c;
@@ -226,6 +227,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the Clerk starts the hearing")]
         public void ProgressToNextPage()
         {
+            Thread.Sleep(TimeSpan.FromSeconds(ExtraTimeAfterReachingWaitingRoom));
             _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(ClerkWaitingRoomPage.StartVideoHearingButton).Displayed.Should().BeTrue();
             CheckParticipantsAreStillConnected();
             _browsers[_c.CurrentUser.Key].Click(ClerkWaitingRoomPage.StartVideoHearingButton);
