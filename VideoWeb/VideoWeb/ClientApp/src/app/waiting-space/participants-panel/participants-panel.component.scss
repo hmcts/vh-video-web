@@ -3,7 +3,7 @@
 .panel-container {
   background: govuk-colour('black');
   color: govuk-colour('white') !important;
-  max-width: 350px;
+  max-width: 320px;
   min-width: 180px;
   min-height: 100px;
   max-height: 90vh;
@@ -57,12 +57,12 @@
   width: 35px;
   display: inline-block;
   align-content: center;
-  margin-right: 5px;
-  margin-top: 5px;
+  margin-right: 3px;
+  margin-top: 3px;
 }
 
 .row-pad {
-  padding: 10px;
+  padding: 10px 0px 10px 5px;
 }
 
 .vh-name {
@@ -159,10 +159,10 @@
 .disconnected {
   @include govuk-font(16, $weight: 'bold', $tabular: false, $line-height: false);
   color: govuk-colour('red');
-  margin: 4px 4px;
+  margin: 4px 0px 0px 8px;
 }
 
-.tooltip-collapse-alert {
-  transform: translate(-15%, -70%);
-  min-width: 75px;
+.tooltip-alert {
+  margin-left: 150%;
+  margin-top: 2%;
 }

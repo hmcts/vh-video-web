@@ -6,12 +6,17 @@
 </div>
 
 <div *ngIf="isDisconnected" class="govuk-grid-row">
-  <div class="govuk-grid-column-three-quarters">
+  <div class="govuk-grid-column-one-half">
     <p class="disconnected">DISCONNECTED</p>
   </div>
   <div class="govuk-grid-column-one-quarter">
     <span class="tooltip">
-      <img src="/assets/images/participant-disconnected.png" class="panel-icon" alt="participant disconnected" />
+      <img
+        src="/assets/images/participant-disconnected.png"
+        class="alert-icon"
+        alt="participant disconnected"
+        style="padding-bottom: 5px;"
+      />
     </span>
   </div>
 </div>

@@ -53,6 +53,10 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewChecked, OnD
     }
 
     ngAfterViewChecked() {
+        this.initializeScrolling();
+    }
+
+    initializeScrolling() {
         if (!this.firstElement || !this.lastElement) {
             this.firstElement = document.querySelector('#panel_participant_0');
             this.lastElement = document.querySelector('#panel_participant_' + (this.participants.length - 1));
@@ -202,8 +206,8 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewChecked, OnD
             this.isScrolling = 2; // scrolling to top
         }
     }
-    
-      mapParticipantToParticipantResponse(participant: ParticipantPanelModel): ParticipantResponse {
+
+    mapParticipantToParticipantResponse(participant: ParticipantPanelModel): ParticipantResponse {
         const participantResponse = new ParticipantResponse();
         participantResponse.id = participant.participantId;
         participantResponse.status = participant.status;
@@ -212,8 +216,8 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewChecked, OnD
         participantResponse.case_type_group = participant.caseTypeGroup;
         return participantResponse;
     }
-    
+
     isParticipantDisconnected(participant: ParticipantPanelModel): boolean {
         return participant.status === ParticipantStatus.Disconnected;
-
+    }
 }

@@ -5,7 +5,11 @@
         <div class="govuk-table_cell govuk-body-s--white vh-name" id="panel_participant_{{ i }}">
           {{ participant.displayName }}
         </div>
-
+        <div class="govuk-table_cell govuk-body-s--white vh-name">
+          <span class="vh-panel-name">
+            {{ participant.role }}
+          </span>
+        </div>
         <div class="govuk-table_cell cell-icon" *ngIf="isParticipantInHearing(participant)">
           <span class="tooltip">
             <span
@@ -38,6 +42,15 @@
           </span>
         </div>
       </div>
+
+      <ng-container *ngIf="!isParticipantDisconnected(participant); else participantDisconnected">
+        <div class="govuk-table_cell">
+          <app-participant-alert [participant]="mapParticipantToParticipantResponse(participant)"></app-participant-alert>
+        </div>
+      </ng-container>
+      <ng-template #participantDisconnected>
+        <app-participant-alert [participant]="mapParticipantToParticipantResponse(participant)"></app-participant-alert>
+      </ng-template>
     </div>
   </div>
   <div class="govuk-grid-row scroll-shevrons">
