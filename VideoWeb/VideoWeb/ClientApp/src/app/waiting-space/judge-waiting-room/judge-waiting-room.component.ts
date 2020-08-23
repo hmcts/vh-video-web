@@ -77,7 +77,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         this.disconnect();
     }
 
-      updateShowVideo(): void {
+    updateShowVideo(): void {
         if (!this.connected) {
             this.logger.debug('Not showing video because not connecting to node');
             this.showVideo = false;
