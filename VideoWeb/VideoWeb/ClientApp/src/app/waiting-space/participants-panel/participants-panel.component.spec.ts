@@ -286,7 +286,7 @@ describe('ParticipantsPanelComponent', () => {
         const dummyElementDown = document.createElement('div');
         spyOn(dummyElementDown, 'getBoundingClientRect').and.returnValue(new DOMRect(10, 10, 0, 0));
         component.lastElement = dummyElementDown;
-        component.setScrollingIndicator();
+        component.ngAfterViewChecked();
         expect(component.isScrolling).toBe(0);
     });
     it('should return true when participant is disconnected', () => {
