@@ -6,7 +6,7 @@
           {{ participant.displayName }}
         </div>
         <div class="govuk-table_cell govuk-body-s--white vh-name">
-          <span class="vh-panel-name">
+          <span class="vh-panel-name" id="panel_participant_role_{{ i }}">
             {{ participant.role }}
           </span>
         </div>
@@ -62,7 +62,7 @@
     </span>
   </div>
 
-  <div class="govuk-grid-row govuk-!-margin-bottom-1">
+  <div class="govuk-grid-row">
     <div class="govuk-grid-column-full govuk-!-margin-top-2 govuk-!-margin-bottom-3">
       <button
         data-prevent-double-click="true"

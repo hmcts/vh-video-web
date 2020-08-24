@@ -59,7 +59,7 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewChecked, OnD
     initializeScrolling() {
         if (!this.firstElement || !this.lastElement) {
             this.firstElement = document.querySelector('#panel_participant_0');
-            this.lastElement = document.querySelector('#panel_participant_' + (this.participants.length - 1));
+            this.lastElement = document.querySelector('#panel_participant_role_' + (this.participants.length - 1));
             this.setScrollingIndicator();
         }
     }
@@ -191,10 +191,13 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewChecked, OnD
     }
 
     isItemOfListVisible(element: HTMLElement) {
-        const position = element.getBoundingClientRect();
-
-        // return true if element is fully visiable in screen
-        return position.top >= 0 && position.bottom <= window.innerHeight;
+        if (element) {
+            const position = element.getBoundingClientRect();
+            console.log('TOP: ' + position.top);
+            console.log('BOTTOM: ' + position.bottom);
+            // return true if element is fully visiable in screen
+            return position.top >= 0 && (position.bottom + 5) <= window.innerHeight;
+        }
     }
 
     setScrollingIndicator() {
