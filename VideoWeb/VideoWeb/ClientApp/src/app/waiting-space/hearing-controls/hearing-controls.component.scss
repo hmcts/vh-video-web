@@ -12,12 +12,12 @@
 
 .main-container-judge {
   @include all-main-container;
-  left: 300px;
+  left: 18%;
   width: 100%;
 }
 
 .judge-controls-container {
-  text-align: center;
+  float: left;
 }
 
 #outgoingFeedVideo {
@@ -63,5 +63,10 @@
 }
 
 .button-spacing {
-  margin-right: 10px;
+  margin-right: 8px;
+}
+
+#hearing-monitor-div {
+  float: left;
+  padding: 0;
 }
