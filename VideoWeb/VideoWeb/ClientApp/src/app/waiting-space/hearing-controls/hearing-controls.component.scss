@@ -1,9 +1,19 @@
-.main-container {
+@mixin all-main-container {
   position: fixed;
   bottom: 1%;
-  left: 0;
   z-index: 200;
+}
+
+.main-container {
+  @include all-main-container;
+  left: 0;
   width: 100vw;
+}
+
+.main-container-judge {
+  @include all-main-container;
+  left: 300px;
+  width: 100%;
 }
 
 .judge-controls-container {

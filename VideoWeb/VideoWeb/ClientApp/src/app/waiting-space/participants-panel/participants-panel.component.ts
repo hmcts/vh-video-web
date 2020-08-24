@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewChecked } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -15,16 +15,18 @@ import { Logger } from 'src/app/services/logging/logger-base';
     templateUrl: './participants-panel.component.html',
     styleUrls: ['./participants-panel.component.scss']
 })
-export class ParticipantsPanelComponent implements OnInit, OnDestroy {
+export class ParticipantsPanelComponent implements OnInit, AfterViewChecked, OnDestroy {
     participants: ParticipantPanelModel[] = [];
-    expandPanel = true;
     isMuteAll = false;
     conferenceId: string;
-    cursorOnIconMute = false;
-    cursorOnIconHand = false;
 
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
+
+    firstElement: HTMLElement;
+    lastElement: HTMLElement;
+
+    isScrolling = 0;
 
     constructor(
         private videoWebService: VideoWebService,
@@ -48,6 +50,18 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             this.setupVideoCallSubscribers();
             this.setupEventhubSubscribers();
         });
+    }
+
+    ngAfterViewChecked() {
+        this.initializeScrolling();
+    }
+
+    initializeScrolling() {
+        if (!this.firstElement || !this.lastElement) {
+            this.firstElement = document.querySelector('#panel_participant_0');
+            this.lastElement = document.querySelector('#panel_participant_' + (this.participants.length - 1));
+            this.setScrollingIndicator();
+        }
     }
 
     ngOnDestroy(): void {
@@ -119,10 +133,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         return participant.status === ParticipantStatus.InHearing;
     }
 
-    toggleCollapseExpand() {
-        this.expandPanel = !this.expandPanel;
-    }
-
     toggleMuteAll() {
         this.videoCallService.muteAllParticipants(!this.isMuteAll);
     }
@@ -168,6 +178,35 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         );
     }
 
+    onScroll() {
+        this.setScrollingIndicator();
+    }
+
+    scrollUp() {
+        this.firstElement.scrollIntoView();
+    }
+
+    scrollDown() {
+        this.lastElement.scrollIntoView();
+    }
+
+    isItemOfListVisible(element: HTMLElement) {
+        const position = element.getBoundingClientRect();
+
+        // return true if element is fully visiable in screen
+        return position.top >= 0 && position.bottom <= window.innerHeight;
+    }
+
+    setScrollingIndicator() {
+        if (this.isItemOfListVisible(this.lastElement) && this.isItemOfListVisible(this.firstElement)) {
+            this.isScrolling = 0; // no scrolling
+        } else if (this.isItemOfListVisible(this.firstElement)) {
+            this.isScrolling = 1; // scrolling to bottom
+        } else {
+            this.isScrolling = 2; // scrolling to top
+        }
+    }
+
     mapParticipantToParticipantResponse(participant: ParticipantPanelModel): ParticipantResponse {
         const participantResponse = new ParticipantResponse();
         participantResponse.id = participant.participantId;
@@ -177,6 +216,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         participantResponse.case_type_group = participant.caseTypeGroup;
         return participantResponse;
     }
+
     isParticipantDisconnected(participant: ParticipantPanelModel): boolean {
         return participant.status === ParticipantStatus.Disconnected;
     }

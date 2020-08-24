@@ -1,5 +1,5 @@
 <div class="govuk-grid-row">
-  <div class="main-container">
+  <div [ngClass]="isJudge ? 'main-container-judge' : 'main-container'">
     <div class="outgoing-video-container govuk-grid-column-full">
       <video
         [ngClass]="{ 'vh-fade-in': selfViewOpen, 'vh-fade-out': !selfViewOpen }"
@@ -13,7 +13,7 @@
       </video>
     </div>
     <div class="controls-container govuk-grid-column-full govuk-!-padding-0">
-      <div [ngClass]="{ 'govuk-grid-column-one-half': !isJudge, 'govuk-grid-column-one-third': isJudge }" id="outgoingFeedDiv">
+      <div [ngClass]="{ 'govuk-grid-column-one-half': !isJudge, 'govuk-grid-column-one-quarter': isJudge }" id="outgoingFeedDiv">
         <!-- Self-view button -->
         <button
           id="outgoingFeedButton"
@@ -115,7 +115,7 @@
       </div>
       <!-- Judge-only controls-->
       <div
-        [ngClass]="{ 'govuk-grid-column-one-half': !isJudge, 'govuk-grid-column-one-third': isJudge }"
+        [ngClass]="{ 'govuk-grid-column-one-half': !isJudge, 'govuk-grid-column-one-quarter': isJudge }"
         *ngIf="isJudge"
         id="judgeControlsDiv"
       >
@@ -157,7 +157,7 @@
 
       <div
         *ngIf="isSupportedBrowserForNetworkHealth"
-        [ngClass]="{ 'govuk-grid-column-one-half': !isJudge, 'govuk-grid-column-one-third': isJudge }"
+        [ngClass]="{ 'govuk-grid-column-one-half': !isJudge, 'govuk-grid-column-one-quarter': isJudge }"
         id="hearing-monitor-div"
       >
         <app-waiting-room-monitor [participant]="participant"></app-waiting-room-monitor>

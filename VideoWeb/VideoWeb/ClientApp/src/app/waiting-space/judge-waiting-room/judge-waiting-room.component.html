@@ -9,30 +9,27 @@
       <app-participants-panel></app-participants-panel>
     </div>
   </div>
-  <div class="govuk-grid-column-three-quarters" style="float: right;">
+  <div class="govuk-grid-column-three-quarters">
     <div class="hearing-video">
       <!-- hearing video-->
       <div *ngIf="!isAdminConsultation">
         <div class="video-background"></div>
-        <div>
-          <video id="incomingFeed" [srcObject]="this.stream" autoplay height="auto">
-            Your browser does not support Video
-          </video>
-        </div>
+        <video id="incomingFeedJudge" [srcObject]="this.stream" autoplay height="auto" class="incomingFeed">
+          Your browser does not support Video
+        </video>
       </div>
     </div>
+    <ng-container *ngIf="connected">
+      <app-hearing-controls
+        [participant]="participant"
+        [isPrivateConsultation]="isAdminConsultation"
+        [outgoingStream]="outgoingStream"
+        [conferenceId]="conference.id"
+        [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
+      ></app-hearing-controls>
+    </ng-container>
   </div>
 </div>
-
-<ng-container *ngIf="connected && showVideo">
-  <app-hearing-controls
-    [participant]="participant"
-    [isPrivateConsultation]="isAdminConsultation"
-    [outgoingStream]="outgoingStream"
-    [conferenceId]="conference.id"
-    [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
-  ></app-hearing-controls>
-</ng-container>
 
 <div *ngIf="!loadingData && conference">
   <a id="back-to-hearing-list-link" href="javascript:void(0)" (click)="goToJudgeHearingList()" class="govuk-back-link">

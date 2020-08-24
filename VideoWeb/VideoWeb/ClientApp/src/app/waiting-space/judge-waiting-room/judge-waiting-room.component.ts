@@ -24,6 +24,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     isRecording: boolean;
     continueWithNoRecording = false;
     showAudioRecordingAlert = false;
+    expanedPanel = true;
 
     constructor(
         protected route: ActivatedRoute,

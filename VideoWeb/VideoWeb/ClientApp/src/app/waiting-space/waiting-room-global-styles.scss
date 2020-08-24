@@ -1,7 +1,7 @@
 #incomingFeed,
 #incomingFeedPrivate {
   position: fixed;
-  left: 25px;
+  left: 0;
   top: 0;
   min-width: 100%;
   min-height: 80vh;
@@ -14,7 +14,6 @@
   z-index: 100;
   position: fixed;
   bottom: 0;
-  right: 0;
 }
 
 .video-background {
