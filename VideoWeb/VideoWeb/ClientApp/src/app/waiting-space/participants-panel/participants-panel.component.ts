@@ -185,11 +185,15 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
     }
 
     scrollUp() {
-        if (this.firstElement) this.firstElement.scrollIntoView();
+        if (this.firstElement) {
+            this.firstElement.scrollIntoView();
+        }
     }
 
     scrollDown() {
-        if (this.lastElement) this.lastElement.scrollIntoView();
+        if (this.lastElement) {
+            this.lastElement.scrollIntoView();
+        }
     }
 
     isItemOfListVisible(element: HTMLElement) {
