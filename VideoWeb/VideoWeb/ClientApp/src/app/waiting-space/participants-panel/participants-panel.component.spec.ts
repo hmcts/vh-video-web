@@ -259,8 +259,7 @@ describe('ParticipantsPanelComponent', () => {
         component.lastElement = dummyElement;
         expect(component.isItemOfListVisible(component.lastElement)).toBeTruthy();
     });
-  
-   
+
     it('should indicate the scroll down is avaliable', () => {
         const dummyElementUp = document.createElement('div');
         spyOn(dummyElementUp, 'getBoundingClientRect').and.returnValue(new DOMRect(0, 10, 0, 0));
