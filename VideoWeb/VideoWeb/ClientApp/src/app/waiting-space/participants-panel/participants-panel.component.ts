@@ -59,7 +59,7 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
     initializeScrolling() {
         if (!this.firstElement || !this.lastElement) {
             this.firstElement = document.querySelector('#panel_participant_0');
-            this.lastElement = document.querySelector('#panel_participant_role_' + (this.participants.length - 1));
+            this.lastElement = document.querySelector('#panel_participant_' + (this.participants.length - 1));
 
             this.setScrollingIndicator();
         }
@@ -203,6 +203,8 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
             // return true if element is fully visiable in screen
             return position.top >= 0 && position.bottom <= window.innerHeight;
         }
+
+        return false;
     }
 
     setScrollingIndicator() {

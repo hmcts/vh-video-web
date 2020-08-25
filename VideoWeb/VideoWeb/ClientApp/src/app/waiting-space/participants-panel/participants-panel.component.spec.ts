@@ -259,6 +259,8 @@ describe('ParticipantsPanelComponent', () => {
         component.lastElement = dummyElement;
         expect(component.isItemOfListVisible(component.lastElement)).toBeTruthy();
     });
+  
+   
     it('should indicate the scroll down is avaliable', () => {
         const dummyElementUp = document.createElement('div');
         spyOn(dummyElementUp, 'getBoundingClientRect').and.returnValue(new DOMRect(0, 10, 0, 0));
@@ -288,6 +290,10 @@ describe('ParticipantsPanelComponent', () => {
         component.lastElement = dummyElementDown;
         component.initializeScrolling();
         expect(component.isScrolling).toBe(0);
+    });
+    it('should set not visible if element of the participant list is  not defined', () => {
+        const result = component.isItemOfListVisible(null);
+        expect(result).toBe(false);
     });
     it('should return true when participant is disconnected', () => {
         const pat = new ParticipantPanelModel('1111', 'test run', Role.Individual, 'group1', ParticipantStatus.Disconnected, 'pexipName');
