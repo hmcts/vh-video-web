@@ -12,7 +12,7 @@
 
 .main-container-judge {
   @include all-main-container;
-  left: 18%;
+  left: 19%;
   width: 100%;
 }
 
@@ -69,4 +69,8 @@
 #hearing-monitor-div {
   float: left;
   padding: 0;
+}
+
+#judgeControlsDiv {
+  padding-right: 0;
 }

@@ -21,7 +21,7 @@
 .panel-container-list {
   overflow-x: hidden;
   overflow: scroll;
-  max-height: 87vh;
+  max-height: 80vh;
 }
 
 ::-webkit-scrollbar {
@@ -72,7 +72,7 @@
   float: left;
   margin: 10px 0px 10px 3px;
   text-align: left !important;
-  padding-left: 5px;
+  padding-left: 10px;
 }
 
 .grey-btn {
@@ -160,9 +160,4 @@
   @include govuk-font(16, $weight: 'bold', $tabular: false, $line-height: false);
   color: govuk-colour('red');
   margin: 4px 0px 0px 8px;
-}
-
-.tooltip-alert {
-  margin-left: 150%;
-  margin-top: 2%;
 }

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewChecked } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -15,7 +15,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
     templateUrl: './participants-panel.component.html',
     styleUrls: ['./participants-panel.component.scss']
 })
-export class ParticipantsPanelComponent implements OnInit, AfterViewChecked, OnDestroy {
+export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDestroy {
     participants: ParticipantPanelModel[] = [];
     isMuteAll = false;
     conferenceId: string;
@@ -52,16 +52,14 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewChecked, OnD
         });
     }
 
-    ngAfterViewChecked() {
-        this.initializeScrolling();
+    ngAfterViewInit() {
+        setTimeout(() => this.initializeScrolling(), 1000);
     }
 
     initializeScrolling() {
-        if (!this.firstElement || !this.lastElement) {
-            this.firstElement = document.querySelector('#panel_participant_0');
-            this.lastElement = document.querySelector('#panel_participant_' + (this.participants.length - 1));
-            this.setScrollingIndicator();
-        }
+        this.firstElement = document.querySelector('#panel_participant_0');
+        this.lastElement = document.querySelector('#panel_participant_' + (this.participants.length - 1));
+        this.setScrollingIndicator();
     }
 
     ngOnDestroy(): void {
@@ -121,6 +119,7 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewChecked, OnD
                 const participant = this.mapParticipant(x);
                 this.participants.push(participant);
             });
+
             this.participants.sort((x, z) => {
                 return x.orderInTheList === z.orderInTheList ? 0 : +(x.orderInTheList > z.orderInTheList) || -1;
             });
@@ -191,10 +190,14 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewChecked, OnD
     }
 
     isItemOfListVisible(element: HTMLElement) {
-        const position = element.getBoundingClientRect();
+        if (element) {
+            const position = element.getBoundingClientRect();
 
-        // return true if element is fully visiable in screen
-        return position.top >= 0 && position.bottom <= window.innerHeight;
+            // return true if element is fully visiable in screen
+            return position.top >= 0 && position.bottom <= window.innerHeight;
+        }
+
+        return false;
     }
 
     setScrollingIndicator() {

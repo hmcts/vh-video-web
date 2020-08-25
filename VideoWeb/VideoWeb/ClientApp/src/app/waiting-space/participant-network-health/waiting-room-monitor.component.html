@@ -1,7 +1,7 @@
 <div *ngIf="networkHealth" class="govuk-grid-row health-container live-hearing">
   <div class="govuk-grid-column-full">
     <ng-container *ngIf="isNetworkGood; else poorNetwork">
-      <p class="govuk-body govuk-!-font-weight-bold health-text">
+      <p class="govuk-body health-text">
         Your internet connection is good
         <span class="govuk-button__start-icon">
           <img
@@ -14,7 +14,7 @@
       </p>
     </ng-container>
     <ng-template #poorNetwork>
-      <p class="govuk-body govuk-!-font-weight-bold health-text govuk-!-margin-bottom-0">
+      <p class="govuk-body health-text govuk-!-margin-bottom-0">
         Your internet connection is poor
         <span class="govuk-button__start-icon">
           <img id="hearing-network-bad-img" class="networkIcon" src="/assets/images/alert-1.png" alt="Good network icon in hearing" />

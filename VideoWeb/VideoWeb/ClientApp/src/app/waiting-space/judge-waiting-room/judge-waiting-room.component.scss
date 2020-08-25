@@ -25,15 +25,16 @@
   position: fixed;
   vertical-align: top;
   z-index: 999;
+  max-width: 20%;
 }
 
 .incomingFeed {
   position: fixed;
   top: 0;
-  left: 8%;
-  min-width: 95%;
-  min-height: 80vh;
+  left: 11%;
+  min-width: 94%;
+  min-height: 70vh;
   max-width: 96%;
-  max-height: 90vh;
+  max-height: 85vh;
   z-index: 100;
 }
