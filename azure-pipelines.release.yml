@@ -88,9 +88,15 @@ stages:
         resourceGroup: vh-video-web-$(environment)
         testCaseFilter: TestCategory=smoketest
         dependentApps:
-        - vh-user-api-$(environment)
-        - vh-bookings-api-$(environment)
-        - vh-video-api-$(environment)
+        - name: vh-user-api-$(environment)
+          resourceGroup: vh-user-api-$(environment)
+          healthEndpoint: $(user_api_url)healthcheck/health
+        - name: vh-bookings-api-$(environment)
+          resourceGroup: vh-bookings-api-$(environment)
+          healthEndpoint: $(bookings_api_url)healthcheck/health
+        - name: vh-video-api-$(environment)
+          resourceGroup: vh-video-api-$(environment)
+          healthEndpoint: $(video_api_url)healthcheck/health
         variables:
           - group: vh-wowza-dev
             env:
