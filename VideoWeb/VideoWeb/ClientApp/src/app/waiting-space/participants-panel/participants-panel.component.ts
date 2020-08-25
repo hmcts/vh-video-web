@@ -57,12 +57,9 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
     }
 
     initializeScrolling() {
-        if (!this.firstElement || !this.lastElement) {
-            this.firstElement = document.querySelector('#panel_participant_0');
-            this.lastElement = document.querySelector('#panel_participant_' + (this.participants.length - 1));
-
-            this.setScrollingIndicator();
-        }
+        this.firstElement = document.querySelector('#panel_participant_0');
+        this.lastElement = document.querySelector('#panel_participant_' + (this.participants.length - 1));
+        this.setScrollingIndicator();
     }
 
     ngOnDestroy(): void {

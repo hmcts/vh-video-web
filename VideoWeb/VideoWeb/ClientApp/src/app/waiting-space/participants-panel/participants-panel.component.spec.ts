@@ -280,16 +280,21 @@ describe('ParticipantsPanelComponent', () => {
         component.onScroll();
         expect(component.isScrolling).toBe(2);
     });
-    it('should indicate the scrolling is not required', () => {
+    it('should indicate the scrolling is down', () => {
+        component.initializeScrolling();
+        expect(component.isScrolling).toBe(2);
+    });
+    it('should indicate the scrolling is not need', () => {
         const dummyElementUp = document.createElement('div');
         spyOn(dummyElementUp, 'getBoundingClientRect').and.returnValue(new DOMRect(10, 10, 0, 0));
         component.firstElement = dummyElementUp;
         const dummyElementDown = document.createElement('div');
         spyOn(dummyElementDown, 'getBoundingClientRect').and.returnValue(new DOMRect(10, 10, 0, 0));
         component.lastElement = dummyElementDown;
-        component.initializeScrolling();
+        component.setScrollingIndicator();
         expect(component.isScrolling).toBe(0);
     });
+
     it('should set not visible if element of the participant list is  not defined', () => {
         const result = component.isItemOfListVisible(null);
         expect(result).toBe(false);
