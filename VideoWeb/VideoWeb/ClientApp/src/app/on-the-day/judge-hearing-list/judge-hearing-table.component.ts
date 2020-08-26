@@ -24,7 +24,7 @@ export class JudgeHearingTableComponent implements OnInit {
     constructor(private logger: Logger) {}
 
     ngOnInit() {
-        this.hearings = this.conferenceForJudgeResponse.map(c => new HearingSummary(c));
+        this.hearings = this.conferenceForJudgeResponse.map(c => new JudgeHearingSummary(c));
     }
 
     getRepresentative(participants: ParticipantSummary[]): ParticipantSummary {

@@ -1512,6 +1512,9 @@ namespace VideoWeb.Services.User
         [Newtonsoft.Json.JsonProperty("recovery_email", Required = Newtonsoft.Json.Required.AllowNull)]
         public string Recovery_email { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("is_test_user", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool Is_test_user { get; set; }
+    
     
     }
     

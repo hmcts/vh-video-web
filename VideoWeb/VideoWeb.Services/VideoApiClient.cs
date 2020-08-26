@@ -554,18 +554,87 @@ namespace VideoWeb.Services.Video
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task RespondToAdminConsultationRequestAsync(AdminConsultationRequest body, System.Threading.CancellationToken cancellationToken);
     
+        /// <summary>Get all endpoints for a conference</summary>
+        /// <param name="conferenceId">Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.List<EndpointResponse>> GetEndpointsForConferenceAsync(System.Guid conferenceId);
     
+        /// <summary>Get all endpoints for a conference</summary>
+        /// <param name="conferenceId">Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Collections.Generic.List<EndpointResponse> GetEndpointsForConference(System.Guid conferenceId);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Get all endpoints for a conference</summary>
+        /// <param name="conferenceId">Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.List<EndpointResponse>> GetEndpointsForConferenceAsync(System.Guid conferenceId, System.Threading.CancellationToken cancellationToken);
+    
+        /// <summary>Add an endpoint to a conference</summary>
+        /// <param name="conferenceId">Id of conference</param>
+        /// <param name="body">Endpoint details</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<System.Collections.Generic.List<EndpointResponse>> AddEndpointToConferenceAsync(System.Guid conferenceId, AddEndpointRequest body);
+    
+        /// <summary>Add an endpoint to a conference</summary>
+        /// <param name="conferenceId">Id of conference</param>
+        /// <param name="body">Endpoint details</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Collections.Generic.List<EndpointResponse> AddEndpointToConference(System.Guid conferenceId, AddEndpointRequest body);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Add an endpoint to a conference</summary>
+        /// <param name="conferenceId">Id of conference</param>
+        /// <param name="body">Endpoint details</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<System.Collections.Generic.List<EndpointResponse>> AddEndpointToConferenceAsync(System.Guid conferenceId, AddEndpointRequest body, System.Threading.CancellationToken cancellationToken);
+    
+        /// <summary>Remove an endpoint from a conference</summary>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<System.Collections.Generic.List<EndpointResponse>> RemoveEndpointFromConferenceAsync(System.Guid conferenceId, System.Guid endpointId);
+    
+        /// <summary>Remove an endpoint from a conference</summary>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Collections.Generic.List<EndpointResponse> RemoveEndpointFromConference(System.Guid conferenceId, System.Guid endpointId);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Remove an endpoint from a conference</summary>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<System.Collections.Generic.List<EndpointResponse>> RemoveEndpointFromConferenceAsync(System.Guid conferenceId, System.Guid endpointId, System.Threading.CancellationToken cancellationToken);
+    
+        /// <summary>Update the display name of an endpoint</summary>
+        /// <param name="conferenceId">the conference id</param>
+        /// <param name="endpointId">the endpoint id to be updated</param>
+        /// <param name="body">the display name to be updated</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task UpdateDisplayNameForEndpoint_Async(System.Guid conferenceId, System.Guid endpointId, UpdateEndpointRequest body);
+    
+        /// <summary>Update the display name of an endpoint</summary>
+        /// <param name="conferenceId">the conference id</param>
+        /// <param name="endpointId">the endpoint id to be updated</param>
+        /// <param name="body">the display name to be updated</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        void UpdateDisplayNameForEndpoint_(System.Guid conferenceId, System.Guid endpointId, UpdateEndpointRequest body);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Update the display name of an endpoint</summary>
+        /// <param name="conferenceId">the conference id</param>
+        /// <param name="endpointId">the endpoint id to be updated</param>
+        /// <param name="body">the display name to be updated</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task UpdateDisplayNameForEndpoint_Async(System.Guid conferenceId, System.Guid endpointId, UpdateEndpointRequest body, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Check Service Health</summary>
         /// <returns>Success</returns>
@@ -3766,6 +3835,8 @@ namespace VideoWeb.Services.Video
             }
         }
     
+        /// <summary>Get all endpoints for a conference</summary>
+        /// <param name="conferenceId">Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public System.Threading.Tasks.Task<System.Collections.Generic.List<EndpointResponse>> GetEndpointsForConferenceAsync(System.Guid conferenceId)
@@ -3773,6 +3844,8 @@ namespace VideoWeb.Services.Video
             return GetEndpointsForConferenceAsync(conferenceId, System.Threading.CancellationToken.None);
         }
     
+        /// <summary>Get all endpoints for a conference</summary>
+        /// <param name="conferenceId">Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public System.Collections.Generic.List<EndpointResponse> GetEndpointsForConference(System.Guid conferenceId)
@@ -3781,6 +3854,8 @@ namespace VideoWeb.Services.Video
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Get all endpoints for a conference</summary>
+        /// <param name="conferenceId">Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
         public async System.Threading.Tasks.Task<System.Collections.Generic.List<EndpointResponse>> GetEndpointsForConferenceAsync(System.Guid conferenceId, System.Threading.CancellationToken cancellationToken)
@@ -3837,6 +3912,292 @@ namespace VideoWeb.Services.Video
                         }
             
                         return default(System.Collections.Generic.List<EndpointResponse>);
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Add an endpoint to a conference</summary>
+        /// <param name="conferenceId">Id of conference</param>
+        /// <param name="body">Endpoint details</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<EndpointResponse>> AddEndpointToConferenceAsync(System.Guid conferenceId, AddEndpointRequest body)
+        {
+            return AddEndpointToConferenceAsync(conferenceId, body, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Add an endpoint to a conference</summary>
+        /// <param name="conferenceId">Id of conference</param>
+        /// <param name="body">Endpoint details</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public System.Collections.Generic.List<EndpointResponse> AddEndpointToConference(System.Guid conferenceId, AddEndpointRequest body)
+        {
+            return System.Threading.Tasks.Task.Run(async () => await AddEndpointToConferenceAsync(conferenceId, body, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Add an endpoint to a conference</summary>
+        /// <param name="conferenceId">Id of conference</param>
+        /// <param name="body">Endpoint details</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<EndpointResponse>> AddEndpointToConferenceAsync(System.Guid conferenceId, AddEndpointRequest body, System.Threading.CancellationToken cancellationToken)
+        {
+            if (conferenceId == null)
+                throw new System.ArgumentNullException("conferenceId");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/{conferenceId}/endpoints");
+            urlBuilder_.Replace("{conferenceId}", System.Uri.EscapeDataString(ConvertToString(conferenceId, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body, _settings.Value));
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("POST");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "204") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<EndpointResponse>>(response_, headers_).ConfigureAwait(false);
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new VideoApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new VideoApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+            
+                        return default(System.Collections.Generic.List<EndpointResponse>);
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Remove an endpoint from a conference</summary>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<EndpointResponse>> RemoveEndpointFromConferenceAsync(System.Guid conferenceId, System.Guid endpointId)
+        {
+            return RemoveEndpointFromConferenceAsync(conferenceId, endpointId, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Remove an endpoint from a conference</summary>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public System.Collections.Generic.List<EndpointResponse> RemoveEndpointFromConference(System.Guid conferenceId, System.Guid endpointId)
+        {
+            return System.Threading.Tasks.Task.Run(async () => await RemoveEndpointFromConferenceAsync(conferenceId, endpointId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Remove an endpoint from a conference</summary>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<EndpointResponse>> RemoveEndpointFromConferenceAsync(System.Guid conferenceId, System.Guid endpointId, System.Threading.CancellationToken cancellationToken)
+        {
+            if (conferenceId == null)
+                throw new System.ArgumentNullException("conferenceId");
+    
+            if (endpointId == null)
+                throw new System.ArgumentNullException("endpointId");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/{conferenceId}/endpoints/{endpointId}");
+            urlBuilder_.Replace("{conferenceId}", System.Uri.EscapeDataString(ConvertToString(conferenceId, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{endpointId}", System.Uri.EscapeDataString(ConvertToString(endpointId, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("DELETE");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "204") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<EndpointResponse>>(response_, headers_).ConfigureAwait(false);
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new VideoApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new VideoApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+            
+                        return default(System.Collections.Generic.List<EndpointResponse>);
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Update the display name of an endpoint</summary>
+        /// <param name="conferenceId">the conference id</param>
+        /// <param name="endpointId">the endpoint id to be updated</param>
+        /// <param name="body">the display name to be updated</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task UpdateDisplayNameForEndpoint_Async(System.Guid conferenceId, System.Guid endpointId, UpdateEndpointRequest body)
+        {
+            return UpdateDisplayNameForEndpoint_Async(conferenceId, endpointId, body, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Update the display name of an endpoint</summary>
+        /// <param name="conferenceId">the conference id</param>
+        /// <param name="endpointId">the endpoint id to be updated</param>
+        /// <param name="body">the display name to be updated</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public void UpdateDisplayNameForEndpoint_(System.Guid conferenceId, System.Guid endpointId, UpdateEndpointRequest body)
+        {
+            System.Threading.Tasks.Task.Run(async () => await UpdateDisplayNameForEndpoint_Async(conferenceId, endpointId, body, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Update the display name of an endpoint</summary>
+        /// <param name="conferenceId">the conference id</param>
+        /// <param name="endpointId">the endpoint id to be updated</param>
+        /// <param name="body">the display name to be updated</param>
+        /// <returns>Success</returns>
+        /// <exception cref="VideoApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task UpdateDisplayNameForEndpoint_Async(System.Guid conferenceId, System.Guid endpointId, UpdateEndpointRequest body, System.Threading.CancellationToken cancellationToken)
+        {
+            if (conferenceId == null)
+                throw new System.ArgumentNullException("conferenceId");
+    
+            if (endpointId == null)
+                throw new System.ArgumentNullException("endpointId");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/{conferenceId}/endpoints/{endpointId}/displayname");
+            urlBuilder_.Replace("{conferenceId}", System.Uri.EscapeDataString(ConvertToString(conferenceId, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{endpointId}", System.Uri.EscapeDataString(ConvertToString(endpointId, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body, _settings.Value));
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("PATCH");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new VideoApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new VideoApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
                     }
                     finally
                     {
@@ -6392,6 +6753,9 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonProperty("participants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.List<ParticipantForJudgeResponse> Participants { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("number_of_endpoints", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int Number_of_endpoints { get; set; }
+    
     
     }
     
@@ -6595,6 +6959,31 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public EndpointState Status { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class AddEndpointRequest 
+    {
+        [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.AllowNull)]
+        public string Display_name { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("sip_address", Required = Newtonsoft.Json.Required.AllowNull)]
+        public string Sip_address { get; set; }
+    
+        /// <summary>The endpoint pin</summary>
+        [Newtonsoft.Json.JsonProperty("pin", Required = Newtonsoft.Json.Required.AllowNull)]
+        public string Pin { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class UpdateEndpointRequest 
+    {
+        [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.AllowNull)]
+        public string Display_name { get; set; }
     
     
     }
@@ -6951,6 +7340,12 @@ namespace VideoWeb.Services.Video
     
         [System.Runtime.Serialization.EnumMember(Value = @"CountdownFinished")]
         CountdownFinished = 16,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"EndpointJoined")]
+        EndpointJoined = 17,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"EndpointDisconnected")]
+        EndpointDisconnected = 18,
     
     }
     

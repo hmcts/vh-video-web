@@ -1,85 +1,87 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <table class="govuk-table">
-      <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-          <th class="govuk-table__header" scope="col">Time</th>
-          <th class="govuk-table__header" scope="col">Judge</th>
-          <th class="govuk-table__header" scope="col">Hearing</th>
-          <th class="govuk-table__header" scope="col">Participants</th>
-          <th class="govuk-table__header" scope="col"></th>
-        </tr>
-      </thead>
-      <tbody class="govuk-table__body">
-        <tr *ngFor="let hearing of hearings" id="judges-list" class="govuk-table__row">
-          <!-- Time -->
-          <td class="govuk-table__cell">
-            <p id="scheduled-datetime-{{ hearing.id }}" class="govuk-!-margin-0 govuk-!-padding-0">
-              {{ hearing.scheduledStartTime | date: 'HH:mm' }} -
-              {{ hearing.scheduledEndTime | date: 'HH:mm' }}
-            </p>
-          </td>
+    <div class="govuk-grid-column-full">
+        <table class="govuk-table">
+            <thead class="govuk-table__head">
+                <tr class="govuk-table__row">
+                    <th class="govuk-table__header" scope="col">Time</th>
+                    <th class="govuk-table__header" scope="col">Judge</th>
+                    <th class="govuk-table__header" scope="col">Hearing</th>
+                    <th class="govuk-table__header" scope="col">Attendees</th>
+                    <th class="govuk-table__header" scope="col"></th>
+                </tr>
+            </thead>
+            <tbody class="govuk-table__body">
+                <tr *ngFor="let hearing of hearings" id="judges-list" class="govuk-table__row">
+                    <!-- Time -->
+                    <td class="govuk-table__cell">
+                        <p id="scheduled-datetime-{{ hearing.id }}" class="govuk-!-margin-0 govuk-!-padding-0">
+                            {{ hearing.scheduledStartTime | date: 'HH:mm' }} -
+                            {{ hearing.scheduledEndTime | date: 'HH:mm' }}
+                        </p>
+                    </td>
 
-          <!-- Judge-->
-          <td class="govuk-table__cell">
-            <p id="judge-{{ hearing.id }}" class="govuk-!-margin-0 govuk-!-padding-0">{{ hearing.judge.displayName }}</p>
-          </td>
+                    <!-- Judge-->
+                    <td class="govuk-table__cell">
+                        <p id="judge-{{ hearing.id }}" class="govuk-!-margin-0 govuk-!-padding-0">{{ hearing.judge.displayName }}</p>
+                    </td>
 
-          <!-- Hearing -->
-          <td class="govuk-table__cell">
-            <p id="case-name-{{ hearing.id }}" class="govuk-!-margin-0 govuk-!-padding-0 govuk-!-font-weight-bold">
-              {{ hearing.caseName }}
-            </p>
-            <p id="case-type-{{ hearing.id }}" class="govuk-!-margin-0">
-              {{ hearing.caseType }}
-            </p>
-            <p class="govuk-!-margin-0 govuk-!-padding-0">
-              Case number: <span id="case-number-{{ hearing.id }}" class="govuk-!-font-weight-bold">{{ hearing.caseNumber }}</span>
-            </p>
-          </td>
+                    <!-- Hearing -->
+                    <td class="govuk-table__cell">
+                        <p id="case-name-{{ hearing.id }}" class="govuk-!-margin-0 govuk-!-padding-0 govuk-!-font-weight-bold">
+                            {{ hearing.caseName }}
+                        </p>
+                        <p id="case-type-{{ hearing.id }}" class="govuk-!-margin-0">
+                            {{ hearing.caseType }}
+                        </p>
+                        <p class="govuk-!-margin-0 govuk-!-padding-0">
+                            Case number: <span id="case-number-{{ hearing.id }}" class="govuk-!-font-weight-bold">{{ hearing.caseNumber }}</span>
+                        </p>
+                    </td>
 
-          <!-- Participant -->
-          <td class="govuk-table__cell">
-            <!-- Participant count -->
-            <span *ngIf="getParticipantsCount(hearing)">
-              <p class="govuk-!-margin-0 govuk-!-padding-0">
-                <span id="participant-count-{{ hearing.id }}">{{ getParticipantsCount(hearing) }}</span>
-              </p>
-            </span>
-          </td>
+                    <!-- Participant -->
+                    <td class="govuk-table__cell">
+                        <!-- Participant count -->
+                        <span *ngIf="getParticipantsCount(hearing)">
+                            <p class="govuk-!-margin-0 govuk-!-padding-0">
+                                <span id="participant-count-{{ hearing.id }}">
+                                    {{ getParticipantsCount(hearing) }} Participant{{ getParticipantsCount(hearing) > 1 ? 's' : '' }}
+                                </span>
+                            </p>
+                        </span>
+                        <div *ngIf="hearing.numberOfEndpoints > 0">
+                            <span id="endpoints-count-{{ hearing.id }}">
+                                {{ hearing.numberOfEndpoints }} Video access point{{ hearing.numberOfEndpoints > 1 ? 's' : '' }}
+                            </span>
+                        </div>
+                    </td>
 
-          <!-- Conference Status -->
-          <td class="govuk-table__cell">
-            <div *ngIf="!hearing.isClosed() && hearing.isReadyToStart()">
-              <button
-                id="start-hearing-btn-{{ hearing.id }}"
-                class="govuk-button govuk-!-margin-top-3 govuk-!-margin-bottom-3"
-                data-module="govuk-button"
-                type="button"
-                (click)="signIntoConference(hearing)"
-                alt="Sign into the conference"
-              >
-                Select
-              </button>
-            </div>
-            <div *ngIf="!hearing.isClosed() && !hearing.isReadyToStart()">
-              Not ready to start
-            </div>
-            <div *ngIf="showConferenceStatus(hearing)" class="govuk-!-margin-top-3 govuk-!-margin-bottom-3">
-              <span
-                id="hearing-status-{{ hearing.id }}"
-                class="govuk-!-padding-top-1 govuk-!-padding-bottom-1 govuk-!-padding-right-2 govuk-!-padding-left-2"
-                [ngClass]="{
+                    <!-- Conference Status -->
+                    <td class="govuk-table__cell">
+                        <div *ngIf="!hearing.isClosed() && hearing.isReadyToStart()">
+                            <button id="start-hearing-btn-{{ hearing.id }}"
+                                    class="govuk-button govuk-!-margin-top-3 govuk-!-margin-bottom-3"
+                                    data-module="govuk-button"
+                                    type="button"
+                                    (click)="signIntoConference(hearing)"
+                                    alt="Sign into the conference">
+                                Select
+                            </button>
+                        </div>
+                        <div *ngIf="!hearing.isClosed() && !hearing.isReadyToStart()">
+                            Not ready to start
+                        </div>
+                        <div *ngIf="showConferenceStatus(hearing)" class="govuk-!-margin-top-3 govuk-!-margin-bottom-3">
+                            <span id="hearing-status-{{ hearing.id }}"
+                                  class="govuk-!-padding-top-1 govuk-!-padding-bottom-1 govuk-!-padding-right-2 govuk-!-padding-left-2"
+                                  [ngClass]="{
                   'conference-closed': hearing.isClosed(),
                   'conference-paused': hearing.isPaused(),
                   'conference-suspended': hearing.isSuspended()
-                }"
-                >{{ hearing.status }}</span
-              >
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+                }">{{ hearing.status }}</span>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
