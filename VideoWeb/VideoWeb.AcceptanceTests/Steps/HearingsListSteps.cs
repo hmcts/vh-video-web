@@ -186,8 +186,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         private static void AssertParticipantsCount(IEnumerable<ParticipantResponse> participantResponses, HearingRow rowData)
-        { 
-            rowData.ParticipantCount.Should().Be(participantResponses.Count(x => x.Hearing_role_name != "Judge"));
+        {
+            var count = participantResponses.Count(x => x.Hearing_role_name != "Judge");
+            var ending = count > 1 ? "s" : "";
+            var countText = $"{count} Participant{ending}";
+            rowData.ParticipantCount.Should().Be(countText);
         }
     }
 }

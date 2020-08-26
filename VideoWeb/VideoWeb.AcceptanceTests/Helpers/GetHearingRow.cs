@@ -117,7 +117,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
         private void GetParticipantCount()
         {
-            _hearingRow.ParticipantCount = Int32.Parse( _browser.Driver.WaitUntilVisible(ClerkHearingListPage.ParticipantCount(_hearingId)).Text);
+            _hearingRow.ParticipantCount = _browser.Driver.WaitUntilVisible(ClerkHearingListPage.ParticipantCount(_hearingId)).Text;
         }
 
         public HearingRow Fetch()

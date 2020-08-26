@@ -26,6 +26,7 @@ namespace VideoWeb.UnitTests.Mappings
             var conference = Builder<Conference>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
                 .With(x => x.Participants = participants)
+                .With(x => x.Number_of_endpoints = 2)
                 .Build();
 
             var response = ConferenceForJudgeResponseMapper.MapConferenceSummaryToModel(conference);
@@ -38,6 +39,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.CaseName.Should().Be(conference.Case_name);
             response.Status.ToString().Should().Be(conference.Status.ToString());
             response.Participants.Count.Should().Be(participants.Count);
+            response.NumberOfEndpoints.Should().Be(conference.Number_of_endpoints);
         }
     }
 }

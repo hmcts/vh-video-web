@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ConferenceForJudgeResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { HearingSummary } from 'src/app/shared/models/hearing-summary';
 import { JudgeHearingSummary } from 'src/app/shared/models/JudgeHearingSummary';
 import { ParticipantSummary } from 'src/app/shared/models/participant-summary';
 
