@@ -9,6 +9,7 @@ using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
+using EndpointState = VideoWeb.EventHub.Enums.EndpointState;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
 using Task = System.Threading.Tasks.Task;
@@ -34,6 +35,7 @@ namespace VideoWeb.EventHub.Handlers.Core
 
         public Conference SourceConference { get; set; }
         public Participant SourceParticipant { get; set; }
+        public Endpoint SourceEndpoint { get; set; }
 
         public abstract EventType EventType { get; }
 
@@ -45,6 +47,9 @@ namespace VideoWeb.EventHub.Handlers.Core
             SourceParticipant = SourceConference.Participants
                 .SingleOrDefault(x => x.Id == callbackEvent.ParticipantId);
 
+            SourceEndpoint = SourceConference.Endpoints
+                .SingleOrDefault(x => x.Id == callbackEvent.ParticipantId);
+            
             Logger.LogTrace($"Handling Event: {callbackEvent.EventType} for conferenceId {callbackEvent.ConferenceId} with reason " +
                 $"{callbackEvent.Reason} at Timestamp: { (DateTime.Now) :yyyy-MM-dd HH:mm:ss.fffffff}");
             await PublishStatusAsync(callbackEvent);
@@ -52,8 +57,9 @@ namespace VideoWeb.EventHub.Handlers.Core
 
         private async Task<Conference> GetConference(Guid conferenceId)
         {
-            return await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
-
+            var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
+                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
+            return conference;
         }
 
         /// <summary>
@@ -93,6 +99,20 @@ namespace VideoWeb.EventHub.Handlers.Core
             }
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .ConferenceStatusMessage(SourceConference.Id, hearingEventStatus);
+        }
+        
+        protected async Task PublishEndpointStatusMessage(EndpointState endpointState)
+        {
+            foreach (var participant in SourceConference.Participants)
+            {
+                await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
+                    .EndpointStatusMessage(SourceEndpoint.Id,  SourceConference.Id, endpointState);
+            }
+            
+            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
+                .EndpointStatusMessage(SourceEndpoint.Id,  SourceConference.Id, endpointState);
+            Logger.LogTrace($"Endpoint Status: Endpoint Id: { SourceEndpoint.Id } | " +
+                            $"Endpoint State: { endpointState } | Timestamp: { (DateTime.Now) :yyyy-MM-dd HH:mm:ss.fffffff} ");
         }
 
         protected abstract Task PublishStatusAsync(CallbackEvent callbackEvent);

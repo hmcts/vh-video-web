@@ -4,6 +4,7 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
@@ -46,14 +47,15 @@ namespace VideoWeb.UnitTests.Mappings
                 new ParticipantDetailsResponseBuilder(UserRole.Judge, "None").Build(),
                 new ParticipantDetailsResponseBuilder(UserRole.CaseAdmin, "None").Build()
             };
+            var endpoints = Builder<EndpointResponse>.CreateListOfSize(2).Build().ToList();
 
-            var bookingParticipants = Builder<BookingParticipant>.CreateListOfSize(participants.Count)
-                .Build().ToList();
-            participants[0].Ref_id = bookingParticipants[0].Id;
-            participants[1].Ref_id = bookingParticipants[1].Id;
-            participants[2].Ref_id = bookingParticipants[2].Id;
-            participants[3].Ref_id = bookingParticipants[3].Id;
-            participants[4].Ref_id = bookingParticipants[4].Id;
+            // var bookingParticipants = Builder<BookingParticipant>.CreateListOfSize(participants.Count)
+            //     .Build().ToList();
+            // participants[0].Ref_id = bookingParticipants[0].Id;
+            // participants[1].Ref_id = bookingParticipants[1].Id;
+            // participants[2].Ref_id = bookingParticipants[2].Id;
+            // participants[3].Ref_id = bookingParticipants[3].Id;
+            // participants[4].Ref_id = bookingParticipants[4].Id;
 
             var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
 
@@ -61,6 +63,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Current_status = ConferenceState.Suspended)
                 .With(x => x.Participants = participants)
                 .With(x => x.Meeting_room = meetingRoom)
+                .With(x => x.Endpoints = endpoints)
                 .Build();
             return conference;
         }
