@@ -6,7 +6,9 @@ import {
     ParticipantResponse,
     ParticipantStatus,
     Role,
-    UpdateParticipantRequest
+    UpdateParticipantRequest,
+    VideoEndpointResponse,
+    EndpointStatus
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
@@ -24,6 +26,7 @@ export class JudgeParticipantStatusListComponent implements OnInit {
     representativeParticipants: ParticipantResponse[];
     litigantInPerson: boolean;
     individualParticipants: ParticipantResponse[];
+    endpoints: VideoEndpointResponse[];
     showChangeJudgeDisplayName = false;
     newJudgeDisplayName: string;
 
@@ -38,6 +41,7 @@ export class JudgeParticipantStatusListComponent implements OnInit {
         this.filterRepresentatives();
         this.filterObservers();
         this.filterPanelMembers();
+        this.endpoints = this.conference.endpoints;
     }
 
     private filterNonJudgeParticipants(): void {
@@ -68,6 +72,10 @@ export class JudgeParticipantStatusListComponent implements OnInit {
         return this.camelToSpaced(participant.status.toString());
     }
 
+    getEndpointStatus(endpoint: VideoEndpointResponse): string {
+        return this.camelToSpaced(endpoint.status.toString());
+    }
+
     private camelToSpaced(word: string) {
         const splitWord = word.split(/(?=[A-Z])/).join(' ');
         const lowcaseWord = splitWord.toLowerCase();
@@ -80,6 +88,10 @@ export class JudgeParticipantStatusListComponent implements OnInit {
         } else {
             return this.camelToSnake(participant.status.toString());
         }
+    }
+
+    getEndpointStatusCss(endpoint: VideoEndpointResponse): string {
+        return this.camelToSnake(endpoint.status.toString());
     }
 
     private camelToSnake(word: string) {

@@ -24,6 +24,8 @@ namespace VideoWeb.Mappings
                 .Select(x => ParticipantResponseMapper.MapParticipantToResponseModel(x))
                 .ToList();
 
+            var endpoints = conference.Endpoints.Select(x => EndpointsResponseMapper.Map(x)).ToList();
+
             var response = new ConferenceResponse
             {
                 Id = conference.Id,
@@ -37,7 +39,8 @@ namespace VideoWeb.Mappings
                 ClosedDateTime = conference.Closed_date_time,
                 HearingVenueName = conference.Hearing_venue_name,
                 AudioRecordingRequired = conference.Audio_recording_required,
-                HearingRefId = conference.Hearing_id
+                HearingRefId = conference.Hearing_id,
+                Endpoints = endpoints
             };
 
             if (conference.Meeting_room == null) return response;
@@ -86,7 +89,7 @@ namespace VideoWeb.Mappings
 
         private static string GetTiledDisplayName(ParticipantResponse participant, int position)
         {
-            return  $"T{position};{participant.DisplayName};{participant.Id}";
+            return $"T{position};{participant.DisplayName};{participant.Id}";
         }
     }
 }
