@@ -3,8 +3,8 @@ Feature: Login
 	I would like to login and Logout
 	So that I can access and sign out of the application
 
-Scenario: Clerk login
-	Given a new browser is open for a Clerk
+Scenario: Judge login
+	Given a new browser is open for a Judge
 	When the user attempts to login with valid credentials
 	Then the user is on the Hearing List page
 	When the user attempts to logout and log back in

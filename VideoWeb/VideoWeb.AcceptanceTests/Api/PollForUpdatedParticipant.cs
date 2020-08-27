@@ -10,14 +10,14 @@ namespace VideoWeb.AcceptanceTests.Api
     public class PollForUpdatedParticipant
     {
         private const int MaxRetries = 5;
-        private readonly VideoApiManager _videoApi;
+        private readonly TestApiManager _api;
         private string _username;
         private Guid _conferenceId;
         private UpdateParticipantRequest _updatedRequest;
 
-        public PollForUpdatedParticipant(VideoApiManager videoApi)
+        public PollForUpdatedParticipant(TestApiManager api)
         {
-            _videoApi = videoApi;
+            _api = api;
         }
 
         public PollForUpdatedParticipant WithConferenceId(Guid conferenceId)
@@ -42,7 +42,7 @@ namespace VideoWeb.AcceptanceTests.Api
         {
             for (var i = 0; i < MaxRetries; i++)
             {
-                var response = _videoApi.GetConferenceByConferenceId(_conferenceId);
+                var response = _api.GetConferenceByConferenceId(_conferenceId);
                 var conference = RequestHelper.Deserialise<ConferenceDetailsResponse>(response.Content);
                 var updatedParticipant = conference.Participants.Find(x => x.Username.ToLower().Equals(_username.ToLower()));
                 if (updatedParticipant.Display_name.Equals(_updatedRequest.Display_name) &&

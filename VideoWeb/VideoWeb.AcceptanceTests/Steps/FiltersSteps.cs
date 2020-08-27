@@ -8,8 +8,10 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.Common.Models;
-using VideoWeb.Services.Video;
+using VideoWeb.Services.TestApi;
+using ParticipantDetailsResponse = VideoWeb.Services.Video.ParticipantDetailsResponse;
 using RoomType = VideoWeb.Common.Models.RoomType;
+using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -17,9 +19,9 @@ namespace VideoWeb.AcceptanceTests.Steps
     public class FiltersSteps
     {
         private readonly TestContext _c;
-        private readonly Dictionary<string, UserBrowser> _browsers;
+        private readonly Dictionary<User, UserBrowser> _browsers;
         private readonly HearingAlertsSteps _alertsSteps;
-        public FiltersSteps(TestContext c, HearingAlertsSteps alertsSteps, Dictionary<string, UserBrowser> browsers)
+        public FiltersSteps(TestContext c, HearingAlertsSteps alertsSteps, Dictionary<User, UserBrowser> browsers)
         {
             _c = c;
             _alertsSteps = alertsSteps;
@@ -38,7 +40,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private ParticipantDetailsResponse GetUserFromConferenceDetails(string userRole)
         {
-            var participantUser = userRole.ToLower().Equals("judge") || userRole.ToLower().Equals("clerk")
+            var participantUser = userRole.ToLower().Equals("judge") || userRole.ToLower().Equals("Judge")
                 ? _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(Role.Judge.ToString()))
                 : _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(Role.Individual.ToString()));
             return participantUser;
@@ -47,27 +49,27 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the VHO filters by Judge Name (.*)")]
         public void WhenTheVHOFiltersByJudgeNameAutomationBuilding(string options)
         {
-            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.FiltersButton);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(FiltersPopupPage.FiltersPopup).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Click(VhoHearingListPage.FiltersButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(FiltersPopupPage.FiltersPopup).Displayed.Should().BeTrue();
             UnSelectTheSelectAllCheckboxes();
 
             foreach (var option in ConverterHelpers.ConvertStringIntoArray(options))
             {
-                _browsers[_c.CurrentUser.Key].ClickCheckbox(FiltersPopupPage.CheckBox(option));
+                _browsers[_c.CurrentUser].ClickCheckbox(FiltersPopupPage.CheckBox(option));
             }
 
-            _browsers[_c.CurrentUser.Key].Click(FiltersPopupPage.ApplyButton);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(FiltersPopupPage.FiltersPopup).Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Refresh();
+            _browsers[_c.CurrentUser].Click(FiltersPopupPage.ApplyButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(FiltersPopupPage.FiltersPopup).Should().BeTrue();
+            _browsers[_c.CurrentUser].Refresh();
         }
 
         private void UnSelectTheSelectAllCheckboxes()
         {
-            var selectAllCount = _browsers[_c.CurrentUser.Key].Driver.FindElements(FiltersPopupPage.SelectAllCheckboxes).Count;
+            var selectAllCount = _browsers[_c.CurrentUser].Driver.FindElements(FiltersPopupPage.SelectAllCheckboxes).Count;
 
             for (var i = 1; i <= selectAllCount; i++)
             {
-                _browsers[_c.CurrentUser.Key].ClickCheckbox(FiltersPopupPage.SelectAllCheckbox(i));
+                _browsers[_c.CurrentUser].ClickCheckbox(FiltersPopupPage.SelectAllCheckbox(i));
             }
         }
 
@@ -76,8 +78,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var hearingThatShouldNotBeVisible = _c.Test.Conferences.First();
             var hearingThatShouldBeVisible = _c.Test.Conferences.Last();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(hearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(VhoHearingListPage.CaseName(hearingThatShouldNotBeVisible.Id)).Should().BeTrue();
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(hearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(VhoHearingListPage.CaseName(hearingThatShouldNotBeVisible.Id)).Should().BeTrue();
         }
         
         [Then(@"the hearings are filtered by the judge named (.*)")]
@@ -90,8 +92,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             var hearingThatShouldBeVisible = _c.Test.Conferences.FirstOrDefault(p =>
                 p.Participants.Any(m => m.User_role == UserRole.Judge && m.First_name == judgeName));
 
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(hearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(VhoHearingListPage.CaseName(hearingThatShouldNotBeVisible.Id)).Should().BeTrue();
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(hearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(VhoHearingListPage.CaseName(hearingThatShouldNotBeVisible.Id)).Should().BeTrue();
         }
 
         [Then(@"both hearings are visible")]
@@ -99,8 +101,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var firstHearingThatShouldBeVisible = _c.Test.Conferences.First();
             var secondHearingThatShouldBeVisible = _c.Test.Conferences.Last();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(firstHearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(secondHearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(firstHearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(secondHearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
         }
     }
 }

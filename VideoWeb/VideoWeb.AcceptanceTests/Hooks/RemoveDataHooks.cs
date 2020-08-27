@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net;
 using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Helpers;
-using AcceptanceTests.Common.Configuration.Users;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -17,75 +16,70 @@ namespace VideoWeb.AcceptanceTests.Hooks
     {
         private string _username;
 
-        [BeforeScenario(Order = (int)HooksSequence.RemoveDataHooks)]
         [AfterScenario]
         public void RemovePreviousHearings(TestContext context)
         {
-            _username = UserManager.GetClerkUser(context.UserAccounts).Username;
-            ClearHearingsForUser(context.Apis.BookingsApi);
-            ClearClosedConferencesForUser(context.Apis.BookingsApi, context.Apis.VideoApi);
-
-            _username = UserManager.GetJudgeUser(context.UserAccounts).Username;
-            ClearHearingsForUser(context.Apis.BookingsApi);
-            ClearClosedConferencesForUser(context.Apis.BookingsApi, context.Apis.VideoApi);
+            _username = Users.GetJudgeUser(context.Test.Users).Username;
+            ClearHearingsForUser(context.Apis.TestApi);
+            ClearClosedConferencesForUser(context.Apis.TestApi);
         }
 
-        private void ClearHearingsForUser(BookingsApiManager bookingsApi)
+        private void ClearHearingsForUser(TestApiManager api)
         {
-            var response = bookingsApi.GetHearingsForUsername(_username);
+            var response = api.GetHearingsByUsername(_username);
             var hearings = RequestHelper.Deserialise<List<HearingDetailsResponse>>(response.Content);
             if (hearings == null) return;
             foreach (var hearing in hearings)
             {
-                DeleteTheHearing(bookingsApi, hearing.Id);
+                DeleteTheHearing(api, hearing.Id);
             }
         }
-        private static void DeleteTheHearing(BookingsApiManager bookingsApi, Guid hearingId)
+        private static void DeleteTheHearing(TestApiManager api, Guid hearingId)
         {
-            var response = bookingsApi.DeleteHearing(hearingId);
+            var response = api.DeleteHearing(hearingId);
             response.IsSuccessful.Should().BeTrue($"HearingDetails {hearingId} has been deleted. Status {response.StatusCode}. {response.Content}");
         }
 
-        private void ClearClosedConferencesForUser(BookingsApiManager bookingsApi, VideoApiManager videoApi)
+        private void ClearClosedConferencesForUser(TestApiManager api)
         {
-            var response = videoApi.GetConferencesForTodayJudge(_username);
+            var response = api.GetConferencesForTodayJudge(_username);
             var todaysConferences = RequestHelper.Deserialise<List<ConferenceForAdminResponse>>(response.Content);
             if (todaysConferences == null) return;
 
             foreach (var conference in todaysConferences)
             {
-                var hearingId = GetTheHearingIdFromTheConference(videoApi, conference.Id);
+                var hearingId = GetTheHearingIdFromTheConference(api, conference.Id);
 
-                if (HearingHasNotBeenDeletedAlready(bookingsApi, hearingId) && !hearingId.Equals(Guid.Empty))
-                    DeleteTheHearing(bookingsApi, hearingId);
+                if (HearingHasNotBeenDeletedAlready(api, hearingId) && !hearingId.Equals(Guid.Empty))
+                    DeleteTheHearing(api, hearingId);
 
-                if (ConferenceHasNotBeenDeletedAlready(videoApi, conference.Id))
-                    DeleteTheConference(videoApi, conference.Id);
+                if (ConferenceHasNotBeenDeletedAlready(api, conference.Id))
+                    DeleteTheConference(api, hearingId, conference.Id);
             }
         }
 
-        private static Guid GetTheHearingIdFromTheConference(VideoApiManager videoApi, Guid conferenceId)
+        private static Guid GetTheHearingIdFromTheConference(TestApiManager api, Guid conferenceId)
         {
-            var response = videoApi.GetConferenceByConferenceId(conferenceId);
+            var response = api.GetConferenceByConferenceId(conferenceId);
             var conference = RequestHelper.Deserialise<ConferenceDetailsResponse>(response.Content);
             return conference?.Hearing_id ?? Guid.Empty;
         }
 
-        private static bool HearingHasNotBeenDeletedAlready(BookingsApiManager bookingsApi, Guid hearingId)
+        private static bool HearingHasNotBeenDeletedAlready(TestApiManager api, Guid hearingId)
         {
-            var response = bookingsApi.GetHearing(hearingId);
+            var response = api.GetHearing(hearingId);
             return !response.StatusCode.Equals(HttpStatusCode.NotFound);
         }
 
-        private static bool ConferenceHasNotBeenDeletedAlready(VideoApiManager videoApi, Guid conferenceId)
+        private static bool ConferenceHasNotBeenDeletedAlready(TestApiManager api, Guid conferenceId)
         {
-            var response = videoApi.GetConferenceByConferenceId(conferenceId);
+            var response = api.GetConferenceByConferenceId(conferenceId);
             return !response.StatusCode.Equals(HttpStatusCode.NotFound);
         }
 
-        private static void DeleteTheConference(VideoApiManager videoApi, Guid conferenceId)
+        private static void DeleteTheConference(TestApiManager api, Guid hearingId, Guid conferenceId)
         {
-            videoApi.DeleteConference(conferenceId);
+            api.DeleteConference(hearingId, conferenceId);
         }
     }
 }

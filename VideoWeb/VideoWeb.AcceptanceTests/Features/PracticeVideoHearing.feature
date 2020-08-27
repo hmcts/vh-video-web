@@ -39,8 +39,8 @@ Scenario: Representative self test video hearing practice
 	Then the choose your camera and microphone popup should disappear
 
 @VIH-4671 @Video
-Scenario: Clerk video hearing practice
-	Given the Clerk Self Test user has progressed to the Practice video hearing page
+Scenario: Judge video hearing practice
+	Given the Judge Self Test user has progressed to the Practice video hearing page
 	Then the incoming and self video should be playing video
 	And contact us details are available
 	When the video has ended
@@ -50,15 +50,15 @@ Scenario: Clerk video hearing practice
 	Then the choose your camera and microphone popup should disappear
 
 @VIH-4671 @Video
-Scenario: Clerk confirms the equipment is working
-	Given the Clerk Self Test user has progressed to the Practice video hearing page
+Scenario: Judge confirms the equipment is working
+	Given the Judge Self Test user has progressed to the Practice video hearing page
 	Then the incoming and self video should be playing video
 	When the user clicks the Equipment is working button
 	Then the user is on the Hearing List page
 
 @VIH-4671 @Video
-Scenario: Clerk does not confirm the equipment is working
-	Given the Clerk Self Test user has progressed to the Practice video hearing page
+Scenario: Judge does not confirm the equipment is working
+	Given the Judge Self Test user has progressed to the Practice video hearing page
 	Then the incoming and self video should be playing video
 	When the user clicks the Equipment is faulty button
 	Then the user can see contact details to help resolve the issues

@@ -2,8 +2,8 @@ namespace VideoWeb.AcceptanceTests.Journeys
 {
     public enum Journey
     {
-        Clerk,
-        ClerkSelftest,
+        Judge,
+        JudgeSelftest,
         Participant,
         PanelMember,
         SelfTest,

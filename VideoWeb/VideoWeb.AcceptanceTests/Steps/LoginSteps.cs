@@ -7,6 +7,7 @@ using AcceptanceTests.Common.Test.Steps;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
+using VideoWeb.Services.TestApi;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -15,10 +16,10 @@ namespace VideoWeb.AcceptanceTests.Steps
     {
         private const int ReachedThePageRetries = 2;
         private LoginSharedSteps _loginSharedSteps;
-        private readonly Dictionary<string, UserBrowser> _browsers;
+        private readonly Dictionary<User, UserBrowser> _browsers;
         private readonly TestContext _c;
 
-        public LoginSteps(Dictionary<string, UserBrowser> browsers, TestContext c)
+        public LoginSteps(Dictionary<User, UserBrowser> browsers, TestContext c)
         {
             _browsers = browsers;
             _c = c;
@@ -28,22 +29,22 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ProgressToNextPage()
         {
             if (_c.VideoWebConfig.TestConfig.TargetBrowser == TargetBrowser.Ie11) return;
-            _loginSharedSteps = new LoginSharedSteps(_browsers[_c.CurrentUser.Key], _c.CurrentUser.Username, _c.VideoWebConfig.TestConfig.TestUserPassword);
+            _loginSharedSteps = new LoginSharedSteps(_browsers[_c.CurrentUser], _c.CurrentUser.Username, _c.VideoWebConfig.TestConfig.TestUserPassword);
             _loginSharedSteps.ProgressToNextPage();
         }
 
         [When(@"the user attempts to logout and log back in")]
         public void WhenTheUserAttemptsToLogout()
         {
-            _browsers[_c.CurrentUser.Key].ClickLink(CommonPages.SignOutLink);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(CommonPages.SignOutMessage).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].ClickLink(CommonPages.SignInLink);
+            _browsers[_c.CurrentUser].ClickLink(CommonPages.SignOutLink);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(CommonPages.SignOutMessage).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].ClickLink(CommonPages.SignInLink);
         }
 
         [Then(@"the user should be navigated to sign in screen")]
         public void ThenTheUserShouldBeNavigatedToSignInScreen()
         {
-            _browsers[_c.CurrentUser.Key].Retry(() => _browsers[_c.CurrentUser.Key].Driver.Title.Trim().Should().Be(LoginPage.SignInTitle), ReachedThePageRetries);
+            _browsers[_c.CurrentUser].Retry(() => _browsers[_c.CurrentUser].Driver.Title.Trim().Should().Be(LoginPage.SignInTitle), ReachedThePageRetries);
         }
 
         [Then(@"the sign out link is displayed")]

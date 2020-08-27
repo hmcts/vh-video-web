@@ -5,17 +5,18 @@ using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.Services.TestApi;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
     public class EquipmentWorkingSteps : ISteps
     {
-        private readonly Dictionary<string, UserBrowser> _browsers;
+        private readonly Dictionary<User, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly CommonSteps _commonSteps;
 
-        public EquipmentWorkingSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, CommonSteps commonSteps)
+        public EquipmentWorkingSteps(Dictionary<User, UserBrowser> browsers, TestContext testContext, CommonSteps commonSteps)
         {
             _browsers = browsers;
             _c = testContext;
@@ -25,8 +26,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ProgressToNextPage()
         {
             _commonSteps.WhenTheUserSelectsTheRadiobutton("Yes");
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(EquipmentWorkingPage.ContinueButton).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Click(EquipmentWorkingPage.ContinueButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(EquipmentWorkingPage.ContinueButton).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Click(EquipmentWorkingPage.ContinueButton);
         }
 
         [When(@"the user says the camera is not working")]
@@ -35,8 +36,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenTheUserSaysTheEquipmentIsNotWorking()
         {
             _commonSteps.WhenTheUserSelectsTheRadiobutton("No");
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(EquipmentWorkingPage.ContinueButton).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Click(EquipmentWorkingPage.ContinueButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(EquipmentWorkingPage.ContinueButton).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Click(EquipmentWorkingPage.ContinueButton);
         }
     }
 }

@@ -2,8 +2,12 @@ using System;
 using System.Collections.Generic;
 using AcceptanceTests.Common.Data.TestData;
 using VideoWeb.AcceptanceTests.Data.TestData;
-using VideoWeb.Services.Bookings;
-using VideoWeb.Services.Video;
+using VideoWeb.Services.TestApi;
+using CaseResponse = VideoWeb.Services.Bookings.CaseResponse;
+using ConferenceDetailsResponse = VideoWeb.Services.Video.ConferenceDetailsResponse;
+using HearingDetailsResponse = VideoWeb.Services.Bookings.HearingDetailsResponse;
+using ParticipantDetailsResponse = VideoWeb.Services.Video.ParticipantDetailsResponse;
+using ParticipantResponse = VideoWeb.Services.Bookings.ParticipantResponse;
 
 namespace VideoWeb.AcceptanceTests.Data
 {
@@ -24,5 +28,6 @@ namespace VideoWeb.AcceptanceTests.Data
         public bool SelfTestJourney { get; set; } = false;
         public long TaskId { get; set; }
         public DefaultData TestData { get; set; }
+        public List<User> Users { get; set; }
     }
 }

@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FluentAssertions;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.Services.TestApi;
 
 namespace VideoWeb.AcceptanceTests.Journeys
 {
-
-    public class ClerkSelfTestJourney : IJourney
+    public class JudgeJourney : IJourney
     {
         public List<Page> Journey()
         {
@@ -13,15 +13,14 @@ namespace VideoWeb.AcceptanceTests.Journeys
             {
                 Page.Login,
                 Page.HearingList,
-                Page.EquipmentCheck,
-                Page.SwitchOnCamAndMic,
-                Page.PracticeVideoHearing
+                Page.WaitingRoom,
+                Page.HearingRoom
             };
         }
 
-        public void VerifyUserIsApplicableToJourney(string currentUserRole)
+        public void VerifyUserIsApplicableToJourney(UserType userType)
         {
-            currentUserRole.ToLower().Should().BeOneOf("clerk", "judge");
+            userType.Should().Be(UserType.Judge);
         }
 
         public void VerifyDestinationIsInThatJourney(Page destinationPage)

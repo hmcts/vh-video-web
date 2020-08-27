@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.Services.TestApi;
 
 namespace VideoWeb.AcceptanceTests.Journeys
 {
@@ -7,6 +8,6 @@ namespace VideoWeb.AcceptanceTests.Journeys
     {
         List<Page> Journey();
         void VerifyDestinationIsInThatJourney(Page destinationPage);
-        void VerifyUserIsApplicableToJourney(string currentUserRole);
+        void VerifyUserIsApplicableToJourney(UserType userType);
     }
 }

@@ -9,13 +9,13 @@ namespace VideoWeb.AcceptanceTests.Api
     public class PollForUpdatedConference
     {
         private const int MaxRetries = 5;
-        private readonly VideoApiManager _videoApi;
+        private readonly TestApiManager _api;
         private string _updatedWord;
         private Guid _conferenceId;
 
-        public PollForUpdatedConference(VideoApiManager videoApi)
+        public PollForUpdatedConference(TestApiManager api)
         {
-            _videoApi = videoApi;
+            _api = api;
         }
 
         public PollForUpdatedConference WithConferenceId(Guid conferenceId)
@@ -33,7 +33,7 @@ namespace VideoWeb.AcceptanceTests.Api
         {
             for (var i = 0; i < MaxRetries; i++)
             {
-                var response = _videoApi.GetConferenceByConferenceId(_conferenceId);
+                var response = _api.GetConferenceByConferenceId(_conferenceId);
                 var conference = RequestHelper.Deserialise<ConferenceDetailsResponse>(response.Content);
                 if (conference.Case_name.Contains(_updatedWord))
                     return conference;

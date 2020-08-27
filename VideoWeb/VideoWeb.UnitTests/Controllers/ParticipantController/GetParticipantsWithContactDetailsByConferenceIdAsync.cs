@@ -16,7 +16,6 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.User.ProblemDetails;

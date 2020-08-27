@@ -7,17 +7,18 @@ using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.Services.Video;
+using VideoWeb.Services.TestApi;
+using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
     public class VenueListSteps : ISteps
     {
-        private readonly Dictionary<string, UserBrowser> _browsers;
+        private readonly Dictionary<User, UserBrowser> _browsers;
         private readonly TestContext _c;
 
-        public VenueListSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext)
+        public VenueListSteps(Dictionary<User, UserBrowser> browsers, TestContext testContext)
         {
             _browsers = browsers;
             _c = testContext;
@@ -35,20 +36,20 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the VHO selects the hearings for Judges named (.*)")]
         public void SelectVenues(string judgeNames)
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesDropdown).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Click(VhoVenueAllocationPage.VenuesTextBox);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesDropdown).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Click(VhoVenueAllocationPage.VenuesTextBox);
 
             foreach (var venue in ConverterHelpers.ConvertStringIntoArray(judgeNames))
             {
-                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesTextBox).SendKeys(venue);
-                _browsers[_c.CurrentUser.Key].ClickCheckbox(VhoVenueAllocationPage.VenueCheckbox(venue));
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesTextBox).SendKeys(venue);
+                _browsers[_c.CurrentUser].ClickCheckbox(VhoVenueAllocationPage.VenueCheckbox(venue));
             }
         }
 
         [When(@"the VHO confirms their allocation selection")]
         public void ConfirmVenue()
         {
-            _browsers[_c.CurrentUser.Key].Click(VhoVenueAllocationPage.VenueConfirmButton);
+            _browsers[_c.CurrentUser].Click(VhoVenueAllocationPage.VenueConfirmButton);
         }
 
         [When(@"the VHO selects all the venues")]

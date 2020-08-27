@@ -13,8 +13,8 @@ Scenario: Participant switch on camera and microphone
 	Then the user is on the Practice video hearing page
 
 @VIH-4671 
-Scenario: Clerk switch on camera and microphone
-	Given the Clerk Self Test user has progressed to the Switch on your camera and microphone page
+Scenario: Judge switch on camera and microphone
+	Given the Judge Self Test user has progressed to the Switch on your camera and microphone page
 	Then contact us details are available
 	When the user clicks the Switch on button
 	Then the camera and microphone turned on success message appears

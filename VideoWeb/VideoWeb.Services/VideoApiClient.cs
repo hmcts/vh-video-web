@@ -6509,6 +6509,45 @@ namespace VideoWeb.Services.Video
     
     }
     
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public enum EndpointState
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"NotYetJoined")]
+        NotYetJoined = 0,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Connected")]
+        Connected = 1,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Disconnected")]
+        Disconnected = 2,
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class EndpointResponse 
+    {
+        /// <summary>The endpoint id</summary>
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid Id { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Display_name { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("sip_address", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Sip_address { get; set; }
+    
+        /// <summary>The endpoint pin</summary>
+        [Newtonsoft.Json.JsonProperty("pin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Pin { get; set; }
+    
+        /// <summary>The current endpoint status</summary>
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public EndpointState Status { get; set; }
+    
+    
+    }
+    
     /// <summary>Represents the meeting room</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
     public partial class MeetingRoomResponse 
@@ -6570,6 +6609,10 @@ namespace VideoWeb.Services.Video
         /// <summary>List of participants in conference</summary>
         [Newtonsoft.Json.JsonProperty("participants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.List<ParticipantDetailsResponse> Participants { get; set; }
+    
+        /// <summary>List of endpoints in conference</summary>
+        [Newtonsoft.Json.JsonProperty("endpoints", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.List<EndpointResponse> Endpoints { get; set; }
     
         [Newtonsoft.Json.JsonProperty("meeting_room", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public MeetingRoomResponse Meeting_room { get; set; }
@@ -6753,6 +6796,9 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonProperty("participants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.List<ParticipantForJudgeResponse> Participants { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("number_of_endpoints", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int Number_of_endpoints { get; set; }
+    
     
     }
     
@@ -6917,45 +6963,6 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonProperty("answer", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public ConsultationAnswer? Answer { get; set; }
-    
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
-    public enum EndpointState
-    {
-        [System.Runtime.Serialization.EnumMember(Value = @"NotYetJoined")]
-        NotYetJoined = 0,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Connected")]
-        Connected = 1,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Disconnected")]
-        Disconnected = 2,
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
-    public partial class EndpointResponse 
-    {
-        /// <summary>The endpoint id</summary>
-        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Guid Id { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Display_name { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("sip_address", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Sip_address { get; set; }
-    
-        /// <summary>The endpoint pin</summary>
-        [Newtonsoft.Json.JsonProperty("pin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Pin { get; set; }
-    
-        /// <summary>The current endpoint status</summary>
-        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public EndpointState Status { get; set; }
     
     
     }

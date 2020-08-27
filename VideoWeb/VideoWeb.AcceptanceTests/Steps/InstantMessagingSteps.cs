@@ -8,18 +8,19 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Assertions;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.Services.TestApi;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
     public class InstantMessagingSteps
     {
-        private readonly Dictionary<string, UserBrowser> _browsers;
+        private readonly Dictionary<User, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly BrowserSteps _browserSteps;
         private readonly List<ChatMessage> _messages;
 
-        public InstantMessagingSteps(Dictionary<string, UserBrowser> browsers, TestContext c, BrowserSteps browserSteps)
+        public InstantMessagingSteps(Dictionary<User, UserBrowser> browsers, TestContext c, BrowserSteps browserSteps)
         {
             _browsers = browsers;
             _c = c;
@@ -62,27 +63,27 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void OpenChatWindow(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            _browsers[_c.CurrentUser.Key].Click(InstantMessagePage.OpenChat);
+            _browsers[_c.CurrentUser].Click(InstantMessagePage.OpenChat);
         }
 
         [When(@"the (.*) user closes the chat window")]
         public void WhenTheUserClosesTheChatWindow(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            _browsers[_c.CurrentUser.Key].Click(InstantMessagePage.CloseChat);
+            _browsers[_c.CurrentUser].Click(InstantMessagePage.CloseChat);
         }
 
         [Then(@"the user can no longer see the messages")]
         public void ThenTheUserCanNoLongerSeeTheMessages()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementNotVisible(InstantMessagePage.SendNewMessageButton).Should().BeTrue();
+            _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(InstantMessagePage.SendNewMessageButton).Should().BeTrue();
         }
 
         [Then(@"the (.*) user can see the message")]
         public void ThenTheUserCanSeeTheMessage(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            var chatMessages = new GetChatMessages(_browsers[_c.CurrentUser.Key]).WaitFor(_messages.Count).Fetch();
+            var chatMessages = new GetChatMessages(_browsers[_c.CurrentUser]).WaitFor(_messages.Count).Fetch();
             chatMessages.Count.Should().BePositive();
             AssertChatMessage.Assert(_messages.Last(), chatMessages.Last(), _c.TimeZone);
         }
@@ -91,7 +92,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheUserCanSeeTheNotificationForTheMessage(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            var newMessagesCount = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(InstantMessagePage.UnreadMessagesBadge).GetAttribute("data-badge");
+            var newMessagesCount = _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(InstantMessagePage.UnreadMessagesBadge).GetAttribute("data-badge");
             int.Parse(newMessagesCount).Should().BePositive();
         }
 
@@ -117,29 +118,29 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"they can see all the messages")]
         public void ThenTheyCanSeeAllTheMessages()
         {
-            CheckMessagesAreAllDisplayed("Clerk");
+            CheckMessagesAreAllDisplayed("Judge");
             CheckMessagesAreAllDisplayed("Video Hearings Officer");
         }
 
         private void SelectTheHearing()
         {
-            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
+            _browsers[_c.CurrentUser].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
         }
 
         private void SelectTheHearingsTab()
         {
-            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.HearingsTabButton);
+            _browsers[_c.CurrentUser].Click(VhoHearingListPage.HearingsTabButton);
         }
 
         private void SelectTheMessagesTab()
         {
-            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.MessagesTabButton);
+            _browsers[_c.CurrentUser].Click(VhoHearingListPage.MessagesTabButton);
         }
 
         private void SelectTheUser(string user)
         {
             var participantId = _c.Test.Conference.Participants.First(x => x.Display_name.ToLower().Contains(user.ToLower())).Id;
-            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.SelectParticipantToMessage(participantId));
+            _browsers[_c.CurrentUser].Click(VhoHearingListPage.SelectParticipantToMessage(participantId));
         }
 
         private void SendNewMessage()
@@ -151,20 +152,20 @@ namespace VideoWeb.AcceptanceTests.Steps
                 Sender = sender,
                 Time = _c.TimeZone.Adjust(DateTime.Now).ToShortTimeString()
             });
-            _browsers[_c.CurrentUser.Key].Click(InstantMessagePage.SendNewMessageTextBox);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(InstantMessagePage.SendNewMessageTextBox).SendKeys(_messages.Last().Message);
-            _browsers[_c.CurrentUser.Key].Click(InstantMessagePage.SendNewMessageButton);
+            _browsers[_c.CurrentUser].Click(InstantMessagePage.SendNewMessageTextBox);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(InstantMessagePage.SendNewMessageTextBox).SendKeys(_messages.Last().Message);
+            _browsers[_c.CurrentUser].Click(InstantMessagePage.SendNewMessageButton);
         }
 
         private string GetSenderNameFormat()
         {
-            return _c.CurrentUser.Role.ToLower().Equals("video hearings officer") ? _c.CurrentUser.Firstname : _c.CurrentUser.DisplayName;
+            return _c.CurrentUser.User_type == UserType.VideoHearingsOfficer ? _c.CurrentUser.First_name : _c.CurrentUser.Display_name;
         }
 
         private void CheckMessagesAreAllDisplayed(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            var chatMessages = new GetChatMessages(_browsers[_c.CurrentUser.Key]).WaitFor(_messages.Count).Fetch();
+            var chatMessages = new GetChatMessages(_browsers[_c.CurrentUser]).WaitFor(_messages.Count).Fetch();
             chatMessages.Count.Should().Be(_messages.Count);
             AssertChatMessage.AssertAll(_messages, chatMessages);
         }

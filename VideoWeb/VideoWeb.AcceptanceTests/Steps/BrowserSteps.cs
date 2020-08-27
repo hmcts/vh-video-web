@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AcceptanceTests.Common.Configuration.Users;
 using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Enums;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.Services.TestApi;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -14,9 +14,9 @@ namespace VideoWeb.AcceptanceTests.Steps
     public class BrowserSteps
     {
         private readonly TestContext _c;
-        private readonly Dictionary<string, UserBrowser> _browsers;
+        private readonly Dictionary<User, UserBrowser> _browsers;
 
-        public BrowserSteps(TestContext testContext, Dictionary<string, UserBrowser> browsers)
+        public BrowserSteps(TestContext testContext, Dictionary<User, UserBrowser> browsers)
         {
             _c = testContext;
             _browsers = browsers;
@@ -36,7 +36,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .SetTargetBrowser(_c.VideoWebConfig.TestConfig.TargetBrowser)
                 .SetDriver(_c.Driver);
 
-            _browsers.Add(_c.CurrentUser.Key, browser);
+            _browsers.Add(_c.CurrentUser, browser);
 
             browser.LaunchBrowser();
             browser.NavigateToPage();
@@ -50,16 +50,25 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"in (.*)'s browser")]
         public void GivenInTheUsersBrowser(string user)
         {
-            SwitchCurrentUser(user.Replace("the ", ""));
-            _browsers[_c.CurrentUser.Key].Driver.SwitchTo().Window(_browsers[_c.CurrentUser.Key].LastWindowName);
+            SwitchCurrentUser(user);
+
+            _browsers[_c.CurrentUser].Driver.SwitchTo().Window(_browsers[_c.CurrentUser].LastWindowName);
         }
 
         private void SwitchCurrentUser(string user)
         {
             if (_c.CurrentUser != null)
-                _browsers[_c.CurrentUser.Key].LastWindowName = _browsers[_c.CurrentUser.Key].Driver.WrappedDriver.WindowHandles.Last();
+                _browsers[_c.CurrentUser].LastWindowName = _browsers[_c.CurrentUser].Driver.WrappedDriver.WindowHandles.Last();
 
-            _c.CurrentUser = UserIsParticipant(user) ? GetDefaultParticipant() : GetMatchingDisplayName(user);
+            if (user.Contains("the"))
+            {
+                var number = user.Split(" ")[1].Trim();
+                _c.CurrentUser = Users.GetUser(_c.Test.Users, number, user);
+            }
+            else
+            {
+                _c.CurrentUser = UserIsParticipant(user) ? GetDefaultParticipant() : GetMatchingDisplayName(user);
+            }
 
             if (_c.CurrentUser == null)
                 throw new ArgumentOutOfRangeException($"There are no users configured called '{user}'");
@@ -70,38 +79,38 @@ namespace VideoWeb.AcceptanceTests.Steps
             return user.ToLower().Equals("participant");
         }
 
-        private UserAccount GetDefaultParticipant()
+        private User GetDefaultParticipant()
         {
-            return UserManager.GetDefaultParticipantUser(_c.UserAccounts);
+            return Users.GetDefaultParticipantUser(_c.Test.Users);
         }
 
-        private UserAccount GetMatchingDisplayName(string user)
+        private User GetMatchingDisplayName(string user)
         {
-            return UserManager.GetUserFromDisplayName(_c.UserAccounts, user);
+            return Users.GetUserFromDisplayName(_c.Test.Users, user);
         }
 
         [When(@"switches to the (.*) tab")]
         public void WhenSwitchesToTheNewTab(string url)
         {
-            _browsers[_c.CurrentUser.Key].LastWindowName = _browsers[_c.CurrentUser.Key].SwitchTab(url);
+            _browsers[_c.CurrentUser].LastWindowName = _browsers[_c.CurrentUser].SwitchTab(url);
         }
 
         [Then(@"the user is on the (.*) page")]
         public void ThenTheUserIsOnThePage(string page)
         {
-            _browsers[_c.CurrentUser.Key].PageUrl(Page.FromString(page).Url);
+            _browsers[_c.CurrentUser].PageUrl(Page.FromString(page).Url);
         }
 
         [Then(@"the user is not on the (.*) page")]
         public void ThenTheUserIsNotOnThePage(string page)
         {
-            _browsers[_c.CurrentUser.Key].PageUrl(page);
+            _browsers[_c.CurrentUser].PageUrl(page);
         }
 
         [When(@"the user refreshes the page")]
         public void WhenTheUserRefreshesThePage()
         {
-            _browsers[_c.CurrentUser.Key].Refresh();
+            _browsers[_c.CurrentUser].Refresh();
         }
     }
 }

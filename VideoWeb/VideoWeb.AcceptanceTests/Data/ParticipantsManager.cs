@@ -10,7 +10,7 @@ namespace VideoWeb.AcceptanceTests.Data
     {
         public static List<ParticipantResponse> GetParticipantsFromRole(List<ParticipantResponse> hearingParticipants, string userRole)
         {
-            userRole = ChangeClerkForJudge(userRole);
+            userRole = ChangeJudgeForJudge(userRole);
             var participants = userRole.ToLower().Equals("participants") ? hearingParticipants.FindAll(x => x.User_role_name == "Individual" || x.User_role_name == "Representative") : hearingParticipants.FindAll(x => x.User_role_name == EnsureRoleTypeHasCapitalLetter(userRole));
             participants.Should().NotBeNullOrEmpty($"No participants with role {userRole} found");
             return participants;
@@ -18,7 +18,7 @@ namespace VideoWeb.AcceptanceTests.Data
 
         public static List<ParticipantDetailsResponse> GetParticipantsFromRole(List<ParticipantDetailsResponse> conferenceParticipants, string userRole)
         {
-            userRole = ChangeClerkForJudge(userRole);
+            userRole = ChangeJudgeForJudge(userRole);
             List<ParticipantDetailsResponse> participants;
             if (userRole.ToLower().Equals("participants"))
             {
@@ -35,9 +35,9 @@ namespace VideoWeb.AcceptanceTests.Data
             return participants;
         }
 
-        private static string ChangeClerkForJudge(string userRole)
+        private static string ChangeJudgeForJudge(string userRole)
         {
-            return userRole.ToLower().Replace("clerk", "Judge");
+            return userRole.ToLower().Replace("Judge", "Judge");
         }
 
         private static string EnsureRoleTypeHasCapitalLetter(string userRole)

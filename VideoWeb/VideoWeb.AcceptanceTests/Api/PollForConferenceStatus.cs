@@ -8,14 +8,14 @@ namespace VideoWeb.AcceptanceTests.Api
 {
     public class PollForConferenceStatus
     {
-        private readonly VideoApiManager _videoApi;
+        private readonly TestApiManager _api;
         private Guid _conferenceId;
         private ConferenceState _expectedState;
         private int _maxRetries = 5;
 
-        public PollForConferenceStatus(VideoApiManager videoApi)
+        public PollForConferenceStatus(TestApiManager api)
         {
-            _videoApi = videoApi;
+            _api = api;
         }
 
         public PollForConferenceStatus WithConferenceId(Guid conferenceId)
@@ -38,13 +38,13 @@ namespace VideoWeb.AcceptanceTests.Api
 
         public ConferenceState Poll()
         {
-            if (_videoApi == null || _conferenceId == Guid.Empty)
+            if (_api == null || _conferenceId == Guid.Empty)
                 throw new DataMisalignedException("Video api or conference Id must be set");
 
             var actualState = ConferenceState.NotStarted;
             for (var i = 0; i < _maxRetries; i++)
             {
-                var response = _videoApi.GetConferenceByConferenceId(_conferenceId);
+                var response = _api.GetConferenceByConferenceId(_conferenceId);
                 var conference = RequestHelper.Deserialise<ConferenceDetailsResponse>(response.Content);
                 if (conference != null)
                 {

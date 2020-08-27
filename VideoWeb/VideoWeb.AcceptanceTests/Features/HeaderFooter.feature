@@ -4,8 +4,8 @@ Feature: Header and Footer
 	I want to be able to see and access external pages from the header and footer
 
 @VIH-4090
-Scenario: Clerk beta banner
-	Given the Clerk user has progressed to the Hearing List page
+Scenario: Judge beta banner
+	Given the Judge user has progressed to the Hearing List page
 	Then the banner should not be displayed
 
 @VIH-4090
@@ -17,8 +17,8 @@ Scenario: Participant beta banner
 	Then the user is on the Feedback page 
 
 @VIH-4701
-Scenario: Clerk privacy policy page
-	Given the Clerk user has progressed to the Hearing List page
+Scenario: Judge privacy policy page
+	Given the Judge user has progressed to the Hearing List page
 	When the user clicks the Privacy policy link
 	And switches to the privacy tab
 	Then the user is on the Privacy Policy page 
@@ -31,8 +31,8 @@ Scenario: Participant privacy page
 	Then the user is on the Privacy Policy page 
 
 @VIH-5023
-Scenario: Clerk accessibility statement
-	Given the Clerk user has progressed to the Hearing List page
+Scenario: Judge accessibility statement
+	Given the Judge user has progressed to the Hearing List page
 	When the user clicks the Accessibility link
 	Then the user is on the Accessibility page 
 
@@ -43,8 +43,8 @@ Scenario: Participant accessibility statement
 	Then the user is on the Accessibility page 
 
 @VIH-4090
-Scenario: Clerk open government licence
-	Given the Clerk user has progressed to the Hearing List page
+Scenario: Judge open government licence
+	Given the Judge user has progressed to the Hearing List page
 	When the user clicks the Open Government Licence link
 	Then the user is on the Open Government Licence page 
 

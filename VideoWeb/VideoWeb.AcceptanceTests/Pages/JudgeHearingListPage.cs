@@ -4,7 +4,7 @@ using OpenQA.Selenium;
 
 namespace VideoWeb.AcceptanceTests.Pages
 {
-    public static class ClerkHearingListPage
+    public static class JudgeHearingListPage
     {
         public static By NoHearingsWarningMessage = CommonLocators.ElementContainingText("You have no video hearings");
         public static By HearingListTitle = CommonLocators.ElementContainingText("Video hearings for");
