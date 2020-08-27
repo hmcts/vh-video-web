@@ -65,9 +65,10 @@ namespace VideoWeb.UnitTests
         private static ConferenceDetailsResponse CreateConferenceResponse()
         {
             var participants = Builder<ParticipantDetailsResponse>.CreateListOfSize(2).Build().ToList();
-
+            var endpoints = Builder<EndpointResponse>.CreateListOfSize(2).Build().ToList();
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
                 .With(x => x.Participants = participants)
+                .With(x => x.Endpoints = endpoints)
                 .Build();
             return conference;
         }

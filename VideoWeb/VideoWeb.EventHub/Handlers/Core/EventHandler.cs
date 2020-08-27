@@ -9,10 +9,4 @@ namespace VideoWeb.EventHub.Handlers.Core
         EventType EventType { get; }
         Task HandleAsync(CallbackEvent callbackEvent);
     }
-
-    public abstract class EventHandler : IEventHandler
-    {
-        public abstract EventType EventType { get; }
-        public abstract Task HandleAsync(CallbackEvent callbackEvent);
-    }
 }
