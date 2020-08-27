@@ -15,6 +15,6 @@ namespace VideoWeb.AcceptanceTests.Helpers
         public string RespondentIndividual { get; set; }
         public string RespondentRep { get; set; }
         public string RespondentRepresentee { get; set; }
-        public int ParticipantCount { get; set; }
+        public string ParticipantCount { get; set; }
     }
 }

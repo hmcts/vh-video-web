@@ -6753,6 +6753,9 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonProperty("participants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.List<ParticipantForJudgeResponse> Participants { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("number_of_endpoints", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int Number_of_endpoints { get; set; }
+    
     
     }
     
