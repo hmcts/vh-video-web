@@ -52,7 +52,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             {
                 Id = Guid.NewGuid(),
                 HearingId = Guid.NewGuid(),
-                Participants = new List<Participant>()
+                Participants = new List<Participant>
                 {
                     Builder<Participant>.CreateNew()
                         .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid()).With(x => x.Username = "one")
@@ -69,7 +69,13 @@ namespace VideoWeb.UnitTests.EventHandlers
                     Builder<Participant>.CreateNew()
                         .With(x => x.Role = Role.Representative).With(x => x.Id = Guid.NewGuid()).With(x => x.Username = "five")
                         .Build()
-                }
+                },
+                Endpoints = new List<Endpoint>
+                {
+                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP1").Build(),
+                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP2").Build()
+                },
+                HearingVenueName = "Automated unit test venue"
             };
         }
     }

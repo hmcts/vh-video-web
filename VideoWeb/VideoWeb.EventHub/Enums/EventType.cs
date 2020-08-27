@@ -18,6 +18,8 @@ namespace VideoWeb.EventHub.Enums
         VhoCall,
         ParticipantNotSignedIn,
         Start,
-        CountdownFinished
+        CountdownFinished,
+        EndpointJoined,
+        EndpointDisconnected
     }
 }

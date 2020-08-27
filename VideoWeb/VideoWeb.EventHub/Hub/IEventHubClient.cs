@@ -8,6 +8,7 @@ namespace VideoWeb.EventHub.Hub
     public interface IEventHubClient
     {
         Task ParticipantStatusMessage(Guid participantId, string username, Guid conferenceId, ParticipantState participantState);
+        Task EndpointStatusMessage(Guid endpointId, Guid conferenceId, EndpointState endpointState);
         Task ConferenceStatusMessage(Guid conferenceId, ConferenceStatus conferenceState);
         Task CountdownFinished(Guid conferenceId);
         Task ConsultationMessage(Guid conferenceId, string requestedBy, string requestedFor, ConsultationAnswer? result);
