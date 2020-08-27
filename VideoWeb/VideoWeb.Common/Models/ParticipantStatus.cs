@@ -14,14 +14,4 @@ namespace VideoWeb.Common.Models
         InConsultation = 6,
         Disconnected = 7
     }
-    
-    /// <summary>
-    /// Known states of an endpoint
-    /// </summary>
-    public enum EndpointStatus
-    {
-        NotYetJoined = 1,
-        Connected = 2,
-        Disconnected = 3
-    }
 }
