@@ -7,8 +7,7 @@ import {
     ParticipantStatus,
     Role,
     UpdateParticipantRequest,
-    VideoEndpointResponse,
-    EndpointStatus
+    VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';

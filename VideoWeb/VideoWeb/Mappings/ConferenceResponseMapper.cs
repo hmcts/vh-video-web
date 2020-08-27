@@ -24,6 +24,7 @@ namespace VideoWeb.Mappings
                 .Select(x => ParticipantResponseMapper.MapParticipantToResponseModel(x))
                 .ToList();
 
+            conference.Endpoints ??= new List<EndpointResponse>();
             var endpoints = conference.Endpoints.Select(x => EndpointsResponseMapper.Map(x)).ToList();
 
             var response = new ConferenceResponse
