@@ -12,11 +12,6 @@ namespace VideoWeb.Mappings
     {
         public static ConferenceResponse MapConferenceDetailsToResponseModel(ConferenceDetailsResponse conference)
         {
-            if (!Enum.TryParse(conference.Current_status.ToString(), true, out ConferenceStatus status))
-            {
-                status = ConferenceStatus.NotStarted;
-            }
-
             var response = new ConferenceResponse
             {
                 Id = conference.Id,
@@ -25,7 +20,7 @@ namespace VideoWeb.Mappings
                 CaseType = conference.Case_type,
                 ScheduledDateTime = conference.Scheduled_date_time,
                 ScheduledDuration = conference.Scheduled_duration,
-                Status = status,
+                Status = GetStatus(conference.Current_status),
                 Participants = MapParticipants(conference),
                 ClosedDateTime = conference.Closed_date_time,
                 HearingVenueName = conference.Hearing_venue_name,
@@ -46,38 +41,25 @@ namespace VideoWeb.Mappings
                 if (tiledParticipants.Count > 4)
                 {
                     // If the number of participants is more than 4, then simply increment the tile numbers
-                    var position = 1;
-                    foreach (var participant in response.Participants)
-                    {
-                        if (participant.Role == Role.Judge)
-                        {
-                            participant.TiledDisplayName = GetTiledDisplayName(participant, 0);
-                        }
-                        else
-                        {
-                            participant.TiledDisplayName = GetTiledDisplayName(participant, position);
-                            position++;
-                        }
-                    }
+                    TiledParticipantGreaterThanFour(response.Participants);
                 }
                 else
                 {
-                    var partyGroups = tiledParticipants.GroupBy(x => x.Case_type_group).ToList();
-                    foreach (var group in partyGroups)
-                    {
-                        var pats = group.ToList();
-                        var position = partyGroups.IndexOf(group) + 1;
-                        foreach (var p in pats)
-                        {
-                            var participant = response.Participants.Find(x => x.Id == p.Id);
-                            participant.TiledDisplayName = GetTiledDisplayName(participant, position);
-                            position += 2;
-                        }
-                    }
+                    TiledParticipants(response.Participants, tiledParticipants);
                 }
             }
 
             return response;
+        }
+
+        private static ConferenceStatus GetStatus(ConferenceState state)
+        {
+            if (!Enum.TryParse(state.ToString(), true, out ConferenceStatus status))
+            {
+                status = ConferenceStatus.NotStarted;
+            }
+
+            return status;
         }
 
         private static string GetTiledDisplayName(ParticipantResponse participant, int position)
@@ -105,6 +87,40 @@ namespace VideoWeb.Mappings
             return conference.Participants.Where(x =>
              x.User_role == UserRole.Individual || x.User_role == UserRole.Representative).ToList();
         }
-       
+
+        private static void TiledParticipantGreaterThanFour(List<ParticipantResponse> participants)
+        {
+            // If the number of participants is more than 4, then simply increment the tile numbers
+            var position = 1;
+            foreach (var participant in participants)
+            {
+                if (participant.Role == Role.Judge)
+                {
+                    participant.TiledDisplayName = GetTiledDisplayName(participant, 0);
+                }
+                else
+                {
+                    participant.TiledDisplayName = GetTiledDisplayName(participant, position);
+                    position++;
+                }
+            }
+        }
+
+        private static void TiledParticipants(List<ParticipantResponse> participants, List<ParticipantDetailsResponse> tiledParticipants)
+        {
+            var partyGroups = tiledParticipants.GroupBy(x => x.Case_type_group).ToList();
+            foreach (var group in partyGroups)
+            {
+                var pats = group.ToList();
+                var position = partyGroups.IndexOf(group) + 1;
+                foreach (var p in pats)
+                {
+                    var participant = participants.Find(x => x.Id == p.Id);
+                    participant.TiledDisplayName = GetTiledDisplayName(participant, position);
+                    position += 2;
+                }
+            }
+        }
+
     }
 }
