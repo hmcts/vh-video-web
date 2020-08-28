@@ -1,9 +1,4 @@
 <div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <h2 class="govuk-heading-m">Participants ({{ getNumberParticipants }})</h2>
-    </div>
-  </div>
   <div id="p-row-{{ judge.id }}" class="govuk-grid-row">
     <div class="govuk-grid-column-one-half vh-mb5">
       <div class="govuk-heading-m govuk-!-margin-bottom-0">Judge</div>
@@ -26,7 +21,7 @@
   <div *ngIf="panelMembers.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">Panel members</h2>
+        <h2 class="govuk-heading-s">Panel members ({{ panelMembers.length }})</h2>
       </div>
     </div>
     <div class="vh-border">
@@ -42,7 +37,7 @@
   <div *ngIf="nonJugdeParticipants.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">Participants</h2>
+        <h2 class="govuk-heading-s">Participants ({{ nonJugdeParticipants.length }})</h2>
       </div>
     </div>
     <div class="vh-border">
@@ -70,10 +65,26 @@
     </div>
   </div>
 
+  <div *ngIf="endpoints.length > 0">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h2 class="govuk-heading-s">Video access points ({{ endpoints.length }})</h2>
+      </div>
+    </div>
+    <div class="vh-border">
+      <div *ngFor="let endpoint of endpoints; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
+        <div id="p-row-{{ endpoint.id }}-endpoints" class="govuk-grid-column-full">
+          <p id="p-{{ endpoint.id }}-name-endpoints" class="govuk-heading-s govuk-!-margin-bottom-0">{{ endpoint.display_name }}</p>
+          <div class="vh-line" *ngIf="!lastItem"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div *ngIf="observers.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">Observers</h2>
+        <h2 class="govuk-heading-s">Observers ({{ observers.length }})</h2>
       </div>
     </div>
     <div class="vh-border">
