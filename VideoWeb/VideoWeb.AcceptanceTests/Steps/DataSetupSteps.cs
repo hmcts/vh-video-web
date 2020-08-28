@@ -166,7 +166,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private static List<UserType> CreateUserTypes(int individualsAndRepresentatives = DEFAULT_INDIVIDUALS_WITH_REPRESENTATIVES
             , int observers = DEFAULT_OBSERVERS, int panelMembers = DEFAULT_PANEL_MEMBERS)
         {
-            var userTypes = new List<UserType> { UserType.Judge, UserType.VideoHearingsOfficer, UserType.CaseAdmin };
+            var userTypes = new List<UserType> { UserType.Judge, UserType.VideoHearingsOfficer };
 
             for (var i = 0; i < individualsAndRepresentatives; i++)
             {
