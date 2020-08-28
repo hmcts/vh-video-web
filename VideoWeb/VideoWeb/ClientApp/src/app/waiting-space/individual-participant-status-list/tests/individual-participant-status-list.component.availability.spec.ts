@@ -147,10 +147,13 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
         participantStatusSubject.next(payload);
         expect(consultationService.clearModals).toHaveBeenCalledTimes(1);
     });
-    it('should show observers, panel members and participants', () => {
+    it('should show observers, panel members, endpoints and participants', () => {
         participantsObserverPanelMember.forEach(x => {
             component.conference.participants.push(x);
         });
+        const endpoints = new ConferenceTestData().getListOfEndpoints();
+        conference.endpoints = endpoints;
+
         component.ngOnInit();
 
         expect(component.nonJugdeParticipants).toBeDefined();
@@ -162,5 +165,7 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
         expect(component.panelMembers.length).toBe(1);
 
         expect(component.getNumberParticipants).toBe(5);
+        expect(component.endpoints).toBeDefined();
+        expect(component.endpoints.length).toBe(2);
     });
 });
