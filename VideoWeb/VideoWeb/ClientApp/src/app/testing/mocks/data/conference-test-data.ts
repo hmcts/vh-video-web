@@ -6,6 +6,7 @@ import {
     ConferenceResponse,
     ConferenceResponseVho,
     ConferenceStatus,
+    EndpointStatus,
     ParticipantContactDetailsResponseVho,
     ParticipantForUserResponse,
     ParticipantHeartbeatResponse,
@@ -15,13 +16,17 @@ import {
     SelfTestPexipResponse,
     TaskResponse,
     TaskType,
-    VideoEndpointResponse,
-    EndpointStatus
+    VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { AlertFilter, AlertsStatus, HearingsFilter, StatusFilter } from '../../../shared/models/hearings-filter';
 
 export class ConferenceTestData {
+    asConferenceResponseVho(confResponse: ConferenceResponse): ConferenceResponseVho {
+        confResponse.endpoints = undefined;
+        return new ConferenceResponseVho(confResponse);
+    }
+
     getConferenceNow(): ConferenceForVhOfficerResponse {
         const currentDateTime = new Date();
         const conference = new ConferenceForVhOfficerResponse({
@@ -148,24 +153,24 @@ export class ConferenceTestData {
         return testData;
     }
 
-    getConferenceDetailFuture(): ConferenceResponseVho {
+    getConferenceDetailFuture(): ConferenceResponse {
         const futureDate = new Date(new Date().toUTCString());
         futureDate.setUTCHours(futureDate.getUTCHours() + 26);
         return this.initConferenceDetails(futureDate);
     }
 
-    getConferenceDetailNow(): ConferenceResponseVho {
+    getConferenceDetailNow(): ConferenceResponse {
         const now = new Date(new Date().toUTCString());
         return this.initConferenceDetails(now);
     }
 
-    getConferenceDetailPast(): ConferenceResponseVho {
+    getConferenceDetailPast(): ConferenceResponse {
         const date = new Date(new Date().toUTCString());
         date.setUTCHours(date.getUTCHours() - 26);
         return this.initConferenceDetails(date);
     }
 
-    private initConferenceDetails(scheduledDateTime): ConferenceResponseVho {
+    private initConferenceDetails(scheduledDateTime): ConferenceResponse {
         const participants = this.getListOfParticipantDetails();
         const conference = new ConferenceResponse({
             id: '612AB52C-BDA5-4F4D-95B8-3F49065219A6',
@@ -178,7 +183,8 @@ export class ConferenceTestData {
             participants: participants,
             participant_uri: 'participant@kinly.com',
             pexip_node_uri: 'node@kinly.com',
-            hearing_venue_name: 'venue name'
+            hearing_venue_name: 'venue name',
+            endpoints: this.getListOfEndpoints()
         });
 
         return conference;

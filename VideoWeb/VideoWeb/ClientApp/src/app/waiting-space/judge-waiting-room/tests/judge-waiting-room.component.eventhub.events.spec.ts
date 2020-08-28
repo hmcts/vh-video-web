@@ -2,6 +2,7 @@ import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { Guid } from 'guid-typescript';
+import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -10,7 +11,8 @@ import {
     ParticipantResponse,
     ParticipantStatus,
     Role,
-    TokenResponse
+    TokenResponse,
+    EndpointStatus
 } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
@@ -20,18 +22,24 @@ import { ConferenceStatusMessage } from 'src/app/services/models/conference-stat
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { eventsServiceSpy, hearingStatusSubjectMock, participantStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
+import {
+    endpointStatusSubjectMock,
+    eventsServiceSpy,
+    hearingStatusSubjectMock,
+    participantStatusSubjectMock
+} from 'src/app/testing/mocks/mock-events-service';
 import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
-import { pageUrls } from 'src/app/shared/page-url.constants';
-import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
+import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
-    const gloalConference = new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse;
+    const gloalConference = new ConferenceTestData().getConferenceDetailPast();
     const globalParticipant = gloalConference.participants.filter(x => x.role === Role.Individual)[0];
+    const globalEndpoint = gloalConference.endpoints[0];
     const videoCallService = videoCallServiceSpy;
 
     const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: gloalConference.id }) } };
@@ -39,6 +47,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     const eventsService = eventsServiceSpy;
     const hearingStatusSubject = hearingStatusSubjectMock;
     const participantStatusSubject = participantStatusSubjectMock;
+    const endpointStatusSubject = endpointStatusSubjectMock;
 
     let adalService: jasmine.SpyObj<AdalService>;
     let errorService: jasmine.SpyObj<ErrorService>;
@@ -164,5 +173,35 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         const participant = component.hearing.getConference().participants.find(x => x.id === message.participantId);
         expect(participant.status === message.status).toBeFalsy();
+    }));
+
+    it('should ignore endpoint updates for another conference', fakeAsync(() => {
+        const status = EndpointStatus.Disconnected;
+        const message = new EndpointStatusMessage(globalEndpoint.id, Guid.create().toString(), status);
+
+        endpointStatusSubject.next(message);
+
+        const endpoint = component.hearing.getEndpoints().find(x => x.id === message.endpointId);
+        expect(endpoint.status === message.status).toBeFalsy();
+    }));
+
+    it('should ignore endpoint updates for not in conference', fakeAsync(() => {
+        const status = EndpointStatus.Disconnected;
+        const message = new EndpointStatusMessage(Guid.create().toString(), gloalConference.id, status);
+
+        endpointStatusSubject.next(message);
+
+        const endpoints = component.hearing.getEndpoints().filter(x => x.status === status);
+        expect(endpoints.length).toBe(0);
+    }));
+
+    it('should updates endpoint in conference', fakeAsync(() => {
+        const status = EndpointStatus.Disconnected;
+        const message = new EndpointStatusMessage(globalEndpoint.id, gloalConference.id, status);
+
+        endpointStatusSubject.next(message);
+
+        const endpoint = component.hearing.getEndpoints().find(x => x.id === message.endpointId);
+        expect(endpoint.status === message.status).toBeTruthy();
     }));
 });

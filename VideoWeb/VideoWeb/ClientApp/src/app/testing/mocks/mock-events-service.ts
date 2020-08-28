@@ -1,16 +1,18 @@
-import { EventsService } from 'src/app/services/events.service';
 import { Subject } from 'rxjs';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { EventsService } from 'src/app/services/events.service';
 import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
+import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ParticipantHeartbeat } from 'src/app/services/models/participant-heartbeat';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 
 export let eventsServiceSpy: jasmine.SpyObj<EventsService>;
 
 export const hearingStatusSubjectMock = new Subject<ConferenceStatusMessage>();
 export const participantStatusSubjectMock = new Subject<ParticipantStatusMessage>();
+export const endpointStatusSubjectMock = new Subject<EndpointStatusMessage>();
 export const hearingCountdownCompleteSubjectMock = new Subject<string>();
 export const adminConsultationMessageSubjectMock = new Subject<AdminConsultationMessage>();
 export const eventHubDisconnectSubjectMock = new Subject<number>();
@@ -23,6 +25,7 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', [
     'start',
     'getHearingStatusMessage',
     'getParticipantStatusMessage',
+    'getEndpointStatusMessage',
     'getHearingCountdownCompleteMessage',
     'getAdminConsultationMessage',
     'getServiceDisconnected',
@@ -36,6 +39,7 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', [
 
 eventsServiceSpy.getHearingStatusMessage.and.returnValue(hearingStatusSubjectMock.asObservable());
 eventsServiceSpy.getParticipantStatusMessage.and.returnValue(participantStatusSubjectMock.asObservable());
+eventsServiceSpy.getEndpointStatusMessage.and.returnValue(endpointStatusSubjectMock.asObservable());
 eventsServiceSpy.getHearingCountdownCompleteMessage.and.returnValue(hearingCountdownCompleteSubjectMock.asObservable());
 eventsServiceSpy.getAdminConsultationMessage.and.returnValue(adminConsultationMessageSubjectMock.asObservable());
 eventsServiceSpy.getServiceDisconnected.and.returnValue(eventHubDisconnectSubjectMock.asObservable());
