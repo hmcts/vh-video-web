@@ -14,7 +14,9 @@ import {
     Role,
     SelfTestPexipResponse,
     TaskResponse,
-    TaskType
+    TaskType,
+    VideoEndpointResponse,
+    EndpointStatus
 } from 'src/app/services/clients/api-client';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { AlertFilter, AlertsStatus, HearingsFilter, StatusFilter } from '../../../shared/models/hearings-filter';
@@ -493,5 +495,22 @@ export class ConferenceTestData {
         participants[2].username = 'pm.green@hearings.net';
 
         return participants;
+    }
+
+    getListOfEndpoints(): VideoEndpointResponse[] {
+        const endpoints: VideoEndpointResponse[] = [];
+        const point1 = new VideoEndpointResponse({
+            display_name: 'DispName1',
+            status: EndpointStatus.NotYetJoined,
+            id: '1232323'
+        });
+        const point2 = new VideoEndpointResponse({
+            display_name: 'DispName2',
+            status: EndpointStatus.Connected,
+            id: '123232355'
+        });
+        endpoints.push(point1);
+        endpoints.push(point2);
+        return endpoints;
     }
 }
