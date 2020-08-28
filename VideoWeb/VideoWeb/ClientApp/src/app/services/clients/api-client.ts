@@ -3266,9 +3266,9 @@ export enum ConferenceStatus {
 }
 
 export enum Role {
+    VideoHearingsOfficer = 'VideoHearingsOfficer',
     None = 'None',
     CaseAdmin = 'CaseAdmin',
-    VideoHearingsOfficer = 'VideoHearingsOfficer',
     HearingFacilitationSupport = 'HearingFacilitationSupport',
     Judge = 'Judge',
     Individual = 'Individual',
@@ -3338,6 +3338,7 @@ export class ConferenceForJudgeResponse implements IConferenceForJudgeResponse {
     status?: ConferenceStatus;
     /** The conference participants */
     participants?: ParticipantForJudgeResponse[] | undefined;
+    number_of_endpoints?: number;
 
     constructor(data?: IConferenceForJudgeResponse) {
         if (data) {
@@ -3360,6 +3361,7 @@ export class ConferenceForJudgeResponse implements IConferenceForJudgeResponse {
                 this.participants = [] as any;
                 for (let item of _data['participants']) this.participants!.push(ParticipantForJudgeResponse.fromJS(item));
             }
+            this.number_of_endpoints = _data['number_of_endpoints'];
         }
     }
 
@@ -3383,6 +3385,7 @@ export class ConferenceForJudgeResponse implements IConferenceForJudgeResponse {
             data['participants'] = [];
             for (let item of this.participants) data['participants'].push(item.toJSON());
         }
+        data['number_of_endpoints'] = this.number_of_endpoints;
         return data;
     }
 }
@@ -3399,6 +3402,7 @@ export interface IConferenceForJudgeResponse {
     status?: ConferenceStatus;
     /** The conference participants */
     participants?: ParticipantForJudgeResponse[] | undefined;
+    number_of_endpoints?: number;
 }
 
 export class ConferenceForIndividualResponse implements IConferenceForIndividualResponse {
@@ -4620,7 +4624,9 @@ export enum EventType {
     VhoCall = 'VhoCall',
     ParticipantNotSignedIn = 'ParticipantNotSignedIn',
     Start = 'Start',
-    CountdownFinished = 'CountdownFinished'
+    CountdownFinished = 'CountdownFinished',
+    EndpointJoined = 'EndpointJoined',
+    EndpointDisconnected = 'EndpointDisconnected'
 }
 
 export class AddMediaEventRequest implements IAddMediaEventRequest {
@@ -4838,6 +4844,8 @@ export class UpdateParticipantRequest implements IUpdateParticipantRequest {
     last_name!: string | undefined;
     display_name!: string | undefined;
     representee?: string | undefined;
+    contact_email?: string | undefined;
+    contact_telephone?: string | undefined;
 
     constructor(data?: IUpdateParticipantRequest) {
         if (data) {
@@ -4854,6 +4862,8 @@ export class UpdateParticipantRequest implements IUpdateParticipantRequest {
             this.last_name = _data['last_name'];
             this.display_name = _data['display_name'];
             this.representee = _data['representee'];
+            this.contact_email = _data['contact_email'];
+            this.contact_telephone = _data['contact_telephone'];
         }
     }
 
@@ -4871,6 +4881,8 @@ export class UpdateParticipantRequest implements IUpdateParticipantRequest {
         data['last_name'] = this.last_name;
         data['display_name'] = this.display_name;
         data['representee'] = this.representee;
+        data['contact_email'] = this.contact_email;
+        data['contact_telephone'] = this.contact_telephone;
         return data;
     }
 }
@@ -4881,6 +4893,8 @@ export interface IUpdateParticipantRequest {
     last_name: string | undefined;
     display_name: string | undefined;
     representee?: string | undefined;
+    contact_email?: string | undefined;
+    contact_telephone?: string | undefined;
 }
 
 export class ParticipantContactDetailsResponseVho implements IParticipantContactDetailsResponseVho {

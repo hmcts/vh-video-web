@@ -45,6 +45,11 @@ namespace VideoWeb.Contract.Responses
         /// The conference participants
         /// </summary>
         public List<ParticipantForJudgeResponse> Participants { get; set; }
+
+        /// <summary>
+        /// The number of hearing endpoints
+        /// </summary>
+        public int NumberOfEndpoints { get; set; }
     }
 
     public class ParticipantForJudgeResponse
