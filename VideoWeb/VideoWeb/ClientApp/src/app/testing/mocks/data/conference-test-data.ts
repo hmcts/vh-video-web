@@ -502,15 +502,11 @@ export class ConferenceTestData {
         const point1 = new VideoEndpointResponse({
             display_name: 'DispName1',
             status: EndpointStatus.NotYetJoined,
-            pin: '1234',
-            sip_address: 'sip1',
             id: '1232323'
         });
         const point2 = new VideoEndpointResponse({
             display_name: 'DispName2',
             status: EndpointStatus.Connected,
-            pin: '12345',
-            sip_address: 'sip2',
             id: '123232355'
         });
         endpoints.push(point1);

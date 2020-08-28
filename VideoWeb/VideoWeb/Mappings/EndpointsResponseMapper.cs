@@ -12,8 +12,6 @@ namespace VideoWeb.Mappings
             {
                 DisplayName = response.Display_name,
                 Id = response.Id,
-                Pin = response.Pin,
-                SipAddress = response.Sip_address,
                 Status = Enum.Parse<EndpointStatus>(response.Status.ToString())
             };
         }

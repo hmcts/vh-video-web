@@ -17,8 +17,6 @@ namespace VideoWeb.UnitTests.Mappings
             result.Should().NotBeNull();
             result.DisplayName.Should().Be(endpoint.Display_name);
             result.Id.Should().Be(endpoint.Id);
-            result.Pin.Should().Be(endpoint.Pin);
-            result.SipAddress.Should().Be(endpoint.Sip_address);
             result.Status.ToString().Should().Be(endpoint.Status.ToString());
         }
     }

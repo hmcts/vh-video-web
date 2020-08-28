@@ -3920,9 +3920,6 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
     /** The endpoint id */
     id?: string;
     display_name?: string | undefined;
-    sip_address?: string | undefined;
-    /** The endpoint pin */
-    pin?: string | undefined;
     /** The current endpoint status */
     status?: EndpointStatus;
 
@@ -3938,8 +3935,6 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
         if (_data) {
             this.id = _data['id'];
             this.display_name = _data['display_name'];
-            this.sip_address = _data['sip_address'];
-            this.pin = _data['pin'];
             this.status = _data['status'];
         }
     }
@@ -3955,8 +3950,6 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
         data = typeof data === 'object' ? data : {};
         data['id'] = this.id;
         data['display_name'] = this.display_name;
-        data['sip_address'] = this.sip_address;
-        data['pin'] = this.pin;
         data['status'] = this.status;
         return data;
     }
@@ -3966,9 +3959,6 @@ export interface IVideoEndpointResponse {
     /** The endpoint id */
     id?: string;
     display_name?: string | undefined;
-    sip_address?: string | undefined;
-    /** The endpoint pin */
-    pin?: string | undefined;
     /** The current endpoint status */
     status?: EndpointStatus;
 }
