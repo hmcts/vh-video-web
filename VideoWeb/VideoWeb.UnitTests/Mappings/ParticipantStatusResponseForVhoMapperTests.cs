@@ -8,7 +8,6 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
-using ParticipantResponse = VideoWeb.Services.Bookings.ParticipantResponse;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -67,30 +66,10 @@ namespace VideoWeb.UnitTests.Mappings
             var results = ParticipantStatusResponseForVhoMapper
                 .MapParticipantsTo(conference, judgesInHearings).ToList();
 
-            AssertResponseItemWithNoBookingParticipants(results.ElementAt(0), conference.Participants[0], conferenceId, false);
+            AssertResponseItem(results.ElementAt(0), conference.Participants[0], conferenceId, false);
         }
         
         private static void AssertResponseItem(ParticipantContactDetailsResponseVho response, Participant participant, 
-            Guid conferenceId, bool isInAnotherHearing)
-        {
-            response.Id.Should().Be(participant.Id);
-            response.ConferenceId.Should().Be(conferenceId);
-            response.Name.Should().Be(participant.Name);
-            response.Role.Should().Be(participant.Role);
-            response.Username.Should().Be(participant.Username);
-            response.CaseTypeGroup.Should().Be(participant.CaseTypeGroup);
-            response.RefId.Should().Be(participant.RefId);
-            response.FirstName.Should().Be(participant.FirstName);
-            response.LastName.Should().Be(participant.LastName);
-            response.DisplayName.Should().Be(participant.DisplayName);
-            response.Status.Should().Be(participant.ParticipantStatus);
-            response.ContactEmail.Should().Be(participant.ContactEmail);
-            response.ContactTelephone.Should().Be(participant.ContactTelephone);
-            response.HearingVenueName.Should().Be("MyVenue");
-            response.JudgeInAnotherHearing.Should().Be(isInAnotherHearing);
-        }
-
-        private static void AssertResponseItemWithNoBookingParticipants(ParticipantContactDetailsResponseVho response, Participant participant,
             Guid conferenceId, bool isInAnotherHearing)
         {
             response.Id.Should().Be(participant.Id);

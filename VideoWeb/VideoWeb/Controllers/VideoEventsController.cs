@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -23,8 +24,8 @@ namespace VideoWeb.Controllers
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<VideoEventsController> _logger;
 
-        public VideoEventsController(IVideoApiClient videoApiClient, 
-            IEventHandlerFactory eventHandlerFactory, IConferenceCache conferenceCache, 
+        public VideoEventsController(IVideoApiClient videoApiClient,
+            IEventHandlerFactory eventHandlerFactory, IConferenceCache conferenceCache,
             ILogger<VideoEventsController> logger)
         {
             _videoApiClient = videoApiClient;
@@ -41,29 +42,24 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                _logger.LogTrace("Received callback from Kinly.");
-                _logger.LogTrace($"ConferenceId: {request.Conference_id}, EventType: {request.Event_type}, Participant ID : {request.Participant_id}");
-                var callbackEvent = CallbackEventMapper.MapConferenceEventToCallbackEventModel(request);
+                var conferenceId = Guid.Parse(request.Conference_id);
+                var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
+                {
+                    _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
 
-                try
-                {
-                    await _conferenceCache.GetOrAddConferenceAsync(callbackEvent.ConferenceId, () =>
-                    {
-                        _logger.LogTrace($"Retrieving conference details for conference: ${callbackEvent.ConferenceId}");
-                    
-                        return _videoApiClient.GetConferenceDetailsByIdAsync(callbackEvent.ConferenceId);
-                    });
-                }
-                catch (VideoApiException e)
-                {
-                    _logger.LogError(e, $"ConferenceId: {request.Conference_id}, ErrorCode: {e.StatusCode}");
-                    
-                    return StatusCode(e.StatusCode, e.Response);
-                }
+                    return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+                });
+
+                
+                _logger.LogTrace("Received callback from Kinly.");
+                _logger.LogTrace(
+                    $"ConferenceId: {request.Conference_id}, EventType: {request.Event_type}, Participant ID : {request.Participant_id}");
+                var callbackEvent = CallbackEventMapper.MapConferenceEventToCallbackEventModel(request, conference);
 
                 if (callbackEvent.EventType != EventType.VhoCall)
                 {
-                    _logger.LogTrace($"Raising video event: ConferenceId: {request.Conference_id}, EventType: {request.Event_type}");
+                    _logger.LogTrace(
+                        $"Raising video event: ConferenceId: {request.Conference_id}, EventType: {request.Event_type}");
                     await _videoApiClient.RaiseVideoEventAsync(request);
                 }
 
