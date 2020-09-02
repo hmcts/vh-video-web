@@ -3266,9 +3266,9 @@ export enum ConferenceStatus {
 }
 
 export enum Role {
-    VideoHearingsOfficer = 'VideoHearingsOfficer',
     None = 'None',
     CaseAdmin = 'CaseAdmin',
+    VideoHearingsOfficer = 'VideoHearingsOfficer',
     HearingFacilitationSupport = 'HearingFacilitationSupport',
     Judge = 'Judge',
     Individual = 'Individual',
@@ -3910,6 +3910,59 @@ export interface IParticipantResponse {
     last_name?: string | undefined;
 }
 
+export enum EndpointStatus {
+    NotYetJoined = 'NotYetJoined',
+    Connected = 'Connected',
+    Disconnected = 'Disconnected'
+}
+
+export class VideoEndpointResponse implements IVideoEndpointResponse {
+    /** The endpoint id */
+    id?: string;
+    display_name?: string | undefined;
+    /** The current endpoint status */
+    status?: EndpointStatus;
+
+    constructor(data?: IVideoEndpointResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data['id'];
+            this.display_name = _data['display_name'];
+            this.status = _data['status'];
+        }
+    }
+
+    static fromJS(data: any): VideoEndpointResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new VideoEndpointResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['id'] = this.id;
+        data['display_name'] = this.display_name;
+        data['status'] = this.status;
+        return data;
+    }
+}
+
+export interface IVideoEndpointResponse {
+    /** The endpoint id */
+    id?: string;
+    display_name?: string | undefined;
+    /** The current endpoint status */
+    status?: EndpointStatus;
+}
+
 /** Detailed information about a conference */
 export class ConferenceResponse implements IConferenceResponse {
     /** Conference ID */
@@ -3930,6 +3983,8 @@ export class ConferenceResponse implements IConferenceResponse {
     hearing_venue_name?: string | undefined;
     audio_recording_required?: boolean;
     hearing_ref_id?: string;
+    /** The video access endpoints in the conference */
+    endpoints?: VideoEndpointResponse[] | undefined;
 
     constructor(data?: IConferenceResponse) {
         if (data) {
@@ -3959,6 +4014,10 @@ export class ConferenceResponse implements IConferenceResponse {
             this.hearing_venue_name = _data['hearing_venue_name'];
             this.audio_recording_required = _data['audio_recording_required'];
             this.hearing_ref_id = _data['hearing_ref_id'];
+            if (Array.isArray(_data['endpoints'])) {
+                this.endpoints = [] as any;
+                for (let item of _data['endpoints']) this.endpoints!.push(VideoEndpointResponse.fromJS(item));
+            }
         }
     }
 
@@ -3989,6 +4048,10 @@ export class ConferenceResponse implements IConferenceResponse {
         data['hearing_venue_name'] = this.hearing_venue_name;
         data['audio_recording_required'] = this.audio_recording_required;
         data['hearing_ref_id'] = this.hearing_ref_id;
+        if (Array.isArray(this.endpoints)) {
+            data['endpoints'] = [];
+            for (let item of this.endpoints) data['endpoints'].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -4013,6 +4076,8 @@ export interface IConferenceResponse {
     hearing_venue_name?: string | undefined;
     audio_recording_required?: boolean;
     hearing_ref_id?: string;
+    /** The video access endpoints in the conference */
+    endpoints?: VideoEndpointResponse[] | undefined;
 }
 
 /** Configuration to initialise the UI application */

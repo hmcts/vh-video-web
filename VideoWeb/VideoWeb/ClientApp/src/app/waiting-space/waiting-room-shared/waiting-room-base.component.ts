@@ -20,6 +20,7 @@ import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-map
 import { Hearing } from 'src/app/shared/models/hearing';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
+import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 
 declare var HeartbeatFactory: any;
 
@@ -118,6 +119,14 @@ export abstract class WaitingRoomBaseComponent {
         this.eventHubSubscription$.add(
             this.eventService.getParticipantStatusMessage().subscribe(message => {
                 this.handleParticipantStatusChange(message);
+                this.updateShowVideo();
+            })
+        );
+
+        this.logger.debug('Subscribing to endpoint status changes...');
+        this.eventHubSubscription$.add(
+            this.eventService.getEndpointStatusMessage().subscribe(message => {
+                this.handleEndpointStatusChange(message);
                 this.updateShowVideo();
             })
         );
@@ -333,6 +342,19 @@ export abstract class WaitingRoomBaseComponent {
         if (message.status !== ParticipantStatus.InConsultation && isMe) {
             this.isAdminConsultation = false;
         }
+    }
+
+    handleEndpointStatusChange(message: EndpointStatusMessage) {
+        if (!this.validateIsForConference(message.conferenceId)) {
+            return;
+        }
+
+        const index = this.hearing.getEndpoints().findIndex(x => x.id === message.endpointId);
+        console.log(index);
+        if (index === -1) {
+            return;
+        }
+        this.hearing.getEndpoints()[index].status = message.status;
     }
 
     protected validateIsForConference(conferenceId: string): boolean {

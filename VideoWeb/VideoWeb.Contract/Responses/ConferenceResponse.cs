@@ -82,5 +82,10 @@ namespace VideoWeb.Contract.Responses
         /// The hearing Id
         /// </summary>
         public Guid HearingRefId { get; set; }
+
+        /// <summary>
+        /// The video access endpoints in the conference
+        /// </summary>
+        public List<VideoEndpointResponse> Endpoints { get; set; }
     }
 }

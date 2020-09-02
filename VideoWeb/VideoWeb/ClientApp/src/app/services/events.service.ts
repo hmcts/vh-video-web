@@ -3,12 +3,13 @@ import * as signalR from '@microsoft/signalr';
 import { AdalService } from 'adal-angular4';
 import { Observable, Subject } from 'rxjs';
 import { Heartbeat } from '../shared/models/heartbeat';
-import { ConferenceStatus, ConsultationAnswer, ParticipantStatus, RoomType } from './clients/api-client';
+import { ConferenceStatus, ConsultationAnswer, EndpointStatus, ParticipantStatus, RoomType } from './clients/api-client';
 import { Logger } from './logging/logger-base';
 import { AdminConsultationMessage } from './models/admin-consultation-message';
 import { ConferenceMessageAnswered } from './models/conference-message-answered';
 import { ConferenceStatusMessage } from './models/conference-status-message';
 import { ConsultationMessage } from './models/consultation-message';
+import { EndpointStatusMessage } from './models/EndpointStatusMessage';
 import { HelpMessage } from './models/help-message';
 import { InstantMessage } from './models/instant-message';
 import { HeartbeatHealth, ParticipantHeartbeat } from './models/participant-heartbeat';
@@ -22,6 +23,7 @@ export class EventsService {
     connection: signalR.HubConnection;
 
     private participantStatusSubject = new Subject<ParticipantStatusMessage>();
+    private endpointStatusSubject = new Subject<EndpointStatusMessage>();
     private hearingStatusSubject = new Subject<ConferenceStatusMessage>();
     private hearingCountdownCompleteSubject = new Subject<string>();
     private helpMessageSubject = new Subject<HelpMessage>();
@@ -85,6 +87,12 @@ export class EventsService {
                 this.participantStatusSubject.next(message);
             }
         );
+
+        this.connection.on('EndpointStatusMessage', (endpointId: string, conferenceId: string, status: EndpointStatus) => {
+            const message = new EndpointStatusMessage(endpointId, conferenceId, status);
+            this.logger.event('EndpointStatusMessage received', message);
+            this.endpointStatusSubject.next(message);
+        });
 
         this.connection.on('ConferenceStatusMessage', (conferenceId: string, status: ConferenceStatus) => {
             const message = new ConferenceStatusMessage(conferenceId, status);
@@ -196,6 +204,10 @@ export class EventsService {
 
     getHearingStatusMessage(): Observable<ConferenceStatusMessage> {
         return this.hearingStatusSubject.asObservable();
+    }
+
+    getEndpointStatusMessage(): Observable<EndpointStatusMessage> {
+        return this.endpointStatusSubject.asObservable();
     }
 
     getHearingCountdownCompleteMessage(): Observable<string> {

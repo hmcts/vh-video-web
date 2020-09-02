@@ -198,4 +198,26 @@ describe('Hearing', () => {
         const hearing = new Hearing(c);
         expect(hearing.isPastClosedTime()).toBeTruthy();
     });
+
+    it('should get empty list of endpoints when not set', () => {
+        const c = new ConferenceTestData().getConferenceDetailFuture();
+        c.endpoints = undefined;
+        const hearing = new Hearing(c);
+        expect(hearing.getEndpoints().length).toEqual(0);
+    });
+
+    it('should get list of endpoints', () => {
+        const c = new ConferenceTestData().getConferenceDetailFuture();
+
+        const hearing = new Hearing(c);
+        expect(hearing.getEndpoints().length).toBeGreaterThan(0);
+        expect(hearing.getEndpoints()).toEqual(c.endpoints);
+    });
+
+    it('should get empty list when base class is vho conference', () => {
+        const ctd = new ConferenceTestData();
+        const c = ctd.asConferenceResponseVho(ctd.getConferenceDetailFuture());
+        const hearing = new Hearing(c);
+        expect(hearing.getEndpoints().length).toEqual(0);
+    });
 });
