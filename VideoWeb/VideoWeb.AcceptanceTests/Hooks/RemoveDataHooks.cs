@@ -19,6 +19,8 @@ namespace VideoWeb.AcceptanceTests.Hooks
         [AfterScenario]
         public void RemovePreviousHearings(TestContext context)
         {
+            if (context?.Test?.Users == null) return;
+            if (context.Test?.Users?.Count == 0) return;
             _username = Users.GetJudgeUser(context.Test.Users).Username;
             ClearHearingsForUser(context.Apis.TestApi);
             ClearClosedConferencesForUser(context.Apis.TestApi);
@@ -34,6 +36,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 DeleteTheHearing(api, hearing.Id);
             }
         }
+
         private static void DeleteTheHearing(TestApiManager api, Guid hearingId)
         {
             var response = api.DeleteHearing(hearingId);
@@ -61,8 +64,9 @@ namespace VideoWeb.AcceptanceTests.Hooks
         private static Guid GetTheHearingIdFromTheConference(TestApiManager api, Guid conferenceId)
         {
             var response = api.GetConferenceByConferenceId(conferenceId);
+            if (!response.IsSuccessful) return Guid.Empty;
             var conference = RequestHelper.Deserialise<ConferenceDetailsResponse>(response.Content);
-            return conference?.Hearing_id ?? Guid.Empty;
+            return conference.Hearing_id;
         }
 
         private static bool HearingHasNotBeenDeletedAlready(TestApiManager api, Guid hearingId)

@@ -13,7 +13,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         [AfterScenario]
         public void UnallocateUsers(TestContext context)
         {
-            if (context.Apis?.TestApi == null) return;
+            if (context?.Apis?.TestApi == null) return;
             if (context.Test?.Users == null) return;
 
             var usernames = context.Test.Users.Select(user => user.Username).ToList();

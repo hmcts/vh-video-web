@@ -17,7 +17,7 @@ Scenario: Judge Instant Messaging
 
 @VIH-5862 @Smoketest-Extended
 Scenario: Participant Instant Messaging
-	Given the the first Individual's user has progressed to the Waiting Room page
+	Given the the first Individual user has progressed to the Waiting Room page
 	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
 	When the Video Hearings Officer instant messages the the first Individual's user
 	Then the the first Individual's user can see the message
@@ -49,7 +49,7 @@ Scenario: Instant Messaging Judge logged in first
 
 @VIH-5862
 Scenario: Instant Messaging Participant logged in first
-	Given the the first Individual's user has progressed to the Waiting Room page
+	Given the the first Individual user has progressed to the Waiting Room page
   When the the first Individual's user opens the chat window
 	And the the first Individual's user instant messages the Video Hearings Officer
   And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing

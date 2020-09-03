@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Helpers;
-using AcceptanceTests.Common.Test.Helpers;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -46,16 +45,18 @@ namespace VideoWeb.AcceptanceTests.Steps
             return participantUser;
         }
 
-        [When(@"the VHO filters by Judge Name (.*)")]
-        public void WhenTheVHOFiltersByJudgeNameAutomationBuilding(string options)
+        [When(@"the VHO filters the hearings for both Judges")]
+        public void WhenTheVHOSelectsTheHearingsForBothJudges()
         {
             _browsers[_c.CurrentUser].Click(VhoHearingListPage.FiltersButton);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(FiltersPopupPage.FiltersPopup).Displayed.Should().BeTrue();
-            UnSelectTheSelectAllCheckboxes();
+            ClickSelectAll();
 
-            foreach (var option in ConverterHelpers.ConvertStringIntoArray(options))
+            var judges = _c.Test.Conferences.Select(conference => conference.Participants.First(x => x.User_role == UserRole.Judge).Last_name).ToList();
+
+            foreach (var judge in judges)
             {
-                _browsers[_c.CurrentUser].ClickCheckbox(FiltersPopupPage.CheckBox(option));
+                _browsers[_c.CurrentUser].ClickCheckbox(FiltersPopupPage.CheckBox(judge));
             }
 
             _browsers[_c.CurrentUser].Click(FiltersPopupPage.ApplyButton);
@@ -63,7 +64,22 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Refresh();
         }
 
-        private void UnSelectTheSelectAllCheckboxes()
+        [When(@"the VHO filters by the second Judge")]
+        public void WhenTheVHOFiltersByTheFirstJudge()
+        {
+            _browsers[_c.CurrentUser].Click(VhoHearingListPage.FiltersButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(FiltersPopupPage.FiltersPopup).Displayed.Should().BeTrue();
+            ClickSelectAll();
+            ClickSelectAll(); // Clicking 'Select All' twice will remove any previous selections
+
+            var judge = _c.Test.Conferences.Last().Participants.First(x => x.User_role == UserRole.Judge).Last_name;
+            _browsers[_c.CurrentUser].ClickCheckbox(FiltersPopupPage.CheckBox(judge));
+            _browsers[_c.CurrentUser].Click(FiltersPopupPage.ApplyButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(FiltersPopupPage.FiltersPopup).Should().BeTrue();
+            _browsers[_c.CurrentUser].Refresh();
+        }
+
+        private void ClickSelectAll()
         {
             var selectAllCount = _browsers[_c.CurrentUser].Driver.FindElements(FiltersPopupPage.SelectAllCheckboxes).Count;
 
@@ -82,20 +98,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(VhoHearingListPage.CaseName(hearingThatShouldNotBeVisible.Id)).Should().BeTrue();
         }
         
-        [Then(@"the hearings are filtered by the judge named (.*)")]
-        [Then(@"the hearings are filtered by judges named (.*)")]
-        public void ThenTheHearingsAreFilteredByTheJudgeNames(string judgeName)
-        {
-            var hearingThatShouldNotBeVisible =
-                _c.Test.Conferences.FirstOrDefault(p =>
-                    p.Participants.Any(m => m.User_role == UserRole.Judge && m.First_name != judgeName));
-            var hearingThatShouldBeVisible = _c.Test.Conferences.FirstOrDefault(p =>
-                p.Participants.Any(m => m.User_role == UserRole.Judge && m.First_name == judgeName));
-
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(hearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(VhoHearingListPage.CaseName(hearingThatShouldNotBeVisible.Id)).Should().BeTrue();
-        }
-
         [Then(@"both hearings are visible")]
         public void ThenBothHearingsAreVisible()
         {

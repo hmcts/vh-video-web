@@ -113,8 +113,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             var rowData = new GetHearingRow()
                 .WithConferenceId(_c.Test.Conference.Id)
                 .WithDriver(_browsers[_c.CurrentUser])
-                .ApplicantsCount(_c.Test.Conference.Participants.Count(x => x.Case_type_group.Equals("Claimant")))
-                .RespondantsCount(_c.Test.Conference.Participants.Count(x => x.Case_type_group.Equals("Defendant")))
                 .Fetch();
 
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeHearingListPage.Date(scheduledDateTime.ToString(DateFormats.JudgeHearingListDate))).Displayed.Should().BeTrue();

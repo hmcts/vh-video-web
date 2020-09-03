@@ -55,7 +55,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the VHO selects all the venues")]
         public void SelectAllVenuesAndProceed()
         {
-            const string venues = "Automation Courtroom 01,Automation01";
+            var venues = _c.Test.Users.Aggregate<User, string>(null, (current, user) => current + user.First_name + ",");
             SelectVenues(venues);
             ConfirmVenue();
         }

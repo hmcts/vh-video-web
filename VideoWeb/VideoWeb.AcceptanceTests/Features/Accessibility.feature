@@ -83,13 +83,13 @@ Scenario: Help page accessibility
 
 @Accessibility @HearingTest @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
 Scenario: Hearing Room page accessibility
-	Given the the first Individual's user has progressed to the Waiting Room page
+	Given the the first Individual user has progressed to the Waiting Room page
 	And the Judge user has progressed to the Waiting Room page for the existing hearing
 	Then the participant status for the first Individual's is displayed as Connected
 	When the Judge starts the hearing
   And the countdown finishes
 	Then the page should be accessible apart from a missing header
-	When in the first Individual's's browser
+	When in the first Individual's browser
 	Then the page should be accessible apart from a missing header
   When in the Judge's browser
   And the Judge clicks close

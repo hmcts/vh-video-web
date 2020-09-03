@@ -44,8 +44,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser], _c.Test.Conference.Id);
 
-            var hearingThatShouldBeVisible = _c.Test.Conferences.FirstOrDefault(p =>
-                p.Participants.Any(m => m.User_role == UserRole.Judge && m.First_name == "Automation Courtroom 01"));
+            var hearingThatShouldBeVisible = _c.Test.Conferences.First();
 
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(hearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.CaseNumber(hearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
