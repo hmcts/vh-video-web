@@ -5,6 +5,7 @@
         <div class="pName" id="panel_participant_{{ i }}">{{ participant.displayName }}</div>
 
         <ng-container *ngIf="!isParticipantDisconnected(participant); else participantDisconnected">
+          <div class="pRole" id="panel_participant_role_{{ i }}"></div>
           <div class="pmute" *ngIf="isParticipantInHearing(participant)">
             <span class="tooltip">
               <span
@@ -45,7 +46,7 @@
           </div>
         </ng-template>
       </div>
-      <hr width="100%" />
+      <div class="vh-line"></div>
     </div>
   </div>
   <div class="govuk-grid-row scroll-shevrons">
