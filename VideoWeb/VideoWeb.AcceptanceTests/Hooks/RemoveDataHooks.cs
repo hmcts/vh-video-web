@@ -6,8 +6,7 @@ using AcceptanceTests.Common.Api.Helpers;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
-using VideoWeb.Services.Bookings;
-using VideoWeb.Services.Video;
+using VideoWeb.Services.TestApi;
 
 namespace VideoWeb.AcceptanceTests.Hooks
 {
@@ -46,7 +45,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         private void ClearClosedConferencesForUser(TestApiManager api)
         {
             var response = api.GetConferencesForTodayJudge(_username);
-            var todaysConferences = RequestHelper.Deserialise<List<ConferenceForAdminResponse>>(response.Content);
+            var todaysConferences = RequestHelper.Deserialise<List<ConferenceForJudgeResponse>>(response.Content);
             if (todaysConferences == null) return;
 
             foreach (var conference in todaysConferences)
