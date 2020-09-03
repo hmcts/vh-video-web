@@ -3,7 +3,14 @@ import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, ConsultationAnswer, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    ConsultationAnswer,
+    ParticipantResponse,
+    ParticipantStatus,
+    Role,
+    VideoEndpointResponse
+} from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
@@ -25,6 +32,7 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
     judge: ParticipantResponse;
     panelMembers: ParticipantResponse[];
     observers: ParticipantResponse[];
+    endpoints: VideoEndpointResponse[];
 
     consultationRequestee: Participant;
     consultationRequester: Participant;
@@ -47,6 +55,7 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
         this.filterPanelMembers();
         this.filterObservers();
         this.setupSubscribers();
+        this.endpoints = this.conference.endpoints;
     }
 
     ngOnDestroy(): void {

@@ -18,7 +18,8 @@
 }
 
 .label-status--not_signed_in,
-.label-status--unable_to_join {
+.label-status--unable_to_join,
+.label-status--not_yet_joined {
   background-color: govuk-colour('dark-grey');
   text-transform: uppercase;
 }
@@ -30,7 +31,8 @@
 
 .label-status--in_hearing,
 .label-status--available,
-.label-status--joining {
+.label-status--joining,
+.label-status--connected {
   background-color: govuk-colour('green');
   text-transform: uppercase;
 }

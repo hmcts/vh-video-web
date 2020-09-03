@@ -145,6 +145,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         private ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@doe.com")
         {
             var participants = Builder<ParticipantDetailsResponse>.CreateListOfSize(2).Build().ToList();
+            var endpoints = Builder<EndpointResponse>.CreateListOfSize(2).Build().ToList();
             if (!string.IsNullOrWhiteSpace(username))
             {
                 participants.First().Username = username;
@@ -152,6 +153,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
                 .With(x => x.Participants = participants)
+                .With(x => x.Endpoints = endpoints)
                 .Build();
             return conference;
         }

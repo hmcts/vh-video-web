@@ -59,14 +59,20 @@ namespace VideoWeb.Controllers
 
         [HttpPost("{conferenceId}/participantstatus")]
         [SwaggerOperation(OperationId = "UpdateParticipantStatus")]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int) HttpStatusCode.NoContent)]
         public async Task<IActionResult> UpdateParticipantStatusAsync(Guid conferenceId,
             UpdateParticipantStatusEventRequest updateParticipantStatusEventRequest)
         {
+            var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
+            {
+                _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
+
+                return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+            });
             var username = User.Identity.Name;
-            var participantId = await GetIdForParticipantByUsernameInConference(conferenceId, username);
+            var participantId = GetIdForParticipantByUsernameInConference(conference, username);
             var conferenceEventRequest = new ConferenceEventRequest
             {
                 Conference_id = conferenceId.ToString(),
@@ -77,7 +83,8 @@ namespace VideoWeb.Controllers
                 Reason = EventTypeReasonMapper.Map(updateParticipantStatusEventRequest.EventType)
             };
 
-            var callbackEvent = CallbackEventMapper.MapConferenceEventToCallbackEventModel(conferenceEventRequest);
+            var callbackEvent =
+                CallbackEventMapper.MapConferenceEventToCallbackEventModel(conferenceEventRequest, conference);
             var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
             try
             {
@@ -100,14 +107,8 @@ namespace VideoWeb.Controllers
             }
         }
 
-        private async Task<Guid> GetIdForParticipantByUsernameInConference(Guid conferenceId, string username)
+        private Guid GetIdForParticipantByUsernameInConference(Conference conference, string username)
         {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync
-            (
-                conferenceId,
-                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
-            );
-
             return conference.Participants
                 .Single(x => x.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase)).Id;
         }

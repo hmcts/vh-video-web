@@ -3,7 +3,8 @@ import {
     ConferenceStatus,
     Role,
     ConferenceResponseVho,
-    ParticipantResponseVho
+    ParticipantResponseVho,
+    VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { HearingBase } from './hearing-base';
 import { Participant } from './participant';
@@ -53,6 +54,17 @@ export class Hearing extends HearingBase {
 
     getParticipants(): ParticipantResponseVho[] {
         return this.conference.participants;
+    }
+
+    getEndpoints(): VideoEndpointResponse[] {
+        console.log(this.conference);
+        if (this.conference instanceof ConferenceResponse) {
+            const conf = this.conference as ConferenceResponse;
+            const ep = conf.endpoints ? conf.endpoints : new Array<VideoEndpointResponse>();
+            return ep;
+        } else {
+            return new Array<VideoEndpointResponse>();
+        }
     }
 
     get status(): ConferenceStatus {

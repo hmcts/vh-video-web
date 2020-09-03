@@ -1,5 +1,5 @@
 import { AdalService } from 'adal-angular4';
-import { ConferenceResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ParticipantStatus, EndpointStatus } from 'src/app/services/clients/api-client';
 import { individualTestProfile, judgeTestProfile } from 'src/app/testing/data/test-profiles';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
@@ -27,6 +27,8 @@ describe('JudgeParticipantStatusListComponent', () => {
         conference = new ConferenceTestData().getConferenceDetailNow();
         const participantObserverPanelMember = new ConferenceTestData().getListOfParticipantsObserverAndPanelMembers();
         participantObserverPanelMember.forEach(x => conference.participants.push(x));
+        const endpoints = new ConferenceTestData().getListOfEndpoints();
+        conference.endpoints = endpoints;
         component = new JudgeParticipantStatusListComponent(adalService, videoWebService, logger);
         component.conference = conference;
         component.ngOnInit();
@@ -45,6 +47,9 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(component.panelMembers.length).toBe(1);
 
         expect(component.getParticipantsCount()).toBe(5);
+
+        expect(component.endpoints).toBeDefined();
+        expect(component.endpoints.length).toBe(2);
     });
 
     it('should show input template for change judge display name', () => {
@@ -122,6 +127,34 @@ describe('JudgeParticipantStatusListComponent', () => {
             const pat = component.conference.participants[0];
             pat.status = test.status;
             expect(component.getParticipantStatusCss(pat)).toBe(test.expected);
+        });
+    });
+
+    const endpointsStatusTestCases = [
+        { status: EndpointStatus.NotYetJoined, expected: 'Not yet joined' },
+        { status: EndpointStatus.Disconnected, expected: 'Disconnected' },
+        { status: EndpointStatus.Connected, expected: 'Connected' }
+    ];
+
+    endpointsStatusTestCases.forEach(test => {
+        it(`should return ${test.expected} when endpoint status is ${test.status}`, () => {
+            const endpoint = component.conference.endpoints[0];
+            endpoint.status = test.status;
+            expect(component.getEndpointStatus(endpoint)).toBe(test.expected);
+        });
+    });
+
+    const endpointsStatusCssTestCases = [
+        { status: EndpointStatus.NotYetJoined, expected: 'not_yet_joined' },
+        { status: EndpointStatus.Disconnected, expected: 'disconnected' },
+        { status: EndpointStatus.Connected, expected: 'connected' }
+    ];
+
+    endpointsStatusCssTestCases.forEach(test => {
+        it(`should return ${test.expected} when endpoint status is ${test.status}`, () => {
+            const endpoint = component.conference.endpoints[0];
+            endpoint.status = test.status;
+            expect(component.getEndpointStatusCss(endpoint)).toBe(test.expected);
         });
     });
 

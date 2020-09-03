@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
 using EventType = VideoWeb.EventHub.Enums.EventType;
@@ -8,7 +10,7 @@ namespace VideoWeb.Mappings
 {
     public static class CallbackEventMapper
     {
-        public static CallbackEvent MapConferenceEventToCallbackEventModel(ConferenceEventRequest request)
+        public static CallbackEvent MapConferenceEventToCallbackEventModel(ConferenceEventRequest request, Conference conference)
         {
             var eventType = Enum.Parse<EventType>(request.Event_type.ToString());
             var conferenceId = Guid.Parse(request.Conference_id);
@@ -28,8 +30,30 @@ namespace VideoWeb.Mappings
                 TimeStampUtc = request.Time_stamp_utc,
                 ParticipantId = participantId
             };
+            
+            if (IsEndpointJoined(callbackEvent, conference))
+            {
+                callbackEvent.EventType = EventType.EndpointJoined;
+            }
+
+            if (IsEndpointDisconnected(callbackEvent, conference))
+            {
+                callbackEvent.EventType = EventType.EndpointDisconnected;
+            }
 
             return callbackEvent;
+        }
+
+        private static bool IsEndpointJoined(CallbackEvent callbackEvent, Conference conference)
+        {
+            return callbackEvent.EventType == EventType.Joined &&
+                   conference.Endpoints.Any(x => x.Id == callbackEvent.ParticipantId);
+        }
+        
+        private static bool IsEndpointDisconnected(CallbackEvent callbackEvent, Conference conference)
+        {
+            return callbackEvent.EventType == EventType.Disconnected &&
+                   conference.Endpoints.Any(x => x.Id == callbackEvent.ParticipantId);
         }
 
         private static RoomType? MapRoom(string room)

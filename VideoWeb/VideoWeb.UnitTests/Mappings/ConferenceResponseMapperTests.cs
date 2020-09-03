@@ -25,6 +25,11 @@ namespace VideoWeb.UnitTests.Mappings
                 new ParticipantDetailsResponseBuilder(UserRole.CaseAdmin, "None").Build()
             };
 
+            var endpoints = new List<EndpointResponse>
+            {
+                new EndpointsResponseBuilder().Build(),
+                new EndpointsResponseBuilder().Build(),
+            };
 
             var expectedConferenceStatus = ConferenceStatus.Suspended;
 
@@ -34,6 +39,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Current_status = ConferenceState.Suspended)
                 .With(x => x.Participants = participants)
                 .With(x => x.Meeting_room = meetingRoom)
+                .With(x=> x.Endpoints = endpoints)
                 .Build();
 
             var response = ConferenceResponseMapper.MapConferenceDetailsToResponseModel(conference);
@@ -45,6 +51,8 @@ namespace VideoWeb.UnitTests.Mappings
             response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);
             response.ScheduledDuration.Should().Be(conference.Scheduled_duration);
             response.Status.Should().Be(expectedConferenceStatus);
+            response.Endpoints.Should().NotBeNull();
+            response.Endpoints.Count.Should().Be(2);
 
             var participantsResponse = response.Participants;
             participantsResponse.Should().NotBeNullOrEmpty();
@@ -135,7 +143,7 @@ namespace VideoWeb.UnitTests.Mappings
                     tiledNames.Count(x => x.StartsWith(position[0])).Should().Be(1);
 
                 }
-             
+
             }
 
             var caseTypeGroups = participantsResponse.Select(p => p.CaseTypeGroup).Distinct().ToList();
