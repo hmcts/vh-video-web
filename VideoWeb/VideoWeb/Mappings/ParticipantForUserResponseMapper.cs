@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Helpers;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings
@@ -25,33 +26,9 @@ namespace VideoWeb.Mappings
                 })
                 .ToList();
 
-            AssignTilePositions(mappedParticipants);
+            ParticipantTilePositionHelper.AssignTilePositions(mappedParticipants);
             
             return mappedParticipants;
-        }
-        
-        private static void AssignTilePositions(List<ParticipantForUserResponse> participants)
-        {
-            var judge = participants.SingleOrDefault(x => x.Role == Role.Judge);
-            if (judge != null)
-            {
-                judge.PexipDisplayName = $"T{0};{judge.DisplayName};{judge.Id}";
-            }
-            var tiledParticipants = participants.Where(x =>
-                x.Role == Role.Individual || x.Role == Role.Representative).ToList();
-
-            var partyGroups = tiledParticipants.GroupBy(x => x.CaseTypeGroup).ToList();
-            foreach (var group in partyGroups)
-            {
-                var pats = @group.ToList();
-                var position = partyGroups.IndexOf(@group) + 1;
-                foreach (var p in pats)
-                {
-                    var participant = participants.Single(x => x.Id == p.Id);
-                    participant.PexipDisplayName = $"T{position};{participant.DisplayName};{participant.Id}";
-                    position += 2;
-                }
-            }
         }
     }
 }
