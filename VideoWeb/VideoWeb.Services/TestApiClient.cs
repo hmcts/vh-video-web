@@ -157,36 +157,36 @@ namespace VideoWeb.Services.TestApi
         /// <param name="username">Username of the Judge</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceDetailsResponse>> GetConferencesForTodayJudgeAsync(string username);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForJudgeResponse>> GetConferencesForTodayJudgeAsync(string username);
     
         /// <summary>Get conferences for today Judge</summary>
         /// <param name="username">Username of the Judge</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Collections.Generic.List<ConferenceDetailsResponse> GetConferencesForTodayJudge(string username);
+        System.Collections.Generic.List<ConferenceForJudgeResponse> GetConferencesForTodayJudge(string username);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get conferences for today Judge</summary>
         /// <param name="username">Username of the Judge</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceDetailsResponse>> GetConferencesForTodayJudgeAsync(string username, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForJudgeResponse>> GetConferencesForTodayJudgeAsync(string username, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get conferences for today VHO</summary>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceDetailsResponse>> GetConferencesForTodayVhoAsync();
+        System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForAdminResponse>> GetConferencesForTodayVhoAsync();
     
         /// <summary>Get conferences for today VHO</summary>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Collections.Generic.List<ConferenceDetailsResponse> GetConferencesForTodayVho();
+        System.Collections.Generic.List<ConferenceForAdminResponse> GetConferencesForTodayVho();
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get conferences for today VHO</summary>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceDetailsResponse>> GetConferencesForTodayVhoAsync(System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForAdminResponse>> GetConferencesForTodayVhoAsync(System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get audio recording link</summary>
         /// <param name="hearingId">Hearing Id of the conference</param>
@@ -292,18 +292,18 @@ namespace VideoWeb.Services.TestApi
         /// <summary>Check Service Health</summary>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<HealthCheckResponse> CheckServiceHealthAsync();
+        System.Threading.Tasks.Task<HealthResponse> CheckServiceHealthAsync();
     
         /// <summary>Check Service Health</summary>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        HealthCheckResponse CheckServiceHealth();
+        HealthResponse CheckServiceHealth();
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Check Service Health</summary>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<HealthCheckResponse> CheckServiceHealthAsync(System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<HealthResponse> CheckServiceHealthAsync(System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get the details of a hearing by id</summary>
         /// <param name="hearingId">Id of the hearing</param>
@@ -447,24 +447,43 @@ namespace VideoWeb.Services.TestApi
         /// <exception cref="TestApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.List<PersonSuitabilityAnswerResponse>> SuitabilityAnswersAsync(string username, System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Get user by username</summary>
+        /// <summary>Get test api user by username</summary>
         /// <param name="username">Username of the user (case insensitive)</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<UserDetailsResponse> UsernameAsync(string username);
     
-        /// <summary>Get user by username</summary>
+        /// <summary>Get test api user by username</summary>
         /// <param name="username">Username of the user (case insensitive)</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
         UserDetailsResponse Username(string username);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Get user by username</summary>
+        /// <summary>Get test api user by username</summary>
         /// <param name="username">Username of the user (case insensitive)</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<UserDetailsResponse> UsernameAsync(string username, System.Threading.CancellationToken cancellationToken);
+    
+        /// <summary>Get user by user principal name</summary>
+        /// <param name="username">Username of the user (case insensitive)</param>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UserProfile> UserPrincipalNameAsync(string username);
+    
+        /// <summary>Get user by user principal name</summary>
+        /// <param name="username">Username of the user (case insensitive)</param>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        UserProfile UserPrincipalName(string username);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Get user by user principal name</summary>
+        /// <param name="username">Username of the user (case insensitive)</param>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UserProfile> UserPrincipalNameAsync(string username, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Check if user exists in AAD by contact email</summary>
         /// <param name="contactEmail">Contact email of the user (case insensitive)</param>
@@ -1258,7 +1277,7 @@ namespace VideoWeb.Services.TestApi
         /// <param name="username">Username of the Judge</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceDetailsResponse>> GetConferencesForTodayJudgeAsync(string username)
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForJudgeResponse>> GetConferencesForTodayJudgeAsync(string username)
         {
             return GetConferencesForTodayJudgeAsync(username, System.Threading.CancellationToken.None);
         }
@@ -1267,7 +1286,7 @@ namespace VideoWeb.Services.TestApi
         /// <param name="username">Username of the Judge</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public System.Collections.Generic.List<ConferenceDetailsResponse> GetConferencesForTodayJudge(string username)
+        public System.Collections.Generic.List<ConferenceForJudgeResponse> GetConferencesForTodayJudge(string username)
         {
             return System.Threading.Tasks.Task.Run(async () => await GetConferencesForTodayJudgeAsync(username, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
@@ -1277,7 +1296,7 @@ namespace VideoWeb.Services.TestApi
         /// <param name="username">Username of the Judge</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceDetailsResponse>> GetConferencesForTodayJudgeAsync(string username, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForJudgeResponse>> GetConferencesForTodayJudgeAsync(string username, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/today/judge?");
@@ -1315,7 +1334,7 @@ namespace VideoWeb.Services.TestApi
                         var status_ = ((int)response_.StatusCode).ToString();
                         if (status_ == "200") 
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<ConferenceDetailsResponse>>(response_, headers_).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<ConferenceForJudgeResponse>>(response_, headers_).ConfigureAwait(false);
                             return objectResponse_.Object;
                         }
                         else
@@ -1343,7 +1362,7 @@ namespace VideoWeb.Services.TestApi
                             throw new TestApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
-                        return default(System.Collections.Generic.List<ConferenceDetailsResponse>);
+                        return default(System.Collections.Generic.List<ConferenceForJudgeResponse>);
                     }
                     finally
                     {
@@ -1360,7 +1379,7 @@ namespace VideoWeb.Services.TestApi
         /// <summary>Get conferences for today VHO</summary>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceDetailsResponse>> GetConferencesForTodayVhoAsync()
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForAdminResponse>> GetConferencesForTodayVhoAsync()
         {
             return GetConferencesForTodayVhoAsync(System.Threading.CancellationToken.None);
         }
@@ -1368,7 +1387,7 @@ namespace VideoWeb.Services.TestApi
         /// <summary>Get conferences for today VHO</summary>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public System.Collections.Generic.List<ConferenceDetailsResponse> GetConferencesForTodayVho()
+        public System.Collections.Generic.List<ConferenceForAdminResponse> GetConferencesForTodayVho()
         {
             return System.Threading.Tasks.Task.Run(async () => await GetConferencesForTodayVhoAsync(System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
@@ -1377,7 +1396,7 @@ namespace VideoWeb.Services.TestApi
         /// <summary>Get conferences for today VHO</summary>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceDetailsResponse>> GetConferencesForTodayVhoAsync(System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForAdminResponse>> GetConferencesForTodayVhoAsync(System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/today/vho");
@@ -1410,7 +1429,7 @@ namespace VideoWeb.Services.TestApi
                         var status_ = ((int)response_.StatusCode).ToString();
                         if (status_ == "200") 
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<ConferenceDetailsResponse>>(response_, headers_).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<ConferenceForAdminResponse>>(response_, headers_).ConfigureAwait(false);
                             return objectResponse_.Object;
                         }
                         else
@@ -1438,7 +1457,7 @@ namespace VideoWeb.Services.TestApi
                             throw new TestApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
-                        return default(System.Collections.Generic.List<ConferenceDetailsResponse>);
+                        return default(System.Collections.Generic.List<ConferenceForAdminResponse>);
                     }
                     finally
                     {
@@ -1970,7 +1989,7 @@ namespace VideoWeb.Services.TestApi
         /// <summary>Check Service Health</summary>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<HealthCheckResponse> CheckServiceHealthAsync()
+        public System.Threading.Tasks.Task<HealthResponse> CheckServiceHealthAsync()
         {
             return CheckServiceHealthAsync(System.Threading.CancellationToken.None);
         }
@@ -1978,7 +1997,7 @@ namespace VideoWeb.Services.TestApi
         /// <summary>Check Service Health</summary>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public HealthCheckResponse CheckServiceHealth()
+        public HealthResponse CheckServiceHealth()
         {
             return System.Threading.Tasks.Task.Run(async () => await CheckServiceHealthAsync(System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
@@ -1987,10 +2006,10 @@ namespace VideoWeb.Services.TestApi
         /// <summary>Check Service Health</summary>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<HealthCheckResponse> CheckServiceHealthAsync(System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<HealthResponse> CheckServiceHealthAsync(System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/HealthCheck/health");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/Health/health");
     
             var client_ = _httpClient;
             try
@@ -2020,14 +2039,14 @@ namespace VideoWeb.Services.TestApi
                         var status_ = ((int)response_.StatusCode).ToString();
                         if (status_ == "200") 
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<HealthCheckResponse>(response_, headers_).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<HealthResponse>(response_, headers_).ConfigureAwait(false);
                             return objectResponse_.Object;
                         }
                         else
                         if (status_ == "500") 
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<HealthCheckResponse>(response_, headers_).ConfigureAwait(false);
-                            throw new TestApiException<HealthCheckResponse>("Server Error", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            var objectResponse_ = await ReadObjectResponseAsync<HealthResponse>(response_, headers_).ConfigureAwait(false);
+                            throw new TestApiException<HealthResponse>("Server Error", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ == "401") 
@@ -2042,7 +2061,7 @@ namespace VideoWeb.Services.TestApi
                             throw new TestApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
-                        return default(HealthCheckResponse);
+                        return default(HealthResponse);
                     }
                     finally
                     {
@@ -2768,7 +2787,7 @@ namespace VideoWeb.Services.TestApi
             }
         }
     
-        /// <summary>Get user by username</summary>
+        /// <summary>Get test api user by username</summary>
         /// <param name="username">Username of the user (case insensitive)</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
@@ -2777,7 +2796,7 @@ namespace VideoWeb.Services.TestApi
             return UsernameAsync(username, System.Threading.CancellationToken.None);
         }
     
-        /// <summary>Get user by username</summary>
+        /// <summary>Get test api user by username</summary>
         /// <param name="username">Username of the user (case insensitive)</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
@@ -2787,7 +2806,7 @@ namespace VideoWeb.Services.TestApi
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Get user by username</summary>
+        /// <summary>Get test api user by username</summary>
         /// <param name="username">Username of the user (case insensitive)</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
@@ -2854,6 +2873,105 @@ namespace VideoWeb.Services.TestApi
                         }
             
                         return default(UserDetailsResponse);
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Get user by user principal name</summary>
+        /// <param name="username">Username of the user (case insensitive)</param>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task<UserProfile> UserPrincipalNameAsync(string username)
+        {
+            return UserPrincipalNameAsync(username, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Get user by user principal name</summary>
+        /// <param name="username">Username of the user (case insensitive)</param>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        public UserProfile UserPrincipalName(string username)
+        {
+            return System.Threading.Tasks.Task.Run(async () => await UserPrincipalNameAsync(username, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Get user by user principal name</summary>
+        /// <param name="username">Username of the user (case insensitive)</param>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task<UserProfile> UserPrincipalNameAsync(string username, System.Threading.CancellationToken cancellationToken)
+        {
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/users/userPrincipalName/{username}");
+            urlBuilder_.Replace("{username}", System.Uri.EscapeDataString(ConvertToString(username, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<UserProfile>(response_, headers_).ConfigureAwait(false);
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == "404") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new TestApiException<ProblemDetails>("Not Found", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "400") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new TestApiException<ProblemDetails>("Bad Request", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new TestApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new TestApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+            
+                        return default(UserProfile);
                     }
                     finally
                     {
@@ -3341,7 +3459,7 @@ namespace VideoWeb.Services.TestApi
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public TestType Test_type { get; set; }
     
-        [Newtonsoft.Json.JsonProperty("user_type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("user_type", Required = Newtonsoft.Json.Required.Always)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public UserType User_type { get; set; }
     
@@ -3431,7 +3549,7 @@ namespace VideoWeb.Services.TestApi
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
     public partial class AllocateUsersRequest 
     {
-        [Newtonsoft.Json.JsonProperty("application", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("application", Required = Newtonsoft.Json.Required.Always)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public Application Application { get; set; }
     
@@ -3448,8 +3566,8 @@ namespace VideoWeb.Services.TestApi
         public TestType Test_type { get; set; }
     
         /// <summary>A list of the User types (e.g. Judge, Individual etc...)</summary>
-        [Newtonsoft.Json.JsonProperty("user_types", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore, ItemConverterType = typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public System.Collections.Generic.List<UserType> User_types { get; set; }
+        [Newtonsoft.Json.JsonProperty("user_types", Required = Newtonsoft.Json.Required.Always, ItemConverterType = typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public System.Collections.Generic.List<UserType> User_types { get; set; } = new System.Collections.Generic.List<UserType>();
     
     
     }
@@ -3459,8 +3577,8 @@ namespace VideoWeb.Services.TestApi
     public partial class UnallocateUsersRequest 
     {
         /// <summary>Usernames of the users to unallocate</summary>
-        [Newtonsoft.Json.JsonProperty("usernames", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.List<string> Usernames { get; set; }
+        [Newtonsoft.Json.JsonProperty("usernames", Required = Newtonsoft.Json.Required.Always)]
+        public System.Collections.Generic.List<string> Usernames { get; set; } = new System.Collections.Generic.List<string>();
     
     
     }
@@ -3761,6 +3879,21 @@ namespace VideoWeb.Services.TestApi
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class AddEndpointRequest 
+    {
+        [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.AllowNull)]
+        public string Display_name { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("sip_address", Required = Newtonsoft.Json.Required.AllowNull)]
+        public string Sip_address { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("pin", Required = Newtonsoft.Json.Required.AllowNull)]
+        public string Pin { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
     public partial class BookNewConferenceRequest 
     {
         [Newtonsoft.Json.JsonProperty("hearing_ref_id", Required = Newtonsoft.Json.Required.Always)]
@@ -3789,6 +3922,146 @@ namespace VideoWeb.Services.TestApi
     
         [Newtonsoft.Json.JsonProperty("audio_recording_required", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool Audio_recording_required { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("endpoints", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.List<AddEndpointRequest> Endpoints { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class ParticipantForJudgeResponse 
+    {
+        [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Display_name { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("role", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public UserRole Role { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("representee", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Representee { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("case_type_group", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Case_type_group { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class ConferenceForJudgeResponse 
+    {
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid Id { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("scheduled_date_time", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime Scheduled_date_time { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("scheduled_duration", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int Scheduled_duration { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("case_type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Case_type { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("case_number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Case_number { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("case_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Case_name { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public ConferenceState Status { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("participants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.List<ParticipantForJudgeResponse> Participants { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("number_of_endpoints", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int Number_of_endpoints { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class ParticipantSummaryResponse 
+    {
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid Id { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Username { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Display_name { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("first_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string First_name { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("last_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Last_name { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("contact_email", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Contact_email { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("contact_telephone", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Contact_telephone { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public ParticipantState Status { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("user_role", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public UserRole User_role { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("representee", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Representee { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("case_group", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Case_group { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class ConferenceForAdminResponse 
+    {
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid Id { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("scheduled_date_time", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime Scheduled_date_time { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("started_date_time", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Started_date_time { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("closed_date_time", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Closed_date_time { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("case_type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Case_type { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("case_number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Case_number { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("case_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Case_name { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("scheduled_duration", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int Scheduled_duration { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public ConferenceState Status { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("participants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.List<ParticipantSummaryResponse> Participants { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("hearing_ref_id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid Hearing_ref_id { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("hearing_venue_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Hearing_venue_name { get; set; }
     
     
     }
@@ -3937,7 +4210,7 @@ namespace VideoWeb.Services.TestApi
     
     /// <summary>Healthcheck response</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
-    public partial class HealthCheck 
+    public partial class HealthDetailsResponse 
     {
         /// <summary>Whether the check was successful</summary>
         [Newtonsoft.Json.JsonProperty("successful", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -3956,7 +4229,7 @@ namespace VideoWeb.Services.TestApi
     
     /// <summary>Version of the app</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
-    public partial class ApplicationVersion 
+    public partial class AppVersionResponse 
     {
         /// <summary>Version of the app</summary>
         [Newtonsoft.Json.JsonProperty("version", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -3967,22 +4240,22 @@ namespace VideoWeb.Services.TestApi
     
     /// <summary>Determine the health of the test api and connected apis</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
-    public partial class HealthCheckResponse 
+    public partial class HealthResponse 
     {
         [Newtonsoft.Json.JsonProperty("bookings_api_health", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public HealthCheck Bookings_api_health { get; set; }
+        public HealthDetailsResponse Bookings_api_health { get; set; }
     
         [Newtonsoft.Json.JsonProperty("test_api_health", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public HealthCheck Test_api_health { get; set; }
+        public HealthDetailsResponse Test_api_health { get; set; }
     
         [Newtonsoft.Json.JsonProperty("user_api_health", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public HealthCheck User_api_health { get; set; }
+        public HealthDetailsResponse User_api_health { get; set; }
     
         [Newtonsoft.Json.JsonProperty("video_api_health", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public HealthCheck Video_api_health { get; set; }
+        public HealthDetailsResponse Video_api_health { get; set; }
     
         [Newtonsoft.Json.JsonProperty("version", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public ApplicationVersion Version { get; set; }
+        public AppVersionResponse Version { get; set; }
     
     
     }
@@ -4089,7 +4362,7 @@ namespace VideoWeb.Services.TestApi
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
-    public partial class EndpointyResponse 
+    public partial class EndpointResponse2 
     {
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid Id { get; set; }
@@ -4180,7 +4453,7 @@ namespace VideoWeb.Services.TestApi
         public string Cancel_reason { get; set; }
     
         [Newtonsoft.Json.JsonProperty("endpoints", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.List<EndpointyResponse> Endpoints { get; set; }
+        public System.Collections.Generic.List<EndpointResponse2> Endpoints { get; set; }
     
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     
@@ -4390,6 +4663,36 @@ namespace VideoWeb.Services.TestApi
             get { return _additionalProperties; }
             set { _additionalProperties = value; }
         }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class UserProfile 
+    {
+        [Newtonsoft.Json.JsonProperty("user_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string User_id { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("user_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string User_name { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("email", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Email { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Display_name { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("first_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string First_name { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("last_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Last_name { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("user_role", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string User_role { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("case_type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.List<string> Case_type { get; set; }
     
     
     }

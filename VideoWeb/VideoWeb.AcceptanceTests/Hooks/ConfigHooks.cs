@@ -10,14 +10,9 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Configuration;
 using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Data.TestData;
+using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Services.TestApi;
-using CaseResponse = VideoWeb.Services.Bookings.CaseResponse;
-using ConferenceDetailsResponse = VideoWeb.Services.Video.ConferenceDetailsResponse;
-using HearingDetailsResponse = VideoWeb.Services.Bookings.HearingDetailsResponse;
-using ParticipantDetailsResponse = VideoWeb.Services.Video.ParticipantDetailsResponse;
-using ParticipantResponse = VideoWeb.Services.Bookings.ParticipantResponse;
-using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
 
 namespace VideoWeb.AcceptanceTests.Hooks
 {

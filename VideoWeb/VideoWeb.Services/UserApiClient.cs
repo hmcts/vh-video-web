@@ -164,22 +164,6 @@ namespace VideoWeb.Services.User
         /// <exception cref="UserApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<UserProfile> GetUserByAdUserNameAsync(string userName, System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Delete an AAD user</summary>
-        /// <returns>Success</returns>
-        /// <exception cref="UserApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task DeleteUserAsync(string username);
-    
-        /// <summary>Delete an AAD user</summary>
-        /// <returns>Success</returns>
-        /// <exception cref="UserApiException">A server side error occurred.</exception>
-        void DeleteUser(string username);
-    
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Delete an AAD user</summary>
-        /// <returns>Success</returns>
-        /// <exception cref="UserApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task DeleteUserAsync(string username, System.Threading.CancellationToken cancellationToken);
-    
         /// <summary>Get user profile by email</summary>
         /// <returns>Success</returns>
         /// <exception cref="UserApiException">A server side error occurred.</exception>
@@ -211,6 +195,22 @@ namespace VideoWeb.Services.User
         /// <returns>Success</returns>
         /// <exception cref="UserApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.List<UserResponse>> GetJudgesAsync(System.Threading.CancellationToken cancellationToken);
+    
+        /// <summary>Delete an AAD user</summary>
+        /// <returns>Success</returns>
+        /// <exception cref="UserApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task DeleteUserAsync(string username);
+    
+        /// <summary>Delete an AAD user</summary>
+        /// <returns>Success</returns>
+        /// <exception cref="UserApiException">A server side error occurred.</exception>
+        void DeleteUser(string username);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Delete an AAD user</summary>
+        /// <returns>Success</returns>
+        /// <exception cref="UserApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task DeleteUserAsync(string username, System.Threading.CancellationToken cancellationToken);
     
     }
     
@@ -1082,101 +1082,6 @@ namespace VideoWeb.Services.User
             }
         }
     
-        /// <summary>Delete an AAD user</summary>
-        /// <returns>Success</returns>
-        /// <exception cref="UserApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task DeleteUserAsync(string username)
-        {
-            return DeleteUserAsync(username, System.Threading.CancellationToken.None);
-        }
-    
-        /// <summary>Delete an AAD user</summary>
-        /// <returns>Success</returns>
-        /// <exception cref="UserApiException">A server side error occurred.</exception>
-        public void DeleteUser(string username)
-        {
-            System.Threading.Tasks.Task.Run(async () => await DeleteUserAsync(username, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
-        }
-    
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Delete an AAD user</summary>
-        /// <returns>Success</returns>
-        /// <exception cref="UserApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task DeleteUserAsync(string username, System.Threading.CancellationToken cancellationToken)
-        {
-            if (username == null)
-                throw new System.ArgumentNullException("username");
-    
-            var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/users/userName/{userName}");
-            urlBuilder_.Replace("{username}", System.Uri.EscapeDataString(ConvertToString(username, System.Globalization.CultureInfo.InvariantCulture)));
-    
-            var client_ = _httpClient;
-            try
-            {
-                using (var request_ = new System.Net.Http.HttpRequestMessage())
-                {
-                    request_.Method = new System.Net.Http.HttpMethod("DELETE");
-    
-                    PrepareRequest(client_, request_, urlBuilder_);
-                    var url_ = urlBuilder_.ToString();
-                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
-                    PrepareRequest(client_, request_, url_);
-    
-                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
-                    try
-                    {
-                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
-                        if (response_.Content != null && response_.Content.Headers != null)
-                        {
-                            foreach (var item_ in response_.Content.Headers)
-                                headers_[item_.Key] = item_.Value;
-                        }
-    
-                        ProcessResponse(client_, response_);
-    
-                        var status_ = ((int)response_.StatusCode).ToString();
-                        if (status_ == "204") 
-                        {
-                            return;
-                        }
-                        else
-                        if (status_ == "400") 
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
-                            throw new UserApiException<ProblemDetails>("Bad Request", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-                        if (status_ == "404") 
-                        {
-                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
-                            throw new UserApiException<ProblemDetails>("Not Found", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
-                        }
-                        else
-                        if (status_ == "401") 
-                        {
-                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new UserApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
-                        }
-                        else
-                        if (status_ != "200" && status_ != "204")
-                        {
-                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
-                            throw new UserApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
-                        }
-                    }
-                    finally
-                    {
-                        if (response_ != null)
-                            response_.Dispose();
-                    }
-                }
-            }
-            finally
-            {
-            }
-        }
-    
         /// <summary>Get user profile by email</summary>
         /// <returns>Success</returns>
         /// <exception cref="UserApiException">A server side error occurred.</exception>
@@ -1346,6 +1251,101 @@ namespace VideoWeb.Services.User
                         }
             
                         return default(System.Collections.Generic.List<UserResponse>);
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Delete an AAD user</summary>
+        /// <returns>Success</returns>
+        /// <exception cref="UserApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task DeleteUserAsync(string username)
+        {
+            return DeleteUserAsync(username, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Delete an AAD user</summary>
+        /// <returns>Success</returns>
+        /// <exception cref="UserApiException">A server side error occurred.</exception>
+        public void DeleteUser(string username)
+        {
+            System.Threading.Tasks.Task.Run(async () => await DeleteUserAsync(username, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Delete an AAD user</summary>
+        /// <returns>Success</returns>
+        /// <exception cref="UserApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task DeleteUserAsync(string username, System.Threading.CancellationToken cancellationToken)
+        {
+            if (username == null)
+                throw new System.ArgumentNullException("username");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/users/username/{username}");
+            urlBuilder_.Replace("{username}", System.Uri.EscapeDataString(ConvertToString(username, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("DELETE");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "204") 
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == "400") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new UserApiException<ProblemDetails>("Bad Request", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "404") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new UserApiException<ProblemDetails>("Not Found", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new UserApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new UserApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
                     }
                     finally
                     {

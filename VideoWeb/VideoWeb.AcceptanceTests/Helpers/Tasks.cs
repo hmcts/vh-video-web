@@ -33,7 +33,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             return eventType.ToString();
         }
 
-        public static void TasksListShouldBeEmpty(TestContext context, EventType eventType)
+        public static void TasksListShouldBeEmpty(TestContext context)
         {
             var response = context.Apis.TestApi.GetTasks(context.Test.NewConferenceId);
             response.StatusCode.Should().Be(HttpStatusCode.OK);

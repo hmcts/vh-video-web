@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using VideoWeb.Services.Bookings;
-using VideoWeb.Services.Video;
+using VideoWeb.Services.TestApi;
 
 namespace VideoWeb.AcceptanceTests.Data
 {

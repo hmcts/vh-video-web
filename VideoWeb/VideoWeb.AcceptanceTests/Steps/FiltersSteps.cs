@@ -8,9 +8,7 @@ using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.Common.Models;
 using VideoWeb.Services.TestApi;
-using ParticipantDetailsResponse = VideoWeb.Services.Video.ParticipantDetailsResponse;
 using RoomType = VideoWeb.Common.Models.RoomType;
-using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {

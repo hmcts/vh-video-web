@@ -20,7 +20,6 @@ using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.TestApi;
 using EventType = VideoWeb.EventHub.Enums.EventType;
-using ParticipantDetailsResponse = VideoWeb.Services.Video.ParticipantDetailsResponse;
 using RoomType = VideoWeb.Common.Models.RoomType;
 
 namespace VideoWeb.AcceptanceTests.Steps
@@ -138,7 +137,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser], _c.Test.Conference.Id);
             _browsers[_c.CurrentUser].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
-            Tasks.TasksListShouldBeEmpty(_c, EventType.Close);
+            Tasks.TasksListShouldBeEmpty(_c);
         }
 
         [Then(@"the Video Hearings Officer user should see a (.*) notification and a (.*) alert")]

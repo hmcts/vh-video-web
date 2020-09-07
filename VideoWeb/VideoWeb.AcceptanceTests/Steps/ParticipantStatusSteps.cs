@@ -11,8 +11,6 @@ using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.AcceptanceTests.Strategies.ParticipantStatus;
 using VideoWeb.Services.TestApi;
-using ParticipantDetailsResponse = VideoWeb.Services.Video.ParticipantDetailsResponse;
-using ParticipantState = VideoWeb.Services.Video.ParticipantState;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {

@@ -98,7 +98,7 @@ namespace VideoWeb.Controllers
         {
             var isApiException = ex is VideoApiException;
             var healthCheck = new HealthCheck {Successful = true};
-            if (isApiException && (((VideoApiException)ex).StatusCode != (int)HttpStatusCode.InternalServerError))
+            if (isApiException && ((VideoApiException)ex).StatusCode != (int)HttpStatusCode.InternalServerError)
             {
                 return healthCheck;
             }

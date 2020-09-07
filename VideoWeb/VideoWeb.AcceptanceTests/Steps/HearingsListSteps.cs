@@ -9,7 +9,6 @@ using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.Services.TestApi;
-using ParticipantResponse = VideoWeb.Services.Bookings.ParticipantResponse;
 using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
 
 namespace VideoWeb.AcceptanceTests.Steps

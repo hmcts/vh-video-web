@@ -8,7 +8,6 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.Services.TestApi;
-using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {

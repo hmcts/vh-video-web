@@ -614,6 +614,25 @@ namespace VideoWeb.Services.Bookings
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<UserWithClosedConferencesResponse> GetPersonByClosedHearingsAsync(System.Threading.CancellationToken cancellationToken);
     
+        /// <summary>Anonymise a person</summary>
+        /// <param name="username">username of person</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task AnonymisePersonWithUsernameAsync(string username);
+    
+        /// <summary>Anonymise a person</summary>
+        /// <param name="username">username of person</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        void AnonymisePersonWithUsername(string username);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Anonymise a person</summary>
+        /// <param name="username">username of person</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task AnonymisePersonWithUsernameAsync(string username, System.Threading.CancellationToken cancellationToken);
+    
         /// <summary>Get a cursor based list of suitability answers</summary>
         /// <param name="cursor">Cursor specifying from which entries to read next page, is defaulted if not specified</param>
         /// <param name="limit">The max number hearings records to return.</param>
@@ -3659,6 +3678,96 @@ namespace VideoWeb.Services.Bookings
                         }
             
                         return default(UserWithClosedConferencesResponse);
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Anonymise a person</summary>
+        /// <param name="username">username of person</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task AnonymisePersonWithUsernameAsync(string username)
+        {
+            return AnonymisePersonWithUsernameAsync(username, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Anonymise a person</summary>
+        /// <param name="username">username of person</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public void AnonymisePersonWithUsername(string username)
+        {
+            System.Threading.Tasks.Task.Run(async () => await AnonymisePersonWithUsernameAsync(username, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Anonymise a person</summary>
+        /// <param name="username">username of person</param>
+        /// <returns>Success</returns>
+        /// <exception cref="BookingsApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task AnonymisePersonWithUsernameAsync(string username, System.Threading.CancellationToken cancellationToken)
+        {
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/persons/username/{username}/anonymise");
+            urlBuilder_.Replace("{username}", System.Uri.EscapeDataString(ConvertToString(username, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Content = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "application/json");
+                    request_.Method = new System.Net.Http.HttpMethod("PATCH");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == "404") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new BookingsApiException<ProblemDetails>("Not Found", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new BookingsApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new BookingsApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
                     }
                     finally
                     {

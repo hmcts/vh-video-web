@@ -9,8 +9,6 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.Services.TestApi;
-using ConferenceDetailsResponse = VideoWeb.Services.Video.ConferenceDetailsResponse;
-using HearingDetailsResponse = VideoWeb.Services.Bookings.HearingDetailsResponse;
 using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
 
 namespace VideoWeb.AcceptanceTests.Steps
