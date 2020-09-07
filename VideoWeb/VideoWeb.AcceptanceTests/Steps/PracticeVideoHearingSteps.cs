@@ -12,7 +12,6 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.Services.TestApi;
-using TestCallScoreResponse = VideoWeb.Services.Video.TestCallScoreResponse;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {

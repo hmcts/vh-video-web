@@ -11,7 +11,6 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.Services.TestApi;
-using VideoWeb.Services.Video;
 using UserRole = VideoWeb.Services.TestApi.UserRole;
 
 namespace VideoWeb.AcceptanceTests.Steps

@@ -11,9 +11,6 @@ using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.AcceptanceTests.Strategies.HearingStatus;
 using VideoWeb.Services.TestApi;
-using ConferenceDetailsResponse = VideoWeb.Services.Video.ConferenceDetailsResponse;
-using ConferenceState = VideoWeb.Services.Video.ConferenceState;
-using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -83,10 +80,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private Guid GetJudgeParticipantId()
         {
-            var id = _c.Test.ConferenceParticipants.Find(x => x.User_role.Equals(UserRole.Judge)).Id;
-            if (id == Guid.Empty)
-                throw new DataMisalignedException("Participant Id cannot be null");
-            return id;
+            return _c.Test.ConferenceParticipants.First(x => x.User_role.Equals(UserRole.Judge)).Id;
         }
     }
 }

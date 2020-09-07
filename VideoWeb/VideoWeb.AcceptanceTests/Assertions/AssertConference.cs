@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using FluentAssertions;
-using VideoWeb.Services.Bookings;
-using VideoWeb.Services.Video;
+using VideoWeb.Services.TestApi;
 
 namespace VideoWeb.AcceptanceTests.Assertions
 {

@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net;
 using AcceptanceTests.Common.Api.Helpers;
 using FluentAssertions;
-using VideoWeb.Services.Video;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.AcceptanceTests.Helpers
