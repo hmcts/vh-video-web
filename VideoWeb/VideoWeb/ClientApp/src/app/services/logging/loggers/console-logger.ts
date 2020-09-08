@@ -1,5 +1,7 @@
 import { LogAdapter } from '../log-adapter';
+import { Injectable } from '@angular/core';
 
+@Injectable()
 export class ConsoleLogger implements LogAdapter {
     debug(message: string): void {
         console.debug(message);

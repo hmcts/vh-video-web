@@ -1,9 +1,10 @@
-import { Input, OnDestroy, OnInit } from '@angular/core';
+import { Input, OnDestroy, OnInit, Directive } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { HeartbeatHealth, ParticipantHeartbeat } from 'src/app/services/models/participant-heartbeat';
 
+@Directive()
 export abstract class ParticipantNetworkHealthBaseComponent implements OnInit, OnDestroy {
     eventSubscriptions$ = new Subscription();
     networkHealth?: HeartbeatHealth;

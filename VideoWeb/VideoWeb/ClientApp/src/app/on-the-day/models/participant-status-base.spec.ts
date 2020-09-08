@@ -3,7 +3,9 @@ import { ParticipantStatusBase } from 'src/app/on-the-day/models/participant-sta
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { Directive } from '@angular/core';
 
+@Directive()
 class ParticipantStatusBaseTest extends ParticipantStatusBase {
     conferenceId = '123456789';
     constructor(protected participantStatusUpdateService: ParticipantStatusUpdateService, protected logger: Logger) {

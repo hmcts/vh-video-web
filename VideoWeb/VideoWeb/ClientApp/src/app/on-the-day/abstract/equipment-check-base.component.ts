@@ -9,7 +9,9 @@ import { ConferenceLite } from 'src/app/services/models/conference-lite';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ParticipantStatusBase } from 'src/app/on-the-day/models/participant-status-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
+import { Directive } from '@angular/core';
 
+@Directive()
 export abstract class EquipmentCheckBaseComponent extends ParticipantStatusBase {
     form: FormGroup;
     submitted = false;
