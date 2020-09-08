@@ -4,7 +4,7 @@ import { EventType } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 
 @Directive()
-export abstract class ParticipantStatusBase {
+export abstract class ParticipantStatusBaseDirective {
     constructor(protected participantStatusUpdateService: ParticipantStatusUpdateService, protected logger: Logger) {}
 
     abstract conferenceId: string;

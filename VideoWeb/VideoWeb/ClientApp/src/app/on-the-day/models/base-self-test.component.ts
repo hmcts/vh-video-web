@@ -9,7 +9,7 @@ import { vhContactDetails } from 'src/app/shared/contact-information';
 import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
 
 @Directive()
-export abstract class BaseSelfTestComponent implements OnInit {
+export abstract class BaseSelfTestComponentDirective implements OnInit {
     @ViewChild(SelfTestComponent, { static: false })
     selfTestComponent: SelfTestComponent;
 

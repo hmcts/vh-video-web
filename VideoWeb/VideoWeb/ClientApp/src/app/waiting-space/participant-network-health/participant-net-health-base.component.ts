@@ -5,7 +5,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { HeartbeatHealth, ParticipantHeartbeat } from 'src/app/services/models/participant-heartbeat';
 
 @Directive()
-export abstract class ParticipantNetworkHealthBaseComponent implements OnInit, OnDestroy {
+export abstract class ParticipantNetworkHealthBaseDirective implements OnInit, OnDestroy {
     eventSubscriptions$ = new Subscription();
     networkHealth?: HeartbeatHealth;
     @Input() participant: ParticipantResponse;

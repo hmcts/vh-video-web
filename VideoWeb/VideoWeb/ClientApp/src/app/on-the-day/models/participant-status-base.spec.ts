@@ -1,12 +1,12 @@
 import { fakeAsync, tick } from '@angular/core/testing';
-import { ParticipantStatusBase } from 'src/app/on-the-day/models/participant-status-base';
+import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { Directive } from '@angular/core';
+import { Directive, Component } from '@angular/core';
 
-@Directive()
-class ParticipantStatusBaseTest extends ParticipantStatusBase {
+@Component({})
+class ParticipantStatusBaseTestComponent extends ParticipantStatusBaseDirective {
     conferenceId = '123456789';
     constructor(protected participantStatusUpdateService: ParticipantStatusUpdateService, protected logger: Logger) {
         super(participantStatusUpdateService, logger);
@@ -18,7 +18,7 @@ describe('ParticipantStatusBase', () => {
     let participantStatusUpdateServiceSpy: jasmine.SpyObj<ParticipantStatusUpdateService>;
     participantStatusUpdateServiceSpy = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
 
-    const component = new ParticipantStatusBaseTest(participantStatusUpdateServiceSpy, loggerMock);
+    const component = new ParticipantStatusBaseTestComponent(participantStatusUpdateServiceSpy, loggerMock);
 
     it('should update participant status on log out', fakeAsync(() => {
         const event: any = { returnValue: 'save' };

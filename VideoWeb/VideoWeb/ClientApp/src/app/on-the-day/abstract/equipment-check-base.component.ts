@@ -7,12 +7,12 @@ import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceLite } from 'src/app/services/models/conference-lite';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { ParticipantStatusBase } from 'src/app/on-the-day/models/participant-status-base';
+import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { Directive } from '@angular/core';
 
 @Directive()
-export abstract class EquipmentCheckBaseComponent extends ParticipantStatusBase {
+export abstract class EquipmentCheckBaseComponentDirective extends ParticipantStatusBaseDirective {
     form: FormGroup;
     submitted = false;
 
