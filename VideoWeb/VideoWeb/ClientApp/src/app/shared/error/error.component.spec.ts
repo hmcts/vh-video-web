@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed, tick, fakeAsync } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, tick, fakeAsync, waitForAsync } from '@angular/core/testing';
 import { Router, NavigationEnd } from '@angular/router';
 import { Location } from '@angular/common';
 import { ErrorComponent } from './error.component';
@@ -33,21 +33,23 @@ describe('ErrorComponent', () => {
     let router: Router;
     let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
 
-    beforeEach(async(() => {
-        pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
-        pageTrackerSpy.getPreviousUrl.and.returnValue('testUrl-test-error1');
+    beforeEach(
+        waitForAsync(() => {
+            pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
+            pageTrackerSpy.getPreviousUrl.and.returnValue('testUrl-test-error1');
 
-        TestBed.configureTestingModule({
-            declarations: [ErrorComponent, ContactUsFoldingComponent, Mock1Component, Mock2Component],
-            imports: [
-                RouterTestingModule.withRoutes([
-                    { path: 'testUrl-test-error1', component: Mock1Component },
-                    { path: 'testUrl-test-error2', component: Mock2Component }
-                ])
-            ],
-            providers: [{ provide: PageTrackerService, useValue: pageTrackerSpy }]
-        }).compileComponents();
-    }));
+            TestBed.configureTestingModule({
+                declarations: [ErrorComponent, ContactUsFoldingComponent, Mock1Component, Mock2Component],
+                imports: [
+                    RouterTestingModule.withRoutes([
+                        { path: 'testUrl-test-error1', component: Mock1Component },
+                        { path: 'testUrl-test-error2', component: Mock2Component }
+                    ])
+                ],
+                providers: [{ provide: PageTrackerService, useValue: pageTrackerSpy }]
+            }).compileComponents();
+        })
+    );
 
     beforeEach(() => {
         router = TestBed.inject(Router);

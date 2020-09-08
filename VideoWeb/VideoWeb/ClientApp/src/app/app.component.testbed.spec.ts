@@ -1,5 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
@@ -83,8 +83,8 @@ describe('AppComponent', () => {
         spyOn(router, 'navigateByUrl').and.returnValue(Promise.resolve(true));
     });
 
-    it('should have a tag Skip to main content', async(() => {
+    it('should have a tag Skip to main content', () => {
         const compiled = fixture.debugElement.nativeElement;
         expect(compiled.querySelector('a').textContent).toContain('Skip to main content');
-    }));
+    });
 });

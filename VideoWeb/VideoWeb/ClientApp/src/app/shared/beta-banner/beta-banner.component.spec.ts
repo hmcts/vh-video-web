@@ -1,5 +1,5 @@
 import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { async, ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
@@ -42,20 +42,22 @@ describe('BetaBannerComponent', () => {
     videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(conference));
     const mockEventService = new MockEventsService();
 
-    beforeEach(async(() => {
-        TestBed.configureTestingModule({
-            declarations: [BetaBannerComponent, Mock1Component, Mock2Component],
-            imports: [RouterTestingModule.withRoutes(routes)],
-            providers: [
-                { provide: ProfileService, useValue: profileServiceSpy },
-                { provide: Logger, useClass: MockLogger },
-                { provide: VideoWebService, useValue: videoWebServiceSpy },
-                { provide: AdalService, useClass: MockAdalService },
-                { provide: EventsService, useValue: mockEventService }
-            ],
-            schemas: [NO_ERRORS_SCHEMA]
-        }).compileComponents();
-    }));
+    beforeEach(
+        waitForAsync(() => {
+            TestBed.configureTestingModule({
+                declarations: [BetaBannerComponent, Mock1Component, Mock2Component],
+                imports: [RouterTestingModule.withRoutes(routes)],
+                providers: [
+                    { provide: ProfileService, useValue: profileServiceSpy },
+                    { provide: Logger, useClass: MockLogger },
+                    { provide: VideoWebService, useValue: videoWebServiceSpy },
+                    { provide: AdalService, useClass: MockAdalService },
+                    { provide: EventsService, useValue: mockEventService }
+                ],
+                schemas: [NO_ERRORS_SCHEMA]
+            }).compileComponents();
+        })
+    );
 
     beforeEach(() => {
         adalService = TestBed.inject<MockAdalService>(AdalService as any);
