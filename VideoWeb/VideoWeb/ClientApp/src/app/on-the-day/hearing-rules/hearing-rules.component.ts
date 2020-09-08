@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { ParticipantStatusBase } from 'src/app/on-the-day/models/participant-status-base';
+import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 
@@ -10,7 +10,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
     templateUrl: './hearing-rules.component.html',
     styleUrls: ['./hearing-rules.component.scss']
 })
-export class HearingRulesComponent extends ParticipantStatusBase implements OnInit {
+export class HearingRulesComponent extends ParticipantStatusBaseDirective implements OnInit {
     conferenceId: string;
 
     constructor(

@@ -19,25 +19,25 @@ describe('JudgeGuard', () => {
         guard = new JudgeGuard(profileServiceSpy, router, new MockLogger());
     });
 
-    it('should not be able to activate component if role is not Judge', async(async () => {
+    it('should not be able to activate component if role is not Judge', async () => {
         const profile = new UserProfileResponse({ role: Role.VideoHearingsOfficer });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         const result = await guard.canActivate(null, null);
         expect(result).toBeFalsy();
         expect(router.navigate).toHaveBeenCalledWith(['/home']);
-    }));
+    });
 
-    it('should be able to activate component if role is Judge', async(async () => {
+    it('should be able to activate component if role is Judge', async () => {
         const profile = new UserProfileResponse({ role: Role.Judge });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         const result = await guard.canActivate(null, null);
         expect(result).toBeTruthy();
-    }));
+    });
 
-    it('should logout when user profile cannot be retrieved', async(async () => {
+    it('should logout when user profile cannot be retrieved', async () => {
         profileServiceSpy.getUserProfile.and.callFake(() => Promise.reject({ status: 404, isApiException: true }));
         const result = await guard.canActivate(null, null);
         expect(result).toBeFalsy();
         expect(router.navigate).toHaveBeenCalledWith(['/logout']);
-    }));
+    });
 });

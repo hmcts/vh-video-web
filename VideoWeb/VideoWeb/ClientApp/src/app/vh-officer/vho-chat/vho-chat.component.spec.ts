@@ -24,7 +24,7 @@ describe('VhoChatComponent', () => {
     let hearing: Hearing;
     const judgeProfile = judgeTestProfile;
     const adminProfile = adminTestProfile;
-    const timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
+    const timer = jasmine.createSpyObj<NodeJS.Timeout>('NodeJS.Timeout', ['ref', 'unref']);
     let chatSub$: Subscription;
     beforeAll(() => {
         adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
@@ -45,7 +45,7 @@ describe('VhoChatComponent', () => {
     });
 
     beforeEach(() => {
-        spyOn(global, 'setTimeout').and.returnValue(timer);
+        spyOn(global, 'setTimeout').and.returnValue(<any>timer);
         const chatHistory = new ConferenceTestData().getChatHistory(adminProfile.username, conference.id);
 
         adalService.userInfo.userName = adminProfile.username;

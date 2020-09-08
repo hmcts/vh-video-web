@@ -1,4 +1,4 @@
-import { OnInit, ViewChild } from '@angular/core';
+import { OnInit, ViewChild, Directive } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -8,7 +8,8 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
 
-export abstract class BaseSelfTestComponent implements OnInit {
+@Directive()
+export abstract class BaseSelfTestComponentDirective implements OnInit {
     @ViewChild(SelfTestComponent, { static: false })
     selfTestComponent: SelfTestComponent;
 

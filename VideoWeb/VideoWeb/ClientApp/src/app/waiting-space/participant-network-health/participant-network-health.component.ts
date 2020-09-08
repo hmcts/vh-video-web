@@ -3,14 +3,14 @@ import { Subscription } from 'rxjs';
 import { EventsService } from 'src/app/services/events.service';
 import { ModalService } from 'src/app/services/modal.service';
 import { HeartbeatHealth, ParticipantHeartbeat } from 'src/app/services/models/participant-heartbeat';
-import { ParticipantNetworkHealthBaseComponent } from './participant-net-health-base.component';
+import { ParticipantNetworkHealthBaseDirective } from './participant-net-health-base.component';
 
 @Component({
     selector: 'app-participant-network-health',
     templateUrl: './participant-network-health.component.html',
     styleUrls: ['./participant-network-health.component.scss']
 })
-export class ParticipantNetworkHealthComponent extends ParticipantNetworkHealthBaseComponent {
+export class ParticipantNetworkHealthComponent extends ParticipantNetworkHealthBaseDirective {
     static GUIDANCE_MODAL = 'more-info-modal';
     eventSubscriptions$ = new Subscription();
     networkHealth?: HeartbeatHealth;

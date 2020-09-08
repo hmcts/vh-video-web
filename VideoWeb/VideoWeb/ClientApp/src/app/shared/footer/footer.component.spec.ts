@@ -31,8 +31,8 @@ describe('FooterComponent', () => {
     });
 
     beforeEach(() => {
-        router = TestBed.get(Router);
-        location = TestBed.get(Location);
+        router = TestBed.inject(Router);
+        location = TestBed.inject(Location);
         fixture = TestBed.createComponent(FooterComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
@@ -43,36 +43,30 @@ describe('FooterComponent', () => {
     });
 
     it('navigate to dashboard you should see contact us link in the footer', fakeAsync(() => {
-        fixture.ngZone.run(() => {
-            router.navigate(['dashboard']);
-        });
+        router.navigate(['dashboard']);
         tick();
         expect(location.path()).toBe('/dashboard');
         expect(component.hideContactUsLink).toBeFalsy();
     }));
 
     it('navigate to contact-us you should not see contact us link in the footer', fakeAsync(() => {
-        fixture.ngZone.run(() => {
-            router.navigate(['contact-us']);
-        });
+        router.navigate(['contact-us']);
         tick();
         expect(location.path()).toBe('/contact-us');
         expect(component.hideContactUsLink).toBeTruthy();
     }));
+
     it('navigate to any page with supported browser you should see the links in the footer', fakeAsync(() => {
-        fixture.ngZone.run(() => {
-            router.navigate(['dashboard']);
-            tick();
-            expect(location.path()).toBe('/dashboard');
-            expect(component.hideLinksForUnsupportedBrowser).toBeFalsy();
-        });
+        router.navigate(['dashboard']);
+        tick();
+        expect(location.path()).toBe('/dashboard');
+        expect(component.hideLinksForUnsupportedBrowser).toBeFalsy();
     }));
+
     it('navigate to unsupported browser you should not see the links in the footer', fakeAsync(() => {
-        fixture.ngZone.run(() => {
-            router.navigate(['unsupported-browser']);
-            tick();
-            expect(location.path()).toBe('/unsupported-browser');
-            expect(component.hideLinksForUnsupportedBrowser).toBeTruthy();
-        });
+        router.navigate(['unsupported-browser']);
+        tick();
+        expect(location.path()).toBe('/unsupported-browser');
+        expect(component.hideLinksForUnsupportedBrowser).toBeTruthy();
     }));
 });

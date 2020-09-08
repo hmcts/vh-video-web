@@ -22,7 +22,7 @@ describe('EventsService', () => {
             .configureLogging(signalR.LogLevel.Debug)
             .withAutomaticReconnect([0])
             .withUrl('/eventhub', {
-                accessTokenFactory: () => this.adalService.userInfo.token
+                accessTokenFactory: () => mockAdalService.userInfo.token
             })
             .build();
     });

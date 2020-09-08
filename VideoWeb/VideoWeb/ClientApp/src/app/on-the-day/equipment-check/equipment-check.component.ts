@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { ParticipantStatusBase } from 'src/app/on-the-day/models/participant-status-base';
+import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 
@@ -9,7 +9,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
     selector: 'app-equipment-check',
     templateUrl: './equipment-check.component.html'
 })
-export class EquipmentCheckComponent extends ParticipantStatusBase implements OnInit {
+export class EquipmentCheckComponent extends ParticipantStatusBaseDirective implements OnInit {
     conferenceId: string;
 
     constructor(

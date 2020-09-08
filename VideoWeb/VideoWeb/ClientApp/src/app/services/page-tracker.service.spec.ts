@@ -25,8 +25,8 @@ describe('PageTrackerService', () => {
             providers: [PageTrackerService, { provide: Router, useClass: MockRouter }]
         });
 
-        router = TestBed.get(Router);
-        pageTrackerService = TestBed.get(PageTrackerService);
+        router = TestBed.inject(Router);
+        pageTrackerService = TestBed.inject(PageTrackerService);
         pageTrackerService.trackPreviousPage(router);
 
         const mockSessionStorage = {

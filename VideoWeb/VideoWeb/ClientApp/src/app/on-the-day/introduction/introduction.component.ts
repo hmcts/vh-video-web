@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceLite } from 'src/app/services/models/conference-lite';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { ParticipantStatusBase } from 'src/app/on-the-day/models/participant-status-base';
+import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 
@@ -12,7 +12,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
     templateUrl: './introduction.component.html',
     styleUrls: ['./introduction.component.scss']
 })
-export class IntroductionComponent extends ParticipantStatusBase implements OnInit {
+export class IntroductionComponent extends ParticipantStatusBaseDirective implements OnInit {
     conferenceId: string;
     conference: ConferenceLite;
 

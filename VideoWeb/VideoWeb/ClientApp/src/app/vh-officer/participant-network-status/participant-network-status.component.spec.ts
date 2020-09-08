@@ -161,9 +161,9 @@ describe('ParticipantNetworkStatusComponent', () => {
     });
 
     it('should set timer on mouse enter', fakeAsync(() => {
-        const timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
+        const timer = jasmine.createSpyObj<NodeJS.Timeout>('NodeJS.Timeout', ['ref', 'unref']);
         component.timeout = null;
-        spyOn(global, 'setTimeout').and.returnValue(timer);
+        spyOn(global, 'setTimeout').and.returnValue(<any>timer);
 
         component.onMouseEnter(mouseEvent);
         flushMicrotasks();

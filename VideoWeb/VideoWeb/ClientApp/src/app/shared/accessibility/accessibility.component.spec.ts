@@ -1,13 +1,13 @@
-import { async } from '@angular/core/testing';
+import { async, waitForAsync } from '@angular/core/testing';
 import { ScrolledEvent, ScrolledFooter } from '../models/scrolled-event';
 import { AccessibilityComponent } from './accessibility.component';
 
 describe('AccessibilityComponent', () => {
     let component: AccessibilityComponent;
 
-    beforeEach(async(() => {
+    beforeEach(() => {
         component = new AccessibilityComponent();
-    }));
+    });
 
     it('should go to div by id', () => {
         const id = 'chat-list';

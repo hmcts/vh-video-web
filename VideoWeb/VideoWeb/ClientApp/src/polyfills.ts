@@ -80,4 +80,9 @@ import 'zone.js/dist/webapis-rtc-peer-connection';
 // getUserMedia patch
 import 'zone.js/dist/zone-patch-user-media';
 
-window.AudioContext = window.AudioContext || window.webkitAudioContext;
+window.AudioContext = window.AudioContext || (window as any).webkitAudioContext; // Default // Safari and old versions of Chrome
+
+/***************************************************************************************************
+ * Load `$localize` onto the global scope - used if i18n tags appear in Angular templates.
+ */
+import '@angular/localize/init';

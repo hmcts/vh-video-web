@@ -6,13 +6,13 @@ import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
-import { BaseSelfTestComponent } from '../models/base-self-test.component';
+import { BaseSelfTestComponentDirective } from '../models/base-self-test.component';
 
 @Component({
     selector: 'app-judge-self-test',
     templateUrl: './judge-self-test.component.html'
 })
-export class JudgeSelfTestComponent extends BaseSelfTestComponent {
+export class JudgeSelfTestComponent extends BaseSelfTestComponentDirective {
     @ViewChild(SelfTestComponent, { static: false })
     selfTestComponent: SelfTestComponent;
 

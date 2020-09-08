@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { ParticipantStatusBase } from 'src/app/on-the-day/models/participant-status-base';
+import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 
@@ -10,7 +10,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
     selector: 'app-declaration',
     templateUrl: './declaration.component.html'
 })
-export class DeclarationComponent extends ParticipantStatusBase implements OnInit {
+export class DeclarationComponent extends ParticipantStatusBaseDirective implements OnInit {
     declarationForm: FormGroup;
     submitted = false;
     conferenceId: string;

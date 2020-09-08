@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { DeviceDetectorModule } from 'ngx-device-detector';
 import { AccessibilityComponent } from './accessibility/accessibility.component';
 import { BackNavigationComponent } from './back-navigation/back-navigation.component';
 import { BetaBannerComponent } from './beta-banner/beta-banner.component';
@@ -27,7 +26,7 @@ import { SharedRoutingModule } from './shared-routing.module';
 import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-browser.component';
 
 @NgModule({
-    imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, SharedRoutingModule, DeviceDetectorModule.forRoot()],
+    imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, SharedRoutingModule],
     declarations: [
         HeaderComponent,
         FooterComponent,
@@ -63,7 +62,6 @@ import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-b
         FormsModule,
         ReactiveFormsModule,
         HttpClientModule,
-        DeviceDetectorModule,
         BetaBannerComponent,
         ScrollTriggerDirective,
         BackNavigationComponent,

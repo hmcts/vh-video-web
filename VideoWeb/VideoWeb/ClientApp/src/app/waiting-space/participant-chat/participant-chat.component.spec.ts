@@ -26,7 +26,7 @@ describe('ParticipantChatComponent', () => {
 
     const judgeProfile = judgeTestProfile;
     const adminProfile = adminTestProfile;
-    const timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
+    const timer = jasmine.createSpyObj<NodeJS.Timeout>('NodeJS.Timeout', ['ref', 'unref']);
 
     beforeAll(() => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
@@ -44,7 +44,7 @@ describe('ParticipantChatComponent', () => {
     });
 
     beforeEach(() => {
-        spyOn(global, 'setTimeout').and.returnValue(timer);
+        spyOn(global, 'setTimeout').and.returnValue(<any>timer);
         adalService.userInfo.userName = judgeUsername;
         const chatHistory = new ConferenceTestData().getChatHistory(judgeUsername, conference.id);
 

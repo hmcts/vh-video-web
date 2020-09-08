@@ -1,9 +1,9 @@
-import { AppInsights } from 'applicationinsights-js';
 import { Injectable } from '@angular/core';
+import { ActivatedRouteSnapshot, ResolveEnd, Router, RouterEvent } from '@angular/router';
+import { ApplicationInsights, ITelemetryItem } from '@microsoft/applicationinsights-web';
+import { filter } from 'rxjs/operators';
 import { ConfigService } from '../../api/config.service';
 import { LogAdapter } from '../log-adapter';
-import { Router, ResolveEnd, ActivatedRouteSnapshot, RouterEvent } from '@angular/router';
-import { filter } from 'rxjs/operators';
 
 enum SeverityLevel {
     Verbose = 0,
@@ -19,6 +19,7 @@ enum SeverityLevel {
 export class AppInsightsLoggerService implements LogAdapter {
     errorInfo: any;
     router: Router;
+    appInsights: ApplicationInsights;
 
     constructor(configService: ConfigService, router: Router) {
         this.router = router;
@@ -28,37 +29,32 @@ export class AppInsightsLoggerService implements LogAdapter {
 
     private setupAppInsights(configService: ConfigService) {
         const config = configService.getClientSettings();
-        const appInsightsConfig: Microsoft.ApplicationInsights.IConfig = {
-            instrumentationKey: config.app_insights_instrumentation_key
-        };
-
-        if (!AppInsights.config) {
-            AppInsights.downloadAndSetup(appInsightsConfig);
-        }
-
-        // When it's been initialised, set the role so we know which application is logging
-        AppInsights.queue.push(() => {
-            AppInsights.context.addTelemetryInitializer(envelope => {
-                envelope.tags['ai.cloud.role'] = 'vh-video-web';
-            });
+        this.appInsights = new ApplicationInsights({
+            config: {
+                instrumentationKey: config.app_insights_instrumentation_key
+            }
+        });
+        this.appInsights.loadAppInsights();
+        this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
+            envelope.tags['ai.cloud.role'] = 'vh-video-web';
         });
     }
 
     debug(message: string): void {
-        AppInsights.trackTrace(message, null, SeverityLevel.Verbose);
+        this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Verbose });
     }
 
     info(message: string): void {
-        AppInsights.trackTrace(message, null, SeverityLevel.Information);
+        this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Information });
         console.info(`${this.router.url}`);
     }
 
     warn(message: string): void {
-        AppInsights.trackTrace(message, null, SeverityLevel.Warning);
+        this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Warning });
     }
 
     trackEvent(eventName: string, properties: any) {
-        AppInsights.trackEvent(eventName, properties);
+        this.appInsights.trackEvent({ name: eventName }, properties);
     }
 
     trackException(message: string, err: Error, properties: any) {
@@ -70,8 +66,10 @@ export class AppInsightsLoggerService implements LogAdapter {
             ? `${this.errorInfo.error} : ${this.errorInfo.status}
        : ${this.errorInfo.statusText} : ${this.errorInfo.url} : ${this.errorInfo.message}`
             : ``;
-
-        AppInsights.trackException(err, null, properties);
+        this.appInsights.trackException({
+            error: err,
+            properties: properties
+        });
     }
 
     private trackNavigation() {
@@ -88,7 +86,7 @@ export class AppInsightsLoggerService implements LogAdapter {
     }
 
     private trackPage(pageName: string, url: string) {
-        AppInsights.trackPageView(pageName, url);
+        this.appInsights.trackPageView({ name, uri: url });
     }
 
     private getActivatedComponent(snapshot: ActivatedRouteSnapshot): any {

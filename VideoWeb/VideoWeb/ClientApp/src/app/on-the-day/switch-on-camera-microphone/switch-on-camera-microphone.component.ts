@@ -8,14 +8,14 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { ParticipantStatusBase } from 'src/app/on-the-day/models/participant-status-base';
+import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 
 @Component({
     selector: 'app-switch-on-camera-microphone',
     templateUrl: './switch-on-camera-microphone.component.html'
 })
-export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBase implements OnInit {
+export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDirective implements OnInit {
     mediaAccepted: boolean;
     userPrompted: boolean;
     isJudge: boolean;

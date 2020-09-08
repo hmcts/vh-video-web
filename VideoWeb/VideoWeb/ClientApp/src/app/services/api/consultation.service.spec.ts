@@ -21,7 +21,7 @@ describe('ConsultationService', () => {
     let notificationSoundsService: jasmine.SpyObj<NotificationSoundsService>;
     const logger = new MockLogger();
     let service: ConsultationService;
-    let timer: jasmine.SpyObj<NodeJS.Timer>;
+    let timeout: jasmine.SpyObj<NodeJS.Timer>;
 
     beforeAll(() => {
         modalService = jasmine.createSpyObj<ModalService>('ModalService', ['add', 'remove', 'open', 'close', 'closeAll']);
@@ -43,8 +43,8 @@ describe('ConsultationService', () => {
         apiClient.leavePrivateConsultation.and.returnValue(of());
         apiClient.respondToAdminConsultationRequest.and.returnValue(of());
 
-        timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
-        spyOn(global, 'setTimeout').and.returnValue(timer);
+        timeout = jasmine.createSpyObj<NodeJS.Timeout>('NodeJS.Timeout', ['ref', 'unref']);
+        spyOn(global, 'setTimeout').and.returnValue(<any>timeout);
 
         service = new ConsultationService(apiClient, modalService, notificationSoundsService, logger);
 
@@ -78,12 +78,12 @@ describe('ConsultationService', () => {
         expect(apiClient.handleConsultationRequest).toHaveBeenCalledWith(request);
         expect(modalService.open).toHaveBeenCalledWith(ConsultationService.REQUEST_PC_MODAL);
         expect(service.waitingForConsultationResponse).toBeTruthy();
-        expect(service.callRingingTimeout).toBe(timer);
+        expect(service.callRingingTimeout).toBe(timeout);
         expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalled();
     });
 
     it('shoul stop rining, clear modals and cancel request on cancellation', async () => {
-        service.callRingingTimeout = timer;
+        service.callRingingTimeout = timeout;
         service.waitingForConsultationResponse = true;
         const conference = new ConferenceTestData().getConferenceDetailFuture();
         const requester = conference.participants[0];
@@ -116,7 +116,7 @@ describe('ConsultationService', () => {
             answer: ConsultationAnswer.Accepted
         });
         service.waitingForConsultationResponse = true;
-        service.callRingingTimeout = timer;
+        service.callRingingTimeout = timeout;
 
         await service.respondToConsultationRequest(conference, requester, requestee, ConsultationAnswer.Accepted);
 
@@ -138,7 +138,7 @@ describe('ConsultationService', () => {
             answer: ConsultationAnswer.Rejected
         });
         service.waitingForConsultationResponse = true;
-        service.callRingingTimeout = timer;
+        service.callRingingTimeout = timeout;
 
         await service.respondToConsultationRequest(conference, requester, requestee, ConsultationAnswer.Rejected);
 
@@ -149,7 +149,7 @@ describe('ConsultationService', () => {
     });
 
     it('should display accepted PC modal on "Accepted"', () => {
-        service.callRingingTimeout = timer;
+        service.callRingingTimeout = timeout;
         service.handleConsultationResponse(ConsultationAnswer.Accepted);
 
         expect(service.callRingingTimeout).toBeNull();
@@ -157,7 +157,7 @@ describe('ConsultationService', () => {
     });
 
     it('should display accepted PC modal on "Rejected"', () => {
-        service.callRingingTimeout = timer;
+        service.callRingingTimeout = timeout;
         service.handleConsultationResponse(ConsultationAnswer.Rejected);
 
         expect(service.callRingingTimeout).toBeNull();
@@ -165,7 +165,7 @@ describe('ConsultationService', () => {
     });
 
     it('should clear modals on screen on "Cancelled"', () => {
-        service.callRingingTimeout = timer;
+        service.callRingingTimeout = timeout;
         service.handleConsultationResponse(ConsultationAnswer.Cancelled);
 
         expect(service.callRingingTimeout).toBeNull();
@@ -216,7 +216,7 @@ describe('ConsultationService', () => {
         const conference = new ConferenceTestData().getConferenceDetailFuture();
         const requester = conference.participants[0];
         const requestee = conference.participants[1];
-        service.callRingingTimeout = timer;
+        service.callRingingTimeout = timeout;
         apiClient.handleConsultationRequest.and.callFake(() => throwError(error));
 
         await service.respondToConsultationRequest(conference, requester, requestee, ConsultationAnswer.Accepted);
@@ -230,7 +230,7 @@ describe('ConsultationService', () => {
         const conference = new ConferenceTestData().getConferenceDetailFuture();
         const requester = conference.participants[0];
         const requestee = conference.participants[1];
-        service.callRingingTimeout = timer;
+        service.callRingingTimeout = timeout;
         apiClient.handleConsultationRequest.and.callFake(() => throwError(error));
 
         await expectAsync(
@@ -270,7 +270,7 @@ describe('ConsultationService', () => {
             answer: ConsultationAnswer.Cancelled
         });
         service.waitingForConsultationResponse = true;
-        service.callRingingTimeout = timer;
+        service.callRingingTimeout = timeout;
 
         await service.cancelTimedOutConsultationRequest(conference, requester, requestee);
         expect(service.waitingForConsultationResponse).toBeFalsy();
@@ -291,7 +291,7 @@ describe('ConsultationService', () => {
 
         expect(service.waitingForConsultationResponse).toBeFalsy();
         expect(modalService.open).toHaveBeenCalledWith(ConsultationService.RECEIVE_PC_MODAL);
-        expect(service.callRingingTimeout).toBe(timer);
+        expect(service.callRingingTimeout).toBe(timeout);
         expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalled();
     });
 
@@ -300,6 +300,6 @@ describe('ConsultationService', () => {
 
         expect(modalService.open).toHaveBeenCalledWith(ConsultationService.VHO_REQUEST_PC_MODAL);
         expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalled();
-        expect(service.callRingingTimeout).toBe(timer);
+        expect(service.callRingingTimeout).toBe(timeout);
     });
 });
