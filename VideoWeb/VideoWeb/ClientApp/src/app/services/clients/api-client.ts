@@ -3476,21 +3476,23 @@ export enum ParticipantStatus {
 }
 
 export class ParticipantForUserResponse implements IParticipantForUserResponse {
-    /** The participant Id */
+    /** The participant id in a conference */
     id?: string;
-    /** The participant username */
+    /** The participant's full name */
+    name?: string | undefined;
+    /** The participant's username */
     username?: string | undefined;
+    /** The participant's role */
+    role?: Role;
+    /** The participant's status */
+    status?: ParticipantStatus;
     display_name?: string | undefined;
+    tiled_display_name?: string | undefined;
+    case_type_group?: string | undefined;
+    /** The representee the participant is acting on behalf */
+    representee?: string | undefined;
     first_name?: string | undefined;
     last_name?: string | undefined;
-    /** The participant role in conference */
-    role?: Role;
-    /** The current status of a participant */
-    status?: ParticipantStatus;
-    /** The representee (if participant is a representative) */
-    representee?: string | undefined;
-    case_type_group?: string | undefined;
-    pexip_display_name?: string | undefined;
 
     constructor(data?: IParticipantForUserResponse) {
         if (data) {
@@ -3503,15 +3505,16 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     init(_data?: any) {
         if (_data) {
             this.id = _data['id'];
+            this.name = _data['name'];
             this.username = _data['username'];
-            this.display_name = _data['display_name'];
-            this.first_name = _data['first_name'];
-            this.last_name = _data['last_name'];
             this.role = _data['role'];
             this.status = _data['status'];
-            this.representee = _data['representee'];
+            this.display_name = _data['display_name'];
+            this.tiled_display_name = _data['tiled_display_name'];
             this.case_type_group = _data['case_type_group'];
-            this.pexip_display_name = _data['pexip_display_name'];
+            this.representee = _data['representee'];
+            this.first_name = _data['first_name'];
+            this.last_name = _data['last_name'];
         }
     }
 
@@ -3525,35 +3528,38 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data['id'] = this.id;
+        data['name'] = this.name;
         data['username'] = this.username;
-        data['display_name'] = this.display_name;
-        data['first_name'] = this.first_name;
-        data['last_name'] = this.last_name;
         data['role'] = this.role;
         data['status'] = this.status;
-        data['representee'] = this.representee;
+        data['display_name'] = this.display_name;
+        data['tiled_display_name'] = this.tiled_display_name;
         data['case_type_group'] = this.case_type_group;
-        data['pexip_display_name'] = this.pexip_display_name;
+        data['representee'] = this.representee;
+        data['first_name'] = this.first_name;
+        data['last_name'] = this.last_name;
         return data;
     }
 }
 
 export interface IParticipantForUserResponse {
-    /** The participant Id */
+    /** The participant id in a conference */
     id?: string;
-    /** The participant username */
+    /** The participant's full name */
+    name?: string | undefined;
+    /** The participant's username */
     username?: string | undefined;
+    /** The participant's role */
+    role?: Role;
+    /** The participant's status */
+    status?: ParticipantStatus;
     display_name?: string | undefined;
+    tiled_display_name?: string | undefined;
+    case_type_group?: string | undefined;
+    /** The representee the participant is acting on behalf */
+    representee?: string | undefined;
     first_name?: string | undefined;
     last_name?: string | undefined;
-    /** The participant role in conference */
-    role?: Role;
-    /** The current status of a participant */
-    status?: ParticipantStatus;
-    /** The representee (if participant is a representative) */
-    representee?: string | undefined;
-    case_type_group?: string | undefined;
-    pexip_display_name?: string | undefined;
 }
 
 export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerResponse {
