@@ -78,7 +78,7 @@ describe('AppComponent', () => {
         fixture = TestBed.createComponent(AppComponent);
         component = fixture.componentInstance;
         deviceTypeServiceSpy.isSupportedBrowser.and.returnValue(true);
-        router = TestBed.get(Router);
+        router = TestBed.inject(Router);
         spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
         spyOn(router, 'navigateByUrl').and.returnValue(Promise.resolve(true));
     });

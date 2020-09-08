@@ -50,8 +50,8 @@ describe('ErrorComponent', () => {
     }));
 
     beforeEach(() => {
-        router = TestBed.get(Router);
-        location = TestBed.get(Location);
+        router = TestBed.inject(Router);
+        location = TestBed.inject(Location);
         fixture = TestBed.createComponent(ErrorComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
@@ -108,8 +108,8 @@ describe('ErrorComponent Refresh', () => {
                 { provide: Router, useClass: MockRouter }
             ]
         }).compileComponents();
-        router = TestBed.get(Router);
-        location = TestBed.get(Location);
+        router = TestBed.inject(Router);
+        location = TestBed.inject(Location);
         fixture = TestBed.createComponent(ErrorComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();

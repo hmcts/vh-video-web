@@ -58,9 +58,9 @@ describe('BetaBannerComponent', () => {
     }));
 
     beforeEach(() => {
-        adalService = TestBed.get(AdalService);
-        eventService = TestBed.get(EventsService);
-        router = TestBed.get(Router);
+        adalService = TestBed.inject<MockAdalService>(AdalService as any);
+        eventService = TestBed.inject<MockEventsService>(EventsService as any);
+        router = TestBed.inject(Router);
         fixture = TestBed.createComponent(BetaBannerComponent);
         component = fixture.componentInstance;
     });
