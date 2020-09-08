@@ -598,43 +598,43 @@ namespace VideoWeb.Services.Video
         /// <summary>Remove an endpoint from a conference</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<EndpointResponse>> RemoveEndpointFromConferenceAsync(System.Guid conferenceId, System.Guid endpointId);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<EndpointResponse>> RemoveEndpointFromConferenceAsync(System.Guid conferenceId, string sipAddress);
     
         /// <summary>Remove an endpoint from a conference</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Collections.Generic.List<EndpointResponse> RemoveEndpointFromConference(System.Guid conferenceId, System.Guid endpointId);
+        System.Collections.Generic.List<EndpointResponse> RemoveEndpointFromConference(System.Guid conferenceId, string sipAddress);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Remove an endpoint from a conference</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<EndpointResponse>> RemoveEndpointFromConferenceAsync(System.Guid conferenceId, System.Guid endpointId, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<EndpointResponse>> RemoveEndpointFromConferenceAsync(System.Guid conferenceId, string sipAddress, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Update the display name of an endpoint</summary>
         /// <param name="conferenceId">the conference id</param>
-        /// <param name="endpointId">the endpoint id to be updated</param>
+        /// <param name="sipAddress">the endpoint sip address to be updated</param>
         /// <param name="body">the display name to be updated</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task UpdateDisplayNameForEndpoint_Async(System.Guid conferenceId, System.Guid endpointId, UpdateEndpointRequest body);
+        System.Threading.Tasks.Task UpdateDisplayNameForEndpoint_Async(System.Guid conferenceId, string sipAddress, UpdateEndpointRequest body);
     
         /// <summary>Update the display name of an endpoint</summary>
         /// <param name="conferenceId">the conference id</param>
-        /// <param name="endpointId">the endpoint id to be updated</param>
+        /// <param name="sipAddress">the endpoint sip address to be updated</param>
         /// <param name="body">the display name to be updated</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        void UpdateDisplayNameForEndpoint_(System.Guid conferenceId, System.Guid endpointId, UpdateEndpointRequest body);
+        void UpdateDisplayNameForEndpoint_(System.Guid conferenceId, string sipAddress, UpdateEndpointRequest body);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Update the display name of an endpoint</summary>
         /// <param name="conferenceId">the conference id</param>
-        /// <param name="endpointId">the endpoint id to be updated</param>
+        /// <param name="sipAddress">the endpoint sip address to be updated</param>
         /// <param name="body">the display name to be updated</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task UpdateDisplayNameForEndpoint_Async(System.Guid conferenceId, System.Guid endpointId, UpdateEndpointRequest body, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task UpdateDisplayNameForEndpoint_Async(System.Guid conferenceId, string sipAddress, UpdateEndpointRequest body, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Check Service Health</summary>
         /// <returns>Success</returns>
@@ -4024,35 +4024,35 @@ namespace VideoWeb.Services.Video
         /// <summary>Remove an endpoint from a conference</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.List<EndpointResponse>> RemoveEndpointFromConferenceAsync(System.Guid conferenceId, System.Guid endpointId)
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<EndpointResponse>> RemoveEndpointFromConferenceAsync(System.Guid conferenceId, string sipAddress)
         {
-            return RemoveEndpointFromConferenceAsync(conferenceId, endpointId, System.Threading.CancellationToken.None);
+            return RemoveEndpointFromConferenceAsync(conferenceId, sipAddress, System.Threading.CancellationToken.None);
         }
     
         /// <summary>Remove an endpoint from a conference</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public System.Collections.Generic.List<EndpointResponse> RemoveEndpointFromConference(System.Guid conferenceId, System.Guid endpointId)
+        public System.Collections.Generic.List<EndpointResponse> RemoveEndpointFromConference(System.Guid conferenceId, string sipAddress)
         {
-            return System.Threading.Tasks.Task.Run(async () => await RemoveEndpointFromConferenceAsync(conferenceId, endpointId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+            return System.Threading.Tasks.Task.Run(async () => await RemoveEndpointFromConferenceAsync(conferenceId, sipAddress, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Remove an endpoint from a conference</summary>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.List<EndpointResponse>> RemoveEndpointFromConferenceAsync(System.Guid conferenceId, System.Guid endpointId, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<EndpointResponse>> RemoveEndpointFromConferenceAsync(System.Guid conferenceId, string sipAddress, System.Threading.CancellationToken cancellationToken)
         {
             if (conferenceId == null)
                 throw new System.ArgumentNullException("conferenceId");
     
-            if (endpointId == null)
-                throw new System.ArgumentNullException("endpointId");
+            if (sipAddress == null)
+                throw new System.ArgumentNullException("sipAddress");
     
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/{conferenceId}/endpoints/{endpointId}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/{conferenceId}/endpoints/{sipAddress}");
             urlBuilder_.Replace("{conferenceId}", System.Uri.EscapeDataString(ConvertToString(conferenceId, System.Globalization.CultureInfo.InvariantCulture)));
-            urlBuilder_.Replace("{endpointId}", System.Uri.EscapeDataString(ConvertToString(endpointId, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{sipAddress}", System.Uri.EscapeDataString(ConvertToString(sipAddress, System.Globalization.CultureInfo.InvariantCulture)));
     
             var client_ = _httpClient;
             try
@@ -4114,45 +4114,45 @@ namespace VideoWeb.Services.Video
     
         /// <summary>Update the display name of an endpoint</summary>
         /// <param name="conferenceId">the conference id</param>
-        /// <param name="endpointId">the endpoint id to be updated</param>
+        /// <param name="sipAddress">the endpoint sip address to be updated</param>
         /// <param name="body">the display name to be updated</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task UpdateDisplayNameForEndpoint_Async(System.Guid conferenceId, System.Guid endpointId, UpdateEndpointRequest body)
+        public System.Threading.Tasks.Task UpdateDisplayNameForEndpoint_Async(System.Guid conferenceId, string sipAddress, UpdateEndpointRequest body)
         {
-            return UpdateDisplayNameForEndpoint_Async(conferenceId, endpointId, body, System.Threading.CancellationToken.None);
+            return UpdateDisplayNameForEndpoint_Async(conferenceId, sipAddress, body, System.Threading.CancellationToken.None);
         }
     
         /// <summary>Update the display name of an endpoint</summary>
         /// <param name="conferenceId">the conference id</param>
-        /// <param name="endpointId">the endpoint id to be updated</param>
+        /// <param name="sipAddress">the endpoint sip address to be updated</param>
         /// <param name="body">the display name to be updated</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public void UpdateDisplayNameForEndpoint_(System.Guid conferenceId, System.Guid endpointId, UpdateEndpointRequest body)
+        public void UpdateDisplayNameForEndpoint_(System.Guid conferenceId, string sipAddress, UpdateEndpointRequest body)
         {
-            System.Threading.Tasks.Task.Run(async () => await UpdateDisplayNameForEndpoint_Async(conferenceId, endpointId, body, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+            System.Threading.Tasks.Task.Run(async () => await UpdateDisplayNameForEndpoint_Async(conferenceId, sipAddress, body, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Update the display name of an endpoint</summary>
         /// <param name="conferenceId">the conference id</param>
-        /// <param name="endpointId">the endpoint id to be updated</param>
+        /// <param name="sipAddress">the endpoint sip address to be updated</param>
         /// <param name="body">the display name to be updated</param>
         /// <returns>Success</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task UpdateDisplayNameForEndpoint_Async(System.Guid conferenceId, System.Guid endpointId, UpdateEndpointRequest body, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task UpdateDisplayNameForEndpoint_Async(System.Guid conferenceId, string sipAddress, UpdateEndpointRequest body, System.Threading.CancellationToken cancellationToken)
         {
             if (conferenceId == null)
                 throw new System.ArgumentNullException("conferenceId");
     
-            if (endpointId == null)
-                throw new System.ArgumentNullException("endpointId");
+            if (sipAddress == null)
+                throw new System.ArgumentNullException("sipAddress");
     
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/{conferenceId}/endpoints/{endpointId}/displayname");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/{conferenceId}/endpoints/{sipAddress}/displayname");
             urlBuilder_.Replace("{conferenceId}", System.Uri.EscapeDataString(ConvertToString(conferenceId, System.Globalization.CultureInfo.InvariantCulture)));
-            urlBuilder_.Replace("{endpointId}", System.Uri.EscapeDataString(ConvertToString(endpointId, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Replace("{sipAddress}", System.Uri.EscapeDataString(ConvertToString(sipAddress, System.Globalization.CultureInfo.InvariantCulture)));
     
             var client_ = _httpClient;
             try
@@ -6380,6 +6380,21 @@ namespace VideoWeb.Services.Video
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class AddEndpointRequest 
+    {
+        [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.AllowNull)]
+        public string Display_name { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("sip_address", Required = Newtonsoft.Json.Required.AllowNull)]
+        public string Sip_address { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("pin", Required = Newtonsoft.Json.Required.AllowNull)]
+        public string Pin { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
     public partial class BookNewConferenceRequest 
     {
         [Newtonsoft.Json.JsonProperty("hearing_ref_id", Required = Newtonsoft.Json.Required.Always)]
@@ -6408,6 +6423,9 @@ namespace VideoWeb.Services.Video
     
         [Newtonsoft.Json.JsonProperty("audio_recording_required", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool Audio_recording_required { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("endpoints", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.List<AddEndpointRequest> Endpoints { get; set; }
     
     
     }
@@ -6963,22 +6981,6 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonProperty("answer", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public ConsultationAnswer? Answer { get; set; }
-    
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
-    public partial class AddEndpointRequest 
-    {
-        [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.AllowNull)]
-        public string Display_name { get; set; }
-    
-        [Newtonsoft.Json.JsonProperty("sip_address", Required = Newtonsoft.Json.Required.AllowNull)]
-        public string Sip_address { get; set; }
-    
-        /// <summary>The endpoint pin</summary>
-        [Newtonsoft.Json.JsonProperty("pin", Required = Newtonsoft.Json.Required.AllowNull)]
-        public string Pin { get; set; }
     
     
     }
