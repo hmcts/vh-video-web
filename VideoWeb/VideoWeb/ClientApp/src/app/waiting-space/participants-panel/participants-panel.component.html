@@ -1,56 +1,52 @@
-<div class="panel-container">
-  <div class="govuk-table table-br panel-container-list" (scroll)="onScroll()" summary="Judge hearing participants panel" id="panelList">
-    <div class="govuk-grid-row vh-line row-pad" *ngFor="let participant of participants; let i = index">
-      <div>
-        <div class="govuk-table_cell govuk-body-s--white vh-name" id="panel_participant_{{ i }}">
-          {{ participant.displayName }}
-        </div>
-        <div class="govuk-table_cell govuk-body-s--white vh-name">
-          <span class="vh-panel-name" id="panel_participant_role_{{ i }}">
-            {{ participant.role }}
-          </span>
-        </div>
-        <div class="govuk-table_cell cell-icon" *ngIf="isParticipantInHearing(participant)">
-          <span class="tooltip">
-            <span
-              class="top top-name-icon govuk-body-s--white tooltip-mute"
-              [ngClass]="participant.isMuted ? 'tooltip-unmute' : 'tooltip-mute'"
-            >
-              {{ participant.isMuted ? 'Unmute' : 'Mute' }}
-            </span>
+<div class="participantList">
+  <div class="panel-container-list" (scroll)="onScroll()" id="panelList">
+    <div *ngFor="let participant of participants; let i = index">
+      <div class="pGridOpen">
+        <div class="pName" id="panel_participant_{{ i }}">{{ participant.displayName }}</div>
 
-            <img
-              [src]="participant.isMuted ? '/assets/images/mute-mic-red.png' : '/assets/images/mic.png'"
-              class="panel-icon"
-              [alt]="participant.isMuted ? 'Microphone muted icon' : 'Microphone on icon'"
-              (click)="toggleMuteParticipant(participant)"
-            />
-          </span>
-        </div>
-
-        <div class="govuk-table_cell cell-icon" *ngIf="participant.handRaised">
-          <span class="tooltip">
-            <span class="top top-name-icon govuk-body-s--white tooltip-hand">
-              Lower hand
+        <ng-container *ngIf="!isParticipantDisconnected(participant); else participantDisconnected">
+          <div class="pRole" id="panel_participant_role_{{ i }}"></div>
+          <div class="pmute" *ngIf="isParticipantInHearing(participant)">
+            <span class="tooltip">
+              <span
+                class="top top-name-icon govuk-body-s--white tooltip-mute"
+                [ngClass]="participant.isMuted ? 'tooltip-unmute' : 'tooltip-mute'"
+              >
+                {{ participant.isMuted ? 'Unmute' : 'Mute' }}
+              </span>
+              <img
+                [src]="participant.isMuted ? '/assets/images/mute-mic-red.png' : '/assets/images/mic.png'"
+                class="panel-icon"
+                [alt]="participant.isMuted ? 'Microphone muted icon' : 'Microphone on icon'"
+                (click)="toggleMuteParticipant(participant)"
+              />
             </span>
-            <img
-              src="/assets/images/hand-yellow.png"
-              class="panel-icon"
-              alt="Hand on icon"
-              (click)="lowerParticipantHand(participant.participantId)"
-            />
-          </span>
-        </div>
+          </div>
+          <div class="phand" *ngIf="participant.handRaised">
+            <span class="tooltip">
+              <span class="top top-name-icon govuk-body-s--white tooltip-hand">
+                Lower hand
+              </span>
+              <img
+                src="/assets/images/hand-yellow.png"
+                class="panel-icon"
+                alt="Hand on icon"
+                (click)="lowerParticipantHand(participant.participantId)"
+              />
+            </span>
+          </div>
+          <div class="pntwk">
+            <app-participant-alert [participant]="mapParticipantToParticipantResponse(participant)"></app-participant-alert>
+          </div>
+        </ng-container>
+        <ng-template #participantDisconnected>
+          <div class="pRole disconnected" id="panel_participant_role_{{ i }}">DISCONNECTED</div>
+          <div class="pntwk">
+            <app-participant-alert [participant]="mapParticipantToParticipantResponse(participant)"></app-participant-alert>
+          </div>
+        </ng-template>
       </div>
-
-      <ng-container *ngIf="!isParticipantDisconnected(participant); else participantDisconnected">
-        <div class="govuk-table_cell">
-          <app-participant-alert [participant]="mapParticipantToParticipantResponse(participant)"></app-participant-alert>
-        </div>
-      </ng-container>
-      <ng-template #participantDisconnected>
-        <app-participant-alert [participant]="mapParticipantToParticipantResponse(participant)"></app-participant-alert>
-      </ng-template>
+      <div class="vh-line"></div>
     </div>
   </div>
   <div class="govuk-grid-row scroll-shevrons">
@@ -61,18 +57,10 @@
       <img src="/assets/images/IM-open-arrow.png" class="scroll-icon" alt="chevron scroll up" (click)="scrollUp()" />
     </span>
   </div>
-
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full govuk-!-margin-top-2 govuk-!-margin-bottom-3">
-      <button
-        data-prevent-double-click="true"
-        class="govuk-button grey-btn vh-mr"
-        [ngClass]="{ muted: isMuteAll }"
-        (click)="toggleMuteAll()"
-      >
-        {{ muteAllToggleText }}
-      </button>
-      <button class="govuk-button grey-btn" (click)="lowerAllHands()">Lower all hands</button>
+  <div class="buttonRow">
+    <div class="small-button btn-mute" [ngClass]="{ muted: isMuteAll }" data-prevent-double-click="true" (click)="toggleMuteAll()">
+      {{ muteAllToggleText }}
     </div>
+    <div class="small-button btn-lowerhand" (click)="lowerAllHands()">Lower all hands</div>
   </div>
 </div>

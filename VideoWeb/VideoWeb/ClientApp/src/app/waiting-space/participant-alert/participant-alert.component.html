@@ -1,22 +1,12 @@
 <div *ngIf="networkHealth">
   <span *ngIf="!isNetworkGood" class="tooltip">
-    <span class="top tooltip-alert"> Poor signal</span>
-    <img *ngIf="!isNetworkGood" src="/assets/images/alert-1.png" class="panel-icon-alert" alt="Hand on icon" />
+    <span class="top tooltip-alert">Poor signal</span>
+    <img *ngIf="!isNetworkGood" src="/assets/images/alert-1.png" class="panel-icon-alert" alt="Poor connection icon" />
   </span>
 </div>
-
-<div *ngIf="isDisconnected" class="govuk-grid-row">
-  <div class="govuk-grid-column-one-half">
-    <p class="disconnected">DISCONNECTED</p>
-  </div>
-  <div class="govuk-grid-column-one-quarter">
-    <span class="tooltip">
-      <img
-        src="/assets/images/participant-disconnected.png"
-        class="alert-icon"
-        alt="participant disconnected"
-        style="padding-bottom: 5px;"
-      />
-    </span>
-  </div>
+<div *ngIf="isDisconnected">
+  <span class="tooltip">
+    <span class="top tooltip-disc">Disconnected</span>
+    <img src="/assets/images/alert-full.png" class="panel-icon-alert-disc" alt="Disconnected icon" />
+  </span>
 </div>

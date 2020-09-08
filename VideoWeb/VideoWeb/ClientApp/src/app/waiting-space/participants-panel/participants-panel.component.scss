@@ -46,7 +46,7 @@
 }
 
 .panel-icon {
-  height: 25px;
+  width: 24px;
   cursor: pointer;
   padding-left: 5px;
   padding-right: 5px;
@@ -159,5 +159,77 @@
 .disconnected {
   @include govuk-font(16, $weight: 'bold', $tabular: false, $line-height: false);
   color: govuk-colour('red');
-  margin: 4px 0px 0px 8px;
+  margin: 0px 0px 3px 0px;
+}
+
+.participantList {
+  grid-column: 1/1;
+  grid-row: 1/1;
+  justify-self: start;
+  align-self: start;
+  overflow: scroll;
+  background: #222;
+  padding: 12px 4px 4px 4px;
+}
+.pGridOpen {
+  @include govuk-font(16, $weight: 'regular', $tabular: false, $line-height: false);
+  color: govuk-colour('white');
+  padding-left: 12px;
+  display: grid;
+  grid-template-columns: auto 40px 40px 40px;
+  grid-template-rows: auto auto;
+}
+.pName {
+  grid-column: 1/1;
+  grid-row: 1/1;
+  justify-self: start;
+  align-self: end;
+}
+.pRole {
+  grid-column: 1/1;
+  grid-row: 2/2;
+  justify-self: start;
+  align-self: end;
+  font-size: 14px;
+}
+.pmute {
+  grid-column: 2/2;
+  grid-row: 2/2;
+  justify-self: end;
+  align-self: end;
+}
+.phand {
+  grid-column: 3/3;
+  grid-row: 2/2;
+  justify-self: end;
+  align-self: center;
+}
+.pntwk {
+  grid-column: 4/4;
+  grid-row: 2/2;
+  justify-self: end;
+  align-self: start;
+}
+.buttonRow {
+  display: flex;
+  flex-direction: row;
+  justify-items: center;
+  margin-left: 8px;
+}
+.small-button {
+  @include govuk-font(14, $weight: 'regular', $tabular: false, $line-height: false);
+  color: #ffffff;
+  padding: 6px 10px;
+  background: #626a6e;
+  border: transparent 1px;
+  border-radius: 2px;
+}
+.btn-mute {
+  cursor: pointer;
+  font-size: 12px;
+  margin-right: 4px;
+}
+.btn-lowerhand {
+  cursor: pointer;
+  font-size: 12px;
 }
