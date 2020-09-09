@@ -15,7 +15,7 @@ describe('ErrorService', () => {
             providers: [ErrorService, { provide: Logger, useClass: MockLogger }]
         });
 
-        router = TestBed.get(Router);
+        router = TestBed.inject(Router);
     });
 
     it('should do nothing if skip redirect is true', inject([ErrorService], (service: ErrorService) => {

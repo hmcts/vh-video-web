@@ -7,14 +7,14 @@ import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VideoWebService } from '../../services/api/video-web.service';
-import { EquipmentCheckBaseComponent } from '../abstract/equipment-check-base.component';
+import { EquipmentCheckBaseComponentDirective } from '../abstract/equipment-check-base.component';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 
 @Component({
     selector: 'app-camera-check',
     templateUrl: './camera-check.component.html'
 })
-export class CameraCheckComponent extends EquipmentCheckBaseComponent implements OnInit {
+export class CameraCheckComponent extends EquipmentCheckBaseComponentDirective implements OnInit {
     constructor(
         protected router: Router,
         protected route: ActivatedRoute,

@@ -173,7 +173,7 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
             participant.role,
             participant.case_type_group,
             participant.status,
-            participant.pexip_display_name
+            participant.tiled_display_name
         );
     }
 

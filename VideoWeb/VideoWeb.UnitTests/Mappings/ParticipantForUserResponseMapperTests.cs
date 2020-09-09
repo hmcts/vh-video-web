@@ -57,25 +57,23 @@ namespace VideoWeb.UnitTests.Mappings
                 response[index].Status.ToString().Should().BeEquivalentTo(participant.Status.ToString());
                 response[index].Representee.Should().BeEquivalentTo(participant.Representee);
                 response[index].CaseTypeGroup.Should().BeEquivalentTo(participant.Case_group);
-                response[index].PexipDisplayName.Should().NotBeNullOrWhiteSpace();
+                response[index].TiledDisplayName.Should().NotBeNullOrWhiteSpace();
             }
             
-            var tiledNames = response.Select(x => x.PexipDisplayName).ToList();
+            var tiledNames = response.Select(x => x.TiledDisplayName).ToList();
 
             foreach (var participantResponse in response)
             {
-                var position = participantResponse.PexipDisplayName.Split(';');
+                var position = participantResponse.TiledDisplayName.Split(';');
                 if (participantResponse.Role == Role.Judge)
                 {
-                    participantResponse.PexipDisplayName.StartsWith("T0").Should().BeTrue();
+                    participantResponse.TiledDisplayName.StartsWith("T0").Should().BeTrue();
                 }
 
                 if (position[0].StartsWith("T"))
                 {
                     tiledNames.Count(x => x.StartsWith(position[0])).Should().Be(1);
-
                 }
-             
             }
         }
     }

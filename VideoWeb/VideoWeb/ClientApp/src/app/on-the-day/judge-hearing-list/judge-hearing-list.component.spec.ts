@@ -93,8 +93,8 @@ describe('JudgeHearingListComponent', () => {
 
     it('should retrieve conferences and setup interval on init', fakeAsync(() => {
         component.conferences = null;
-        const interval = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
-        spyOn(global, 'setInterval').and.returnValue(interval);
+        const interval = jasmine.createSpyObj<NodeJS.Timeout>('NodeJS.Timeout', ['ref', 'unref']);
+        spyOn(global, 'setInterval').and.returnValue(<any>interval);
 
         component.ngOnInit();
         flushMicrotasks();

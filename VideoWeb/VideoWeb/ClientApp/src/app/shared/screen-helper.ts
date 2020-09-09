@@ -1,3 +1,5 @@
+import { Injectable } from '@angular/core';
+@Injectable()
 export class ScreenHelper {
     enableFullScreen(fullScreen: boolean) {
         const masterContainer = document.getElementById('master-container');

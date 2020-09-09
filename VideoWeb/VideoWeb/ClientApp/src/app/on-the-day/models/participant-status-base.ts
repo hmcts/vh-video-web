@@ -1,9 +1,10 @@
-import { HostListener } from '@angular/core';
+import { HostListener, Directive } from '@angular/core';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { EventType } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 
-export abstract class ParticipantStatusBase {
+@Directive()
+export abstract class ParticipantStatusBaseDirective {
     constructor(protected participantStatusUpdateService: ParticipantStatusUpdateService, protected logger: Logger) {}
 
     abstract conferenceId: string;

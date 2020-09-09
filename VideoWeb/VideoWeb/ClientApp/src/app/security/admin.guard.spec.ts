@@ -1,4 +1,4 @@
-import { async } from '@angular/core/testing';
+import { async, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { ProfileService } from '../services/api/profile.service';
 import { Role, UserProfileResponse } from '../services/clients/api-client';
@@ -19,25 +19,25 @@ describe('AdminGuard', () => {
         guard = new AdminGuard(profileServiceSpy, router, new MockLogger());
     });
 
-    it('should not be able to activate component if role is not VHOfficer', async(async () => {
+    it('should not be able to activate component if role is not VHOfficer', async () => {
         const profile = new UserProfileResponse({ role: Role.Judge });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         const result = await guard.canActivate(null, null);
         expect(result).toBeFalsy();
         expect(router.navigate).toHaveBeenCalledWith(['/home']);
-    }));
+    });
 
-    it('should be able to activate component if role is VHOfficer', async(async () => {
+    it('should be able to activate component if role is VHOfficer', async () => {
         const profile = new UserProfileResponse({ role: Role.VideoHearingsOfficer });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         const result = await guard.canActivate(null, null);
         expect(result).toBeTruthy();
-    }));
+    });
 
-    it('should logout when user profile cannot be retrieved', async(async () => {
+    it('should logout when user profile cannot be retrieved', async () => {
         profileServiceSpy.getUserProfile.and.callFake(() => Promise.reject({ status: 404, isApiException: true }));
         const result = await guard.canActivate(null, null);
         expect(result).toBeFalsy();
         expect(router.navigate).toHaveBeenCalledWith(['/logout']);
-    }));
+    });
 });

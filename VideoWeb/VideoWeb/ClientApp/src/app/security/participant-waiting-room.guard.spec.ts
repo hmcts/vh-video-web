@@ -20,13 +20,13 @@ describe('ParticipantWaitingRoomGuard', () => {
         guard = new ParticipantWaitingRoomGuard(videoWebServiceSpy, router, new MockLogger());
     });
 
-    it('should be able to activate component', async(async () => {
+    it('should be able to activate component', async () => {
         const response = new ConferenceResponse({ status: ConferenceStatus.NotStarted });
         videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(response));
         const result = await guard.canActivate(activateRoute);
 
         expect(result).toBeTruthy();
-    }));
+    });
 
     it('should not be able to activate component when conference closed', async () => {
         const date = new Date(new Date().toUTCString());
@@ -39,20 +39,20 @@ describe('ParticipantWaitingRoomGuard', () => {
         expect(router.navigate).toHaveBeenCalledWith(['participant/hearing-list']);
     });
 
-    it('should not be able to activate component if conferenceId null', async(async () => {
+    it('should not be able to activate component if conferenceId null', async () => {
         activateRoute = { paramMap: convertToParamMap({ conferenceId: null }) };
         videoWebServiceSpy.getConferenceById.and.returnValue(undefined);
         const result = await guard.canActivate(activateRoute);
 
         expect(result).toBeFalsy();
         expect(router.navigate).toHaveBeenCalledWith(['home']);
-    }));
+    });
 
-    it('should not be able to activate component when exception', async(async () => {
+    it('should not be able to activate component when exception', async () => {
         videoWebServiceSpy.getConferenceById.and.callFake(() => Promise.reject({ status: 500, isApiException: true }));
         const result = await guard.canActivate(activateRoute);
 
         expect(result).toBeFalsy();
         expect(router.navigate).toHaveBeenCalledWith(['home']);
-    }));
+    });
 });

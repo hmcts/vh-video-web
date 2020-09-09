@@ -37,7 +37,7 @@ describe('ParticipantsPanelComponent', () => {
                         x.role,
                         x.case_type_group,
                         ParticipantStatus.InHearing,
-                        x.pexip_display_name
+                        x.tiled_display_name
                     )
             );
     });

@@ -6,7 +6,7 @@ import { TestCallScoreResponse, AddSelfTestFailureEventRequest, SelfTestFailureR
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { BaseSelfTestComponent } from '../models/base-self-test.component';
+import { BaseSelfTestComponentDirective } from '../models/base-self-test.component';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { EventType } from 'src/app/services/clients/api-client';
 
@@ -14,7 +14,7 @@ import { EventType } from 'src/app/services/clients/api-client';
     selector: 'app-participant-self-test',
     templateUrl: './participant-self-test.component.html'
 })
-export class ParticipantSelfTestComponent extends BaseSelfTestComponent {
+export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective {
     selfTestCompleted = false;
     constructor(
         private router: Router,

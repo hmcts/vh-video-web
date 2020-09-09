@@ -25,7 +25,7 @@ describe('ConfigService', () => {
         clientSettings.post_logout_redirect_uri = '/dashboard';
         clientSettings.redirect_uri = '/dashboard';
         apiClientSpy.getClientConfigurationSettings.and.returnValue(of(clientSettings));
-        configService = TestBed.get(ConfigService);
+        configService = TestBed.inject(ConfigService);
     });
 
     afterEach(() => {

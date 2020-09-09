@@ -42,7 +42,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     let logger: jasmine.SpyObj<Logger>;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
 
-    let timer: jasmine.SpyObj<NodeJS.Timer>;
+    let timer: jasmine.SpyObj<NodeJS.Timeout>;
 
     beforeAll(() => {
         adalService = mockAdalService;
@@ -269,7 +269,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
     it('should display VHO consultation request modal when VHO request message is received and participant is available', fakeAsync(() => {
         consultationService.displayAdminConsultationRequest.calls.reset();
-        spyOn(global, 'setTimeout').and.returnValue(timer);
+        spyOn(global, 'setTimeout').and.returnValue(<any>timer);
         component.consultationRequestee = undefined;
         component.consultationRequester = undefined;
 
@@ -283,7 +283,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
     it('should not VHO consultation request modal when VHO request message is received and participant is not available', fakeAsync(() => {
         consultationService.displayAdminConsultationRequest.calls.reset();
-        spyOn(global, 'setTimeout').and.returnValue(timer);
+        spyOn(global, 'setTimeout').and.returnValue(<any>timer);
         component.consultationRequestee = undefined;
         component.consultationRequester = undefined;
         spyOn(component, 'isParticipantAvailable').and.returnValue(false);
