@@ -79,6 +79,9 @@ stages:
         - name: vh-video-api-$(environment)
           resourceGroup: vh-video-api-$(environment)
           healthEndpoint: $(video_api_url)healthcheck/health
+        - name: vh-test-api-$(environment)
+          resourceGroup: vh-test-api-$(environment)
+          healthEndpoint: $(test_api_url)health/health
       deviceConfiguration:
         - OS: Windows
           Browser: Chrome
@@ -136,6 +139,11 @@ stages:
           value: $(user_api_url)
         - name: VhServices:UserApiResourceId
           value: vh-user-api-identifieruris
+          secret: true
+        - name: VhServices:TestApiUrl
+          value: $(test_api_url)
+        - name: VhServices:TestApiResourceId
+          value: vh-test-api-identifieruris
           secret: true
         - name: VhServices:BookingsApiUrl
           value: $(bookings_api_url)
