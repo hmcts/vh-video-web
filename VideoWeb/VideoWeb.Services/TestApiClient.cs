@@ -192,39 +192,39 @@ namespace VideoWeb.Services.TestApi
         /// <param name="hearingId">Hearing Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceDetailsResponse>> GetAudioRecordingLinkByHearingIdAsync(System.Guid hearingId);
+        System.Threading.Tasks.Task<AudioRecordingResponse> GetAudioRecordingLinkByHearingIdAsync(System.Guid hearingId);
     
         /// <summary>Get audio recording link</summary>
         /// <param name="hearingId">Hearing Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Collections.Generic.List<ConferenceDetailsResponse> GetAudioRecordingLinkByHearingId(System.Guid hearingId);
+        AudioRecordingResponse GetAudioRecordingLinkByHearingId(System.Guid hearingId);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get audio recording link</summary>
         /// <param name="hearingId">Hearing Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceDetailsResponse>> GetAudioRecordingLinkByHearingIdAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<AudioRecordingResponse> GetAudioRecordingLinkByHearingIdAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get tasks for a conference</summary>
         /// <param name="conferenceId">Conference Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceDetailsResponse>> GetTasksByConferenceIdAsync(System.Guid conferenceId);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<TaskResponse>> GetTasksByConferenceIdAsync(System.Guid conferenceId);
     
         /// <summary>Get tasks for a conference</summary>
         /// <param name="conferenceId">Conference Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Collections.Generic.List<ConferenceDetailsResponse> GetTasksByConferenceId(System.Guid conferenceId);
+        System.Collections.Generic.List<TaskResponse> GetTasksByConferenceId(System.Guid conferenceId);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get tasks for a conference</summary>
         /// <param name="conferenceId">Conference Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceDetailsResponse>> GetTasksByConferenceIdAsync(System.Guid conferenceId, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<TaskResponse>> GetTasksByConferenceIdAsync(System.Guid conferenceId, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Create video event</summary>
         /// <param name="body">Conference event request</param>
@@ -1475,7 +1475,7 @@ namespace VideoWeb.Services.TestApi
         /// <param name="hearingId">Hearing Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceDetailsResponse>> GetAudioRecordingLinkByHearingIdAsync(System.Guid hearingId)
+        public System.Threading.Tasks.Task<AudioRecordingResponse> GetAudioRecordingLinkByHearingIdAsync(System.Guid hearingId)
         {
             return GetAudioRecordingLinkByHearingIdAsync(hearingId, System.Threading.CancellationToken.None);
         }
@@ -1484,7 +1484,7 @@ namespace VideoWeb.Services.TestApi
         /// <param name="hearingId">Hearing Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public System.Collections.Generic.List<ConferenceDetailsResponse> GetAudioRecordingLinkByHearingId(System.Guid hearingId)
+        public AudioRecordingResponse GetAudioRecordingLinkByHearingId(System.Guid hearingId)
         {
             return System.Threading.Tasks.Task.Run(async () => await GetAudioRecordingLinkByHearingIdAsync(hearingId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
@@ -1494,7 +1494,7 @@ namespace VideoWeb.Services.TestApi
         /// <param name="hearingId">Hearing Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceDetailsResponse>> GetAudioRecordingLinkByHearingIdAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<AudioRecordingResponse> GetAudioRecordingLinkByHearingIdAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)
                 throw new System.ArgumentNullException("hearingId");
@@ -1531,7 +1531,7 @@ namespace VideoWeb.Services.TestApi
                         var status_ = ((int)response_.StatusCode).ToString();
                         if (status_ == "200") 
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<ConferenceDetailsResponse>>(response_, headers_).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<AudioRecordingResponse>(response_, headers_).ConfigureAwait(false);
                             return objectResponse_.Object;
                         }
                         else
@@ -1559,7 +1559,7 @@ namespace VideoWeb.Services.TestApi
                             throw new TestApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
-                        return default(System.Collections.Generic.List<ConferenceDetailsResponse>);
+                        return default(AudioRecordingResponse);
                     }
                     finally
                     {
@@ -1577,7 +1577,7 @@ namespace VideoWeb.Services.TestApi
         /// <param name="conferenceId">Conference Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceDetailsResponse>> GetTasksByConferenceIdAsync(System.Guid conferenceId)
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<TaskResponse>> GetTasksByConferenceIdAsync(System.Guid conferenceId)
         {
             return GetTasksByConferenceIdAsync(conferenceId, System.Threading.CancellationToken.None);
         }
@@ -1586,7 +1586,7 @@ namespace VideoWeb.Services.TestApi
         /// <param name="conferenceId">Conference Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public System.Collections.Generic.List<ConferenceDetailsResponse> GetTasksByConferenceId(System.Guid conferenceId)
+        public System.Collections.Generic.List<TaskResponse> GetTasksByConferenceId(System.Guid conferenceId)
         {
             return System.Threading.Tasks.Task.Run(async () => await GetTasksByConferenceIdAsync(conferenceId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
@@ -1596,7 +1596,7 @@ namespace VideoWeb.Services.TestApi
         /// <param name="conferenceId">Conference Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceDetailsResponse>> GetTasksByConferenceIdAsync(System.Guid conferenceId, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<TaskResponse>> GetTasksByConferenceIdAsync(System.Guid conferenceId, System.Threading.CancellationToken cancellationToken)
         {
             if (conferenceId == null)
                 throw new System.ArgumentNullException("conferenceId");
@@ -1633,7 +1633,7 @@ namespace VideoWeb.Services.TestApi
                         var status_ = ((int)response_.StatusCode).ToString();
                         if (status_ == "200") 
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<ConferenceDetailsResponse>>(response_, headers_).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<TaskResponse>>(response_, headers_).ConfigureAwait(false);
                             return objectResponse_.Object;
                         }
                         else
@@ -1661,7 +1661,7 @@ namespace VideoWeb.Services.TestApi
                             throw new TestApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
-                        return default(System.Collections.Generic.List<ConferenceDetailsResponse>);
+                        return default(System.Collections.Generic.List<TaskResponse>);
                     }
                     finally
                     {
@@ -4067,6 +4067,72 @@ namespace VideoWeb.Services.TestApi
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class AudioRecordingResponse 
+    {
+        [Newtonsoft.Json.JsonProperty("audio_file_link", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Audio_file_link { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public enum TaskType
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"Hearing")]
+        Hearing = 0,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Judge")]
+        Judge = 1,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Participant")]
+        Participant = 2,
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public enum TaskStatus
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"ToDo")]
+        ToDo = 0,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Done")]
+        Done = 1,
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class TaskResponse 
+    {
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public long Id { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("origin_id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid Origin_id { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("body", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Body { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public TaskType Type { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public TaskStatus Status { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime Created { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("updated", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Updated { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("updated_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Updated_by { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
     public enum EventType
     {
         [System.Runtime.Serialization.EnumMember(Value = @"None")]
@@ -4084,41 +4150,41 @@ namespace VideoWeb.Services.TestApi
         [System.Runtime.Serialization.EnumMember(Value = @"Help")]
         Help = 4,
     
-        [System.Runtime.Serialization.EnumMember(Value = @"Pause")]
-        Pause = 5,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Close")]
-        Close = 6,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Leave")]
-        Leave = 7,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Consultation")]
-        Consultation = 8,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"MediaPermissionDenied")]
-        MediaPermissionDenied = 9,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"ParticipantJoining")]
-        ParticipantJoining = 10,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"SelfTestFailed")]
-        SelfTestFailed = 11,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"Suspend")]
-        Suspend = 12,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"VhoCall")]
-        VhoCall = 13,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"ParticipantNotSignedIn")]
-        ParticipantNotSignedIn = 14,
-    
         [System.Runtime.Serialization.EnumMember(Value = @"Start")]
-        Start = 15,
+        Start = 5,
     
         [System.Runtime.Serialization.EnumMember(Value = @"CountdownFinished")]
-        CountdownFinished = 16,
+        CountdownFinished = 6,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Pause")]
+        Pause = 7,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Close")]
+        Close = 8,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Leave")]
+        Leave = 9,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Consultation")]
+        Consultation = 10,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"MediaPermissionDenied")]
+        MediaPermissionDenied = 11,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"ParticipantJoining")]
+        ParticipantJoining = 12,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"SelfTestFailed")]
+        SelfTestFailed = 13,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Suspend")]
+        Suspend = 14,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"VhoCall")]
+        VhoCall = 15,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"ParticipantNotSignedIn")]
+        ParticipantNotSignedIn = 16,
     
         [System.Runtime.Serialization.EnumMember(Value = @"EndpointJoined")]
         EndpointJoined = 17,
@@ -4231,9 +4297,13 @@ namespace VideoWeb.Services.TestApi
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
     public partial class AppVersionResponse 
     {
-        /// <summary>Version of the app</summary>
-        [Newtonsoft.Json.JsonProperty("version", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Version { get; set; }
+        /// <summary>File Version of the app</summary>
+        [Newtonsoft.Json.JsonProperty("file_version", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string File_version { get; set; }
+    
+        /// <summary>Information Version of the app</summary>
+        [Newtonsoft.Json.JsonProperty("information_version", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Information_version { get; set; }
     
     
     }
