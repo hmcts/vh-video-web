@@ -92,7 +92,7 @@ parameters:
   - name: Testing:TestUsernameStem
     value: $(TestUserSecrets:TestUsernameStem)
   - name: Testing:TestUserPassword
-    value: $(TestUserSecrets:TestUserPassword)
+    value: $(TestUserSecrets:TestApiUserPassword)
 
   # Kinly
   - name: KinlyConfiguration:CallbackSecret
