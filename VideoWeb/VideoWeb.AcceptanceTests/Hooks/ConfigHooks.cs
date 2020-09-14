@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AcceptanceTests.Common.Configuration;
-using AcceptanceTests.Common.Configuration.Users;
 using AcceptanceTests.Common.Data.TestData;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
@@ -11,10 +10,9 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Configuration;
 using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Data.TestData;
+using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.Common.Security.HashGen;
-using VideoWeb.Services.Bookings;
-using VideoWeb.Services.Video;
-using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
+using VideoWeb.Services.TestApi;
 
 namespace VideoWeb.AcceptanceTests.Hooks
 {
@@ -27,7 +25,6 @@ namespace VideoWeb.AcceptanceTests.Hooks
         {
             _configRoot = ConfigurationManager.BuildConfig("CA353381-2F0D-47D7-A97B-79A30AFF8B86", GetTargetEnvironment(), RunOnSauceLabsFromLocal());
             context.VideoWebConfig = new VideoWebConfig();
-            context.UserAccounts = new List<UserAccount>();
             context.Tokens = new VideoWebTokens();
         }
 
@@ -48,8 +45,8 @@ namespace VideoWeb.AcceptanceTests.Hooks
             RegisterAzureSecrets(context);
             RegisterCustomTokenSecrets(context);
             RegisterTestUserSecrets(context);
-            RegisterTestUsers(context);
             RegisterDefaultData(context);
+            RegisterIsLive(context);
             RegisterHearingServices(context);
             RegisterWowzaSettings(context);
             RegisterSauceLabsSettings(context);
@@ -85,17 +82,6 @@ namespace VideoWeb.AcceptanceTests.Hooks
             context.VideoWebConfig.TestConfig.TestUserPassword.Should().NotBeNull();
         }
 
-        private void RegisterTestUsers(TestContext context)
-        {
-            context.UserAccounts = Options.Create(_configRoot.GetSection("UserAccounts").Get<List<UserAccount>>()).Value;
-            context.UserAccounts.Should().NotBeNullOrEmpty();
-            foreach (var user in context.UserAccounts)
-            {
-                user.Key = user.Lastname;
-                user.Username = $"{user.DisplayName.Replace(" ", "").Replace("ClerkJudge", "Clerk")}{context.VideoWebConfig.TestConfig.TestUsernameStem}";
-            }
-        }
-
         private static void RegisterDefaultData(TestContext context)
         {
             context.Test = new Test
@@ -109,8 +95,15 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 HearingParticipants = new List<ParticipantResponse>(),
                 NewConferenceId = Guid.Empty,
                 NewHearingId = Guid.Empty,
-                TestData = new DefaultDataManager().SerialiseTestData()
+                TestData = new DefaultDataManager().SerialiseTestData(),
+                Users = new List<User>()
             };
+        }
+
+        private void RegisterIsLive(TestContext context)
+        {
+            context.VideoWebConfig.IsLive = _configRoot.GetValue<bool>("IsLive");
+            context.VideoWebConfig.Should().NotBeNull();
         }
 
         private void RegisterHearingServices(TestContext context)
@@ -137,27 +130,15 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         private static void RunningAppsLocally(TestContext context)
         {
-            context.VideoWebConfig.VhServices.RunningVideoApiLocally = context.VideoWebConfig.VhServices.VideoApiUrl.Contains("localhost");
+            context.VideoWebConfig.VhServices.RunningTestApiLocally = context.VideoWebConfig.VhServices.TestApiUrl.Contains("localhost");
             context.VideoWebConfig.VhServices.RunningVideoWebLocally = context.VideoWebConfig.VhServices.VideoWebUrl.Contains("localhost");
         }
 
         private static async Task GenerateBearerTokens(TestContext context)
         {
-            context.Tokens.BookingsApiBearerToken = await ConfigurationManager.GetBearerToken(
-                context.VideoWebConfig.AzureAdConfiguration, context.VideoWebConfig.VhServices.BookingsApiResourceId);
-            context.Tokens.BookingsApiBearerToken.Should().NotBeNullOrEmpty();
-
-            context.Tokens.UserApiBearerToken = await ConfigurationManager.GetBearerToken(
-                context.VideoWebConfig.AzureAdConfiguration, context.VideoWebConfig.VhServices.UserApiResourceId);
-            context.Tokens.UserApiBearerToken.Should().NotBeNullOrEmpty();
-
-            context.Tokens.VideoApiBearerToken = await ConfigurationManager.GetBearerToken(
-                context.VideoWebConfig.AzureAdConfiguration, context.VideoWebConfig.VhServices.VideoApiResourceId);
-            context.Tokens.VideoApiBearerToken.Should().NotBeNullOrEmpty();
-
-            context.Tokens.VideoWebBearerToken = await ConfigurationManager.GetBearerToken(
-                context.VideoWebConfig.AzureAdConfiguration, context.VideoWebConfig.AzureAdConfiguration.ClientId);
-            context.Tokens.VideoWebBearerToken.Should().NotBeNullOrEmpty();
+            context.Tokens.TestApiBearerToken = await ConfigurationManager.GetBearerToken(
+                context.VideoWebConfig.AzureAdConfiguration, context.VideoWebConfig.VhServices.TestApiResourceId);
+            context.Tokens.TestApiBearerToken.Should().NotBeNullOrEmpty();
 
             context.Tokens.CallbackBearerToken = GenerateTemporaryTokens.SetCustomJwTokenForCallback(context.VideoWebConfig.VideoWebKinlyConfiguration);
             context.Tokens.CallbackBearerToken.Should().NotBeNullOrEmpty();

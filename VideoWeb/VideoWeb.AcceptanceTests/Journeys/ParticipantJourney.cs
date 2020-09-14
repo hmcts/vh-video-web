@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using FluentAssertions;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.Services.TestApi;
 
 namespace VideoWeb.AcceptanceTests.Journeys
 {
@@ -27,9 +28,9 @@ namespace VideoWeb.AcceptanceTests.Journeys
             };
         }
 
-        public void VerifyUserIsApplicableToJourney(string currentUserRole)
+        public void VerifyUserIsApplicableToJourney(UserType userType)
         {
-            currentUserRole.ToLower().Should().BeOneOf("participant", "individual", "representative");
+            userType.ToString().ToLower().Should().BeOneOf("participant", "individual", "representative");
         }
 
         public void VerifyDestinationIsInThatJourney(Page destinationPage)

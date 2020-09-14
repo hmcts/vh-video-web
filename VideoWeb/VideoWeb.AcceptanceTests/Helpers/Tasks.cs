@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net;
 using AcceptanceTests.Common.Api.Helpers;
 using FluentAssertions;
-using VideoWeb.Services.Video;
+using VideoWeb.Services.TestApi;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.AcceptanceTests.Helpers
@@ -12,7 +12,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
     {
         public static void GetTheTaskId(TestContext context, EventType eventType)
         {
-            var response = context.Apis.VideoApi.GetTasks(context.Test.NewConferenceId);
+            var response = context.Apis.TestApi.GetTasks(context.Test.NewConferenceId);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var tasks = RequestHelper.Deserialise<List<TaskResponse>>(response.Content);
             var taskType = EventTypeToTaskTypeMapper(eventType);
@@ -33,9 +33,9 @@ namespace VideoWeb.AcceptanceTests.Helpers
             return eventType.ToString();
         }
 
-        public static void TasksListShouldBeEmpty(TestContext context, EventType eventType)
+        public static void TasksListShouldBeEmpty(TestContext context)
         {
-            var response = context.Apis.VideoApi.GetTasks(context.Test.NewConferenceId);
+            var response = context.Apis.TestApi.GetTasks(context.Test.NewConferenceId);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var tasks = RequestHelper.Deserialise<List<TaskResponse>>(response.Content);
             tasks.Count.Should().Be(0);

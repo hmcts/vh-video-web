@@ -1,4 +1,4 @@
-﻿using AcceptanceTests.Common.Api.Hearings;
+using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Configuration;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Configuration;
@@ -14,8 +14,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         {
             context.Apis = new Apis
             {
-                BookingsApi = new BookingsApiManager(context.VideoWebConfig.VhServices.BookingsApiUrl, context.Tokens.BookingsApiBearerToken),
-                VideoApi = new VideoApiManager(context.VideoWebConfig.VhServices.VideoApiUrl, context.Tokens.VideoApiBearerToken),
+                TestApi = new TestApiManager(context.VideoWebConfig.VhServices.TestApiUrl, context.Tokens.TestApiBearerToken),
                 VideoWebApi = new VideoWebApiManager(context.VideoWebConfig.VhServices.VideoWebApiUrl, context.Tokens.CallbackBearerToken)
             };
             ConfigurationManager.VerifyConfigValuesSet(context.Apis);

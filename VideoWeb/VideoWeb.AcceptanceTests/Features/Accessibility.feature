@@ -9,7 +9,7 @@ Scenario Outline: Hearing List page accessibility
 	Then the page should be accessible
 	Examples: 
 	| Role        |
-	| Clerk       |
+	| Judge       |
 	| Participant |
 
 @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
@@ -34,7 +34,7 @@ Scenario Outline: Practice video hearing page accessibility
 	Then the page should be accessible 
 	Examples: 
 	| Role                     |
-	| Clerk Self Test          |
+	| Judge Self Test          |
 	| Representative Self Test |
 	| Individual               |
 
@@ -70,7 +70,7 @@ Scenario Outline: Waiting Room page accessibility
     Then the page should be accessible 
     Examples: 
     | Role        |
-    | Clerk       |
+    | Judge       |
     | Participant |
 
 @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
@@ -83,16 +83,16 @@ Scenario: Help page accessibility
 
 @Accessibility @HearingTest @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
 Scenario: Hearing Room page accessibility
-	Given the Individual01 user has progressed to the Waiting Room page
-	And the Clerk user has progressed to the Waiting Room page for the existing hearing
-	Then the participant status for Individual01 is displayed as Connected
-	When the Clerk starts the hearing
+	Given the the first Individual user has progressed to the Waiting Room page
+	And the Judge user has progressed to the Waiting Room page for the existing hearing
+	Then the participant status for the first Individual's is displayed as Connected
+	When the Judge starts the hearing
   And the countdown finishes
 	Then the page should be accessible apart from a missing header
-	When in Individual01's browser
+	When in the first Individual's browser
 	Then the page should be accessible apart from a missing header
-  When in the Clerk's browser
-  And the Clerk clicks close
+  When in the Judge's browser
+  And the Judge clicks close
 	Then the user is on the Hearing List page
 
 # Ignoring this test until we can upgrade to Angular 9. See VIH-6032 for more details

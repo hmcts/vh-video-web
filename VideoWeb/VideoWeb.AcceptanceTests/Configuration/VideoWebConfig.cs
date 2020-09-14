@@ -5,6 +5,7 @@ namespace VideoWeb.AcceptanceTests.Configuration
 {
     public class VideoWebConfig
     {
+        public bool IsLive { get; set; }
         public VideoWebSecurityConfiguration AzureAdConfiguration { get; set; }
         public KinlyConfiguration VideoWebKinlyConfiguration { get; set; }
         public VideoWebTestConfig TestConfig { get; set; }

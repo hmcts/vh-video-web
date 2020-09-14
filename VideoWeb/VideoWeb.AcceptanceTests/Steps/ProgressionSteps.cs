@@ -67,8 +67,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"the (.*) user has progressed to the (.*) page")]
         public void GivenIAmOnThePage(string user, string page)
         {
-            _dataSetupSteps.GivenIHaveAHearing(0);
-            _dataSetupSteps.GetTheNewConferenceDetails();
+            _dataSetupSteps.GivenIHaveAHearingAndAConference();
             _browserSteps.GivenANewBrowserIsOpenFor(user.ToLower().Contains("self test") ? user.Split(" ")[0] : user);
             Progression(FromString(user), page);
         }
@@ -77,8 +76,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"the (.*) user has progressed to the (.*) page with a hearing in (.*) minutes time")]
         public void GivenIAmOnThePageWithAHearingInMinuteTime(string user, string page, int minutes)
         {
-            _dataSetupSteps.GivenIHaveAHearing(minutes);
-            _dataSetupSteps.GetTheNewConferenceDetails();
+            _dataSetupSteps.GivenIHaveAHearingAndAConferenceInMinutesTime(minutes);
             _browserSteps.GivenANewBrowserIsOpenFor(user);
             Progression(FromString(user), page);
         }
@@ -87,17 +85,17 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the (.*) user has progressed to the (.*) page for the existing hearing")]
         public void GivenHearingExistsAndIAmOnThePage(string user, string page)
         {
-            _browserSteps.GivenANewBrowserIsOpenFor(user.ToLower().Equals("clerk self test") ? "clerk" : user);
+            _browserSteps.GivenANewBrowserIsOpenFor(user.ToLower().Equals("Judge self test") ? "Judge" : user);
             Progression(FromString(user), page);
         }
 
         private static Journey FromString(string user)
         {
-            if (RemoveNumbersFromUsername(user.ToLower()) == "clerk" ||
+            if (RemoveNumbersFromUsername(user.ToLower()) == "Judge" ||
                 RemoveNumbersFromUsername(user.ToLower()) == "judge")
-                return Journey.Clerk;
-            if (RemoveNumbersFromUsername(user.ToLower()) == "clerk self test")
-                return Journey.ClerkSelftest;
+                return Journey.Judge;
+            if (RemoveNumbersFromUsername(user.ToLower()) == "Judge self test")
+                return Journey.JudgeSelftest;
             if (RemoveNumbersFromUsername(user.ToLower()) == "individual self test" ||
                 RemoveNumbersFromUsername(user.ToLower()) == "representative self test" ||
                 RemoveNumbersFromUsername(user.ToLower()) == "panel member self test")
@@ -125,16 +123,16 @@ namespace VideoWeb.AcceptanceTests.Steps
             var endPage = Page.FromString(pageAsString);
             var journeys = new Dictionary<Journey, IJourney>
             {
-                {Journey.Clerk, new ClerkJourney()},
-                {Journey.ClerkSelftest, new ClerkSelfTestJourney()},
+                {Journey.Judge, new JudgeJourney()},
+                {Journey.JudgeSelftest, new JudgeSelfTestJourney()},
                 {Journey.Participant, new ParticipantJourney()},
                 {Journey.PanelMember, new PanelMemberJourney()},
                 {Journey.SelfTest, new SelfTestJourney()},
                 {Journey.Vho, new VhoJourney()}
             };
-            journeys[userJourney].VerifyUserIsApplicableToJourney(_c.CurrentUser.Role);
+            journeys[userJourney].VerifyUserIsApplicableToJourney(_c.CurrentUser.User_type);
             journeys[userJourney].VerifyDestinationIsInThatJourney(endPage);
-            if (userJourney == Journey.ClerkSelftest || userJourney == Journey.SelfTest) _c.Test.SelfTestJourney = true;           
+            if (userJourney == Journey.JudgeSelftest || userJourney == Journey.SelfTest) _c.Test.SelfTestJourney = true;           
             var journey = journeys[userJourney].Journey();
             var steps = Steps();
             foreach (var page in journey)

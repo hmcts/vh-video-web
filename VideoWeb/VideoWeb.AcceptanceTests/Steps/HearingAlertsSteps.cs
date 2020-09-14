@@ -18,7 +18,7 @@ using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.Common.Extensions;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Services.Video;
+using VideoWeb.Services.TestApi;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using RoomType = VideoWeb.Common.Models.RoomType;
 
@@ -28,10 +28,10 @@ namespace VideoWeb.AcceptanceTests.Steps
     public sealed class HearingAlertsSteps
     {
         private const int TimeoutForCheckboxToNotBeEnabled = 10;
-        private readonly Dictionary<string, UserBrowser> _browsers;
+        private readonly Dictionary<User, UserBrowser> _browsers;
         private readonly TestContext _c;
 
-        public HearingAlertsSteps(Dictionary<string, UserBrowser> browsers, TestContext context)
+        public HearingAlertsSteps(Dictionary<User, UserBrowser> browsers, TestContext context)
         {
             _browsers = browsers;
             _c = context;
@@ -58,7 +58,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var request = new CallbackEventRequestBuilder()
                 .WithConferenceId(_c.Test.NewConferenceId)
-                .WithParticipantId(GetClerkParticipantId())
+                .WithParticipantId(GetJudgeParticipantId())
                 .WithEventType(EventType.Suspend)
                 .WithRoomType(RoomType.HearingRoom)
                 .Build();
@@ -104,7 +104,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private ParticipantDetailsResponse GetUserFromConferenceDetails(string userRole)
         {
-            _c.Test.Participant = userRole.ToLower().Equals("judge") || userRole.ToLower().Equals("clerk")
+            _c.Test.Participant = userRole.ToLower().Equals("judge") || userRole.ToLower().Equals("Judge")
                 ? _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(Role.Judge.ToString()))
                 : _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(Role.Individual.ToString()));
             return _c.Test.Participant;
@@ -113,7 +113,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user selects the alert")]
         public void WhenTheUserSelectsTheAlert()
         {
-            _browsers[_c.CurrentUser.Key].ClickCheckbox(AdminPanelPage.TaskCheckbox(_c.Test.TaskId));
+            _browsers[_c.CurrentUser].ClickCheckbox(AdminPanelPage.TaskCheckbox(_c.Test.TaskId));
         }
 
         [When(@"the hearing has been closed")]
@@ -121,7 +121,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var request = new CallbackEventRequestBuilder()
                 .WithConferenceId(_c.Test.NewConferenceId)
-                .WithParticipantId(GetClerkParticipantId())
+                .WithParticipantId(GetJudgeParticipantId())
                 .WithEventType(EventType.Close)
                 .WithRoomType(RoomType.HearingRoom)
                 .Build();
@@ -133,37 +133,37 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Video Hearings Officer user should not see an alert")]
         public void ThenTheVideoHearingsOfficerUserShouldNotSeeAnAlert()
         {
-            _browsers[_c.CurrentUser.Key].Refresh();
-            Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser.Key], _c.Test.Conference.Id);
-            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
-            Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser.Key]);
-            Tasks.TasksListShouldBeEmpty(_c, EventType.Close);
+            _browsers[_c.CurrentUser].Refresh();
+            Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser], _c.Test.Conference.Id);
+            _browsers[_c.CurrentUser].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
+            Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
+            Tasks.TasksListShouldBeEmpty(_c);
         }
 
         [Then(@"the Video Hearings Officer user should see a (.*) notification and a (.*) alert")]
         public void ThenTheVideoHearingsOfficerUserShouldSeeAnAlert(string notification, string alertType)
         {
-            _browsers[_c.CurrentUser.Key].Refresh();
-            _browsers[_c.CurrentUser.Key].Driver.WaitForAngular();
-            Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser.Key], _c.Test.Conference.Id);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.StatusBadge(_c.Test.Conference.Id)).Text.Trim().Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
-            _browsers[_c.CurrentUser.Key].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
-            Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser.Key]);
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.TaskDetails(_c.Test.TaskId)).Text.Trim().Should().Be(alertType);
+            _browsers[_c.CurrentUser].Refresh();
+            _browsers[_c.CurrentUser].Driver.WaitForAngular();
+            Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser], _c.Test.Conference.Id);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.StatusBadge(_c.Test.Conference.Id)).Text.Trim().Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
+            _browsers[_c.CurrentUser].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
+            Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.TaskDetails(_c.Test.TaskId)).Text.Trim().Should().Be(alertType);
 
             var timeOfAlert = _c.TimeZone.AdjustAnyOS(_c.Test.AlertTime).ToString(DateFormats.AlertMessageTimestamp);
             var timeOfAlertMinusAMinute = _c.TimeZone.AdjustAnyOS(_c.Test.AlertTime).AddMinutes(-1).ToString(DateFormats.AlertMessageTimestamp);
             var timeOfAlertPlusAMinute = _c.TimeZone.AdjustAnyOS(_c.Test.AlertTime).AddMinutes(1).ToString(DateFormats.AlertMessageTimestamp);
 
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(AdminPanelPage.TaskCheckbox(_c.Test.TaskId)).Selected.Should().BeFalse();
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(AdminPanelPage.TaskCheckbox(_c.Test.TaskId)).Enabled.Should().BeTrue();
+            _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(AdminPanelPage.TaskCheckbox(_c.Test.TaskId)).Selected.Should().BeFalse();
+            _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(AdminPanelPage.TaskCheckbox(_c.Test.TaskId)).Enabled.Should().BeTrue();
             
-            var timestamp = _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.TaskCreatedDate(_c.Test.TaskId)).Text.Trim();
+            var timestamp = _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.TaskCreatedDate(_c.Test.TaskId)).Text.Trim();
             timestamp.Should().BeOneOf(timeOfAlert, timeOfAlertMinusAMinute, timeOfAlertPlusAMinute);
 
             if (alertType.ToLower().Contains("failed self-test") || alertType.ToLower().Equals("disconnected"))
-                _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.TaskFromUser(_c.Test.TaskId)).Text.Trim().Should().Be(_c.Test.Participant.Name);
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.TaskFromUser(_c.Test.TaskId)).Text.Trim().Should().Be(_c.Test.Participant.Name);
         }
 
         [Then(@"the alert checkbox is no longer enabled")]
@@ -185,7 +185,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             try
             {
-                return _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementExists(AdminPanelPage.TaskCheckbox(_c.Test.TaskId)).Enabled;
+                return _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(AdminPanelPage.TaskCheckbox(_c.Test.TaskId)).Enabled;
             }
             catch (StaleElementReferenceException e)
             {
@@ -200,12 +200,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             var time = _c.TimeZone.Adjust(DateTime.Now).ToString(DateFormats.AlertMessageTimestamp);
             var timeMinusAMinute = _c.TimeZone.Adjust(DateTime.Now).AddMinutes(-1).ToString(DateFormats.AlertMessageTimestamp);
             var timePlusAMinute = _c.TimeZone.Adjust(DateTime.Now).AddMinutes(1).ToString(DateFormats.AlertMessageTimestamp);
-            var actionedDetails = _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(AdminPanelPage.TaskActionedBy(_c.Test.TaskId)).Text.Trim();
+            var actionedDetails = _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.TaskActionedBy(_c.Test.TaskId)).Text.Trim();
             actionedDetails.Should().ContainAny(time, timeMinusAMinute, timePlusAMinute);
             actionedDetails.ToLower().Should().Contain(_c.CurrentUser.Username.WithoutDomain().ToLower());
         }
 
-        private Guid GetClerkParticipantId()
+        private Guid GetJudgeParticipantId()
         {
             return _c.Test.ConferenceParticipants.First(x => x.User_role.ToString().Equals(Role.Judge.ToString())).Id;
         }
@@ -213,7 +213,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private IRestResponse SendEventToVideoApi(CallbackEvent request)
         {
             _c.Test.AlertTime = _c.TimeZone.Adjust(DateTime.Now);
-            return _c.Apis.VideoApi.SendEvent(request);
+            return _c.Apis.TestApi.SendEvent(request);
         }
 
         private IRestResponse SendEventToVideoWeb(CallbackEvent request)

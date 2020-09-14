@@ -32,34 +32,29 @@ Scenario: Participant has no hearings
 	And contact us details are available
 
 @VIH-4607
-Scenario: Clerk has no hearings
-	Given a new browser is open for a Clerk
+Scenario: Judge has no hearings
+	Given a new browser is open for a Judge
 	When the user attempts to login with valid credentials
 	Then the user is on the Hearing List page
-	And a warning message appears indicating the clerk has no hearings scheduled
-	And contact us details for the clerk are available
+	And a warning message appears indicating the Judge has no hearings scheduled
+	And contact us details for the Judge are available
 
 @VIH-4607
-Scenario: Clerk has 1 or more hearings
+Scenario: Judge has 1 or more hearings
 	Given I have a hearing
-	And a new browser is open for a Clerk
+	And a new browser is open for a Judge
 	When the user attempts to login with valid credentials
 	Then the user is on the Hearing List page
 	And a phone number for help is provided
 	And the user can see their details at the top of the hearing list 
-	And the Clerk can see a list of hearings including the new hearing
-	And contact us details for the clerk are available
+	And the Judge can see a list of hearings including the new hearing
+	And contact us details for the Judge are available
 	When the user clicks on the Start Hearing button
 	Then the user is on the Waiting Room page
 
 @VIH-4156 @VIH-4507 @Smoketest
 Scenario: Video Hearings Officer has 1 or more hearings
-	Given I have a hearing
-	And a new browser is open for a Video Hearings Officer
-	When the user attempts to login with valid credentials
-	Then the user is on the VHO Venue List page
-  When the VHO selects the courtroom Automation Courtroom 01
-  And the VHO confirms their allocation selection
+  Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	Then the VHO can see a list of hearings including the new hearing
 	When the VHO selects the hearing
 	Then the VHO can see the hearing view
@@ -76,12 +71,12 @@ Scenario: Video Hearings Officer can see all hearings for today only
   And the VHO selects all the venues
 	Then the Video Hearings Officer should only see hearings for today
 
-Scenario: Clerk cannot access Closed hearing
+Scenario: Judge cannot access Closed hearing
 	Given I have a hearing
 	And the hearing status changes to Closed
-  And the Clerk user has progressed to the Hearing List page for the existing hearing
+  And the Judge user has progressed to the Hearing List page for the existing hearing
   Then the hearing status should be displayed as Closed on the hearing list page
-  And the Clerk is unable to access the Waiting Room
+  And the Judge is unable to access the Waiting Room
 
 Scenario: Participant can access Closed hearing within 30 minutes
 	Given I have a hearing

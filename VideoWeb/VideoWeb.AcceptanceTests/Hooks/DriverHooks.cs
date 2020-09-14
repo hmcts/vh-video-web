@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using AcceptanceTests.Common.Api;
-using AcceptanceTests.Common.Configuration.Users;
 using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Enums;
 using AcceptanceTests.Common.Driver.Helpers;
@@ -11,6 +10,7 @@ using BoDi;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
+using VideoWeb.Services.TestApi;
 using TimeZone = AcceptanceTests.Common.Data.Time.TimeZone;
 
 namespace VideoWeb.AcceptanceTests.Hooks
@@ -18,7 +18,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
     [Binding]
     public class DriverHooks
     {
-        private Dictionary<string, UserBrowser> _browsers;
+        private Dictionary<User, UserBrowser> _browsers;
         private readonly IObjectContainer _objectContainer;
 
         public DriverHooks(IObjectContainer objectContainer)
@@ -29,7 +29,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         [BeforeScenario(Order = (int)HooksSequence.InitialiseBrowserHooks)]
         public void InitialiseBrowserContainer()
         {
-            _browsers = new Dictionary<string, UserBrowser>();
+            _browsers = new Dictionary<User, UserBrowser>();
             _objectContainer.RegisterInstanceAs(_browsers);
         }
 
@@ -89,16 +89,16 @@ namespace VideoWeb.AcceptanceTests.Hooks
         public void SignOutIfPossible(TestContext context)
         {
             if (context.CurrentUser == null) return;
-            if (_browsers?[context.CurrentUser.Key].Driver == null) return;
-            if (SignOutLinkIsPresent(context.CurrentUser.Key))
-                SignOut(context.CurrentUser.Key);
+            if (_browsers?[context.CurrentUser].Driver == null) return;
+            if (SignOutLinkIsPresent(context.CurrentUser))
+                SignOut(context.CurrentUser);
         }
 
-        public bool SignOutLinkIsPresent(string key)
+        public bool SignOutLinkIsPresent(User user)
         {
             try
             {
-                _browsers[key].Driver.FindElement(CommonPages.SignOutLink, 2);
+                _browsers[user].Driver.FindElement(CommonPages.SignOutLink, 2);
                 return true;
             }
             catch
@@ -107,12 +107,12 @@ namespace VideoWeb.AcceptanceTests.Hooks
             }
         }
 
-        private void SignOut(string key)
+        private void SignOut(User user)
         {
             try
             {
-                _browsers[key].ClickLink(CommonPages.SignOutLink, 2);
-                _browsers[key].Driver.WaitUntilVisible(CommonPages.SignOutMessage).Displayed.Should().BeTrue();
+                _browsers[user].ClickLink(CommonPages.SignOutLink, 2);
+                _browsers[user].Driver.WaitUntilVisible(CommonPages.SignOutMessage).Displayed.Should().BeTrue();
             }
             catch
             {
@@ -126,18 +126,18 @@ namespace VideoWeb.AcceptanceTests.Hooks
             if (_browsers == null) return;
             if (_browsers.Count.Equals(0))
             {
-                context.CurrentUser = UserManager.GetDefaultParticipantUser(context.UserAccounts);
+                context.CurrentUser = Users.GetDefaultParticipantUser(context.Test.Users);
                 var browser = new UserBrowser()
                     .SetBaseUrl(context.VideoWebConfig.VhServices.VideoWebUrl)
                     .SetTargetDevice(context.VideoWebConfig.TestConfig.TargetDevice)
                     .SetTargetBrowser(context.VideoWebConfig.TestConfig.TargetBrowser)
                     .SetDriver(context.Driver);
-                _browsers.Add(context.CurrentUser.Key, browser);
+                _browsers.Add(context.CurrentUser, browser);
             }
 
             DriverManager.LogTestResult(
                 context.VideoWebConfig.SauceLabsConfiguration.RunningOnSauceLabs(),
-                _browsers[context.CurrentUser.Key].Driver,
+                _browsers[context.CurrentUser].Driver,
                 scenarioContext.TestError == null);
         }
 
@@ -145,7 +145,12 @@ namespace VideoWeb.AcceptanceTests.Hooks
         public void TearDownBrowser()
         {
             if (_browsers != null)
-                DriverManager.TearDownBrowsers(_browsers);
+            {
+                foreach (var browser in _browsers.Values)
+                {
+                    browser.BrowserTearDown();
+                }
+            }
 
             DriverManager.KillAnyLocalDriverProcesses();
         }

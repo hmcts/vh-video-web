@@ -1,6 +1,5 @@
-﻿using System;
+using System;
 using VideoWeb.AcceptanceTests.Helpers;
-using VideoWeb.AcceptanceTests.Steps;
 
 namespace VideoWeb.AcceptanceTests.Strategies.HearingStatus
 {
@@ -8,8 +7,7 @@ namespace VideoWeb.AcceptanceTests.Strategies.HearingStatus
     {
         public void Execute(TestContext context, Guid participantId)
         {
-            var dataSetupSteps = new DataSetupSteps(context);
-            dataSetupSteps.GivenIHaveAHearingAndAConferenceInMinutesTime(-10);
+            // Deliberately Empty
         }
     }
 }

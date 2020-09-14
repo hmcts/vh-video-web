@@ -3,7 +3,7 @@ using OpenQA.Selenium;
 
 namespace VideoWeb.AcceptanceTests.Pages
 {
-    public static class ClerkWaitingRoomPage
+    public static class JudgeWaitingRoomPage
     {
         public static By ReturnToHearingRoomLink = By.XPath("//a[contains(text(),'Return to video hearing list')]");
         public static By ContactVho = CommonLocators.ElementContainingText("you must call the video hearings team ");

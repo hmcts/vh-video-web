@@ -5,17 +5,18 @@ using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
+using VideoWeb.Services.TestApi;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
     public sealed class RulesSteps : ISteps
     {
-        private readonly Dictionary<string, UserBrowser> _browsers;
+        private readonly Dictionary<User, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly CommonSteps _commonSteps;
 
-        public RulesSteps(Dictionary<string, UserBrowser> browsers, TestContext testContext, CommonSteps commonSteps)
+        public RulesSteps(Dictionary<User, UserBrowser> browsers, TestContext testContext, CommonSteps commonSteps)
         {
             _browsers = browsers;
             _c = testContext;
@@ -25,7 +26,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the HMCTS Crest is visible")]
         public void ThenTheHmctsCrestIsVisible()
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(RulesPage.HmctsLogo).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(RulesPage.HmctsLogo).Displayed.Should().BeTrue();
         }
 
         public void ProgressToNextPage()

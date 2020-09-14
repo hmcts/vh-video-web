@@ -3,21 +3,21 @@ using System.Threading;
 using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Helpers;
 using FluentAssertions;
-using VideoWeb.Services.Video;
+using VideoWeb.Services.TestApi;
 
 namespace VideoWeb.AcceptanceTests.Api
 {
     public class PollForParticipantStatus
     {
-        private readonly VideoApiManager _videoApi;
+        private readonly TestApiManager _api;
         private Guid _conferenceId;
         private string _username;
         private ParticipantState _expectedState;
         private int _maxRetries = 5;
 
-        public PollForParticipantStatus(VideoApiManager videoApi)
+        public PollForParticipantStatus(TestApiManager api)
         {
-            _videoApi = videoApi;
+            _api = api;
         }
 
         public PollForParticipantStatus WithConferenceId(Guid conferenceId)
@@ -49,7 +49,7 @@ namespace VideoWeb.AcceptanceTests.Api
             var actualState = ParticipantState.None;
             for (var i = 0; i < _maxRetries; i++)
             {
-                var response = _videoApi.GetConferenceByConferenceId(_conferenceId);
+                var response = _api.GetConferenceByConferenceId(_conferenceId);
                 var conference = RequestHelper.Deserialise<ConferenceDetailsResponse>(response.Content);
                 conference.Should().NotBeNull();
                 var participant = conference.Participants.Find(x => x.Username.ToLower().Equals(_username.ToLower()));

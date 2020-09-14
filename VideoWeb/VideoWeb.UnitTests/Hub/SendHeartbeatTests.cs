@@ -88,7 +88,7 @@ namespace VideoWeb.UnitTests.Hub
         [Test]
         public async Task Should_send_heartbeat_to_vhofficers_group_from_judge()
         {
-            var participantUsername = "individual@test.com";
+            const string participantUsername = "individual@test.com";
             var conference = InitConference(participantUsername);
             var judge = conference.Participants.First(x => x.Role == Role.Judge);
             var judgeUserName = judge.Username;

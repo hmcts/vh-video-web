@@ -9,12 +9,8 @@ namespace VideoWeb.AcceptanceTests.Helpers
         public string CaseType { get; set; }
         public string CaseNumber { get; set; }
         public string Status { get; set; }
-        public string ApplicantIndividual { get; set; }
         public string ApplicantRep { get; set; }
-        public string ApplicantRepresentee { get; set; }
-        public string RespondentIndividual { get; set; }
         public string RespondentRep { get; set; }
-        public string RespondentRepresentee { get; set; }
         public string ParticipantCount { get; set; }
     }
 }

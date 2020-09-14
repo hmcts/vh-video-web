@@ -10,7 +10,7 @@ using VideoWeb.AcceptanceTests.Api;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.AcceptanceTests.Strategies.HearingStatus;
-using VideoWeb.Services.Video;
+using VideoWeb.Services.TestApi;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -19,9 +19,9 @@ namespace VideoWeb.AcceptanceTests.Steps
     {
         private const int MaxRetries = 20;
         private readonly TestContext _c;
-        private readonly Dictionary<string, UserBrowser> _browsers;
+        private readonly Dictionary<User, UserBrowser> _browsers;
 
-        public HearingsStatusSteps(Dictionary<string, UserBrowser> browsers, TestContext c)
+        public HearingsStatusSteps(Dictionary<User, UserBrowser> browsers, TestContext c)
         {
             _c = c;
             _browsers = browsers;
@@ -46,7 +46,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the hearings should be in chronological order")]
         public void ThenTheHearingsShouldBeInChronologicalOrder()
         {
-            var displayedCaseOrder = _browsers[_c.CurrentUser.Key].Driver.WaitUntilElementsVisible(VhoHearingListPage.CaseNumbers);
+            var displayedCaseOrder = _browsers[_c.CurrentUser].Driver.WaitUntilElementsVisible(VhoHearingListPage.CaseNumbers);
             var automationCaseNumberLength = _c.Test.Case.Number.Length;
             var automationOnlyCases = displayedCaseOrder.Select(caseNumber => caseNumber.Text.Trim()).Where(caseNumberText => caseNumberText.Trim().Length.Equals(automationCaseNumberLength) && caseNumberText.Contains("/")).ToList();
             automationOnlyCases.Should().NotBeNullOrEmpty();
@@ -56,13 +56,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Video Hearings Officer user should see a (.*) notification")]
         public void ThenTheVideoHearingsOfficerUserShouldSeeANotification(string notification)
         {
-            _browsers[_c.CurrentUser.Key].Driver.WaitUntilVisible(VhoHearingListPage.StatusBadge(_c.Test.Conference.Id)).Text.Trim().Should().Be(notification);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.StatusBadge(_c.Test.Conference.Id)).Text.Trim().Should().Be(notification);
         }
 
         [Then(@"the closedDate attribute should be populated")]
         public void WhenTheClosedDateAttributeShouldBePopulated()
         {
-            var response = _c.Apis.VideoApi.GetConferenceByConferenceId(_c.Test.Conference.Id);
+            var response = _c.Apis.TestApi.GetConferenceByConferenceId(_c.Test.Conference.Id);
             var conference = RequestHelper.Deserialise<ConferenceDetailsResponse>(response.Content);
             conference.Closed_date_time?.Date.Should().Be(DateTime.Now.Date);
         }
@@ -70,7 +70,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the hearing status changed to (.*)")]
         public void ThenTheHearingStatusChanges(ConferenceState state)
         {
-            var conferenceState = new PollForConferenceStatus(_c.Apis.VideoApi)
+            var conferenceState = new PollForConferenceStatus(_c.Apis.TestApi)
                     .WithConferenceId(_c.Test.Conference.Id)
                     .WithExpectedState(state)
                     .Retries(MaxRetries)
@@ -80,10 +80,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private Guid GetJudgeParticipantId()
         {
-            var id = _c.Test.ConferenceParticipants.Find(x => x.User_role.Equals(UserRole.Judge)).Id;
-            if (id == Guid.Empty)
-                throw new DataMisalignedException("Participant Id cannot be null");
-            return id;
+            return _c.Test.ConferenceParticipants.First(x => x.User_role.Equals(UserRole.Judge)).Id;
         }
     }
 }
