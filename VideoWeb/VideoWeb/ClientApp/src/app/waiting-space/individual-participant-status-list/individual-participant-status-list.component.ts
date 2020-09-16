@@ -6,6 +6,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
     ConsultationAnswer,
+    EndpointStatus,
     ParticipantResponse,
     ParticipantStatus,
     Role,
@@ -140,6 +141,22 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
         return this.isParticipantAvailable(participant);
     }
 
+    canCallEndpoint(endpoint: VideoEndpointResponse): boolean {
+        const hearing = new Hearing(this.conference);
+        if (hearing.isStarting() || hearing.isDelayed() || hearing.isSuspended()) {
+            return false;
+        }
+        if (!endpoint.defence_advocate_username) {
+            return false;
+        }
+        const requester = this.getConsultationRequester();
+        if (requester.username.toLowerCase() !== endpoint.defence_advocate_username) {
+            return false;
+        }
+
+        return this.isEndpointAvailable(endpoint);
+    }
+
     getConsultationRequester(): ParticipantResponse {
         return this.conference.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
     }
@@ -161,6 +178,16 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
 
         try {
             await this.consultationService.raiseConsultationRequest(this.conference, requester, requestee);
+            this.logger.info('Raised consultation request event');
+        } catch (error) {
+            this.logger.error('Failed to raise consultation request', error);
+        }
+    }
+
+    async begingEndpointCallWith(endpoint: VideoEndpointResponse) {
+        this.logger.debug(`attempting to video call ${endpoint.display_name}`);
+        try {
+            await this.consultationService.startPrivateConsulationWithEndpoint(this.conference, endpoint);
             this.logger.info('Raised consultation request event');
         } catch (error) {
             this.logger.error('Failed to raise consultation request', error);
@@ -228,6 +255,10 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
 
     isParticipantAvailable(participant: ParticipantResponse): boolean {
         return participant.status === ParticipantStatus.Available;
+    }
+
+    isEndpointAvailable(endpoint: VideoEndpointResponse): boolean {
+        return endpoint.status === EndpointStatus.Connected;
     }
 
     private filterNonJudgeParticipants(): void {

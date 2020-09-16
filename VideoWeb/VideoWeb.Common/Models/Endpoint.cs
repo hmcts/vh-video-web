@@ -7,5 +7,6 @@ namespace VideoWeb.Common.Models
         public Guid Id { get; set; }
         public string DisplayName { get; set; }
         public EndpointStatus EndpointStatus { get; set; }
+        public string DefenceAdvocateUsername { get; set; }
     }
 }

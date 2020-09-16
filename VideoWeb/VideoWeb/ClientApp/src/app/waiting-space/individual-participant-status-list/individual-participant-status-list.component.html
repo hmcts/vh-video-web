@@ -77,6 +77,16 @@
       <div *ngFor="let endpoint of endpoints; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
         <div id="p-row-{{ endpoint.id }}-endpoints" class="govuk-grid-column-full">
           <p id="p-{{ endpoint.id }}-name-endpoints" class="govuk-heading-s govuk-!-margin-bottom-0">{{ endpoint.display_name }}</p>
+          <div *ngIf="canCallEndpoint(endpoint)">
+            <img src="/assets/images/glyphicons-181-facetime-video.png" width="20" height="13" alt="video camera icon" />
+            <a
+              id="p-call-{{ endpoint.id }}-btn"
+              class="govuk-link govuk-!-margin-bottom-0 vh-ml5"
+              href="javascript:void(0)"
+              (click)="begingEndpointCallWith(endpoint)"
+              >Contact this endpoint by video</a
+            >
+          </div>
           <div class="vh-line" *ngIf="!lastItem"></div>
         </div>
       </div>

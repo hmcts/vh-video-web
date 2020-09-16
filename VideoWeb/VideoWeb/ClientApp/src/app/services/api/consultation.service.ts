@@ -10,7 +10,9 @@ import {
     ParticipantResponse,
     PrivateAdminConsultationRequest,
     PrivateConsultationRequest,
-    RoomType
+    PrivateVideoEndpointConsultationRequest,
+    RoomType,
+    VideoEndpointResponse
 } from '../clients/api-client';
 import { Logger } from '../logging/logger-base';
 import { ModalService } from '../modal.service';
@@ -92,6 +94,27 @@ export class ConsultationService {
                 answer: answer
             })
         );
+    }
+    async startPrivateConsulationWithEndpoint(conference: ConferenceResponse, endpoint: VideoEndpointResponse) {
+        try {
+            this.stopCallRinging();
+            this.clearModals();
+            await this.apiClient
+                .callVideoEndpoint(
+                    new PrivateVideoEndpointConsultationRequest({
+                        conference_id: conference.id,
+                        endpoint_id: endpoint.id
+                    })
+                )
+                .toPromise();
+        } catch (error) {
+            if (this.checkNoRoomsLeftError(error)) {
+                this.displayNoConsultationRoomAvailableModal();
+            } else {
+                this.displayConsultationErrorModal();
+                throw error;
+            }
+        }
     }
 
     /**

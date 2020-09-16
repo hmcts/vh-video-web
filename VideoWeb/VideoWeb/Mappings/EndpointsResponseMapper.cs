@@ -12,7 +12,8 @@ namespace VideoWeb.Mappings
             {
                 DisplayName = response.Display_name,
                 Id = response.Id,
-                Status = Enum.Parse<EndpointStatus>(response.Status.ToString())
+                Status = Enum.Parse<EndpointStatus>(response.Status.ToString()),
+                DefenceAdvocateUsername = response.Defence_advocate
             };
         }
     }

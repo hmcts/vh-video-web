@@ -19,5 +19,10 @@ namespace VideoWeb.Contract.Responses
         /// The current endpoint status
         /// </summary>
         public EndpointStatus Status { get; set; }
+        
+        /// <summary>
+        /// The current endpoint status
+        /// </summary>
+        public string DefenceAdvocateUsername { get; set; }
     }
 }
