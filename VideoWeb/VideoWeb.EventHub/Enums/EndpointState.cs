@@ -5,6 +5,6 @@ namespace VideoWeb.EventHub.Enums
         NotYetJoined = 1,
         Connected = 2,
         Disconnected = 3,
-        InConsultation = 3
+        InConsultation = 4
     }
 }
