@@ -447,6 +447,25 @@ namespace VideoWeb.Services.TestApi
         /// <exception cref="TestApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.List<PersonSuitabilityAnswerResponse>> SuitabilityAnswersAsync(string username, System.Threading.CancellationToken cancellationToken);
     
+        /// <summary>Get person by username</summary>
+        /// <param name="username">Username of the person</param>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<PersonResponse> PersonAsync(string username);
+    
+        /// <summary>Get person by username</summary>
+        /// <param name="username">Username of the person</param>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        PersonResponse Person(string username);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Get person by username</summary>
+        /// <param name="username">Username of the person</param>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<PersonResponse> PersonAsync(string username, System.Threading.CancellationToken cancellationToken);
+    
         /// <summary>Get test api user by username</summary>
         /// <param name="username">Username of the user (case insensitive)</param>
         /// <returns>Success</returns>
@@ -485,24 +504,24 @@ namespace VideoWeb.Services.TestApi
         /// <exception cref="TestApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<UserProfile> UserPrincipalNameAsync(string username, System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Check if user exists in AAD by contact email</summary>
-        /// <param name="contactEmail">Contact email of the user (case insensitive)</param>
+        /// <summary>Check if user exists in AAD by username</summary>
+        /// <param name="username">Username of the user (case insensitive)</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<bool> AadAsync(string contactEmail);
+        System.Threading.Tasks.Task<bool> AadAsync(string username);
     
-        /// <summary>Check if user exists in AAD by contact email</summary>
-        /// <param name="contactEmail">Contact email of the user (case insensitive)</param>
+        /// <summary>Check if user exists in AAD by username</summary>
+        /// <param name="username">Username of the user (case insensitive)</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        bool Aad(string contactEmail);
+        bool Aad(string username);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Check if user exists in AAD by contact email</summary>
-        /// <param name="contactEmail">Contact email of the user (case insensitive)</param>
+        /// <summary>Check if user exists in AAD by username</summary>
+        /// <param name="username">Username of the user (case insensitive)</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<bool> AadAsync(string contactEmail, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<bool> AadAsync(string username, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Delete AAD user</summary>
         /// <param name="contactEmail">Email of the user to delete</param>
@@ -522,6 +541,22 @@ namespace VideoWeb.Services.TestApi
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task Aad2Async(string contactEmail, System.Threading.CancellationToken cancellationToken);
+    
+        /// <summary>Refresh Judges Cache</summary>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task CacheAsync();
+    
+        /// <summary>Refresh Judges Cache</summary>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        void Cache();
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Refresh Judges Cache</summary>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task CacheAsync(System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Delete hearings by partial case name or number</summary>
         /// <param name="body">Partial case name or number text for the hearing</param>
@@ -2787,6 +2822,105 @@ namespace VideoWeb.Services.TestApi
             }
         }
     
+        /// <summary>Get person by username</summary>
+        /// <param name="username">Username of the person</param>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task<PersonResponse> PersonAsync(string username)
+        {
+            return PersonAsync(username, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Get person by username</summary>
+        /// <param name="username">Username of the person</param>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        public PersonResponse Person(string username)
+        {
+            return System.Threading.Tasks.Task.Run(async () => await PersonAsync(username, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Get person by username</summary>
+        /// <param name="username">Username of the person</param>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task<PersonResponse> PersonAsync(string username, System.Threading.CancellationToken cancellationToken)
+        {
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/person/{username}");
+            urlBuilder_.Replace("{username}", System.Uri.EscapeDataString(ConvertToString(username, System.Globalization.CultureInfo.InvariantCulture)));
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<PersonResponse>(response_, headers_).ConfigureAwait(false);
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == "404") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new TestApiException<ProblemDetails>("Not Found", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "400") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new TestApiException<ProblemDetails>("Bad Request", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new TestApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new TestApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+            
+                        return default(PersonResponse);
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
         /// <summary>Get test api user by username</summary>
         /// <param name="username">Username of the user (case insensitive)</param>
         /// <returns>Success</returns>
@@ -2985,34 +3119,34 @@ namespace VideoWeb.Services.TestApi
             }
         }
     
-        /// <summary>Check if user exists in AAD by contact email</summary>
-        /// <param name="contactEmail">Contact email of the user (case insensitive)</param>
+        /// <summary>Check if user exists in AAD by username</summary>
+        /// <param name="username">Username of the user (case insensitive)</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<bool> AadAsync(string contactEmail)
+        public System.Threading.Tasks.Task<bool> AadAsync(string username)
         {
-            return AadAsync(contactEmail, System.Threading.CancellationToken.None);
+            return AadAsync(username, System.Threading.CancellationToken.None);
         }
     
-        /// <summary>Check if user exists in AAD by contact email</summary>
-        /// <param name="contactEmail">Contact email of the user (case insensitive)</param>
+        /// <summary>Check if user exists in AAD by username</summary>
+        /// <param name="username">Username of the user (case insensitive)</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public bool Aad(string contactEmail)
+        public bool Aad(string username)
         {
-            return System.Threading.Tasks.Task.Run(async () => await AadAsync(contactEmail, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+            return System.Threading.Tasks.Task.Run(async () => await AadAsync(username, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Check if user exists in AAD by contact email</summary>
-        /// <param name="contactEmail">Contact email of the user (case insensitive)</param>
+        /// <summary>Check if user exists in AAD by username</summary>
+        /// <param name="username">Username of the user (case insensitive)</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<bool> AadAsync(string contactEmail, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<bool> AadAsync(string username, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/users/aad/{contactEmail}");
-            urlBuilder_.Replace("{contactEmail}", System.Uri.EscapeDataString(ConvertToString(contactEmail, System.Globalization.CultureInfo.InvariantCulture)));
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/users/aad/{username}");
+            urlBuilder_.Replace("{username}", System.Uri.EscapeDataString(ConvertToString(username, System.Globalization.CultureInfo.InvariantCulture)));
     
             var client_ = _httpClient;
             try
@@ -3139,6 +3273,91 @@ namespace VideoWeb.Services.TestApi
     
                         var status_ = ((int)response_.StatusCode).ToString();
                         if (status_ == "204") 
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == "400") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new TestApiException<ProblemDetails>("Bad Request", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new TestApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new TestApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Refresh Judges Cache</summary>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task CacheAsync()
+        {
+            return CacheAsync(System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Refresh Judges Cache</summary>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        public void Cache()
+        {
+            System.Threading.Tasks.Task.Run(async () => await CacheAsync(System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Refresh Judges Cache</summary>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task CacheAsync(System.Threading.CancellationToken cancellationToken)
+        {
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/users/judges/cache");
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
                         {
                             return;
                         }
@@ -3404,6 +3623,9 @@ namespace VideoWeb.Services.TestApi
     
         [System.Runtime.Serialization.EnumMember(Value = @"Performance")]
         Performance = 2,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"ITHC")]
+        ITHC = 3,
     
     }
     
@@ -4461,6 +4683,9 @@ namespace VideoWeb.Services.TestApi
         [Newtonsoft.Json.JsonProperty("pin", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Pin { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("defence_advocate_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid? Defence_advocate_id { get; set; }
+    
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     
         [Newtonsoft.Json.JsonExtensionData]
@@ -4739,6 +4964,48 @@ namespace VideoWeb.Services.TestApi
     
         [Newtonsoft.Json.JsonProperty("answers", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.List<SuitabilityAnswerResponse> Answers { get; set; }
+    
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+    
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class PersonResponse 
+    {
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid Id { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("title", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Title { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("first_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string First_name { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("middle_names", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Middle_names { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("last_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Last_name { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("contact_email", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Contact_email { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("telephone_number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Telephone_number { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Username { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("organisation", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Organisation { get; set; }
     
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     
