@@ -10,6 +10,7 @@ using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using EventType = VideoWeb.EventHub.Enums.EventType;
+using VAEventType = VideoWeb.Services.Video.EventType;
 
 namespace VideoWeb.Controllers
 {
@@ -55,7 +56,7 @@ namespace VideoWeb.Controllers
                 _logger.LogTrace(
                     $"ConferenceId: {request.Conference_id}, EventType: {request.Event_type}, Participant ID : {request.Participant_id}");
                 var callbackEvent = CallbackEventMapper.MapConferenceEventToCallbackEventModel(request, conference);
-
+                request.Event_type = Enum.Parse<VAEventType>(callbackEvent.EventType.ToString());
                 if (callbackEvent.EventType != EventType.VhoCall)
                 {
                     _logger.LogTrace(
