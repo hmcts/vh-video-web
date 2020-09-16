@@ -3966,6 +3966,9 @@ namespace VideoWeb.Services.TestApi
         [System.Runtime.Serialization.EnumMember(Value = @"Disconnected")]
         Disconnected = 2,
     
+        [System.Runtime.Serialization.EnumMember(Value = @"InConsultation")]
+        InConsultation = 3,
+    
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
@@ -4428,6 +4431,9 @@ namespace VideoWeb.Services.TestApi
     
         [System.Runtime.Serialization.EnumMember(Value = @"EndpointDisconnected")]
         EndpointDisconnected = 18,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"EndpointTransfer")]
+        EndpointTransfer = 19,
     
     }
     
