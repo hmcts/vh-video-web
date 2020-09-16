@@ -45,9 +45,11 @@
         <div id="p-row-{{ participant.id }}-participant" class="govuk-grid-column-full">
           <p id="p-{{ participant.id }}-name" class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
           <p id="p-{{ participant.id }}-case-type-group" class="govuk-body-s govuk-!-margin-bottom-1">{{ participant.case_type_group }}</p>
-          <p *ngIf="participant.representee" class="govuk-body-s">
+          <p *ngIf="participant.representee" class="govuk-body-s govuk-!-margin-bottom-1">
             Representing
-            <span id="p-{{ participant.id }}-representee" class="govuk-heading-s">{{ participant.representee }}</span>
+            <span id="p-{{ participant.id }}-representee" class="govuk-heading-s govuk-!-margin-bottom-1">{{
+              participant.representee
+            }}</span>
           </p>
           <div *ngIf="canCallParticipant(participant)">
             <img src="/assets/images/glyphicons-181-facetime-video.png" width="20" height="13" alt="video camera icon" />
