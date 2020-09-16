@@ -14,7 +14,7 @@ namespace VideoWeb.UnitTests.Mappings
     public class CallbackEventMapperTests
     {
         [Test]
-        public void Should_map_conferenceevent_to_callbackevent()
+        public void Should_map_conference_event_to_callback_event()
         {
             var testConference = new Conference
             {
@@ -51,22 +51,7 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void should_map_callback_to_endpoint_joined()
         {
-            var testConference = new Conference
-            {
-                Id = Guid.NewGuid(),
-                HearingId = Guid.NewGuid(),
-                Participants = new List<Participant>()
-                {
-                    Builder<Participant>.CreateNew()
-                        .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
-                        .Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
-                        .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
-                        .Build()
-                },
-                Endpoints = Builder<Endpoint>.CreateListOfSize(2).Build().ToList()
-            };
+            var testConference = CreateTestConferenceForEndpointEvent();
             
             var conferenceEventRequest = Builder<ConferenceEventRequest>.CreateNew()
                 .With(x => x.Conference_id = testConference.Id.ToString())
@@ -79,9 +64,42 @@ namespace VideoWeb.UnitTests.Mappings
             result.Should().NotBeNull();
             result.EventType.Should().Be(EventType.EndpointJoined);
         }
-        
+
         [Test]
         public void should_map_callback_to_endpoint_disconnected()
+        {
+            var testConference = CreateTestConferenceForEndpointEvent();
+            
+            var conferenceEventRequest = Builder<ConferenceEventRequest>.CreateNew()
+                .With(x => x.Conference_id = testConference.Id.ToString())
+                .With(x => x.Participant_id = testConference.Endpoints[0].Id.ToString())
+                .With(x => x.Event_type = EventType.Disconnected)
+                .Build();
+
+            var result =
+                CallbackEventMapper.MapConferenceEventToCallbackEventModel(conferenceEventRequest, testConference);
+            result.Should().NotBeNull();
+            result.EventType.Should().Be(EventType.EndpointDisconnected);
+        }
+        
+        [Test]
+        public void should_map_callback_to_endpoint_transferred()
+        {
+            var testConference = CreateTestConferenceForEndpointEvent();
+            
+            var conferenceEventRequest = Builder<ConferenceEventRequest>.CreateNew()
+                .With(x => x.Conference_id = testConference.Id.ToString())
+                .With(x => x.Participant_id = testConference.Endpoints[0].Id.ToString())
+                .With(x => x.Event_type = EventType.Transfer)
+                .Build();
+
+            var result =
+                CallbackEventMapper.MapConferenceEventToCallbackEventModel(conferenceEventRequest, testConference);
+            result.Should().NotBeNull();
+            result.EventType.Should().Be(EventType.EndpointTransfer);
+        }
+
+        private static Conference CreateTestConferenceForEndpointEvent()
         {
             var testConference = new Conference
             {
@@ -99,17 +117,7 @@ namespace VideoWeb.UnitTests.Mappings
                 },
                 Endpoints = Builder<Endpoint>.CreateListOfSize(2).Build().ToList()
             };
-            
-            var conferenceEventRequest = Builder<ConferenceEventRequest>.CreateNew()
-                .With(x => x.Conference_id = testConference.Id.ToString())
-                .With(x => x.Participant_id = testConference.Endpoints[0].Id.ToString())
-                .With(x => x.Event_type = EventType.Disconnected)
-                .Build();
-
-            var result =
-                CallbackEventMapper.MapConferenceEventToCallbackEventModel(conferenceEventRequest, testConference);
-            result.Should().NotBeNull();
-            result.EventType.Should().Be(EventType.EndpointDisconnected);
+            return testConference;
         }
     }
 }

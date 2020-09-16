@@ -7,7 +7,7 @@ namespace VideoWeb.EventHub.Exceptions
     public class RoomTransferException : Exception
     {
         public RoomTransferException(RoomType roomFrom, RoomType roomTo) : base(
-            $"Unable to process TransferEvent from: {roomFrom}, to: {roomTo} to participant a status")
+            $"Unable to process TransferEvent from: {roomFrom}, to: {roomTo} to a status")
         {
         }
     }
