@@ -95,6 +95,13 @@ export class ConsultationService {
             })
         );
     }
+
+    /**
+     * Start a private consultation with video endpoint. This will only be allowed for defence advocates linked to the
+     * endpoint
+     * @param conference conference
+     * @param endpoint video endpoint to call
+     */
     async startPrivateConsulationWithEndpoint(conference: ConferenceResponse, endpoint: VideoEndpointResponse) {
         try {
             this.stopCallRinging();

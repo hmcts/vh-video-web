@@ -141,9 +141,6 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         const mutedParticipants = hearingParticipants.filter(x => x.isMuted);
         const p = this.participants.find(x => x.participantId === participant.participantId);
 
-        console.log(hearingParticipants);
-        console.log(mutedParticipants);
-        console.log(p);
         this.videoCallService.muteParticipant(p.pexipId, !p.isMuted);
 
         // check if last person to be unmuted manually

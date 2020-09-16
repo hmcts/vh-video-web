@@ -513,7 +513,8 @@ export class ConferenceTestData {
         const point2 = new VideoEndpointResponse({
             display_name: 'DispName2',
             status: EndpointStatus.Connected,
-            id: '123232355'
+            id: '123232355',
+            defence_advocate_username: 'john.doe@hearings.net'
         });
         endpoints.push(point1);
         endpoints.push(point2);

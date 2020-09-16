@@ -10,6 +10,7 @@ import {
     LeavePrivateConsultationRequest,
     PrivateAdminConsultationRequest,
     PrivateConsultationRequest,
+    PrivateVideoEndpointConsultationRequest,
     RoomType
 } from '../clients/api-client';
 import { ModalService } from '../modal.service';
@@ -28,7 +29,8 @@ describe('ConsultationService', () => {
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
             'handleConsultationRequest',
             'leavePrivateConsultation',
-            'respondToAdminConsultationRequest'
+            'respondToAdminConsultationRequest',
+            'callVideoEndpoint'
         ]);
 
         notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', [
@@ -42,6 +44,7 @@ describe('ConsultationService', () => {
         apiClient.handleConsultationRequest.and.returnValue(of());
         apiClient.leavePrivateConsultation.and.returnValue(of());
         apiClient.respondToAdminConsultationRequest.and.returnValue(of());
+        apiClient.callVideoEndpoint.and.returnValue(of());
 
         timeout = jasmine.createSpyObj<NodeJS.Timeout>('NodeJS.Timeout', ['ref', 'unref']);
         spyOn(global, 'setTimeout').and.returnValue(<any>timeout);
@@ -301,5 +304,45 @@ describe('ConsultationService', () => {
         expect(modalService.open).toHaveBeenCalledWith(ConsultationService.VHO_REQUEST_PC_MODAL);
         expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalled();
         expect(service.callRingingTimeout).toBe(timeout);
+    });
+
+    it('should call api to start private consultation', async () => {
+        const conference = new ConferenceTestData().getConferenceDetailFuture();
+        const endpoint = conference.endpoints[0];
+        const request = new PrivateVideoEndpointConsultationRequest({
+            conference_id: conference.id,
+            endpoint_id: endpoint.id
+        });
+        await service.startPrivateConsulationWithEndpoint(conference, endpoint);
+        expect(apiClient.callVideoEndpoint).toHaveBeenCalledWith(request);
+    });
+
+    it('should display no consultation room modal when endpoint consultation has been requested but no rooms left', async () => {
+        const error = new BadRequestModelResponse({
+            errors: Array(
+                new BadModel({
+                    title: 'ConsultationRoom',
+                    errors: Array('No consultation room available')
+                })
+            )
+        });
+        apiClient.callVideoEndpoint.and.callFake(() => throwError(error));
+        const conference = new ConferenceTestData().getConferenceDetailFuture();
+        const endpoint = conference.endpoints[0];
+
+        await service.startPrivateConsulationWithEndpoint(conference, endpoint);
+
+        expect(modalService.open).toHaveBeenCalledWith(ConsultationService.NO_ROOM_PC_MODAL);
+    });
+
+    it('should display error modal when endpoint consultation has been requested throw unexpected error', async () => {
+        const error = { error: 'test bad thing' };
+        const conference = new ConferenceTestData().getConferenceDetailFuture();
+        const endpoint = conference.endpoints[0];
+        apiClient.callVideoEndpoint.and.callFake(() => throwError(error));
+
+        await expectAsync(service.startPrivateConsulationWithEndpoint(conference, endpoint)).toBeRejectedWith(error);
+
+        expect(modalService.open).toHaveBeenCalledWith(ConsultationService.ERROR_PC_MODAL);
     });
 });

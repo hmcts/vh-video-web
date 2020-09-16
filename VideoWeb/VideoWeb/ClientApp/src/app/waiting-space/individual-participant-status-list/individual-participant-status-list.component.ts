@@ -161,7 +161,7 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
         return this.conference.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
     }
 
-    async begingCallWith(participant: ParticipantResponse): Promise<void> {
+    async beginCallWith(participant: ParticipantResponse): Promise<void> {
         if (!this.canCallParticipant(participant)) {
             return;
         }
@@ -184,13 +184,16 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
         }
     }
 
-    async begingEndpointCallWith(endpoint: VideoEndpointResponse) {
+    async beginEndpointCallWith(endpoint: VideoEndpointResponse) {
+        if (!this.canCallEndpoint(endpoint)) {
+            return;
+        }
         this.logger.debug(`attempting to video call ${endpoint.display_name}`);
         try {
             await this.consultationService.startPrivateConsulationWithEndpoint(this.conference, endpoint);
-            this.logger.info('Raised consultation request event');
+            this.logger.info('Starting private consultation with endpoint');
         } catch (error) {
-            this.logger.error('Failed to raise consultation request', error);
+            this.logger.error('Failed to raise private consultation with endpoint', error);
         }
     }
 
