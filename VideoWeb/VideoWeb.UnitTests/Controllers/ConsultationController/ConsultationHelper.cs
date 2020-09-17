@@ -22,11 +22,18 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
+                        .With(x=> x.Username = "rep1@test.com")
                         .With(x => x.Id = Guid.NewGuid()).Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                         .With(x => x.Id = Guid.NewGuid()).Build()
+                },
+                Endpoints = new List<Endpoint>
+                {
+                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP1")
+                        .With(x=> x.DefenceAdvocateUsername = "rep1@test.com").Build(),
+                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP2").Build()
                 }
             };
         }

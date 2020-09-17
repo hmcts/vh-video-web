@@ -73,4 +73,10 @@ namespace VideoWeb.Contract.Request
         /// </summary>
         public RoomType ConsultationRoom { get; set; }
     }
+
+    public class PrivateVideoEndpointConsultationRequest
+    {
+        public Guid ConferenceId { get; set; }
+        public Guid EndpointId { get; set; }
+    }
 }

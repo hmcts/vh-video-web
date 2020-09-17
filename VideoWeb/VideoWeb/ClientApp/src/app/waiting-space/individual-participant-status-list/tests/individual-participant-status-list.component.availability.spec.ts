@@ -7,7 +7,9 @@ import {
     ParticipantResponse,
     ParticipantStatus,
     Role,
-    ParticipantResponseVho
+    ParticipantResponseVho,
+    VideoEndpointResponse,
+    EndpointStatus
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
@@ -118,6 +120,56 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
     it('should be able to call an available participant', () => {
         const participant = new ParticipantResponse({ status: ParticipantStatus.Available, username: 'test@dot.com' });
         expect(component.canCallParticipant(participant)).toBeTruthy();
+    });
+
+    it('should not be able to call endpoint when hearing is about to start', () => {
+        component.conference = new ConferenceTestData().getConferenceDetailNow();
+        const endpoint = new VideoEndpointResponse({
+            status: EndpointStatus.Connected,
+            defence_advocate_username: adalService.userInfo.userName
+        });
+        expect(component.canCallEndpoint(endpoint)).toBeFalsy();
+    });
+
+    it('should not be able to call endpoint when hearing is delayed', () => {
+        component.conference = new ConferenceTestData().getConferenceDetailPast();
+        const endpoint = new VideoEndpointResponse({
+            status: EndpointStatus.Connected,
+            defence_advocate_username: adalService.userInfo.userName
+        });
+        expect(component.canCallEndpoint(endpoint)).toBeFalsy();
+    });
+
+    it('should not be able to call endpoint when hearing is suspended', () => {
+        component.conference.status = ConferenceStatus.Suspended;
+        const endpoint = new VideoEndpointResponse({
+            status: EndpointStatus.Connected,
+            defence_advocate_username: adalService.userInfo.userName
+        });
+        expect(component.canCallEndpoint(endpoint)).toBeFalsy();
+    });
+
+    it('should not be able to call endpoint that has no defence advocate', () => {
+        const endpoint = new VideoEndpointResponse({
+            status: EndpointStatus.Connected
+        });
+        expect(component.canCallEndpoint(endpoint)).toBeFalsy();
+    });
+
+    it('should not be able to call endpoint linked to another defence advocate', () => {
+        const endpoint = new VideoEndpointResponse({
+            status: EndpointStatus.Connected,
+            defence_advocate_username: 'another@test.com'
+        });
+        expect(component.canCallEndpoint(endpoint)).toBeFalsy();
+    });
+
+    it('should be able to call an available endpoint', () => {
+        const endpoint = new VideoEndpointResponse({
+            status: EndpointStatus.Connected,
+            defence_advocate_username: adalService.userInfo.userName
+        });
+        expect(component.canCallEndpoint(endpoint)).toBeTruthy();
     });
 
     const handleParticipantStatus = [

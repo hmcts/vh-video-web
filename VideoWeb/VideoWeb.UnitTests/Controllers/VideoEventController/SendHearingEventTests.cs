@@ -17,8 +17,10 @@ using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
+using Endpoint = VideoWeb.Common.Models.Endpoint;
 using EventComponentHelper = VideoWeb.UnitTests.Builders.EventComponentHelper;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
+using RoomType = VideoWeb.Services.Video.RoomType;
 
 namespace VideoWeb.UnitTests.Controllers.VideoEventController
 {
@@ -80,7 +82,24 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
         }
-        
+
+        [TestCase(EventType.Joined, EventType.EndpointJoined)]
+        [TestCase(EventType.Disconnected, EventType.EndpointDisconnected)]
+        [TestCase(EventType.Transfer, EventType.EndpointTransfer)]
+        public async Task Should_return_no_content_when_endpoint_event_is_sent(EventType incomingEventType,
+            EventType expectedEventType)
+        {
+            _videoApiClientMock.Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
+                .Returns(Task.FromResult(default(object)));
+
+            var result = await _controller.SendHearingEventAsync(CreateEndpointRequest(incomingEventType));
+            var typedResult = (NoContentResult) result;
+            typedResult.Should().NotBeNull();
+
+            _videoApiClientMock.Verify(x =>
+                x.RaiseVideoEventAsync(It.Is<ConferenceEventRequest>(r => r.Event_type == expectedEventType)));
+        }
+
         [Test]
         public async Task Should_return_bad_request()
         {
@@ -133,6 +152,17 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 .Build();
         }
         
+        private ConferenceEventRequest CreateEndpointRequest(EventType incomingEventType)
+        {
+            return Builder<ConferenceEventRequest>.CreateNew()
+                .With(x => x.Conference_id = _testConference.Id.ToString())
+                .With(x => x.Participant_id = _testConference.Endpoints[0].Id.ToString())
+                .With(x => x.Event_type = incomingEventType)
+                .With(x => x.Transfer_to = RoomType.ConsultationRoom1)
+                .With(x => x.Transfer_from = RoomType.WaitingRoom)
+                .Build();
+        }
+        
         private static Conference BuildConferenceForTest()
         {
             return new Conference
@@ -152,6 +182,11 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                         .With(x => x.Id = Guid.NewGuid()).Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                         .With(x => x.Id = Guid.NewGuid()).Build()
+                },
+                Endpoints = new List<Endpoint>
+                {
+                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP1").Build(),
+                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP2").Build()
                 }
             };
         }

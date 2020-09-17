@@ -57,7 +57,6 @@ export class Hearing extends HearingBase {
     }
 
     getEndpoints(): VideoEndpointResponse[] {
-        console.log(this.conference);
         if (this.conference instanceof ConferenceResponse) {
             const conf = this.conference as ConferenceResponse;
             const ep = conf.endpoints ? conf.endpoints : new Array<VideoEndpointResponse>();
