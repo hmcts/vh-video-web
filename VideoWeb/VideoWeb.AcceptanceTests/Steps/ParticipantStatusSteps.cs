@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Helpers;
@@ -59,10 +60,10 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Then(@"the VHO can see the status of participant (.*) is (.*)")]
-        public void ThenTheParticipantStatusIs(string user, string participantStatus)
+        public void ThenTheParticipantStatusIs(string user, string expectedStatus)
         {
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
-            CheckParticipantStatus(participantStatus, ParticipantsManager.GetParticipantFromLastname(_c.Test.ConferenceParticipants, user));
+            CheckParticipantStatus(expectedStatus, GetParticipants(user));
         }
 
         [Then(@"the users status has updated to (.*)")]
@@ -80,15 +81,21 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         [Then(@"the VHO can see the (.*) status has updated to (.*)")]
         [Then(@"the VHO can see the (.*) statuses have updated to (.*)")]
-        public void ThenTheParticipantsStatusesShouldUpdateTo(string userType, string expectedStatus)
+        public void ThenTheParticipantsStatusesShouldUpdateTo(string user, string expectedStatus)
         {
             _browsers[_c.CurrentUser].Refresh();
             Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser], _c.Test.Conference.Id);
             _browsers[_c.CurrentUser].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
-            var participants = ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, userType);
-            CheckParticipantStatus(expectedStatus, participants);
+            CheckParticipantStatus(expectedStatus, GetParticipants(user));
+        }
+
+        private IEnumerable<ParticipantDetailsResponse> GetParticipants(string text)
+        {
+            var user = Users.GetUserFromTextWithIndex(text, _c.Test.Users);
+            var participant = _c.Test.ConferenceParticipants.First(x => x.Username.Equals(user.Username));
+            return new List<ParticipantDetailsResponse>() {participant};
         }
 
         private void CheckParticipantStatus(string expectedStatus, IEnumerable<ParticipantDetailsResponse> participants)
