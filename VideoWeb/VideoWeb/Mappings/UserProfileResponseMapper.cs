@@ -43,7 +43,7 @@ namespace VideoWeb.Mappings
             return response;
         }
 
-        public static object MapUserToResponseModel(ClaimsPrincipal user)
+        public static UserProfileResponse MapUserToResponseModel(ClaimsPrincipal user)
         {
             var response = new UserProfileResponse
             {
@@ -83,8 +83,8 @@ namespace VideoWeb.Mappings
             {
                 return Role.CaseAdmin;
             }
-            
-            throw new ArgumentOutOfRangeException(nameof(roleClaims));
+
+            throw new NotSupportedException($"Role is not supported for this application");
         }
     }
 }
