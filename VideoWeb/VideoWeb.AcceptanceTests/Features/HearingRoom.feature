@@ -110,7 +110,7 @@ Scenario: VHO Monitors Hearing
   When the Judge clicks close
 	Then the user is on the Hearing List page
   When in the Video Hearings Officer's browser
-  Then the VHO can see the Judge status is Disconneted
+  Then the VHO can see the Judge status is Disconnected
   And the VHO can see the status of participant the first Individual's is Available
   And the VHO can see that the first Individual's is in the Waiting Room
 
