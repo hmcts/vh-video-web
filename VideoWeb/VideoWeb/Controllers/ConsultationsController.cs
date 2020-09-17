@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Caching;
+using VideoWeb.Common.Extensions;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
@@ -52,14 +53,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(BadRequestModelResponse), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> HandleConsultationRequestAsync(PrivateConsultationRequest request)
         {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync(request.ConferenceId, () =>
-            {
-                _logger.LogTrace($"Retrieving conference details for conference: ${request.ConferenceId}");
-
-                return _videoApiClient.GetConferenceDetailsByIdAsync(request.ConferenceId);
-            });
-
-            conference.Participants ??= new List<Participant>();
+            var conference = await GetConference(request.ConferenceId);
 
             var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedById);
             if (requestedBy == null)
@@ -123,14 +117,7 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var conference = await _conferenceCache.GetOrAddConferenceAsync(request.ConferenceId, () =>
-                {
-                    _logger.LogTrace($"Retrieving conference details for conference: ${request.ConferenceId}");
-                    
-                    return _videoApiClient.GetConferenceDetailsByIdAsync(request.ConferenceId);
-                });
-
-                conference.Participants ??= new List<Participant>();
+                var conference = await GetConference(request.ConferenceId);
 
                 var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.ParticipantId);
                 if (participant == null)
@@ -170,14 +157,7 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var conference = await _conferenceCache.GetOrAddConferenceAsync(request.ConferenceId, () =>
-                {
-                    _logger.LogTrace($"Retrieving conference details for conference: ${request.ConferenceId}");
-                
-                    return _videoApiClient.GetConferenceDetailsByIdAsync(request.ConferenceId);
-                });
-
-                conference.Participants ??= new List<Participant>();
+                var conference = await GetConference(request.ConferenceId);
                 var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.ParticipantId);
                 if (participant == null)
                 {
@@ -199,6 +179,63 @@ namespace VideoWeb.Controllers
             {
                 return StatusCode(e.StatusCode, e.Response);
             }
+        }
+
+        [HttpPost("video-endpoint")]
+        [SwaggerOperation(OperationId = "CallVideoEndpoint")]
+        [ProducesResponseType((int) HttpStatusCode.Accepted)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> CallVideoEndpointAsync(PrivateVideoEndpointConsultationRequest request)
+        {
+            _logger.LogDebug("CallVideoEndpoint");
+            if (!User.IsInRole(Role.Representative.EnumDataMemberAttr()))
+            {
+                _logger.LogWarning($"User is not a representative");
+                return Unauthorized("User must be a representative");
+            }
+            var username = User.Identity.Name?.ToLower().Trim();
+            var conference = await GetConference(request.ConferenceId);
+
+            var defenceAdvocate = conference.Participants.SingleOrDefault(x =>
+                x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
+            if (defenceAdvocate == null)
+            {
+                return NotFound($"Defence advocate does not exist in conference {request.ConferenceId}");
+            }
+            
+            var endpoint = conference.Endpoints.SingleOrDefault(x => x.Id == request.EndpointId);
+            if (endpoint == null)
+            {
+                return NotFound($"No endpoint id {request.EndpointId} exists");
+            }
+            
+            try
+            {
+                await _videoApiClient.StartPrivateConsultationWithEndpointAsync(new EndpointConsultationRequest
+                {
+                    Conference_id = request.ConferenceId,
+                    Endpoint_id = endpoint.Id,
+                    Defence_advocate_id = defenceAdvocate.Id
+                });
+            }
+            catch (VideoApiException ex)
+            {
+                _logger.LogError(ex, $"Unable to start endpoint private consultation");
+                return StatusCode(ex.StatusCode, ex.Response);
+            }
+
+            return Accepted();
+        }
+
+        private async Task<Conference> GetConference(Guid conferenceId)
+        {
+            return await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
+            {
+                _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
+                
+                return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+            });
         }
 
         /// <summary>

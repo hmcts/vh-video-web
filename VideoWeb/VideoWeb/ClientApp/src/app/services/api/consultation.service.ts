@@ -10,7 +10,9 @@ import {
     ParticipantResponse,
     PrivateAdminConsultationRequest,
     PrivateConsultationRequest,
-    RoomType
+    PrivateVideoEndpointConsultationRequest,
+    RoomType,
+    VideoEndpointResponse
 } from '../clients/api-client';
 import { Logger } from '../logging/logger-base';
 import { ModalService } from '../modal.service';
@@ -92,6 +94,34 @@ export class ConsultationService {
                 answer: answer
             })
         );
+    }
+
+    /**
+     * Start a private consultation with video endpoint. This will only be allowed for defence advocates linked to the
+     * endpoint
+     * @param conference conference
+     * @param endpoint video endpoint to call
+     */
+    async startPrivateConsulationWithEndpoint(conference: ConferenceResponse, endpoint: VideoEndpointResponse) {
+        try {
+            this.stopCallRinging();
+            this.clearModals();
+            await this.apiClient
+                .callVideoEndpoint(
+                    new PrivateVideoEndpointConsultationRequest({
+                        conference_id: conference.id,
+                        endpoint_id: endpoint.id
+                    })
+                )
+                .toPromise();
+        } catch (error) {
+            if (this.checkNoRoomsLeftError(error)) {
+                this.displayNoConsultationRoomAvailableModal();
+            } else {
+                this.displayConsultationErrorModal();
+                throw error;
+            }
+        }
     }
 
     /**

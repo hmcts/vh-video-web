@@ -5,7 +5,6 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
 using VideoWeb.Services.Video;
-using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.Mappings
 {
@@ -58,14 +57,14 @@ namespace VideoWeb.Mappings
             conference.Participants ??= new List<ParticipantDetailsResponse>();
             return conference.Participants
                 .OrderBy(x => x.Case_type_group)
-                .Select(x => ParticipantResponseMapper.MapParticipantToResponseModel(x))
+                .Select(ParticipantResponseMapper.MapParticipantToResponseModel)
                 .ToList();
         }
 
         private static List<VideoEndpointResponse> MapEndpoints(ConferenceDetailsResponse conference)
         {
             conference.Endpoints ??= new List<EndpointResponse>();
-            return conference.Endpoints.Select(x => EndpointsResponseMapper.Map(x)).ToList();
+            return conference.Endpoints.Select(EndpointsResponseMapper.Map).ToList();
         }
     }
 }

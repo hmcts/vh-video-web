@@ -350,7 +350,6 @@ export abstract class WaitingRoomBaseComponent {
         }
 
         const index = this.hearing.getEndpoints().findIndex(x => x.id === message.endpointId);
-        console.log(index);
         if (index === -1) {
             return;
         }
