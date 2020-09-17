@@ -28,7 +28,7 @@ parameters:
       BrowserVersion: Latest
       DeviceType: Desktop
       DeviceName:
-      TestCaseFilter: TestCategory!=UnsupportedBrowser
+      TestCaseFilter: TestCategory!~Unsupported
     - OS: Windows
       Browser: Firefox
       BrowserVersion: Latest

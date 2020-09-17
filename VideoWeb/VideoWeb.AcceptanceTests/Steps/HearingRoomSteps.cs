@@ -118,22 +118,31 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Then(@"the VHO can see that (.*) is in the Waiting Room")]
-        public void ThenTheVHOCanSeeThatAllTheParticipantsAreInTheWaitingRoom(string lastname)
+        public void ThenTheVHOCanSeeThatAllTheParticipantsAreInTheWaitingRoom(string text)
         {
             SwitchToTheVhoIframe();
-            var participantId = _c.Test.Conference.Participants.First(x => x.Name.ToLower().Contains(lastname.ToLower())).Id;
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantInWaitingRoom(participantId)).Displayed.Should().BeTrue();
+
+            var user = Users.GetUserFromTextWithIndex(text, _c.Test.Users);
+            var participant = _c.Test.ConferenceParticipants.First(x => x.Username.Equals(user.Username));
+            
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantInWaitingRoom(participant.Id)).Displayed.Should().BeTrue();
+            
             SwitchToDefaultContent();
         }
 
         [Then(@"the VHO can see that the Judge and (.*) participants are in the Hearing Room")]
-        public void ThenTheVHOCanSeeThatAllTheJudgeAndParticipantsAreInTheHearingRoom(string lastname)
+        public void ThenTheVHOCanSeeThatAllTheJudgeAndParticipantsAreInTheHearingRoom(string text)
         {
             SwitchToTheVhoIframe();
+
             var judgeId = _c.Test.Conference.Participants.First(x => x.User_role == UserRole.Judge).Id;
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantInHearingRoom(judgeId)).Displayed.Should().BeTrue();
-            var participantId = _c.Test.Conference.Participants.First(x => x.Name.ToLower().Contains(lastname.ToLower())).Id;
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantInHearingRoom(participantId)).Displayed.Should().BeTrue();
+
+            var user = Users.GetUserFromTextWithIndex(text, _c.Test.Users);
+            var participant = _c.Test.ConferenceParticipants.First(x => x.Username.Equals(user.Username));
+
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantInHearingRoom(participant.Id)).Displayed.Should().BeTrue();
+            
             SwitchToDefaultContent();
         }
 

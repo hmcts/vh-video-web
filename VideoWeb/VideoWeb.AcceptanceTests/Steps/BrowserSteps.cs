@@ -60,9 +60,11 @@ namespace VideoWeb.AcceptanceTests.Steps
             if (_c.CurrentUser != null)
                 _browsers[_c.CurrentUser].LastWindowName = _browsers[_c.CurrentUser].Driver.WrappedDriver.WindowHandles.Last();
 
-            if (user.Contains("the"))
+            user = user.Replace("the", string.Empty).Trim().ToLower();
+
+            if (user.Contains("first") || user.Contains("second") || user.Contains("third") || user.Contains("fourth") || user.Contains("fifth"))
             {
-                var number = user.Split(" ")[1].Trim();
+                var number = user.Split(" ")[0].Trim();
                 _c.CurrentUser = Users.GetUser(_c.Test.Users, number, user);
             }
             else
@@ -76,7 +78,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private static bool UserIsParticipant(string user)
         {
-            return user.ToLower().Equals("participant");
+            return user.Equals("participant");
         }
 
         private User GetDefaultParticipant()
