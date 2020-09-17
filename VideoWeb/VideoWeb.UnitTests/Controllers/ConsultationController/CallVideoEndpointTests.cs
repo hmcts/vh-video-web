@@ -62,27 +62,9 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_return_unauthorized_if_user_is_not_representative()
-        {
-            var cp = new ClaimsPrincipalBuilder().WithRole(Role.Individual)
-                .WithUsername("rep1@test.com").Build();
-            _controller = SetupControllerWithClaims(cp);
-            
-            var request = new PrivateVideoEndpointConsultationRequest
-            {
-                ConferenceId = _testConference.Id,
-                EndpointId = _testConference.Endpoints.First(x => !string.IsNullOrWhiteSpace(x.DefenceAdvocateUsername))
-                    .Id
-            };
-            var result = await _controller.CallVideoEndpointAsync(request);
-            var actionResult = result.As<UnauthorizedObjectResult>();
-            actionResult.Should().NotBeNull();
-        }
-        
-        [Test]
         public async Task should_return_not_found_if_defence_advocate_is_not_found()
         {
-            var cp = new ClaimsPrincipalBuilder().WithRole(Role.Representative)
+            var cp = new ClaimsPrincipalBuilder().WithRole(AppRoles.RepresentativeRole)
                 .WithUsername("nf@test.com").Build();
             _controller = SetupControllerWithClaims(cp);
             
@@ -150,7 +132,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         
         private ConsultationsController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)
         {
-            var cp = claimsPrincipal ?? new ClaimsPrincipalBuilder().WithRole(Role.Representative)
+            var cp = claimsPrincipal ?? new ClaimsPrincipalBuilder().WithRole(AppRoles.RepresentativeRole)
                 .WithUsername("rep1@test.com").Build();
             var context = new ControllerContext
             {

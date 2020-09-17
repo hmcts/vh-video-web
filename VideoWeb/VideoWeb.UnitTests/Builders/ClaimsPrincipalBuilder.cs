@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Security.Claims;
-using VideoWeb.Common.Extensions;
-using VideoWeb.Common.Models;
 
 namespace VideoWeb.UnitTests.Builders
 {
@@ -20,9 +18,9 @@ namespace VideoWeb.UnitTests.Builders
             };
         }
 
-        public ClaimsPrincipalBuilder WithRole(Role role)
+        public ClaimsPrincipalBuilder WithRole(string role)
         {
-            _claims.Add(new Claim(ClaimTypes.Role, role.EnumDataMemberAttr()));
+            _claims.Add(new Claim(ClaimTypes.Role, role));
             return this;
         }
 

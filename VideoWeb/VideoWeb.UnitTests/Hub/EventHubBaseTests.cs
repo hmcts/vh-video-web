@@ -65,7 +65,7 @@ namespace VideoWeb.UnitTests.Hub
                 .With(x => x.Id = Guid.NewGuid())
                 .Build().ToList();
 
-            Claims = new ClaimsPrincipalBuilder().WithRole(Role.VideoHearingsOfficer).Build();
+            Claims = new ClaimsPrincipalBuilder().WithRole(AppRoles.VhOfficerRole).Build();
             HubCallerContextMock.Setup(x => x.User).Returns(Claims);
 
             VideoApiClientMock.Setup(x => x.GetConferencesTodayForAdminAsync(It.IsAny<IEnumerable<string>>())).ReturnsAsync(conferences);
@@ -88,7 +88,7 @@ namespace VideoWeb.UnitTests.Hub
                 .TheRest().With(x => x.Participants = participantsWithoutUser)
                 .Build().ToList();
 
-            Claims = new ClaimsPrincipalBuilder().WithRole(Role.Judge).Build();
+            Claims = new ClaimsPrincipalBuilder().WithRole(AppRoles.JudgeRole).Build();
             HubCallerContextMock.Setup(x => x.User).Returns(Claims);
 
             VideoApiClientMock.Setup(x => x.GetConferencesTodayForAdminAsync(It.IsAny<IEnumerable<string>>()))

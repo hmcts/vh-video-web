@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Caching;
-using VideoWeb.Common.Extensions;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
@@ -43,6 +43,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(List<ConferenceForJudgeResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [SwaggerOperation(OperationId = "GetConferencesForJudge")]
+        [Authorize(AppRoles.JudgeRole)]
         public async Task<ActionResult<List<ConferenceForJudgeResponse>>> GetConferencesForJudgeAsync()
         {
             _logger.LogDebug("GetConferencesForJudge");
@@ -70,6 +71,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(List<ConferenceForIndividualResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [SwaggerOperation(OperationId = "GetConferencesForIndividual")]
+        [Authorize("Individual")]
         public async Task<ActionResult<IEnumerable<ConferenceForIndividualResponse>>> GetConferencesForIndividual()
         {
             _logger.LogDebug("GetConferencesForIndividual");
@@ -98,16 +100,10 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(List<ConferenceForVhOfficerResponse>), (int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.Unauthorized)]
         [SwaggerOperation(OperationId = "GetConferencesForVhOfficer")]
+        [Authorize(AppRoles.VhOfficerRole)]
         public async Task<ActionResult<List<ConferenceForVhOfficerResponse>>> GetConferencesForVhOfficerAsync([FromQuery]VhoConferenceFilterQuery query)
         {
             _logger.LogDebug("GetConferencesForVhOfficer");
-            var username = User.Identity.Name.ToLower().Trim();
-            if (!User.IsInRole(Role.VideoHearingsOfficer.EnumDataMemberAttr()))
-            {
-                _logger.LogWarning($"Failed to get conferences for today: {username} is not a VH officer");
-                return Unauthorized("User must be a VH Officer");
-            }
-
             try
             {
                 var conferences = await _videoApiClient.GetConferencesTodayForAdminAsync(query.UserNames);
@@ -137,6 +133,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         [SwaggerOperation(OperationId = "GetConferenceByIdVHO")]
+        [Authorize(AppRoles.VhOfficerRole)]
         public async Task<ActionResult<ConferenceResponseVho>> GetConferenceByIdVHOAsync(Guid conferenceId)
         {
             _logger.LogDebug("GetConferenceById");
@@ -146,14 +143,6 @@ namespace VideoWeb.Controllers
                 ModelState.AddModelError(nameof(conferenceId), $"Please provide a valid {nameof(conferenceId)}");
 
                 return BadRequest(ModelState);
-            }
-
-            _logger.LogTrace("Checking to see if user is a VH Officer");
-            if (!User.IsInRole(Role.VideoHearingsOfficer.EnumDataMemberAttr()))
-            {
-                _logger.LogWarning($"Failed to get conference: ${conferenceId}, {User.Identity.Name} is not a VH officer");
-
-                return Unauthorized("User must be a VH Officer");
             }
 
             ConferenceDetailsResponse conference;

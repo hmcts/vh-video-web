@@ -47,7 +47,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 judge, individual, representative
             };
 
-            var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(Role.VideoHearingsOfficer).Build();
+            var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.VhOfficerRole).Build();
             _controller = SetupControllerWithClaims(claimsPrincipal);
         }
         
@@ -93,19 +93,6 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             
             var typedResult = (BadRequestObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
-        }
-        
-        [Test]
-        public async Task Should_return_unauthorised_when_user_not_in_vho_role()
-        {
-            var errorMessage = "User must be a VH Officer";
-            var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(Role.Individual).Build();
-            _controller = SetupControllerWithClaims(claimsPrincipal);
-            var result = await _controller.GetParticipantsWithContactDetailsByConferenceIdAsync(Guid.NewGuid());
-            
-            var typedResult = (UnauthorizedObjectResult)result;
-            typedResult.StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
-            typedResult.Value.Should().Be(errorMessage);
         }
         
         [Test]

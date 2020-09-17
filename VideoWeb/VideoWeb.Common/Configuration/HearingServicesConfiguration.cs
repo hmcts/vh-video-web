@@ -10,5 +10,6 @@ namespace VideoWeb.Common.Configuration
         public string VideoWebResourceId { get; set; }
         public string UserApiUrl { get; set; }
         public string UserApiResourceId { get; set; }
+        public string EventHubPath { get; set; }
     }
 }

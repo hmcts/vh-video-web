@@ -3,11 +3,22 @@ import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
 import { MockAdalService } from '../testing/mocks/MockAdalService';
 import { MockLogger } from '../testing/mocks/MockLogger';
+import { ConfigService } from './api/config.service';
+import { ClientSettingsResponse } from './clients/api-client';
 import { EventsService } from './events.service';
 import { Logger } from './logging/logger-base';
 import { InstantMessage } from './models/instant-message';
 
 describe('EventsService', () => {
+    const clientSettings = new ClientSettingsResponse({
+        tenant_id: 'tenantid',
+        client_id: 'clientid',
+        post_logout_redirect_uri: '/logout',
+        redirect_uri: '/home',
+        video_api_url: 'http://vh-video-api/',
+        event_hub_path: 'eventhub-karma-tests'
+    });
+    let configService: jasmine.SpyObj<ConfigService>;
     let service: EventsService;
     const mockAdalService = new MockAdalService();
     let adalService;
@@ -15,13 +26,15 @@ describe('EventsService', () => {
     const subscription$ = new Subscription();
 
     beforeAll(() => {
+        configService = jasmine.createSpyObj<ConfigService>('ConfigService', ['clientSettings', 'getClientSettings', 'loadConfig']);
+        configService.getClientSettings.and.returnValue(clientSettings);
         adalService = mockAdalService;
-        service = new EventsService(adalService, logger);
+        service = new EventsService(adalService, configService, logger);
 
         service.connection = new signalR.HubConnectionBuilder()
             .configureLogging(signalR.LogLevel.Debug)
             .withAutomaticReconnect([0])
-            .withUrl('/eventhub', {
+            .withUrl('eventhub-karma-tests', {
                 accessTokenFactory: () => mockAdalService.userInfo.token
             })
             .build();

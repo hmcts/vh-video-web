@@ -24,7 +24,7 @@ using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
-    public class GetConferencesForVHOfficerTests
+    public class GetConferencesForVhOfficerTests
     {
         private ConferencesController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
@@ -38,22 +38,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             _mockLogger = new Mock<ILogger<ConferencesController>>();
             _mockConferenceCache = new Mock<IConferenceCache>();
 
-            var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(Role.VideoHearingsOfficer).Build();
+            var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.VhOfficerRole).Build();
             _controller = SetupControllerWithClaims(claimsPrincipal);
 
             _mockConferenceCache.Setup(x => x.AddConferenceAsync(It.IsAny<ConferenceDetailsResponse>()));
-        }
-
-        [Test]
-        public async Task Should_return_unauthorised_when_not_a_vh_officer()
-        {
-            var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(Role.Individual).Build();
-            _controller = SetupControllerWithClaims(claimsPrincipal);
-            var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery());
-
-            var typedResult = (UnauthorizedObjectResult) result.Result;
-            typedResult.Should().NotBeNull();
-            typedResult.Value.Should().Be("User must be a VH Officer");
         }
 
         [Test]

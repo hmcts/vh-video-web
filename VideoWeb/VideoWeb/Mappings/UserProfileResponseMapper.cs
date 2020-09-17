@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Services.User;
@@ -7,6 +10,8 @@ namespace VideoWeb.Mappings
 {
     public static class UserProfileResponseMapper
     {
+       
+        
         const string Vhofficer = "VhOfficer";
         const string Representative = "Representative";
         const string Individual = "Individual";
@@ -36,6 +41,50 @@ namespace VideoWeb.Mappings
             };
 
             return response;
+        }
+
+        public static object MapUserToResponseModel(ClaimsPrincipal user)
+        {
+            var response = new UserProfileResponse
+            {
+                FirstName = user.Claims.First(c => c.Type == ClaimTypes.GivenName).Value,
+                LastName = user.Claims.First(c => c.Type == ClaimTypes.Surname).Value,
+                DisplayName = user.Claims.First(c => c.Type == ClaimTypes.Name).Value,
+                Username = user.Identity?.Name?.ToLower().Trim(),
+            };
+            var roleClaims = user.Claims.Where(c => c.Type == ClaimTypes.Role).ToList();
+            response.Role = DetermineRoleFromClaims(roleClaims);
+            return response;
+        }
+
+        private static Role DetermineRoleFromClaims(List<Claim> roleClaims)
+        {
+            if (roleClaims.Exists(x => x.Value == AppRoles.VhOfficerRole))
+            {
+                return Role.VideoHearingsOfficer;
+            }
+
+            if (roleClaims.Exists(x => x.Value == AppRoles.JudgeRole))
+            {
+                return Role.Judge;
+            }
+            
+            if (roleClaims.Exists(x => x.Value == AppRoles.RepresentativeRole))
+            {
+                return Role.Representative;
+            }
+            
+            if (roleClaims.Exists(x => x.Value == AppRoles.CitizenRole))
+            {
+                return Role.Individual;
+            }
+            
+            if (roleClaims.Exists(x => x.Value == AppRoles.CaseAdminRole))
+            {
+                return Role.CaseAdmin;
+            }
+            
+            throw new ArgumentOutOfRangeException(nameof(roleClaims));
         }
     }
 }

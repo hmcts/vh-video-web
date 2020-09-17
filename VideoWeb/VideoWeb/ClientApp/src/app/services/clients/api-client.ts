@@ -4009,7 +4009,8 @@ export interface IParticipantResponse {
 export enum EndpointStatus {
     NotYetJoined = 'NotYetJoined',
     Connected = 'Connected',
-    Disconnected = 'Disconnected'
+    Disconnected = 'Disconnected',
+    InConsultation = 'InConsultation'
 }
 
 export class VideoEndpointResponse implements IVideoEndpointResponse {
@@ -4188,6 +4189,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     post_logout_redirect_uri?: string | undefined;
     video_api_url?: string | undefined;
     app_insights_instrumentation_key?: string | undefined;
+    event_hub_path?: string | undefined;
 
     constructor(data?: IClientSettingsResponse) {
         if (data) {
@@ -4205,6 +4207,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
             this.post_logout_redirect_uri = _data['post_logout_redirect_uri'];
             this.video_api_url = _data['video_api_url'];
             this.app_insights_instrumentation_key = _data['app_insights_instrumentation_key'];
+            this.event_hub_path = _data['event_hub_path'];
         }
     }
 
@@ -4223,6 +4226,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         data['post_logout_redirect_uri'] = this.post_logout_redirect_uri;
         data['video_api_url'] = this.video_api_url;
         data['app_insights_instrumentation_key'] = this.app_insights_instrumentation_key;
+        data['event_hub_path'] = this.event_hub_path;
         return data;
     }
 }
@@ -4235,6 +4239,7 @@ export interface IClientSettingsResponse {
     post_logout_redirect_uri?: string | undefined;
     video_api_url?: string | undefined;
     app_insights_instrumentation_key?: string | undefined;
+    event_hub_path?: string | undefined;
 }
 
 export enum ConsultationAnswer {

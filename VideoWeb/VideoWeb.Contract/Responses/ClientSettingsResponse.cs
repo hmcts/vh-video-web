@@ -34,5 +34,10 @@ namespace VideoWeb.Contract.Responses
         /// The application insight instrumentation key
         /// </summary>
         public string AppInsightsInstrumentationKey { get; set; }
+        
+        /// <summary>
+        /// The eventhub path
+        /// </summary>
+        public string EventHubPath { get; set; }
     }
 }
