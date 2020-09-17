@@ -7,14 +7,6 @@ namespace VideoWeb.AcceptanceTests.Data
 {
     public static class ParticipantsManager
     {
-        public static List<ParticipantResponse> GetParticipantsFromRole(List<ParticipantResponse> hearingParticipants, string userRole)
-        {
-            userRole = ChangeJudgeForJudge(userRole);
-            var participants = userRole.ToLower().Equals("participants") ? hearingParticipants.FindAll(x => x.User_role_name == "Individual" || x.User_role_name == "Representative") : hearingParticipants.FindAll(x => x.User_role_name == EnsureRoleTypeHasCapitalLetter(userRole));
-            participants.Should().NotBeNullOrEmpty($"No participants with role {userRole} found");
-            return participants;
-        }
-
         public static List<ParticipantDetailsResponse> GetParticipantsFromRole(List<ParticipantDetailsResponse> conferenceParticipants, string userRole)
         {
             userRole = ChangeJudgeForJudge(userRole);
@@ -42,13 +34,6 @@ namespace VideoWeb.AcceptanceTests.Data
         private static string EnsureRoleTypeHasCapitalLetter(string userRole)
         {
             return char.ToUpper(userRole[0]) + userRole.Substring(1);
-        }
-
-        public static List<ParticipantDetailsResponse> GetParticipantFromLastname(List<ParticipantDetailsResponse> hearingParticipants, string lastname)
-        {
-            var participant = hearingParticipants.FindAll(x => x.Name.ToLower().Contains(lastname.ToLower()));
-            participant.Should().NotBeNullOrEmpty($"No participants with lastname {lastname} found");
-            return participant;
         }
     }
 }

@@ -39,6 +39,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Driver.SwitchTo().Frame(AdminPanelPage.AdminIframeId);
             var participant = _c.Test.ConferenceParticipants.First(x => x.Name.ToLower().Contains(user.ToLower()));
+            Thread.Sleep(TimeSpan.FromSeconds(SecondsDelayBeforeCallingTheParticipant));
             _browsers[_c.CurrentUser].Click(AdminPanelPage.ParticipantInIframe(participant.Display_name));
             Thread.Sleep(TimeSpan.FromSeconds(SecondsDelayBeforeCallingTheParticipant));
             _browsers[_c.CurrentUser].Click(AdminPanelPage.VhoPrivateConsultationLink(participant.Id));

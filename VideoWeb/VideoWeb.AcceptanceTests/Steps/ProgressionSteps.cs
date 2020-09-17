@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -91,26 +92,39 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private static Journey FromString(string user)
         {
-            if (RemoveNumbersFromUsername(user.ToLower()) == "Judge" ||
-                RemoveNumbersFromUsername(user.ToLower()) == "judge")
-                return Journey.Judge;
-            if (RemoveNumbersFromUsername(user.ToLower()) == "Judge self test")
-                return Journey.JudgeSelftest;
-            if (RemoveNumbersFromUsername(user.ToLower()) == "individual self test" ||
-                RemoveNumbersFromUsername(user.ToLower()) == "representative self test" ||
-                RemoveNumbersFromUsername(user.ToLower()) == "panel member self test")
-                return Journey.SelfTest; 
-            if (RemoveNumbersFromUsername(user.ToLower()) == "participant" ||
-                     RemoveNumbersFromUsername(user.ToLower()) == "individual" ||
-                     RemoveNumbersFromUsername(user.ToLower()) == "representative" ||
-                     RemoveNumbersFromUsername(user.ToLower()) == "observer")
-                return Journey.Participant;
-            if (RemoveNumbersFromUsername(user.ToLower()) == "panel member")
-                return Journey.PanelMember;
-            if (RemoveNumbersFromUsername(user.ToLower()) == "video hearings officer") 
-                return Journey.Vho;
+            user = RemoveIndexFromUser(user);
+            user = RemoveNumbersFromUsername(user);
+            user = user.ToLower();
 
-            throw new ArgumentOutOfRangeException($"No user journey found for '{user}'");
+            switch (user)
+            {
+                case "judge":
+                    return Journey.Judge;
+                case "judge self test":
+                    return Journey.JudgeSelftest;
+                case "individual self test":
+                case "representative self test":
+                case "panel member self test":
+                    return Journey.SelfTest;
+                case "participant":
+                case "individual":
+                case "representative":
+                case "observer":
+                    return Journey.Participant;
+                case "panel member":
+                    return Journey.PanelMember;
+                case "video hearings officer":
+                    return Journey.Vho;
+                default:
+                    throw new ArgumentOutOfRangeException($"No user journey found for '{user}'");
+            }
+        }
+
+        private static string RemoveIndexFromUser(string user)
+        {
+            var numbers = new[]{ "first", "second", "third", "fourth", "fifth"};
+            user = numbers.Aggregate(user, (current, number) => current.Replace(number, string.Empty));
+            return user.Replace("the", string.Empty).Trim();
         }
 
         private static string RemoveNumbersFromUsername(string user)
