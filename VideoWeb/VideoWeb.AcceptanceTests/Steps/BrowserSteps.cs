@@ -88,7 +88,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private User GetMatchingDisplayName(string user)
         {
-            return Users.GetUserFromDisplayName(_c.Test.Users, user);
+            return Users.GetUserFromDisplayName(_c.Test.Users, user.Replace(" ", string.Empty));
         }
 
         [When(@"switches to the (.*) tab")]

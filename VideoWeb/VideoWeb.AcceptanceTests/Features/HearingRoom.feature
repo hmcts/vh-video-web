@@ -125,11 +125,11 @@ Scenario: Observer and Panel Member join hearing
 	When the countdown finishes
 	Then the Judge is on the Hearing Room page for 30 seconds
 	And the Judge can see the participants
-	And Observer01 can see the other participants
-	And PanelMember01 can see the other participants
+	And the Observer can see the other participants
+	And the Panel Member can see the other participants
   When in the Judge's browser
   And the Judge clicks close
 	Then the user is on the Hearing List page
 	And the hearing status changed to Closed
-	When in Observer01's browser
+	When in the Observer's browser
 	Then the participants waiting room displays the closed status
