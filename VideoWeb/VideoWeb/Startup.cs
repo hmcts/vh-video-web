@@ -1,22 +1,13 @@
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
-using Microsoft.IdentityModel.Tokens;
 using VideoWeb.Common.Configuration;
-using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Extensions;
 
@@ -24,7 +15,6 @@ namespace VideoWeb
 {
     public class Startup
     {
-        private const string EventHubPath = "/eventhub";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -41,7 +31,7 @@ namespace VideoWeb
 
             services.AddCustomTypes();
 
-            RegisterAuth(services);
+            services.RegisterAuthSchemes(Configuration);
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0).AddFluentValidation();
             services.AddApplicationInsightsTelemetry(Configuration["ApplicationInsights:InstrumentationKey"]);
             // In production, the Angular files will be served from this directory
@@ -50,7 +40,6 @@ namespace VideoWeb
 
         private void RegisterSettings(IServiceCollection services)
         {
-
             services.Configure<AzureAdConfiguration>(options =>
             {
                 Configuration.Bind("AzureAd", options);
@@ -65,66 +54,7 @@ namespace VideoWeb
             services.AddSingleton(connectionStrings);
         }
 
-        private void RegisterAuth(IServiceCollection serviceCollection)
-        {
-            var kinlyConfiguration = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
-            var securitySettings = Configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
-            var securityKey = Convert.FromBase64String(kinlyConfiguration.CallbackSecret);
-            serviceCollection.AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                }).AddPolicyScheme(JwtBearerDefaults.AuthenticationScheme, "Handler", options =>
-                    options.ForwardDefaultSelector = context =>
-                        context.Request.Path.StartsWithSegments("/callback")
-                            ? "Callback" : "Default")
-                .AddJwtBearer("Default", options =>
-                {
-                    options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}";
-                    options.TokenValidationParameters.ValidateLifetime = true;
-                    options.Audience = securitySettings.ClientId;
-                    options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
-                    options.Events = new JwtBearerEvents {OnTokenValidated = OnTokenValidated};
-                }).AddJwtBearer("EventHubUser", options =>
-                {
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = context =>
-                        {
-                            var accessToken = context.Request.Query["access_token"];
-                            if (string.IsNullOrEmpty(accessToken)) return Task.CompletedTask;
-
-                            var path = context.HttpContext.Request.Path;
-                            if (path.StartsWithSegments(EventHubPath))
-                            {
-                                context.Token = accessToken;
-                            }
-
-                            return Task.CompletedTask;
-                        },
-                        OnTokenValidated = OnTokenValidated
-                    };
-                    options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}";
-                    options.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        ClockSkew = TimeSpan.Zero,
-                        ValidateLifetime = true,
-                        ValidAudience = securitySettings.ClientId
-                    };
-                }).AddJwtBearer("Callback", options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        IssuerSigningKey = new SymmetricSecurityKey(securityKey)
-                    };
-                });
-
-            serviceCollection.AddMemoryCache();
-            serviceCollection.AddAuthorization(AddPolicies);
-            serviceCollection.AddMvc(AddMvcPolicies);
-        }
+        
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -163,7 +93,8 @@ namespace VideoWeb
             {
                 endpoints.MapDefaultControllerRoute();
 
-                endpoints.MapHub<EventHub.Hub.EventHub>(EventHubPath, options =>
+                var hubPath = Configuration.GetValue<string>("VhServices:EventHubPath");
+                endpoints.MapHub<EventHub.Hub.EventHub>(hubPath, options =>
                 {
                     options.Transports = HttpTransportType.ServerSentEvents | HttpTransportType.LongPolling |
                                          HttpTransportType.WebSockets;
@@ -181,46 +112,6 @@ namespace VideoWeb
                     spa.UseProxyToSpaDevelopmentServer(ngBaseUri);
                 }
             });
-        }
-
-        private static void AddPolicies(AuthorizationOptions options)
-        {
-            options.AddPolicy("Default", new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser()
-                .AddAuthenticationSchemes("Default")
-                .Build());
-
-            options.AddPolicy("EventHubUser", new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser()
-                .AddAuthenticationSchemes("EventHubUser")
-                .Build());
-
-            options.AddPolicy("Callback", new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser()
-                .AddAuthenticationSchemes("Callback")
-                .Build());
-        }
-
-        private static void AddMvcPolicies(MvcOptions options)
-        {
-            options.Filters.Add(new AuthorizeFilter(new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser().Build()));
-        }
-        
-        private static async Task OnTokenValidated(TokenValidatedContext ctx)
-        {
-            if (ctx.SecurityToken is JwtSecurityToken jwtToken )
-            {
-                var claimsIdentity = ctx.Principal.Identity as ClaimsIdentity;
-                if (!claimsIdentity.HasClaim(c => c.Type == ClaimTypes.Name))
-                {
-                    return;
-                }
-                var cachedUserClaimBuilder = ctx.HttpContext.RequestServices.GetService<ICachedUserClaimBuilder>();
-                var userProfileClaims = await cachedUserClaimBuilder.BuildAsync(ctx.Principal.Identity.Name, jwtToken.RawData);
-                
-                claimsIdentity?.AddClaims(userProfileClaims);
-            }
         }
     }
 }

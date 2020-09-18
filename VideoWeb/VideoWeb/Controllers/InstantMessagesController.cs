@@ -4,10 +4,12 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Castle.Core.Internal;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
@@ -75,6 +77,7 @@ namespace VideoWeb.Controllers
         [HttpGet("{conferenceId}/instantmessages/unread/vho")]
         [SwaggerOperation(OperationId = "GetNumberOfUnreadAdminMessagesForConference")]
         [ProducesResponseType(typeof(UnreadInstantMessageConferenceCountResponse), (int)HttpStatusCode.OK)]
+        [Authorize(AppRoles.VhOfficerRole)]
         public async Task<IActionResult> GetUnreadMessagesForVideoOfficerAsync(Guid conferenceId)
         {
             _logger.LogDebug($"GetMessages for {conferenceId}");

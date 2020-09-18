@@ -29,10 +29,10 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
             _userApiClientMock = new Mock<IUserApiClient>();
             _mockLogger = new Mock<ILogger<ProfilesController>>();
             var claimsPrincipal = new ClaimsPrincipalBuilder()
-                .WithRole(Role.Judge)
+                .WithRole(AppRoles.JudgeRole)
                 .WithClaim(ClaimTypes.GivenName, "John")
                 .WithClaim(ClaimTypes.Surname, "Doe")
-                .WithClaim(ClaimTypes.Name, "John D")
+                .WithClaim("name", "John D")
                 .Build();
             var context = new ControllerContext
             {

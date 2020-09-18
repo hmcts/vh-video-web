@@ -31,7 +31,7 @@ using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 using VideoWeb.Swagger;
 
-namespace VideoWeb
+namespace VideoWeb.Extensions
 {
     public static class ConfigureServicesExtensions
     {
@@ -97,7 +97,6 @@ namespace VideoWeb
             services.AddScoped<IMessageDecoder, MessageFromDecoder>();
             services.AddScoped<IHeartbeatRequestMapper, HeartbeatRequestMapper>();
             services.AddSingleton<IUserCache, DistributedUserCache>();
-            services.AddScoped<ICachedUserClaimBuilder, CachedUserClaimBuilder>();
 
             var container = services.BuildServiceProvider();
             var servicesConfiguration = container.GetService<IOptions<HearingServicesConfiguration>>().Value;

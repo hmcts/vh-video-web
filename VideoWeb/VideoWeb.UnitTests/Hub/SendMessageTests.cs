@@ -34,7 +34,7 @@ namespace VideoWeb.UnitTests.Hub
 
         private List<Mock<IEventHubClient>> ParticipantChannels => new List<Mock<IEventHubClient>>()
             {JudgeGroupChannel, IndividualGroupChannel, RepresentativeGroupChannel};
-        
+
         private Conference Conference { get; set; }
 
         [Test]
@@ -43,7 +43,7 @@ namespace VideoWeb.UnitTests.Hub
         {
             SetupSendMessageTests();
             // setup claims to return judge username
-            var claims = new ClaimsPrincipalBuilder().WithUsername(JudgeUsername).WithRole(Role.Judge).Build();
+            var claims = new ClaimsPrincipalBuilder().WithUsername(JudgeUsername).WithRole(AppRoles.JudgeRole).Build();
             UpdateUserIdentity(claims);
 
             var fromUsername = JudgeUsername;
@@ -63,7 +63,7 @@ namespace VideoWeb.UnitTests.Hub
         {
             SetupSendMessageTests();
             // setup claims to return individual username
-            var claims = new ClaimsPrincipalBuilder().WithUsername(IndividualUsername).WithRole(Role.Individual)
+            var claims = new ClaimsPrincipalBuilder().WithUsername(IndividualUsername).WithRole(AppRoles.CitizenRole)
                 .Build();
             UpdateUserIdentity(claims);
 
@@ -83,7 +83,7 @@ namespace VideoWeb.UnitTests.Hub
         {
             SetupSendMessageTests();
             // setup claims to return judge username
-            var claims = new ClaimsPrincipalBuilder().WithUsername(JudgeUsername).WithRole(Role.Judge).Build();
+            var claims = new ClaimsPrincipalBuilder().WithUsername(JudgeUsername).WithRole(AppRoles.JudgeRole).Build();
             UpdateUserIdentity(claims);
 
             var fromUsername = JudgeUsername;
@@ -103,7 +103,7 @@ namespace VideoWeb.UnitTests.Hub
         {
             SetupSendMessageTests();
             // setup claims to return individual username
-            var claims = new ClaimsPrincipalBuilder().WithUsername(IndividualUsername).WithRole(Role.Individual)
+            var claims = new ClaimsPrincipalBuilder().WithUsername(IndividualUsername).WithRole(AppRoles.CitizenRole)
                 .Build();
             UpdateUserIdentity(claims);
 
@@ -123,7 +123,7 @@ namespace VideoWeb.UnitTests.Hub
         {
             SetupSendMessageTests();
             // setup claims to return admin username
-            var claims = new ClaimsPrincipalBuilder().WithUsername(AdminUsername).WithRole(Role.VideoHearingsOfficer)
+            var claims = new ClaimsPrincipalBuilder().WithUsername(AdminUsername).WithRole(AppRoles.VhOfficerRole)
                 .Build();
             UpdateUserIdentity(claims);
 
@@ -144,7 +144,7 @@ namespace VideoWeb.UnitTests.Hub
         {
             SetupSendMessageTests();
             // setup claims to return judge username
-            var claims = new ClaimsPrincipalBuilder().WithUsername(JudgeUsername).WithRole(Role.Judge).Build();
+            var claims = new ClaimsPrincipalBuilder().WithUsername(JudgeUsername).WithRole(AppRoles.JudgeRole).Build();
             UpdateUserIdentity(claims);
 
             var fromUsername = "does@notexist.com";
@@ -165,7 +165,7 @@ namespace VideoWeb.UnitTests.Hub
         {
             SetupSendMessageTests();
             // setup claims to return admin username
-            var claims = new ClaimsPrincipalBuilder().WithUsername(AdminUsername).WithRole(Role.VideoHearingsOfficer)
+            var claims = new ClaimsPrincipalBuilder().WithUsername(AdminUsername).WithRole(AppRoles.VhOfficerRole)
                 .Build();
             UpdateUserIdentity(claims);
 
@@ -186,7 +186,8 @@ namespace VideoWeb.UnitTests.Hub
         {
             SetupSendMessageTests();
             // setup claims to return admin username
-            var claims = new ClaimsPrincipalBuilder().WithUsername(RepresentativeUsername).WithRole(Role.Representative)
+            var claims = new ClaimsPrincipalBuilder().WithUsername(RepresentativeUsername)
+                .WithRole(AppRoles.RepresentativeRole)
                 .Build();
             UpdateUserIdentity(claims);
 
