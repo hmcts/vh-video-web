@@ -49,7 +49,7 @@ namespace VideoWeb.Mappings
             {
                 FirstName = user.Claims.First(c => c.Type == ClaimTypes.GivenName).Value,
                 LastName = user.Claims.First(c => c.Type == ClaimTypes.Surname).Value,
-                DisplayName = user.Claims.First(c => c.Type == ClaimTypes.Name).Value,
+                DisplayName = user.Claims.First(c => c.Type == "name").Value,
                 Username = user.Identity?.Name?.ToLower().Trim(),
             };
             var roleClaims = user.Claims.Where(c => c.Type == ClaimTypes.Role).ToList();

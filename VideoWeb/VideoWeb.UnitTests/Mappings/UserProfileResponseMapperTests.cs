@@ -54,10 +54,12 @@ namespace VideoWeb.UnitTests.Mappings
         {
             const string firstName = "John";
             const string lastname = "Doe";
+            const string displayName = "John Doe";
             var username = ClaimsPrincipalBuilder.Username;
             var user = new ClaimsPrincipalBuilder()
                 .WithClaim(ClaimTypes.GivenName, firstName)
                 .WithClaim(ClaimTypes.Surname, lastname)
+                .WithClaim("name", displayName)
                 .WithUsername(username)
                 .WithRole(role).Build();
 
@@ -66,7 +68,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.Role.Should().Be(expectedRole);
             response.FirstName.Should().Be(firstName);
             response.LastName.Should().Be(lastname);
-            response.DisplayName.Should().Be(username);
+            response.DisplayName.Should().Be(displayName);
             response.Username.Should().Be(username);
         }
         
@@ -75,10 +77,12 @@ namespace VideoWeb.UnitTests.Mappings
         {
             const string firstName = "John";
             const string lastname = "Doe";
+            const string displayName = "John Doe";
             var username = ClaimsPrincipalBuilder.Username;
             var user = new ClaimsPrincipalBuilder()
                 .WithClaim(ClaimTypes.GivenName, firstName)
                 .WithClaim(ClaimTypes.Surname, lastname)
+                .WithClaim("name", displayName)
                 .WithUsername(username)
                 .WithRole("unknown").Build();
             Action action = () => UserProfileResponseMapper.MapUserToResponseModel(user);

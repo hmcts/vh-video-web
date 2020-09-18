@@ -33,7 +33,7 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
                 .WithRole(AppRoles.JudgeRole)
                 .WithClaim(ClaimTypes.GivenName, "John")
                 .WithClaim(ClaimTypes.Surname, "Doe")
-                .WithClaim(ClaimTypes.Name, "John D")
+                .WithClaim("name", "John D")
                 .Build();
             _controller = SetupControllerWithClaims(_claimsPrincipal);
         }
@@ -51,7 +51,7 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
             userProfile.LastName.Should()
                 .Be(_claimsPrincipal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Surname)?.Value);
             userProfile.DisplayName.Should()
-                .Be(_claimsPrincipal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value);
+                .Be(_claimsPrincipal.Claims.FirstOrDefault(x => x.Type == "name")?.Value);
         }
 
         [Test]

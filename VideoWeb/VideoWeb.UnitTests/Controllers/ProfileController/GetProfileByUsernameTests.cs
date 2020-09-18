@@ -32,7 +32,7 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
                 .WithRole(AppRoles.JudgeRole)
                 .WithClaim(ClaimTypes.GivenName, "John")
                 .WithClaim(ClaimTypes.Surname, "Doe")
-                .WithClaim(ClaimTypes.Name, "John D")
+                .WithClaim("name", "John D")
                 .Build();
             var context = new ControllerContext
             {
