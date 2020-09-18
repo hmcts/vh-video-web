@@ -122,7 +122,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             SwitchToTheVhoIframe();
 
-            var user = Users.GetUserFromTextWithIndex(text, _c.Test.Users);
+            var user = Users.GetUserFromText(text, _c.Test.Users);
             var participant = _c.Test.ConferenceParticipants.First(x => x.Username.Equals(user.Username));
             
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantInWaitingRoom(participant.Id)).Displayed.Should().BeTrue();
@@ -138,7 +138,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var judgeId = _c.Test.Conference.Participants.First(x => x.User_role == UserRole.Judge).Id;
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantInHearingRoom(judgeId)).Displayed.Should().BeTrue();
 
-            var user = Users.GetUserFromTextWithIndex(text, _c.Test.Users);
+            var user = Users.GetUserFromText(text, _c.Test.Users);
             var participant = _c.Test.ConferenceParticipants.First(x => x.Username.Equals(user.Username));
 
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantInHearingRoom(participant.Id)).Displayed.Should().BeTrue();

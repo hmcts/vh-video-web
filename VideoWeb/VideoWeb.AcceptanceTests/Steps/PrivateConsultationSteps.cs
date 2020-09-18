@@ -30,11 +30,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [When(@"the user starts a private consultation with (.*)")]
-        public void WhenTheUserStartsAPrivateConsultationWithIndividual(string user)
+        public void WhenTheUserStartsAPrivateConsultationWithIndividual(string text)
         {
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.TimePanel).Displayed.Should().BeTrue();
             Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitToCallAndAnswer));
-            var participant = _c.Test.ConferenceParticipants.First(x => x.Name.ToLower().Contains(user.ToLower()));
+            var user = Users.GetUserFromText(text, _c.Test.Users);
+            var participant = _c.Test.ConferenceParticipants.First(x => x.Username.ToLower().Contains(user.Username.ToLower()));
             _browsers[_c.CurrentUser].ClickLink(ParticipantListPanel.PrivateConsultationLink(participant.Id));
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateCallPopupPage.OutgoingCallMessage).Text.Should().Contain(participant.Name);
         }
@@ -44,7 +45,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browserSteps.GivenInTheUsersBrowser(user);
             Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitToCallAndAnswer));
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateCallPopupPage.IncomingCallMessage).Text.Should().Contain(from);
+            var fromUser = Users.GetUserFromText(from, _c.Test.Users);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateCallPopupPage.IncomingCallMessage).Text.Should().Contain(fromUser.Display_name);
             _browsers[_c.CurrentUser].Click(PrivateCallPopupPage.AcceptPrivateCall);
         }
 
@@ -95,10 +97,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Then(@"the private consultation link with (.*) is not visible")]
-        public void ThenThePrivateConsultationLinkIsNotVisible(string user)
+        public void ThenThePrivateConsultationLinkIsNotVisible(string text)
         {
             _browsers[_c.CurrentUser].Refresh();
-            var participantId = _c.Test.ConferenceParticipants.First(x => x.Name.ToLower().Contains(user.ToLower())).Id;
+            var user = Users.GetUserFromText(text, _c.Test.Users);
+            var participantId = _c.Test.ConferenceParticipants.First(x => x.Username.ToLower().Contains(user.Username.ToLower())).Id;
             _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(ParticipantListPanel.PrivateConsultationLink(participantId)).Should().BeTrue();
         }
 
