@@ -31,14 +31,15 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [When(@"the Video Hearings Officer starts a call with (.*)")]
-        public void WhenTheVideoHearingsOfficerStartsACallWithIndividual(string user)
+        public void WhenTheVideoHearingsOfficerStartsACallWithIndividual(string text)
         {
             Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser], _c.Test.Conference.Id);
             _browsers[_c.CurrentUser].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Driver.SwitchTo().Frame(AdminPanelPage.AdminIframeId);
-            var participant = _c.Test.ConferenceParticipants.First(x => x.Name.ToLower().Contains(user.ToLower()));
+            var user = Users.GetUserFromText(text, _c.Test.Users);
+            var participant = _c.Test.ConferenceParticipants.First(x => x.Username.ToLower().Contains(user.Username.ToLower()));
             Thread.Sleep(TimeSpan.FromSeconds(SecondsDelayBeforeCallingTheParticipant));
             _browsers[_c.CurrentUser].Click(AdminPanelPage.ParticipantInIframe(participant.Display_name));
             Thread.Sleep(TimeSpan.FromSeconds(SecondsDelayBeforeCallingTheParticipant));
@@ -93,14 +94,16 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Then(@"the option to call (.*) is not visible")]
-        public void ThenTheOptionToCallIsNotVisible(string user)
+        public void ThenTheOptionToCallIsNotVisible(string text)
         {
             Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser], _c.Test.Conference.Id);
             _browsers[_c.CurrentUser].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Driver.SwitchTo().Frame(AdminPanelPage.AdminIframeId);
-            var participant = _c.Test.ConferenceParticipants.Find(x => x.Name.ToLower().Contains(user.ToLower()));
+            var user = Users.GetUserFromText(text, _c.Test.Users);
+            var participant = _c.Test.ConferenceParticipants.Find(x => x.Username.ToLower().Contains(user.Username.ToLower()));
+            Thread.Sleep(TimeSpan.FromSeconds(SecondsDelayBeforeCallingTheParticipant));
             _browsers[_c.CurrentUser].Click(AdminPanelPage.ParticipantInIframe(participant.Display_name));
             Thread.Sleep(TimeSpan.FromSeconds(SecondsDelayBeforeCallingTheParticipant));
             _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(AdminPanelPage.VhoPrivateConsultationLink(participant.Id)).Should().BeTrue();

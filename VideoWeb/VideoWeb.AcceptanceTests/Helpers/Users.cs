@@ -67,7 +67,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             return users.FindAll(x => x.User_type == userType);
         }
 
-        public static User GetUserFromTextWithIndex(string text, List<User> users)
+        public static User GetUserFromText(string text, List<User> users)
         {
             text = text.ToLower().Replace("'s", string.Empty).Replace("the", string.Empty).Trim();
 

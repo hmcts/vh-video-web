@@ -93,7 +93,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private IEnumerable<ParticipantDetailsResponse> GetParticipants(string text)
         {
-            var user = Users.GetUserFromTextWithIndex(text, _c.Test.Users);
+            var user = Users.GetUserFromText(text, _c.Test.Users);
             var participant = _c.Test.ConferenceParticipants.First(x => x.Username.Equals(user.Username));
             return new List<ParticipantDetailsResponse>() {participant};
         }
