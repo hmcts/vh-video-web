@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VideoWeb.Common.Caching;
-using VideoWeb.Common.Extensions;
 using VideoWeb.Common.Models;
 using VideoWeb.Common.SignalR;
 using VideoWeb.EventHub.Exceptions;
@@ -120,7 +119,7 @@ namespace VideoWeb.EventHub.Hub
 
         private bool IsSenderAdmin()
         {
-            return Context.User.IsInRole(Role.VideoHearingsOfficer.DescriptionAttr());
+            return Context.User.IsInRole(AppRoles.VhOfficerRole);
         }
 
         private async Task<string> GetObfuscatedUsernameAsync(string username)

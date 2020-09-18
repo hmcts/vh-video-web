@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Caching;
-using VideoWeb.Common.Extensions;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
@@ -25,6 +25,7 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("consultations")]
+    [Authorize("Individual")]
     public class ConsultationsController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
@@ -186,14 +187,10 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int) HttpStatusCode.Accepted)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [Authorize(AppRoles.RepresentativeRole)]
         public async Task<IActionResult> CallVideoEndpointAsync(PrivateVideoEndpointConsultationRequest request)
         {
             _logger.LogDebug("CallVideoEndpoint");
-            if (!User.IsInRole(Role.Representative.EnumDataMemberAttr()))
-            {
-                _logger.LogWarning($"User is not a representative");
-                return Unauthorized("User must be a representative");
-            }
             var username = User.Identity.Name?.ToLower().Trim();
             var conference = await GetConference(request.ConferenceId);
 

@@ -3,6 +3,8 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
@@ -13,6 +15,7 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [Route("api/accounts")]
     [ApiController]
+    [Authorize(AppRoles.VhOfficerRole)]
     public class UserDataController : ControllerBase
     {
         private readonly IUserApiClient _userApiClient;

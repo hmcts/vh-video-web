@@ -3,6 +3,7 @@ import * as signalR from '@microsoft/signalr';
 import { AdalService } from 'adal-angular4';
 import { Observable, Subject } from 'rxjs';
 import { Heartbeat } from '../shared/models/heartbeat';
+import { ConfigService } from './api/config.service';
 import { ConferenceStatus, ConsultationAnswer, EndpointStatus, ParticipantStatus, RoomType } from './clients/api-client';
 import { Logger } from './logging/logger-base';
 import { AdminConsultationMessage } from './models/admin-consultation-message';
@@ -37,12 +38,13 @@ export class EventsService {
 
     reconnectionAttempt: number;
 
-    constructor(private adalService: AdalService, private logger: Logger) {
+    constructor(private adalService: AdalService, private configService: ConfigService, private logger: Logger) {
         this.reconnectionAttempt = 0;
+        const eventhubPath = this.configService.getClientSettings().event_hub_path;
         this.connection = new signalR.HubConnectionBuilder()
             .configureLogging(signalR.LogLevel.Debug)
             .withAutomaticReconnect([0, 2000, 5000, 10000, 15000, 20000, 30000])
-            .withUrl('/eventhub', {
+            .withUrl(eventhubPath, {
                 accessTokenFactory: () => this.adalService.userInfo.token
             })
             .build();

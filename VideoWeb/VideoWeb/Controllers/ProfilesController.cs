@@ -1,13 +1,10 @@
 using System;
-using System.Linq;
 using System.Net;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Caching;
-using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services.User;
@@ -41,22 +38,14 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var role = User.Claims.First(c => c.Type == ClaimTypes.Role).Value;
-                var response = new UserProfileResponse
-                {
-                    FirstName = User.Claims.First(c => c.Type == ClaimTypes.GivenName).Value,
-                    LastName = User.Claims.First(c => c.Type == ClaimTypes.Surname).Value,
-                    DisplayName = User.Claims.First(c => c.Type == ClaimTypes.Name).Value,
-                    Role = Enum.Parse<Role>(role),
-                    Username = User.Identity.Name.ToLower().Trim(),
-                };
+                var response = UserProfileResponseMapper.MapUserToResponseModel(User);
                 return Ok(response);
             }
             catch (Exception e)
             {
                 const string message = "User does not have permission";
                 _logger.LogError(e, message);
-                return StatusCode((int) HttpStatusCode.Unauthorized, message);
+                return Unauthorized(message);
             }
         }
 

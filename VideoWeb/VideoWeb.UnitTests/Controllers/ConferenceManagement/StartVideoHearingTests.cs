@@ -27,7 +27,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var participant = TestConference.Participants.First(x => x.Role == Role.Individual);
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(participant.Username)
-                .WithRole(participant.Role).Build();
+                .WithRole(AppRoles.CitizenRole).Build();
 
             Controller = SetupControllerWithClaims(user);
 
@@ -43,7 +43,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         {
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername("notforconference@test.com")
-                .WithRole(Role.Judge).Build();
+                .WithRole(AppRoles.JudgeRole).Build();
 
             Controller = SetupControllerWithClaims(user);
             
@@ -60,7 +60,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var participant = TestConference.GetJudge();
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(participant.Username)
-                .WithRole(participant.Role).Build();
+                .WithRole(AppRoles.JudgeRole).Build();
             
             Controller = SetupControllerWithClaims(user);
             
@@ -84,7 +84,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var participant = TestConference.GetJudge();
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(participant.Username)
-                .WithRole(participant.Role).Build();
+                .WithRole(AppRoles.JudgeRole).Build();
             
             Controller = SetupControllerWithClaims(user);
             

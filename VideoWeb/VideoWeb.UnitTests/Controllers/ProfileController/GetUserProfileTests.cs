@@ -30,10 +30,10 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
             _userApiClientMock = new Mock<IUserApiClient>();
             _mockLogger = new Mock<ILogger<ProfilesController>>();
             _claimsPrincipal = new ClaimsPrincipalBuilder()
-                .WithRole(Role.Judge)
+                .WithRole(AppRoles.JudgeRole)
                 .WithClaim(ClaimTypes.GivenName, "John")
                 .WithClaim(ClaimTypes.Surname, "Doe")
-                .WithClaim(ClaimTypes.Name, "John D")
+                .WithClaim("name", "John D")
                 .Build();
             _controller = SetupControllerWithClaims(_claimsPrincipal);
         }
@@ -51,7 +51,7 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
             userProfile.LastName.Should()
                 .Be(_claimsPrincipal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Surname)?.Value);
             userProfile.DisplayName.Should()
-                .Be(_claimsPrincipal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value);
+                .Be(_claimsPrincipal.Claims.FirstOrDefault(x => x.Type == "name")?.Value);
         }
 
         [Test]

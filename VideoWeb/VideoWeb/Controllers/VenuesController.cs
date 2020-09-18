@@ -1,8 +1,10 @@
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
+using VideoWeb.Common.Models;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Controllers
@@ -10,6 +12,7 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("hearing-venues")]
+    [Authorize(AppRoles.VhOfficerRole)]
     public class VenuesController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;

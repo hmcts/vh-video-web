@@ -25,7 +25,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.PostLogoutRedirectUri.Should().Be(azureAdConfiguration.PostLogoutRedirectUri);
             response.VideoApiUrl.Should().Be(servicesConfiguration.VideoApiUrl);
             response.AppInsightsInstrumentationKey.Should().Be(azureAdConfiguration.ApplicationInsights.InstrumentationKey);
-
+            response.EventHubPath.Should().Be(servicesConfiguration.EventHubPath);
         }
     }
 }

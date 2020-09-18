@@ -15,7 +15,8 @@ namespace VideoWeb.Mappings
                 RedirectUri = azureAdConfiguration.RedirectUri,
                 PostLogoutRedirectUri = azureAdConfiguration.PostLogoutRedirectUri,
                 VideoApiUrl = servicesConfiguration.VideoApiUrl,
-                AppInsightsInstrumentationKey = azureAdConfiguration.ApplicationInsights.InstrumentationKey
+                AppInsightsInstrumentationKey = azureAdConfiguration.ApplicationInsights.InstrumentationKey,
+                EventHubPath = servicesConfiguration.EventHubPath
             };
         }
 

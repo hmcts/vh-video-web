@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Caching;
-using VideoWeb.Common.Extensions;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
@@ -17,7 +17,6 @@ using VideoWeb.Mappings;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
 using UpdateParticipantRequest = VideoWeb.Services.Video.UpdateParticipantRequest;
-using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
 
 namespace VideoWeb.Controllers
 {
@@ -176,6 +175,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         [SwaggerOperation(OperationId = "GetParticipantsWithContactDetailsByConferenceId")]
+        [Authorize(AppRoles.VhOfficerRole)]
         public async Task<IActionResult> GetParticipantsWithContactDetailsByConferenceIdAsync(Guid conferenceId)
         {
             _logger.LogDebug("GetParticipantsWithContactDetailsByConferenceId");
@@ -187,15 +187,6 @@ namespace VideoWeb.Controllers
 
                 return BadRequest(ModelState);
             }
-
-            _logger.LogTrace("Checking to see if user is a VH Officer");
-            if (!User.IsInRole(Role.VideoHearingsOfficer.EnumDataMemberAttr()))
-            {
-                _logger.LogWarning($"Failed to get conference: ${conferenceId}, {User.Identity.Name} is not a VH officer");
-
-                return Unauthorized("User must be a VH Officer");
-            }
-
             try
             {
                 var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
