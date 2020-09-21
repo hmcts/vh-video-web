@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using AcceptanceTests.Common.Api.Helpers;
 using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Enums;
+using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
@@ -83,6 +86,24 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private User GetDefaultParticipant()
         {
+            if (_c.Test.Users.Count != 0) return Users.GetDefaultParticipantUser(_c.Test.Users);
+
+            var request = new AllocateUserRequest()
+            {
+                Application = Application.VideoWeb,
+                Expiry_in_minutes = 1,
+                Is_prod_user = _c.VideoWebConfig.IsLive,
+                Test_type = TestType.Automated,
+                User_type = UserType.Individual
+            };
+
+            var response = _c.Apis.TestApi.AllocateUser(request);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            response.Should().NotBeNull();
+            var user = RequestHelper.Deserialise<UserDetailsResponse>(response.Content);
+            user.Should().NotBeNull();
+            _c.Test.Users = UserDetailsResponseToUsersMapper.Map(user);
+
             return Users.GetDefaultParticipantUser(_c.Test.Users);
         }
 

@@ -137,10 +137,11 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Click(VhoHearingListPage.MessagesTabButton);
         }
 
-        private void SelectTheUser(string user)
+        private void SelectTheUser(string text)
         {
-            var participantId = _c.Test.Conference.Participants.First(x => x.Display_name.ToLower().Contains(user.ToLower())).Id;
-            _browsers[_c.CurrentUser].Click(VhoHearingListPage.SelectParticipantToMessage(participantId));
+            var user = Users.GetUserFromText(text, _c.Test.Users);
+            var participant = _c.Test.Conference.Participants.First(x => x.Username.ToLower().Equals(user.Username.ToLower()));
+            _browsers[_c.CurrentUser].Click(VhoHearingListPage.SelectParticipantToMessage(participant.Id));
         }
 
         private void SendNewMessage()

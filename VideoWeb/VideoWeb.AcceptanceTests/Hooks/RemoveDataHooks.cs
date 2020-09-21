@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Helpers;
@@ -20,6 +21,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         {
             if (context?.Test?.Users == null) return;
             if (context.Test?.Users?.Count == 0) return;
+            if (context.Test.Users.All(x => x.User_type != UserType.Judge)) return;
             _username = Users.GetJudgeUser(context.Test.Users).Username;
             ClearHearingsForUser(context.Apis.TestApi);
             ClearClosedConferencesForUser(context.Apis.TestApi);
