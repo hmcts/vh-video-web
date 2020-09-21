@@ -107,12 +107,8 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
     }
 
     handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): boolean {
-        console.log('--------- participant update in video call ---------');
-        console.log(updatedParticipant);
         const participant = this.participants.find(x => x.pexipDisplayName === updatedParticipant.pexipDisplayName);
         if (!participant) {
-            console.log('unable to find participant');
-            console.log(updatedParticipant);
             return;
         }
         participant.pexipId = updatedParticipant.uuid;
