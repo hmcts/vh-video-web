@@ -18,7 +18,8 @@ import {
     UpdateParticipantStatusEventRequest,
     UnreadInstantMessageConferenceCountResponse,
     JudgeNameListResponse,
-    ParticipantForUserResponse
+    ParticipantForUserResponse,
+    VideoEndpointResponse
 } from '../clients/api-client';
 import { ConferenceLite } from '../models/conference-lite';
 import { SessionStorage } from '../session-storage';
@@ -141,5 +142,9 @@ export class VideoWebService implements IVideoWebApiService {
 
     getParticipantsByConferenceId(conferenceId: string): Promise<ParticipantForUserResponse[]> {
         return this.apiClient.getParticipantsByConferenceId(conferenceId).toPromise();
+    }
+
+    getEndpointsForConference(conferenceId: string): Promise<VideoEndpointResponse[]> {
+        return this.apiClient.getVideoEndpointsForConference(conferenceId).toPromise();
     }
 }

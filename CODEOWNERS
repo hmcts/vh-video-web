@@ -1,5 +1,5 @@
 * @hmcts/vh
-azure-pipelines.yml @rdbartram
-azure-pipelines.release.yml @rdbartram
-azure-pipelines.nightly.yml @rdbartram @npoxon
-azure-pipelines.beta.yml @rdbartram @npoxon
+azure-pipelines.yml @vh-DevOps
+azure-pipelines.release.yml @vh-DevOps
+azure-pipelines.nightly.yml @vh-DevOps
+azure-pipelines.beta.yml @vh-DevOps

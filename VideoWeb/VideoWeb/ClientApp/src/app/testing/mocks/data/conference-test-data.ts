@@ -508,13 +508,15 @@ export class ConferenceTestData {
         const point1 = new VideoEndpointResponse({
             display_name: 'DispName1',
             status: EndpointStatus.NotYetJoined,
-            id: '1232323'
+            id: '1232323',
+            pexip_display_name: 'T100;DispName1;1232323'
         });
         const point2 = new VideoEndpointResponse({
             display_name: 'DispName2',
             status: EndpointStatus.Connected,
             id: '123232355',
-            defence_advocate_username: 'john.doe@hearings.net'
+            defence_advocate_username: 'john.doe@hearings.net',
+            pexip_display_name: 'T101;DispName2;123232355'
         });
         endpoints.push(point1);
         endpoints.push(point2);

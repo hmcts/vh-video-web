@@ -70,19 +70,19 @@ parameters:
       BrowserVersion:
       DeviceType: Tablet
       DeviceName:
-      TestCaseFilter: TestCategory=UnsupportedDevice
+      TestCaseFilter: TestCategory=UnsupportedDeviceTablet
     - OS: iOS
       Browser: Safari
       BrowserVersion:
       DeviceType: Mobile
       DeviceName:
-      TestCaseFilter: TestCategory=UnsupportedDevice
+      TestCaseFilter: TestCategory=UnsupportedDeviceMobile
     - OS: Android
       Browser: Chrome
       BrowserVersion:
       DeviceType: Mobile
       DeviceName:
-      TestCaseFilter: TestCategory=UnsupportedDevice
+      TestCaseFilter: TestCategory=UnsupportedDeviceMobile
 
 - name: prodEnvs
   displayName: Environments Using Prod Subscription

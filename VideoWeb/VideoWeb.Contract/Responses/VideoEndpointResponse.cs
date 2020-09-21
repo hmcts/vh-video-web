@@ -24,5 +24,10 @@ namespace VideoWeb.Contract.Responses
         /// The current endpoint status
         /// </summary>
         public string DefenceAdvocateUsername { get; set; }
+        
+        /// <summary>
+        /// The display name when connected to the pexip node
+        /// </summary>
+        public string PexipDisplayName { get; set; }
     }
 }
