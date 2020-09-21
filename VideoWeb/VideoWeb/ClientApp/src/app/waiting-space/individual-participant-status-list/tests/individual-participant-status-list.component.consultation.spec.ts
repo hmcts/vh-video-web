@@ -5,12 +5,12 @@ import {
     ConferenceResponse,
     ConferenceStatus,
     ConsultationAnswer,
+    EndpointStatus,
     ParticipantResponse,
+    ParticipantResponseVho,
     ParticipantStatus,
     Role,
-    RoomType,
-    ParticipantResponseVho,
-    EndpointStatus
+    RoomType
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
@@ -23,8 +23,8 @@ import {
     eventsServiceSpy
 } from 'src/app/testing/mocks/mock-events-service';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
-import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
 import { CaseTypeGroup } from '../../models/case-type-group';
+import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
 
 describe('IndividualParticipantStatusListComponent consultations', () => {
     let component: IndividualParticipantStatusListComponent;

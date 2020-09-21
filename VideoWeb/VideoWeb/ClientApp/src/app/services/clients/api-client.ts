@@ -7,10 +7,10 @@
 //----------------------
 // ReSharper disable InconsistentNaming
 
-import { mergeMap as _observableMergeMap, catchError as _observableCatch } from 'rxjs/operators';
-import { Observable, throwError as _observableThrow, of as _observableOf } from 'rxjs';
-import { Injectable, Inject, Optional, InjectionToken } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
+import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
+import { Observable, of as _observableOf, throwError as _observableThrow } from 'rxjs';
+import { catchError as _observableCatch, mergeMap as _observableMergeMap } from 'rxjs/operators';
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
@@ -1327,6 +1327,82 @@ export class ApiClient {
             );
         }
         return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    getVideoEndpointsForConference(conferenceId: string): Observable<VideoEndpointResponse[]> {
+        let url_ = this.baseUrl + '/{conferenceId}/participants';
+        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({
+                Accept: 'application/json'
+            })
+        };
+
+        return this.http
+            .request('get', url_, options_)
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processGetVideoEndpointsForConference(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processGetVideoEndpointsForConference(<any>response_);
+                        } catch (e) {
+                            return <Observable<VideoEndpointResponse[]>>(<any>_observableThrow(e));
+                        }
+                    } else return <Observable<VideoEndpointResponse[]>>(<any>_observableThrow(response_));
+                })
+            );
+    }
+
+    protected processGetVideoEndpointsForConference(response: HttpResponseBase): Observable<VideoEndpointResponse[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result200: any = null;
+                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    if (Array.isArray(resultData200)) {
+                        result200 = [] as any;
+                        for (let item of resultData200) result200!.push(VideoEndpointResponse.fromJS(item));
+                    }
+                    return _observableOf(result200);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<VideoEndpointResponse[]>(<any>null);
     }
 
     /**
@@ -4020,6 +4096,7 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
     /** The current endpoint status */
     status?: EndpointStatus;
     defence_advocate_username?: string | undefined;
+    pexip_display_name?: string | undefined;
 
     constructor(data?: IVideoEndpointResponse) {
         if (data) {
@@ -4035,6 +4112,7 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
             this.display_name = _data['display_name'];
             this.status = _data['status'];
             this.defence_advocate_username = _data['defence_advocate_username'];
+            this.pexip_display_name = _data['pexip_display_name'];
         }
     }
 
@@ -4051,6 +4129,7 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
         data['display_name'] = this.display_name;
         data['status'] = this.status;
         data['defence_advocate_username'] = this.defence_advocate_username;
+        data['pexip_display_name'] = this.pexip_display_name;
         return data;
     }
 }
@@ -4062,6 +4141,7 @@ export interface IVideoEndpointResponse {
     /** The current endpoint status */
     status?: EndpointStatus;
     defence_advocate_username?: string | undefined;
+    pexip_display_name?: string | undefined;
 }
 
 /** Detailed information about a conference */

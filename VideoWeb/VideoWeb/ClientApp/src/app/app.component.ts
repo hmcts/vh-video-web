@@ -103,7 +103,6 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     async retrieveProfileRole(): Promise<void> {
-        console.log(this.adalService.userInfo.profile);
         try {
             const profile = await this.profileService.getUserProfile();
             if (profile.role === Role.Representative || profile.role === Role.Individual) {
