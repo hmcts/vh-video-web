@@ -28,7 +28,10 @@
                 "output": "assets/fonts/"
               }
             ],
-            "styles": ["src/styles.css", "src/styles.scss"],
+            "styles": [
+              "src/styles.css",
+              "src/styles.scss"
+            ],
             "scripts": [
               "src/scripts/pexrtc.js",
               "src/scripts/EdgePF.js",
@@ -84,8 +87,15 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
-            "codeCoverageExclude": ["src/app/testing/**", "src/app/services/clients/**", "src/app/vh-officer/helper.ts"],
-            "styles": ["src/styles.css", "src/styles.scss"],
+            "codeCoverageExclude": [
+              "src/app/testing/**",
+              "src/app/services/clients/**",
+              "src/app/vh-officer/helper.ts"
+            ],
+            "styles": [
+              "src/styles.css",
+              "src/styles.scss"
+            ],
             "scripts": [
               "src/scripts/pexrtc.js",
               "src/scripts/EdgePF.js",
@@ -106,8 +116,13 @@
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": ["src/tsconfig.app.json", "src/tsconfig.spec.json"],
-            "exclude": ["**/node_modules/**"]
+            "tsConfig": [
+              "src/tsconfig.app.json",
+              "src/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
           }
         },
         "server": {
@@ -137,5 +152,8 @@
       }
     }
   },
-  "defaultProject": "VideoWeb"
+  "defaultProject": "VideoWeb",
+  "cli": {
+    "analytics": "d98edcd7-fbf7-457b-8b1a-674a89b98183"
+  }
 }
