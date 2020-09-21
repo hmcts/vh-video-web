@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
@@ -29,7 +31,7 @@ namespace VideoWeb.Controllers
         [HttpGet("{conferenceId}/participants")]
         [SwaggerOperation(OperationId = "GetVideoEndpointsForConference")]
         [ProducesResponseType(typeof(List<VideoEndpointResponse>), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [Authorize(AppRoles.JudgeRole)]
         public async Task<IActionResult> GetVideoEndpointsForConferenceAsync(Guid conferenceId)
         {
             _logger.LogDebug("GetVideoEndpointsForConference");
