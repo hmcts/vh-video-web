@@ -1,14 +1,15 @@
-import { Component, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ParticipantForUserResponse, Role, ParticipantStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
+import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { ParticipantPanelModel } from '../models/participant-panel-model';
+import { PanelModel, ParticipantPanelModel, VideoEndpointPanelModel } from '../models/participant-panel-model';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
-import { Logger } from 'src/app/services/logging/logger-base';
 
 @Component({
     selector: 'app-participants-panel',
@@ -16,7 +17,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
     styleUrls: ['./participants-panel.component.scss']
 })
 export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDestroy {
-    participants: ParticipantPanelModel[] = [];
+    participants: PanelModel[] = [];
     isMuteAll = false;
     conferenceId: string;
 
@@ -87,6 +88,12 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
                 this.handleParticipantStatusChange(message);
             })
         );
+
+        this.eventhubSubscription$.add(
+            this.eventService.getEndpointStatusMessage().subscribe(message => {
+                this.handleEndpointStatusChange(message);
+            })
+        );
     }
 
     handleUpdatedConferenceVideoCall(updatedConference: ConferenceUpdated): void {
@@ -104,20 +111,36 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
-        const participant = this.participants.find(x => x.participantId === message.participantId);
+        const participant = this.participants.find(x => x.id === message.participantId);
         if (!participant) {
             return;
         }
-        participant.status = message.status;
+        (<ParticipantPanelModel>participant).status = message.status;
+    }
+
+    handleEndpointStatusChange(message: EndpointStatusMessage) {
+        const endpoint = this.participants.find(x => x.id === message.endpointId);
+        if (!endpoint) {
+            return;
+        }
+        (<VideoEndpointPanelModel>endpoint).status = message.status;
     }
 
     async getParticipantsList() {
         try {
-            const data = await this.videoWebService.getParticipantsByConferenceId(this.conferenceId);
+            const pats = this.videoWebService.getParticipantsByConferenceId(this.conferenceId);
+            const eps = this.videoWebService.getEndpointsForConference(this.conferenceId);
 
-            data.filter(x => x.role !== Role.Judge).forEach(x => {
-                const participant = this.mapParticipant(x);
-                this.participants.push(participant);
+            (await pats)
+                .filter(x => x.role !== Role.Judge)
+                .forEach(x => {
+                    const participant = new ParticipantPanelModel(x);
+                    this.participants.push(participant);
+                });
+
+            (await eps).forEach(x => {
+                const endpoint = new VideoEndpointPanelModel(x);
+                this.participants.push(endpoint);
             });
 
             this.participants.sort((x, z) => {
@@ -128,18 +151,18 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         }
     }
 
-    isParticipantInHearing(participant: ParticipantPanelModel): boolean {
-        return participant.status === ParticipantStatus.InHearing;
+    isParticipantInHearing(participant: PanelModel): boolean {
+        return participant.isInHearing();
     }
 
     toggleMuteAll() {
         this.videoCallService.muteAllParticipants(!this.isMuteAll);
     }
 
-    toggleMuteParticipant(participant: ParticipantPanelModel) {
-        const hearingParticipants = this.participants.filter(x => x.status === ParticipantStatus.InHearing);
+    toggleMuteParticipant(participant: PanelModel) {
+        const hearingParticipants = this.participants.filter(x => x.isInHearing());
         const mutedParticipants = hearingParticipants.filter(x => x.isMuted);
-        const p = this.participants.find(x => x.participantId === participant.participantId);
+        const p = this.participants.find(x => x.id === participant.id);
 
         this.videoCallService.muteParticipant(p.pexipId, !p.isMuted);
 
@@ -159,19 +182,8 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
     }
 
     lowerParticipantHand(participantId: string) {
-        const participant = this.participants.find(x => x.participantId === participantId);
+        const participant = this.participants.find(x => x.id === participantId);
         this.videoCallService.lowerHandById(participant.pexipId);
-    }
-
-    private mapParticipant(participant: ParticipantForUserResponse): ParticipantPanelModel {
-        return new ParticipantPanelModel(
-            participant.id,
-            participant.display_name,
-            participant.role,
-            participant.case_type_group,
-            participant.status,
-            participant.tiled_display_name
-        );
     }
 
     onScroll() {
@@ -207,9 +219,13 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         }
     }
 
+    isEndpoint(participant: PanelModel) {
+        return participant instanceof VideoEndpointPanelModel;
+    }
+
     mapParticipantToParticipantResponse(participant: ParticipantPanelModel): ParticipantResponse {
         const participantResponse = new ParticipantResponse();
-        participantResponse.id = participant.participantId;
+        participantResponse.id = participant.id;
         participantResponse.status = participant.status;
         participantResponse.display_name = participant.displayName;
         participantResponse.role = participant.role;

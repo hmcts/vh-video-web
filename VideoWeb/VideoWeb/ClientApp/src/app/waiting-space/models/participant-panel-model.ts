@@ -1,8 +1,13 @@
-import { ParticipantStatus, Role } from '../../services/clients/api-client';
+import {
+    EndpointStatus,
+    ParticipantForUserResponse,
+    ParticipantStatus,
+    Role,
+    VideoEndpointResponse
+} from '../../services/clients/api-client';
 
-export class ParticipantPanelModel {
-    public participantId: string;
-    public status: ParticipantStatus;
+export abstract class PanelModel {
+    public id: string;
     public isMuted: boolean;
     public handRaised: boolean;
     public displayName: string;
@@ -12,36 +17,53 @@ export class ParticipantPanelModel {
     public role: Role;
     public caseTypeGroup: string;
 
-    constructor(
-        participantId: string,
-        displayName: string,
-        role: Role,
-        caseTypeGroup: string,
-        status: ParticipantStatus,
-        pexipDisplayName: string
-    ) {
-        this.participantId = participantId;
+    constructor(id: string, displayName: string, role: Role, caseTypeGroup: string, pexipDisplayName: string) {
+        this.id = id;
         this.displayName = displayName;
         this.role = role;
         this.caseTypeGroup = caseTypeGroup;
         this.orderInTheList = this.setOrderInTheList();
-        this.status = status;
         this.pexipDisplayName = pexipDisplayName;
     }
 
+    abstract isInHearing(): boolean;
+
     private setOrderInTheList(): number {
-        let order: number;
         switch (this.caseTypeGroup.toLowerCase()) {
             case 'panelmember':
-                order = 1;
-                break;
+                return 1;
+            case 'endpoint':
+                return 3;
             case 'observer':
-                order = 3;
-                break;
+                return 4;
             default:
-                order = 2;
+                return 2;
         }
+    }
+}
 
-        return order;
+export class ParticipantPanelModel extends PanelModel {
+    public status: ParticipantStatus;
+
+    constructor(participant: ParticipantForUserResponse) {
+        super(participant.id, participant.display_name, participant.role, participant.case_type_group, participant.tiled_display_name);
+        this.status = participant.status;
+    }
+
+    isInHearing(): boolean {
+        return this.status === ParticipantStatus.InHearing;
+    }
+}
+
+export class VideoEndpointPanelModel extends PanelModel {
+    public status: EndpointStatus;
+
+    constructor(endpoint: VideoEndpointResponse) {
+        super(endpoint.id, endpoint.display_name, Role.Individual, 'Endpoint', endpoint.pexip_display_name);
+        this.status = endpoint.status;
+    }
+
+    isInHearing(): boolean {
+        return this.status === EndpointStatus.Connected;
     }
 }
