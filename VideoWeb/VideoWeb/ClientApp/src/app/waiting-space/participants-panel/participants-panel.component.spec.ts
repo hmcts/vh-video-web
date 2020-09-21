@@ -33,7 +33,7 @@ describe('ParticipantsPanelComponent', () => {
         component.participants = participants.filter(x => x.role !== Role.Judge).map(x => new ParticipantPanelModel(x));
 
         endpoints.map(endpoint => {
-            component.participants.push(new VideoEndpointPanelModel(endpoint));
+            component.participants = component.participants.concat(new VideoEndpointPanelModel(endpoint));
         });
     });
 
@@ -108,7 +108,6 @@ describe('ParticipantsPanelComponent', () => {
         const status = EndpointStatus.InConsultation;
         const ep = endpoints[0];
         const message = new EndpointStatusMessage(ep.id, conferenceId, status);
-
         endpointStatusSubjectMock.next(message);
 
         const updatedEp = component.participants.find(x => x.id === message.endpointId);
@@ -212,8 +211,9 @@ describe('ParticipantsPanelComponent', () => {
     it('should unmute conference when last participant is unmuted after a conference mute', () => {
         videocallService.muteAllParticipants.calls.reset();
         component.isMuteAll = true;
-        const pat = component.participants[0];
+        const pat = component.participants.filter(x => x instanceof ParticipantPanelModel)[0] as ParticipantPanelModel;
         pat.isMuted = true;
+        pat.status = ParticipantStatus.InHearing;
 
         component.toggleMuteParticipant(pat);
 
@@ -238,10 +238,11 @@ describe('ParticipantsPanelComponent', () => {
     it('should not unmute conference when second last participant is unmuted after a conference mute', () => {
         videocallService.muteAllParticipants.calls.reset();
         component.isMuteAll = true;
+        component.participants.forEach(x => (x.isMuted = true));
         const pat = component.participants[0];
-        pat.isMuted = true;
+        (<ParticipantPanelModel>pat).status = ParticipantStatus.InHearing;
         component.participants[1].isMuted = true;
-
+        (<ParticipantPanelModel>component.participants[1]).status = ParticipantStatus.InHearing;
         component.toggleMuteParticipant(pat);
 
         expect(videocallService.muteAllParticipants).toHaveBeenCalledTimes(0);
@@ -347,12 +348,12 @@ describe('ParticipantsPanelComponent', () => {
     });
 
     it('should return true when panelmodel is a video endpoint', () => {
-        const panelModel = component.participants[component.participants.length - 1];
+        const panelModel = component.participants.filter(x => x instanceof VideoEndpointPanelModel)[0];
         expect(component.isEndpoint(panelModel)).toBeTruthy();
     });
 
     it('should return false when panelmodel is a participant', () => {
-        const panelModel = component.participants[0];
+        const panelModel = component.participants.filter(x => x instanceof ParticipantPanelModel)[0];
         expect(component.isEndpoint(panelModel)).toBeFalsy();
     });
 });
