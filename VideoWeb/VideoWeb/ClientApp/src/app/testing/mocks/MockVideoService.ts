@@ -16,7 +16,8 @@ import {
     ConferenceForJudgeResponse,
     UpdateParticipantRequest,
     ConferenceResponseVho,
-    JudgeNameListResponse
+    JudgeNameListResponse,
+    VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { Observable, of } from 'rxjs';
 import { ConferenceTestData } from './data/conference-test-data';
@@ -61,6 +62,10 @@ export class MockVideoWebService implements IVideoWebApiService {
 
     getConferencesForIndividual(): Observable<ConferenceForIndividualResponse[]> {
         return of(new ConferenceTestData().getTestData());
+    }
+
+    getEndpointsForConference(conferenceId: string): Promise<VideoEndpointResponse[]> {
+        return Promise.resolve(new ConferenceTestData().getListOfEndpoints());
     }
 
     getConferenceById(conferenceId: string): Promise<ConferenceResponse> {

@@ -3,21 +3,24 @@ import { Guid } from 'guid-typescript';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { eventsServiceSpy, participantStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
+import { endpointStatusSubjectMock, eventsServiceSpy, participantStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { videoCallServiceSpy, onConferenceUpdatedMock, onParticipantUpdatedMock } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { ParticipantStatus, Role } from '../../services/clients/api-client';
-import { ParticipantPanelModel } from '../models/participant-panel-model';
+import { EndpointStatus, ParticipantStatus, Role } from '../../services/clients/api-client';
+import { ParticipantPanelModel, VideoEndpointPanelModel } from '../models/participant-panel-model';
 import { ParticipantsPanelComponent } from './participants-panel.component';
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
+import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 
 describe('ParticipantsPanelComponent', () => {
     const conferenceId = '1111-1111-1111';
     const participants = new ConferenceTestData().getListOfParticipants();
+    const endpoints = new ConferenceTestData().getListOfEndpoints();
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    videoWebServiceSpy = jasmine.createSpyObj('VideoWebService', ['getParticipantsByConferenceId']);
+    videoWebServiceSpy = jasmine.createSpyObj('VideoWebService', ['getParticipantsByConferenceId', 'getEndpointsForConference']);
     videoWebServiceSpy.getParticipantsByConferenceId.and.returnValue(Promise.resolve(participants));
+    videoWebServiceSpy.getEndpointsForConference.and.returnValue(Promise.resolve(endpoints));
     const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: conferenceId }) } };
     const videocallService = videoCallServiceSpy;
     const eventService = eventsServiceSpy;
@@ -27,19 +30,11 @@ describe('ParticipantsPanelComponent', () => {
 
     beforeEach(() => {
         component = new ParticipantsPanelComponent(videoWebServiceSpy, activatedRoute, videocallService, eventService, logger);
-        component.participants = participants
-            .filter(x => x.role !== Role.Judge)
-            .map(
-                x =>
-                    new ParticipantPanelModel(
-                        x.id,
-                        x.display_name,
-                        x.role,
-                        x.case_type_group,
-                        ParticipantStatus.InHearing,
-                        x.tiled_display_name
-                    )
-            );
+        component.participants = participants.filter(x => x.role !== Role.Judge).map(x => new ParticipantPanelModel(x));
+
+        endpoints.map(endpoint => {
+            component.participants.push(new VideoEndpointPanelModel(endpoint));
+        });
     });
 
     afterEach(() => {
@@ -92,8 +87,9 @@ describe('ParticipantsPanelComponent', () => {
 
         participantStatusSubjectMock.next(message);
 
-        const updatedPat = component.participants.find(x => x.participantId === message.participantId);
-        expect(updatedPat.status).toBe(status);
+        const updatedPat = component.participants.find(x => x.id === message.participantId);
+        expect(updatedPat).toBeInstanceOf(ParticipantPanelModel);
+        expect((<ParticipantPanelModel>updatedPat).status).toBe(status);
     });
 
     it('should not process eventhub participant updates not in list', () => {
@@ -104,16 +100,44 @@ describe('ParticipantsPanelComponent', () => {
 
         participantStatusSubjectMock.next(message);
 
-        expect(component.participants.find(x => x.participantId === message.participantId)).toBeUndefined();
+        expect(component.participants.find(x => x.id === message.participantId)).toBeUndefined();
+    });
+
+    it('should process eventhub endpoint updates', () => {
+        component.setupEventhubSubscribers();
+        const status = EndpointStatus.InConsultation;
+        const ep = endpoints[0];
+        const message = new EndpointStatusMessage(ep.id, conferenceId, status);
+
+        endpointStatusSubjectMock.next(message);
+
+        const updatedEp = component.participants.find(x => x.id === message.endpointId);
+        expect(updatedEp).toBeInstanceOf(VideoEndpointPanelModel);
+        expect((<VideoEndpointPanelModel>updatedEp).status).toBe(status);
+    });
+
+    it('should not process eventhub endpoint updates not in list', () => {
+        component.setupEventhubSubscribers();
+        const status = EndpointStatus.InConsultation;
+        const ep = endpoints[0];
+        const message = new EndpointStatusMessage(Guid.create().toString(), conferenceId, status);
+
+        endpointStatusSubjectMock.next(message);
+
+        expect(component.participants.find(x => x.id === message.endpointId)).toBeUndefined();
     });
 
     it('should return true when participant is in hearing', () => {
-        const pat = new ParticipantPanelModel('1111', 'test run', Role.Individual, 'group1', ParticipantStatus.InHearing, 'pexipName');
+        const p = participants[0];
+        p.status = ParticipantStatus.InHearing;
+        const pat = new ParticipantPanelModel(p);
         expect(component.isParticipantInHearing(pat)).toBeTruthy();
     });
 
     it('should return false when participant is not in hearing', () => {
-        const pat = new ParticipantPanelModel('1111', 'test run', Role.Individual, 'group1', ParticipantStatus.Disconnected, 'pexipName');
+        const p = participants[0];
+        p.status = ParticipantStatus.Disconnected;
+        const pat = new ParticipantPanelModel(p);
         expect(component.isParticipantInHearing(pat)).toBeFalsy();
     });
 
@@ -141,7 +165,7 @@ describe('ParticipantsPanelComponent', () => {
         const payload = new ParticipantUpdated('YES', 1, pat.pexipDisplayName, Guid.create().toString());
 
         onParticipantUpdatedMock.next(payload);
-        const result = component.participants.find(x => x.participantId === pat.participantId);
+        const result = component.participants.find(x => x.id === pat.id);
         expect(result.pexipId).toBe(payload.uuid);
         expect(result.isMuted).toBeTruthy();
         expect(result.handRaised).toBeTruthy();
@@ -153,7 +177,7 @@ describe('ParticipantsPanelComponent', () => {
         const payload = new ParticipantUpdated('YES', 1, 'do_not_exist_display_name', Guid.create().toString());
 
         onParticipantUpdatedMock.next(payload);
-        const result = component.participants.find(x => x.participantId === pat.participantId);
+        const result = component.participants.find(x => x.id === pat.id);
         expect(result.pexipId).toBeUndefined();
         expect(result.isMuted).toBeFalsy();
         expect(result.handRaised).toBeFalsy();
@@ -230,7 +254,7 @@ describe('ParticipantsPanelComponent', () => {
     it('should lower hand of participant', () => {
         const pat = component.participants[0];
         pat.handRaised = true;
-        component.lowerParticipantHand(pat.participantId);
+        component.lowerParticipantHand(pat.id);
         expect(videocallService.lowerHandById).toHaveBeenCalledWith(pat.pexipId);
     });
     it('should scroll up to first participant', () => {
@@ -300,19 +324,35 @@ describe('ParticipantsPanelComponent', () => {
         expect(result).toBe(false);
     });
     it('should return true when participant is disconnected', () => {
-        const pat = new ParticipantPanelModel('1111', 'test run', Role.Individual, 'group1', ParticipantStatus.Disconnected, 'pexipName');
+        const p = participants[0];
+        p.status = ParticipantStatus.Disconnected;
+        const pat = new ParticipantPanelModel(p);
         expect(component.isParticipantDisconnected(pat)).toBeTruthy();
     });
     it('should return false when participant is not disconnected', () => {
-        const pat = new ParticipantPanelModel('1111', 'test run', Role.Individual, 'group1', ParticipantStatus.InHearing, 'pexipName');
+        const p = participants[0];
+        p.status = ParticipantStatus.InHearing;
+        const pat = new ParticipantPanelModel(p);
         expect(component.isParticipantDisconnected(pat)).toBeFalsy();
     });
     it('should map the participant panel model to the participant response model', () => {
-        const ppm = new ParticipantPanelModel('1111', 'test run', Role.Individual, 'group1', ParticipantStatus.InHearing, 'pexipName');
+        const p = participants[0];
+        p.status = ParticipantStatus.Disconnected;
+        const ppm = new ParticipantPanelModel(p);
         const pr = component.mapParticipantToParticipantResponse(ppm);
-        expect(pr.id).toBe(ppm.participantId);
+        expect(pr.id).toBe(ppm.id);
         expect(pr.role).toBe(ppm.role);
         expect(pr.status).toBe(ppm.status);
         expect(pr.display_name).toBe(ppm.displayName);
+    });
+
+    it('should return true when panelmodel is a video endpoint', () => {
+        const panelModel = component.participants[component.participants.length - 1];
+        expect(component.isEndpoint(panelModel)).toBeTruthy();
+    });
+
+    it('should return false when panelmodel is a participant', () => {
+        const panelModel = component.participants[0];
+        expect(component.isEndpoint(panelModel)).toBeFalsy();
     });
 });

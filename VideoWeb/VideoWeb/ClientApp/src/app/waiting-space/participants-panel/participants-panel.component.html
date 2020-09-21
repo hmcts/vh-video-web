@@ -24,25 +24,29 @@
           </div>
           <div class="phand" *ngIf="participant.handRaised">
             <span class="tooltip">
-              <span class="top top-name-icon govuk-body-s--white tooltip-hand">
-                Lower hand
-              </span>
+              <span class="top top-name-icon govuk-body-s--white tooltip-hand"> Lower hand </span>
               <img
                 src="/assets/images/hand-yellow.png"
                 class="panel-icon"
                 alt="Hand on icon"
-                (click)="lowerParticipantHand(participant.participantId)"
+                (click)="lowerParticipantHand(participant.id)"
               />
             </span>
           </div>
           <div class="pntwk">
-            <app-participant-alert [participant]="mapParticipantToParticipantResponse(participant)"></app-participant-alert>
+            <app-participant-alert
+              *ngIf="!isEndpoint(participant)"
+              [participant]="mapParticipantToParticipantResponse(participant)"
+            ></app-participant-alert>
           </div>
         </ng-container>
         <ng-template #participantDisconnected>
           <div class="pRole disconnected" id="panel_participant_role_{{ i }}">DISCONNECTED</div>
           <div class="pntwk">
-            <app-participant-alert [participant]="mapParticipantToParticipantResponse(participant)"></app-participant-alert>
+            <app-participant-alert
+              *ngIf="!isEndpoint(participant)"
+              [participant]="mapParticipantToParticipantResponse(participant)"
+            ></app-participant-alert>
           </div>
         </ng-template>
       </div>
