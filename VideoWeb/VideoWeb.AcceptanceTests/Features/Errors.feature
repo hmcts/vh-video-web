@@ -26,13 +26,13 @@ Scenario: Unsupported browser error page
 	When the user attempts to access the page on their unsupported browser
 	Then the user is on the Unsupported Browser error page with text of how to rectify the problem
 
-@VIH-4617 @UnsupportedDevice @MobileOnly 
+@VIH-4617 @UnsupportedDeviceMobile @MobileOnly 
 Scenario: Unsupported device error page - Mobile
 	Given a new browser is open for a Participant
 	When the user attempts to access the page on their unsupported device
   Then the user is on the Unsupported Device error page with text of how to rectify the problem
 
-@VIH-4617 @UnsupportedDevice @TabletOnly @NotIOS 
+@VIH-4617 @UnsupportedDeviceTablet @TabletOnly @NotIOS 
 Scenario: Unsupported device error page - Tablet
 	Given a new browser is open for a Participant
 	When the user attempts to access the page on their unsupported device

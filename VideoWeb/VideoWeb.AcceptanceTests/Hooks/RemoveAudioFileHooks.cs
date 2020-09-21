@@ -19,7 +19,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 .SetStorageAccountName(context.VideoWebConfig.Wowza.StorageAccountName)
                 .SetStorageAccountKey(context.VideoWebConfig.Wowza.StorageAccountKey)
                 .SetStorageContainerName(context.VideoWebConfig.Wowza.StorageContainerName)
-                .CreateBlobClient(context.Test.NewHearingId);
+                .CreateBlobClient(context.Test.NewHearingId.ToString());
             storage.RemoveAudioFileFromStorage();
         }
     }
