@@ -31,7 +31,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"the (.*) status is (.*)")]
         [When(@"the (.*) statuses are (.*)")]
         [When(@"the (.*) status is (.*)")]
-        public void WhenTheParticipantsStatusesChange(string userType, string action)
+        public void WhenTheParticipantsStatusesChange(string text, string action)
         {
             var statuses = new Dictionary<string, IParticipantStatusStrategy>
             {
@@ -41,7 +41,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {"In hearing", new InHearingStrategy()},
                 {"Joining", new JoiningStrategy()}
             };
-            var participants = ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, userType);
+            var participants = text.Equals("participants") ? _c.Test.ConferenceParticipants.Where(x => x.User_role != UserRole.Judge) : ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, text);
             foreach (var participant in participants)
             {
                 statuses[action].Execute(_c, participant.Id);
@@ -50,13 +50,14 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         [Then(@"the VHO can see the (.*) status is (.*)")]
         [Then(@"the VHO can see the (.*) statuses are (.*)")]
-        public void ThenTheParticipantsStatusesAre(string userType, string participantStatus)
+        public void ThenTheParticipantsStatusesAre(string text, string participantStatus)
         {
             Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser], _c.Test.Conference.Id);
             _browsers[_c.CurrentUser].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
-            CheckParticipantStatus(participantStatus, ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, userType));
+            var participants = text.Equals("participants") ? _c.Test.ConferenceParticipants.Where(x => x.User_role != UserRole.Judge) : ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, text);
+            CheckParticipantStatus(participantStatus, participants);
         }
 
         [Then(@"the VHO can see the status of participant (.*) is (.*)")]
@@ -81,14 +82,15 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         [Then(@"the VHO can see the (.*) status has updated to (.*)")]
         [Then(@"the VHO can see the (.*) statuses have updated to (.*)")]
-        public void ThenTheParticipantsStatusesShouldUpdateTo(string user, string expectedStatus)
+        public void ThenTheParticipantsStatusesShouldUpdateTo(string text, string expectedStatus)
         {
             _browsers[_c.CurrentUser].Refresh();
             Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser], _c.Test.Conference.Id);
             _browsers[_c.CurrentUser].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
-            CheckParticipantStatus(expectedStatus, GetParticipants(user));
+            var participants = text.Equals("participants") ? _c.Test.ConferenceParticipants.Where(x => x.User_role != UserRole.Judge) : ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, text);
+            CheckParticipantStatus(expectedStatus, participants);
         }
 
         private IEnumerable<ParticipantDetailsResponse> GetParticipants(string text)

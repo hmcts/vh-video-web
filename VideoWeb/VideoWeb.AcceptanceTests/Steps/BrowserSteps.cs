@@ -87,14 +87,34 @@ namespace VideoWeb.AcceptanceTests.Steps
         private User GetDefaultParticipant()
         {
             if (_c.Test.Users.Count != 0) return Users.GetDefaultParticipantUser(_c.Test.Users);
+            AllocateSingleUser(UserType.Individual);
+            return Users.GetDefaultParticipantUser(_c.Test.Users);
+        }
 
+        private User GetMatchingDisplayName(string userType)
+        {
+            if (_c.Test.Users.Count != 0)
+                return Users.GetUserFromDisplayName(_c.Test.Users, userType.Replace(" ", string.Empty));
+            if (!Enum.TryParse(RemoveWhiteSpace(userType), true, out UserType result))
+                throw new DataMisalignedException($"User Type {userType} could not be parsed");
+            AllocateSingleUser(result);
+            return _c.Test.Users.First();
+        }
+
+        private static string RemoveWhiteSpace(string text)
+        {
+            return text.Replace(" ", string.Empty);
+        }
+
+        private void AllocateSingleUser(UserType userType)
+        {
             var request = new AllocateUserRequest()
             {
                 Application = Application.VideoWeb,
                 Expiry_in_minutes = 1,
                 Is_prod_user = _c.VideoWebConfig.IsLive,
                 Test_type = TestType.Automated,
-                User_type = UserType.Individual
+                User_type = userType
             };
 
             var response = _c.Apis.TestApi.AllocateUser(request);
@@ -103,13 +123,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             var user = RequestHelper.Deserialise<UserDetailsResponse>(response.Content);
             user.Should().NotBeNull();
             _c.Test.Users = UserDetailsResponseToUsersMapper.Map(user);
-
-            return Users.GetDefaultParticipantUser(_c.Test.Users);
-        }
-
-        private User GetMatchingDisplayName(string user)
-        {
-            return Users.GetUserFromDisplayName(_c.Test.Users, user.Replace(" ", string.Empty));
         }
 
         [When(@"switches to the (.*) tab")]
