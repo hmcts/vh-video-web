@@ -71,7 +71,8 @@ Scenario: Judge does not confirm the equipment is working
 	Then the user is on the Hearing List page
 
 Scenario: Panel member video hearing practice
-	Given the Panel Member Self Test user has progressed to the Practice video hearing page
+  Given I have a hearing with an Observer and Panel Member
+	And the Panel Member Self Test user has progressed to the Practice video hearing page for the existing hearing
 	Then the incoming and self video should be playing video
 	And contact us details are available
 	When the video has ended
@@ -82,7 +83,8 @@ Scenario: Panel member video hearing practice
 
 @VIH-6140
 Scenario: Panel member confirms the equipment is working
-	Given the Panel Member Self Test user has progressed to the Practice video hearing page
+  Given I have a hearing with an Observer and Panel Member
+	And the Panel Member Self Test user has progressed to the Practice video hearing page for the existing hearing
 	Then the incoming and self video should be playing video
 	When the user clicks the Equipment is working button
 	Then the user is on the Hearing List page

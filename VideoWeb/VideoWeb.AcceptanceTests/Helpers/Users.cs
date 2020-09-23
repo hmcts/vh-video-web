@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -19,7 +20,13 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
         public static User GetUserFromDisplayName(List<User> users, string displayName)
         {
-            return users.First(x => x.Display_name.ToLower().Contains(displayName.ToLower().Replace(" ", "")));
+            if (users.Any(x => x.Display_name.ToLower().Contains(displayName.ToLower().Replace(" ", ""))))
+            {
+                return users.First(x => x.Display_name.ToLower().Contains(displayName.ToLower().Replace(" ", "")));
+            }
+
+            var usersList = users.Select(x => x.Display_name).Aggregate("", (current, name) => current + name + ",");
+            throw new InvalidOperationException($"No user with display name '{displayName}' found in the list: '{usersList}'");
         }
 
         public static User GetUser(List<User> users, string number, string user)
