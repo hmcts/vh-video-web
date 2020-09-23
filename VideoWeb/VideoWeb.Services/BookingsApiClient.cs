@@ -4667,16 +4667,16 @@ namespace VideoWeb.Services.Bookings
         public System.Collections.Generic.List<CaseRequest> Cases { get; set; }
     
         /// <summary>User updated the hearing record</summary>
-        [Newtonsoft.Json.JsonProperty("updated_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonProperty("updated_by", Required = Newtonsoft.Json.Required.AllowNull)]
         public string Updated_by { get; set; }
     
         /// <summary>QuestionnaireNotRequired</summary>
-        [Newtonsoft.Json.JsonProperty("questionnaire_not_required", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool Questionnaire_not_required { get; set; }
+        [Newtonsoft.Json.JsonProperty("questionnaire_not_required", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? Questionnaire_not_required { get; set; }
     
         /// <summary>Gets or sets the audio recording required flag, value true  is indicated that recording is required, otherwise false</summary>
-        [Newtonsoft.Json.JsonProperty("audio_recording_required", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool Audio_recording_required { get; set; }
+        [Newtonsoft.Json.JsonProperty("audio_recording_required", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool? Audio_recording_required { get; set; }
     
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     

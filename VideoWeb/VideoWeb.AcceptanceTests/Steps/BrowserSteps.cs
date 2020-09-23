@@ -63,7 +63,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             if (_c.CurrentUser != null)
                 _browsers[_c.CurrentUser].LastWindowName = _browsers[_c.CurrentUser].Driver.WrappedDriver.WindowHandles.Last();
 
-            user = user.Replace("the", string.Empty).Trim().ToLower();
+            user = RemoveErroneousText(user);
 
             if (user.Contains("first") || user.Contains("second") || user.Contains("third") || user.Contains("fourth") || user.Contains("fifth"))
             {
@@ -77,6 +77,14 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             if (_c.CurrentUser == null)
                 throw new ArgumentOutOfRangeException($"There are no users configured called '{user}'");
+        }
+
+        private static string RemoveErroneousText(string text)
+        {
+            text = text.ToLower();
+            text = text.Replace("the", string.Empty);
+            text = text.Replace("self test", string.Empty);
+            return text.Trim();
         }
 
         private static bool UserIsParticipant(string user)
