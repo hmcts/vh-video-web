@@ -4,6 +4,7 @@ import { ApiClient } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
+import { HearingLayout } from '../models/hearing-layout';
 import { CallError, CallSetup, ConferenceUpdated, ConnectedCall, DisconnectedCall, ParticipantUpdated } from '../models/video-call-models';
 
 declare var PexRTC: any;
@@ -18,6 +19,7 @@ export class VideoCallService {
     private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
 
     pexipAPI: PexipClient;
+    preferredLayout: HearingLayout;
 
     constructor(private logger: Logger, private userMediaService: UserMediaService, private apiClient: ApiClient) {}
 
@@ -162,6 +164,10 @@ export class VideoCallService {
 
     lowerAllHands() {
         this.pexipAPI.clearAllBuzz();
+    }
+
+    updatePreferredLayout(layout: HearingLayout) {
+        this.preferredLayout = layout;
     }
 
     async startHearing(conferenceId: string) {
