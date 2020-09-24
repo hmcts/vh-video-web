@@ -59,7 +59,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         this.connected = false;
         this.getConference().then(() => {
             this.startEventHubSubscribers();
-            this.getJwtokenAndConnectToPexip();
+            // this.getJwtokenAndConnectToPexip();
         });
     }
 

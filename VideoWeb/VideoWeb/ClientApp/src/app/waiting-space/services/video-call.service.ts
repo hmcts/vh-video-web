@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { ApiClient } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { SessionStorage } from 'src/app/services/session-storage';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { HearingLayout } from '../models/hearing-layout';
@@ -11,6 +12,9 @@ declare var PexRTC: any;
 
 @Injectable()
 export class VideoCallService {
+    private readonly preferredLayoutCache: SessionStorage<HearingLayout>;
+    readonly PREFERRED_LAYOUT_KEY = 'vh.preferred.layout';
+
     private onSetupSubject = new Subject<CallSetup>();
     private onConnectedSubject = new Subject<ConnectedCall>();
     private onDisconnected = new Subject<DisconnectedCall>();
@@ -19,9 +23,12 @@ export class VideoCallService {
     private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
 
     pexipAPI: PexipClient;
-    preferredLayout: HearingLayout;
+    private preferredLayout: HearingLayout;
 
-    constructor(private logger: Logger, private userMediaService: UserMediaService, private apiClient: ApiClient) {}
+    constructor(private logger: Logger, private userMediaService: UserMediaService, private apiClient: ApiClient) {
+        this.preferredLayoutCache = new SessionStorage(this.PREFERRED_LAYOUT_KEY);
+        this.preferredLayout = this.preferredLayoutCache.get();
+    }
 
     /**
      * This will initialise the pexip client and initalise the call with
@@ -167,7 +174,12 @@ export class VideoCallService {
     }
 
     updatePreferredLayout(layout: HearingLayout) {
+        this.preferredLayoutCache.set(layout);
         this.preferredLayout = layout;
+    }
+
+    getPreferredLayout() {
+        return this.preferredLayout;
     }
 
     async startHearing(conferenceId: string) {

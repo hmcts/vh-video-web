@@ -73,7 +73,7 @@
       {{ getConferenceStatusText() }}
     </h1>
 
-    <app-select-hearing-layout></app-select-hearing-layout>
+    <app-select-hearing-layout [conference]="conference"></app-select-hearing-layout>
 
     <h2 class="govuk-heading-m" *ngIf="isNotStarted()">Is everyone connected?</h2>
 

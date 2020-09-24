@@ -7,6 +7,8 @@ import { VideoCallService } from './video-call.service';
 import { Guid } from 'guid-typescript';
 import { ApiClient } from 'src/app/services/clients/api-client';
 import { of } from 'rxjs';
+import { HearingLayout } from '../models/hearing-layout';
+import { SessionStorage } from 'src/app/services/session-storage';
 
 describe('VideoCallService', () => {
     let service: VideoCallService;
@@ -179,5 +181,15 @@ describe('VideoCallService', () => {
         const conferenceId = Guid.create().toString();
         await service.requestTechnicalAssistance(conferenceId);
         expect(apiClient.requestTechnicalAssistance).toHaveBeenCalledWith(conferenceId);
+    });
+
+    it('should update preferred layout', () => {
+        const ss = new SessionStorage(service.PREFERRED_LAYOUT_KEY);
+        ss.clear();
+        expect(service.getPreferredLayout()).toBeNull();
+        const layout = HearingLayout.OnePlus7;
+        service.updatePreferredLayout(layout);
+        expect(service.getPreferredLayout()).toBe(layout);
+        ss.clear();
     });
 });
