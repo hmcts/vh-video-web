@@ -69,7 +69,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void GivenIAmOnThePage(string user, string page)
         {
             _dataSetupSteps.GivenIHaveAHearingAndAConference();
-            _browserSteps.GivenANewBrowserIsOpenFor(user.ToLower().Contains("self test") ? user.Split(" ")[0] : user);
+            _browserSteps.GivenANewBrowserIsOpenFor(user);
             Progression(FromString(user), page);
         }
 
@@ -86,7 +86,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the (.*) user has progressed to the (.*) page for the existing hearing")]
         public void GivenHearingExistsAndIAmOnThePage(string user, string page)
         {
-            _browserSteps.GivenANewBrowserIsOpenFor(user.ToLower().Equals("Judge self test") ? "Judge" : user);
+            _browserSteps.GivenANewBrowserIsOpenFor(user);
             Progression(FromString(user), page);
         }
 
