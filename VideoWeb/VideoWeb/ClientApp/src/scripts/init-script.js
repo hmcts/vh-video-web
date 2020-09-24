@@ -1,1 +1,0 @@
-window.GOVUKFrontend.initAll()
