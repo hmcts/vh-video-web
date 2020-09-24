@@ -42,7 +42,7 @@
     "chart.js": "^2.9.3",
     "classlist.js": "^1.1.20150312",
     "core-js": "^3.6.5",
-    "govuk-frontend": "^3.8.1",
+    "govuk-frontend": "^3.9.1",
     "guid-typescript": "^1.0.9",
     "moment": "^2.27.0",
     "ng-bullet": "^1.0.3",
