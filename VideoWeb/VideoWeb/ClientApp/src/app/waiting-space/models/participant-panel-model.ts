@@ -9,6 +9,7 @@ import {
 export abstract class PanelModel {
     public id: string;
     public isMuted: boolean;
+    public isSpotlighted: boolean;
     public handRaised: boolean;
     public displayName: string;
     public pexipId: string;

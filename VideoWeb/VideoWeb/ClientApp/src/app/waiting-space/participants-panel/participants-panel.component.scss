@@ -1,4 +1,4 @@
-@import '~govuk-frontend/govuk/all';
+@import '~govuk-frontend/govuk/base';
 
 .panel-container {
   background: govuk-colour('black');
@@ -232,4 +232,8 @@
 .btn-lowerhand {
   cursor: pointer;
   font-size: 12px;
+}
+
+.spotlighted {
+  background: govuk-colour('red');
 }

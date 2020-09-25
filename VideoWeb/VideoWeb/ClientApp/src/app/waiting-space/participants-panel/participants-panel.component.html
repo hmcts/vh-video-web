@@ -1,6 +1,10 @@
 <div class="participantList">
   <div class="panel-container-list" (scroll)="onScroll()" id="panelList">
-    <div *ngFor="let participant of participants; let i = index">
+    <div
+      [ngClass]="participant.isSpotlighted ? 'spotlighted' : ''"
+      (click)="toggleSpotlightParticipant(participant)"
+      *ngFor="let participant of participants; let i = index"
+    >
       <div class="pGridOpen">
         <div class="pName" id="panel_participant_{{ i }}">{{ participant.displayName }}</div>
 
@@ -18,7 +22,7 @@
                 [src]="participant.isMuted ? '/assets/images/mute-mic-red.png' : '/assets/images/mic.png'"
                 class="panel-icon"
                 [alt]="participant.isMuted ? 'Microphone muted icon' : 'Microphone on icon'"
-                (click)="toggleMuteParticipant(participant)"
+                (click)="toggleMuteParticipant(participant); $event.stopPropagation()"
               />
             </span>
           </div>
@@ -29,7 +33,7 @@
                 src="/assets/images/hand-yellow.png"
                 class="panel-icon"
                 alt="Hand on icon"
-                (click)="lowerParticipantHand(participant.id)"
+                (click)="lowerParticipantHand(participant.id); $event.stopPropagation()"
               />
             </span>
           </div>

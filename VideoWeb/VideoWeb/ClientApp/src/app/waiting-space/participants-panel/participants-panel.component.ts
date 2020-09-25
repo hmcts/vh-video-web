@@ -101,13 +101,16 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
     }
 
     handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): boolean {
-        const participant = this.participants.find(x => x.pexipDisplayName === updatedParticipant.pexipDisplayName);
+        console.log(updatedParticipant);
+        console.log(this.participants);
+        const participant = this.participants.find(x => updatedParticipant.pexipDisplayName.includes(x.id));
         if (!participant) {
             return;
         }
         participant.pexipId = updatedParticipant.uuid;
         participant.isMuted = updatedParticipant.isRemoteMuted;
         participant.handRaised = updatedParticipant.handRaised;
+        participant.isSpotlighted = updatedParticipant.isSpotlighted;
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
@@ -142,7 +145,6 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
                 const endpoint = new VideoEndpointPanelModel(x);
                 this.participants.push(endpoint);
             });
-
             this.participants.sort((x, z) => {
                 return x.orderInTheList === z.orderInTheList ? 0 : +(x.orderInTheList > z.orderInTheList) || -1;
             });
@@ -157,6 +159,11 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
 
     toggleMuteAll() {
         this.videoCallService.muteAllParticipants(!this.isMuteAll);
+    }
+
+    toggleSpotlightParticipant(participant: PanelModel) {
+        const p = this.participants.find(x => x.id === participant.id);
+        this.videoCallService.spotlightParticipant(p.pexipId, !p.isSpotlighted);
     }
 
     toggleMuteParticipant(participant: PanelModel) {
