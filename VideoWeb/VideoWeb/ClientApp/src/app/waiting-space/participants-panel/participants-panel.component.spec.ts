@@ -204,16 +204,16 @@ describe('ParticipantsPanelComponent', () => {
     it('should not mute conference when any of the second last participant is unmuted manually', () => {
         videocallService.muteAllParticipants.calls.reset();
         component.isMuteAll = true;
-        // Mute all participants except one
+        // Mute all the participants except for one participant
         for (let index = 0; index < component.participants.length - 1; index++) {
             component.participants[index].isMuted = true;
             (<ParticipantPanelModel>component.participants[index]).status = ParticipantStatus.InHearing;
         }
 
         // Get any muted participant
-        const pat = component.participants[0];
+        const mutedParticipant = component.participants.filter(x => x.isMuted)[0];
         // Unmute the participant
-        component.toggleMuteParticipant(pat);
+        component.toggleMuteParticipant(mutedParticipant);
 
         expect(videocallService.muteAllParticipants).toHaveBeenCalledTimes(0);
     });
@@ -221,16 +221,16 @@ describe('ParticipantsPanelComponent', () => {
     it('should not mute conference when any of the second last participant is muted manually', () => {
         videocallService.muteAllParticipants.calls.reset();
         component.isMuteAll = true;
-        // Mute all participants except one
+        // Unmute all participants except for one participant
         for (let index = 0; index < component.participants.length - 1; index++) {
             component.participants[index].isMuted = false;
             (<ParticipantPanelModel>component.participants[index]).status = ParticipantStatus.InHearing;
         }
 
-        // Get any muted participant
-        const pat = component.participants[0];
-        // Unmute the participant
-        component.toggleMuteParticipant(pat);
+        // Get any unmuted participant
+        const unmutedParticipant = component.participants.filter(x => x.isMuted === false)[0];
+        // Mute the participant
+        component.toggleMuteParticipant(unmutedParticipant);
 
         expect(videocallService.muteAllParticipants).toHaveBeenCalledTimes(0);
     });
