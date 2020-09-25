@@ -36,7 +36,7 @@ namespace VideoWeb.Controllers
         [HttpPost("{conferenceId}/start")]
         [SwaggerOperation(OperationId = "StartOrResumeVideoHearing")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        public async Task<IActionResult> StartOrResumeVideoHearingAsync(Guid conferenceId)
+        public async Task<IActionResult> StartOrResumeVideoHearingAsync(Guid conferenceId, StartHearingRequest request)
         {
             var validatedRequest = await ValidateUserIsJudgeAndInConference(conferenceId);
             if (validatedRequest != null)
@@ -45,7 +45,7 @@ namespace VideoWeb.Controllers
             }
             try
             {
-                await _videoApiClient.StartOrResumeVideoHearingAsync(conferenceId);
+                await _videoApiClient.StartOrResumeVideoHearingAsync(conferenceId, request);
                 return Accepted();
             }
             catch (VideoApiException ex)

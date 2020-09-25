@@ -121,7 +121,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     }
 
     startHearing() {
-        this.videoCallService.startHearing(this.hearing.id);
+        this.videoCallService.startHearing(this.hearing.id, this.videoCallService.getPreferredLayout());
     }
 
     goToJudgeHearingList(): void {
