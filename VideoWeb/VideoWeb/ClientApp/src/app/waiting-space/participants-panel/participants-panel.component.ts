@@ -172,7 +172,7 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         }
 
         // mute conference if last person manually muted
-        if (mutedParticipants.length === hearingParticipants.length - 1) {
+        if (mutedParticipants.length === hearingParticipants.length - 1 && !p.isMuted) {
             this.videoCallService.muteAllParticipants(true);
         }
     }
