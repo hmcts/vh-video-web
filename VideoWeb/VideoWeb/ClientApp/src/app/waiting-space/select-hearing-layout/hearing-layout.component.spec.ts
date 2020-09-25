@@ -1,6 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HearingLayout } from '../models/hearing-layout';
-
+import { HearingLayout } from 'src/app/services/clients/api-client';
 import { HearingLayoutComponent } from './hearing-layout.component';
 
 describe('HearingLayoutComponent', () => {

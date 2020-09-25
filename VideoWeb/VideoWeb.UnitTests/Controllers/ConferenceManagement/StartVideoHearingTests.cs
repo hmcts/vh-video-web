@@ -31,11 +31,14 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.StartOrResumeVideoHearingAsync(TestConference.Id);
+            var result = await Controller.StartOrResumeVideoHearingAsync(TestConference.Id,
+                new StartHearingRequest {Layout = HearingLayout.Dynamic});
             var typedResult = (UnauthorizedObjectResult) result;
             typedResult.Should().NotBeNull();
 
-            VideoApiClientMock.Verify(x => x.StartOrResumeVideoHearingAsync(TestConference.Id), Times.Never);
+            VideoApiClientMock.Verify(
+                x => x.StartOrResumeVideoHearingAsync(TestConference.Id,
+                    It.Is<StartHearingRequest>(r => r.Layout == HearingLayout.Dynamic)), Times.Never);
         }
 
         [Test]
@@ -46,12 +49,14 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithRole(AppRoles.JudgeRole).Build();
 
             Controller = SetupControllerWithClaims(user);
-            
-            var result = await Controller.StartOrResumeVideoHearingAsync(TestConference.Id);
+
+            var result = await Controller.StartOrResumeVideoHearingAsync(TestConference.Id,
+                new StartHearingRequest {Layout = HearingLayout.Dynamic});
             var typedResult = (UnauthorizedObjectResult) result;
             typedResult.Should().NotBeNull();
-            
-            VideoApiClientMock.Verify(x => x.StartOrResumeVideoHearingAsync(TestConference.Id), Times.Never);
+
+            VideoApiClientMock.Verify(
+                x => x.StartOrResumeVideoHearingAsync(TestConference.Id, It.IsAny<StartHearingRequest>()), Times.Never);
         }
 
         [Test]
@@ -61,17 +66,20 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(participant.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
-            
+
             Controller = SetupControllerWithClaims(user);
-            
+
             var responseMessage = "Could not start a video hearing";
-            var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
+            var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
+                (int) HttpStatusCode.InternalServerError,
                 responseMessage, null, default, null);
             VideoApiClientMock
-                .Setup(x => x.StartOrResumeVideoHearingAsync(TestConference.Id))
+                .Setup(x => x.StartOrResumeVideoHearingAsync(TestConference.Id,
+                    new StartHearingRequest {Layout = HearingLayout.Dynamic}))
                 .ThrowsAsync(apiException);
-            
-            var result = await Controller.StartOrResumeVideoHearingAsync(TestConference.Id);
+
+            var result = await Controller.StartOrResumeVideoHearingAsync(TestConference.Id,
+                new StartHearingRequest {Layout = HearingLayout.Dynamic});
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().Be(responseMessage);
@@ -85,14 +93,16 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(participant.Username)
                 .WithRole(AppRoles.JudgeRole).Build();
-            
+
             Controller = SetupControllerWithClaims(user);
-            
-            var result = await Controller.StartOrResumeVideoHearingAsync(TestConference.Id);
+
+            var result = await Controller.StartOrResumeVideoHearingAsync(TestConference.Id,
+                new StartHearingRequest {Layout = HearingLayout.Dynamic});
             var typedResult = (AcceptedResult) result;
             typedResult.Should().NotBeNull();
-            
-            VideoApiClientMock.Verify(x => x.StartOrResumeVideoHearingAsync(TestConference.Id), Times.Once);
+
+            VideoApiClientMock.Verify(x => x.StartOrResumeVideoHearingAsync(TestConference.Id,
+                It.Is<StartHearingRequest>(r => r.Layout == HearingLayout.Dynamic)), Times.Once);
         }
     }
 }

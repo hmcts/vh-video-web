@@ -1,7 +1,7 @@
 import { ConferenceResponse } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
-import { HearingLayout } from '../models/hearing-layout';
+import { HearingLayout } from 'src/app/services/clients/api-client';
 import { SelectHearingLayoutComponent } from './select-hearing-layout.component';
 
 describe('SelectHearingLayoutComponent', () => {

@@ -4,7 +4,14 @@ import { AdalService } from 'adal-angular4';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse, Role, TokenResponse } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    ConferenceStatus,
+    HearingLayout,
+    ParticipantResponse,
+    Role,
+    TokenResponse
+} from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
@@ -218,8 +225,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     it('should start the hearing', () => {
+        const layout = HearingLayout.TwoPlus21;
+        videoCallService.getPreferredLayout.and.returnValue(layout);
         component.startHearing();
-        expect(videoCallService.startHearing).toHaveBeenCalledWith(component.conference.id);
+        expect(videoCallService.startHearing).toHaveBeenCalledWith(component.conference.id, layout);
     });
 
     it('should close audio  alert  for judge', () => {

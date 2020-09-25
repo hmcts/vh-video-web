@@ -7,10 +7,10 @@
 //----------------------
 // ReSharper disable InconsistentNaming
 
+import { mergeMap as _observableMergeMap, catchError as _observableCatch } from 'rxjs/operators';
+import { Observable, throwError as _observableThrow, of as _observableOf } from 'rxjs';
+import { Injectable, Inject, Optional, InjectionToken } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
-import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
-import { Observable, of as _observableOf, throwError as _observableThrow } from 'rxjs';
-import { catchError as _observableCatch, mergeMap as _observableMergeMap } from 'rxjs/operators';
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
@@ -189,18 +189,24 @@ export class ApiClient {
     /**
      * Start or resume a video hearing
      * @param conferenceId conference id
+     * @param body (optional)
      * @return Success
      */
-    startOrResumeVideoHearing(conferenceId: string): Observable<void> {
+    startOrResumeVideoHearing(conferenceId: string, body: StartHearingRequest | undefined): Observable<void> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/start';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
         url_ = url_.replace(/[?&]$/, '');
 
+        const content_ = JSON.stringify(body);
+
         let options_: any = {
+            body: content_,
             observe: 'response',
             responseType: 'blob',
-            headers: new HttpHeaders({})
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json-patch+json'
+            })
         };
 
         return this.http
@@ -3423,6 +3429,47 @@ export interface IProblemDetails {
     extensions?: { [key: string]: any } | undefined;
 }
 
+export enum HearingLayout {
+    Dynamic = 'Dynamic',
+    OnePlus7 = 'OnePlus7',
+    TwoPlus21 = 'TwoPlus21'
+}
+
+export class StartHearingRequest implements IStartHearingRequest {
+    layout?: HearingLayout | undefined;
+
+    constructor(data?: IStartHearingRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.layout = _data['layout'];
+        }
+    }
+
+    static fromJS(data: any): StartHearingRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new StartHearingRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['layout'] = this.layout;
+        return data;
+    }
+}
+
+export interface IStartHearingRequest {
+    layout?: HearingLayout | undefined;
+}
+
 export enum ConferenceStatus {
     NotStarted = 'NotStarted',
     InSession = 'InSession',
@@ -4902,6 +4949,8 @@ export enum EventType {
     Disconnected = 'Disconnected',
     Transfer = 'Transfer',
     Help = 'Help',
+    Start = 'Start',
+    CountdownFinished = 'CountdownFinished',
     Pause = 'Pause',
     Close = 'Close',
     Leave = 'Leave',
@@ -4912,8 +4961,6 @@ export enum EventType {
     Suspend = 'Suspend',
     VhoCall = 'VhoCall',
     ParticipantNotSignedIn = 'ParticipantNotSignedIn',
-    Start = 'Start',
-    CountdownFinished = 'CountdownFinished',
     EndpointJoined = 'EndpointJoined',
     EndpointDisconnected = 'EndpointDisconnected',
     EndpointTransfer = 'EndpointTransfer'

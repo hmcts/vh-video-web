@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { HearingLayout } from '../models/hearing-layout';
+import { HearingLayout } from 'src/app/services/clients/api-client';
 
 @Component({
     selector: 'app-hearing-layout',

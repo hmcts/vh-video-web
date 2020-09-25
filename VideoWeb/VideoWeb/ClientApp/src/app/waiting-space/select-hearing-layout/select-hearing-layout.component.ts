@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ConferenceResponse } from 'src/app/services/clients/api-client';
-import { HearingLayout } from '../models/hearing-layout';
+import { ConferenceResponse, HearingLayout } from 'src/app/services/clients/api-client';
 import { VideoCallService } from '../services/video-call.service';
 
 @Component({
