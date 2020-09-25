@@ -1,0 +1,13 @@
+@import '~govuk-frontend/govuk/all';
+
+.vh-popup {
+  padding: 40px;
+  margin: 200px auto;
+  border-radius: 3px;
+  position: relative;
+  background: govuk-colour('white');
+  z-index: 999;
+  transition: all 2s ease-in-out;
+  width: 100%;
+  left: 11%;
+}
