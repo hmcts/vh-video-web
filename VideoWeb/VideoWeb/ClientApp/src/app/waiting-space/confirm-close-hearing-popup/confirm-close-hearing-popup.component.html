@@ -1,17 +1,19 @@
-<div id="confirmationDialog" class="vh-popup">
-    <h1 class="govuk-heading-m">You are about to close this hearing</h1>
+<div id="confirmationDialog" class="vh-popup-overlay">
+    <div class="vh-popup">
+        <h1 class="govuk-heading-m">You are about to close this hearing</h1>
 
-    <p class="govuk-body govuk-!-margin-bottom-9">Close the hearing if you have completed proceedings.
-        Once closed, the hearing is ended and cannot be re-opened.
-    </p>
+        <p class="govuk-body govuk-!-margin-bottom-9">Close the hearing if you have completed proceedings.
+            Once closed, the hearing is ended and cannot be re-opened.
+        </p>
 
-    <button id="btnConfirm" class="govuk-button govuk-!-margin-right-1" type="submit" data-module="govuk-button"
-        (click)="confirmCloseHearing()">
-        Close hearing
-    </button>
+        <button id="btnConfirm" class="govuk-button govuk-!-margin-right-1" type="submit" data-module="govuk-button"
+            (click)="confirmCloseHearing()">
+            Close hearing
+        </button>
 
-    <button id="btnCancel" class="govuk-button govuk-button--secondary" type="button" data-module="govuk-button"
-        (click)="keepHearingOpen()">
-        Keep hearing open
-    </button>
+        <button id="btnCancel" class="govuk-button govuk-button--secondary" type="button" data-module="govuk-button"
+            (click)="keepHearingOpen()">
+            Keep hearing open
+        </button>
+    </div>
 </div>
