@@ -74,8 +74,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 (int) HttpStatusCode.InternalServerError,
                 responseMessage, null, default, null);
             VideoApiClientMock
-                .Setup(x => x.StartOrResumeVideoHearingAsync(TestConference.Id,
-                    new StartHearingRequest {Layout = HearingLayout.Dynamic}))
+                .Setup(x => x.StartOrResumeVideoHearingAsync(TestConference.Id, It.IsAny<StartHearingRequest>()))
                 .ThrowsAsync(apiException);
 
             var result = await Controller.StartOrResumeVideoHearingAsync(TestConference.Id,
