@@ -1,6 +1,10 @@
 <div class="participantList">
   <div class="panel-container-list" (scroll)="onScroll()" id="panelList">
     <div
+      appTooltip
+      [text]="
+        participant.isSpotlighted ? participant.displayName + ' (remove spotlight)' : participant.displayName + ' (click to spotlight)'
+      "
       [ngClass]="participant.isSpotlighted ? 'spotlighted' : ''"
       (click)="toggleSpotlightParticipant(participant)"
       *ngFor="let participant of participants; let i = index"
@@ -11,31 +15,26 @@
         <ng-container *ngIf="!isParticipantDisconnected(participant); else participantDisconnected">
           <div class="pRole" id="panel_participant_role_{{ i }}"></div>
           <div class="pmute" *ngIf="isParticipantInHearing(participant)">
-            <span class="tooltip">
-              <span
-                class="top top-name-icon govuk-body-s--white tooltip-mute"
-                [ngClass]="participant.isMuted ? 'tooltip-unmute' : 'tooltip-mute'"
-              >
-                {{ participant.isMuted ? 'Unmute' : 'Mute' }}
-              </span>
-              <img
-                [src]="participant.isMuted ? '/assets/images/mute-mic-red.png' : '/assets/images/mic.png'"
-                class="panel-icon"
-                [alt]="participant.isMuted ? 'Microphone muted icon' : 'Microphone on icon'"
-                (click)="toggleMuteParticipant(participant); $event.stopPropagation()"
-              />
-            </span>
+            <img
+              appTooltip
+              [text]="participant.isMuted ? 'Unmute' : 'Mute'"
+              [colour]="'grey'"
+              [src]="participant.isMuted ? '/assets/images/mute-mic-red.png' : '/assets/images/mic.png'"
+              class="panel-icon"
+              [alt]="participant.isMuted ? 'Microphone muted icon' : 'Microphone on icon'"
+              (click)="toggleMuteParticipant(participant); $event.stopPropagation()"
+            />
           </div>
           <div class="phand" *ngIf="participant.handRaised">
-            <span class="tooltip">
-              <span class="top top-name-icon govuk-body-s--white tooltip-hand"> Lower hand </span>
-              <img
-                src="/assets/images/hand-yellow.png"
-                class="panel-icon"
-                alt="Hand on icon"
-                (click)="lowerParticipantHand(participant.id); $event.stopPropagation()"
-              />
-            </span>
+            <img
+              appTooltip
+              [text]="'Lower hand'"
+              [colour]="'grey'"
+              src="/assets/images/hand-yellow.png"
+              class="panel-icon"
+              alt="Hand on icon"
+              (click)="lowerParticipantHand(participant.id); $event.stopPropagation()"
+            />
           </div>
           <div class="pntwk">
             <app-participant-alert
