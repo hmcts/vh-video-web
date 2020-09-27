@@ -41,8 +41,8 @@ export class TooltipDirective implements OnDestroy {
 
         if (this.tooltip) {
             this.show();
+            this.updatePosition($event);
         }
-        this.updatePosition($event);
     }
 
     @HostListener('mouseleave', ['$event']) onMouseLeave($event: MouseEvent) {
