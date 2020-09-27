@@ -31,7 +31,6 @@ describe('CopyIdComponent', () => {
         const hearing = new HearingSummary(conference);
         component.copyToClipboard(hearing);
         expect(clipboardServiceSpy.copyFromContent).toHaveBeenCalledWith(hearing.id);
-        expect(component.displayTooltip).toBe(false);
         expect(component.tooltip).toBe('Conference ID copied to clipboard');
     });
 });

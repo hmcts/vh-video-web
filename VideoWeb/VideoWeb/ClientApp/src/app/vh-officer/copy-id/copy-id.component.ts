@@ -9,14 +9,12 @@ import { ClipboardService } from 'ngx-clipboard';
 })
 export class CopyIdComponent implements OnInit {
     @Input() conference: HearingSummary;
-    displayTooltip: boolean;
     tooltip: string;
     @ViewChild('copyID', { static: false }) copyID: ElementRef;
 
     constructor(private clipboardService: ClipboardService) {}
 
     ngOnInit(): void {
-        this.displayTooltip = true;
         this.tooltip = 'Copy conference ID to clipboard';
     }
 
