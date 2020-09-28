@@ -7368,41 +7368,41 @@ namespace VideoWeb.Services.Video
         [System.Runtime.Serialization.EnumMember(Value = @"Help")]
         Help = 4,
     
-        [System.Runtime.Serialization.EnumMember(Value = @"Start")]
-        Start = 5,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"CountdownFinished")]
-        CountdownFinished = 6,
-    
         [System.Runtime.Serialization.EnumMember(Value = @"Pause")]
-        Pause = 7,
+        Pause = 5,
     
         [System.Runtime.Serialization.EnumMember(Value = @"Close")]
-        Close = 8,
+        Close = 6,
     
         [System.Runtime.Serialization.EnumMember(Value = @"Leave")]
-        Leave = 9,
+        Leave = 7,
     
         [System.Runtime.Serialization.EnumMember(Value = @"Consultation")]
-        Consultation = 10,
+        Consultation = 8,
     
         [System.Runtime.Serialization.EnumMember(Value = @"MediaPermissionDenied")]
-        MediaPermissionDenied = 11,
+        MediaPermissionDenied = 9,
     
         [System.Runtime.Serialization.EnumMember(Value = @"ParticipantJoining")]
-        ParticipantJoining = 12,
+        ParticipantJoining = 10,
     
         [System.Runtime.Serialization.EnumMember(Value = @"SelfTestFailed")]
-        SelfTestFailed = 13,
+        SelfTestFailed = 11,
     
         [System.Runtime.Serialization.EnumMember(Value = @"Suspend")]
-        Suspend = 14,
+        Suspend = 12,
     
         [System.Runtime.Serialization.EnumMember(Value = @"VhoCall")]
-        VhoCall = 15,
+        VhoCall = 13,
     
         [System.Runtime.Serialization.EnumMember(Value = @"ParticipantNotSignedIn")]
-        ParticipantNotSignedIn = 16,
+        ParticipantNotSignedIn = 14,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Start")]
+        Start = 15,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"CountdownFinished")]
+        CountdownFinished = 16,
     
         [System.Runtime.Serialization.EnumMember(Value = @"EndpointJoined")]
         EndpointJoined = 17,

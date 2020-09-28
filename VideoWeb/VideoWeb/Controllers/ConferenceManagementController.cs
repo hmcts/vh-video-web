@@ -27,11 +27,12 @@ namespace VideoWeb.Controllers
             _logger = logger;
             _conferenceCache = conferenceCache;
         }
-        
+
         /// <summary>
         /// Start or resume a video hearing
         /// </summary>
         /// <param name="conferenceId">conference id</param>
+        /// <param name="request">start hearing request details</param>
         /// <returns>No Content status</returns>
         [HttpPost("{conferenceId}/start")]
         [SwaggerOperation(OperationId = "StartOrResumeVideoHearing")]
