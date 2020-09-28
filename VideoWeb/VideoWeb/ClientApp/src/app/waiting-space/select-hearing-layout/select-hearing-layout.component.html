@@ -1,0 +1,67 @@
+<div class="govuk-accordion" data-module="govuk-accordion" id="select-hearing-container">
+  <div class="govuk-accordion__section" id="accordian-container">
+    <div class="govuk-accordion__section-header">
+      <h2 class="govuk-accordion__section-heading">
+        <span class="govuk-accordion__section-button" id="accordion-choose-layout-heading"> Choose hearing layout </span>
+      </h2>
+    </div>
+
+    <div *ngIf="!isAccordianOpen">
+      <app-hearing-layout [layout]="selectedLayout" [recommended]="selectedLayout === recommendedLayout()"></app-hearing-layout>
+    </div>
+
+    <div id="accordion-default-content-1" class="govuk-accordion__section-content" aria-labelledby="accordion-default-heading-1">
+      <div class="govuk-radios govuk-radios--small layoutsgrid">
+        <ng-container *ngTemplateOutlet="layout17"></ng-container>
+        <ng-container *ngTemplateOutlet="layout221"></ng-container>
+        <ng-container *ngTemplateOutlet="layoutDynamic"></ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #layout17>
+  <div class="govuk-radios__item layoutradio1">
+    <input
+      [checked]="getSelectedOrPreferredLayout() === availableLayouts.OnePlus7"
+      [value]="availableLayouts.OnePlus7"
+      (change)="updateSelectedLayout(availableLayouts.OnePlus7)"
+      class="govuk-radios__input"
+      id="layout_1_7"
+      name="layout"
+      type="radio"
+    />
+    <label class="govuk-label govuk-radios__label" for="layout1"></label>
+  </div>
+  <app-hearing-layout [layout]="availableLayouts.OnePlus7" [recommended]="recommend1Plus7"></app-hearing-layout>
+</ng-template>
+<ng-template #layout221>
+  <div class="govuk-radios__item layoutradio2">
+    <input
+      [checked]="getSelectedOrPreferredLayout() === availableLayouts.TwoPlus21"
+      [value]="availableLayouts.TwoPlus21"
+      (change)="updateSelectedLayout(availableLayouts.TwoPlus21)"
+      class="govuk-radios__input"
+      id="layout_2_21"
+      name="layout"
+      type="radio"
+    />
+    <label class="govuk-label govuk-radios__label" for="layout2"></label>
+  </div>
+  <app-hearing-layout [layout]="availableLayouts.TwoPlus21" [recommended]="recommend2Plus21"></app-hearing-layout>
+</ng-template>
+<ng-template #layoutDynamic>
+  <div class="govuk-radios__item layoutradio3">
+    <input
+      [checked]="getSelectedOrPreferredLayout() === availableLayouts.Dynamic"
+      [value]="availableLayouts.Dynamic"
+      (change)="updateSelectedLayout(availableLayouts.Dynamic)"
+      class="govuk-radios__input"
+      id="layout_dynamic"
+      name="layout"
+      type="radio"
+    />
+    <label class="govuk-label govuk-radios__label" for="layout3"></label>
+  </div>
+  <app-hearing-layout [layout]="availableLayouts.Dynamic" [recommended]="recommendDynamic"></app-hearing-layout>
+</ng-template>

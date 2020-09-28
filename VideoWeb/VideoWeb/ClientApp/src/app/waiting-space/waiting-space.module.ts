@@ -23,7 +23,9 @@ import { VideoCallService } from './services/video-call.service';
 import { WaitingSpaceRoutingModule } from './waiting-space-routing.module';
 import { ParticipantsPanelComponent } from './participants-panel/participants-panel.component';
 import { ParticipantAlertComponent } from './participant-alert/participant-alert.component';
+import { SelectHearingLayoutComponent } from './select-hearing-layout/select-hearing-layout.component';
 import { ConfirmCloseHearingPopupComponent } from './confirm-close-hearing-popup/confirm-close-hearing-popup.component';
+import { HearingLayoutComponent } from './select-hearing-layout/hearing-layout.component';
 
 @NgModule({
     imports: [SharedModule, WaitingSpaceRoutingModule],
@@ -48,7 +50,9 @@ import { ConfirmCloseHearingPopupComponent } from './confirm-close-hearing-popup
         HearingControlsComponent,
         ParticipantsPanelComponent,
         ParticipantAlertComponent,
+        SelectHearingLayoutComponent,
         ConfirmCloseHearingPopupComponent
+        HearingLayoutComponent
     ],
     providers: [VideoCallService, NotificationSoundsService]
 })

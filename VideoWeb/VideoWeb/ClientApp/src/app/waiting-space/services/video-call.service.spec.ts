@@ -5,8 +5,10 @@ import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-tes
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { VideoCallService } from './video-call.service';
 import { Guid } from 'guid-typescript';
-import { ApiClient } from 'src/app/services/clients/api-client';
+import { ApiClient, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { of } from 'rxjs';
+import { HearingLayout } from 'src/app/services/clients/api-client';
+import { SessionStorage } from 'src/app/services/session-storage';
 
 describe('VideoCallService', () => {
     let service: VideoCallService;
@@ -156,8 +158,9 @@ describe('VideoCallService', () => {
     it('should make api start call on start hearing', async () => {
         apiClient.startOrResumeVideoHearing.and.returnValue(of());
         const conferenceId = Guid.create().toString();
-        await service.startHearing(conferenceId);
-        expect(apiClient.startOrResumeVideoHearing).toHaveBeenCalledWith(conferenceId);
+        const layout = HearingLayout.TwoPlus21;
+        await service.startHearing(conferenceId, layout);
+        expect(apiClient.startOrResumeVideoHearing).toHaveBeenCalledWith(conferenceId, new StartHearingRequest({ layout }));
     });
 
     it('should make api start call on pause hearing', async () => {
@@ -179,5 +182,15 @@ describe('VideoCallService', () => {
         const conferenceId = Guid.create().toString();
         await service.requestTechnicalAssistance(conferenceId);
         expect(apiClient.requestTechnicalAssistance).toHaveBeenCalledWith(conferenceId);
+    });
+
+    it('should update preferred layout', () => {
+        const ss = new SessionStorage(service.PREFERRED_LAYOUT_KEY);
+        ss.clear();
+        expect(service.getPreferredLayout()).toBeNull();
+        const layout = HearingLayout.OnePlus7;
+        service.updatePreferredLayout(layout);
+        expect(service.getPreferredLayout()).toBe(layout);
+        ss.clear();
     });
 });

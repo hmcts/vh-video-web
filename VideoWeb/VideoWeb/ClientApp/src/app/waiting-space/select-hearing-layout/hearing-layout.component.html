@@ -1,0 +1,12 @@
+<div class="sub-layout-grid">
+  <div class="layoutimg">
+    <img alt="layout image for {{ getLayoutTitle() }}" class="layout-image" [src]="getLayoutImagePath()" />
+  </div>
+  <div class="layouttxt">
+    <div class="govuk-body f16">
+      <strong>{{ getLayoutTitle() }}</strong>
+      <span *ngIf="recommended" class="recommended-txt"> (recommended)</span>
+      <br />{{ getLayoutDescription() }}
+    </div>
+  </div>
+</div>
