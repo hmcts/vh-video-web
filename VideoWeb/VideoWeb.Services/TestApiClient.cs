@@ -188,24 +188,24 @@ namespace VideoWeb.Services.TestApi
         /// <exception cref="TestApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.List<ConferenceForAdminResponse>> GetConferencesForTodayVhoAsync(System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Get audio recording link</summary>
+        /// <summary>Get audio recording links</summary>
         /// <param name="hearingId">Hearing Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<AudioRecordingResponse> GetAudioRecordingLinkByHearingIdAsync(System.Guid hearingId);
+        System.Threading.Tasks.Task<AudioRecordingResponse> GetAudioRecordingLinksByHearingIdAsync(System.Guid hearingId);
     
-        /// <summary>Get audio recording link</summary>
+        /// <summary>Get audio recording links</summary>
         /// <param name="hearingId">Hearing Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        AudioRecordingResponse GetAudioRecordingLinkByHearingId(System.Guid hearingId);
+        AudioRecordingResponse GetAudioRecordingLinksByHearingId(System.Guid hearingId);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Get audio recording link</summary>
+        /// <summary>Get audio recording links</summary>
         /// <param name="hearingId">Hearing Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<AudioRecordingResponse> GetAudioRecordingLinkByHearingIdAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<AudioRecordingResponse> GetAudioRecordingLinksByHearingIdAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get tasks for a conference</summary>
         /// <param name="conferenceId">Conference Id of the conference</param>
@@ -1506,30 +1506,30 @@ namespace VideoWeb.Services.TestApi
             }
         }
     
-        /// <summary>Get audio recording link</summary>
+        /// <summary>Get audio recording links</summary>
         /// <param name="hearingId">Hearing Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<AudioRecordingResponse> GetAudioRecordingLinkByHearingIdAsync(System.Guid hearingId)
+        public System.Threading.Tasks.Task<AudioRecordingResponse> GetAudioRecordingLinksByHearingIdAsync(System.Guid hearingId)
         {
-            return GetAudioRecordingLinkByHearingIdAsync(hearingId, System.Threading.CancellationToken.None);
+            return GetAudioRecordingLinksByHearingIdAsync(hearingId, System.Threading.CancellationToken.None);
         }
     
-        /// <summary>Get audio recording link</summary>
+        /// <summary>Get audio recording links</summary>
         /// <param name="hearingId">Hearing Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public AudioRecordingResponse GetAudioRecordingLinkByHearingId(System.Guid hearingId)
+        public AudioRecordingResponse GetAudioRecordingLinksByHearingId(System.Guid hearingId)
         {
-            return System.Threading.Tasks.Task.Run(async () => await GetAudioRecordingLinkByHearingIdAsync(hearingId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+            return System.Threading.Tasks.Task.Run(async () => await GetAudioRecordingLinksByHearingIdAsync(hearingId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Get audio recording link</summary>
+        /// <summary>Get audio recording links</summary>
         /// <param name="hearingId">Hearing Id of the conference</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<AudioRecordingResponse> GetAudioRecordingLinkByHearingIdAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<AudioRecordingResponse> GetAudioRecordingLinksByHearingIdAsync(System.Guid hearingId, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)
                 throw new System.ArgumentNullException("hearingId");
@@ -4309,8 +4309,8 @@ namespace VideoWeb.Services.TestApi
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
     public partial class AudioRecordingResponse 
     {
-        [Newtonsoft.Json.JsonProperty("audio_file_link", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Audio_file_link { get; set; }
+        [Newtonsoft.Json.JsonProperty("audio_file_links", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.List<string> Audio_file_links { get; set; }
     
     
     }
@@ -4390,41 +4390,41 @@ namespace VideoWeb.Services.TestApi
         [System.Runtime.Serialization.EnumMember(Value = @"Help")]
         Help = 4,
     
-        [System.Runtime.Serialization.EnumMember(Value = @"Start")]
-        Start = 5,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"CountdownFinished")]
-        CountdownFinished = 6,
-    
         [System.Runtime.Serialization.EnumMember(Value = @"Pause")]
-        Pause = 7,
+        Pause = 5,
     
         [System.Runtime.Serialization.EnumMember(Value = @"Close")]
-        Close = 8,
+        Close = 6,
     
         [System.Runtime.Serialization.EnumMember(Value = @"Leave")]
-        Leave = 9,
+        Leave = 7,
     
         [System.Runtime.Serialization.EnumMember(Value = @"Consultation")]
-        Consultation = 10,
+        Consultation = 8,
     
         [System.Runtime.Serialization.EnumMember(Value = @"MediaPermissionDenied")]
-        MediaPermissionDenied = 11,
+        MediaPermissionDenied = 9,
     
         [System.Runtime.Serialization.EnumMember(Value = @"ParticipantJoining")]
-        ParticipantJoining = 12,
+        ParticipantJoining = 10,
     
         [System.Runtime.Serialization.EnumMember(Value = @"SelfTestFailed")]
-        SelfTestFailed = 13,
+        SelfTestFailed = 11,
     
         [System.Runtime.Serialization.EnumMember(Value = @"Suspend")]
-        Suspend = 14,
+        Suspend = 12,
     
         [System.Runtime.Serialization.EnumMember(Value = @"VhoCall")]
-        VhoCall = 15,
+        VhoCall = 13,
     
         [System.Runtime.Serialization.EnumMember(Value = @"ParticipantNotSignedIn")]
-        ParticipantNotSignedIn = 16,
+        ParticipantNotSignedIn = 14,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"Start")]
+        Start = 15,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"CountdownFinished")]
+        CountdownFinished = 16,
     
         [System.Runtime.Serialization.EnumMember(Value = @"EndpointJoined")]
         EndpointJoined = 17,
