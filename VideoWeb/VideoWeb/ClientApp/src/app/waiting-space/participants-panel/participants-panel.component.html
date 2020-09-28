@@ -2,11 +2,9 @@
   <div class="panel-container-list" (scroll)="onScroll()" id="panelList">
     <div
       appTooltip
-      [text]="
-        participant.isSpotlighted ? participant.displayName + ' (remove spotlight)' : participant.displayName + ' (click to spotlight)'
-      "
+      [text]="getPanelRowTooltipText(participant)"
+      [colour]="getPanelRowTooltipColour(participant)"
       [ngClass]="participant.isSpotlighted ? 'spotlighted' : ''"
-      (click)="toggleSpotlightParticipant(participant)"
       *ngFor="let participant of participants; let i = index"
     >
       <div class="pGridOpen">
@@ -34,6 +32,21 @@
               class="panel-icon"
               alt="Hand on icon"
               (click)="lowerParticipantHand(participant.id); $event.stopPropagation()"
+            />
+          </div>
+          <div class="pPin" *ngIf="isParticipantInHearing(participant)">
+            <img
+              appTooltip
+              [text]="
+                participant.isSpotlighted
+                  ? participant.displayName + ' (remove spotlight)'
+                  : participant.displayName + ' (click to spotlight)'
+              "
+              [colour]="'blue'"
+              [src]="participant.isSpotlighted ? '/assets/images/pin.png' : '/assets/images/unpin.png'"
+              class="panel-icon"
+              [alt]="participant.isSpotlighted ? 'Spotlight enabled icon' : 'Spotlight disabled icon'"
+              (click)="toggleSpotlightParticipant(participant); $event.stopPropagation()"
             />
           </div>
           <div class="pntwk">
