@@ -238,7 +238,32 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         return participantResponse;
     }
 
-    isParticipantDisconnected(participant: ParticipantPanelModel): boolean {
-        return participant.status === ParticipantStatus.Disconnected;
+    isParticipantDisconnected(participant: PanelModel): boolean {
+        return participant.isDisconnected();
+    }
+
+    getPanelRowTooltipText(participant: PanelModel) {
+        if (participant.isAvailable()) {
+            return participant.displayName + ': Joining';
+        }
+        if (!participant.isDisconnected() && !participant.isInHearing()) {
+            return participant.displayName + ': Not joined';
+        }
+
+        if (participant.isDisconnected()) {
+            return participant.displayName + ': DISCONNECTED';
+        }
+
+        return participant.displayName;
+    }
+
+    getPanelRowTooltipColour(participant: PanelModel) {
+        if (participant.isDisconnected()) {
+            return 'red';
+        } else if (participant.isAvailable() || participant.isInHearing()) {
+            return 'blue';
+        } else {
+            return 'grey';
+        }
     }
 }

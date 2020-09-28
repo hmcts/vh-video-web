@@ -5,13 +5,18 @@ import { Directive, ElementRef, HostListener, Input, OnDestroy, Renderer2 } from
 })
 export class TooltipDirective implements OnDestroy {
     _text: string;
+    _colour = 'blue';
     @Input() set text(value: string) {
         this._text = value;
         if (this.tooltip) {
             this.setTooltipText();
         }
     }
-    @Input() colour = 'blue';
+    @Input() set colour(value: string) {
+        const oldColour = this._colour;
+        this._colour = value;
+        this.setTooltipColour(oldColour);
+    }
     tooltip: HTMLElement;
 
     constructor(private el: ElementRef, private renderer: Renderer2) {}
@@ -66,11 +71,15 @@ export class TooltipDirective implements OnDestroy {
     }
 
     show() {
-        this.renderer.addClass(this.tooltip, 'vh-tooltip-show');
+        if (this.tooltip) {
+            this.renderer.addClass(this.tooltip, 'vh-tooltip-show');
+        }
     }
 
     hide() {
-        this.renderer.removeClass(this.tooltip, 'vh-tooltip-show');
+        if (this.tooltip) {
+            this.renderer.removeClass(this.tooltip, 'vh-tooltip-show');
+        }
     }
 
     create() {
@@ -78,12 +87,21 @@ export class TooltipDirective implements OnDestroy {
         this.renderer.appendChild(this.tooltip, this.renderer.createText(this._text));
 
         this.renderer.appendChild(document.body, this.tooltip);
-        const tooltipColour = `vh-tooltip-${this.colour}`;
         this.renderer.addClass(this.tooltip, 'vh-tooltip');
-        this.renderer.addClass(this.tooltip, tooltipColour);
+        this.setTooltipColour(null);
     }
 
     setTooltipText() {
         this.tooltip.innerText = this._text;
+    }
+
+    setTooltipColour(oldColour: string) {
+        if (!this.tooltip) {
+            return;
+        }
+        const oldColourColour = `vh-tooltip-${oldColour}`;
+        const tooltipColour = `vh-tooltip-${this._colour}`;
+        this.renderer.removeClass(this.tooltip, oldColourColour);
+        this.renderer.addClass(this.tooltip, tooltipColour);
     }
 }

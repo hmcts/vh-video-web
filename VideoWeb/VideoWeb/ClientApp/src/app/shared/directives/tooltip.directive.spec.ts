@@ -26,6 +26,18 @@ describe('TooltipDirective', () => {
         expect(directive._text).toBe(text);
     });
 
+    it('should replace old colour with new colour', () => {
+        const oldColour = 'blue';
+        const newColour = 'red';
+        directive.tooltip = document.createElement('span');
+        directive._colour = oldColour;
+
+        directive.colour = newColour;
+
+        expect(renderer2.removeClass).toHaveBeenCalledWith(directive.tooltip, `vh-tooltip-${oldColour}`);
+        expect(renderer2.addClass).toHaveBeenCalledWith(directive.tooltip, `vh-tooltip-${newColour}`);
+    });
+
     it('should set element text if created', () => {
         const text = 'test';
         directive.tooltip = document.createElement('span');
@@ -33,17 +45,30 @@ describe('TooltipDirective', () => {
         expect(directive.tooltip.innerText).toBe(text);
     });
 
+    it('should do nothing when tooltip is not ready', () => {
+        directive.tooltip = undefined;
+        directive.show();
+        directive.hide();
+        directive.colour = 'green';
+
+        expect(renderer2.addClass).toHaveBeenCalledTimes(0);
+        expect(renderer2.removeClass).toHaveBeenCalledTimes(0);
+    });
+
     it('should hide on destroy', () => {
+        directive.tooltip = document.createElement('span');
         directive.ngOnDestroy();
         expect(renderer2.removeClass).toHaveBeenCalledWith(directive.tooltip, 'vh-tooltip-show');
     });
 
     it('should remove class hide', () => {
+        directive.tooltip = document.createElement('span');
         directive.hide();
         expect(renderer2.removeClass).toHaveBeenCalledWith(directive.tooltip, 'vh-tooltip-show');
     });
 
     it('should add class show', () => {
+        directive.tooltip = document.createElement('span');
         directive.show();
         expect(renderer2.addClass).toHaveBeenCalledWith(directive.tooltip, 'vh-tooltip-show');
     });

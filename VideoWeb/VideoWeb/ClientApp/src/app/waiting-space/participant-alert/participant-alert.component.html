@@ -1,12 +1,8 @@
-<div *ngIf="networkHealth">
-  <span *ngIf="!isNetworkGood" class="tooltip">
-    <span class="top tooltip-alert">Poor signal</span>
+<div class="alert-container">
+  <div *ngIf="networkHealth">
     <img *ngIf="!isNetworkGood" src="/assets/images/alert-1.png" class="panel-icon-alert" alt="Poor connection icon" />
-  </span>
-</div>
-<div *ngIf="isDisconnected">
-  <span class="tooltip">
-    <span class="top tooltip-disc">Disconnected</span>
+  </div>
+  <div *ngIf="isDisconnected">
     <img src="/assets/images/alert-full.png" class="panel-icon-alert-disc" alt="Disconnected icon" />
-  </span>
+  </div>
 </div>
