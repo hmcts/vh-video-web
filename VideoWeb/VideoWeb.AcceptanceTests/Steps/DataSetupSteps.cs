@@ -32,7 +32,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Given(@"I have a hearing")]
-        [Given(@"I have another hearing")]
         [Given(@"I have a hearing with a Judge")]
         [Given(@"I have another hearing with another Judge")]
         public void GivenIHaveAHearingAndAConference()
@@ -43,13 +42,28 @@ namespace VideoWeb.AcceptanceTests.Steps
             CreateConference();
         }
 
+        [Given(@"I have another hearing")]
+        public void GivenIHaveAnotherHearingAndAConference()
+        {
+            GivenIHaveAHearing();
+            CreateConference();
+        }
+
         [Given(@"I have a hearing in (.*) minutes time")]
-        [Given(@"I have another hearing in (.*) minutes time")]
         public void GivenIHaveAHearingAndAConferenceInMinutesTime(int minutes)
         {
             CheckThatTheHearingWillBeCreatedForToday(_c.TimeZone.AdjustAnyOS(DateTime.Now.ToUniversalTime().AddMinutes(minutes)));
             var userTypes = CreateUserTypes();
             AllocateUsers(userTypes);
+            GivenIHaveAHearing(minutes);
+            CreateConference();
+            _c.Test.DelayedStartTime = minutes;
+        }
+
+        [Given(@"I have another hearing in (.*) minutes time")]
+        public void GivenIHaveAnotherHearingAndAConferenceInMinutesTime(int minutes)
+        {
+            CheckThatTheHearingWillBeCreatedForToday(_c.TimeZone.AdjustAnyOS(DateTime.Now.ToUniversalTime().AddMinutes(minutes)));
             GivenIHaveAHearing(minutes);
             CreateConference();
             _c.Test.DelayedStartTime = minutes;
