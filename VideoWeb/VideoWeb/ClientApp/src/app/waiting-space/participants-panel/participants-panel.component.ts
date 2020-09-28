@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ParticipantResponse, Role } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
@@ -238,7 +238,32 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         return participantResponse;
     }
 
-    isParticipantDisconnected(participant: ParticipantPanelModel): boolean {
-        return participant.status === ParticipantStatus.Disconnected;
+    isParticipantDisconnected(participant: PanelModel): boolean {
+        return participant.isDisconnected();
+    }
+
+    getPanelRowTooltipText(participant: PanelModel) {
+        if (participant.isAvailable()) {
+            return participant.displayName + ': Joining';
+        }
+        if (!participant.isDisconnected() && !participant.isInHearing()) {
+            return participant.displayName + ': Not joined';
+        }
+
+        if (participant.isDisconnected()) {
+            return participant.displayName + ': DISCONNECTED';
+        }
+
+        return participant.displayName;
+    }
+
+    getPanelRowTooltipColour(participant: PanelModel) {
+        if (participant.isDisconnected()) {
+            return 'red';
+        } else if (participant.isAvailable() || participant.isInHearing()) {
+            return 'blue';
+        } else {
+            return 'grey';
+        }
     }
 }
