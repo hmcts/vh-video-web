@@ -9,6 +9,7 @@ import {
 export abstract class PanelModel {
     public id: string;
     public isMuted: boolean;
+    public isSpotlighted: boolean;
     public handRaised: boolean;
     public displayName: string;
     public pexipId: string;
@@ -27,6 +28,8 @@ export abstract class PanelModel {
     }
 
     abstract isInHearing(): boolean;
+    abstract isDisconnected(): boolean;
+    abstract isAvailable(): boolean;
 
     private setOrderInTheList(): number {
         switch (this.caseTypeGroup.toLowerCase()) {
@@ -53,6 +56,14 @@ export class ParticipantPanelModel extends PanelModel {
     isInHearing(): boolean {
         return this.status === ParticipantStatus.InHearing;
     }
+
+    isDisconnected(): boolean {
+        return this.status === ParticipantStatus.Disconnected;
+    }
+
+    isAvailable(): boolean {
+        return this.status === ParticipantStatus.Available;
+    }
 }
 
 export class VideoEndpointPanelModel extends PanelModel {
@@ -64,6 +75,15 @@ export class VideoEndpointPanelModel extends PanelModel {
     }
 
     isInHearing(): boolean {
+        return this.status === EndpointStatus.Connected;
+    }
+
+    isDisconnected(): boolean {
+        return this.status === EndpointStatus.Disconnected;
+    }
+
+    isAvailable(): boolean {
+        console.log(this.status);
         return this.status === EndpointStatus.Connected;
     }
 }

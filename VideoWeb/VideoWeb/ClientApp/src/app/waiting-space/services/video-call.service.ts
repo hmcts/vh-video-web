@@ -60,7 +60,8 @@ export class VideoCallService {
                     participantUpdate.is_muted,
                     participantUpdate.buzz_time,
                     participantUpdate.display_name,
-                    participantUpdate.uuid
+                    participantUpdate.uuid,
+                    participantUpdate.spotlight
                 )
             );
         };
@@ -146,6 +147,10 @@ export class VideoCallService {
 
     muteParticipant(participantId: string, mute: boolean) {
         this.pexipAPI.setParticipantMute(participantId, mute);
+    }
+
+    spotlightParticipant(participantId: string, spotlight: boolean) {
+        this.pexipAPI.setParticipantSpotlight(participantId, spotlight);
     }
 
     muteAllParticipants(mute: boolean) {

@@ -1,4 +1,4 @@
-@import '~govuk-frontend/govuk/all';
+@import '~govuk-frontend/govuk/base';
 
 .panel-container {
   background: govuk-colour('black');
@@ -51,6 +51,7 @@
   padding-left: 5px;
   padding-right: 5px;
   margin-top: 10px;
+  z-index: 130;
 }
 
 .cell-icon {
@@ -176,7 +177,7 @@
   color: govuk-colour('white');
   padding-left: 12px;
   display: grid;
-  grid-template-columns: auto 40px 40px 40px;
+  grid-template-columns: auto 40px 40px 40px auto;
   grid-template-rows: auto auto;
 }
 .pName {
@@ -204,8 +205,16 @@
   justify-self: end;
   align-self: center;
 }
-.pntwk {
+
+.pPin {
   grid-column: 4/4;
+  grid-row: 2/2;
+  justify-self: end;
+  align-self: center;
+}
+
+.pntwk {
+  grid-column: 5/5;
   grid-row: 2/2;
   justify-self: end;
   align-self: start;
@@ -232,4 +241,8 @@
 .btn-lowerhand {
   cursor: pointer;
   font-size: 12px;
+}
+
+.spotlighted {
+  background: govuk-colour('red');
 }
