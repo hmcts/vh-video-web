@@ -23,6 +23,7 @@ declare interface PexipClient {
     connect(pin: string, extension: string);
     disconnect();
     setParticipantMute(participantId: string, mute: boolean);
+    setParticipantSpotlight(participantId: string, spotlight: boolean);
     setMuteAllGuests(mute: boolean);
     muteAudio(): boolean;
     setBuzz();

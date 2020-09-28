@@ -147,3 +147,40 @@ $govuk-global-styles: true;
   opacity: 1;
   transition: visibility 0s linear 0s, opacity 300ms;
 }
+
+.vh-tooltip {
+  @include govuk-font(14, $weight: 'regular', $tabular: false, $line-height: false);
+  color: govuk-colour('white');
+  width: auto;
+  height: auto;
+  z-index: 999;
+  box-shadow: 0 7px 11px 0px rgba(0, 0, 0, 0.3);
+  background: govuk-colour('blue');
+  border: 1px solidgovuk-colour('blue');
+  border-radius: 2px;
+  position: absolute;
+  top: 127px;
+  left: 42px;
+  padding: 8px;
+  visibility: hidden;
+  opacity: 90%;
+}
+
+.vh-tooltip-blue {
+  background: govuk-colour('blue');
+  border: 1px solidgovuk-colour('blue');
+}
+
+.vh-tooltip-red {
+  background: govuk-colour('red');
+  border: 1px solidgovuk-colour('red');
+}
+
+.vh-tooltip-grey {
+  background: govuk-colour('dark-grey');
+  border: 1px solidgovuk-colour('dark-grey');
+}
+
+.vh-tooltip-show {
+  visibility: visible;
+}

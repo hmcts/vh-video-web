@@ -161,25 +161,27 @@ describe('ParticipantsPanelComponent', () => {
     it('should process video call participant updates', () => {
         component.setupVideoCallSubscribers();
         const pat = component.participants.filter(x => x.role !== Role.Judge)[0];
-        const payload = new ParticipantUpdated('YES', 1, pat.pexipDisplayName, Guid.create().toString());
+        const payload = new ParticipantUpdated('YES', 1, pat.pexipDisplayName, Guid.create().toString(), 1);
 
         onParticipantUpdatedMock.next(payload);
         const result = component.participants.find(x => x.id === pat.id);
         expect(result.pexipId).toBe(payload.uuid);
         expect(result.isMuted).toBeTruthy();
         expect(result.handRaised).toBeTruthy();
+        expect(result.isSpotlighted).toBeTruthy();
     });
 
     it('should not process video call participant updates not in list', () => {
         component.setupVideoCallSubscribers();
         const pat = component.participants.filter(x => x.role !== Role.Judge)[1];
-        const payload = new ParticipantUpdated('YES', 1, 'do_not_exist_display_name', Guid.create().toString());
+        const payload = new ParticipantUpdated('YES', 1, 'do_not_exist_display_name', Guid.create().toString(), 0);
 
         onParticipantUpdatedMock.next(payload);
         const result = component.participants.find(x => x.id === pat.id);
         expect(result.pexipId).toBeUndefined();
         expect(result.isMuted).toBeFalsy();
         expect(result.handRaised).toBeFalsy();
+        expect(result.isSpotlighted).toBeFalsy();
     });
 
     it('should unmute all participants', () => {
@@ -199,6 +201,13 @@ describe('ParticipantsPanelComponent', () => {
         pat.isMuted = true;
         component.toggleMuteParticipant(pat);
         expect(videocallService.muteParticipant).toHaveBeenCalledWith(pat.pexipId, false);
+    });
+
+    it('should spotlight participant', () => {
+        const pat = component.participants[1];
+        pat.isSpotlighted = false;
+        component.toggleSpotlightParticipant(pat);
+        expect(videocallService.spotlightParticipant).toHaveBeenCalledWith(pat.pexipId, true);
     });
 
     it('should not mute conference when any of the second last participant is unmuted manually', () => {
