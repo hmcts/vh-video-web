@@ -113,8 +113,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var response = _c.Apis.TestApi.GetAudioRecordingLink(_c.Test.NewHearingId);
             var audioLink = RequestHelper.Deserialise<AudioRecordingResponse>(response.Content);
-            audioLink.Should().NotBeNull();
-            audioLink.Audio_file_link.ToLower().Should().Contain(_c.Test.NewHearingId.ToString().ToLower());
+            audioLink.Audio_file_links.Should().NotBeNullOrEmpty();
+            audioLink.Audio_file_links.First().ToLower().Should().Contain(_c.Test.NewHearingId.ToString().ToLower());
         }
 
         [Then(@"the VHO can see that (.*) is in the Waiting Room")]

@@ -54,7 +54,8 @@ describe('VideoCallService', () => {
             'clearBuzz',
             'setParticipantMute',
             'setMuteAllGuests',
-            'clearAllBuzz'
+            'clearAllBuzz',
+            'setParticipantSpotlight'
         ]);
         service = new VideoCallService(logger, userMediaService, apiClient);
         await service.setupClient();

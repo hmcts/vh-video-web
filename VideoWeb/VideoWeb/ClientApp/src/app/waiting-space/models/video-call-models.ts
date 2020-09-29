@@ -16,12 +16,14 @@ export class CallError {
 
 export class ParticipantUpdated {
     public isRemoteMuted: boolean;
+    public isSpotlighted: boolean;
     public handRaised: boolean;
     public pexipDisplayName: string;
     public uuid: string;
 
-    constructor(isMuted: string, buzzTime: number, pexipName: string, uuid: string) {
+    constructor(isMuted: string, buzzTime: number, pexipName: string, uuid: string, spotlightTime: number) {
         this.isRemoteMuted = isMuted.toUpperCase() === 'YES';
+        this.isSpotlighted = spotlightTime !== 0;
         this.handRaised = buzzTime !== 0;
         this.pexipDisplayName = pexipName;
         this.uuid = uuid;

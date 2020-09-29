@@ -200,7 +200,8 @@ export class ConferenceTestData {
             username: 'chris.green@hearings.net',
             role: Role.Representative,
             representee: 'James Green',
-            case_type_group: 'applicant'
+            case_type_group: 'applicant',
+            tiled_display_name: 'T4;Mr Chris Green;1111-1111-1111-1111'
         });
 
         const participant2 = new ParticipantForUserResponse({
@@ -209,7 +210,8 @@ export class ConferenceTestData {
             display_name: 'J Green',
             username: 'james.green@hearings.net',
             role: Role.Individual,
-            case_type_group: 'applicant'
+            case_type_group: 'applicant',
+            tiled_display_name: 'T2;J Green;2222-2222-2222-2222'
         });
 
         const participant3 = new ParticipantForUserResponse({
@@ -224,22 +226,24 @@ export class ConferenceTestData {
         });
 
         const participant4 = new ParticipantForUserResponse({
-            id: '4444-4444-4444-4444',
+            id: '5555-5555-5555-5555',
             status: ParticipantStatus.Available,
             display_name: 'J Doe',
             username: 'john.doe@hearings.net',
             role: Role.Representative,
             representee: 'J Doe',
-            case_type_group: 'respondent'
+            case_type_group: 'respondent',
+            tiled_display_name: 'T1;J Doe;5555-5555-5555-5555'
         });
 
         const participant5 = new ParticipantForUserResponse({
-            id: '4444-4444-4444-444',
+            id: '6666-6666-6666-6666',
             status: ParticipantStatus.NotSignedIn,
             display_name: 'J Doe',
             username: 'jane.doe@hearings.net',
             role: Role.Individual,
-            case_type_group: 'respondent'
+            case_type_group: 'respondent',
+            tiled_display_name: 'T3;Ms J Doe;6666-6666-6666-6666'
         });
 
         const participant6 = new ParticipantForUserResponse({
