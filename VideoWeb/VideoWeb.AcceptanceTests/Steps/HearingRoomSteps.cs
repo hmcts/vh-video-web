@@ -47,10 +47,11 @@ namespace VideoWeb.AcceptanceTests.Steps
             Thread.Sleep(TimeSpan.FromSeconds(PauseCloseTransferDuration));
         }
 
-        [When(@"the Judge clicks close")]
-        public void WhenTheUserClicksClose()
+        [When(@"the Judge closes the hearing")]
+        public void WhenTheJudgeClosesTheHearing()
         {
             _browsers[_c.CurrentUser].Click(HearingRoomPage.CloseButton);
+            _browsers[_c.CurrentUser].Click(HearingRoomPage.ConfirmCloseButton);
             Thread.Sleep(TimeSpan.FromSeconds(PauseCloseTransferDuration));
         }
 
@@ -148,7 +149,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         public void ProgressToNextPage()
         {
-            WhenTheUserClicksClose();
+            WhenTheJudgeClosesTheHearing();
         }
 
         private void SwitchToTheVhoIframe()
