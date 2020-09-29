@@ -13,7 +13,7 @@ export class SelectHearingLayoutComponent implements OnInit {
     constructor(private videoCallService: VideoCallService) {}
 
     ngOnInit(): void {
-        this.selectedLayout = this.videoCallService.getPreferredLayout();
+        this.selectedLayout = this.videoCallService.getPreferredLayout(this.conference.id);
         if (!this.selectedLayout) {
             this.selectedLayout = this.recommendedLayout();
         }
@@ -63,6 +63,6 @@ export class SelectHearingLayoutComponent implements OnInit {
 
     updateSelectedLayout(layout: HearingLayout) {
         this.selectedLayout = layout;
-        this.videoCallService.updatePreferredLayout(layout);
+        this.videoCallService.updatePreferredLayout(this.conference.id, layout);
     }
 }

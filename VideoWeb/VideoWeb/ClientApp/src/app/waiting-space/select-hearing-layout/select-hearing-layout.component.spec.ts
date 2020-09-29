@@ -61,7 +61,7 @@ describe('SelectHearingLayoutComponent', () => {
         const layout = HearingLayout.Dynamic;
         component.updateSelectedLayout(layout);
         expect(component.selectedLayout).toBe(layout);
-        expect(videoCallService.updatePreferredLayout).toHaveBeenCalledWith(layout);
+        expect(videoCallService.updatePreferredLayout).toHaveBeenCalledWith(component.conference.id, layout);
     });
 
     it('should return selected layout', () => {

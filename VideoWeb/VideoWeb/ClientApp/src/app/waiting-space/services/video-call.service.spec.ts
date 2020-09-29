@@ -187,11 +187,12 @@ describe('VideoCallService', () => {
 
     it('should update preferred layout', () => {
         const ss = new SessionStorage(service.PREFERRED_LAYOUT_KEY);
-        ss.clear();
-        expect(service.getPreferredLayout()).toBeNull();
+        ss.set({});
+        const conferenceId = Guid.create().toString();
+        expect(service.getPreferredLayout(conferenceId)).toBeUndefined();
         const layout = HearingLayout.OnePlus7;
-        service.updatePreferredLayout(layout);
-        expect(service.getPreferredLayout()).toBe(layout);
+        service.updatePreferredLayout(conferenceId, layout);
+        expect(service.getPreferredLayout(conferenceId)).toBe(layout);
         ss.clear();
     });
 });
