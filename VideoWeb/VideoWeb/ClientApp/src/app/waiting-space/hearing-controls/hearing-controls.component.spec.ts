@@ -200,8 +200,28 @@ describe('HearingControlsComponent', () => {
         expect(videoCallService.pauseHearing).toHaveBeenCalledWith(component.conferenceId);
     });
 
+    it('should display confirm close hearing popup', () => {
+        component.displayConfirmPopup = false;
+        component.displayConfirmationDialog();
+        expect(component.displayConfirmPopup).toBeTruthy();
+    });
+
+    it('should not close the hearing on keep hearing open', async () => {
+        component.displayConfirmPopup = true;
+        component.close(false);
+        expect(component.displayConfirmPopup).toBeFalsy();
+        expect(videoCallService.endHearing).toHaveBeenCalledTimes(0);
+    });
+
+    it('should close the hearing on close hearing', async () => {
+        component.displayConfirmPopup = true;
+        component.close(true);
+        expect(component.displayConfirmPopup).toBeFalsy();
+        expect(videoCallService.endHearing).toHaveBeenCalledWith(component.conferenceId);
+    });
+
     it('should close the hearing', () => {
-        component.close();
+        component.close(true);
         expect(videoCallService.endHearing).toHaveBeenCalledWith(component.conferenceId);
     });
 

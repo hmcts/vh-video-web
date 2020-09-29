@@ -136,7 +136,7 @@
             class="govuk-button reduce-margin button-spacing govuk-button--warning"
             data-module="govuk-button"
             type="button"
-            (click)="close()"
+            (click)="displayConfirmationDialog()"
             aria-label="Close Button"
           >
             Close
@@ -165,3 +165,5 @@
     </div>
   </div>
 </div>
+<app-confirm-close-hearing-popup *ngIf="displayConfirmPopup" (closeHearingAnswer)="close($event)">ddd
+</app-confirm-close-hearing-popup>

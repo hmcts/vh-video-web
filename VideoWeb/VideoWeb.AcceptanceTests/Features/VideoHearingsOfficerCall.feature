@@ -43,7 +43,7 @@ Scenario: Video Hearings Officer cannot call users in a hearing
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
 	Then the option to call the first Individual's is not visible
   When in the Judge's browser
-  And the Judge clicks close
+  And the Judge closes the hearing
 	Then the user is on the Hearing List page
 
 @VIH-6132 @DisableLogging

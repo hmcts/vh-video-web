@@ -28,7 +28,7 @@ Scenario: Judge pauses and closes hearing
 	Then the participant is back in the hearing
   And the participant is on the Hearing Room page for 1 minute
   When in the Judge's browser
-  And the Judge clicks close
+  And the Judge closes the hearing
 	Then the user is on the Hearing List page
 	And the hearing status changed to Closed
 
@@ -45,7 +45,7 @@ Scenario: Two participants join hearing
 	And the first Individual can see the other participants
 	And the first Representative can see the other participants
   When in the Judge's browser
-  And the Judge clicks close
+  And the Judge closes the hearing
 	Then the user is on the Hearing List page
 	And the hearing status changed to Closed
 	When in the first Individual's browser
@@ -68,7 +68,7 @@ Scenario: Four participants join hearing
 	And the second Individual can see the other participants
 	And the second Representative can see the other participants
   When in the Judge's browser
-  And the Judge clicks close
+  And the Judge closes the hearing
 	Then the user is on the Hearing List page
 	And the hearing status changed to Closed
 	When in the first Individual's browser
@@ -82,7 +82,7 @@ Scenario: Audio Recording
 	When the Judge starts the hearing
 	And the countdown finishes
 	And the Judge is on the Hearing Room page for 20 seconds
-  When the Judge clicks close
+  When the Judge closes the hearing
 	Then the user is on the Hearing List page
 	And the hearing status changed to Closed
   And an audio recording of the hearing has been created
@@ -107,7 +107,7 @@ Scenario: VHO Monitors Hearing
   And the VHO can see the status of participant the first Individual's is In hearing
   And the VHO can see that the Judge and the first Individual's participants are in the Hearing Room
   When in the Judge's browser
-  When the Judge clicks close
+  When the Judge closes the hearing
 	Then the user is on the Hearing List page
   When in the Video Hearings Officer's browser
   Then the VHO can see the Judge status is Disconnected
@@ -128,7 +128,7 @@ Scenario: Observer and Panel Member join hearing
 	And the Observer can see the other participants
 	And the Panel Member can see the other participants
   When in the Judge's browser
-  And the Judge clicks close
+  And the Judge closes the hearing
 	Then the user is on the Hearing List page
 	And the hearing status changed to Closed
 	When in the Observer's browser
