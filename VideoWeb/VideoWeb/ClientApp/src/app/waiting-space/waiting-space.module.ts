@@ -51,7 +51,7 @@ import { HearingLayoutComponent } from './select-hearing-layout/hearing-layout.c
         ParticipantsPanelComponent,
         ParticipantAlertComponent,
         SelectHearingLayoutComponent,
-        ConfirmCloseHearingPopupComponent
+        ConfirmCloseHearingPopupComponent,
         HearingLayoutComponent
     ],
     providers: [VideoCallService, NotificationSoundsService]
