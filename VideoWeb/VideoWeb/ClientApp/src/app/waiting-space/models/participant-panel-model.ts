@@ -83,7 +83,6 @@ export class VideoEndpointPanelModel extends PanelModel {
     }
 
     isAvailable(): boolean {
-        console.log(this.status);
         return this.status === EndpointStatus.Connected;
     }
 }

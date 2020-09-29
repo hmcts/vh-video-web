@@ -1465,7 +1465,7 @@ PexRTCCall.prototype.muteAudio = function(setting) {
         return self.mutedAudio;
     }
 
-    if (self.pc && self.safari_ver >= 13) {
+    if (self.pc && self.safari_ver >= 13 && self.safari_ver < 13.1) {
         if (!self.audioSender) {
             var senders = self.pc.getSenders();
             for (var i=0; i<senders.length; i++) {
@@ -3384,7 +3384,12 @@ PexRTC.prototype.renegotiate = function(call_type) {
     var self = this;
 
     if (self.call && self.call.update) {
+        var oldMute = self.mutedAudio;
+        if (self.safari_ver >= 13 && self.safari_ver < 13.1 && self.mutedAudio) {
+            self.muteAudio(false);
+        }
         self.call.update(call_type === undefined ? self.call_type : call_type);
+        self.muteAudio(oldMute);
     }
 };
 
