@@ -11,7 +11,7 @@ declare var PexRTC: any;
 
 @Injectable()
 export class VideoCallService {
-    private readonly preferredLayoutCache: SessionStorage<HearingLayout>;
+    private readonly preferredLayoutCache: SessionStorage<Record<string, HearingLayout>>;
     readonly PREFERRED_LAYOUT_KEY = 'vh.preferred.layout';
 
     private onSetupSubject = new Subject<CallSetup>();
@@ -22,11 +22,12 @@ export class VideoCallService {
     private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
 
     pexipAPI: PexipClient;
-    private preferredLayout: HearingLayout;
 
     constructor(private logger: Logger, private userMediaService: UserMediaService, private apiClient: ApiClient) {
         this.preferredLayoutCache = new SessionStorage(this.PREFERRED_LAYOUT_KEY);
-        this.preferredLayout = this.preferredLayoutCache.get();
+        if (!this.preferredLayoutCache.get()) {
+            this.preferredLayoutCache.set({});
+        }
     }
 
     /**
@@ -177,13 +178,15 @@ export class VideoCallService {
         this.pexipAPI.clearAllBuzz();
     }
 
-    updatePreferredLayout(layout: HearingLayout) {
-        this.preferredLayoutCache.set(layout);
-        this.preferredLayout = layout;
+    updatePreferredLayout(conferenceId: string, layout: HearingLayout) {
+        const record = this.preferredLayoutCache.get();
+        record[conferenceId] = layout;
+        this.preferredLayoutCache.set(record);
     }
 
-    getPreferredLayout() {
-        return this.preferredLayout;
+    getPreferredLayout(conferenceId: string) {
+        const record = this.preferredLayoutCache.get();
+        return record[conferenceId];
     }
 
     async startHearing(conferenceId: string, layout: HearingLayout) {
