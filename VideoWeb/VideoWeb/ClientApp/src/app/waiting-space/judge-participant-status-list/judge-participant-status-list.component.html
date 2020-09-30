@@ -97,7 +97,10 @@
             <p id="p-{{ participant.id }}-name-participant" class="govuk-heading-s govuk-!-margin-bottom-3">
               {{ participant.name }}
             </p>
-            <p id="p-{{ participant.id }}-case-type-group-participant" class="govuk-body-m govuk-!-margin-bottom-3">
+            <p id="p-{{ participant.id }}-hearing-role-participant" class="govuk-body-m govuk-!-margin-bottom-3">
+              {{ participant.hearing_role }}
+            </p>             
+            <p *ngIf="!isCaseTypeNone(participant)" id="p-{{ participant.id }}-case-type-group-participant" class="govuk-body-m govuk-!-margin-bottom-3">
               {{ participant.case_type_group }}
             </p>
           </div>
@@ -127,7 +130,10 @@
             <p id="p-{{ participant.id }}-representee" *ngIf="participant.representee" class="govuk-body-m govuk-!-margin-bottom-3">
               Representing {{ participant.representee }}
             </p>
-            <p id="p-{{ participant.id }}-case-type-group-participant" class="govuk-body-m govuk-!-margin-bottom-3">
+            <p id="p-{{ participant.id }}-hearing-role-participant" *ngIf="!participant.representee" class="govuk-body-m govuk-!-margin-bottom-3">
+              {{ participant.hearing_role }}
+            </p>            
+            <p *ngIf="!isCaseTypeNone(participant)" id="p-{{ participant.id }}-case-type-group-participant" class="govuk-body-m govuk-!-margin-bottom-3">
               {{ participant.case_type_group }}
             </p>
           </div>

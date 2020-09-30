@@ -102,6 +102,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             foreach (var individual in individuals)
             {
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantName(individual.Id)).Text.Trim().Should().Be(individual.Name);
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantHearingRole(individual.Id)).Text.Trim().Should().Be(individual.Hearing_role);
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantCaseType(individual.Id)).Text.Trim().Should().Be(individual.Case_type_group);
             }
 
