@@ -173,4 +173,18 @@ describe('JudgeParticipantStatusListComponent', () => {
         component.conference = conference;
         expect(component.isUserJudge()).toBeFalsy();
     });
+
+    it('should return true if case type is none', () => {
+        const participants = component.conference.participants;
+        const participant = participants[0];
+        participant.case_type_group = 'None';
+        const isCaseTypeNone = component.isCaseTypeNone(participant);
+        expect(isCaseTypeNone).toBe(true);
+    });
+    it('should return false if case type is not none', () => {
+        const participants = component.conference.participants;
+        const participant = participants[0];
+        const isCaseTypeNone = component.isCaseTypeNone(participant);
+        expect(isCaseTypeNone).toBe(false);
+    });
 });

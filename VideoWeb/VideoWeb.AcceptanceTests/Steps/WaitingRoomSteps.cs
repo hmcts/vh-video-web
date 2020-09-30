@@ -102,6 +102,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             foreach (var individual in individuals)
             {
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantName(individual.Id)).Text.Trim().Should().Be(individual.Name);
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantHearingRole(individual.Id)).Text.Trim().Should().Be(individual.Hearing_role);
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantCaseType(individual.Id)).Text.Trim().Should().Be(individual.Case_type_group);
             }
 
@@ -109,7 +110,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantName(representative.Id)).Text.Trim().Should().Be(representative.Name);
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantCaseType(representative.Id)).Text.Trim().Should().Be(representative.Case_type_group);
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.RepresentativeRepresentee(representative.Id)).Text.Trim().Should().Be($"Representing {representative.Representee}");
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.RepresentativeRepresentee(representative.Id)).Text.Trim().Should().Be($"Representative for {representative.Representee}");
             }
 
             foreach (var observer in observers)
@@ -136,12 +137,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             foreach (var individual in individuals)
             {
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantListPanel.ParticipantName(individual.Id)).Text.Trim().Should().Be(individual.Name);
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantListPanel.ParticipantHearingRole(individual.Id)).Text.Trim().Should().Be(individual.Hearing_role);
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantListPanel.ParticipantCaseTypeGroup(individual.Id)).Text.Trim().Should().Be(individual.Case_type_group);
             }
 
             foreach (var representative in representatives)
             {
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantListPanel.ParticipantName(representative.Id)).Text.Trim().Should().Be(representative.Name);
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantListPanel.ParticipantHearingRole(representative.Id)).Text.Trim().Should().Be(representative.Hearing_role);
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantListPanel.ParticipantCaseTypeGroup(representative.Id)).Text.Trim().Should().Be(representative.Case_type_group);
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantListPanel.RepresentativeRepresentee(representative.Id)).Text.Trim().Should().Be(representative.Representee);
             }
