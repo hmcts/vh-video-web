@@ -110,7 +110,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantName(representative.Id)).Text.Trim().Should().Be(representative.Name);
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantCaseType(representative.Id)).Text.Trim().Should().Be(representative.Case_type_group);
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.RepresentativeRepresentee(representative.Id)).Text.Trim().Should().Be($"Representing {representative.Representee}");
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.RepresentativeRepresentee(representative.Id)).Text.Trim().Should().Be($"Representative for {representative.Representee}");
             }
 
             foreach (var observer in observers)
