@@ -346,7 +346,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         component.closeAllPCModals();
         expect(consultationService.clearModals).toHaveBeenCalledTimes(1);
     });
-    it('should not be able to call participant is user is observer', () => {
+    it('should not be able to call participant if user is observer', () => {
         component.conference.scheduled_date_time = new Date(new Date(Date.now()).getTime() + 31 * 60000);
 
         participantsObserverPanelMember.forEach(x => {
@@ -358,7 +358,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
         expect(component.canCallParticipant(participant)).toBeFalsy();
     });
-    it('should not be able to call participant is user is panel member', () => {
+    it('should not be able to call participant if user is panel member', () => {
         component.conference.scheduled_date_time = new Date(new Date(Date.now()).getTime() + 31 * 60000);
 
         participantsObserverPanelMember.forEach(x => {

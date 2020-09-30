@@ -62,5 +62,10 @@ namespace VideoWeb.Contract.Responses
         /// The last name of the participant
         /// </summary>
         public string LastName { get; set; }
+
+        /// <summary>
+        /// The hearing role
+        /// </summary>
+        public string HearingRole { get; set; }
     }
 }
