@@ -22,7 +22,7 @@ export abstract class PanelModel {
         this.id = id;
         this.displayName = displayName;
         this.role = role;
-        this.caseTypeGroup = caseTypeGroup;
+        this.caseTypeGroup = role === Role.Judge ? 'Judge' : caseTypeGroup;
         this.orderInTheList = this.setOrderInTheList();
         this.pexipDisplayName = pexipDisplayName;
     }
@@ -31,16 +31,22 @@ export abstract class PanelModel {
     abstract isDisconnected(): boolean;
     abstract isAvailable(): boolean;
 
+    get isJudge(): boolean {
+        return this.role === Role.Judge;
+    }
+
     private setOrderInTheList(): number {
         switch (this.caseTypeGroup.toLowerCase()) {
-            case 'panelmember':
+            case 'judge':
                 return 1;
-            case 'endpoint':
-                return 3;
-            case 'observer':
-                return 4;
-            default:
+            case 'panelmember':
                 return 2;
+            case 'endpoint':
+                return 4;
+            case 'observer':
+                return 5;
+            default:
+                return 3;
         }
     }
 }

@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ParticipantResponse, Role } from 'src/app/services/clients/api-client';
+import { ParticipantResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
@@ -132,12 +132,10 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
             const pats = this.videoWebService.getParticipantsByConferenceId(this.conferenceId);
             const eps = this.videoWebService.getEndpointsForConference(this.conferenceId);
 
-            (await pats)
-                .filter(x => x.role !== Role.Judge)
-                .forEach(x => {
-                    const participant = new ParticipantPanelModel(x);
-                    this.participants.push(participant);
-                });
+            (await pats).forEach(x => {
+                const participant = new ParticipantPanelModel(x);
+                this.participants.push(participant);
+            });
 
             (await eps).forEach(x => {
                 const endpoint = new VideoEndpointPanelModel(x);
@@ -146,6 +144,7 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
             this.participants.sort((x, z) => {
                 return x.orderInTheList === z.orderInTheList ? 0 : +(x.orderInTheList > z.orderInTheList) || -1;
             });
+            console.warn(this.participants);
         } catch (err) {
             this.logger.error('Failed to get participants for judge hearing panel', err);
         }
