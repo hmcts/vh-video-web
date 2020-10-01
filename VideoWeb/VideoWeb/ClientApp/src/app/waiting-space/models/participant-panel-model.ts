@@ -22,7 +22,7 @@ export abstract class PanelModel {
         this.id = id;
         this.displayName = displayName;
         this.role = role;
-        this.caseTypeGroup = role === Role.Judge ? 'Judge' : caseTypeGroup;
+        this.caseTypeGroup = role === Role.Judge ? 'judge' : caseTypeGroup;
         this.orderInTheList = this.setOrderInTheList();
         this.pexipDisplayName = pexipDisplayName;
     }

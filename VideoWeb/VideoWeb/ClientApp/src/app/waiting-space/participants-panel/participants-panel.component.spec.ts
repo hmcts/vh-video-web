@@ -45,10 +45,10 @@ describe('ParticipantsPanelComponent', () => {
         component.participants = [];
         component.ngOnInit();
         flushMicrotasks();
-
         expect(component.participants.length).toBeGreaterThan(0);
-        expect(component.participants[0].caseTypeGroup).toBe('panelmember');
-        expect(component.participants[component.participants.length].caseTypeGroup).toBe('observer');
+        expect(component.participants[0].caseTypeGroup).toBe('judge');
+        expect(component.participants[1].caseTypeGroup).toBe('panelmember');
+        expect(component.participants[component.participants.length - 1].caseTypeGroup).toBe('observer');
     }));
 
     it('should log error when api returns error', async () => {
