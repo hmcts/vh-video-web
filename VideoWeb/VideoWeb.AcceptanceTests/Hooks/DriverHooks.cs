@@ -54,7 +54,8 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
             var sauceLabsOptions = new SauceLabsOptions()
             {
-                EnableLogging = EnableLogging(context.VideoWebConfig.TestConfig.TargetOS, context.VideoWebConfig.TestConfig.TargetBrowser, scenario.ScenarioInfo),
+                EnableLogging = false, // Temporarily disable whilst Sauce Labs fix the issue
+                //EnableLogging = EnableLogging(context.VideoWebConfig.TestConfig.TargetOS, context.VideoWebConfig.TestConfig.TargetBrowser, scenario.ScenarioInfo),
                 Name = scenario.ScenarioInfo.Title
             };
 
