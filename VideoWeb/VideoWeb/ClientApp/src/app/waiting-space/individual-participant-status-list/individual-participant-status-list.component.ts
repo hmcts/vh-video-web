@@ -285,4 +285,8 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
     get getNumberParticipants() {
         return this.nonJugdeParticipants.length + this.observers.length + this.panelMembers.length;
     }
+
+    isCaseTypeNone(participant: ParticipantResponse): boolean {
+        return participant.case_type_group === 'None';
+    }
 }
