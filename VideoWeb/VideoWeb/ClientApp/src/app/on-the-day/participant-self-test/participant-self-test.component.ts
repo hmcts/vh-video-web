@@ -36,6 +36,7 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
     async continueParticipantJourney() {
         if (!this.selfTestCompleted) {
             await this.raisedSelfTestIncompleted();
+            await super.skipSelfTest();
         }
         const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         this.router.navigate([pageUrls.CameraWorking, conferenceId]);
