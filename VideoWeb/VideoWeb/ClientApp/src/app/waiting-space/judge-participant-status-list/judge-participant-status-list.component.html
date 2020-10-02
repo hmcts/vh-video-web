@@ -128,7 +128,7 @@
               {{ participant.name }}
             </p>
             <p id="p-{{ participant.id }}-representee" *ngIf="participant.representee" class="govuk-body-m govuk-!-margin-bottom-3">
-              Representative for {{ participant.representee }}
+              {{ !isCaseTypeNone(participant) ? 'Representative' : participant.hearing_role }}  for {{ participant.representee }}
             </p>
             <p id="p-{{ participant.id }}-hearing-role-participant" *ngIf="!participant.representee" class="govuk-body-m govuk-!-margin-bottom-3">
               {{ participant.hearing_role }}
