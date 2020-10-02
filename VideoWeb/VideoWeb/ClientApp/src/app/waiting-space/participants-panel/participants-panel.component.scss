@@ -54,6 +54,10 @@
   z-index: 130;
 }
 
+.panel-icon-crest {
+  width: 27px;
+}
+
 .cell-icon {
   width: 35px;
   display: inline-block;
@@ -195,30 +199,38 @@
 }
 .pmute {
   grid-column: 2/2;
-  grid-row: 2/2;
+  grid-row: 1;
   justify-self: end;
   align-self: end;
 }
 .phand {
   grid-column: 3/3;
-  grid-row: 2/2;
+  grid-row: 1;
   justify-self: end;
   align-self: center;
 }
 
 .pPin {
   grid-column: 4/4;
-  grid-row: 2/2;
+  grid-row: 1;
   justify-self: end;
   align-self: center;
 }
 
 .pntwk {
   grid-column: 5/5;
-  grid-row: 2/2;
+  grid-row: 1;
   justify-self: end;
   align-self: start;
 }
+
+.pCrest {
+  grid-column: 5/5;
+  grid-row: 1/1;
+  justify-self: start;
+  align-self: end;
+}
+
 .buttonRow {
   display: flex;
   flex-direction: row;
@@ -245,4 +257,10 @@
 
 .spotlighted {
   background: govuk-colour('red');
+}
+
+.panelRowBorder {
+  border: 0;
+  height: 0;
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.2);
 }

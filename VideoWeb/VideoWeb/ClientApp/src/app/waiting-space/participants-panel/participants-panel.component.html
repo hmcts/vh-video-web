@@ -8,11 +8,13 @@
       *ngFor="let participant of participants; let i = index"
     >
       <div class="pGridOpen">
-        <div class="pName" id="panel_participant_{{ i }}">{{ participant.displayName }}</div>
+        <div class="pName" [ngClass]="participant.isDisconnected() ? 'disconnected' : ''" id="panel_participant_{{ i }}">
+          {{ participant.displayName }}
+        </div>
 
         <ng-container *ngIf="!isParticipantDisconnected(participant); else participantDisconnected">
           <div class="pRole" id="panel_participant_role_{{ i }}"></div>
-          <div class="pmute" *ngIf="isParticipantInHearing(participant)">
+          <div class="pmute" *ngIf="!participant.isJudge && isParticipantInHearing(participant)">
             <img
               appTooltip
               [text]="participant.isMuted ? 'Unmute' : 'Mute'"
@@ -23,7 +25,7 @@
               (click)="toggleMuteParticipant(participant); $event.stopPropagation()"
             />
           </div>
-          <div class="phand" *ngIf="participant.handRaised">
+          <div class="phand" *ngIf="!participant.isJudge && participant.handRaised">
             <img
               appTooltip
               [text]="'Lower hand'"
@@ -33,6 +35,12 @@
               alt="Hand on icon"
               (click)="lowerParticipantHand(participant.id); $event.stopPropagation()"
             />
+          </div>
+          <div class="pCrest" *ngIf="participant.isJudge">
+            <img src="/assets/images/UkGovCrestWhite.png" class="panel-icon panel-icon-crest" alt="HMCTS Crest" />
+          </div>
+          <div class="pCrest" *ngIf="isEndpoint(participant)">
+            <img src="/assets/images/jvs.png" class="panel-icon panel-icon-crest" alt="JVS endpoint icon" />
           </div>
           <div class="pPin" *ngIf="isParticipantInHearing(participant)">
             <img
@@ -57,16 +65,15 @@
           </div>
         </ng-container>
         <ng-template #participantDisconnected>
-          <div class="pRole disconnected" id="panel_participant_role_{{ i }}">DISCONNECTED</div>
           <div class="pntwk">
             <app-participant-alert
-              *ngIf="!isEndpoint(participant)"
+              *ngIf="!participant.isJudge && !isEndpoint(participant)"
               [participant]="mapParticipantToParticipantResponse(participant)"
             ></app-participant-alert>
           </div>
         </ng-template>
       </div>
-      <div class="vh-line"></div>
+      <div class="panelRowBorder"></div>
     </div>
   </div>
   <div class="govuk-grid-row scroll-shevrons">
