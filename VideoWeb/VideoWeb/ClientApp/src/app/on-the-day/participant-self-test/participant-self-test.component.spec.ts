@@ -74,6 +74,10 @@ describe('ParticipantSelfTestComponent', () => {
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.CameraWorking, conference.id]);
     });
     it('should navigate to camera working screen if self-test is incompleted', fakeAsync(() => {
+        const selfTestSpy = jasmine.createSpyObj<SelfTestComponent>('SelfTestComponent', ['handleCallDisconnect']);
+        selfTestSpy.handleCallDisconnect.and.returnValue(Promise.resolve());
+        component.selfTestComponent = selfTestSpy;
+
         spyOn(logger, 'info');
         component.selfTestCompleted = false;
         component.continueParticipantJourney();
@@ -81,8 +85,13 @@ describe('ParticipantSelfTestComponent', () => {
         expect(videoWebService.raiseSelfTestFailureEvent).toHaveBeenCalled();
         expect(logger.info).toHaveBeenCalled();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.CameraWorking, conference.id]);
+        expect(selfTestSpy.handleCallDisconnect).toHaveBeenCalled();
     }));
     it('should log error if self-test is incompleted and raised event is failed', fakeAsync(() => {
+        const selfTestSpy = jasmine.createSpyObj<SelfTestComponent>('SelfTestComponent', ['handleCallDisconnect']);
+        selfTestSpy.handleCallDisconnect.and.returnValue(Promise.resolve());
+        component.selfTestComponent = selfTestSpy;
+
         spyOn(logger, 'error');
         component.selfTestCompleted = false;
         videoWebService.raiseSelfTestFailureEvent.and.returnValue(Promise.reject());
@@ -105,7 +114,7 @@ describe('ParticipantSelfTestComponent', () => {
 
     it('should show self test restarting video', () => {
         const selfTestSpy = jasmine.createSpyObj<SelfTestComponent>('SelfTestComponent', ['replayVideo']);
-        selfTestSpy.replayVideo.and.callFake(() => {});
+        selfTestSpy.replayVideo.and.callFake(() => { });
         component.selfTestComponent = selfTestSpy;
 
         component.restartTest();

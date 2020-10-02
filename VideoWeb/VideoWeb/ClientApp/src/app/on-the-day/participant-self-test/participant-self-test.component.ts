@@ -9,6 +9,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { BaseSelfTestComponentDirective } from '../models/base-self-test.component';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { EventType } from 'src/app/services/clients/api-client';
+import { DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 
 @Component({
     selector: 'app-participant-self-test',
@@ -35,8 +36,10 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
 
     async continueParticipantJourney() {
         if (!this.selfTestCompleted) {
+            console.log('Self test skipped');
+            const reason = new DisconnectedCall('Conference terminated by another participant');
+            await this.selfTestComponent.handleCallDisconnect(reason);
             await this.raisedSelfTestIncompleted();
-            await super.skipSelfTest();
         }
         const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         this.router.navigate([pageUrls.CameraWorking, conferenceId]);

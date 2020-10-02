@@ -7,7 +7,6 @@ import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
-import { DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 
 @Directive()
 export abstract class BaseSelfTestComponentDirective implements OnInit {
@@ -89,11 +88,5 @@ export abstract class BaseSelfTestComponentDirective implements OnInit {
         if (testcallScore) {
             this.logger.debug(testcallScore.toJSON());
         }
-    }
-
-    async skipSelfTest() {
-        console.log('Self test skipped');
-        const reason = new DisconnectedCall('Conference terminated by another participant');
-        this.selfTestComponent.handleCallDisconnect(reason);
     }
 }
