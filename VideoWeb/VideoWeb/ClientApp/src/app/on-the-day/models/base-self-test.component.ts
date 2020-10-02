@@ -92,7 +92,7 @@ export abstract class BaseSelfTestComponentDirective implements OnInit {
     }
 
     async skipSelfTest() {
-        console.log('user skipped the self test!');
+        console.log('Self test skipped');
         const reason = new DisconnectedCall('Conference terminated by another participant');
         this.selfTestComponent.handleCallDisconnect(reason);
     }
