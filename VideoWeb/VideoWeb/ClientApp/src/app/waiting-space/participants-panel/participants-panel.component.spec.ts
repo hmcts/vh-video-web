@@ -30,7 +30,7 @@ describe('ParticipantsPanelComponent', () => {
 
     beforeEach(() => {
         component = new ParticipantsPanelComponent(videoWebServiceSpy, activatedRoute, videocallService, eventService, logger);
-        component.participants = participants.filter(x => x.role !== Role.Judge).map(x => new ParticipantPanelModel(x));
+        component.participants = participants.map(x => new ParticipantPanelModel(x));
 
         endpoints.map(endpoint => {
             component.participants = component.participants.concat(new VideoEndpointPanelModel(endpoint));
@@ -41,23 +41,14 @@ describe('ParticipantsPanelComponent', () => {
         component.ngOnDestroy();
     });
 
-    it('should get participant sorted list, the panel members are the first and observers are the last one', fakeAsync(() => {
+    it('should get participant sorted list, the judge is first, then panel members and finally observers are the last one', fakeAsync(() => {
         component.participants = [];
         component.ngOnInit();
         flushMicrotasks();
-
         expect(component.participants.length).toBeGreaterThan(0);
-        expect(component.participants[0].caseTypeGroup).toBe('panelmember');
+        expect(component.participants[0].caseTypeGroup).toBe('judge');
+        expect(component.participants[1].caseTypeGroup).toBe('panelmember');
         expect(component.participants[component.participants.length - 1].caseTypeGroup).toBe('observer');
-    }));
-
-    it('should list of participant not include judge', fakeAsync(() => {
-        component.participants = [];
-        component.ngOnInit();
-        flushMicrotasks();
-
-        expect(component.participants.length).toBeGreaterThan(0);
-        expect(component.participants.findIndex(x => x.role === Role.Judge)).toBe(-1);
     }));
 
     it('should log error when api returns error', async () => {
