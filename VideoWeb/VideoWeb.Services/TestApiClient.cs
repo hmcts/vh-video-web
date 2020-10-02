@@ -4771,6 +4771,9 @@ namespace VideoWeb.Services.TestApi
         [Newtonsoft.Json.JsonProperty("endpoints", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.List<EndpointResponse2> Endpoints { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("group_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid? Group_id { get; set; }
+    
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     
         [Newtonsoft.Json.JsonExtensionData]

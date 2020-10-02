@@ -27,7 +27,7 @@
   </div>
 
   <div class="govuk-grid-row">
-    <div class="conference-list">
+    <div class="conference-list" tabindex="0">
       <app-vho-hearing-list #conferenceList [conferences]="hearings" (selectedConference)="onConferenceSelected($event)">
       </app-vho-hearing-list>
     </div>
