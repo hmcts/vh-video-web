@@ -20,7 +20,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private const int DEFAULT_PANEL_MEMBERS = 0;
         private const int DEFAULT_OBSERVERS = 0;
         private const string DEFAULT_VENUE = "Birmingham Civil and Family Justice Centre";
-        private const int ALLOCATE_USERS_FOR_MINUTES = 3;
+        private const int ALLOCATE_USERS_FOR_MINUTES = 8;
         private const int ALLOCATE_USERS_FOR_HEARING_TESTS = 15;
         private readonly TestContext _c;
         private readonly ScenarioContext _scenario;
