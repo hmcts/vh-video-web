@@ -11,6 +11,7 @@ import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-map
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import {
+    onCallTransferredMock,
     onConnectedSubjectMock,
     onDisconnectedSubjectMock,
     onErrorSubjectMock,
@@ -31,6 +32,7 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
     const onConnectedSubject = onConnectedSubjectMock;
     const onDisconnectedSubject = onDisconnectedSubjectMock;
     const onErrorSubject = onErrorSubjectMock;
+    const onTransferSubject = onCallTransferredMock;
     const videoCallService = videoCallServiceSpy;
 
     const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: gloalConference.id }) } };
@@ -227,5 +229,12 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
         expect(component.heartbeat.kill).toHaveBeenCalled();
         expect(component.showVideo).toBeFalsy();
         expect(component.callbackTimeout).toBeUndefined();
+    });
+
+    it('should dettach current stream on transfer', () => {
+        const incomingStream = <any>{};
+        component.stream = incomingStream;
+        onTransferSubject.next('new_room');
+        expect(component.stream).toBeNull();
     });
 });

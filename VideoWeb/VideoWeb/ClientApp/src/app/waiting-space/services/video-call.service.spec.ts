@@ -70,6 +70,7 @@ describe('VideoCallService', () => {
         expect(service.onError()).toBeDefined();
         expect(service.onParticipantUpdated()).toBeDefined();
         expect(service.onConferenceUpdated()).toBeDefined();
+        expect(service.onCallTransferred()).toBeDefined();
     });
 
     it('should use default devices on setup if no preferred devices found', async () => {

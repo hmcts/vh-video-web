@@ -17,6 +17,7 @@ export const onDisconnectedSubjectMock = new Subject<DisconnectedCall>();
 export const onErrorSubjectMock = new Subject<CallError>();
 export const onParticipantUpdatedMock = new Subject<ParticipantUpdated>();
 export const onConferenceUpdatedMock = new Subject<ConferenceUpdated>();
+export const onCallTransferredMock = new Subject<any>();
 
 videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', [
     'setupClient',
@@ -29,6 +30,7 @@ videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService',
     'onConferenceUpdated',
     'onParticipantUpdated',
     'onError',
+    'onCallTransferred',
     'updateCameraForCall',
     'updateMicrophoneForCall',
     'toggleMute',
@@ -53,3 +55,4 @@ videoCallServiceSpy.onCallDisconnected.and.returnValue(onDisconnectedSubjectMock
 videoCallServiceSpy.onError.and.returnValue(onErrorSubjectMock.asObservable());
 videoCallServiceSpy.onParticipantUpdated.and.returnValue(onParticipantUpdatedMock.asObservable());
 videoCallServiceSpy.onConferenceUpdated.and.returnValue(onConferenceUpdatedMock.asObservable());
+videoCallServiceSpy.onCallTransferred.and.returnValue(onCallTransferredMock.asObservable());
