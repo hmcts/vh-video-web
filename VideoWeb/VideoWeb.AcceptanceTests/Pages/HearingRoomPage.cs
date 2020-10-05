@@ -4,7 +4,6 @@ namespace VideoWeb.AcceptanceTests.Pages
 {
     public static class HearingRoomPage
     {
-        public static By TechnicalIssues = By.Id("technicalIssuesButton");
         public static By PauseButton = By.Id("pauseButton");
         public static By CloseButton = By.Id("closeButton");
         public static By ConfirmCloseButton = By.Id("btnConfirmClose");
