@@ -34,39 +34,41 @@
     </div>
   </div>
 
-  <div *ngIf="nonJugdeParticipants.length > 0">
+  <div *ngIf="nonJudgeParticipants.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">Participants ({{ nonJugdeParticipants.length }})</h2>
+        <h2 class="govuk-heading-s">Participants ({{ nonJudgeParticipants.length }})</h2>
       </div>
     </div>
     <div class="vh-border">
-      <div *ngFor="let participant of nonJugdeParticipants; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
-          <div id="p-row-{{ participant.id }}-participant" class="govuk-grid-column-full">
-              <p id="p-{{ participant.id }}-name" class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
+      <div *ngFor="let participant of nonJudgeParticipants; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
+        <div id="p-row-{{ participant.id }}-participant" class="govuk-grid-column-full">
+          <p id="p-{{ participant.id }}-name" class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
 
-              <p id="p-{{ participant.id }}-representee" *ngIf="participant.representee" class="govuk-body-s govuk-!-margin-bottom-1">
-                  {{ !isCaseTypeNone(participant) ? 'Representative' : participant.hearing_role }}  for {{ participant.representee }}
-              </p>
+          <p id="p-{{ participant.id }}-representee" *ngIf="participant.representee" class="govuk-body-s govuk-!-margin-bottom-1">
+            {{ !isCaseTypeNone(participant) ? 'Representative' : participant.hearing_role }} for {{ participant.representee }}
+          </p>
 
-              <p id="p-{{ participant.id }}-hearing-role" *ngIf="!participant.representee" class="govuk-body-s govuk-!-margin-bottom-1">
-              {{ participant.hearing_role }}</p>
+          <p id="p-{{ participant.id }}-hearing-role" *ngIf="!participant.representee" class="govuk-body-s govuk-!-margin-bottom-1">
+            {{ participant.hearing_role }}
+          </p>
 
-              <p *ngIf="!isCaseTypeNone(participant)"
-                 id="p-{{ participant.id }}-case-type-group"
-                 class="govuk-body-s govuk-!-margin-bottom-1">
-                  {{ participant.case_type_group }}
-              </p>
+          <p *ngIf="!isCaseTypeNone(participant)" id="p-{{ participant.id }}-case-type-group" class="govuk-body-s govuk-!-margin-bottom-1">
+            {{ participant.case_type_group }}
+          </p>
 
-              <div *ngIf="canCallParticipant(participant)">
-                  <img src="/assets/images/glyphicons-181-facetime-video.png" width="20" height="13" alt="video camera icon" />
-                  <a id="p-call-{{ participant.id }}-btn"
-                     class="govuk-link govuk-!-margin-bottom-0 vh-ml5"
-                     href="javascript:void(0)"
-                     (click)="beginCallWith(participant)">Contact this person by video</a>
-              </div>
-              <div class="vh-line" *ngIf="!lastItem"></div>
+          <div *ngIf="canCallParticipant(participant)">
+            <img src="/assets/images/glyphicons-181-facetime-video.png" width="20" height="13" alt="video camera icon" />
+            <a
+              id="p-call-{{ participant.id }}-btn"
+              class="govuk-link govuk-!-margin-bottom-0 vh-ml5"
+              href="javascript:void(0)"
+              (click)="beginCallWith(participant)"
+              >Contact this person by video</a
+            >
           </div>
+          <div class="vh-line" *ngIf="!lastItem"></div>
+        </div>
       </div>
     </div>
   </div>
