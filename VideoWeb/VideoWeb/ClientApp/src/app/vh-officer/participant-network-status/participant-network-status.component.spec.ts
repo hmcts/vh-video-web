@@ -117,12 +117,7 @@ describe('ParticipantNetworkStatusComponent', () => {
         { status: ParticipantStatus.Available, health: HeartbeatHealth.Bad, browser: 'Chrome', expected: 'bad-signal.png' },
         { status: ParticipantStatus.Available, health: HeartbeatHealth.Poor, browser: 'Chrome', expected: 'poor-signal.png' },
         { status: ParticipantStatus.Disconnected, health: HeartbeatHealth.None, browser: 'Chrome', expected: 'disconnected.png' },
-        {
-            status: ParticipantStatus.Available,
-            health: HeartbeatHealth.None,
-            browser: 'Safari',
-            expected: 'incompatible-browser-signal.png'
-        },
+        { status: ParticipantStatus.Available, health: HeartbeatHealth.Bad, browser: 'Safari', expected: 'bad-signal.png' },
         { status: ParticipantStatus.Available, health: HeartbeatHealth.None, browser: 'Edge', expected: 'incompatible-browser-signal.png' }
     ];
 

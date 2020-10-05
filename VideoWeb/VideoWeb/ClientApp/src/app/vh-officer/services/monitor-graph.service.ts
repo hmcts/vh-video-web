@@ -20,7 +20,6 @@ export class MonitorGraphService {
     }
 
     setUnsupportedBrowser() {
-        this.unsupportedBroswer.push(new UnsupportedBrowserHeartbeat('Safari', null));
         this.unsupportedBroswer.push(new UnsupportedBrowserHeartbeat('MS-Edge', '44.19041'));
     }
 

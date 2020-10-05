@@ -126,7 +126,7 @@ export class ParticipantNetworkStatusComponent implements OnInit, AfterContentCh
     }
 
     isUnsupportedBrowser(browserName: string) {
-        return browserName.toLowerCase() === 'ms-edge' || browserName.toLowerCase() === 'safari';
+        return browserName.toLowerCase() === 'ms-edge';
     }
 
     setGraphVisibility(visible: boolean) {
