@@ -13,7 +13,7 @@
       </video>
     </div>
     <div class="controls-container govuk-grid-column-full govuk-!-padding-0">
-      <div [ngClass]="{ 'govuk-grid-column-one-half': !isJudge, 'govuk-grid-column-one-quarter': isJudge }" id="outgoingFeedDiv">
+      <div [ngClass]="{ 'govuk-grid-column-one-half': !isJudge, 'govuk-grid-column-one-third': isJudge }" id="outgoingFeedDiv">
         <!-- Self-view button -->
         <button
           id="outgoingFeedButton"
@@ -114,11 +114,7 @@
         </span>
       </div>
       <!-- Judge-only controls-->
-      <div
-        [ngClass]="{ 'govuk-grid-column-one-half': !isJudge, 'govuk-grid-column-two-quarters': isJudge }"
-        *ngIf="isJudge"
-        id="judgeControlsDiv"
-      >
+      <div *ngIf="isJudge" id="judgeControlsDiv">
         <div class="judge-controls-container">
           <button
             id="pauseButton"
@@ -141,23 +137,12 @@
           >
             Close
           </button>
-
-          <button
-            id="technicalIssuesButton"
-            class="govuk-button govuk-button--secondary reduce-margin"
-            data-module="govuk-button"
-            type="button"
-            (click)="suspend()"
-            aria-label="Suspend Button"
-          >
-            Technical Assistance
-          </button>
         </div>
       </div>
 
       <div
         *ngIf="isSupportedBrowserForNetworkHealth"
-        [ngClass]="{ 'govuk-grid-column-one-half': !isJudge, 'govuk-grid-column-one-quarter': isJudge }"
+        [ngClass]="{ 'govuk-grid-column-one-half': !isJudge, 'govuk-grid-column-one-third': isJudge }"
         id="hearing-monitor-div"
       >
         <app-waiting-room-monitor [participant]="participant"></app-waiting-room-monitor>
@@ -165,5 +150,4 @@
     </div>
   </div>
 </div>
-<app-confirm-close-hearing-popup *ngIf="displayConfirmPopup" (closeHearingAnswer)="close($event)">ddd
-</app-confirm-close-hearing-popup>
+<app-confirm-close-hearing-popup *ngIf="displayConfirmPopup" (closeHearingAnswer)="close($event)">ddd </app-confirm-close-hearing-popup>

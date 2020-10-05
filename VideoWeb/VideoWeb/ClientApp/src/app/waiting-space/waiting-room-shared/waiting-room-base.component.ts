@@ -193,7 +193,7 @@ export abstract class WaitingRoomBaseComponent {
         if (!this.deviceTypeService.isSupportedBrowser()) {
             return false;
         }
-        const unsupportedBrowsers = ['Safari', 'MS-Edge'];
+        const unsupportedBrowsers = ['MS-Edge'];
         const browser = this.deviceTypeService.getBrowserName();
         return unsupportedBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) < 0;
     }

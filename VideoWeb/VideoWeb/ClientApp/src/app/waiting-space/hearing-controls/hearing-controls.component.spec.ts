@@ -225,11 +225,6 @@ describe('HearingControlsComponent', () => {
         expect(videoCallService.endHearing).toHaveBeenCalledWith(component.conferenceId);
     });
 
-    it('should suspend the hearing', () => {
-        component.suspend();
-        expect(videoCallService.requestTechnicalAssistance).toHaveBeenCalledWith(component.conferenceId);
-    });
-
     it('should return true when partipant is judge', () => {
         component.participant = gloalConference.participants.find(x => x.role === Role.Judge);
         expect(component.isJudge).toBeTruthy();

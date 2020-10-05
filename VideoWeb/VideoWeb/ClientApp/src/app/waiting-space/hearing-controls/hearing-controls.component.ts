@@ -151,10 +151,6 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         this.videoCallService.pauseHearing(this.conferenceId);
     }
 
-    suspend() {
-        this.videoCallService.requestTechnicalAssistance(this.conferenceId);
-    }
-
     close(answer: boolean) {
         this.displayConfirmPopup = false;
         if (answer) {

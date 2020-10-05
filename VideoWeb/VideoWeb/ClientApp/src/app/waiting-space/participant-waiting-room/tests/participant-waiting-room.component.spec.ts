@@ -261,7 +261,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     const isSupportedBrowserForNetworkHealthTestCases = [
         { isSupportedBrowser: true, browserName: 'Chrome', expected: true },
         { isSupportedBrowser: false, browserName: 'Opera', expected: false },
-        { isSupportedBrowser: true, browserName: 'Safari', expected: false },
+        { isSupportedBrowser: true, browserName: 'Safari', expected: true },
         { isSupportedBrowser: true, browserName: 'MS-Edge', expected: false }
     ];
 
