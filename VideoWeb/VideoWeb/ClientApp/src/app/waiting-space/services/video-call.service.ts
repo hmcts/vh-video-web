@@ -18,6 +18,7 @@ export class VideoCallService {
     private onConnectedSubject = new Subject<ConnectedCall>();
     private onDisconnected = new Subject<DisconnectedCall>();
     private onErrorSubject = new Subject<CallError>();
+    private onCallTransferSubject = new Subject<any>();
     private onParticipantUpdatedSubject = new Subject<ParticipantUpdated>();
     private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
 
@@ -70,6 +71,10 @@ export class VideoCallService {
         this.pexipAPI.onConferenceUpdate = function (conferenceUpdate) {
             self.onConferenceUpdatedSubject.next(new ConferenceUpdated(conferenceUpdate.guests_muted));
         };
+
+        this.pexipAPI.onCallTransfer = function (alias) {
+            self.onCallTransferSubject.next(alias);
+        };
     }
 
     private async retrievePreferredDevices() {
@@ -118,6 +123,10 @@ export class VideoCallService {
 
     onCallDisconnected(): Observable<DisconnectedCall> {
         return this.onDisconnected.asObservable();
+    }
+
+    onCallTransferred(): Observable<any> {
+        return this.onCallTransferSubject.asObservable();
     }
 
     onError(): Observable<CallError> {

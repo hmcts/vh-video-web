@@ -5,7 +5,7 @@
 <div *ngIf="showVideo && !isPrivateConsultation" class="govuk-grid-row">
   <div class="video-background"></div>
   <div class="govuk-grid-column-one-half">
-    <video id="incomingFeed" [srcObject]="this.stream" autoplay height="auto">
+    <video id="incomingFeed" [srcObject]="this.stream" autoplay height="auto" poster="/assets/images/empty_crest.jpg">
       Your browser does not support Video
     </video>
   </div>
@@ -14,7 +14,7 @@
 <div *ngIf="showVideo && isPrivateConsultation" class="govuk-grid-row">
   <div class="video-background"></div>
   <div class="govuk-grid-column-one-half">
-    <video id="incomingFeedPrivate" autoplay [srcObject]="this.stream" height="auto">
+    <video id="incomingFeedPrivate" autoplay [srcObject]="this.stream" height="auto" poster="/assets/images/empty_crest.jpg">
       Your browser does not support Video
     </video>
   </div>
@@ -79,9 +79,7 @@
 
         <div *ngIf="hearing.isDelayed()">
           <h2 class="govuk-heading-m">Your hearing is delayed</h2>
-          <p>
-            We're sorry for the delay. Stay near your screen for further updates.
-          </p>
+          <p>We're sorry for the delay. Stay near your screen for further updates.</p>
         </div>
 
         <div *ngIf="hearing.isClosed()">
@@ -94,9 +92,7 @@
 
         <div *ngIf="hearing.isSuspended()">
           <h2 class="govuk-heading-m">We're having technical issues</h2>
-          <p>
-            All participants are affected. Stay near your screen for further updates. There's no need to call us.
-          </p>
+          <p>All participants are affected. Stay near your screen for further updates. There's no need to call us.</p>
         </div>
       </div>
       <div class="govuk-grid-row">
