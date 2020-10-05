@@ -4,14 +4,20 @@
 
 <!-- contains the in-hearing participant list and incoming video -->
 <div id="video-container" class="govuk-grid-row" *ngIf="showVideo">
-  <div class="govuk-grid-column-one-quarter">
+  <div *ngIf="!isPrivateConsultation" class="govuk-grid-column-one-quarter">
     <div class="panel-wrap">
       <app-participants-panel></app-participants-panel>
     </div>
   </div>
-  <div class="govuk-grid-column-three-quarters">
+  <div [ngClass]="{ 'govuk-grid-column-three-quarters': !isAdminConsultation }">
     <div class="hearing-video">
       <!-- hearing video-->
+      <div *ngIf="isAdminConsultation">
+        <div class="video-background"></div>
+        <video id="incomingFeedJudgePrivate" [srcObject]="this.stream" autoplay height="auto" class="incomingFeedPrivate">
+          Your browser does not support Video
+        </video>
+      </div>
       <div *ngIf="!isAdminConsultation">
         <div class="video-background"></div>
         <video id="incomingFeedJudge" [srcObject]="this.stream" autoplay height="auto" class="incomingFeed">
@@ -22,7 +28,7 @@
     <ng-container *ngIf="connected">
       <app-hearing-controls
         [participant]="participant"
-        [isPrivateConsultation]="isAdminConsultation"
+        [isPrivateConsultation]="isPrivateConsultation"
         [outgoingStream]="outgoingStream"
         [conferenceId]="conference.id"
         [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
@@ -135,5 +141,8 @@
     </app-judge-participant-status-list>
   </div>
 </div>
+
+<app-individual-consultation-controls (cancelConsulation)="onConsultationCancelled()" *ngIf="showConsultationControls">
+</app-individual-consultation-controls>
 
 <app-participant-chat *ngIf="hearing && !showVideo" [hearing]="hearing"></app-participant-chat>

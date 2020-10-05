@@ -5,6 +5,7 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
+    ConsultationAnswer,
     EndpointStatus,
     ParticipantResponse,
     ParticipantStatus,
@@ -14,6 +15,7 @@ import {
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
+import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Participant } from 'src/app/shared/models/participant';
 import { CaseTypeGroup } from '../models/case-type-group';
 
@@ -47,13 +49,12 @@ export abstract class WRParticipantStatusListDirective {
         this.filterPanelMembers();
         this.filterObservers();
         this.endpoints = this.conference.endpoints;
-        this.setupSubscribers();
     }
     abstract setupSubscribers(): void;
     abstract canCallParticipant(participant: ParticipantResponse): boolean;
     abstract canCallEndpoint(endpoint: VideoEndpointResponse): boolean;
 
-    get participantsCount(): number {
+    get participantCount(): number {
         return this.nonJudgeParticipants.length + this.observers.length + this.panelMembers.length;
     }
 
@@ -70,15 +71,70 @@ export abstract class WRParticipantStatusListDirective {
         return this.conference.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
     }
 
-    async handleAdminConsultationMessage(message: AdminConsultationMessage) {
+    addSharedEventHubSubcribers() {
+        this.eventHubSubscriptions$.add(
+            this.eventService.getAdminConsultationMessage().subscribe(async message => {
+                this.adminConsultationMessage = message;
+                if (!message.answer) {
+                    this.displayAdminConsultationRequest(message);
+                } else {
+                    this.handleAdminConsultationResponse(message);
+                }
+            })
+        );
+
+        this.eventHubSubscriptions$.add(
+            this.eventService.getParticipantStatusMessage().subscribe(message => {
+                this.handleParticipantStatusChange(message);
+            })
+        );
+    }
+
+    displayAdminConsultationRequest(message: AdminConsultationMessage) {
         const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
-        if (!this.isParticipantAvailable(requestee)) {
+        if (!requestee) {
+            this.logger.info(`Ignoring request for private consultation from Video Hearings Team since participant is not in hearing`);
+            return;
+        }
+        if (!message.answer && !this.isParticipantAvailable(requestee)) {
             this.logger.info(`Ignoring request for private consultation from Video Hearings Team since participant is not available`);
             return;
         }
         this.logger.info(`Incoming request for private consultation from Video Hearings Team`);
         this.consultationRequestee = new Participant(requestee);
         this.consultationService.displayAdminConsultationRequest();
+    }
+
+    handleAdminConsultationResponse(message: AdminConsultationMessage) {
+        const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
+        if (message.answer === ConsultationAnswer.Rejected) {
+            this.logger.info(`${requestee.display_name} ******* rejected vho consultation`);
+            this.consultationService.cancelTimedOutIncomingRequest();
+        }
+    }
+
+    handleParticipantStatusChange(message: ParticipantStatusMessage): void {
+        const isCurrentUser = this.adalService.userInfo.userName.toLocaleLowerCase() === message.username.toLowerCase();
+        if (isCurrentUser && message.status === ParticipantStatus.InConsultation) {
+            console.warn(`closing for current user ${this.adalService.userInfo.userName}`);
+            this.closeAllPCModals();
+        }
+        this.filterNonJudgeParticipants();
+    }
+
+    async respondToVhoConsultationRequest(answer: ConsultationAnswer) {
+        const displayName = this.videoWebService.getObfuscatedName(this.consultationRequestee.displayName);
+        this.logger.event(`${displayName} responded to vho consultation: ${answer}`);
+        try {
+            await this.consultationService.respondToAdminConsultationRequest(
+                this.conference,
+                this.consultationRequestee.base,
+                answer,
+                this.adminConsultationMessage.roomType
+            );
+        } catch (error) {
+            this.logger.error('Failed to respond to admin consultation request', error);
+        }
     }
 
     handleNoConsulationRoom() {
@@ -113,5 +169,18 @@ export abstract class WRParticipantStatusListDirective {
 
     protected filterJudge(): void {
         this.judge = this.conference.participants.find(x => x.role === Role.Judge);
+    }
+
+    protected camelToSpaced(word: string) {
+        const splitWord = word.split(/(?=[A-Z])/).join(' ');
+        const lowcaseWord = splitWord.toLowerCase();
+        return lowcaseWord.charAt(0).toUpperCase() + lowcaseWord.slice(1);
+    }
+
+    protected camelToSnake(word: string) {
+        return word
+            .split(/(?=[A-Z])/)
+            .join('_')
+            .toLowerCase();
     }
 }

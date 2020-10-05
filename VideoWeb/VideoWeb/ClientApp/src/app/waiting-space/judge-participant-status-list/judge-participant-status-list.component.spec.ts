@@ -1,7 +1,18 @@
 import { AdalService } from 'adal-angular4';
-import { ConferenceResponse, ParticipantStatus, EndpointStatus } from 'src/app/services/clients/api-client';
+import { ConsultationService } from 'src/app/services/api/consultation.service';
+import {
+    ConferenceResponse,
+    ConsultationAnswer,
+    EndpointStatus,
+    ParticipantStatus,
+    Role,
+    RoomType
+} from 'src/app/services/clients/api-client';
+import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
+import { Participant } from 'src/app/shared/models/participant';
 import { individualTestProfile, judgeTestProfile } from 'src/app/testing/data/test-profiles';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { VideoWebService } from '../../services/api/video-web.service';
 import { Logger } from '../../services/logging/logger-base';
@@ -11,16 +22,26 @@ describe('JudgeParticipantStatusListComponent', () => {
     let component: JudgeParticipantStatusListComponent;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
     let adalService: jasmine.SpyObj<AdalService>;
+    let consultationService: jasmine.SpyObj<ConsultationService>;
+    const eventsService = eventsServiceSpy;
     const judgeProfile = judgeTestProfile;
     const individualProfile = individualTestProfile;
     const logger: Logger = new MockLogger();
     let conference: ConferenceResponse;
 
     beforeAll(() => {
+        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', [
+            'clearOutoingCallTimeout',
+            'clearModals',
+            'resetWaitingForResponse',
+            'respondToAdminConsultationRequest'
+        ]);
+
         adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
             userInfo: <adal.User>{ userName: judgeProfile.username, authenticated: true }
         });
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails']);
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails', 'getObfuscatedName']);
+        videoWebService.getObfuscatedName.and.returnValue('test username');
     });
 
     beforeEach(() => {
@@ -29,8 +50,12 @@ describe('JudgeParticipantStatusListComponent', () => {
         participantObserverPanelMember.forEach(x => conference.participants.push(x));
         const endpoints = new ConferenceTestData().getListOfEndpoints();
         conference.endpoints = endpoints;
-        component = new JudgeParticipantStatusListComponent(adalService, videoWebService, logger);
+        component = new JudgeParticipantStatusListComponent(adalService, consultationService, eventsService, logger, videoWebService);
         component.conference = conference;
+        component.ngOnInit();
+    });
+
+    afterEach(() => {
         component.ngOnInit();
     });
 
@@ -46,7 +71,7 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(component.panelMembers).toBeDefined();
         expect(component.panelMembers.length).toBe(1);
 
-        expect(component.getParticipantsCount()).toBe(5);
+        expect(component.participantCount).toBe(5);
 
         expect(component.endpoints).toBeDefined();
         expect(component.endpoints.length).toBe(2);
@@ -90,7 +115,7 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(logger.error).toHaveBeenCalled();
     });
     it('should get the participant count excluding judge', () => {
-        const participantCount = component.getParticipantsCount();
+        const participantCount = component.participantCount;
         expect(participantCount).toBe(component.nonJudgeParticipants.length + component.observers.length + component.panelMembers.length);
     });
 
@@ -169,7 +194,7 @@ describe('JudgeParticipantStatusListComponent', () => {
         adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
             userInfo: <adal.User>{ userName: individualProfile.username, authenticated: true }
         });
-        component = new JudgeParticipantStatusListComponent(adalService, videoWebService, logger);
+        component = new JudgeParticipantStatusListComponent(adalService, consultationService, eventsService, logger, videoWebService);
         component.conference = conference;
         expect(component.isUserJudge()).toBeFalsy();
     });
@@ -186,5 +211,32 @@ describe('JudgeParticipantStatusListComponent', () => {
         const participant = participants[0];
         const isCaseTypeNone = component.isCaseTypeNone(participant);
         expect(isCaseTypeNone).toBe(false);
+    });
+
+    it('should not be able to call participants', () => {
+        expect(component.canCallParticipant(component.conference.participants[0])).toBeFalsy();
+    });
+
+    it('should not be able to call endpoints', () => {
+        expect(component.canCallEndpoint(component.conference.endpoints[0])).toBeFalsy();
+    });
+
+    it('should respond to admin consultation with answer "Rejected"', async () => {
+        component.consultationRequestee = new Participant(conference.participants.filter(x => x.role === Role.Judge)[0]);
+        const adminConsultationMessage = new AdminConsultationMessage(
+            conference.id,
+            RoomType.AdminRoom,
+            component.consultationRequestee.username,
+            null
+        );
+        component.adminConsultationMessage = adminConsultationMessage;
+
+        await component.respondToVhoConsultationRequest(ConsultationAnswer.Rejected);
+        expect(consultationService.respondToAdminConsultationRequest).toHaveBeenCalledWith(
+            conference,
+            component.consultationRequestee.base,
+            ConsultationAnswer.Rejected,
+            adminConsultationMessage.roomType
+        );
     });
 });

@@ -4,7 +4,7 @@ import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -26,8 +26,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     currentPlayCount: number;
     hearingAlertSound: HTMLAudioElement;
 
-    isPrivateConsultation: boolean;
-
     clockSubscription$: Subscription;
 
     constructor(
@@ -41,7 +39,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         protected videoCallService: VideoCallService,
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
-        private consultationService: ConsultationService,
+        protected consultationService: ConsultationService,
         private clockService: ClockService
     ) {
         super(
@@ -54,9 +52,9 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
             heartbeatMapper,
             videoCallService,
             deviceTypeService,
-            router
+            router,
+            consultationService
         );
-        this.isPrivateConsultation = false;
     }
 
     ngOnInit() {
@@ -148,48 +146,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
             return 'is closed';
         }
         return 'is in session';
-    }
-
-    updateShowVideo(): void {
-        if (!this.connected) {
-            this.logger.debug('Not showing video because not connecting to node');
-            this.showVideo = false;
-            this.showConsultationControls = false;
-            this.isPrivateConsultation = false;
-            return;
-        }
-
-        if (this.hearing.isInSession()) {
-            this.logger.debug('Showing video because hearing is in session');
-            this.showVideo = true;
-            this.showConsultationControls = false;
-            this.isPrivateConsultation = false;
-            return;
-        }
-
-        if (this.participant.status === ParticipantStatus.InConsultation) {
-            this.logger.debug('Showing video because hearing is in session');
-            this.showVideo = true;
-            this.isPrivateConsultation = true;
-            this.showConsultationControls = !this.isAdminConsultation;
-            return;
-        }
-
-        this.logger.debug('Not showing video because hearing is not in session and user is not in consultation');
-        this.showVideo = false;
-        this.showConsultationControls = false;
-        this.isPrivateConsultation = false;
-    }
-
-    async onConsultationCancelled() {
-        this.logger.info(
-            `Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}. Participant ${this.participant.id} attempting to leave conference: ${this.conference.id}`
-        );
-        try {
-            await this.consultationService.leaveConsultation(this.conference, this.participant);
-        } catch (error) {
-            this.logger.error('Failed to leave private consultation', error);
-        }
     }
 
     getCurrentTimeClass() {

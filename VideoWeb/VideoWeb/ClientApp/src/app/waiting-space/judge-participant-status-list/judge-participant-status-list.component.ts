@@ -1,27 +1,25 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
+import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
-    ConferenceResponse,
     ParticipantResponse,
     ParticipantStatus,
     Role,
     UpdateParticipantRequest,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
+import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
+import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-participant-list-shared.component';
 
 @Component({
     selector: 'app-judge-participant-status-list',
     templateUrl: './judge-participant-status-list.component.html',
     styleUrls: ['./judge-participant-status-list.component.scss']
 })
-export class JudgeParticipantStatusListComponent implements OnInit {
-    @Input() conference: ConferenceResponse;
-
-    nonJudgeParticipants: ParticipantResponse[];
-    judge: ParticipantResponse;
+export class JudgeParticipantStatusListComponent extends WRParticipantStatusListDirective implements OnInit {
     representativeParticipants: ParticipantResponse[];
     litigantInPerson: boolean;
     individualParticipants: ParticipantResponse[];
@@ -32,33 +30,38 @@ export class JudgeParticipantStatusListComponent implements OnInit {
     observers: ParticipantResponse[];
     panelMembers: ParticipantResponse[];
 
-    constructor(private adalService: AdalService, private videoWebService: VideoWebService, private logger: Logger) {}
+    constructor(
+        protected adalService: AdalService,
+        protected consultationService: ConsultationService,
+        protected eventService: EventsService,
+        protected logger: Logger,
+        protected videoWebService: VideoWebService
+    ) {
+        super(adalService, consultationService, eventService, videoWebService, logger);
+    }
 
     ngOnInit() {
-        this.filterNonJudgeParticipants();
-        this.filterJudge();
+        this.consultationService.resetWaitingForResponse();
+        this.initParticipants();
+        this.setupSubscribers();
+    }
+
+    initParticipants() {
+        super.initParticipants();
         this.filterRepresentatives();
-        this.filterObservers();
-        this.filterPanelMembers();
-        this.endpoints = this.conference.endpoints;
     }
 
-    private filterNonJudgeParticipants(): void {
-        this.nonJudgeParticipants = this.conference.participants.filter(
-            x => x.role !== Role.Judge && x.case_type_group !== CaseTypeGroup.OBSERVER && x.case_type_group !== CaseTypeGroup.PANEL_MEMBER
-        );
+    setupSubscribers(): void {
+        this.addSharedEventHubSubcribers();
+        this.eventService.start();
     }
 
-    private filterObservers(): void {
-        this.observers = this.conference.participants.filter(x => x.case_type_group === CaseTypeGroup.OBSERVER);
+    canCallParticipant(participant: ParticipantResponse): boolean {
+        return false;
     }
 
-    private filterPanelMembers(): void {
-        this.panelMembers = this.conference.participants.filter(x => x.case_type_group === CaseTypeGroup.PANEL_MEMBER);
-    }
-
-    private filterJudge(): void {
-        this.judge = this.conference.participants.find(x => x.role === Role.Judge);
+    canCallEndpoint(endpoint: VideoEndpointResponse): boolean {
+        return false;
     }
 
     getParticipantStatus(participant: ParticipantResponse): string {
@@ -75,12 +78,6 @@ export class JudgeParticipantStatusListComponent implements OnInit {
         return this.camelToSpaced(endpoint.status.toString());
     }
 
-    private camelToSpaced(word: string) {
-        const splitWord = word.split(/(?=[A-Z])/).join(' ');
-        const lowcaseWord = splitWord.toLowerCase();
-        return lowcaseWord.charAt(0).toUpperCase() + lowcaseWord.slice(1);
-    }
-
     getParticipantStatusCss(participant: ParticipantResponse): string {
         if (participant.status === ParticipantStatus.None) {
             return this.camelToSnake(ParticipantStatus.NotSignedIn.toString());
@@ -91,13 +88,6 @@ export class JudgeParticipantStatusListComponent implements OnInit {
 
     getEndpointStatusCss(endpoint: VideoEndpointResponse): string {
         return this.camelToSnake(endpoint.status.toString());
-    }
-
-    private camelToSnake(word: string) {
-        return word
-            .split(/(?=[A-Z])/)
-            .join('_')
-            .toLowerCase();
     }
 
     isUserJudge(): boolean {
@@ -156,13 +146,5 @@ export class JudgeParticipantStatusListComponent implements OnInit {
         } catch (error) {
             this.logger.error(`There was an error update judge display name ${this.judge.id}`, error);
         }
-    }
-
-    getParticipantsCount(): number {
-        return this.nonJudgeParticipants.length + this.observers.length + this.panelMembers.length;
-    }
-
-    isCaseTypeNone(participant: ParticipantResponse): boolean {
-        return participant.case_type_group === 'None';
     }
 }

@@ -104,6 +104,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             videoCallService,
             deviceTypeService,
             router,
+            consultationService,
             audioRecordingService
         );
 

@@ -101,7 +101,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         component.ngOnInit();
         expect(component).toBeTruthy();
         expect(component.judge).toBeDefined();
-        expect(component.nonJugdeParticipants).toBeDefined();
+        expect(component.nonJudgeParticipants).toBeDefined();
         expect(consultationService.resetWaitingForResponse).toHaveBeenCalled();
     });
 
@@ -261,7 +261,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         );
         component.adminConsultationMessage = adminConsultationMessage;
 
-        await component.acceptVhoConsultationRequest();
+        await component.respondToVhoConsultationRequest(ConsultationAnswer.Accepted);
         expect(consultationService.respondToAdminConsultationRequest).toHaveBeenCalledWith(
             conference,
             component.consultationRequestee.base,
@@ -293,7 +293,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         logger.error.calls.reset();
         const error = { error: 'test error' };
         consultationService.respondToAdminConsultationRequest.and.rejectWith(error);
-        await component.acceptVhoConsultationRequest();
+        await component.respondToVhoConsultationRequest(ConsultationAnswer.Accepted);
         expect(logger.error).toHaveBeenCalled();
     });
 
@@ -330,7 +330,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         consultationService.displayAdminConsultationRequest.calls.reset();
         component.consultationRequestee = undefined;
         component.consultationRequester = undefined;
-        spyOn(component, 'handleAdminConsultationMessage');
+        spyOn(component, 'displayAdminConsultationRequest');
         const payload = new AdminConsultationMessage(
             conference.id,
             RoomType.AdminRoom,
@@ -339,7 +339,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         );
         adminConsultationSubject.next(payload);
 
-        expect(component.handleAdminConsultationMessage).toHaveBeenCalledTimes(0);
+        expect(component.displayAdminConsultationRequest).toHaveBeenCalledTimes(0);
     }));
 
     it('should close all modals when user clicks close on modal', () => {

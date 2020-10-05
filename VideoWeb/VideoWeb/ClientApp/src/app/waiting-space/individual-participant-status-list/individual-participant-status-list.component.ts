@@ -6,7 +6,6 @@ import { ConsultationAnswer, ParticipantResponse, ParticipantStatus, VideoEndpoi
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
 import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
@@ -31,7 +30,7 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
     ngOnInit() {
         this.consultationService.resetWaitingForResponse();
         this.initParticipants();
-        this.endpoints = this.conference.endpoints;
+        this.setupSubscribers();
     }
 
     ngOnDestroy(): void {
@@ -67,20 +66,12 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
             this.eventService.getAdminConsultationMessage().subscribe(async message => {
                 if (!message.answer) {
                     this.adminConsultationMessage = message;
-                    await this.handleAdminConsultationMessage(message);
+                    await this.displayAdminConsultationRequest(message);
                 }
             })
         );
 
         this.eventService.start();
-    }
-
-    handleParticipantStatusChange(message: ParticipantStatusMessage): void {
-        const isCurrentUser = this.adalService.userInfo.userName.toLocaleLowerCase() === message.username.toLowerCase();
-        if (isCurrentUser && message.status === ParticipantStatus.InConsultation) {
-            this.closeAllPCModals();
-        }
-        this.filterNonJudgeParticipants();
     }
 
     canCallParticipant(participant: ParticipantResponse): boolean {
@@ -181,21 +172,6 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         }
     }
 
-    async acceptVhoConsultationRequest(): Promise<void> {
-        const displayName = this.videoWebService.getObfuscatedName(this.consultationRequestee.displayName);
-        this.logger.event(`${displayName} responded to vho consultation: ${ConsultationAnswer.Accepted}`);
-        try {
-            await this.consultationService.respondToAdminConsultationRequest(
-                this.conference,
-                this.consultationRequestee.base,
-                ConsultationAnswer.Accepted,
-                this.adminConsultationMessage.roomType
-            );
-        } catch (error) {
-            this.logger.error('Failed to respond to admin consultation request', error);
-        }
-    }
-
     private initConsultationParticipants(message: ConsultationMessage): void {
         const requester = this.conference.participants.find(x => x.username === message.requestedBy);
         const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
@@ -207,7 +183,7 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         return participant.status === ParticipantStatus.Available ? 'Available' : 'Unavailable';
     }
 
-    get getNumberPats() {
+    get participantCount() {
         return this.nonJudgeParticipants.length + this.observers.length + this.panelMembers.length;
     }
 }

@@ -208,15 +208,15 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
 
         component.ngOnInit();
 
-        expect(component.nonJugdeParticipants).toBeDefined();
-        expect(component.nonJugdeParticipants.length).toBe(2);
+        expect(component.nonJudgeParticipants).toBeDefined();
+        expect(component.nonJudgeParticipants.length).toBe(2);
 
         expect(component.observers).toBeDefined();
         expect(component.observers.length).toBe(2);
         expect(component.panelMembers).toBeDefined();
         expect(component.panelMembers.length).toBe(1);
 
-        expect(component.getNumberParticipants).toBe(5);
+        expect(component.participantCount).toBe(5);
         expect(component.endpoints).toBeDefined();
         expect(component.endpoints.length).toBe(2);
     });

@@ -99,8 +99,12 @@
             </p>
             <p id="p-{{ participant.id }}-hearing-role-participant" class="govuk-body-m govuk-!-margin-bottom-3">
               {{ participant.hearing_role }}
-            </p>             
-            <p *ngIf="!isCaseTypeNone(participant)" id="p-{{ participant.id }}-case-type-group-participant" class="govuk-body-m govuk-!-margin-bottom-3">
+            </p>
+            <p
+              *ngIf="!isCaseTypeNone(participant)"
+              id="p-{{ participant.id }}-case-type-group-participant"
+              class="govuk-body-m govuk-!-margin-bottom-3"
+            >
               {{ participant.case_type_group }}
             </p>
           </div>
@@ -128,12 +132,20 @@
               {{ participant.name }}
             </p>
             <p id="p-{{ participant.id }}-representee" *ngIf="participant.representee" class="govuk-body-m govuk-!-margin-bottom-3">
-              {{ !isCaseTypeNone(participant) ? 'Representative' : participant.hearing_role }}  for {{ participant.representee }}
+              {{ !isCaseTypeNone(participant) ? 'Representative' : participant.hearing_role }} for {{ participant.representee }}
             </p>
-            <p id="p-{{ participant.id }}-hearing-role-participant" *ngIf="!participant.representee" class="govuk-body-m govuk-!-margin-bottom-3">
+            <p
+              id="p-{{ participant.id }}-hearing-role-participant"
+              *ngIf="!participant.representee"
+              class="govuk-body-m govuk-!-margin-bottom-3"
+            >
               {{ participant.hearing_role }}
-            </p>            
-            <p *ngIf="!isCaseTypeNone(participant)" id="p-{{ participant.id }}-case-type-group-participant" class="govuk-body-m govuk-!-margin-bottom-3">
+            </p>
+            <p
+              *ngIf="!isCaseTypeNone(participant)"
+              id="p-{{ participant.id }}-case-type-group-participant"
+              class="govuk-body-m govuk-!-margin-bottom-3"
+            >
               {{ participant.case_type_group }}
             </p>
           </div>
@@ -210,3 +222,18 @@
     </div>
   </div>
 </div>
+
+<app-modal id="vho-raise-pc-modal" class="modal clear consultation">
+  <app-vho-raise-consultation
+    [allowRejection]="true"
+    (answeredVhoCall)="respondToVhoConsultationRequest($event)"
+  ></app-vho-raise-consultation>
+</app-modal>
+
+<app-modal id="no-room-pc-modal" class="modal clear consultation">
+  <app-no-consultation-room (closedModal)="closeAllPCModals()"></app-no-consultation-room>
+</app-modal>
+
+<app-modal id="pc-error-modal" class="modal clear consultation">
+  <app-consultation-error (closedModal)="closeAllPCModals()"></app-consultation-error>
+</app-modal>

@@ -2,6 +2,7 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
+import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
@@ -37,6 +38,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         protected videoCallService: VideoCallService,
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
+        protected consultationService: ConsultationService,
         private audioRecordingService: AudioRecordingService
     ) {
         super(
@@ -49,7 +51,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
             heartbeatMapper,
             videoCallService,
             deviceTypeService,
-            router
+            router,
+            consultationService
         );
     }
 
@@ -75,26 +78,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         clearTimeout(this.callbackTimeout);
         clearInterval(this.audioRecordingInterval);
         this.disconnect();
-    }
-
-    updateShowVideo(): void {
-        if (!this.connected) {
-            this.logger.debug('Not showing video because not connecting to node');
-            this.showVideo = false;
-            this.showConsultationControls = false;
-            return;
-        }
-
-        if (this.hearing.isInSession()) {
-            this.logger.debug('Showing video because hearing is in session');
-            this.showVideo = true;
-            this.showConsultationControls = false;
-            return;
-        }
-
-        this.logger.debug('Not showing video because hearing is not in session and user is not in consultation');
-        this.showVideo = false;
-        this.showConsultationControls = false;
     }
 
     getConferenceStatusText() {

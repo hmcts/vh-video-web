@@ -25,7 +25,6 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("consultations")]
-    [Authorize("Individual")]
     public class ConsultationsController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
@@ -33,7 +32,7 @@ namespace VideoWeb.Controllers
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<ConsultationsController> _logger;
 
-        public ConsultationsController(IVideoApiClient videoApiClient, 
+        public ConsultationsController(IVideoApiClient videoApiClient,
             IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext,
             IConferenceCache conferenceCache, ILogger<ConsultationsController> logger)
         {
@@ -50,8 +49,8 @@ namespace VideoWeb.Controllers
         /// <returns></returns>
         [HttpPost]
         [SwaggerOperation(OperationId = "HandleConsultationRequest")]
-        [ProducesResponseType((int) HttpStatusCode.NoContent)]
-        [ProducesResponseType(typeof(BadRequestModelResponse), (int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(BadRequestModelResponse), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> HandleConsultationRequestAsync(PrivateConsultationRequest request)
         {
             var conference = await GetConference(request.ConferenceId);
@@ -111,9 +110,9 @@ namespace VideoWeb.Controllers
 
         [HttpPost("leave")]
         [SwaggerOperation(OperationId = "LeavePrivateConsultation")]
-        [ProducesResponseType((int) HttpStatusCode.NoContent)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> LeavePrivateConsultationAsync(LeavePrivateConsultationRequest request)
         {
             try
@@ -142,18 +141,18 @@ namespace VideoWeb.Controllers
             await _hubContext.Clients.Group(requesterUsername.ToLowerInvariant()).ConsultationMessage(conferenceId,
                 requesterUsername.ToLowerInvariant(),
                 requesteeUsername.ToLowerInvariant(), ConsultationAnswer.NoRoomsAvailable);
-            
+
             await _hubContext.Clients.Group(requesteeUsername.ToLowerInvariant()).ConsultationMessage(conferenceId,
                 requesterUsername.ToLowerInvariant(),
                 requesteeUsername.ToLowerInvariant(), ConsultationAnswer.NoRoomsAvailable);
 
         }
-        
+
         [HttpPost("vhofficer/respond")]
         [SwaggerOperation(OperationId = "RespondToAdminConsultationRequest")]
-        [ProducesResponseType((int) HttpStatusCode.NoContent)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> RespondToAdminConsultationRequestAsync(PrivateAdminConsultationRequest request)
         {
             try
@@ -167,7 +166,11 @@ namespace VideoWeb.Controllers
 
                 var mappedRequest = PrivateAdminConsultationRequestMapper.MapToAdminConsultationRequest(request);
                 await _videoApiClient.RespondToAdminConsultationRequestAsync(mappedRequest);
-                if (request.Answer != ConsultationAnswer.Accepted) return NoContent();
+                if (request.Answer != ConsultationAnswer.Accepted && request.Answer != ConsultationAnswer.Rejected)
+                {
+                    return NoContent();
+                }
+
                 var roomType = Enum.Parse<RoomType>(request.ConsultationRoom.ToString());
                 var answer = Enum.Parse<ConsultationAnswer>(request.Answer.ToString());
 
@@ -184,9 +187,9 @@ namespace VideoWeb.Controllers
 
         [HttpPost("video-endpoint")]
         [SwaggerOperation(OperationId = "CallVideoEndpoint")]
-        [ProducesResponseType((int) HttpStatusCode.Accepted)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [Authorize(AppRoles.RepresentativeRole)]
         public async Task<IActionResult> CallVideoEndpointAsync(PrivateVideoEndpointConsultationRequest request)
         {
@@ -200,13 +203,13 @@ namespace VideoWeb.Controllers
             {
                 return NotFound($"Defence advocate does not exist in conference {request.ConferenceId}");
             }
-            
+
             var endpoint = conference.Endpoints.SingleOrDefault(x => x.Id == request.EndpointId);
             if (endpoint == null)
             {
                 return NotFound($"No endpoint id {request.EndpointId} exists");
             }
-            
+
             try
             {
                 await _videoApiClient.StartPrivateConsultationWithEndpointAsync(new EndpointConsultationRequest
@@ -230,7 +233,7 @@ namespace VideoWeb.Controllers
             return await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
             {
                 _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
-                
+
                 return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
             });
         }
@@ -259,7 +262,7 @@ namespace VideoWeb.Controllers
         private async Task NotifyConsultationResponseAsync(Conference conference, Participant requestedBy,
             Participant requestedFor, ConsultationAnswer answer)
         {
-            
+
             await _hubContext.Clients.Group(requestedBy.Username.ToLowerInvariant())
                 .ConsultationMessage(conference.Id, requestedBy.Username, requestedFor.Username, answer);
         }
