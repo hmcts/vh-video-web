@@ -1,4 +1,3 @@
-import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
@@ -213,13 +212,13 @@ describe('WaitingRoom ParticipantList Base', () => {
     });
 
     it('should cancel incoming timeout request when admin call is rejected', () => {
-        // consultationService.cancelTimedOutIncomingRequest.calls.reset();
+        consultationService.cancelTimedOutIncomingRequest.calls.reset();
         component.addSharedEventHubSubcribers();
 
         const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, ConsultationAnswer.Rejected);
         adminConsultationMessageSubjectMock.next(payload);
 
-        // expect(consultationService.cancelTimedOutIncomingRequest).toHaveBeenCalled();
+        expect(consultationService.cancelTimedOutIncomingRequest).toHaveBeenCalled();
     });
 
     it('should do nothing when admin call is anything other than rejected', () => {
