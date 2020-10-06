@@ -171,6 +171,12 @@ namespace VideoWeb.Controllers
                     return NoContent();
                 }
 
+                if (request.Answer == ConsultationAnswer.Rejected)
+                {
+                    var callRejectedEvent = new ConferenceEventRequest();
+                    await _videoApiClient.RaiseVideoEventAsync(callRejectedEvent);
+                }
+
                 var roomType = Enum.Parse<RoomType>(request.ConsultationRoom.ToString());
                 var answer = Enum.Parse<ConsultationAnswer>(request.Answer.ToString());
 
