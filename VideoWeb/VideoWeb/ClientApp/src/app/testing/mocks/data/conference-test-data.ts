@@ -500,8 +500,11 @@ export class ConferenceTestData {
         const participants: ParticipantResponseVho[] = this.getListOfParticipantDetails();
         participants[0].case_type_group = 'Observer';
         participants[0].username = 'observer.green@hearings.net';
+        participants[0].hearing_role = 'Observer';
         participants[1].case_type_group = 'Observer';
+        participants[1].hearing_role = 'Observer';
         participants[2].case_type_group = 'PanelMember';
+        participants[2].hearing_role = 'Panel Member';
         participants[2].username = 'pm.green@hearings.net';
 
         return participants;
@@ -525,5 +528,22 @@ export class ConferenceTestData {
         endpoints.push(point1);
         endpoints.push(point2);
         return endpoints;
+    }
+
+    getListOfParticipantsWingers(): ParticipantResponseVho[] {
+        const participants: ParticipantResponseVho[] = [];
+        const participant1 = new ParticipantResponseVho({
+            id: '9F681318-4955-49AF-A887-DED64554429E',
+            name: 'Mr Chris Winger',
+            status: ParticipantStatus.Available,
+            role: Role.Individual,
+            case_type_group: 'None',
+            display_name: 'Winger',
+            username: 'chris.winger@hearings.net',
+            tiled_display_name: 'T3;Greeno;9F681318-4955-49AF-A887-DED64554429E',
+            hearing_role: 'Winger'
+        });
+        participants.push(participant1);
+        return participants;
     }
 }

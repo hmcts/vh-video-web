@@ -18,6 +18,22 @@
   </div>
   <div class="vh-line govuk-!-margin-bottom-3"></div>
 
+  <div *ngIf="wingers.length > 0">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h2 class="govuk-heading-s">Wingers ({{ wingers.length }})</h2>
+      </div>
+    </div>
+    <div class="vh-border">
+      <div *ngFor="let participant of wingers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
+        <div id="p-row-{{ participant.id }}-panel-member" class="govuk-grid-column-full">
+          <p id="p-{{ participant.id }}-name-panel-member" class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
+          <div class="vh-line" *ngIf="!lastItem"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div *ngIf="panelMembers.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">

@@ -27,6 +27,10 @@ describe('JudgeParticipantStatusListComponent', () => {
         conference = new ConferenceTestData().getConferenceDetailNow();
         const participantObserverPanelMember = new ConferenceTestData().getListOfParticipantsObserverAndPanelMembers();
         participantObserverPanelMember.forEach(x => conference.participants.push(x));
+
+        const participantWinger = new ConferenceTestData().getListOfParticipantsWingers();
+        participantWinger.forEach(x => conference.participants.push(x));
+
         const endpoints = new ConferenceTestData().getListOfEndpoints();
         conference.endpoints = endpoints;
         component = new JudgeParticipantStatusListComponent(adalService, videoWebService, logger);
@@ -46,10 +50,13 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(component.panelMembers).toBeDefined();
         expect(component.panelMembers.length).toBe(1);
 
-        expect(component.getParticipantsCount()).toBe(5);
+        expect(component.getParticipantsCount()).toBe(6);
 
         expect(component.endpoints).toBeDefined();
         expect(component.endpoints.length).toBe(2);
+
+        expect(component.wingers).toBeDefined();
+        expect(component.wingers.length).toBe(1);
     });
 
     it('should show input template for change judge display name', () => {
@@ -91,7 +98,9 @@ describe('JudgeParticipantStatusListComponent', () => {
     });
     it('should get the participant count excluding judge', () => {
         const participantCount = component.getParticipantsCount();
-        expect(participantCount).toBe(component.nonJudgeParticipants.length + component.observers.length + component.panelMembers.length);
+        expect(participantCount).toBe(
+            component.nonJudgeParticipants.length + component.observers.length + component.panelMembers.length + component.wingers.length
+        );
     });
 
     const participantStatusTestCases = [

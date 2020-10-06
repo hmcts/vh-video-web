@@ -30,11 +30,13 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
 
     let conference: ConferenceResponse;
     let participantsObserverPanelMember: ParticipantResponseVho[];
+    let participantsWinger: ParticipantResponseVho[];
 
     beforeAll(() => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
         const testParticipant = conference.participants.filter(x => x.role === Role.Individual)[0];
         participantsObserverPanelMember = new ConferenceTestData().getListOfParticipantsObserverAndPanelMembers();
+        participantsWinger = new ConferenceTestData().getListOfParticipantsWingers();
 
         adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
             userInfo: <adal.User>{ userName: testParticipant.username, authenticated: true }
@@ -203,6 +205,9 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
         participantsObserverPanelMember.forEach(x => {
             component.conference.participants.push(x);
         });
+        participantsWinger.forEach(x => {
+            component.conference.participants.push(x);
+        });
         const endpoints = new ConferenceTestData().getListOfEndpoints();
         conference.endpoints = endpoints;
 
@@ -216,9 +221,11 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
         expect(component.panelMembers).toBeDefined();
         expect(component.panelMembers.length).toBe(1);
 
-        expect(component.getNumberParticipants).toBe(5);
+        expect(component.getNumberParticipants).toBe(6);
         expect(component.endpoints).toBeDefined();
         expect(component.endpoints.length).toBe(2);
+        expect(component.wingers).toBeDefined();
+        expect(component.wingers.length).toBe(1);
     });
     it('should return true if case type is none', () => {
         const participants = component.conference.participants;
