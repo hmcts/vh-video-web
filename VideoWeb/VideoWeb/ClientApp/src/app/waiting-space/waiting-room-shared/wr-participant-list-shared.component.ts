@@ -116,7 +116,6 @@ export abstract class WRParticipantStatusListDirective {
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
         const isCurrentUser = this.adalService.userInfo.userName.toLocaleLowerCase() === message.username.toLowerCase();
         if (isCurrentUser && message.status === ParticipantStatus.InConsultation) {
-            console.warn(`closing for current user ${this.adalService.userInfo.userName}`);
             this.closeAllPCModals();
         }
         this.filterNonJudgeParticipants();
