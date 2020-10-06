@@ -1,15 +1,6 @@
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import {
-    ConferenceResponse,
-    ConsultationAnswer,
-    EndpointStatus,
-    ParticipantStatus,
-    Role,
-    RoomType
-} from 'src/app/services/clients/api-client';
-import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
-import { Participant } from 'src/app/shared/models/participant';
+import { ConferenceResponse, EndpointStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { individualTestProfile, judgeTestProfile } from 'src/app/testing/data/test-profiles';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
@@ -19,6 +10,8 @@ import { Logger } from '../../services/logging/logger-base';
 import { JudgeParticipantStatusListComponent } from './judge-participant-status-list.component';
 
 describe('JudgeParticipantStatusListComponent', () => {
+    const testData = new ConferenceTestData();
+
     let component: JudgeParticipantStatusListComponent;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
     let adalService: jasmine.SpyObj<AdalService>;
@@ -31,10 +24,10 @@ describe('JudgeParticipantStatusListComponent', () => {
 
     beforeAll(() => {
         consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', [
-            'clearOutoingCallTimeout',
+            'clearOutgoingCallTimeout',
+            'cancelTimedOutIncomingRequest',
             'clearModals',
-            'resetWaitingForResponse',
-            'respondToAdminConsultationRequest'
+            'resetWaitingForResponse'
         ]);
 
         adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
@@ -45,11 +38,9 @@ describe('JudgeParticipantStatusListComponent', () => {
     });
 
     beforeEach(() => {
-        conference = new ConferenceTestData().getConferenceDetailNow();
-        const participantObserverPanelMember = new ConferenceTestData().getListOfParticipantsObserverAndPanelMembers();
+        conference = testData.getConferenceDetailNow();
+        const participantObserverPanelMember = testData.getListOfParticipantsObserverAndPanelMembers();
         participantObserverPanelMember.forEach(x => conference.participants.push(x));
-        const endpoints = new ConferenceTestData().getListOfEndpoints();
-        conference.endpoints = endpoints;
         component = new JudgeParticipantStatusListComponent(adalService, consultationService, eventsService, logger, videoWebService);
         component.conference = conference;
         component.ngOnInit();
@@ -116,7 +107,8 @@ describe('JudgeParticipantStatusListComponent', () => {
     });
     it('should get the participant count excluding judge', () => {
         const participantCount = component.participantCount;
-        expect(participantCount).toBe(component.nonJudgeParticipants.length + component.observers.length + component.panelMembers.length);
+        const expected = component.conference.participants.filter(x => x.role !== Role.Judge).length;
+        expect(participantCount).toBe(expected);
     });
 
     const participantStatusTestCases = [
@@ -199,44 +191,11 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(component.isUserJudge()).toBeFalsy();
     });
 
-    it('should return true if case type is none', () => {
-        const participants = component.conference.participants;
-        const participant = participants[0];
-        participant.case_type_group = 'None';
-        const isCaseTypeNone = component.isCaseTypeNone(participant);
-        expect(isCaseTypeNone).toBe(true);
-    });
-    it('should return false if case type is not none', () => {
-        const participants = component.conference.participants;
-        const participant = participants[0];
-        const isCaseTypeNone = component.isCaseTypeNone(participant);
-        expect(isCaseTypeNone).toBe(false);
-    });
-
     it('should not be able to call participants', () => {
         expect(component.canCallParticipant(component.conference.participants[0])).toBeFalsy();
     });
 
     it('should not be able to call endpoints', () => {
         expect(component.canCallEndpoint(component.conference.endpoints[0])).toBeFalsy();
-    });
-
-    it('should respond to admin consultation with answer "Rejected"', async () => {
-        component.consultationRequestee = new Participant(conference.participants.filter(x => x.role === Role.Judge)[0]);
-        const adminConsultationMessage = new AdminConsultationMessage(
-            conference.id,
-            RoomType.AdminRoom,
-            component.consultationRequestee.username,
-            null
-        );
-        component.adminConsultationMessage = adminConsultationMessage;
-
-        await component.respondToVhoConsultationRequest(ConsultationAnswer.Rejected);
-        expect(consultationService.respondToAdminConsultationRequest).toHaveBeenCalledWith(
-            conference,
-            component.consultationRequestee.base,
-            ConsultationAnswer.Rejected,
-            adminConsultationMessage.roomType
-        );
     });
 });

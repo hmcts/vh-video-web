@@ -41,7 +41,7 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
         });
 
         consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', [
-            'clearOutoingCallTimeout',
+            'clearOutgoingCallTimeout',
             'clearModals',
             'resetWaitingForResponse'
         ]);

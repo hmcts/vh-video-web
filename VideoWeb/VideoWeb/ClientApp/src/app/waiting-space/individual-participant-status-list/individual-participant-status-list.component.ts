@@ -38,6 +38,7 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
     }
 
     setupSubscribers() {
+        this.addSharedEventHubSubcribers();
         this.eventHubSubscriptions$.add(
             this.eventService.getConsultationMessage().subscribe(message => {
                 switch (message.result) {
@@ -52,21 +53,6 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
                     default:
                         this.displayConsultationRequestPopup(message);
                         break;
-                }
-            })
-        );
-
-        this.eventHubSubscriptions$.add(
-            this.eventService.getParticipantStatusMessage().subscribe(message => {
-                this.handleParticipantStatusChange(message);
-            })
-        );
-
-        this.eventHubSubscriptions$.add(
-            this.eventService.getAdminConsultationMessage().subscribe(async message => {
-                if (!message.answer) {
-                    this.adminConsultationMessage = message;
-                    await this.displayAdminConsultationRequest(message);
                 }
             })
         );

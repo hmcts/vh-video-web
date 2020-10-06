@@ -62,7 +62,7 @@ describe('WaitingRoom ParticipantList Base', () => {
 
     beforeAll(() => {
         consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', [
-            'clearOutoingCallTimeout',
+            'clearOutgoingCallTimeout',
             'cancelTimedOutIncomingRequest',
             'clearModals',
             'resetWaitingForResponse',
@@ -76,6 +76,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         });
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails', 'getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('test username');
+        consultationService.respondToAdminConsultationRequest.and.returnValue(Promise.resolve());
     });
 
     beforeEach(() => {
@@ -172,7 +173,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         component.executeTeardown();
 
         expect(component.eventHubSubscriptions$.unsubscribe).toHaveBeenCalled();
-        expect(consultationService.clearOutoingCallTimeout).toHaveBeenCalled();
+        expect(consultationService.clearOutgoingCallTimeout).toHaveBeenCalled();
     });
 
     it('should logged in user as requester', () => {

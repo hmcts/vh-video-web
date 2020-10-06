@@ -87,7 +87,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         heartbeatModelMapper = new HeartbeatModelMapper();
         deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['getBrowserName', 'getBrowserVersion']);
-        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', ['leaveConsultation']);
+        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', ['leaveConsultation', 'clearModals']);
     });
 
     beforeEach(() => {

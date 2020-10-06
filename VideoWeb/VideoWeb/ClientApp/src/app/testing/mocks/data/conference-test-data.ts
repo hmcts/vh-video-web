@@ -222,46 +222,49 @@ export class ConferenceTestData {
             role: Role.Judge,
             case_type_group: 'judge',
             first_name: 'judge',
-            last_name: 'fudge'
+            last_name: 'fudge',
+            tiled_display_name: 'T1;Judge Fudge;3333-3333-3333-3333'
         });
 
         const participant4 = new ParticipantForUserResponse({
-            id: '5555-5555-5555-5555',
+            id: '4444-4444-4444-4444',
             status: ParticipantStatus.Available,
             display_name: 'J Doe',
             username: 'john.doe@hearings.net',
             role: Role.Representative,
             representee: 'J Doe',
             case_type_group: 'respondent',
-            tiled_display_name: 'T1;J Doe;5555-5555-5555-5555'
+            tiled_display_name: 'T4;J Doe;4444-4444-4444-4444'
         });
 
         const participant5 = new ParticipantForUserResponse({
-            id: '6666-6666-6666-6666',
+            id: '5555-5555-5555-5555',
             status: ParticipantStatus.NotSignedIn,
             display_name: 'J Doe',
             username: 'jane.doe@hearings.net',
             role: Role.Individual,
             case_type_group: 'respondent',
-            tiled_display_name: 'T3;Ms J Doe;6666-6666-6666-6666'
+            tiled_display_name: 'T5;Ms J Doe;5555-5555-5555-5555'
         });
 
         const participant6 = new ParticipantForUserResponse({
-            id: '4444-4444-4444-444',
+            id: '6666-6666-6666-6666',
             status: ParticipantStatus.NotSignedIn,
-            display_name: 'J Doe O',
-            username: 'jane.doe.O@hearings.net',
+            display_name: 'Observer Doe O',
+            username: 'observer.doe.O@hearings.net',
             role: Role.Individual,
-            case_type_group: 'observer'
+            case_type_group: 'observer',
+            tiled_display_name: 'T6;Observer Doe O;6666-6666-6666-6666'
         });
 
         const participant7 = new ParticipantForUserResponse({
-            id: '4444-4444-4444-444',
+            id: '7777-7777-7777-7777',
             status: ParticipantStatus.NotSignedIn,
-            display_name: 'J Doe PM',
-            username: 'jane.doe.PM@hearings.net',
+            display_name: 'Panel Mem Doe PM',
+            username: 'panelmem.doe.PM@hearings.net',
             role: Role.Individual,
-            case_type_group: 'panelmember'
+            case_type_group: 'panelmember',
+            tiled_display_name: 'T7;Panel Mem Doe PM;7777-7777-7777-7777'
         });
 
         participants.push(participant1);
@@ -497,13 +500,44 @@ export class ConferenceTestData {
     }
 
     getListOfParticipantsObserverAndPanelMembers(): ParticipantResponseVho[] {
-        const participants: ParticipantResponseVho[] = this.getListOfParticipantDetails();
-        participants[0].case_type_group = 'Observer';
-        participants[0].username = 'observer.green@hearings.net';
-        participants[1].case_type_group = 'Observer';
-        participants[2].case_type_group = 'PanelMember';
-        participants[2].username = 'pm.green@hearings.net';
+        const participants: ParticipantResponseVho[] = [];
+        const participant1 = new ParticipantResponseVho({
+            id: 'abd18c35-884d-430e-9569-415cafe30afb',
+            name: 'Observer Test 1',
+            status: ParticipantStatus.Available,
+            role: Role.Individual,
+            case_type_group: 'Observer',
+            display_name: 'Greeno',
+            username: 'ob1@hearings.net',
+            tiled_display_name: 'T100;Observer Test 1;abd18c35-884d-430e-9569-415cafe30afb'
+        });
 
+        const participant2 = new ParticipantResponseVho({
+            id: '2ccddb9f-887c-47f9-82b3-896eec0a2595',
+            name: 'Observer Test 2',
+            representee: 'Chris Green',
+            status: ParticipantStatus.NotSignedIn,
+            role: Role.Individual,
+            display_name: 'James Green',
+            case_type_group: 'Observer',
+            username: 'ob2@hearings.net',
+            tiled_display_name: 'T101;Observer Test 2;2ccddb9f-887c-47f9-82b3-896eec0a2595'
+        });
+
+        const participant3 = new ParticipantResponseVho({
+            id: 'e698a672-8925-46e6-907d-21f1bc3b8bbf',
+            name: 'Panel Mem 1',
+            status: ParticipantStatus.Available,
+            role: Role.Individual,
+            display_name: 'Panel Mem 1',
+            username: 'pm.1@hearings.net',
+            case_type_group: 'PanelMember',
+            tiled_display_name: 'T102;Panel Mem 1;e698a672-8925-46e6-907d-21f1bc3b8bbf'
+        });
+
+        participants.push(participant1);
+        participants.push(participant2);
+        participants.push(participant3);
         return participants;
     }
 

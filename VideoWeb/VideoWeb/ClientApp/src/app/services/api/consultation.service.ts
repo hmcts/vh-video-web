@@ -303,11 +303,11 @@ export class ConsultationService {
     }
 
     stopCallRinging() {
-        this.clearOutoingCallTimeout();
+        this.clearOutgoingCallTimeout();
         this.notificationSoundService.stopConsultationRequestRingtone();
     }
 
-    clearOutoingCallTimeout() {
+    clearOutgoingCallTimeout() {
         if (this.callRingingTimeout) {
             clearTimeout(this.callRingingTimeout);
             this.callRingingTimeout = null;

@@ -50,7 +50,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
         consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', [
             'resetWaitingForResponse',
-            'clearOutoingCallTimeout',
+            'clearOutgoingCallTimeout',
             'displayAdminConsultationRequest',
             'displayNoConsultationRoomAvailableModal',
             'displayIncomingPrivateConsultation',
