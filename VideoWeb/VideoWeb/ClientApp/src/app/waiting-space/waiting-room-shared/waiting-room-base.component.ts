@@ -240,6 +240,8 @@ export abstract class WaitingRoomBaseComponent {
             this.videoCallService.onCallDisconnected().subscribe(disconnectedCall => this.handleCallDisconnect(disconnectedCall))
         );
 
+        this.videoCallSubscription$.add(this.videoCallService.onCallTransferred().subscribe(() => this.handleCallTransfer()));
+
         await this.videoCallService.setupClient();
     }
 
@@ -315,6 +317,10 @@ export abstract class WaitingRoomBaseComponent {
                 this.call();
             }, this.CALL_TIMEOUT);
         }
+    }
+
+    handleCallTransfer(): void {
+        this.stream = null;
     }
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {

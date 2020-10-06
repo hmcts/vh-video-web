@@ -20,7 +20,14 @@
       </div>
       <div *ngIf="!isAdminConsultation">
         <div class="video-background"></div>
-        <video id="incomingFeedJudge" [srcObject]="this.stream" autoplay height="auto" class="incomingFeed">
+        <video
+          id="incomingFeedJudge"
+          [srcObject]="this.stream"
+          autoplay
+          height="auto"
+          class="incomingFeed"
+          poster="/assets/images/empty_crest.jpg"
+        >
           Your browser does not support Video
         </video>
       </div>
