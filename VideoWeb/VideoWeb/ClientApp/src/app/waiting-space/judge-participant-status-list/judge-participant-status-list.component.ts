@@ -11,7 +11,7 @@ import {
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
+import { HearingRole } from '../models/hearing-role-model';
 import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-participant-list-shared.component';
 
 @Component({
@@ -23,12 +23,12 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     representativeParticipants: ParticipantResponse[];
     litigantInPerson: boolean;
     individualParticipants: ParticipantResponse[];
-    endpoints: VideoEndpointResponse[];
     showChangeJudgeDisplayName = false;
     newJudgeDisplayName: string;
 
     observers: ParticipantResponse[];
     panelMembers: ParticipantResponse[];
+    wingers: ParticipantResponse[];
 
     constructor(
         protected adalService: AdalService,
@@ -105,15 +105,17 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         this.representativeParticipants = this.conference.participants.filter(
             x =>
                 x.role === Role.Representative &&
-                x.case_type_group !== CaseTypeGroup.OBSERVER &&
-                x.case_type_group !== CaseTypeGroup.PANEL_MEMBER
+                x.hearing_role !== HearingRole.OBSERVER &&
+                x.hearing_role !== HearingRole.PANEL_MEMBER &&
+                x.hearing_role !== HearingRole.WINGER
         );
         this.litigantInPerson = this.representativeParticipants.length === 0;
         this.individualParticipants = this.conference.participants.filter(
             x =>
                 x.role === Role.Individual &&
-                x.case_type_group !== CaseTypeGroup.OBSERVER &&
-                x.case_type_group !== CaseTypeGroup.PANEL_MEMBER
+                x.hearing_role !== HearingRole.OBSERVER &&
+                x.hearing_role !== HearingRole.PANEL_MEMBER &&
+                x.hearing_role !== HearingRole.WINGER
         );
     }
 

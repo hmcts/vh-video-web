@@ -8,7 +8,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
-import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
+import { HearingRole } from '../models/hearing-role-model';
 import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-participant-list-shared.component';
 
 @Component({
@@ -17,6 +17,7 @@ import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-part
     styleUrls: ['./individual-participant-status-list.component.scss']
 })
 export class IndividualParticipantStatusListComponent extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
+    wingers: ParticipantResponse[];
     constructor(
         protected adalService: AdalService,
         protected consultationService: ConsultationService,
@@ -67,7 +68,7 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         }
 
         const requester = this.getConsultationRequester();
-        if (requester.case_type_group === CaseTypeGroup.OBSERVER || requester.case_type_group === CaseTypeGroup.PANEL_MEMBER) {
+        if (requester.hearing_role === HearingRole.OBSERVER || requester.hearing_role === HearingRole.PANEL_MEMBER) {
             return false;
         }
 
@@ -167,9 +168,5 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
 
     getParticipantStatusText(participant: ParticipantResponse): string {
         return participant.status === ParticipantStatus.Available ? 'Available' : 'Unavailable';
-    }
-
-    get participantCount() {
-        return this.nonJudgeParticipants.length + this.observers.length + this.panelMembers.length;
     }
 }

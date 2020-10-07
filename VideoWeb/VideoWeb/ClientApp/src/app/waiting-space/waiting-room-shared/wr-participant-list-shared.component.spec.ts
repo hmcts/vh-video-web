@@ -176,7 +176,6 @@ describe('WaitingRoom ParticipantList Base', () => {
     });
 
     it('should not display vho consultation request when participant is unavailable', fakeAsync(() => {
-        console.warn('should not display vho consultation request when participant is unavailable');
         consultationService.displayAdminConsultationRequest.calls.reset();
         const index = component.conference.participants.findIndex(x => x.username === judgeProfile.username);
         component.conference.participants[index].status = ParticipantStatus.InHearing;

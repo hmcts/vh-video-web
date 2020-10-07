@@ -5,7 +5,8 @@ export const graphLabel = {
     Poor: 'poor',
     Bad: 'bad',
     Good: 'good',
-    Disconnected: 'disconnected'
+    Disconnected: 'disconnected',
+    Unsupported: 'unsupported'
 };
 
 export class GraphSettings {

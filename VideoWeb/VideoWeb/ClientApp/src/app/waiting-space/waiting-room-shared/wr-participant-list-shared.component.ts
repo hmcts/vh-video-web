@@ -17,7 +17,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Participant } from 'src/app/shared/models/participant';
-import { CaseTypeGroup } from '../models/case-type-group';
+import { HearingRole } from '../models/hearing-role-model';
 
 @Directive()
 export abstract class WRParticipantStatusListDirective {
@@ -28,6 +28,7 @@ export abstract class WRParticipantStatusListDirective {
     endpoints: VideoEndpointResponse[];
     observers: ParticipantResponse[];
     panelMembers: ParticipantResponse[];
+    wingers: ParticipantResponse[];
 
     consultationRequestee: Participant;
     consultationRequester: Participant;
@@ -48,6 +49,7 @@ export abstract class WRParticipantStatusListDirective {
         this.filterJudge();
         this.filterPanelMembers();
         this.filterObservers();
+        this.filterWingers();
         this.endpoints = this.conference.endpoints;
     }
     abstract setupSubscribers(): void;
@@ -55,7 +57,7 @@ export abstract class WRParticipantStatusListDirective {
     abstract canCallEndpoint(endpoint: VideoEndpointResponse): boolean;
 
     get participantCount(): number {
-        return this.nonJudgeParticipants.length + this.observers.length + this.panelMembers.length;
+        return this.nonJudgeParticipants.length + this.observers.length + this.panelMembers.length + this.wingers.length;
     }
 
     isCaseTypeNone(participant: ParticipantResponse): boolean {
@@ -65,7 +67,6 @@ export abstract class WRParticipantStatusListDirective {
     executeTeardown(): void {
         this.consultationService.clearOutgoingCallTimeout();
         this.eventHubSubscriptions$.unsubscribe();
-        console.warn('******** removing shared event hub subscribers');
     }
 
     getConsultationRequester(): ParticipantResponse {
@@ -73,8 +74,6 @@ export abstract class WRParticipantStatusListDirective {
     }
 
     addSharedEventHubSubcribers() {
-        console.warn('******** adding shared event hub subscribers');
-        console.warn(this);
         this.eventHubSubscriptions$.add(
             this.eventService.getAdminConsultationMessage().subscribe(async message => {
                 this.adminConsultationMessage = message;
@@ -91,23 +90,18 @@ export abstract class WRParticipantStatusListDirective {
                 this.handleParticipantStatusChange(message);
             })
         );
-
-        console.log(this.eventHubSubscriptions$);
     }
 
     async displayAdminConsultationRequest(message: AdminConsultationMessage) {
-        console.warn(`attempting to display admin consultation request`);
         const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
         if (!requestee) {
             this.logger.info(`Ignoring request for private consultation from Video Hearings Team since participant is not in hearing`);
             return;
         }
         if (!message.answer && !this.isParticipantAvailable(requestee)) {
-            console.warn(`unavailable so not showing modal`);
             this.logger.info(`Ignoring request for private consultation from Video Hearings Team since participant is not available`);
             return;
         }
-        console.warn(`available so display modal`);
         this.logger.info(`Incoming request for private consultation from Video Hearings Team`);
         this.consultationRequestee = new Participant(requestee);
         await this.consultationService.displayAdminConsultationRequest();
@@ -162,16 +156,24 @@ export abstract class WRParticipantStatusListDirective {
 
     protected filterNonJudgeParticipants(): void {
         this.nonJudgeParticipants = this.conference.participants.filter(
-            x => x.role !== Role.Judge && x.case_type_group !== CaseTypeGroup.OBSERVER && x.case_type_group !== CaseTypeGroup.PANEL_MEMBER
+            x =>
+                x.role !== Role.Judge &&
+                x.hearing_role !== HearingRole.OBSERVER &&
+                x.hearing_role !== HearingRole.PANEL_MEMBER &&
+                x.hearing_role !== HearingRole.WINGER
         );
     }
 
     protected filterObservers(): void {
-        this.observers = this.conference.participants.filter(x => x.case_type_group === CaseTypeGroup.OBSERVER);
+        this.observers = this.conference.participants.filter(x => x.hearing_role === HearingRole.OBSERVER);
+    }
+
+    private filterWingers(): void {
+        this.wingers = this.conference.participants.filter(x => x.hearing_role === HearingRole.WINGER);
     }
 
     protected filterPanelMembers(): void {
-        this.panelMembers = this.conference.participants.filter(x => x.case_type_group === CaseTypeGroup.PANEL_MEMBER);
+        this.panelMembers = this.conference.participants.filter(x => x.hearing_role === HearingRole.PANEL_MEMBER);
     }
 
     protected filterJudge(): void {

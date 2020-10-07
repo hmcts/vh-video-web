@@ -37,9 +37,10 @@ describe('JudgeParticipantStatusListComponent', () => {
         conference = testData.getConferenceDetailNow();
         const participantObserverPanelMember = testData.getListOfParticipantsObserverAndPanelMembers();
         participantObserverPanelMember.forEach(x => conference.participants.push(x));
+        const participantWinger = new ConferenceTestData().getListOfParticipantsWingers();
+        participantWinger.forEach(x => conference.participants.push(x));
         component = new JudgeParticipantStatusListComponent(adalService, consultationService, eventsService, logger, videoWebService);
         component.conference = conference;
-        console.warn(consultationService);
         component.ngOnInit();
     });
 
@@ -59,10 +60,13 @@ describe('JudgeParticipantStatusListComponent', () => {
         expect(component.panelMembers).toBeDefined();
         expect(component.panelMembers.length).toBe(1);
 
-        expect(component.participantCount).toBe(5);
+        expect(component.wingers).toBeDefined();
+        expect(component.wingers.length).toBe(1);
 
         expect(component.endpoints).toBeDefined();
         expect(component.endpoints.length).toBe(2);
+
+        expect(component.participantCount).toBe(6);
     });
 
     it('should show input template for change judge display name', () => {

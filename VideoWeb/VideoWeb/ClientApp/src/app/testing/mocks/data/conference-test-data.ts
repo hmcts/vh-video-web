@@ -506,6 +506,7 @@ export class ConferenceTestData {
             name: 'Observer Test 1',
             status: ParticipantStatus.Available,
             role: Role.Individual,
+            hearing_role: 'Observer',
             case_type_group: 'Observer',
             display_name: 'Greeno',
             username: 'ob1@hearings.net',
@@ -518,6 +519,7 @@ export class ConferenceTestData {
             representee: 'Chris Green',
             status: ParticipantStatus.NotSignedIn,
             role: Role.Individual,
+            hearing_role: 'Observer',
             display_name: 'James Green',
             case_type_group: 'Observer',
             username: 'ob2@hearings.net',
@@ -529,6 +531,7 @@ export class ConferenceTestData {
             name: 'Panel Mem 1',
             status: ParticipantStatus.Available,
             role: Role.Individual,
+            hearing_role: 'Panel Member',
             display_name: 'Panel Mem 1',
             username: 'pm.1@hearings.net',
             case_type_group: 'PanelMember',
@@ -538,6 +541,23 @@ export class ConferenceTestData {
         participants.push(participant1);
         participants.push(participant2);
         participants.push(participant3);
+        return participants;
+    }
+
+    getListOfParticipantsWingers(): ParticipantResponseVho[] {
+        const participants: ParticipantResponseVho[] = [];
+        const participant1 = new ParticipantResponseVho({
+            id: 'c8c33015-d164-4a46-a5c9-6b58e892511b',
+            name: 'Mr Chris Winger',
+            status: ParticipantStatus.Available,
+            role: Role.Individual,
+            case_type_group: 'None',
+            display_name: 'Chris Winger',
+            username: 'chris.winger@hearings.net',
+            tiled_display_name: 'T200;Chris Winger;c8c33015-d164-4a46-a5c9-6b58e892511b',
+            hearing_role: 'Winger'
+        });
+        participants.push(participant1);
         return participants;
     }
 
