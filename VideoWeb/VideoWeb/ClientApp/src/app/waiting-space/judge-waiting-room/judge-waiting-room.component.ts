@@ -72,6 +72,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     }
 
     executeEndHearingSequence() {
+        if (this.heartbeat) {
+            this.heartbeat.kill();
+        }
         clearTimeout(this.callbackTimeout);
         clearInterval(this.audioRecordingInterval);
         this.disconnect();
