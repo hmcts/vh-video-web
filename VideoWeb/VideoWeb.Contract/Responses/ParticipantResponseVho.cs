@@ -53,5 +53,9 @@ namespace VideoWeb.Contract.Responses
         /// </summary>
         public string Representee { get; set; }
 
+        /// <summary>
+        /// The hearing role
+        /// </summary>
+        public string HearingRole { get; set; }
     }
 }
