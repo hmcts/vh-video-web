@@ -5,7 +5,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceForIndividualResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
+import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { ProfileService } from '../../services/api/profile.service';
 import { pageUrls } from '../../shared/page-url.constants';
 
@@ -91,7 +91,10 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
                 const participant = conferenceResponse.participants.find(
                     p => p.username.toLowerCase() === this.profile.username.toLowerCase()
                 );
-                if (participant.case_type_group.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLocaleLowerCase()) {
+                if (
+                    participant.hearing_role.toLowerCase() === HearingRole.PANEL_MEMBER.toLocaleLowerCase() ||
+                    participant.hearing_role.toLowerCase() === HearingRole.WINGER.toLocaleLowerCase()
+                ) {
                     this.router.navigate([pageUrls.ParticipantWaitingRoom, conference.id]);
                 } else {
                     this.router.navigate([pageUrls.Introduction, conference.id]);

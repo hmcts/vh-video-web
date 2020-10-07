@@ -35,6 +35,13 @@ describe('ParticipantHearingList', () => {
         role: Role.Individual,
         username: 'jane.doe.O@hearings.net'
     });
+    const mockWingerProfile: UserProfileResponse = new UserProfileResponse({
+        display_name: 'J Doe Winger',
+        first_name: 'Jane',
+        last_name: 'Doe Winger',
+        role: Role.Individual,
+        username: 'jane.doe.Winger@hearings.net'
+    });
 
     const conferences = new ConferenceTestData().getTestData();
 
@@ -158,4 +165,15 @@ describe('ParticipantHearingList', () => {
         component.ngOnDestroy();
         expect(clearInterval).toHaveBeenCalledWith(interval);
     });
+
+    it('should navigate to Waiting room page when conference is selected for winger', fakeAsync(() => {
+        const conference = conferences[0];
+        videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
+        component.profile = mockWingerProfile;
+        component.onConferenceSelected(conference);
+        tick(100);
+        expect(videoWebService.setActiveIndividualConference).toHaveBeenCalledWith(conference);
+        expect(videoWebService.getConferenceById).toHaveBeenCalledWith(conference.id);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.ParticipantWaitingRoom, conference.id]);
+    }));
 });
