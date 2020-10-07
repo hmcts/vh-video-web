@@ -17,6 +17,7 @@ import { AdminConsultationMessage } from 'src/app/services/models/admin-consulta
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { Participant } from 'src/app/shared/models/participant';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
 import {
     adminConsultationMessageSubjectMock,
     consultationMessageSubjectMock,
@@ -48,26 +49,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     beforeAll(() => {
         adalService = mockAdalService;
 
-        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', [
-            'resetWaitingForResponse',
-            'clearOutgoingCallTimeout',
-            'displayAdminConsultationRequest',
-            'displayNoConsultationRoomAvailableModal',
-            'displayIncomingPrivateConsultation',
-            'raiseConsultationRequest',
-            'handleConsultationResponse',
-            'respondToConsultationRequest',
-            'leaveConsultation',
-            'respondToAdminConsultationRequest',
-            'clearModals',
-            'startPrivateConsulationWithEndpoint'
-        ]);
-        consultationService.raiseConsultationRequest.and.resolveTo();
-        consultationService.respondToConsultationRequest.and.resolveTo();
-        consultationService.leaveConsultation.and.resolveTo();
-        consultationService.respondToAdminConsultationRequest.and.resolveTo();
-        consultationService.respondToAdminConsultationRequest.and.resolveTo();
-        consultationService.startPrivateConsulationWithEndpoint.and.resolveTo();
+        consultationService = consultationServiceSpyFactory();
 
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');

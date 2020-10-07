@@ -15,6 +15,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Participant } from 'src/app/shared/models/participant';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
 import { eventsServiceSpy, participantStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
@@ -42,11 +43,7 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
             userInfo: <adal.User>{ userName: testParticipant.username, authenticated: true }
         });
 
-        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', [
-            'clearOutgoingCallTimeout',
-            'clearModals',
-            'resetWaitingForResponse'
-        ]);
+        consultationService = consultationServiceSpyFactory();
 
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');

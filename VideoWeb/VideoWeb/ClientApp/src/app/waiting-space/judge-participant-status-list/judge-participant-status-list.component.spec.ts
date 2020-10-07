@@ -22,12 +22,13 @@ describe('JudgeParticipantStatusListComponent', () => {
     const individualProfile = individualTestProfile;
     const logger: Logger = new MockLogger();
     let conference: ConferenceResponse;
+    let userInfo: adal.User;
 
     beforeAll(() => {
         consultationService = consultationServiceSpyFactory();
-
+        userInfo = <adal.User>{ userName: judgeProfile.username, authenticated: true };
         adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
-            userInfo: <adal.User>{ userName: judgeProfile.username, authenticated: true }
+            userInfo: userInfo
         });
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails', 'getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('test username');
@@ -45,6 +46,7 @@ describe('JudgeParticipantStatusListComponent', () => {
     });
 
     afterEach(() => {
+        jasmine.getEnv().allowRespy(true);
         component.ngOnDestroy();
     });
 
@@ -184,11 +186,9 @@ describe('JudgeParticipantStatusListComponent', () => {
     });
 
     it('should return false when user is not judge', () => {
-        adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
-            userInfo: <adal.User>{ userName: individualProfile.username, authenticated: true }
-        });
-        component = new JudgeParticipantStatusListComponent(adalService, consultationService, eventsService, logger, videoWebService);
-        component.conference = conference;
+        jasmine.getEnv().allowRespy(true);
+        userInfo = <adal.User>{ userName: individualProfile.username, authenticated: true };
+        spyOnProperty(adalService, 'userInfo').and.returnValue(userInfo);
         expect(component.isUserJudge()).toBeFalsy();
     });
 

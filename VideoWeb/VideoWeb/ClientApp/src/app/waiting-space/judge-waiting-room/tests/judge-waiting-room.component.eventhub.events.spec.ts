@@ -8,22 +8,24 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
     ConferenceStatus,
+    EndpointStatus,
     ParticipantResponse,
     ParticipantStatus,
     Role,
-    TokenResponse,
-    EndpointStatus
+    TokenResponse
 } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
 import {
     endpointStatusSubjectMock,
     eventsServiceSpy,
@@ -33,7 +35,6 @@ import {
 import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
-import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
@@ -87,7 +88,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         heartbeatModelMapper = new HeartbeatModelMapper();
         deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['getBrowserName', 'getBrowserVersion']);
-        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', ['leaveConsultation']);
+        consultationService = consultationServiceSpyFactory();
 
         audioRecordingService = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
     });

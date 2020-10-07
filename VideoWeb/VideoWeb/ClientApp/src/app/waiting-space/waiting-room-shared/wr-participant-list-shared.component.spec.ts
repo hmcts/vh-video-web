@@ -1,3 +1,4 @@
+import { OnDestroy, OnInit } from '@angular/core';
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
@@ -28,7 +29,7 @@ import {
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { WRParticipantStatusListDirective } from './wr-participant-list-shared.component';
 
-class WrParticipantStatusListTest extends WRParticipantStatusListDirective {
+class WrParticipantStatusListTest extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
     constructor(
         protected adalService: AdalService,
         protected consultationService: ConsultationService,
@@ -37,6 +38,16 @@ class WrParticipantStatusListTest extends WRParticipantStatusListDirective {
         protected videoWebService: VideoWebService
     ) {
         super(adalService, consultationService, eventService, videoWebService, logger);
+    }
+
+    ngOnInit() {
+        this.consultationService.resetWaitingForResponse();
+        this.initParticipants();
+        this.setupSubscribers();
+    }
+
+    ngOnDestroy(): void {
+        this.executeTeardown();
     }
 
     setupSubscribers(): void {
@@ -61,6 +72,8 @@ describe('WaitingRoom ParticipantList Base', () => {
     const indProfile = individualTestProfile;
     const logger: Logger = new MockLogger();
     let conference: ConferenceResponse;
+    const adminConsultationMessageSubject = adminConsultationMessageSubjectMock;
+    const participantStatusSubject = participantStatusSubjectMock;
 
     beforeAll(() => {
         consultationService = consultationServiceSpyFactory();
@@ -78,12 +91,11 @@ describe('WaitingRoom ParticipantList Base', () => {
         participantObserverPanelMember.forEach(x => conference.participants.push(x));
         component = new WrParticipantStatusListTest(adalService, consultationService, eventsService, logger, videoWebService);
         component.conference = conference;
-        component.initParticipants();
-        component.addSharedEventHubSubcribers();
+        component.ngOnInit();
     });
 
     afterEach(() => {
-        component.executeTeardown();
+        component.ngOnDestroy();
     });
 
     it('should group type of participants', () => {
@@ -161,12 +173,7 @@ describe('WaitingRoom ParticipantList Base', () => {
     });
 
     it('should clear timeouts and subsciptions on teardown', () => {
-        const sub = jasmine.createSpyObj<Subscription>('Subscription', ['add', 'unsubscribe']);
-        component.eventHubSubscriptions$ = sub;
-
         component.executeTeardown();
-
-        expect(component.eventHubSubscriptions$.unsubscribe).toHaveBeenCalled();
         expect(consultationService.clearOutgoingCallTimeout).toHaveBeenCalled();
     });
 
@@ -180,8 +187,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         const index = component.conference.participants.findIndex(x => x.username === judgeProfile.username);
         component.conference.participants[index].status = ParticipantStatus.InHearing;
         const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, null);
-
-        adminConsultationMessageSubjectMock.next(payload);
+        adminConsultationMessageSubject.next(payload);
         flushMicrotasks();
 
         expect(consultationService.displayAdminConsultationRequest).toHaveBeenCalledTimes(0);
@@ -191,7 +197,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         consultationService.displayAdminConsultationRequest.calls.reset();
         const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, 'doesnotexist@test.com', null);
 
-        adminConsultationMessageSubjectMock.next(payload);
+        adminConsultationMessageSubject.next(payload);
         flushMicrotasks();
 
         expect(consultationService.displayAdminConsultationRequest).toHaveBeenCalledTimes(0);
@@ -201,7 +207,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         consultationService.displayAdminConsultationRequest.calls.reset();
         const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, null);
 
-        adminConsultationMessageSubjectMock.next(payload);
+        adminConsultationMessageSubject.next(payload);
         flushMicrotasks();
 
         expect(consultationService.displayAdminConsultationRequest).toHaveBeenCalled();
@@ -211,7 +217,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         consultationService.cancelTimedOutIncomingRequest.calls.reset();
 
         const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, ConsultationAnswer.Rejected);
-        adminConsultationMessageSubjectMock.next(payload);
+        adminConsultationMessageSubject.next(payload);
         flushMicrotasks();
 
         expect(consultationService.cancelTimedOutIncomingRequest).toHaveBeenCalled();
@@ -221,7 +227,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         consultationService.cancelTimedOutIncomingRequest.calls.reset();
 
         const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, ConsultationAnswer.Accepted);
-        adminConsultationMessageSubjectMock.next(payload);
+        adminConsultationMessageSubject.next(payload);
         flushMicrotasks();
 
         expect(consultationService.cancelTimedOutIncomingRequest).toHaveBeenCalledTimes(0);
@@ -236,7 +242,7 @@ describe('WaitingRoom ParticipantList Base', () => {
             conference.id,
             ParticipantStatus.InConsultation
         );
-        participantStatusSubjectMock.next(payload);
+        participantStatusSubject.next(payload);
         flushMicrotasks();
 
         expect(consultationService.clearModals).toHaveBeenCalledTimes(1);
@@ -246,7 +252,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         consultationService.clearModals.calls.reset();
         const loggedInUser = component.conference.participants.find(x => x.username === judgeProfile.username);
         const payload = new ParticipantStatusMessage(loggedInUser.id, indProfile.username, conference.id, ParticipantStatus.InConsultation);
-        participantStatusSubjectMock.next(payload);
+        participantStatusSubject.next(payload);
 
         expect(consultationService.clearModals).toHaveBeenCalledTimes(0);
     });
