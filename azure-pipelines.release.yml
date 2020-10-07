@@ -58,7 +58,7 @@ resources:
       type: github
       name: hmcts/azure-devops-templates
       ref: refs/heads/master
-      endpoint: hmcts (1)
+      endpoint: hmcts_shaed
   pipelines:
   - pipeline: CI
     source: hmcts.vh-video-web

@@ -3813,6 +3813,7 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
     case_type_group?: string | undefined;
     /** The representee the participant is acting on behalf */
     representee?: string | undefined;
+    hearing_role?: string | undefined;
 
     constructor(data?: IParticipantResponseVho) {
         if (data) {
@@ -3833,6 +3834,7 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
             this.tiled_display_name = _data['tiled_display_name'];
             this.case_type_group = _data['case_type_group'];
             this.representee = _data['representee'];
+            this.hearing_role = _data['hearing_role'];
         }
     }
 
@@ -3854,6 +3856,7 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
         data['tiled_display_name'] = this.tiled_display_name;
         data['case_type_group'] = this.case_type_group;
         data['representee'] = this.representee;
+        data['hearing_role'] = this.hearing_role;
         return data;
     }
 }
@@ -3875,6 +3878,7 @@ export interface IParticipantResponseVho {
     case_type_group?: string | undefined;
     /** The representee the participant is acting on behalf */
     representee?: string | undefined;
+    hearing_role?: string | undefined;
 }
 
 /** Detailed information about a conference for VHO officer */

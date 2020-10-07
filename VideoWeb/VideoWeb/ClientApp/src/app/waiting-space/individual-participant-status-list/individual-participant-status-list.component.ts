@@ -19,7 +19,7 @@ import { ConsultationMessage } from 'src/app/services/models/consultation-messag
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
-import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
+import { HearingRole } from '../models/hearing-role-model';
 
 @Component({
     selector: 'app-individual-participant-status-list',
@@ -34,6 +34,7 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
     panelMembers: ParticipantResponse[];
     observers: ParticipantResponse[];
     endpoints: VideoEndpointResponse[];
+    wingers: ParticipantResponse[];
 
     consultationRequestee: Participant;
     consultationRequester: Participant;
@@ -55,6 +56,7 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
         this.filterJudge();
         this.filterPanelMembers();
         this.filterObservers();
+        this.filterWingers();
         this.setupSubscribers();
         this.endpoints = this.conference.endpoints;
     }
@@ -131,7 +133,7 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
         }
 
         const requester = this.getConsultationRequester();
-        if (requester.case_type_group === CaseTypeGroup.OBSERVER || requester.case_type_group === CaseTypeGroup.PANEL_MEMBER) {
+        if (requester.hearing_role === HearingRole.OBSERVER || requester.hearing_role === HearingRole.PANEL_MEMBER) {
             return false;
         }
 
@@ -266,7 +268,11 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
 
     private filterNonJudgeParticipants(): void {
         this.nonJugdeParticipants = this.conference.participants.filter(
-            x => x.role !== Role.Judge && x.case_type_group !== CaseTypeGroup.OBSERVER && x.case_type_group !== CaseTypeGroup.PANEL_MEMBER
+            x =>
+                x.role !== Role.Judge &&
+                x.hearing_role !== HearingRole.OBSERVER &&
+                x.hearing_role !== HearingRole.PANEL_MEMBER &&
+                x.hearing_role !== HearingRole.WINGER
         );
     }
 
@@ -275,15 +281,19 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
     }
 
     private filterPanelMembers(): void {
-        this.panelMembers = this.conference.participants.filter(x => x.case_type_group === CaseTypeGroup.PANEL_MEMBER);
+        this.panelMembers = this.conference.participants.filter(x => x.hearing_role === HearingRole.PANEL_MEMBER);
     }
 
     private filterObservers(): void {
-        this.observers = this.conference.participants.filter(x => x.case_type_group === CaseTypeGroup.OBSERVER);
+        this.observers = this.conference.participants.filter(x => x.hearing_role === HearingRole.OBSERVER);
+    }
+
+    private filterWingers(): void {
+        this.wingers = this.conference.participants.filter(x => x.hearing_role === HearingRole.WINGER);
     }
 
     get getNumberParticipants() {
-        return this.nonJugdeParticipants.length + this.observers.length + this.panelMembers.length;
+        return this.nonJugdeParticipants.length + this.observers.length + this.panelMembers.length + this.wingers.length;
     }
 
     isCaseTypeNone(participant: ParticipantResponse): boolean {
