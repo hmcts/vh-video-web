@@ -22,7 +22,6 @@ import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models
 import { VideoCallService } from '../services/video-call.service';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { Participant } from 'src/app/shared/models/participant';
 
 declare var HeartbeatFactory: any;
 
@@ -407,7 +406,7 @@ export abstract class WaitingRoomBaseComponent {
             this.logger.debug('Showing video because hearing is in consultation');
             this.showVideo = true;
             this.isPrivateConsultation = true;
-            this.showConsultationControls = new Participant(this.participant).isJudge ? true : !this.isAdminConsultation;
+            this.showConsultationControls = !this.isAdminConsultation;
             return;
         }
 

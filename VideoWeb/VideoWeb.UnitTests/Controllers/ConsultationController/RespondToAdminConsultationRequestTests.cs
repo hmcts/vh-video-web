@@ -150,27 +150,5 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                     ConsultationAnswer.Accepted), Times.Once);
 
         }
-        
-        [Test]
-        public async Task Should_send_message_to_clients_and_raise_consultation_rejected_event_when_answer_rejected()
-        {
-            var answer = ConsultationAnswer.Rejected;
-            _videoApiClientMock
-                .Setup(x => x.RespondToAdminConsultationRequestAsync(It.IsAny<AdminConsultationRequest>()))
-                .Returns(Task.FromResult(HttpStatusCode.NoContent));
-
-            var adminConsultationRequest =
-                ConsultationHelper.GetAdminConsultationRequest(_testConference, answer);
-            var result = await _controller.RespondToAdminConsultationRequestAsync(adminConsultationRequest);
-            var typedResult = (NoContentResult) result;
-            typedResult.Should().NotBeNull();
-
-            _eventHubClientMock.Verify(
-                x => x.AdminConsultationMessage
-                (_testConference.Id, RoomType.ConsultationRoom1,
-                    _testConference.Participants[0].Username.ToLowerInvariant(),
-                    answer), Times.Once);
-            _videoApiClientMock.Verify(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()), Times.Once);
-        }
     }
 }

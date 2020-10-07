@@ -201,31 +201,41 @@ export class ConsultationService {
         room: RoomType
     ): Promise<void> {
         this.waitingForConsultationResponse = false;
-        await this.apiClient
-            .respondToAdminConsultationRequest(
-                new PrivateAdminConsultationRequest({
-                    conference_id: conference.id,
-                    participant_id: participant.id,
-                    answer: answer,
-                    consultation_room: room
-                })
-            )
-            .toPromise();
-        this.stopCallRinging();
+        try {
+            this.stopCallRinging();
+            this.clearModals();
+            await this.apiClient
+                .respondToAdminConsultationRequest(
+                    new PrivateAdminConsultationRequest({
+                        conference_id: conference.id,
+                        participant_id: participant.id,
+                        answer: answer,
+                        consultation_room: room
+                    })
+                )
+                .toPromise();
+        } catch (error) {
+            if (this.checkNoRoomsLeftError(error)) {
+                this.displayNoConsultationRoomAvailableModal();
+            } else {
+                this.displayConsultationErrorModal();
+                throw error;
+            }
+        }
     }
 
     displayOutgoingPrivateConsultationRequestModal() {
         this.displayModal(ConsultationService.REQUEST_PC_MODAL);
     }
 
-    displayIncomingPrivateConsultation() {
+    async displayIncomingPrivateConsultation() {
         this.displayModal(ConsultationService.RECEIVE_PC_MODAL);
-        this.startIncomingCallRingingTimeout();
+        await this.startIncomingCallRingingTimeout();
     }
 
-    displayAdminConsultationRequest() {
+    async displayAdminConsultationRequest() {
         this.displayModal(ConsultationService.VHO_REQUEST_PC_MODAL);
-        this.startIncomingCallRingingTimeout();
+        await this.startIncomingCallRingingTimeout();
     }
 
     displayNoConsultationRoomAvailableModal() {
@@ -264,7 +274,7 @@ export class ConsultationService {
         this.callRingingTimeout = setTimeout(async () => {
             await this.cancelTimedOutConsultationRequest(conference, requester, requestee);
         }, this.CALL_TIMEOUT);
-        this.notificationSoundService.playConsultationRequestRingtone();
+        await this.notificationSoundService.playConsultationRequestRingtone();
     }
 
     /**
@@ -274,7 +284,7 @@ export class ConsultationService {
         this.callRingingTimeout = setTimeout(() => {
             this.cancelTimedOutIncomingRequest();
         }, this.CALL_TIMEOUT);
-        this.notificationSoundService.playConsultationRequestRingtone();
+        await this.notificationSoundService.playConsultationRequestRingtone();
     }
 
     cancelTimedOutIncomingRequest() {

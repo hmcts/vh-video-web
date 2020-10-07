@@ -224,10 +224,7 @@
 </div>
 
 <app-modal id="vho-raise-pc-modal" class="modal clear consultation">
-  <app-vho-raise-consultation
-    [allowRejection]="true"
-    (answeredVhoCall)="respondToVhoConsultationRequest($event)"
-  ></app-vho-raise-consultation>
+  <app-vho-raise-consultation (answeredVhoCall)="respondToVhoConsultationRequest($event)"></app-vho-raise-consultation>
 </app-modal>
 
 <app-modal id="no-room-pc-modal" class="modal clear consultation">

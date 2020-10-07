@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -19,7 +19,7 @@ import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-part
     templateUrl: './judge-participant-status-list.component.html',
     styleUrls: ['./judge-participant-status-list.component.scss']
 })
-export class JudgeParticipantStatusListComponent extends WRParticipantStatusListDirective implements OnInit {
+export class JudgeParticipantStatusListComponent extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
     representativeParticipants: ParticipantResponse[];
     litigantInPerson: boolean;
     individualParticipants: ParticipantResponse[];
@@ -44,6 +44,10 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         this.consultationService.resetWaitingForResponse();
         this.initParticipants();
         this.setupSubscribers();
+    }
+
+    ngOnDestroy() {
+        this.executeTeardown();
     }
 
     initParticipants() {

@@ -3,6 +3,7 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { ConferenceResponse, EndpointStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { individualTestProfile, judgeTestProfile } from 'src/app/testing/data/test-profiles';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { VideoWebService } from '../../services/api/video-web.service';
@@ -23,12 +24,7 @@ describe('JudgeParticipantStatusListComponent', () => {
     let conference: ConferenceResponse;
 
     beforeAll(() => {
-        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', [
-            'clearOutgoingCallTimeout',
-            'cancelTimedOutIncomingRequest',
-            'clearModals',
-            'resetWaitingForResponse'
-        ]);
+        consultationService = consultationServiceSpyFactory();
 
         adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
             userInfo: <adal.User>{ userName: judgeProfile.username, authenticated: true }
@@ -43,11 +39,12 @@ describe('JudgeParticipantStatusListComponent', () => {
         participantObserverPanelMember.forEach(x => conference.participants.push(x));
         component = new JudgeParticipantStatusListComponent(adalService, consultationService, eventsService, logger, videoWebService);
         component.conference = conference;
+        console.warn(consultationService);
         component.ngOnInit();
     });
 
     afterEach(() => {
-        component.ngOnInit();
+        component.ngOnDestroy();
     });
 
     it('should create', () => {

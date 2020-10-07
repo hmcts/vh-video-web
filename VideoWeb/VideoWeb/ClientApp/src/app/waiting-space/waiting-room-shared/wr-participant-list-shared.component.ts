@@ -65,6 +65,7 @@ export abstract class WRParticipantStatusListDirective {
     executeTeardown(): void {
         this.consultationService.clearOutgoingCallTimeout();
         this.eventHubSubscriptions$.unsubscribe();
+        console.warn('******** removing shared event hub subscribers');
     }
 
     getConsultationRequester(): ParticipantResponse {
@@ -72,11 +73,13 @@ export abstract class WRParticipantStatusListDirective {
     }
 
     addSharedEventHubSubcribers() {
+        console.warn('******** adding shared event hub subscribers');
+        console.warn(this);
         this.eventHubSubscriptions$.add(
             this.eventService.getAdminConsultationMessage().subscribe(async message => {
                 this.adminConsultationMessage = message;
                 if (!message.answer) {
-                    this.displayAdminConsultationRequest(message);
+                    await this.displayAdminConsultationRequest(message);
                 } else {
                     this.handleAdminConsultationResponse(message);
                 }
@@ -88,21 +91,26 @@ export abstract class WRParticipantStatusListDirective {
                 this.handleParticipantStatusChange(message);
             })
         );
+
+        console.log(this.eventHubSubscriptions$);
     }
 
-    displayAdminConsultationRequest(message: AdminConsultationMessage) {
+    async displayAdminConsultationRequest(message: AdminConsultationMessage) {
+        console.warn(`attempting to display admin consultation request`);
         const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
         if (!requestee) {
             this.logger.info(`Ignoring request for private consultation from Video Hearings Team since participant is not in hearing`);
             return;
         }
         if (!message.answer && !this.isParticipantAvailable(requestee)) {
+            console.warn(`unavailable so not showing modal`);
             this.logger.info(`Ignoring request for private consultation from Video Hearings Team since participant is not available`);
             return;
         }
+        console.warn(`available so display modal`);
         this.logger.info(`Incoming request for private consultation from Video Hearings Team`);
         this.consultationRequestee = new Participant(requestee);
-        this.consultationService.displayAdminConsultationRequest();
+        await this.consultationService.displayAdminConsultationRequest();
     }
 
     handleAdminConsultationResponse(message: AdminConsultationMessage) {

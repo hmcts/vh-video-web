@@ -1,3 +1,4 @@
+import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
@@ -18,6 +19,7 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 import { Participant } from 'src/app/shared/models/participant';
 import { individualTestProfile, judgeTestProfile } from 'src/app/testing/data/test-profiles';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
 import {
     adminConsultationMessageSubjectMock,
     eventsServiceSpy,
@@ -61,22 +63,13 @@ describe('WaitingRoom ParticipantList Base', () => {
     let conference: ConferenceResponse;
 
     beforeAll(() => {
-        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', [
-            'clearOutgoingCallTimeout',
-            'cancelTimedOutIncomingRequest',
-            'clearModals',
-            'resetWaitingForResponse',
-            'respondToAdminConsultationRequest',
-            'displayAdminConsultationRequest',
-            'displayNoConsultationRoomAvailableModal'
-        ]);
+        consultationService = consultationServiceSpyFactory();
 
         adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
             userInfo: <adal.User>{ userName: judgeProfile.username, authenticated: true }
         });
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails', 'getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('test username');
-        consultationService.respondToAdminConsultationRequest.and.returnValue(Promise.resolve());
     });
 
     beforeEach(() => {
@@ -86,6 +79,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         component = new WrParticipantStatusListTest(adalService, consultationService, eventsService, logger, videoWebService);
         component.conference = conference;
         component.initParticipants();
+        component.addSharedEventHubSubcribers();
     });
 
     afterEach(() => {
@@ -181,58 +175,60 @@ describe('WaitingRoom ParticipantList Base', () => {
         expect(result.username).toBe(judgeProfile.username);
     });
 
-    it('should not display vho consultation request when participant is unavailable', () => {
+    it('should not display vho consultation request when participant is unavailable', fakeAsync(() => {
+        console.warn('should not display vho consultation request when participant is unavailable');
         consultationService.displayAdminConsultationRequest.calls.reset();
         const index = component.conference.participants.findIndex(x => x.username === judgeProfile.username);
         component.conference.participants[index].status = ParticipantStatus.InHearing;
-        component.addSharedEventHubSubcribers();
         const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, null);
 
         adminConsultationMessageSubjectMock.next(payload);
+        flushMicrotasks();
 
         expect(consultationService.displayAdminConsultationRequest).toHaveBeenCalledTimes(0);
-    });
+    }));
 
-    it('should not display vho consultation request when participant not found', () => {
+    it('should not display vho consultation request when participant not found', fakeAsync(() => {
         consultationService.displayAdminConsultationRequest.calls.reset();
-        component.addSharedEventHubSubcribers();
         const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, 'doesnotexist@test.com', null);
 
         adminConsultationMessageSubjectMock.next(payload);
-        expect(consultationService.displayAdminConsultationRequest).toHaveBeenCalledTimes(0);
-    });
+        flushMicrotasks();
 
-    it('should display vho consultation request', () => {
+        expect(consultationService.displayAdminConsultationRequest).toHaveBeenCalledTimes(0);
+    }));
+
+    it('should display vho consultation request', fakeAsync(() => {
         consultationService.displayAdminConsultationRequest.calls.reset();
-        component.addSharedEventHubSubcribers();
         const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, null);
 
         adminConsultationMessageSubjectMock.next(payload);
+        flushMicrotasks();
 
         expect(consultationService.displayAdminConsultationRequest).toHaveBeenCalled();
-    });
+    }));
 
-    it('should cancel incoming timeout request when admin call is rejected', () => {
+    it('should cancel incoming timeout request when admin call is rejected', fakeAsync(() => {
         consultationService.cancelTimedOutIncomingRequest.calls.reset();
-        component.addSharedEventHubSubcribers();
 
         const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, ConsultationAnswer.Rejected);
         adminConsultationMessageSubjectMock.next(payload);
+        flushMicrotasks();
 
         expect(consultationService.cancelTimedOutIncomingRequest).toHaveBeenCalled();
-    });
+    }));
 
-    it('should do nothing when admin call is anything other than rejected', () => {
+    it('should do nothing when admin call is anything other than rejected', fakeAsync(() => {
         consultationService.cancelTimedOutIncomingRequest.calls.reset();
-        component.addSharedEventHubSubcribers();
 
         const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, ConsultationAnswer.Accepted);
         adminConsultationMessageSubjectMock.next(payload);
+        flushMicrotasks();
 
         expect(consultationService.cancelTimedOutIncomingRequest).toHaveBeenCalledTimes(0);
-    });
+    }));
 
-    it('should close all open modals when current user is transferred to a consultation room', () => {
+    it('should close all open modals when current user is transferred to a consultation room', fakeAsync(() => {
         consultationService.clearModals.calls.reset();
         const loggedInUser = component.conference.participants.find(x => x.username === judgeProfile.username);
         const payload = new ParticipantStatusMessage(
@@ -241,17 +237,16 @@ describe('WaitingRoom ParticipantList Base', () => {
             conference.id,
             ParticipantStatus.InConsultation
         );
-        component.addSharedEventHubSubcribers();
         participantStatusSubjectMock.next(payload);
+        flushMicrotasks();
 
         expect(consultationService.clearModals).toHaveBeenCalledTimes(1);
-    });
+    }));
 
     it('should reapply filters when another participant is transferred to a consultation room', () => {
         consultationService.clearModals.calls.reset();
         const loggedInUser = component.conference.participants.find(x => x.username === judgeProfile.username);
         const payload = new ParticipantStatusMessage(loggedInUser.id, indProfile.username, conference.id, ParticipantStatus.InConsultation);
-        component.addSharedEventHubSubcribers();
         participantStatusSubjectMock.next(payload);
 
         expect(consultationService.clearModals).toHaveBeenCalledTimes(0);

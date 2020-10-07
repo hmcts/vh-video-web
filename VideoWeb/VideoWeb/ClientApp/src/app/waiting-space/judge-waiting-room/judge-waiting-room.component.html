@@ -44,7 +44,7 @@
   </div>
 </div>
 
-<div *ngIf="!loadingData && conference">
+<div *ngIf="!loadingData && conference" [ngClass]="{ 'no-mass': showVideo }">
   <a id="back-to-hearing-list-link" href="javascript:void(0)" (click)="goToJudgeHearingList()" class="govuk-back-link">
     Return to video hearing list
   </a>
@@ -80,7 +80,7 @@
   </table>
 </div>
 
-<div *ngIf="!loadingData && conference" class="govuk-grid-row">
+<div *ngIf="!loadingData && conference" class="govuk-grid-row" [ngClass]="{ 'no-mass': showVideo }">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-xl" [ngClass]="hearingSuspended() ? 'text-highlight-red' : ''">
       {{ getConferenceStatusText() }}

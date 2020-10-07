@@ -22,6 +22,7 @@ import { ConferenceStatusMessage } from 'src/app/services/models/conference-stat
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
 import {
     adminConsultationMessageSubjectMock,
     eventHubDisconnectSubjectMock,
@@ -87,7 +88,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         heartbeatModelMapper = new HeartbeatModelMapper();
         deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['getBrowserName', 'getBrowserVersion']);
-        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', ['leaveConsultation', 'clearModals']);
+        consultationService = consultationServiceSpyFactory();
     });
 
     beforeEach(() => {

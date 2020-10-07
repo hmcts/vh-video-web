@@ -69,7 +69,7 @@
 
   HeartbeatFactory.prototype.revive = function () {
 
-    if (this.timer == null && this.postponer == null) {
+    if (this.timer == null || this.postponer == null) {
       console.log("Starting heartbeat.");
       var self = this;
       var beat = this.beat.bind(this);

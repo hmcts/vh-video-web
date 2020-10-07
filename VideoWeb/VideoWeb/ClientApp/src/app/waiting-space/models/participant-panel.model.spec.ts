@@ -1,4 +1,4 @@
-import { EndpointStatus, ParticipantForUserResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { EndpointStatus, ParticipantForUserResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { ParticipantPanelModel, VideoEndpointPanelModel } from './participant-panel-model';
 
@@ -32,5 +32,17 @@ describe('ParticipantPanelModel', () => {
         participant.status = ParticipantStatus.Available;
         model = new ParticipantPanelModel(participant);
         expect(model.isAvailable()).toBeTruthy();
+    });
+
+    it('should return true when participant is a judge', () => {
+        participant.role = Role.Judge;
+        model = new ParticipantPanelModel(participant);
+        expect(model.isJudge).toBeTruthy();
+    });
+
+    it('should return false when participant is not a judge', () => {
+        participant.role = Role.Individual;
+        model = new ParticipantPanelModel(participant);
+        expect(model.isJudge).toBeFalsy();
     });
 });
