@@ -24,6 +24,7 @@ import {
 } from 'src/app/testing/mocks/mock-events-service';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { CaseTypeGroup } from '../../models/case-type-group';
+import { HearingRole } from '../../models/hearing-role-model';
 import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
 
 describe('IndividualParticipantStatusListComponent consultations', () => {
@@ -32,6 +33,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     let consultationRequester: Participant;
     let consultationRequestee: Participant;
     let participantsObserverPanelMember: ParticipantResponseVho[];
+    let participantsWinger: ParticipantResponseVho[];
 
     const mockAdalService = new MockAdalService();
     let adalService;
@@ -74,6 +76,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
         logger = jasmine.createSpyObj<Logger>('Logger', ['debug', 'info', 'warn', 'event', 'error']);
         participantsObserverPanelMember = new ConferenceTestData().getListOfParticipantsObserverAndPanelMembers();
+        participantsWinger = new ConferenceTestData().getListOfParticipantsWingers();
     });
 
     beforeEach(() => {
@@ -352,7 +355,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         participantsObserverPanelMember.forEach(x => {
             component.conference.participants.push(x);
         });
-        const observer = component.conference.participants.find(x => x.case_type_group === CaseTypeGroup.OBSERVER);
+        const observer = component.conference.participants.find(x => x.hearing_role === HearingRole.OBSERVER);
         adalService.userInfo.userName = observer.username;
 
         const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
@@ -364,10 +367,24 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         participantsObserverPanelMember.forEach(x => {
             component.conference.participants.push(x);
         });
-        const panelMember = component.conference.participants.find(x => x.case_type_group === CaseTypeGroup.PANEL_MEMBER);
+        const panelMember = component.conference.participants.find(x => x.hearing_role === HearingRole.PANEL_MEMBER);
         adalService.userInfo.userName = panelMember.username;
 
         expect(component.getConsultationRequester().username).toBe(panelMember.username);
+
+        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
+        expect(component.canCallParticipant(participant)).toBeFalsy();
+    });
+    it('should not be able to call participant if user is winger', () => {
+        component.conference.scheduled_date_time = new Date(new Date(Date.now()).getTime() + 31 * 60000);
+
+        participantsWinger.forEach(x => {
+            component.conference.participants.push(x);
+        });
+        const wingerMember = component.conference.participants.find(x => x.hearing_role === HearingRole.WINGER);
+        adalService.userInfo.userName = wingerMember.username;
+
+        expect(component.getConsultationRequester().username).toBe(wingerMember.username);
 
         const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
         expect(component.canCallParticipant(participant)).toBeFalsy();
