@@ -34,6 +34,8 @@ import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-servi
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { Hearing } from '../../../shared/models/hearing';
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
+import { SelectedUserMediaDevice } from '../../../shared/models/selected-user-media-device';
+import { UserMediaService } from 'src/app/services/user-media.service';
 
 describe('ParticipantWaitingRoomComponent event hub events', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -61,6 +63,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
 
     let consultationService: jasmine.SpyObj<ConsultationService>;
     const logger: Logger = new MockLogger();
+    let userMediaService: jasmine.SpyObj<UserMediaService>;
 
     const jwToken = new TokenResponse({
         expires_on: '06/10/2020 01:13:00',
@@ -88,6 +91,10 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         heartbeatModelMapper = new HeartbeatModelMapper();
         deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['getBrowserName', 'getBrowserVersion']);
         consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', ['leaveConsultation']);
+        userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
+            'updatePreferredCamera',
+            'updatePreferredMicrophone'
+        ]);
     });
 
     beforeEach(() => {
@@ -103,7 +110,8 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
             deviceTypeService,
             router,
             consultationService,
-            clockService
+            clockService,
+            userMediaService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, gloalConference));

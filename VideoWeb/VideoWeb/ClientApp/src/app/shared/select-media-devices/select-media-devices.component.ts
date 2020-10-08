@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, OnDestroy, Input } from '@angular/core';
 import { SelectedUserMediaDevice } from 'src/app/shared/models/selected-user-media-device';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { FormBuilder, FormGroup, AbstractControl, Validators } from '@angular/forms';
@@ -8,11 +8,12 @@ import { UserMediaStreamService } from 'src/app/services/user-media-stream.servi
 @Component({
     selector: 'app-select-media-devices',
     templateUrl: './select-media-devices.component.html',
-    styleUrls: ['./select-media-devices.component.css']
+    styleUrls: ['./select-media-devices.component.scss']
 })
 export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     @Output() cancelMediaDeviceChange = new EventEmitter();
     @Output() acceptMediaDeviceChange = new EventEmitter<SelectedUserMediaDevice>();
+    @Input() waitingRoomMode: boolean = false;
 
     availableCameraDevices: UserMediaDevice[] = [];
     availableMicrophoneDevices: UserMediaDevice[] = [];
@@ -21,6 +22,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     preferredMicrophoneStream: MediaStream;
 
     selectedMediaDevicesForm: FormGroup;
+    deviceIsChanged = false;
 
     constructor(
         private userMediaService: UserMediaService,
@@ -99,19 +101,30 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         return this.selectedMediaDevicesForm.get('microphone');
     }
 
+    onChangeDevice() {
+        this.deviceIsChanged = true;
+        this.saveSelectedDevices();
+    }
+
+    private saveSelectedDevices() {
+        const selectedCam = this.getSelectedCamera();
+        const selectedMic = this.getSelectedMicrophone();
+        this.acceptMediaDeviceChange.emit(new SelectedUserMediaDevice(selectedCam, selectedMic));
+    }
+
     onSubmit() {
         if (this.selectedMediaDevicesForm.invalid) {
             return;
         }
-        const selectedCam = this.getSelectedCamera();
-        const selectedMic = this.getSelectedMicrophone();
-        this.userMediaStreamService.stopStream(this.preferredCameraStream);
-        this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
-        this.acceptMediaDeviceChange.emit(new SelectedUserMediaDevice(selectedCam, selectedMic));
+        this.acceptChange();
+        this.cancelMediaDeviceChange.emit();
     }
 
-    onCancel() {
-        this.cancelMediaDeviceChange.emit();
+    private acceptChange() {
+        this.userMediaStreamService.stopStream(this.preferredCameraStream);
+        this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
+        this.saveSelectedDevices();
+        this.deviceIsChanged = false;
     }
 
     getSelectedCamera(): UserMediaDevice {

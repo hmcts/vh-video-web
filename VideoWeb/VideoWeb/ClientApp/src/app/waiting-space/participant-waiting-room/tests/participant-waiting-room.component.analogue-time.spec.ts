@@ -14,6 +14,8 @@ import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-servi
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { Hearing } from '../../../shared/models/hearing';
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
+import { SelectedUserMediaDevice } from '../../../shared/models/selected-user-media-device';
+import { UserMediaService } from 'src/app/services/user-media.service';
 
 describe('ParticipantWaitingRoomComponent message and clock', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -32,6 +34,7 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
     const videoCallService = videoCallServiceSpy;
     let consultationService: jasmine.SpyObj<ConsultationService>;
     const logger: Logger = new MockLogger();
+    let userMediaService: jasmine.SpyObj<UserMediaService>;
 
     beforeAll(() => {
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
@@ -46,6 +49,10 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
         heartbeatModelMapper = new HeartbeatModelMapper();
         deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['getBrowserName', 'getBrowserVersion']);
         consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', ['leaveConsultation']);
+        userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
+            'updatePreferredCamera',
+            'updatePreferredMicrophone'
+        ]);
     });
 
     beforeEach(() => {
@@ -61,7 +68,8 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
             deviceTypeService,
             router,
             consultationService,
-            clockService
+            clockService,
+            userMediaService
         );
     });
 

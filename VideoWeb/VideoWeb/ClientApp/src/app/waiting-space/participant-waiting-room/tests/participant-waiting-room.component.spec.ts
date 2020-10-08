@@ -1,7 +1,7 @@
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
-import { of, Subscription } from 'rxjs';
+import { of, Subscription, BehaviorSubject } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse, Role, TokenResponse } from 'src/app/services/clients/api-client';
@@ -16,6 +16,8 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
+import { SelectedUserMediaDevice } from '../../../shared/models/selected-user-media-device';
+import { UserMediaService } from 'src/app/services/user-media.service';
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -36,6 +38,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     const videoCallService = videoCallServiceSpy;
     let consultationService: jasmine.SpyObj<ConsultationService>;
     let logger: jasmine.SpyObj<Logger>;
+    let userMediaService: jasmine.SpyObj<UserMediaService>;
 
     const jwToken = new TokenResponse({
         expires_on: '06/10/2020 01:13:00',
@@ -68,9 +71,17 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             'isSupportedBrowser'
         ]);
 
-        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', ['leaveConsultation']);
+        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', [
+            'leaveConsultation',
+            'consultationAcceptedBy'
+        ]);
+        consultationService.consultationAcceptedBy = new BehaviorSubject<boolean>(true);
 
         logger = jasmine.createSpyObj<Logger>('Logger', ['debug', 'info', 'warn', 'event', 'error']);
+        userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
+            'updatePreferredCamera',
+            'updatePreferredMicrophone'
+        ]);
     });
 
     beforeEach(() => {
@@ -86,7 +97,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             deviceTypeService,
             router,
             consultationService,
-            clockService
+            clockService,
+            userMediaService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, gloalConference));
@@ -109,6 +121,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         expect(component.clockSubscription$).toBeDefined();
         expect(component.eventHubSubscription$).toBeDefined();
         expect(component.videoCallSubscription$).toBeDefined();
+        expect(component.consultationAccepted$).toBeDefined();
     }));
 
     it('should handle api error with error service', async () => {

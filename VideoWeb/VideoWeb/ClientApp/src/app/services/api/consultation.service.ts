@@ -16,6 +16,7 @@ import {
 } from '../clients/api-client';
 import { Logger } from '../logging/logger-base';
 import { ModalService } from '../modal.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -35,6 +36,8 @@ export class ConsultationService {
 
     consultationRequestee: Participant;
     consultationRequester: Participant;
+
+    consultationAcceptedBy: BehaviorSubject<boolean> = new BehaviorSubject(true);
 
     constructor(
         private apiClient: ApiClient,
@@ -134,6 +137,9 @@ export class ConsultationService {
         try {
             this.stopCallRinging();
             this.clearModals();
+            if (request.answer === ConsultationAnswer.Accepted) {
+                this.consultationAcceptedBy.next(false);
+            }
             await this.apiClient.handleConsultationRequest(request).toPromise();
         } catch (error) {
             if (this.checkNoRoomsLeftError(error)) {

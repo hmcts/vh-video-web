@@ -84,7 +84,7 @@ describe('SelectMediaDevicesComponent', () => {
 
     it('should emit cancelled event onCancel', async () => {
         spyOn(component.cancelMediaDeviceChange, 'emit');
-        component.onCancel();
+        component.onSubmit();
         expect(component.cancelMediaDeviceChange.emit).toHaveBeenCalled();
     });
 
@@ -129,5 +129,18 @@ describe('SelectMediaDevicesComponent', () => {
 
         expect(component.preferredCameraStream).toBeNull();
         expect(component.preferredMicrophoneStream).toBeNull();
+    });
+    it('should on change device save selected devices and emit device update event', () => {
+        spyOn(component.acceptMediaDeviceChange, 'emit');
+        component.onChangeDevice();
+        expect(component.acceptMediaDeviceChange.emit).toHaveBeenCalled();
+    });
+    it('should emit cnange device event and close event on submit', async () => {
+        spyOn(component.cancelMediaDeviceChange, 'emit');
+        spyOn(component.acceptMediaDeviceChange, 'emit');
+
+        component.onSubmit();
+        expect(component.cancelMediaDeviceChange.emit).toHaveBeenCalled();
+        expect(component.acceptMediaDeviceChange.emit).toHaveBeenCalled();
     });
 });

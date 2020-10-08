@@ -14,6 +14,8 @@ import { DeviceTypeService } from '../../services/device-type.service';
 import { HeartbeatModelMapper } from '../../shared/mappers/heartbeat-model-mapper';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
+import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
+import { UserMediaService } from 'src/app/services/user-media.service';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -29,6 +31,9 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     isPrivateConsultation: boolean;
 
     clockSubscription$: Subscription;
+    consultationAccepted$: Subscription;
+
+    displayDeviceChangeModal: boolean;
 
     constructor(
         protected route: ActivatedRoute,
@@ -42,7 +47,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
         private consultationService: ConsultationService,
-        private clockService: ClockService
+        private clockService: ClockService,
+        private userMediaService: UserMediaService
     ) {
         super(
             route,
@@ -57,14 +63,17 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
             router
         );
         this.isPrivateConsultation = false;
+        this.displayDeviceChangeModal = true;
     }
 
     ngOnInit() {
         this.errorCount = 0;
         this.logger.debug('Loading participant waiting room');
         this.connected = false;
+        this.displayDeviceChangeModal = true;
         this.initHearingAlert();
         this.getConference().then(() => {
+            this.subscribeToAcceptConsultation();
             this.subscribeToClock();
             this.startEventHubSubscribers();
             this.getJwtokenAndConnectToPexip();
@@ -80,6 +89,15 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         this.disconnect();
         this.eventHubSubscription$.unsubscribe();
         this.videoCallSubscription$.unsubscribe();
+        if (this.consultationAccepted$) {
+            this.consultationAccepted$.unsubscribe();
+        }
+    }
+
+    subscribeToAcceptConsultation() {
+        this.consultationAccepted$ = this.consultationService.consultationAcceptedBy.subscribe(x => {
+            this.displayDeviceChangeModal = x;
+        });
     }
 
     initHearingAlert() {
@@ -187,6 +205,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         );
         try {
             await this.consultationService.leaveConsultation(this.conference, this.participant);
+            this.displayDeviceChangeModal = true;
         } catch (error) {
             this.logger.error('Failed to leave private consultation', error);
         }
@@ -201,6 +220,32 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         }
         if (this.hearing.isDelayed() || this.hearing.isSuspended()) {
             return 'hearing-delayed';
+        }
+    }
+
+    showChooseCameraDialog() {
+        this.displayDeviceChangeModal = true;
+    }
+
+    onMediaDeviceChangeCancelled() {
+        this.displayDeviceChangeModal = false;
+    }
+
+    async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
+        this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
+        this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
+        await this.updatePexipAudioVideoSource();
+    }
+
+    async updatePexipAudioVideoSource() {
+        const cam = await this.userMediaService.getPreferredCamera();
+        if (cam) {
+            this.videoCallService.updateCameraForCall(cam);
+        }
+
+        const mic = await this.userMediaService.getPreferredMicrophone();
+        if (mic) {
+            this.videoCallService.updateMicrophoneForCall(mic);
         }
     }
 }
