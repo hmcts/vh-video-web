@@ -25,7 +25,6 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("consultations")]
-    [Authorize("Individual")]
     public class ConsultationsController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;

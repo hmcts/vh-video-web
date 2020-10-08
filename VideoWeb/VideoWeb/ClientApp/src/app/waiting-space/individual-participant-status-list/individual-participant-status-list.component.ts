@@ -1,72 +1,45 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
-import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import {
-    ConferenceResponse,
-    ConsultationAnswer,
-    EndpointStatus,
-    ParticipantResponse,
-    ParticipantStatus,
-    Role,
-    VideoEndpointResponse
-} from 'src/app/services/clients/api-client';
+import { ConsultationAnswer, ParticipantResponse, ParticipantStatus, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
 import { HearingRole } from '../models/hearing-role-model';
+import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-participant-list-shared.component';
 
 @Component({
     selector: 'app-individual-participant-status-list',
     templateUrl: './individual-participant-status-list.component.html',
     styleUrls: ['./individual-participant-status-list.component.scss']
 })
-export class IndividualParticipantStatusListComponent implements OnInit, OnDestroy {
-    @Input() conference: ConferenceResponse;
-
-    nonJugdeParticipants: ParticipantResponse[];
-    judge: ParticipantResponse;
-    panelMembers: ParticipantResponse[];
-    observers: ParticipantResponse[];
-    endpoints: VideoEndpointResponse[];
+export class IndividualParticipantStatusListComponent extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
     wingers: ParticipantResponse[];
-
-    consultationRequestee: Participant;
-    consultationRequester: Participant;
-
-    adminConsultationMessage: AdminConsultationMessage;
-    eventHubSubscriptions$ = new Subscription();
-
     constructor(
-        private adalService: AdalService,
-        private consultationService: ConsultationService,
-        private eventService: EventsService,
-        private logger: Logger,
-        private videoWebService: VideoWebService
-    ) {}
+        protected adalService: AdalService,
+        protected consultationService: ConsultationService,
+        protected eventService: EventsService,
+        protected logger: Logger,
+        protected videoWebService: VideoWebService
+    ) {
+        super(adalService, consultationService, eventService, videoWebService, logger);
+    }
 
     ngOnInit() {
         this.consultationService.resetWaitingForResponse();
-        this.filterNonJudgeParticipants();
-        this.filterJudge();
-        this.filterPanelMembers();
-        this.filterObservers();
-        this.filterWingers();
+        this.initParticipants();
         this.setupSubscribers();
-        this.endpoints = this.conference.endpoints;
     }
 
     ngOnDestroy(): void {
-        this.consultationService.clearOutoingCallTimeout();
-        this.eventHubSubscriptions$.unsubscribe();
+        this.executeTeardown();
     }
 
     setupSubscribers() {
+        this.addSharedEventHubSubcribers();
         this.eventHubSubscriptions$.add(
             this.eventService.getConsultationMessage().subscribe(message => {
                 switch (message.result) {
@@ -85,45 +58,7 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
             })
         );
 
-        this.eventHubSubscriptions$.add(
-            this.eventService.getParticipantStatusMessage().subscribe(message => {
-                this.handleParticipantStatusChange(message);
-            })
-        );
-
-        this.eventHubSubscriptions$.add(
-            this.eventService.getAdminConsultationMessage().subscribe(async message => {
-                if (!message.answer) {
-                    this.adminConsultationMessage = message;
-                    await this.handleAdminConsultationMessage(message);
-                }
-            })
-        );
-
         this.eventService.start();
-    }
-
-    handleNoConsulationRoom() {
-        this.consultationService.displayNoConsultationRoomAvailableModal();
-    }
-
-    handleParticipantStatusChange(message: ParticipantStatusMessage): void {
-        const isCurrentUser = this.adalService.userInfo.userName.toLocaleLowerCase() === message.username.toLowerCase();
-        if (isCurrentUser && message.status === ParticipantStatus.InConsultation) {
-            this.closeAllPCModals();
-        }
-        this.filterNonJudgeParticipants();
-    }
-
-    async handleAdminConsultationMessage(message: AdminConsultationMessage) {
-        const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
-        if (!this.isParticipantAvailable(requestee)) {
-            this.logger.info(`Ignoring request for private consultation from Video Hearings Team since participant is not available`);
-            return;
-        }
-        this.logger.info(`Incoming request for private consultation from Video Hearings Team`);
-        this.consultationRequestee = new Participant(requestee);
-        this.consultationService.displayAdminConsultationRequest();
     }
 
     canCallParticipant(participant: ParticipantResponse): boolean {
@@ -157,10 +92,6 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
         }
 
         return this.isEndpointAvailable(endpoint);
-    }
-
-    getConsultationRequester(): ParticipantResponse {
-        return this.conference.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
     }
 
     async beginCallWith(participant: ParticipantResponse): Promise<void> {
@@ -228,25 +159,6 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
         }
     }
 
-    async acceptVhoConsultationRequest(): Promise<void> {
-        const displayName = this.videoWebService.getObfuscatedName(this.consultationRequestee.displayName);
-        this.logger.event(`${displayName} responded to vho consultation: ${ConsultationAnswer.Accepted}`);
-        try {
-            await this.consultationService.respondToAdminConsultationRequest(
-                this.conference,
-                this.consultationRequestee.base,
-                ConsultationAnswer.Accepted,
-                this.adminConsultationMessage.roomType
-            );
-        } catch (error) {
-            this.logger.error('Failed to respond to admin consultation request', error);
-        }
-    }
-
-    closeAllPCModals(): void {
-        this.consultationService.clearModals();
-    }
-
     private initConsultationParticipants(message: ConsultationMessage): void {
         const requester = this.conference.participants.find(x => x.username === message.requestedBy);
         const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
@@ -256,47 +168,5 @@ export class IndividualParticipantStatusListComponent implements OnInit, OnDestr
 
     getParticipantStatusText(participant: ParticipantResponse): string {
         return participant.status === ParticipantStatus.Available ? 'Available' : 'Unavailable';
-    }
-
-    isParticipantAvailable(participant: ParticipantResponse): boolean {
-        return participant.status === ParticipantStatus.Available;
-    }
-
-    isEndpointAvailable(endpoint: VideoEndpointResponse): boolean {
-        return endpoint.status === EndpointStatus.Connected;
-    }
-
-    private filterNonJudgeParticipants(): void {
-        this.nonJugdeParticipants = this.conference.participants.filter(
-            x =>
-                x.role !== Role.Judge &&
-                x.hearing_role !== HearingRole.OBSERVER &&
-                x.hearing_role !== HearingRole.PANEL_MEMBER &&
-                x.hearing_role !== HearingRole.WINGER
-        );
-    }
-
-    private filterJudge(): void {
-        this.judge = this.conference.participants.find(x => x.role === Role.Judge);
-    }
-
-    private filterPanelMembers(): void {
-        this.panelMembers = this.conference.participants.filter(x => x.hearing_role === HearingRole.PANEL_MEMBER);
-    }
-
-    private filterObservers(): void {
-        this.observers = this.conference.participants.filter(x => x.hearing_role === HearingRole.OBSERVER);
-    }
-
-    private filterWingers(): void {
-        this.wingers = this.conference.participants.filter(x => x.hearing_role === HearingRole.WINGER);
-    }
-
-    get getNumberParticipants() {
-        return this.nonJugdeParticipants.length + this.observers.length + this.panelMembers.length + this.wingers.length;
-    }
-
-    isCaseTypeNone(participant: ParticipantResponse): boolean {
-        return participant.case_type_group === 'None';
     }
 }
