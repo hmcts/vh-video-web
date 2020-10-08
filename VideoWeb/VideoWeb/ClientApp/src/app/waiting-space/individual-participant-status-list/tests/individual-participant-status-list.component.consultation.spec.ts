@@ -1,4 +1,3 @@
-import { fakeAsync, tick } from '@angular/core/testing';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -9,14 +8,13 @@ import {
     ParticipantResponse,
     ParticipantResponseVho,
     ParticipantStatus,
-    Role,
-    RoomType
+    Role
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { Participant } from 'src/app/shared/models/participant';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
 import {
     adminConsultationMessageSubjectMock,
     consultationMessageSubjectMock,
@@ -50,26 +48,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     beforeAll(() => {
         adalService = mockAdalService;
 
-        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', [
-            'resetWaitingForResponse',
-            'clearOutoingCallTimeout',
-            'displayAdminConsultationRequest',
-            'displayNoConsultationRoomAvailableModal',
-            'displayIncomingPrivateConsultation',
-            'raiseConsultationRequest',
-            'handleConsultationResponse',
-            'respondToConsultationRequest',
-            'leaveConsultation',
-            'respondToAdminConsultationRequest',
-            'clearModals',
-            'startPrivateConsulationWithEndpoint'
-        ]);
-        consultationService.raiseConsultationRequest.and.resolveTo();
-        consultationService.respondToConsultationRequest.and.resolveTo();
-        consultationService.leaveConsultation.and.resolveTo();
-        consultationService.respondToAdminConsultationRequest.and.resolveTo();
-        consultationService.respondToAdminConsultationRequest.and.resolveTo();
-        consultationService.startPrivateConsulationWithEndpoint.and.resolveTo();
+        consultationService = consultationServiceSpyFactory();
 
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
@@ -104,7 +83,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         component.ngOnInit();
         expect(component).toBeTruthy();
         expect(component.judge).toBeDefined();
-        expect(component.nonJugdeParticipants).toBeDefined();
+        expect(component.nonJudgeParticipants).toBeDefined();
         expect(consultationService.resetWaitingForResponse).toHaveBeenCalled();
     });
 
@@ -254,25 +233,6 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         );
     });
 
-    it('should respond to admin consultation with answer "Accepted"', async () => {
-        component.consultationRequestee = new Participant(conference.participants[1]);
-        const adminConsultationMessage = new AdminConsultationMessage(
-            conference.id,
-            RoomType.AdminRoom,
-            component.consultationRequestee.username,
-            null
-        );
-        component.adminConsultationMessage = adminConsultationMessage;
-
-        await component.acceptVhoConsultationRequest();
-        expect(consultationService.respondToAdminConsultationRequest).toHaveBeenCalledWith(
-            conference,
-            component.consultationRequestee.base,
-            ConsultationAnswer.Accepted,
-            adminConsultationMessage.roomType
-        );
-    });
-
     it('should cancel consultation when requester cancels call', async () => {
         await component.cancelConsultationRequest();
 
@@ -291,60 +251,6 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         await component.answerConsultationRequest(ConsultationAnswer.Accepted);
         expect(logger.error).toHaveBeenCalled();
     });
-
-    it('should log error when accepting VHO consultation fails', async () => {
-        logger.error.calls.reset();
-        const error = { error: 'test error' };
-        consultationService.respondToAdminConsultationRequest.and.rejectWith(error);
-        await component.acceptVhoConsultationRequest();
-        expect(logger.error).toHaveBeenCalled();
-    });
-
-    it('should display VHO consultation request modal when VHO request message is received and participant is available', fakeAsync(() => {
-        consultationService.displayAdminConsultationRequest.calls.reset();
-        spyOn(global, 'setTimeout').and.returnValue(<any>timer);
-        component.consultationRequestee = undefined;
-        component.consultationRequester = undefined;
-
-        const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, consultationRequestee.username, null);
-        adminConsultationSubject.next(payload);
-        tick();
-
-        expect(component.consultationRequestee.id).toEqual(consultationRequestee.id);
-        expect(consultationService.displayAdminConsultationRequest).toHaveBeenCalledTimes(1);
-    }));
-
-    it('should not VHO consultation request modal when VHO request message is received and participant is not available', fakeAsync(() => {
-        consultationService.displayAdminConsultationRequest.calls.reset();
-        spyOn(global, 'setTimeout').and.returnValue(<any>timer);
-        component.consultationRequestee = undefined;
-        component.consultationRequester = undefined;
-        spyOn(component, 'isParticipantAvailable').and.returnValue(false);
-
-        const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, consultationRequestee.username, null);
-        adminConsultationSubject.next(payload);
-        tick();
-
-        expect(component.consultationRequestee).toBeUndefined();
-        expect(consultationService.displayAdminConsultationRequest).toHaveBeenCalledTimes(0);
-    }));
-
-    it('should not take action when VHO consultation response message is received', fakeAsync(() => {
-        consultationService.displayAdminConsultationRequest.calls.reset();
-        component.consultationRequestee = undefined;
-        component.consultationRequester = undefined;
-        spyOn(component, 'handleAdminConsultationMessage');
-        const payload = new AdminConsultationMessage(
-            conference.id,
-            RoomType.AdminRoom,
-            consultationRequestee.username,
-            ConsultationAnswer.Accepted
-        );
-        adminConsultationSubject.next(payload);
-
-        expect(component.handleAdminConsultationMessage).toHaveBeenCalledTimes(0);
-    }));
-
     it('should close all modals when user clicks close on modal', () => {
         component.closeAllPCModals();
         expect(consultationService.clearModals).toHaveBeenCalledTimes(1);
