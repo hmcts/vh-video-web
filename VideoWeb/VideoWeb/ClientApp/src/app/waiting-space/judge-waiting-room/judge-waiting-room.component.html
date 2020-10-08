@@ -49,10 +49,17 @@
     Return to video hearing list
   </a>
 
-  <div class="govuk-!-margin-top-5" *ngIf="isNotStarted() || isPaused()">
-    <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button" (click)="checkEquipment()" aria-label="Camera Check">
-      Check equipment
-    </button>
+  <div class="govuk-grid-row govuk-!-margin-top-5" *ngIf="!showVideo">
+    <div class="govuk-grid-column-one-third">
+      <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button" (click)="checkEquipment()" aria-label="Camera Check">
+        Check camera and microphone
+      </button>
+    </div>
+    <div class="govuk-grid-column-two-thirds">
+      <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-container">
+        <app-participant-network-health [participant]="participant"></app-participant-network-health>
+      </div>
+    </div>
   </div>
 
   <table class="govuk-table vh-fullwidth" aria-describedby="Details of the hearing">
@@ -136,10 +143,6 @@
       >
         Resume video hearing
       </button>
-    </div>
-
-    <div *ngIf="isSupportedBrowserForNetworkHealth && !showVideo" id="hearing-monitor-container">
-      <app-participant-network-health [participant]="participant"></app-participant-network-health>
     </div>
   </div>
 
