@@ -28,26 +28,6 @@ describe('ParticipantNetworkHealthComponent', () => {
         component.ngOnDestroy();
     });
 
-    it('should return false when heartbeat is not set', () => {
-        component.networkHealth = undefined;
-        expect(component.isNetworkGood).toBeFalsy();
-    });
-
-    const isNetworkGoodTestCases = [
-        { status: HeartbeatHealth.None, expected: false },
-        { status: HeartbeatHealth.Good, expected: true },
-        { status: HeartbeatHealth.Poor, expected: false },
-        { status: HeartbeatHealth.Bad, expected: false }
-    ];
-
-    isNetworkGoodTestCases.forEach(testcase => {
-        it(`should return isNetworkGood ${testcase.expected} when heartbeat is ${testcase.status}`, () => {
-            const payload = new ParticipantHeartbeat(globalConference.id, globalParticipant.id, testcase.status, 'Chrome', '82.0.0');
-            heartbeatSubject.next(payload);
-            expect(component.isNetworkGood).toBe(testcase.expected);
-        });
-    });
-
     const isNetworkPoorTestCases = [
         { status: HeartbeatHealth.None, expected: false },
         { status: HeartbeatHealth.Good, expected: false },
@@ -67,7 +47,7 @@ describe('ParticipantNetworkHealthComponent', () => {
         component.networkHealth = undefined;
         const payload = new ParticipantHeartbeat(globalConference.id, Guid.create().toString(), HeartbeatHealth.Good, 'Chrome', '82.0.0');
         heartbeatSubject.next(payload);
-        expect(component.isNetworkGood).toBeUndefined();
+        expect(component.isNetworkPoor).toBeUndefined();
     });
 
     it('should open guidance modal', () => {
