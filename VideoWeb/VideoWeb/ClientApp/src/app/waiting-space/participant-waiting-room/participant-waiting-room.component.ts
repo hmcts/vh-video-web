@@ -166,7 +166,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         return 'is in session';
     }
 
-            this.displayDeviceChangeModal = true;
+  //          this.displayDeviceChangeModal = true;
     getCurrentTimeClass() {
         if (this.hearing.isOnTime() || this.hearing.isPaused() || this.hearing.isClosed()) {
             return 'hearing-on-time';
