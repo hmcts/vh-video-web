@@ -133,3 +133,22 @@ Scenario: Observer and Panel Member join hearing
 	And the hearing status changed to Closed
 	When in the Observer's browser
 	Then the participants waiting room displays the closed status
+
+@HearingTest @Smoketest-Extended @DisableLogging
+Scenario: Winger joins hearing
+  Given I have a CACD hearing with a Winger
+	And the Winger user has progressed to the Waiting Room page for the existing hearing
+	And the Judge user has progressed to the Waiting Room page for the existing hearing
+	When the Judge starts the hearing
+	Then the user is on the Countdown page
+	When the countdown finishes
+	Then the Judge is on the Hearing Room page for 30 seconds
+	And the Judge can see the participants
+	And the Winger can see the other participants
+  When in the Judge's browser
+  And the Judge closes the hearing
+	Then the user is on the Hearing List page
+	And the hearing status changed to Closed
+	When in the Winger's browser
+	Then the participants waiting room displays the closed status
+

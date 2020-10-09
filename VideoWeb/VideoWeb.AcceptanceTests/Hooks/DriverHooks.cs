@@ -127,7 +127,12 @@ namespace VideoWeb.AcceptanceTests.Hooks
             if (_browsers == null) return;
             if (_browsers.Count.Equals(0))
             {
-                context.CurrentUser = Users.GetDefaultParticipantUser(context.Test.Users);
+                context.CurrentUser = context.Test.Users.Count.Equals(0) ? new User()
+                {
+                    User_type = UserType.Individual,
+                    Username = "logger"
+                } : Users.GetDefaultParticipantUser(context.Test.Users);
+
                 var browser = new UserBrowser()
                     .SetBaseUrl(context.VideoWebConfig.VhServices.VideoWebUrl)
                     .SetTargetDevice(context.VideoWebConfig.TestConfig.TargetDevice)

@@ -55,7 +55,7 @@ Scenario: Observer and Panel Member visible on Participant Waiting Room
   And the Participant user has progressed to the Waiting Room page for the existing hearing
   Then the participant can see a list of other participants and their representatives
 
-@VIH-6131
+@VIH-6131 @Smoketest-Extended
 Scenario: Observer Waiting Room
   Given I have a hearing with an Observer and Panel Member
   And the Observer user has progressed to the Waiting Room page for the existing hearing
@@ -66,10 +66,21 @@ Scenario: Observer Waiting Room
 	And the participant can see a list of other participants and their representatives
 	And the user can see a black box and an about to begin message
 
-@VIH-6131
+@VIH-6131 @Smoketest-Extended
 Scenario: Panel Member Waiting Room
   Given I have a hearing with an Observer and Panel Member
   And the Panel Member user has progressed to the Waiting Room page for the existing hearing
+  Then the user is on the Waiting Room page
+	And a phone number for help is provided
+	And the users status has updated to Available
+	And the participant can see information about their case
+	And the participant can see a list of other participants and their representatives
+	And the user can see a black box and an about to begin message
+
+@VIH-6420 @Smoketest-Extended
+Scenario: Winger Waiting Room
+  Given I have a CACD hearing with a Winger
+  And the Winger user has progressed to the Waiting Room page for the existing hearing
   Then the user is on the Waiting Room page
 	And a phone number for help is provided
 	And the users status has updated to Available
