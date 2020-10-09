@@ -37,7 +37,7 @@ export class ConsultationService {
     consultationRequestee: Participant;
     consultationRequester: Participant;
 
-    consultationAcceptedBy: BehaviorSubject<boolean> = new BehaviorSubject(true);
+    consultationAcceptedBy: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
     constructor(
         private apiClient: ApiClient,
@@ -138,7 +138,7 @@ export class ConsultationService {
             this.stopCallRinging();
             this.clearModals();
             if (request.answer === ConsultationAnswer.Accepted) {
-                this.consultationAcceptedBy.next(false);
+                this.consultationAcceptedBy.next(true);
             }
             await this.apiClient.handleConsultationRequest(request).toPromise();
         } catch (error) {

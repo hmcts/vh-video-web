@@ -148,4 +148,5 @@
 
 <app-select-media-devices *ngIf="displayDeviceChangeModal" [waitingRoomMode]="true"
                           (cancelMediaDeviceChange)="onMediaDeviceChangeCancelled()"
-                          (acceptMediaDeviceChange)="onMediaDeviceChangeAccepted($event)"></app-select-media-devices>
+                          (acceptMediaDeviceChange)="onMediaDeviceChangeAccepted($event)"
+                          #selectMediaDevices></app-select-media-devices>

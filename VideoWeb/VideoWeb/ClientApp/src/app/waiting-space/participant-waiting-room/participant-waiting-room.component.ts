@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
@@ -16,6 +16,7 @@ import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
 import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { SelectMediaDevicesComponent } from '../../shared/select-media-devices/select-media-devices.component';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -31,7 +32,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     clockSubscription$: Subscription;
     consultationAccepted$: Subscription;
 
-    displayDeviceChangeModal: boolean;
+    @ViewChild(SelectMediaDevicesComponent) selectMediaDevices: SelectMediaDevicesComponent; 
 
     constructor(
         protected route: ActivatedRoute,
@@ -61,14 +62,14 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
             router,
             consultationService
         );
-        this.displayDeviceChangeModal = true;
     }
 
     ngOnInit() {
         this.errorCount = 0;
         this.logger.debug('Loading participant waiting room');
         this.connected = false;
-        this.displayDeviceChangeModal = true;
+
+        this.showChooseDeviceDialog();
         this.initHearingAlert();
         this.getConference().then(() => {
             this.subscribeToAcceptConsultation();
@@ -76,6 +77,11 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
             this.startEventHubSubscribers();
             this.getJwtokenAndConnectToPexip();
         });
+    }
+
+    showChooseDeviceDialog() {
+        this.displayDeviceChangeModal = !this.userMediaService.getShowDialogChooseDevice();
+        this.userMediaService.updateShowDialogChooseDevice(true);
     }
 
     @HostListener('window:beforeunload')
@@ -93,8 +99,10 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     }
 
     subscribeToAcceptConsultation() {
-        this.consultationAccepted$ = this.consultationService.consultationAcceptedBy.subscribe(x => {
-            this.displayDeviceChangeModal = x;
+        this.consultationAccepted$ = this.consultationService.consultationAcceptedBy.subscribe(accepted => {
+            if (accepted && this.displayDeviceChangeModal) {
+                this.selectMediaDevices.onSubmit();
+            }
         });
     }
 
@@ -166,7 +174,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         return 'is in session';
     }
 
-  //          this.displayDeviceChangeModal = true;
     getCurrentTimeClass() {
         if (this.hearing.isOnTime() || this.hearing.isPaused() || this.hearing.isClosed()) {
             return 'hearing-on-time';
@@ -181,27 +188,26 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
 
     showChooseCameraDialog() {
         this.displayDeviceChangeModal = true;
+        this.videoCallService.getVideoSource();
     }
 
     onMediaDeviceChangeCancelled() {
         this.displayDeviceChangeModal = false;
     }
 
-    async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
-        this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
-        this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
-        await this.updatePexipAudioVideoSource();
-    }
-
-    async updatePexipAudioVideoSource() {
-        const cam = await this.userMediaService.getPreferredCamera();
+    onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
+        this.logger.debug('EVENT  camera and mic *********************');
+        const cam = selectedMediaDevice.selectedCamera;
         if (cam) {
             this.videoCallService.updateCameraForCall(cam);
         }
 
-        const mic = await this.userMediaService.getPreferredMicrophone();
+        const mic = selectedMediaDevice.selectedMicrophone;
         if (mic) {
             this.videoCallService.updateMicrophoneForCall(mic);
         }
+        this.videoCallService.getVideoSource();
+
     }
+  
 }

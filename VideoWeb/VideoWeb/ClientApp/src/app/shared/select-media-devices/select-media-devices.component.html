@@ -31,8 +31,8 @@
                       <p class="govuk-body govuk-!-font-weight-bold">
                           Change your camera?
                       </p>
-                      <select class="govuk-select govuk-!-width-two-thirds" id="available-cam-list" formControlName="camera">
-                          <option *ngFor="let availableCam of availableCameraDevices" [ngValue]="availableCam" (change)="onChangeDevice()">
+                      <select class="govuk-select govuk-!-width-two-thirds" id="available-cam-list" formControlName="camera" (change)="onChangeDevice()">
+                          <option *ngFor="let availableCam of availableCameraDevices" [ngValue]="availableCam">
                               {{ availableCam.label }}
                           </option>
                       </select>
@@ -48,8 +48,8 @@
                       <p class="govuk-body govuk-!-font-weight-bold">
                           Change your microphone?
                       </p>
-                      <select class="govuk-select govuk-!-width-two-thirds" id="available-mics-list" formControlName="microphone">
-                          <option *ngFor="let availableMic of availableMicrophoneDevices" [ngValue]="availableMic" (change)="onChangeDevice()">
+                      <select class="govuk-select govuk-!-width-two-thirds" id="available-mics-list" formControlName="microphone" (change)="onChangeDevice()">
+                          <option *ngFor="let availableMic of availableMicrophoneDevices" [ngValue]="availableMic" >
                               {{ availableMic.label }}
                           </option>
                       </select>

@@ -73,9 +73,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         ]);
 
         consultationService = consultationServiceSpyFactory();
-            'leaveConsultation',
-            'consultationAcceptedBy'
-        ]);
         consultationService.consultationAcceptedBy = new BehaviorSubject<boolean>(true);
 
         logger = jasmine.createSpyObj<Logger>('Logger', ['debug', 'info', 'warn', 'event', 'error']);

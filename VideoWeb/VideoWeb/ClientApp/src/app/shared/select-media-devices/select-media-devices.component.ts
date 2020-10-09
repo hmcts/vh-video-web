@@ -102,29 +102,23 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     }
 
     onChangeDevice() {
-        this.deviceIsChanged = true;
         this.saveSelectedDevices();
     }
 
     private saveSelectedDevices() {
+        // save on select device
         const selectedCam = this.getSelectedCamera();
         const selectedMic = this.getSelectedMicrophone();
+        this.userMediaService.updatePreferredCamera(selectedCam);
+        this.userMediaService.updatePreferredMicrophone(selectedMic);
         this.acceptMediaDeviceChange.emit(new SelectedUserMediaDevice(selectedCam, selectedMic));
     }
 
     onSubmit() {
-        if (this.selectedMediaDevicesForm.invalid) {
-            return;
-        }
-        this.acceptChange();
-        this.cancelMediaDeviceChange.emit();
-    }
-
-    private acceptChange() {
+        // close dialog and stop streams
         this.userMediaStreamService.stopStream(this.preferredCameraStream);
         this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
-        this.saveSelectedDevices();
-        this.deviceIsChanged = false;
+        this.cancelMediaDeviceChange.emit();
     }
 
     getSelectedCamera(): UserMediaDevice {

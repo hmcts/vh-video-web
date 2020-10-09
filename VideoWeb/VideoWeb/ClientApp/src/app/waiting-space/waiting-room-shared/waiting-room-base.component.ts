@@ -47,6 +47,7 @@ export abstract class WaitingRoomBaseComponent {
     isPrivateConsultation: boolean;
     isAdminConsultation: boolean;
     showConsultationControls: boolean;
+    displayDeviceChangeModal: boolean;
 
     CALL_TIMEOUT = 31000; // 31 seconds
     callbackTimeout: NodeJS.Timer;

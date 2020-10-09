@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
@@ -14,6 +14,10 @@ import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-map
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
+import { SelectMediaDevicesComponent } from '../../shared/select-media-devices/select-media-devices.component';
+import { Subscription } from 'rxjs';
+import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
+import { UserMediaService } from 'src/app/services/user-media.service';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -25,7 +29,11 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     isRecording: boolean;
     continueWithNoRecording = false;
     showAudioRecordingAlert = false;
-    expanedPanel = true;
+    expanedPanel = true
+
+    consultationAccepted$: Subscription;
+
+    @ViewChild(SelectMediaDevicesComponent) selectMediaDevices: SelectMediaDevicesComponent; 
 
     constructor(
         protected route: ActivatedRoute,
@@ -39,7 +47,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
         protected consultationService: ConsultationService,
-        private audioRecordingService: AudioRecordingService
+        private audioRecordingService: AudioRecordingService,
+        private userMediaService: UserMediaService
+
     ) {
         super(
             route,
@@ -59,10 +69,26 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     ngOnInit() {
         this.errorCount = 0;
         this.logger.debug('Loading judge waiting room');
+        this.showChooseDeviceDialog();
         this.connected = false;
         this.getConference().then(() => {
             this.startEventHubSubscribers();
             this.getJwtokenAndConnectToPexip();
+            this.subscribeToAcceptConsultation();
+
+        });
+    }
+
+    showChooseDeviceDialog() {
+        this.displayDeviceChangeModal = !this.userMediaService.getShowDialogChooseDevice();
+        this.userMediaService.updateShowDialogChooseDevice(true);
+    }
+
+    subscribeToAcceptConsultation() {
+        this.consultationAccepted$ = this.consultationService.consultationAcceptedBy.subscribe(accepted => {
+            if (accepted && this.displayDeviceChangeModal) {
+                this.selectMediaDevices.onSubmit();
+            }
         });
     }
 
@@ -165,4 +191,25 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         this.continueWithNoRecording = true;
         clearInterval(this.audioRecordingInterval);
     }
+
+    showChooseCameraDialog() {
+        this.displayDeviceChangeModal = true;
+    }
+
+    onMediaDeviceChangeCancelled() {
+        this.displayDeviceChangeModal = false;
+    }
+
+    onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
+        const cam = selectedMediaDevice.selectedCamera;
+        if (cam) {
+            this.videoCallService.updateCameraForCall(cam);
+        }
+
+        const mic = selectedMediaDevice.selectedMicrophone;
+        if (mic) {
+            this.videoCallService.updateMicrophoneForCall(mic);
+        }
+    }
+
 }
