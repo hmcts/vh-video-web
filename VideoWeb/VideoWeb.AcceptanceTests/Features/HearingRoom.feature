@@ -136,7 +136,7 @@ Scenario: Observer and Panel Member join hearing
 
 @HearingTest @Smoketest-Extended @DisableLogging
 Scenario: Winger joins hearing
-  Given I have a CACD hearing with a winger
+  Given I have a CACD hearing with a Winger
 	And the Winger user has progressed to the Waiting Room page for the existing hearing
 	And the Judge user has progressed to the Waiting Room page for the existing hearing
 	When the Judge starts the hearing

@@ -117,7 +117,7 @@ Scenario: Panel Member has a hearing more than 30 minutes in the future
 
 @VIH-6420
 Scenario: Winger has a hearing more than 30 minutes in the future
-	Given I have a CACD hearing with a winger in in 31 minutes time
+	Given I have a CACD hearing with a winger in 31 minutes time
 	And a new browser is open for a Winger
 	When the user attempts to login with valid credentials
 	Then the user is on the Hearing List page

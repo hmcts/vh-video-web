@@ -57,11 +57,20 @@ Scenario: Participants cannot request Private consultation in suspended seating 
 @VIH-6132
 Scenario: Observers cannot request Private consultation
   Given I have a hearing with an Observer and Panel Member
+  And the the first Individual user has progressed to the Waiting Room page for the existing hearing
   And the Observer user has progressed to the Waiting Room page for the existing hearing
 	Then the private consultation link with the first Individual's is not visible
 
 @VIH-6132
 Scenario: Panel Members cannot request Private consultation
   Given I have a hearing with an Observer and Panel Member
+  And the the first Individual user has progressed to the Waiting Room page for the existing hearing
   And the Panel Member user has progressed to the Waiting Room page for the existing hearing
+  Then the private consultation link with the first Individual's is not visible
+
+@VIH-6420
+Scenario: Wingers cannot request Private consultation
+  Given I have a CACD hearing with a Winger
+  And the the first Individual user has progressed to the Waiting Room page for the existing hearing
+  And the Winger user has progressed to the Waiting Room page for the existing hearing
   Then the private consultation link with the first Individual's is not visible

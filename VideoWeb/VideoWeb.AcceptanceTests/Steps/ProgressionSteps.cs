@@ -105,6 +105,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 case "individual self test":
                 case "representative self test":
                 case "panel member self test":
+                case "winger self test":
                     return Journey.SelfTest;
                 case "participant":
                 case "individual":
