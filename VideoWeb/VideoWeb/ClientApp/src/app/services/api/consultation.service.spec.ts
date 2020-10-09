@@ -194,7 +194,7 @@ describe('ConsultationService', () => {
         const conference = new ConferenceTestData().getConferenceDetailFuture();
         const participant = conference.participants[0];
         const answer = ConsultationAnswer.Accepted;
-        const room = RoomType.WaitingRoom;
+        const room = RoomType.ConsultationRoom1;
         const request = new PrivateAdminConsultationRequest({
             conference_id: conference.id,
             participant_id: participant.id,
@@ -205,6 +205,57 @@ describe('ConsultationService', () => {
         await service.respondToAdminConsultationRequest(conference, participant, answer, room);
 
         expect(apiClient.respondToAdminConsultationRequest).toHaveBeenCalledWith(request);
+    });
+
+    it('should display error modal when unexpected admin consultation error occurs', async () => {
+        const error = { error: 'test bad thing' };
+        const conference = new ConferenceTestData().getConferenceDetailFuture();
+        const participant = conference.participants[0];
+        const answer = ConsultationAnswer.Accepted;
+        const room = RoomType.ConsultationRoom1;
+        const request = new PrivateAdminConsultationRequest({
+            conference_id: conference.id,
+            participant_id: participant.id,
+            answer,
+            consultation_room: room
+        });
+        service.callRingingTimeout = timeout;
+        apiClient.respondToAdminConsultationRequest.and.callFake(() => throwError(error));
+
+        await expectAsync(
+            service.respondToAdminConsultationRequest(conference, participant, ConsultationAnswer.Accepted, room)
+        ).toBeRejectedWith(error);
+
+        expect(service.callRingingTimeout).toBeNull();
+        expect(modalService.open).toHaveBeenCalledWith(ConsultationService.ERROR_PC_MODAL);
+    });
+
+    it('should display no consultation room modal when admin consultation has been accepted but no rooms left', async () => {
+        const error = new BadRequestModelResponse({
+            errors: Array(
+                new BadModel({
+                    title: 'ConsultationRoom',
+                    errors: Array('No consultation room available')
+                })
+            )
+        });
+        const conference = new ConferenceTestData().getConferenceDetailFuture();
+        const participant = conference.participants[0];
+        const answer = ConsultationAnswer.Accepted;
+        const room = RoomType.ConsultationRoom1;
+        const request = new PrivateAdminConsultationRequest({
+            conference_id: conference.id,
+            participant_id: participant.id,
+            answer,
+            consultation_room: room
+        });
+        service.callRingingTimeout = timeout;
+        apiClient.respondToAdminConsultationRequest.and.callFake(() => throwError(error));
+
+        await service.respondToAdminConsultationRequest(conference, participant, ConsultationAnswer.Accepted, room);
+
+        expect(service.callRingingTimeout).toBeNull();
+        expect(modalService.open).toHaveBeenCalledWith(ConsultationService.NO_ROOM_PC_MODAL);
     });
 
     it('should display no consultation room modal when consultation has been accepted but no rooms left', async () => {

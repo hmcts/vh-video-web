@@ -23,7 +23,7 @@ namespace VideoWeb.Mappings
                 .Select(x =>
                 {
                     var status = Enum.Parse<ParticipantStatus>(x.ParticipantStatus.ToString());
-                    var judgeInHearing = judgesInHearings.SingleOrDefault(j => j.Username == x.Username && j.Id != x.Id);
+                    var judgeInHearing = judgesInHearings.Where(j => j.Username == x.Username && j.Id != x.Id);
 
                     return new ParticipantContactDetailsResponseVho
                     {
@@ -41,7 +41,7 @@ namespace VideoWeb.Mappings
                         ContactEmail = x.ContactEmail,
                         ContactTelephone = x.ContactTelephone,
                         HearingVenueName = hearingVenueName,
-                        JudgeInAnotherHearing = judgeInHearing != null
+                        JudgeInAnotherHearing = judgeInHearing.Any()
                     };
                 });
             return pats.ToList();

@@ -40,6 +40,10 @@
   background-color: govuk-colour('dark-grey');
 }
 
+.graph-footer-black {
+  background-color: govuk-colour('black');
+}
+
 .vh-text-panel {
   margin-left: 20px;
   display: inline-block;
@@ -134,6 +138,7 @@
 .graph-display {
   display: block;
   margin: 10px;
+  width: 525px;
   background-color: govuk-colour('white');
   border-radius: 3px;
 }

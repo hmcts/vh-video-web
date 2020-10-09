@@ -9,6 +9,7 @@ import {
 export abstract class PanelModel {
     public id: string;
     public isMuted: boolean;
+    public isSpotlighted: boolean;
     public handRaised: boolean;
     public displayName: string;
     public pexipId: string;
@@ -21,23 +22,31 @@ export abstract class PanelModel {
         this.id = id;
         this.displayName = displayName;
         this.role = role;
-        this.caseTypeGroup = caseTypeGroup;
+        this.caseTypeGroup = role === Role.Judge ? 'judge' : caseTypeGroup;
         this.orderInTheList = this.setOrderInTheList();
         this.pexipDisplayName = pexipDisplayName;
     }
 
     abstract isInHearing(): boolean;
+    abstract isDisconnected(): boolean;
+    abstract isAvailable(): boolean;
+
+    get isJudge(): boolean {
+        return this.role === Role.Judge;
+    }
 
     private setOrderInTheList(): number {
         switch (this.caseTypeGroup.toLowerCase()) {
-            case 'panelmember':
+            case 'judge':
                 return 1;
-            case 'endpoint':
-                return 3;
-            case 'observer':
-                return 4;
-            default:
+            case 'panelmember':
                 return 2;
+            case 'endpoint':
+                return 4;
+            case 'observer':
+                return 5;
+            default:
+                return 3;
         }
     }
 }
@@ -53,6 +62,14 @@ export class ParticipantPanelModel extends PanelModel {
     isInHearing(): boolean {
         return this.status === ParticipantStatus.InHearing;
     }
+
+    isDisconnected(): boolean {
+        return this.status === ParticipantStatus.Disconnected;
+    }
+
+    isAvailable(): boolean {
+        return this.status === ParticipantStatus.Available;
+    }
 }
 
 export class VideoEndpointPanelModel extends PanelModel {
@@ -64,6 +81,14 @@ export class VideoEndpointPanelModel extends PanelModel {
     }
 
     isInHearing(): boolean {
+        return this.status === EndpointStatus.Connected;
+    }
+
+    isDisconnected(): boolean {
+        return this.status === EndpointStatus.Disconnected;
+    }
+
+    isAvailable(): boolean {
         return this.status === EndpointStatus.Connected;
     }
 }

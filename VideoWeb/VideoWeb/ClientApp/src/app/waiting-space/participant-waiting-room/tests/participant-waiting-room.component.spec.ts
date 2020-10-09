@@ -13,6 +13,7 @@ import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-map
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
@@ -68,7 +69,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             'isSupportedBrowser'
         ]);
 
-        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', ['leaveConsultation']);
+        consultationService = consultationServiceSpyFactory();
 
         logger = jasmine.createSpyObj<Logger>('Logger', ['debug', 'info', 'warn', 'event', 'error']);
     });
@@ -261,7 +262,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     const isSupportedBrowserForNetworkHealthTestCases = [
         { isSupportedBrowser: true, browserName: 'Chrome', expected: true },
         { isSupportedBrowser: false, browserName: 'Opera', expected: false },
-        { isSupportedBrowser: true, browserName: 'Safari', expected: false },
+        { isSupportedBrowser: true, browserName: 'Safari', expected: true },
         { isSupportedBrowser: true, browserName: 'MS-Edge', expected: false }
     ];
 

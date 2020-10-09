@@ -41,7 +41,6 @@ Scenario: Judge in another hearing
 Scenario: Judge in another waiting room after disconnection
   Given I have a hearing
   And the Judge status is Disconnected
-  And the Judge status is Available
 	And I have another hearing
   And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
   Then the VHO can see the Judge status is Unavailable

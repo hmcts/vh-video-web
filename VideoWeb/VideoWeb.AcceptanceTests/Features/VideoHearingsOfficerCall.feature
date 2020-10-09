@@ -43,7 +43,7 @@ Scenario: Video Hearings Officer cannot call users in a hearing
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
 	Then the option to call the first Individual's is not visible
   When in the Judge's browser
-  And the Judge clicks close
+  And the Judge closes the hearing
 	Then the user is on the Hearing List page
 
 @VIH-6132 @DisableLogging
@@ -69,5 +69,18 @@ Scenario: Video Hearings Officer Calls Panel Member
 	Then the Video Hearings Officer can see and hear the other user
 	And the admin self view can be open and closed
 	Then the Panel Member can see and hear the other user
+	When the Video Hearings Officer ends the call
+	Then the user is on the Hearing List page
+
+@VIH-6420 @DisableLogging
+Scenario: Video Hearings Officer Calls Winger
+  Given I have a CACD hearing with a Winger
+  And the Winger user has progressed to the Waiting Room page for the existing hearing
+	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
+	When the Video Hearings Officer starts a call with Winger
+	And Winger accepts the VHO call
+	Then the Video Hearings Officer can see and hear the other user
+	And the admin self view can be open and closed
+	Then the Winger can see and hear the other user
 	When the Video Hearings Officer ends the call
 	Then the user is on the Hearing List page

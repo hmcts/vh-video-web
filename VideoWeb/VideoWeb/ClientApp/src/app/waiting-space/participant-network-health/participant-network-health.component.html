@@ -1,23 +1,16 @@
-<div *ngIf="networkHealth" class="govuk-grid-row health-container">
+<div *ngIf="isNetworkPoor" class="govuk-grid-row right-align-text">
   <div class="govuk-grid-column-full">
-    <ng-container *ngIf="isNetworkGood; else poorNetwork">
-      <p class="govuk-body govuk-!-font-weight-bold health-text">
-        Your internet connection is good
-        <span class="govuk-button__start-icon">
-          <img id="network-good-img" class="networkIcon" src="/assets/images/connected-good-signal.png" alt="Good network icon" />
-        </span>
-      </p>
-    </ng-container>
-    <ng-template #poorNetwork>
-      <p class="govuk-body govuk-!-font-weight-bold health-text govuk-!-margin-bottom-0">
-        Your internet connection is poor
-        <span class="govuk-button__start-icon">
-          <img id="network-bad-img" class="networkIcon" src="/assets/images/alert-1.png" alt="Good network icon" />
-        </span>
-      </p>
-      <p class="govuk-body-s health-text govuk-!-margin-bottom-0">This may affect how others see and hear you.</p>
-      <p class="govuk-body-s health-text info" (click)="displayGuidanceModal()">Find out what you can do to improve it.</p>
-    </ng-template>
+    <span class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0 govuk-!-margin-right-2">
+      <img id="network-bad-img" class="networkIcon lower" src="/assets/images/alert-1.png" alt="Good network icon" /> Your connection is
+      poor
+    </span>
+    <a class="govuk-body-s health-text--info" [ngClass]="{ 'vh-block': !showDetail }" (click)="displayGuidanceModal()"
+      >Tips for improving your connection</a
+    >
+  </div>
+
+  <div class="govuk-grid-column-full" *ngIf="showDetail">
+    <p class="govuk-body-s govuk-!-margin-bottom-0">The hearing may be disrupted if your internet connection does not improve</p>
   </div>
 </div>
 

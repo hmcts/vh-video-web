@@ -88,3 +88,23 @@ Scenario: Panel member confirms the equipment is working
 	Then the incoming and self video should be playing video
 	When the user clicks the Equipment is working button
 	Then the user is on the Hearing List page
+
+@VIH-6420
+Scenario: Winger video hearing practice
+  Given I have a CACD hearing with a Winger
+	And the Winger Self Test user has progressed to the Practice video hearing page for the existing hearing
+	Then the incoming and self video should be playing video
+	And contact us details are available
+	When the video has ended
+	And the user clicks the Check equipment again button
+	Then the incoming and self video should be playing video
+	When the user changes the camera and microphone
+	Then the choose your camera and microphone popup should disappear
+
+@VIH-6420
+Scenario: Winger confirms the equipment is working
+  Given I have a CACD hearing with a Winger
+	And the Winger Self Test user has progressed to the Practice video hearing page for the existing hearing
+	Then the incoming and self video should be playing video
+	When the user clicks the Equipment is working button
+	Then the user is on the Hearing List page

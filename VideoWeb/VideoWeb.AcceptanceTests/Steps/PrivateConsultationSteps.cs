@@ -16,6 +16,7 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public class PrivateConsultationSteps
     {
+        private const int SecondsWaitForTheLinkToAppear = 5;
         private const int SecondsWaitToCallAndAnswer = 15;
         private const int ExtraTimeToConnectTheParticipantsInSaucelabs = 300;
         private readonly Dictionary<User, UserBrowser> _browsers;
@@ -100,6 +101,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenThePrivateConsultationLinkIsNotVisible(string text)
         {
             _browsers[_c.CurrentUser].Refresh();
+            Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitForTheLinkToAppear));
             var user = Users.GetUserFromText(text, _c.Test.Users);
             var participantId = _c.Test.ConferenceParticipants.First(x => x.Username.ToLower().Contains(user.Username.ToLower())).Id;
             _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(ParticipantListPanel.PrivateConsultationLink(participantId)).Should().BeTrue();

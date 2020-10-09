@@ -18,11 +18,13 @@ declare interface PexipClient {
     onDisconnect: (reason: any) => void;
     onParticipantUpdate: (participantUpdate: PexipParticipant) => void;
     onConferenceUpdate: (conferenceUpdate: PexipConference) => void;
+    onCallTransfer: (reason: any) => void;
 
     makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number);
     connect(pin: string, extension: string);
     disconnect();
     setParticipantMute(participantId: string, mute: boolean);
+    setParticipantSpotlight(participantId: string, spotlight: boolean);
     setMuteAllGuests(mute: boolean);
     muteAudio(): boolean;
     setBuzz();

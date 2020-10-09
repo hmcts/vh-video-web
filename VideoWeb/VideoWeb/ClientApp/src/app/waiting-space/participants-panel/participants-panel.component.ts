@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ParticipantResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
@@ -108,6 +108,7 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         participant.pexipId = updatedParticipant.uuid;
         participant.isMuted = updatedParticipant.isRemoteMuted;
         participant.handRaised = updatedParticipant.handRaised;
+        participant.isSpotlighted = updatedParticipant.isSpotlighted;
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
@@ -131,18 +132,15 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
             const pats = this.videoWebService.getParticipantsByConferenceId(this.conferenceId);
             const eps = this.videoWebService.getEndpointsForConference(this.conferenceId);
 
-            (await pats)
-                .filter(x => x.role !== Role.Judge)
-                .forEach(x => {
-                    const participant = new ParticipantPanelModel(x);
-                    this.participants.push(participant);
-                });
+            (await pats).forEach(x => {
+                const participant = new ParticipantPanelModel(x);
+                this.participants.push(participant);
+            });
 
             (await eps).forEach(x => {
                 const endpoint = new VideoEndpointPanelModel(x);
                 this.participants.push(endpoint);
             });
-
             this.participants.sort((x, z) => {
                 return x.orderInTheList === z.orderInTheList ? 0 : +(x.orderInTheList > z.orderInTheList) || -1;
             });
@@ -157,6 +155,11 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
 
     toggleMuteAll() {
         this.videoCallService.muteAllParticipants(!this.isMuteAll);
+    }
+
+    toggleSpotlightParticipant(participant: PanelModel) {
+        const p = this.participants.find(x => x.id === participant.id);
+        this.videoCallService.spotlightParticipant(p.pexipId, !p.isSpotlighted);
     }
 
     toggleMuteParticipant(participant: PanelModel) {
@@ -233,7 +236,32 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         return participantResponse;
     }
 
-    isParticipantDisconnected(participant: ParticipantPanelModel): boolean {
-        return participant.status === ParticipantStatus.Disconnected;
+    isParticipantDisconnected(participant: PanelModel): boolean {
+        return participant.isDisconnected();
+    }
+
+    getPanelRowTooltipText(participant: PanelModel) {
+        if (participant.isAvailable()) {
+            return participant.displayName + ': Joining';
+        }
+        if (!participant.isDisconnected() && !participant.isInHearing()) {
+            return participant.displayName + ': Not joined';
+        }
+
+        if (participant.isDisconnected()) {
+            return participant.displayName + ': DISCONNECTED';
+        }
+
+        return participant.displayName;
+    }
+
+    getPanelRowTooltipColour(participant: PanelModel) {
+        if (participant.isDisconnected()) {
+            return 'red';
+        } else if (participant.isAvailable() || participant.isInHearing()) {
+            return 'blue';
+        } else {
+            return 'grey';
+        }
     }
 }

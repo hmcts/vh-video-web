@@ -9,8 +9,10 @@ import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import {
+    onCallTransferredMock,
     onConnectedSubjectMock,
     onDisconnectedSubjectMock,
     onErrorSubjectMock,
@@ -31,6 +33,7 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
     const onConnectedSubject = onConnectedSubjectMock;
     const onDisconnectedSubject = onDisconnectedSubjectMock;
     const onErrorSubject = onErrorSubjectMock;
+    const onTransferSubject = onCallTransferredMock;
     const videoCallService = videoCallServiceSpy;
 
     const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: gloalConference.id }) } };
@@ -77,7 +80,7 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         heartbeatModelMapper = new HeartbeatModelMapper();
         deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['getBrowserName', 'getBrowserVersion']);
-        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', ['leaveConsultation']);
+        consultationService = consultationServiceSpyFactory();
     });
 
     beforeEach(async () => {
@@ -227,5 +230,12 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
         expect(component.heartbeat.kill).toHaveBeenCalled();
         expect(component.showVideo).toBeFalsy();
         expect(component.callbackTimeout).toBeUndefined();
+    });
+
+    it('should dettach current stream on transfer', () => {
+        const incomingStream = <any>{};
+        component.stream = incomingStream;
+        onTransferSubject.next('new_room');
+        expect(component.stream).toBeNull();
     });
 });

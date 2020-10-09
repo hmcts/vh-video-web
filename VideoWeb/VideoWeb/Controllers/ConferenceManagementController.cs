@@ -27,16 +27,17 @@ namespace VideoWeb.Controllers
             _logger = logger;
             _conferenceCache = conferenceCache;
         }
-        
+
         /// <summary>
         /// Start or resume a video hearing
         /// </summary>
         /// <param name="conferenceId">conference id</param>
+        /// <param name="request">start hearing request details</param>
         /// <returns>No Content status</returns>
         [HttpPost("{conferenceId}/start")]
         [SwaggerOperation(OperationId = "StartOrResumeVideoHearing")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        public async Task<IActionResult> StartOrResumeVideoHearingAsync(Guid conferenceId)
+        public async Task<IActionResult> StartOrResumeVideoHearingAsync(Guid conferenceId, StartHearingRequest request)
         {
             var validatedRequest = await ValidateUserIsJudgeAndInConference(conferenceId);
             if (validatedRequest != null)
@@ -45,7 +46,7 @@ namespace VideoWeb.Controllers
             }
             try
             {
-                await _videoApiClient.StartOrResumeVideoHearingAsync(conferenceId);
+                await _videoApiClient.StartOrResumeVideoHearingAsync(conferenceId, request);
                 return Accepted();
             }
             catch (VideoApiException ex)
@@ -105,33 +106,6 @@ namespace VideoWeb.Controllers
             catch (VideoApiException ex)
             {
                 _logger.LogError(ex, $"Unable to end video hearing {conferenceId}");
-                return StatusCode(ex.StatusCode, ex.Response);
-            }
-        }
-        
-        /// <summary>
-        /// Request technical assistance (suspend a hearing)
-        /// </summary>
-        /// <param name="conferenceId">conference id</param>
-        /// <returns>No Content status</returns>
-        [HttpPost("{conferenceId}/technicalassistance")]
-        [SwaggerOperation(OperationId = "RequestTechnicalAssistance")]
-        [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        public async Task<IActionResult> RequestTechnicalAssistanceAsync(Guid conferenceId)
-        {
-            var validatedRequest = await ValidateUserIsJudgeAndInConference(conferenceId);
-            if (validatedRequest != null)
-            {
-                return validatedRequest;
-            }
-            try
-            {
-                await _videoApiClient.RequestTechnicalAssistanceAsync(conferenceId);
-                return Accepted();
-            }
-            catch (VideoApiException ex)
-            {
-                _logger.LogError(ex, $"Unable to request technical assistance for video hearing {conferenceId}");
                 return StatusCode(ex.StatusCode, ex.Response);
             }
         }

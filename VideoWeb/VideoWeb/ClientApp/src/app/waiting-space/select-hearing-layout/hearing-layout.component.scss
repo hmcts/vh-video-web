@@ -1,0 +1,42 @@
+@import '~govuk-frontend/govuk/base';
+
+.sub-layout-grid {
+  @include govuk-font($size: 16);
+  display: grid;
+  grid-template-columns: 150px auto;
+  grid-template-rows: 100px;
+}
+
+.f16 {
+  @include govuk-font($size: 16);
+}
+
+.layout-image {
+  height: 80px;
+}
+
+.recommended-txt {
+  @extend .f16;
+  color: govuk-colour('dark-grey');
+}
+
+.layout {
+  @include govuk-font($size: 16);
+}
+
+.layoutimg {
+  @extend .layout;
+  grid-column: 1/1;
+  justify-self: start;
+  align-self: start;
+  grid-row: 1/1;
+}
+
+.layouttxt {
+  @extend .layout;
+  grid-column: 2/2;
+  justify-self: start;
+  align-self: start;
+  padding-right: 8%;
+  grid-row: 1/1;
+}

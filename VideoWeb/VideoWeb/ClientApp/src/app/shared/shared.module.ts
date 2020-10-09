@@ -24,6 +24,7 @@ import { SelectMediaDevicesComponent } from './select-media-devices/select-media
 import { SelfTestComponent } from './self-test/self-test.component';
 import { SharedRoutingModule } from './shared-routing.module';
 import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-browser.component';
+import { TooltipDirective } from './directives/tooltip.directive';
 
 @NgModule({
     imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, SharedRoutingModule],
@@ -46,7 +47,8 @@ import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-b
         ScrollTriggerDirective,
         BackNavigationComponent,
         ChatInputBoxComponent,
-        ChatBodyWindowComponent
+        ChatBodyWindowComponent,
+        TooltipDirective
     ],
     providers: [WindowScrolling, ScreenHelper],
     exports: [
@@ -66,7 +68,8 @@ import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-b
         ScrollTriggerDirective,
         BackNavigationComponent,
         ChatInputBoxComponent,
-        ChatBodyWindowComponent
+        ChatBodyWindowComponent,
+        TooltipDirective
     ]
 })
 export class SharedModule {}

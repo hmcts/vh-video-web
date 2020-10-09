@@ -21,6 +21,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
+import { ConsultationService } from 'src/app/services/api/consultation.service';
 
 declare var HeartbeatFactory: any;
 
@@ -43,6 +44,7 @@ export abstract class WaitingRoomBaseComponent {
     outgoingStream: MediaStream | URL;
 
     showVideo: boolean;
+    isPrivateConsultation: boolean;
     isAdminConsultation: boolean;
     showConsultationControls: boolean;
 
@@ -59,15 +61,17 @@ export abstract class WaitingRoomBaseComponent {
         protected heartbeatMapper: HeartbeatModelMapper,
         protected videoCallService: VideoCallService,
         protected deviceTypeService: DeviceTypeService,
-        protected router: Router
+        protected router: Router,
+        protected consultationService: ConsultationService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
         this.showVideo = false;
         this.showConsultationControls = false;
+        this.isPrivateConsultation = false;
     }
 
-    abstract updateShowVideo(): void;
+    // abstract updateShowVideo(): void;
 
     async getConference() {
         const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
@@ -193,7 +197,7 @@ export abstract class WaitingRoomBaseComponent {
         if (!this.deviceTypeService.isSupportedBrowser()) {
             return false;
         }
-        const unsupportedBrowsers = ['Safari', 'MS-Edge'];
+        const unsupportedBrowsers = ['MS-Edge'];
         const browser = this.deviceTypeService.getBrowserName();
         return unsupportedBrowsers.findIndex(x => x.toUpperCase() === browser.toUpperCase()) < 0;
     }
@@ -234,6 +238,8 @@ export abstract class WaitingRoomBaseComponent {
         this.videoCallSubscription$.add(
             this.videoCallService.onCallDisconnected().subscribe(disconnectedCall => this.handleCallDisconnect(disconnectedCall))
         );
+
+        this.videoCallSubscription$.add(this.videoCallService.onCallTransferred().subscribe(() => this.handleCallTransfer()));
 
         await this.videoCallService.setupClient();
     }
@@ -312,6 +318,10 @@ export abstract class WaitingRoomBaseComponent {
         }
     }
 
+    handleCallTransfer(): void {
+        this.stream = null;
+    }
+
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
         if (!this.validateIsForConference(message.conferenceId)) {
             return;
@@ -362,5 +372,47 @@ export abstract class WaitingRoomBaseComponent {
             return false;
         }
         return true;
+    }
+
+    async onConsultationCancelled() {
+        this.logger.info(
+            `Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}. Participant ${this.participant.id} attempting to leave conference: ${this.conference.id}`
+        );
+        try {
+            await this.consultationService.leaveConsultation(this.conference, this.participant);
+        } catch (error) {
+            this.logger.error('Failed to leave private consultation', error);
+        }
+    }
+
+    updateShowVideo(): void {
+        if (!this.connected) {
+            this.logger.debug('Not showing video because not connecting to node');
+            this.showVideo = false;
+            this.showConsultationControls = false;
+            this.isPrivateConsultation = false;
+            return;
+        }
+
+        if (this.hearing.isInSession()) {
+            this.logger.debug('Showing video because hearing is in session');
+            this.showVideo = true;
+            this.showConsultationControls = false;
+            this.isPrivateConsultation = false;
+            return;
+        }
+
+        if (this.participant.status === ParticipantStatus.InConsultation) {
+            this.logger.debug('Showing video because hearing is in consultation');
+            this.showVideo = true;
+            this.isPrivateConsultation = true;
+            this.showConsultationControls = !this.isAdminConsultation;
+            return;
+        }
+
+        this.logger.debug('Not showing video because hearing is not in session and user is not in consultation');
+        this.showVideo = false;
+        this.showConsultationControls = false;
+        this.isPrivateConsultation = false;
     }
 }

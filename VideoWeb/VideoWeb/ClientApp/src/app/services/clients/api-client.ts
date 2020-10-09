@@ -189,18 +189,24 @@ export class ApiClient {
     /**
      * Start or resume a video hearing
      * @param conferenceId conference id
+     * @param body (optional) start hearing request details
      * @return Success
      */
-    startOrResumeVideoHearing(conferenceId: string): Observable<void> {
+    startOrResumeVideoHearing(conferenceId: string, body: StartHearingRequest | undefined): Observable<void> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/start';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
         url_ = url_.replace(/[?&]$/, '');
 
+        const content_ = JSON.stringify(body);
+
         let options_: any = {
+            body: content_,
             observe: 'response',
             responseType: 'blob',
-            headers: new HttpHeaders({})
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json-patch+json'
+            })
         };
 
         return this.http
@@ -364,76 +370,6 @@ export class ApiClient {
     }
 
     protected processEndVideoHearing(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 202) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return _observableOf<void>(<any>null);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<void>(<any>null);
-    }
-
-    /**
-     * Request technical assistance (suspend a hearing)
-     * @param conferenceId conference id
-     * @return Success
-     */
-    requestTechnicalAssistance(conferenceId: string): Observable<void> {
-        let url_ = this.baseUrl + '/conferences/{conferenceId}/technicalassistance';
-        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
-        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
-        url_ = url_.replace(/[?&]$/, '');
-
-        let options_: any = {
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({})
-        };
-
-        return this.http
-            .request('post', url_, options_)
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processRequestTechnicalAssistance(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processRequestTechnicalAssistance(<any>response_);
-                        } catch (e) {
-                            return <Observable<void>>(<any>_observableThrow(e));
-                        }
-                    } else return <Observable<void>>(<any>_observableThrow(response_));
-                })
-            );
-    }
-
-    protected processRequestTechnicalAssistance(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
@@ -3423,6 +3359,47 @@ export interface IProblemDetails {
     extensions?: { [key: string]: any } | undefined;
 }
 
+export enum HearingLayout {
+    Dynamic = 'Dynamic',
+    OnePlus7 = 'OnePlus7',
+    TwoPlus21 = 'TwoPlus21'
+}
+
+export class StartHearingRequest implements IStartHearingRequest {
+    layout?: HearingLayout | undefined;
+
+    constructor(data?: IStartHearingRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.layout = _data['layout'];
+        }
+    }
+
+    static fromJS(data: any): StartHearingRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new StartHearingRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['layout'] = this.layout;
+        return data;
+    }
+}
+
+export interface IStartHearingRequest {
+    layout?: HearingLayout | undefined;
+}
+
 export enum ConferenceStatus {
     NotStarted = 'NotStarted',
     InSession = 'InSession',
@@ -3659,6 +3636,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     representee?: string | undefined;
     first_name?: string | undefined;
     last_name?: string | undefined;
+    hearing_role?: string | undefined;
 
     constructor(data?: IParticipantForUserResponse) {
         if (data) {
@@ -3681,6 +3659,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
             this.representee = _data['representee'];
             this.first_name = _data['first_name'];
             this.last_name = _data['last_name'];
+            this.hearing_role = _data['hearing_role'];
         }
     }
 
@@ -3704,6 +3683,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
         data['representee'] = this.representee;
         data['first_name'] = this.first_name;
         data['last_name'] = this.last_name;
+        data['hearing_role'] = this.hearing_role;
         return data;
     }
 }
@@ -3726,6 +3706,7 @@ export interface IParticipantForUserResponse {
     representee?: string | undefined;
     first_name?: string | undefined;
     last_name?: string | undefined;
+    hearing_role?: string | undefined;
 }
 
 export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerResponse {
@@ -3832,6 +3813,7 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
     case_type_group?: string | undefined;
     /** The representee the participant is acting on behalf */
     representee?: string | undefined;
+    hearing_role?: string | undefined;
 
     constructor(data?: IParticipantResponseVho) {
         if (data) {
@@ -3852,6 +3834,7 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
             this.tiled_display_name = _data['tiled_display_name'];
             this.case_type_group = _data['case_type_group'];
             this.representee = _data['representee'];
+            this.hearing_role = _data['hearing_role'];
         }
     }
 
@@ -3873,6 +3856,7 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
         data['tiled_display_name'] = this.tiled_display_name;
         data['case_type_group'] = this.case_type_group;
         data['representee'] = this.representee;
+        data['hearing_role'] = this.hearing_role;
         return data;
     }
 }
@@ -3894,6 +3878,7 @@ export interface IParticipantResponseVho {
     case_type_group?: string | undefined;
     /** The representee the participant is acting on behalf */
     representee?: string | undefined;
+    hearing_role?: string | undefined;
 }
 
 /** Detailed information about a conference for VHO officer */
@@ -4012,6 +3997,7 @@ export class ParticipantResponse implements IParticipantResponse {
     representee?: string | undefined;
     first_name?: string | undefined;
     last_name?: string | undefined;
+    hearing_role?: string | undefined;
 
     constructor(data?: IParticipantResponse) {
         if (data) {
@@ -4034,6 +4020,7 @@ export class ParticipantResponse implements IParticipantResponse {
             this.representee = _data['representee'];
             this.first_name = _data['first_name'];
             this.last_name = _data['last_name'];
+            this.hearing_role = _data['hearing_role'];
         }
     }
 
@@ -4057,6 +4044,7 @@ export class ParticipantResponse implements IParticipantResponse {
         data['representee'] = this.representee;
         data['first_name'] = this.first_name;
         data['last_name'] = this.last_name;
+        data['hearing_role'] = this.hearing_role;
         return data;
     }
 }
@@ -4080,6 +4068,7 @@ export interface IParticipantResponse {
     representee?: string | undefined;
     first_name?: string | undefined;
     last_name?: string | undefined;
+    hearing_role?: string | undefined;
 }
 
 export enum EndpointStatus {

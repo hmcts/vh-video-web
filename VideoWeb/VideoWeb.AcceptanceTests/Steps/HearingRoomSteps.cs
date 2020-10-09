@@ -47,10 +47,11 @@ namespace VideoWeb.AcceptanceTests.Steps
             Thread.Sleep(TimeSpan.FromSeconds(PauseCloseTransferDuration));
         }
 
-        [When(@"the Judge clicks close")]
-        public void WhenTheUserClicksClose()
+        [When(@"the Judge closes the hearing")]
+        public void WhenTheJudgeClosesTheHearing()
         {
             _browsers[_c.CurrentUser].Click(HearingRoomPage.CloseButton);
+            _browsers[_c.CurrentUser].Click(HearingRoomPage.ConfirmCloseButton);
             Thread.Sleep(TimeSpan.FromSeconds(PauseCloseTransferDuration));
         }
 
@@ -76,7 +77,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.ToggleSelfView).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.PauseButton).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.CloseButton).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.TechnicalIssues).Displayed.Should().BeTrue();
         }
 
         [Then(@"the user can see themselves and toggle the view off and on")]
@@ -113,8 +113,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var response = _c.Apis.TestApi.GetAudioRecordingLink(_c.Test.NewHearingId);
             var audioLink = RequestHelper.Deserialise<AudioRecordingResponse>(response.Content);
-            audioLink.Should().NotBeNull();
-            audioLink.Audio_file_link.ToLower().Should().Contain(_c.Test.NewHearingId.ToString().ToLower());
+            audioLink.Audio_file_links.Should().NotBeNullOrEmpty();
+            audioLink.Audio_file_links.First().ToLower().Should().Contain(_c.Test.NewHearingId.ToString().ToLower());
         }
 
         [Then(@"the VHO can see that (.*) is in the Waiting Room")]
@@ -148,7 +148,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         public void ProgressToNextPage()
         {
-            WhenTheUserClicksClose();
+            WhenTheJudgeClosesTheHearing();
         }
 
         private void SwitchToTheVhoIframe()

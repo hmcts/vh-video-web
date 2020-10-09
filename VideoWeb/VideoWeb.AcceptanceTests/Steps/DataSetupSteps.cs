@@ -19,8 +19,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         private const int DEFAULT_INDIVIDUALS_WITH_REPRESENTATIVES = 2;
         private const int DEFAULT_PANEL_MEMBERS = 0;
         private const int DEFAULT_OBSERVERS = 0;
+        private const int DEFAULT_WINGERS = 0;
         private const string DEFAULT_VENUE = "Birmingham Civil and Family Justice Centre";
-        private const int ALLOCATE_USERS_FOR_MINUTES = 3;
+        private const int ALLOCATE_USERS_FOR_MINUTES = 8;
         private const int ALLOCATE_USERS_FOR_HEARING_TESTS = 15;
         private readonly TestContext _c;
         private readonly ScenarioContext _scenario;
@@ -32,7 +33,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Given(@"I have a hearing")]
-        [Given(@"I have another hearing")]
         [Given(@"I have a hearing with a Judge")]
         [Given(@"I have another hearing with another Judge")]
         public void GivenIHaveAHearingAndAConference()
@@ -43,13 +43,28 @@ namespace VideoWeb.AcceptanceTests.Steps
             CreateConference();
         }
 
+        [Given(@"I have another hearing")]
+        public void GivenIHaveAnotherHearingAndAConference()
+        {
+            GivenIHaveAHearing();
+            CreateConference();
+        }
+
         [Given(@"I have a hearing in (.*) minutes time")]
-        [Given(@"I have another hearing in (.*) minutes time")]
         public void GivenIHaveAHearingAndAConferenceInMinutesTime(int minutes)
         {
             CheckThatTheHearingWillBeCreatedForToday(_c.TimeZone.AdjustAnyOS(DateTime.Now.ToUniversalTime().AddMinutes(minutes)));
             var userTypes = CreateUserTypes();
             AllocateUsers(userTypes);
+            GivenIHaveAHearing(minutes);
+            CreateConference();
+            _c.Test.DelayedStartTime = minutes;
+        }
+
+        [Given(@"I have another hearing in (.*) minutes time")]
+        public void GivenIHaveAnotherHearingAndAConferenceInMinutesTime(int minutes)
+        {
+            CheckThatTheHearingWillBeCreatedForToday(_c.TimeZone.AdjustAnyOS(DateTime.Now.ToUniversalTime().AddMinutes(minutes)));
             GivenIHaveAHearing(minutes);
             CreateConference();
             _c.Test.DelayedStartTime = minutes;
@@ -100,6 +115,38 @@ namespace VideoWeb.AcceptanceTests.Steps
             var userTypes = CreateUserTypes(2, 1, 1);
             AllocateUsers(userTypes);
             GivenIHaveAHearing(minutes);
+            CreateConference();
+            _c.Test.DelayedStartTime = minutes;
+        }
+
+        [Given(@"I have a CACD hearing with a Winger")]
+        public void GivenIHaveAHearingWithAWinger()
+        {
+            var userTypes = CreateUserTypes(2, 0,0,1);
+            AllocateUsers(userTypes);
+
+            var request = new HearingRequestBuilder()
+                .WithUsers(_c.Test.Users)
+                .WithCACDCaseType()
+                .Build();
+
+            SendTheHearingRequest(request);
+            CreateConference();
+        }
+
+        [Given(@"I have a CACD hearing with a winger in (.*) minutes time")]
+        public void GivenIHaveAHearingWithAWingerIn(int minutes)
+        {
+            var userTypes = CreateUserTypes(2, 0, 0, 1);
+            AllocateUsers(userTypes);
+
+            var request = new HearingRequestBuilder()
+                .WithUsers(_c.Test.Users)
+                .WithCACDCaseType()
+                .WithScheduledTime(_c.TimeZone.AdjustAnyOS(DateTime.Now.ToUniversalTime().AddMinutes(minutes)))
+                .Build();
+
+            SendTheHearingRequest(request);
             CreateConference();
             _c.Test.DelayedStartTime = minutes;
         }
@@ -161,8 +208,11 @@ namespace VideoWeb.AcceptanceTests.Steps
             NUnit.Framework.TestContext.WriteLine($"Conference created with Conference Id {conference.Id}");
         }
 
-        private static List<UserType> CreateUserTypes(int individualsAndRepresentatives = DEFAULT_INDIVIDUALS_WITH_REPRESENTATIVES
-            , int observers = DEFAULT_OBSERVERS, int panelMembers = DEFAULT_PANEL_MEMBERS)
+        private static List<UserType> CreateUserTypes(
+            int individualsAndRepresentatives = DEFAULT_INDIVIDUALS_WITH_REPRESENTATIVES, 
+            int observers = DEFAULT_OBSERVERS, 
+            int panelMembers = DEFAULT_PANEL_MEMBERS,
+            int wingers = DEFAULT_WINGERS)
         {
             var userTypes = new List<UserType> { UserType.Judge, UserType.VideoHearingsOfficer };
 
@@ -180,6 +230,11 @@ namespace VideoWeb.AcceptanceTests.Steps
             for (var i = 0; i < panelMembers; i++)
             {
                 userTypes.Add(UserType.PanelMember);
+            }
+
+            for (var i = 0; i < wingers; i++)
+            {
+                userTypes.Add(UserType.Winger);
             }
 
             return userTypes;

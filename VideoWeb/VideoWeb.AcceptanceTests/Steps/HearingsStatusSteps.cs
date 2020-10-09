@@ -49,8 +49,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             var displayedCaseOrder = _browsers[_c.CurrentUser].Driver.WaitUntilElementsVisible(VhoHearingListPage.CaseNumbers);
             var automationCaseNumberLength = _c.Test.Case.Number.Length;
             var automationOnlyCases = displayedCaseOrder.Select(caseNumber => caseNumber.Text.Trim()).Where(caseNumberText => caseNumberText.Trim().Length.Equals(automationCaseNumberLength) && caseNumberText.Contains("/")).ToList();
+            automationOnlyCases = RemoveAutomationCasesForOtherJudges(automationOnlyCases);
             automationOnlyCases.Should().NotBeNullOrEmpty();
             automationOnlyCases.First().Should().Be(_c.Test.Case.Number);
+        }
+
+        private List<string> RemoveAutomationCasesForOtherJudges(IEnumerable<string> caseNumbers)
+        {
+            return caseNumbers.Where(caseNumber => _c.Test.Conferences.Any(x => x.Case_number.Equals(caseNumber))).ToList();
         }
 
         [Then(@"the Video Hearings Officer user should see a (.*) notification")]

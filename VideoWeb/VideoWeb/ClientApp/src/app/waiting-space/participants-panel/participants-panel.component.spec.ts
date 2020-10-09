@@ -30,7 +30,7 @@ describe('ParticipantsPanelComponent', () => {
 
     beforeEach(() => {
         component = new ParticipantsPanelComponent(videoWebServiceSpy, activatedRoute, videocallService, eventService, logger);
-        component.participants = participants.filter(x => x.role !== Role.Judge).map(x => new ParticipantPanelModel(x));
+        component.participants = participants.map(x => new ParticipantPanelModel(x));
 
         endpoints.map(endpoint => {
             component.participants = component.participants.concat(new VideoEndpointPanelModel(endpoint));
@@ -41,23 +41,14 @@ describe('ParticipantsPanelComponent', () => {
         component.ngOnDestroy();
     });
 
-    it('should get participant sorted list, the panel members are the first and observers are the last one', fakeAsync(() => {
+    it('should get participant sorted list, the judge is first, then panel members and finally observers are the last one', fakeAsync(() => {
         component.participants = [];
         component.ngOnInit();
         flushMicrotasks();
-
         expect(component.participants.length).toBeGreaterThan(0);
-        expect(component.participants[0].caseTypeGroup).toBe('panelmember');
+        expect(component.participants[0].caseTypeGroup).toBe('judge');
+        expect(component.participants[1].caseTypeGroup).toBe('panelmember');
         expect(component.participants[component.participants.length - 1].caseTypeGroup).toBe('observer');
-    }));
-
-    it('should list of participant not include judge', fakeAsync(() => {
-        component.participants = [];
-        component.ngOnInit();
-        flushMicrotasks();
-
-        expect(component.participants.length).toBeGreaterThan(0);
-        expect(component.participants.findIndex(x => x.role === Role.Judge)).toBe(-1);
     }));
 
     it('should log error when api returns error', async () => {
@@ -161,25 +152,27 @@ describe('ParticipantsPanelComponent', () => {
     it('should process video call participant updates', () => {
         component.setupVideoCallSubscribers();
         const pat = component.participants.filter(x => x.role !== Role.Judge)[0];
-        const payload = new ParticipantUpdated('YES', 1, pat.pexipDisplayName, Guid.create().toString());
+        const payload = new ParticipantUpdated('YES', 1, pat.pexipDisplayName, Guid.create().toString(), 1);
 
         onParticipantUpdatedMock.next(payload);
         const result = component.participants.find(x => x.id === pat.id);
         expect(result.pexipId).toBe(payload.uuid);
         expect(result.isMuted).toBeTruthy();
         expect(result.handRaised).toBeTruthy();
+        expect(result.isSpotlighted).toBeTruthy();
     });
 
     it('should not process video call participant updates not in list', () => {
         component.setupVideoCallSubscribers();
         const pat = component.participants.filter(x => x.role !== Role.Judge)[1];
-        const payload = new ParticipantUpdated('YES', 1, 'do_not_exist_display_name', Guid.create().toString());
+        const payload = new ParticipantUpdated('YES', 1, 'do_not_exist_display_name', Guid.create().toString(), 0);
 
         onParticipantUpdatedMock.next(payload);
         const result = component.participants.find(x => x.id === pat.id);
         expect(result.pexipId).toBeUndefined();
         expect(result.isMuted).toBeFalsy();
         expect(result.handRaised).toBeFalsy();
+        expect(result.isSpotlighted).toBeFalsy();
     });
 
     it('should unmute all participants', () => {
@@ -199,6 +192,13 @@ describe('ParticipantsPanelComponent', () => {
         pat.isMuted = true;
         component.toggleMuteParticipant(pat);
         expect(videocallService.muteParticipant).toHaveBeenCalledWith(pat.pexipId, false);
+    });
+
+    it('should spotlight participant', () => {
+        const pat = component.participants[1];
+        pat.isSpotlighted = false;
+        component.toggleSpotlightParticipant(pat);
+        expect(videocallService.spotlightParticipant).toHaveBeenCalledWith(pat.pexipId, true);
     });
 
     it('should not mute conference when any of the second last participant is unmuted manually', () => {
@@ -389,5 +389,55 @@ describe('ParticipantsPanelComponent', () => {
     it('should return false when panelmodel is a participant', () => {
         const panelModel = component.participants.filter(x => x instanceof ParticipantPanelModel)[0];
         expect(component.isEndpoint(panelModel)).toBeFalsy();
+    });
+
+    it('should getPanelRowTooltipText return "Joining" for available participant', () => {
+        const p = participants[0];
+        p.status = ParticipantStatus.Available;
+        const model = new ParticipantPanelModel(p);
+        expect(component.getPanelRowTooltipText(model)).toContain(p.display_name + ': Joining');
+    });
+    it('should getPanelRowTooltipText return "Not Joined" for participant not joined', () => {
+        const p = participants[0];
+        p.status = ParticipantStatus.Joining;
+        const model = new ParticipantPanelModel(p);
+        expect(component.getPanelRowTooltipText(model)).toContain(p.display_name + ': Not joined');
+    });
+    it('should getPanelRowTooltipText return "DISCONNECTED" for disconnected participant', () => {
+        const p = participants[0];
+        p.status = ParticipantStatus.Disconnected;
+        const model = new ParticipantPanelModel(p);
+        expect(component.getPanelRowTooltipText(model)).toContain(p.display_name + ': DISCONNECTED');
+    });
+    it('should getPanelRowTooltipText return displayname as default', () => {
+        const p = participants[0];
+        p.status = ParticipantStatus.InHearing;
+        const model = new ParticipantPanelModel(p);
+        expect(component.getPanelRowTooltipText(model)).toContain(p.display_name);
+    });
+
+    it('should get red tooltip when participant is disconnected', () => {
+        const p = participants[0];
+        p.status = ParticipantStatus.Disconnected;
+        const model = new ParticipantPanelModel(p);
+        expect(component.getPanelRowTooltipColour(model)).toBe('red');
+    });
+    it('should get blue tooltip when participant is available', () => {
+        const p = participants[0];
+        p.status = ParticipantStatus.Available;
+        const model = new ParticipantPanelModel(p);
+        expect(component.getPanelRowTooltipColour(model)).toBe('blue');
+    });
+    it('should get blue tooltip when participant is in hearing', () => {
+        const p = participants[0];
+        p.status = ParticipantStatus.InHearing;
+        const model = new ParticipantPanelModel(p);
+        expect(component.getPanelRowTooltipColour(model)).toBe('blue');
+    });
+    it('should get grey tooltip as default', () => {
+        const p = participants[0];
+        p.status = ParticipantStatus.NotSignedIn;
+        const model = new ParticipantPanelModel(p);
+        expect(component.getPanelRowTooltipColour(model)).toBe('grey');
     });
 });

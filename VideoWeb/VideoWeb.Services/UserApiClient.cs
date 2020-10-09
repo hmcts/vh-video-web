@@ -119,18 +119,18 @@ namespace VideoWeb.Services.User
         /// <summary>Updates an AAD user</summary>
         /// <returns>Success</returns>
         /// <exception cref="UserApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task UpdateUserAsync(string body);
+        System.Threading.Tasks.Task<UpdateUserResponse> UpdateUserAsync(string body);
     
         /// <summary>Updates an AAD user</summary>
         /// <returns>Success</returns>
         /// <exception cref="UserApiException">A server side error occurred.</exception>
-        void UpdateUser(string body);
+        UpdateUserResponse UpdateUser(string body);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Updates an AAD user</summary>
         /// <returns>Success</returns>
         /// <exception cref="UserApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task UpdateUserAsync(string body, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<UpdateUserResponse> UpdateUserAsync(string body, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get User by AD User ID</summary>
         /// <returns>Success</returns>
@@ -821,7 +821,7 @@ namespace VideoWeb.Services.User
         /// <summary>Updates an AAD user</summary>
         /// <returns>Success</returns>
         /// <exception cref="UserApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task UpdateUserAsync(string body)
+        public System.Threading.Tasks.Task<UpdateUserResponse> UpdateUserAsync(string body)
         {
             return UpdateUserAsync(body, System.Threading.CancellationToken.None);
         }
@@ -829,16 +829,16 @@ namespace VideoWeb.Services.User
         /// <summary>Updates an AAD user</summary>
         /// <returns>Success</returns>
         /// <exception cref="UserApiException">A server side error occurred.</exception>
-        public void UpdateUser(string body)
+        public UpdateUserResponse UpdateUser(string body)
         {
-            System.Threading.Tasks.Task.Run(async () => await UpdateUserAsync(body, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+            return System.Threading.Tasks.Task.Run(async () => await UpdateUserAsync(body, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Updates an AAD user</summary>
         /// <returns>Success</returns>
         /// <exception cref="UserApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task UpdateUserAsync(string body, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<UpdateUserResponse> UpdateUserAsync(string body, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/users");
@@ -852,6 +852,7 @@ namespace VideoWeb.Services.User
                     content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json-patch+json");
                     request_.Content = content_;
                     request_.Method = new System.Net.Http.HttpMethod("PATCH");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
     
                     PrepareRequest(client_, request_, urlBuilder_);
                     var url_ = urlBuilder_.ToString();
@@ -871,9 +872,10 @@ namespace VideoWeb.Services.User
                         ProcessResponse(client_, response_);
     
                         var status_ = ((int)response_.StatusCode).ToString();
-                        if (status_ == "204") 
+                        if (status_ == "200") 
                         {
-                            return;
+                            var objectResponse_ = await ReadObjectResponseAsync<UpdateUserResponse>(response_, headers_).ConfigureAwait(false);
+                            return objectResponse_.Object;
                         }
                         else
                         if (status_ == "400") 
@@ -899,6 +901,8 @@ namespace VideoWeb.Services.User
                             var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
                             throw new UserApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
+            
+                        return default(UpdateUserResponse);
                     }
                     finally
                     {
@@ -1624,6 +1628,15 @@ namespace VideoWeb.Services.User
     
         [Newtonsoft.Json.JsonProperty("one_time_password", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string One_time_password { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class UpdateUserResponse 
+    {
+        [Newtonsoft.Json.JsonProperty("new_password", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string New_password { get; set; }
     
     
     }

@@ -5,8 +5,10 @@ import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-tes
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { VideoCallService } from './video-call.service';
 import { Guid } from 'guid-typescript';
-import { ApiClient } from 'src/app/services/clients/api-client';
+import { ApiClient, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { of } from 'rxjs';
+import { HearingLayout } from 'src/app/services/clients/api-client';
+import { SessionStorage } from 'src/app/services/session-storage';
 
 describe('VideoCallService', () => {
     let service: VideoCallService;
@@ -18,12 +20,7 @@ describe('VideoCallService', () => {
     let preferredMicrophone: UserMediaDevice;
     let pexipSpy: jasmine.SpyObj<PexipClient>;
     beforeAll(() => {
-        apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
-            'startOrResumeVideoHearing',
-            'pauseVideoHearing',
-            'endVideoHearing',
-            'requestTechnicalAssistance'
-        ]);
+        apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', ['startOrResumeVideoHearing', 'pauseVideoHearing', 'endVideoHearing']);
 
         userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
             'getListOfVideoDevices',
@@ -52,7 +49,8 @@ describe('VideoCallService', () => {
             'clearBuzz',
             'setParticipantMute',
             'setMuteAllGuests',
-            'clearAllBuzz'
+            'clearAllBuzz',
+            'setParticipantSpotlight'
         ]);
         service = new VideoCallService(logger, userMediaService, apiClient);
         await service.setupClient();
@@ -72,6 +70,7 @@ describe('VideoCallService', () => {
         expect(service.onError()).toBeDefined();
         expect(service.onParticipantUpdated()).toBeDefined();
         expect(service.onConferenceUpdated()).toBeDefined();
+        expect(service.onCallTransferred()).toBeDefined();
     });
 
     it('should use default devices on setup if no preferred devices found', async () => {
@@ -156,8 +155,9 @@ describe('VideoCallService', () => {
     it('should make api start call on start hearing', async () => {
         apiClient.startOrResumeVideoHearing.and.returnValue(of());
         const conferenceId = Guid.create().toString();
-        await service.startHearing(conferenceId);
-        expect(apiClient.startOrResumeVideoHearing).toHaveBeenCalledWith(conferenceId);
+        const layout = HearingLayout.TwoPlus21;
+        await service.startHearing(conferenceId, layout);
+        expect(apiClient.startOrResumeVideoHearing).toHaveBeenCalledWith(conferenceId, new StartHearingRequest({ layout }));
     });
 
     it('should make api start call on pause hearing', async () => {
@@ -174,10 +174,14 @@ describe('VideoCallService', () => {
         expect(apiClient.endVideoHearing).toHaveBeenCalledWith(conferenceId);
     });
 
-    it('should make api start call on request for technical assistance', async () => {
-        apiClient.requestTechnicalAssistance.and.returnValue(of());
+    it('should update preferred layout', () => {
+        const ss = new SessionStorage(service.PREFERRED_LAYOUT_KEY);
+        ss.set({});
         const conferenceId = Guid.create().toString();
-        await service.requestTechnicalAssistance(conferenceId);
-        expect(apiClient.requestTechnicalAssistance).toHaveBeenCalledWith(conferenceId);
+        expect(service.getPreferredLayout(conferenceId)).toBeUndefined();
+        const layout = HearingLayout.OnePlus7;
+        service.updatePreferredLayout(conferenceId, layout);
+        expect(service.getPreferredLayout(conferenceId)).toBe(layout);
+        ss.clear();
     });
 });

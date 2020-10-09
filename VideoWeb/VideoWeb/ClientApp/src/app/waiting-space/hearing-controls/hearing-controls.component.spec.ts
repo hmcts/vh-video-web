@@ -1,17 +1,17 @@
+import { Guid } from 'guid-typescript';
 import { ConferenceResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import {
     eventsServiceSpy,
-    participantStatusSubjectMock,
-    hearingCountdownCompleteSubjectMock
+    hearingCountdownCompleteSubjectMock,
+    participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import { onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ParticipantUpdated } from '../models/video-call-models';
 import { HearingControlsComponent } from './hearing-controls.component';
-import { Guid } from 'guid-typescript';
 
 describe('HearingControlsComponent', () => {
     let component: HearingControlsComponent;
@@ -71,7 +71,7 @@ describe('HearingControlsComponent', () => {
     });
 
     it('should show raised hand on hand lowered', () => {
-        const payload = new ParticipantUpdated('YES', 0, globalParticipant.tiled_display_name, Guid.create().toString());
+        const payload = new ParticipantUpdated('YES', 0, globalParticipant.tiled_display_name, Guid.create().toString(), 0);
         onParticipantUpdatedSubject.next(payload);
         expect(component.remoteMuted).toBeTruthy();
         expect(component.handRaised).toBeFalsy();
@@ -80,7 +80,7 @@ describe('HearingControlsComponent', () => {
 
     it('should not show raised hand on hand lowered for another participant', () => {
         const otherParticipant = gloalConference.participants.filter(x => x.role === Role.Representative)[0];
-        const payload = new ParticipantUpdated('YES', 0, otherParticipant.tiled_display_name, Guid.create().toString());
+        const payload = new ParticipantUpdated('YES', 0, otherParticipant.tiled_display_name, Guid.create().toString(), 0);
         component.handRaised = true;
         component.remoteMuted = false;
         onParticipantUpdatedSubject.next(payload);
@@ -90,7 +90,7 @@ describe('HearingControlsComponent', () => {
     });
 
     it('should show lower hand on hand raised', () => {
-        const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name, Guid.create().toString());
+        const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name, Guid.create().toString(), 0);
         onParticipantUpdatedSubject.next(payload);
         expect(component.handRaised).toBeTruthy();
         expect(component.handToggleText).toBe('Lower my hand');
@@ -98,7 +98,7 @@ describe('HearingControlsComponent', () => {
 
     it('should not show lower hand when hand raised for another participant', () => {
         const otherParticipant = gloalConference.participants.filter(x => x.role === Role.Representative)[0];
-        const payload = new ParticipantUpdated('YES', 0, otherParticipant.tiled_display_name, Guid.create().toString());
+        const payload = new ParticipantUpdated('YES', 0, otherParticipant.tiled_display_name, Guid.create().toString(), 0);
         component.handRaised = false;
         onParticipantUpdatedSubject.next(payload);
         expect(component.handRaised).toBeFalsy();
@@ -107,7 +107,7 @@ describe('HearingControlsComponent', () => {
 
     it('should mute locally if remote muted and not muted locally', () => {
         videoCallService.toggleMute.calls.reset();
-        const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name, Guid.create().toString());
+        const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name, Guid.create().toString(), 0);
         component.audioMuted = false;
         component.handleParticipantUpdatedInVideoCall(payload);
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(1);
@@ -115,7 +115,7 @@ describe('HearingControlsComponent', () => {
 
     it('should skip mute locally if remote muted and already muted locally', () => {
         videoCallService.toggleMute.calls.reset();
-        const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name, Guid.create().toString());
+        const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name, Guid.create().toString(), 0);
         component.audioMuted = true;
         component.handleParticipantUpdatedInVideoCall(payload);
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(0);
@@ -200,14 +200,29 @@ describe('HearingControlsComponent', () => {
         expect(videoCallService.pauseHearing).toHaveBeenCalledWith(component.conferenceId);
     });
 
-    it('should close the hearing', () => {
-        component.close();
+    it('should display confirm close hearing popup', () => {
+        component.displayConfirmPopup = false;
+        component.displayConfirmationDialog();
+        expect(component.displayConfirmPopup).toBeTruthy();
+    });
+
+    it('should not close the hearing on keep hearing open', async () => {
+        component.displayConfirmPopup = true;
+        component.close(false);
+        expect(component.displayConfirmPopup).toBeFalsy();
+        expect(videoCallService.endHearing).toHaveBeenCalledTimes(0);
+    });
+
+    it('should close the hearing on close hearing', async () => {
+        component.displayConfirmPopup = true;
+        component.close(true);
+        expect(component.displayConfirmPopup).toBeFalsy();
         expect(videoCallService.endHearing).toHaveBeenCalledWith(component.conferenceId);
     });
 
-    it('should suspend the hearing', () => {
-        component.suspend();
-        expect(videoCallService.requestTechnicalAssistance).toHaveBeenCalledWith(component.conferenceId);
+    it('should close the hearing', () => {
+        component.close(true);
+        expect(videoCallService.endHearing).toHaveBeenCalledWith(component.conferenceId);
     });
 
     it('should return true when partipant is judge', () => {

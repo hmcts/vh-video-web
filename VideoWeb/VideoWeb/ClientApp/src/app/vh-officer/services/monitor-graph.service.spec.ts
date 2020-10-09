@@ -21,7 +21,6 @@ class GraphTestData {
         let timePackage = new Date(Date.now()).getTime();
         for (let i = 0; i < 90; i++) {
             valuesPackageLost.push(new PackageLost(1, 'MS-Edge', '44.18', timePackage - 5000));
-            valuesPackageLost.push(new PackageLost(10, 'Safari', '80.0.3987.122', timePackage - 10000));
             timePackage = timePackage - 10000;
         }
 
@@ -34,10 +33,10 @@ describe('MonitorGraphService', () => {
 
     it('should set list of unsupported browsers and versions', () => {
         expect(service.unsupportedBroswer.length).toBeGreaterThan(0);
-        expect(service.unsupportedBroswer[0].name).toBe('Safari');
+        expect(service.unsupportedBroswer[0].name).toBe('MS-Edge');
     });
     it('should return true if the user browser is unsupported', () => {
-        const result = service.isUnsupportedBrowser(new PackageLost(10, 'Safari', null, 1583487492315));
+        const result = service.isUnsupportedBrowser(new PackageLost(10, 'MS-Edge', '23', 1583487492315));
         expect(result).toBeTruthy();
     });
     it('should return false if the user browser version greater than unsupported version', () => {

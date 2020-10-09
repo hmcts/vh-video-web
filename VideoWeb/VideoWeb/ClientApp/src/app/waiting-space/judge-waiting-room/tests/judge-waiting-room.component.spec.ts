@@ -4,7 +4,14 @@ import { AdalService } from 'adal-angular4';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse, Role, TokenResponse } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    ConferenceStatus,
+    HearingLayout,
+    ParticipantResponse,
+    Role,
+    TokenResponse
+} from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
@@ -13,6 +20,7 @@ import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-map
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { onErrorSubjectMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
@@ -71,7 +79,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         heartbeatModelMapper = new HeartbeatModelMapper();
         deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['getBrowserName', 'getBrowserVersion']);
-        consultationService = jasmine.createSpyObj<ConsultationService>('ConsultationService', ['leaveConsultation']);
+        consultationService = consultationServiceSpyFactory();
         audioRecordingService = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
     });
 
@@ -87,6 +95,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             videoCallService,
             deviceTypeService,
             router,
+            consultationService,
             audioRecordingService
         );
 
@@ -218,8 +227,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     it('should start the hearing', () => {
+        const layout = HearingLayout.TwoPlus21;
+        videoCallService.getPreferredLayout.and.returnValue(layout);
         component.startHearing();
-        expect(videoCallService.startHearing).toHaveBeenCalledWith(component.conference.id);
+        expect(videoCallService.startHearing).toHaveBeenCalledWith(component.conference.id, layout);
     });
 
     it('should close audio  alert  for judge', () => {

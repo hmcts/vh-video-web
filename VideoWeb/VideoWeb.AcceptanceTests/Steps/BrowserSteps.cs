@@ -148,7 +148,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the user is not on the (.*) page")]
         public void ThenTheUserIsNotOnThePage(string page)
         {
-            _browsers[_c.CurrentUser].PageUrl(page);
+            _browsers[_c.CurrentUser].PageUrl(page, true);
         }
 
         [When(@"the user refreshes the page")]

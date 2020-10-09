@@ -5,7 +5,7 @@
 <div *ngIf="showVideo && !isPrivateConsultation" class="govuk-grid-row">
   <div class="video-background"></div>
   <div class="govuk-grid-column-one-half">
-    <video id="incomingFeed" [srcObject]="this.stream" autoplay height="auto">
+    <video id="incomingFeed" [srcObject]="this.stream" autoplay height="auto" poster="/assets/images/empty_crest.jpg">
       Your browser does not support Video
     </video>
   </div>
@@ -14,7 +14,7 @@
 <div *ngIf="showVideo && isPrivateConsultation" class="govuk-grid-row">
   <div class="video-background"></div>
   <div class="govuk-grid-column-one-half">
-    <video id="incomingFeedPrivate" autoplay [srcObject]="this.stream" height="auto">
+    <video id="incomingFeedPrivate" autoplay [srcObject]="this.stream" height="auto" poster="/assets/images/empty_crest.jpg">
       Your browser does not support Video
     </video>
   </div>
@@ -33,6 +33,17 @@
   <div class="govuk-grid-column-full">
     <div class="govuk-!-padding-top-5">
       <h1 class="govuk-heading-xl govuk-!-padding-top-5">Your video hearing {{ getConferenceStatusText() }}</h1>
+    </div>
+
+    <div class="govuk-grid-row govuk-!-margin-bottom-4" *ngIf="!showVideo">
+      <div class="govuk-grid-column-one-third">
+        <!-- check equipment button goes here -->
+      </div>
+      <div class="govuk-grid-column-two-thirds" style="float: right">
+        <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-container">
+          <app-participant-network-health [participant]="participant" [showDetail]="false"></app-participant-network-health>
+        </div>
+      </div>
     </div>
 
     <table class="govuk-table vh-fullwidth" aria-describedby="Details of the hearing">
@@ -79,9 +90,7 @@
 
         <div *ngIf="hearing.isDelayed()">
           <h2 class="govuk-heading-m">Your hearing is delayed</h2>
-          <p>
-            We're sorry for the delay. Stay near your screen for further updates.
-          </p>
+          <p>We're sorry for the delay. Stay near your screen for further updates.</p>
         </div>
 
         <div *ngIf="hearing.isClosed()">
@@ -94,9 +103,7 @@
 
         <div *ngIf="hearing.isSuspended()">
           <h2 class="govuk-heading-m">We're having technical issues</h2>
-          <p>
-            All participants are affected. Stay near your screen for further updates. There's no need to call us.
-          </p>
+          <p>All participants are affected. Stay near your screen for further updates. There's no need to call us.</p>
         </div>
       </div>
       <div class="govuk-grid-row">
@@ -114,10 +121,6 @@
           </div>
         </div>
       </div>
-    </div>
-
-    <div *ngIf="isSupportedBrowserForNetworkHealth" class="govuk-!-padding-3">
-      <app-participant-network-health [participant]="participant"></app-participant-network-health>
     </div>
     <div class="govuk-!-margin-top-9">
       <p class="govuk-body"><strong>Video hearings team: 0300 303 0655</strong></p>

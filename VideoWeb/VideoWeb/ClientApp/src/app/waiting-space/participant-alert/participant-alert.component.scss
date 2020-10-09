@@ -13,40 +13,6 @@
   padding-right: 5px;
 }
 
-.alert-icon {
-  height: 25px;
-  cursor: pointer;
-}
-
-.tooltip-alert {
-  margin-left: -130%;
-  margin-top: -50%;
-}
-.tooltip-disc {
-  margin-left: -300%;
-  margin-top: -2%;
-}
-.tooltip {
-  display: block;
-  position: relative;
-  text-align: left;
-}
-
-.top {
-  padding: 5px;
-  color: govuk-colour('white');
-  position: absolute;
-  z-index: 121;
-  display: none;
-  font-family: sans-serif;
-  opacity: 0.88;
-  border-radius: 2px;
-  box-shadow: 0 7px 11px 0px rgba(0, 0, 0, 0.3);
-  font-size: 85%;
-}
-
-.top-name-icon {
-  background-color: #333;
-  border: 1px solid #333;
-  font-size: 85%;
+.alert-container {
+  z-index: 140;
 }

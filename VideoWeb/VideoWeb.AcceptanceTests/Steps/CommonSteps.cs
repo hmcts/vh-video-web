@@ -6,7 +6,6 @@ using AcceptanceTests.Common.PageObject.Pages;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
-using Selenium.Axe;
 using VideoWeb.Services.TestApi;
 
 namespace VideoWeb.AcceptanceTests.Steps
@@ -82,21 +81,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheButtonIsDisabled(string label)
         {
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(CommonLocators.ButtonWithInnerText(label)).GetAttribute("class").Should().Contain("disabled");
-        }
-
-        [Then(@"the page should be accessible")]
-        public void ThenThePageShouldBeAccessible()
-        {
-            var axeResult = new AxeBuilder(_browsers[_c.CurrentUser].Driver).Analyze();
-            axeResult.Violations.Should().BeEmpty();
-        }
-
-        [Then(@"the page should be accessible apart from a missing header")]
-        public void ThenThePageShouldBeAccessibleApartFromAMissingHeader()
-        {
-            var axeResult = new AxeBuilder(_browsers[_c.CurrentUser].Driver)
-                .DisableRules("page-has-heading-one").Analyze();
-            axeResult.Violations.Should().BeEmpty();
         }
     }
 }

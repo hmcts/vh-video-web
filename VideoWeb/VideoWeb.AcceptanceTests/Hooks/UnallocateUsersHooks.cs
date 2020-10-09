@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Net;
+using Castle.Core.Internal;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -14,7 +15,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         public void UnallocateUsers(TestContext context)
         {
             if (context?.Apis?.TestApi == null) return;
-            if (context.Test?.Users == null) return;
+            if (context.Test.Users.IsNullOrEmpty()) return;
 
             var usernames = context.Test.Users.Select(user => user.Username).ToList();
             if (usernames.Count <= 0) return;

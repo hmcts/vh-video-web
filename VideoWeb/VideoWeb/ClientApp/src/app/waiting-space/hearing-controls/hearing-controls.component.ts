@@ -26,12 +26,14 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
     handRaised: boolean;
     remoteMuted: boolean;
     selfViewOpen: boolean;
+    displayConfirmPopup: boolean;
 
     constructor(private videoCallService: VideoCallService, private eventService: EventsService, private logger: Logger) {
         this.handRaised = false;
         this.audioMuted = false;
         this.remoteMuted = false;
         this.selfViewOpen = false;
+        this.displayConfirmPopup = false;
     }
 
     get isJudge(): boolean {
@@ -149,11 +151,14 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         this.videoCallService.pauseHearing(this.conferenceId);
     }
 
-    suspend() {
-        this.videoCallService.requestTechnicalAssistance(this.conferenceId);
+    close(answer: boolean) {
+        this.displayConfirmPopup = false;
+        if (answer) {
+            this.videoCallService.endHearing(this.conferenceId);
+        }
     }
 
-    close() {
-        this.videoCallService.endHearing(this.conferenceId);
+    displayConfirmationDialog() {
+        this.displayConfirmPopup = true;
     }
 }
