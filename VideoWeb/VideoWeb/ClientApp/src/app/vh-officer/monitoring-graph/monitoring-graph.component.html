@@ -5,9 +5,9 @@
         <div class="signalHeadName">{{ participantName }}</div>
         <div class="signalHeadTitle"></div>
       </div>
-      <div class="boxBody" *ngIf="!showUnsupportedBrowser">
+      <div class="boxBody">
         <div class="graph-display">
-          <canvas
+          <canvas *ngIf="!showUnsupportedBrowser"
             baseChart
             width="525"
             height="150"
@@ -24,21 +24,19 @@
         </div>
       </div>
       <div class="boxFoot">
-        <div class="govuk-grid-row" *ngIf="showUnsupportedBrowser" style="display: block; margin: 20px;">
-          <span class="govuk-body-l vh-center-panel">Browser not sending heartbeat information</span>
-        </div>
+
         <div
           class="govuk-grid-row graph-panel footer-border"
           style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px;"
-          *ngIf="!showUnsupportedBrowser"
           [ngClass]="{
             'graph-footer-yellow': lastPackageLostValue === 'poor',
             'graph-footer-green': lastPackageLostValue === 'good',
             'graph-footer-red': lastPackageLostValue === 'bad',
-            'graph-footer-gray': lastPackageLostValue === 'disconnected'
+            'graph-footer-gray': lastPackageLostValue === 'disconnected',
+            'graph-footer-black': lastPackageLostValue === 'unsupported'
           }"
         >
-          <span
+          <span *ngIf="!showUnsupportedBrowser"
             class="govuk-body-s vh-text-panel"
             id="signal-strength"
             [ngClass]="{ 'vh-c': lastPackageLostValue !== 'poor' }"
@@ -46,12 +44,24 @@
           >
             {{ participantGraphInfo.status }}: {{ lastPackageLostValue }} signal
           </span>
-        </div>
-        <div class="govuk-grid-row graph-panel graph-footer-gray" *ngIf="showUnsupportedBrowser">
-          <span class="govuk-body-s vh-c vh-text-panel" id="signal-unsupported" style="color: white;">
-            {{ participantGraphInfo.status }}: no network quality information
+            <span *ngIf="showUnsupportedBrowser"
+                class="govuk-body-s vh-text-panel"
+                id="signal-strength-unsupported"
+                [ngClass]="{ 'vh-c': lastPackageLostValue !== 'poor' }"
+                style="color: white; margin-top: 6px;"
+            >
+            {{ participantGraphInfo.status }}
+          </span>
+            <span
+                class="govuk-body-s vh-text-panel"
+                id="signal-strength2"
+                [ngClass]="{ 'vh-c': lastPackageLostValue !== 'poor' }"
+                style="color: white; margin-top: 6px; margin-bottom: 1px; margin-right: 10px; float: right"
+            >
+            {{ browserInfoString }}
           </span>
         </div>
+
       </div>
     </div>
   </div>

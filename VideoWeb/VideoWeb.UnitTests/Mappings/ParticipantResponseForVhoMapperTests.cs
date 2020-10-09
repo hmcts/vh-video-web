@@ -28,6 +28,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.Role.Should().Be(expectedRole);
             response.CaseTypeGroup.Should().Be(participant.Case_type_group);
             response.Representee.Should().Be(participant.Representee);
+            response.HearingRole.Should().Be(participant.Hearing_role);
         }
 
     }

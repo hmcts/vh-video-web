@@ -1,0 +1,21 @@
+export enum HearingRole {
+    APPELLANT = 'Appellant',
+    APPELLANT_LIP = 'Appellant LIP',
+    APPLICANT_LIP = 'Applicant LIP',
+    CLAIMANT_LIP = 'Claimant LIP',
+    DEFENCE_ADVOCATE = 'Defence Advocate',
+    DEFENDANT_LIP = 'Defendant LIP',
+    EXPERT = 'Expert',
+    INTERPRETER = 'Interpreter',
+    JUDGE = 'Judge',
+    MACKENZIE_FRIEND = 'MacKenzie friend',
+    OBSERVER = 'Observer',
+    PANEL_MEMBER = 'Panel Member',
+    PROSECUTION = 'Prosecution',
+    PROSECUTION_ADVOCATE = 'Prosecution Advocate',
+    REPRESENTATIVE = 'Representative',
+    RESPONDENT_LIP = 'Respondent LIP',
+    STATE_LIP = 'State LIP',
+    WINGER = 'Winger',
+    WITNESS = 'Witness'
+}

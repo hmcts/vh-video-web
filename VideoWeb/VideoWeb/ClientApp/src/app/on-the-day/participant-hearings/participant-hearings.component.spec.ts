@@ -26,14 +26,14 @@ describe('ParticipantHearingList', () => {
         first_name: 'Jane',
         last_name: 'Doe PM',
         role: Role.Individual,
-        username: 'jane.doe.PM@hearings.net'
+        username: 'panelmem.doe.PM@hearings.net'
     });
     const mockObserverProfile: UserProfileResponse = new UserProfileResponse({
         display_name: 'J Doe PM',
         first_name: 'Jane',
         last_name: 'Doe O',
         role: Role.Individual,
-        username: 'jane.doe.O@hearings.net'
+        username: 'observer.doe.O@hearings.net'
     });
 
     const conferences = new ConferenceTestData().getTestData();

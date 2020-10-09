@@ -41,10 +41,25 @@ describe('ParticipantNetworkHealthComponent', () => {
     ];
 
     isNetworkGoodTestCases.forEach(testcase => {
-        it(`should return ${testcase.expected} when heartbeat is ${testcase.status}`, () => {
+        it(`should return isNetworkGood ${testcase.expected} when heartbeat is ${testcase.status}`, () => {
             const payload = new ParticipantHeartbeat(globalConference.id, globalParticipant.id, testcase.status, 'Chrome', '82.0.0');
             heartbeatSubject.next(payload);
             expect(component.isNetworkGood).toBe(testcase.expected);
+        });
+    });
+
+    const isNetworkPoorTestCases = [
+        { status: HeartbeatHealth.None, expected: false },
+        { status: HeartbeatHealth.Good, expected: false },
+        { status: HeartbeatHealth.Poor, expected: true },
+        { status: HeartbeatHealth.Bad, expected: false }
+    ];
+
+    isNetworkPoorTestCases.forEach(testcase => {
+        it(`should return isNetworkPoor ${testcase.expected} when heartbeat is ${testcase.status}`, () => {
+            const payload = new ParticipantHeartbeat(globalConference.id, globalParticipant.id, testcase.status, 'Chrome', '82.0.0');
+            heartbeatSubject.next(payload);
+            expect(component.isNetworkPoor).toBe(testcase.expected);
         });
     });
 

@@ -54,6 +54,34 @@
 
   <div class="vh-line govuk-!-margin-bottom-3"></div>
 
+    <div *ngIf="wingers.length > 0">
+        <div class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
+            <h2 class="govuk-heading-s">Wingers ({{ wingers.length }})</h2>
+          </div>
+        </div>
+        <div class="vh-border">
+          <div *ngFor="let participant of wingers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
+            <div id="p-row-{{ participant.id }}-panel-member" class="govuk-grid-column-full govuk-!-margin-top-2">
+              <p id="p-{{ participant.id }}-name-panel-member" class="govuk-heading-s govuk-!-margin-bottom-3">
+                {{ participant.name }}
+              </p>
+    
+              <div class="govuk-body-s govuk-!-margin-bottom-3" *ngIf="isUserJudge()">
+                <label
+                  id="p-{{ participant.id }}-status-participant"
+                  class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
+                >
+                  {{ getParticipantStatus(participant) }}
+                </label>
+              </div>
+    
+              <div class="vh-line" *ngIf="!lastItem"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
   <div *ngIf="panelMembers.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
@@ -99,8 +127,12 @@
             </p>
             <p id="p-{{ participant.id }}-hearing-role-participant" class="govuk-body-m govuk-!-margin-bottom-3">
               {{ participant.hearing_role }}
-            </p>             
-            <p *ngIf="!isCaseTypeNone(participant)" id="p-{{ participant.id }}-case-type-group-participant" class="govuk-body-m govuk-!-margin-bottom-3">
+            </p>
+            <p
+              *ngIf="!isCaseTypeNone(participant)"
+              id="p-{{ participant.id }}-case-type-group-participant"
+              class="govuk-body-m govuk-!-margin-bottom-3"
+            >
               {{ participant.case_type_group }}
             </p>
           </div>
@@ -128,12 +160,20 @@
               {{ participant.name }}
             </p>
             <p id="p-{{ participant.id }}-representee" *ngIf="participant.representee" class="govuk-body-m govuk-!-margin-bottom-3">
-              {{ !isCaseTypeNone(participant) ? 'Representative' : participant.hearing_role }}  for {{ participant.representee }}
+              {{ !isCaseTypeNone(participant) ? 'Representative' : participant.hearing_role }} for {{ participant.representee }}
             </p>
-            <p id="p-{{ participant.id }}-hearing-role-participant" *ngIf="!participant.representee" class="govuk-body-m govuk-!-margin-bottom-3">
+            <p
+              id="p-{{ participant.id }}-hearing-role-participant"
+              *ngIf="!participant.representee"
+              class="govuk-body-m govuk-!-margin-bottom-3"
+            >
               {{ participant.hearing_role }}
-            </p>            
-            <p *ngIf="!isCaseTypeNone(participant)" id="p-{{ participant.id }}-case-type-group-participant" class="govuk-body-m govuk-!-margin-bottom-3">
+            </p>
+            <p
+              *ngIf="!isCaseTypeNone(participant)"
+              id="p-{{ participant.id }}-case-type-group-participant"
+              class="govuk-body-m govuk-!-margin-bottom-3"
+            >
               {{ participant.case_type_group }}
             </p>
           </div>
@@ -210,3 +250,15 @@
     </div>
   </div>
 </div>
+
+<app-modal id="vho-raise-pc-modal" class="modal clear consultation">
+  <app-vho-raise-consultation (answeredVhoCall)="respondToVhoConsultationRequest($event)"></app-vho-raise-consultation>
+</app-modal>
+
+<app-modal id="no-room-pc-modal" class="modal clear consultation">
+  <app-no-consultation-room (closedModal)="closeAllPCModals()"></app-no-consultation-room>
+</app-modal>
+
+<app-modal id="pc-error-modal" class="modal clear consultation">
+  <app-consultation-error (closedModal)="closeAllPCModals()"></app-consultation-error>
+</app-modal>

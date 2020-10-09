@@ -42,6 +42,17 @@
             </button>
         </div>
 
+    <div class="govuk-grid-row govuk-!-margin-bottom-4" *ngIf="!showVideo">
+      <div class="govuk-grid-column-one-third">
+        <!-- check equipment button goes here -->
+      </div>
+      <div class="govuk-grid-column-two-thirds" style="float: right">
+        <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-container">
+          <app-participant-network-health [participant]="participant" [showDetail]="false"></app-participant-network-health>
+        </div>
+      </div>
+    </div>
+
         <table class="govuk-table vh-fullwidth" aria-describedby="Details of the hearing">
             <thead class="govuk-table__head no-mass">
                 <tr class="govuk-table__row">
@@ -116,7 +127,6 @@
                 </div>
             </div>
         </div>
-
         <div *ngIf="isSupportedBrowserForNetworkHealth" class="govuk-!-padding-3">
             <app-participant-network-health [participant]="participant"></app-participant-network-health>
         </div>

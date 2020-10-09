@@ -9,18 +9,26 @@ export abstract class ParticipantNetworkHealthBaseDirective implements OnInit, O
     eventSubscriptions$ = new Subscription();
     networkHealth?: HeartbeatHealth;
     @Input() participant: ParticipantResponse;
+    @Input() showDetail = true;
+
     constructor(protected eventsService: EventsService) {}
 
     get isNetworkGood() {
         return this.networkHealth && this.networkHealth === HeartbeatHealth.Good;
     }
 
+    get isNetworkPoor() {
+        return this.networkHealth && this.networkHealth === HeartbeatHealth.Poor;
+    }
+
     get isVideoOn(): boolean {
         return this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation;
     }
+
     get isDisconnected(): boolean {
         return this.participant.status === ParticipantStatus.Disconnected;
     }
+
     ngOnInit() {
         this.setupSubscribers();
     }

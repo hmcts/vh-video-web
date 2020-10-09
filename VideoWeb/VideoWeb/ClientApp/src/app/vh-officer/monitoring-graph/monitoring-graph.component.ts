@@ -37,6 +37,8 @@ export class MonitoringGraphComponent implements OnInit {
     showUnsupportedBrowser = false;
     participantName: string;
 
+    browserInfoString: string;
+
     constructor(private monitorGraphService: MonitorGraphService) {}
 
     ngOnInit() {
@@ -67,6 +69,7 @@ export class MonitoringGraphComponent implements OnInit {
 
     transferPackagesLost(packagesLost: PackageLost[]) {
         this.showUnsupportedBrowser = this.isUnsupportedBrowser(packagesLost);
+        this.browserInfoString = this.getBrowserInfoString(packagesLost);
         if (!this.showUnsupportedBrowser) {
             this.packagesLostValues = this.monitorGraphService.transferPackagesLost(packagesLost);
             this.lastPoint = this.packagesLostValues[GraphSettings.MAX_RECORDS - 1];
@@ -78,6 +81,9 @@ export class MonitoringGraphComponent implements OnInit {
     }
 
     get lastPackageLostValue() {
+        if (this.showUnsupportedBrowser && !this.lastPoint) {
+            return graphLabel.Unsupported;
+        }
         if (!this.lastPoint || this.lastPoint === -1) {
             return graphLabel.Disconnected;
         }
@@ -87,5 +93,11 @@ export class MonitoringGraphComponent implements OnInit {
             return graphLabel.Bad;
         }
         return graphLabel.Good;
+    }
+
+    getBrowserInfoString(packages: PackageLost[]) {
+        return packages && packages.length > 0
+            ? `${packages[packages.length - 1].browserName} | ${packages[packages.length - 1].browserVersion}`
+            : 'No browser info.';
     }
 }

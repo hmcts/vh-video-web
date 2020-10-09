@@ -1,4 +1,4 @@
-@import '~govuk-frontend/govuk/all';
+@import '~govuk-frontend/govuk/base';
 
 .health-container {
   background: govuk-colour('black');
@@ -17,12 +17,17 @@
   color: govuk-colour('white');
 }
 
-.health-text.info {
+.health-text--info {
+  cursor: pointer;
+  color: $govuk-link-colour;
   text-decoration: underline;
 }
 
 .networkIcon {
   height: 25px;
+}
+.networkIcon.lower {
+  margin-bottom: -5px;
 }
 
 .modal-content {
@@ -31,4 +36,12 @@
 
 .actions-row {
   text-align: center;
+}
+
+.right-align-text {
+  text-align: right;
+}
+
+.vh-block {
+  display: block;
 }

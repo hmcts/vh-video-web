@@ -10,7 +10,7 @@ class GraphTestData {
         let timePackage = new Date(Date.now()).getTime();
         for (let i = 0; i < 90; i++) {
             valuesPackageLost.push(new PackageLost(1, 'Edje', '44.001', timePackage - 5000));
-            valuesPackageLost.push(new PackageLost(10, 'Chrome', '', timePackage - 10000));
+            valuesPackageLost.push(new PackageLost(10, 'Chrome', '77.02', timePackage - 10000));
             timePackage = timePackage - 15000;
         }
 
@@ -46,6 +46,11 @@ describe('MonitoringGraphComponent', () => {
         const lastValue = component.lastPoint;
         expect(lastValue).toBe(19);
     });
+    it('should get the browser info string', () => {
+        valuesPackageLost = GraphTestData.getData();
+        component.transferPackagesLost(valuesPackageLost);
+        expect(component.browserInfoString).toBe('Chrome | 77.02');
+    });
     it('should defined the signal strength by the last package lost value as bad ', () => {
         component.lastPoint = 1;
         const lastValue = component.lastPackageLostValue;
@@ -65,6 +70,12 @@ describe('MonitoringGraphComponent', () => {
         component.lastPoint = NaN;
         const lastValue = component.lastPackageLostValue;
         expect(lastValue).toBe('disconnected');
+    });
+    it('should defined the signal strength by the last package lost value as unsupported', () => {
+        component.showUnsupportedBrowser = true;
+        const lastValue = component.lastPackageLostValue;
+        expect(lastValue).toBe('unsupported');
+        expect(component.browserInfoString).toBe('Chrome | 77.02');
     });
     it('should defined the signal strength as disconnected if no data recieved', () => {
         const valuesPackageLoss = [];
