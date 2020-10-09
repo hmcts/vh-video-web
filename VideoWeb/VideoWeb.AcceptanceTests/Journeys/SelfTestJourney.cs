@@ -22,7 +22,7 @@ namespace VideoWeb.AcceptanceTests.Journeys
 
         public void VerifyUserIsApplicableToJourney(UserType userType)
         {
-            userType.ToString().ToLower().Should().BeOneOf("individual","representative","panelmember");
+            userType.ToString().ToLower().Should().BeOneOf("individual","representative","panelmember","winger");
         }
 
         public void VerifyDestinationIsInThatJourney(Page destinationPage)

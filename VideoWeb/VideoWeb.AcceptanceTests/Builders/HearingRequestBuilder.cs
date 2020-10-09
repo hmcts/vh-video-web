@@ -8,6 +8,8 @@ namespace VideoWeb.AcceptanceTests.Builders
     {
         private readonly CreateHearingRequest _request;
         private const string DEFAULT_VENUE = "Birmingham Civil and Family Justice Centre";
+        private const string CASE_TYPE_NAME = "Civil Money Claims";
+        private const string CACD_CASE_TYPE_NAME = "Court of Appeal Criminal Division";
 
         public HearingRequestBuilder()
         {
@@ -15,6 +17,7 @@ namespace VideoWeb.AcceptanceTests.Builders
             {
                 Application = Application.VideoWeb,
                 Audio_recording_required = false,
+                Case_type = CASE_TYPE_NAME,
                 Questionnaire_not_required = true,
                 Scheduled_date_time = DateTime.UtcNow,
                 Test_type = TestType.Automated,
@@ -44,6 +47,12 @@ namespace VideoWeb.AcceptanceTests.Builders
         public HearingRequestBuilder WithAudioRecordingRequired(bool audioRecordingRequired)
         {
             _request.Audio_recording_required = audioRecordingRequired;
+            return this;
+        }
+
+        public HearingRequestBuilder WithCACDCaseType()
+        {
+            _request.Case_type = CACD_CASE_TYPE_NAME;
             return this;
         }
 

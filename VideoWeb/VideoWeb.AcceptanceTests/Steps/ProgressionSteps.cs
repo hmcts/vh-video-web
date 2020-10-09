@@ -105,6 +105,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 case "individual self test":
                 case "representative self test":
                 case "panel member self test":
+                case "winger self test":
                     return Journey.SelfTest;
                 case "participant":
                 case "individual":
@@ -112,7 +113,8 @@ namespace VideoWeb.AcceptanceTests.Steps
                 case "observer":
                     return Journey.Participant;
                 case "panel member":
-                    return Journey.PanelMember;
+                case "winger":
+                    return Journey.PanelMemberOrWinger;
                 case "video hearings officer":
                     return Journey.Vho;
                 default:
@@ -140,7 +142,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {Journey.Judge, new JudgeJourney()},
                 {Journey.JudgeSelftest, new JudgeSelfTestJourney()},
                 {Journey.Participant, new ParticipantJourney()},
-                {Journey.PanelMember, new PanelMemberJourney()},
+                {Journey.PanelMemberOrWinger, new PanelMemberOrWingerJourney()},
                 {Journey.SelfTest, new SelfTestJourney()},
                 {Journey.Vho, new VhoJourney()}
             };
