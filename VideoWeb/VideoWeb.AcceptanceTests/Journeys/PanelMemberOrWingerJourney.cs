@@ -5,7 +5,7 @@ using VideoWeb.Services.TestApi;
 
 namespace VideoWeb.AcceptanceTests.Journeys
 {
-    public class PanelMemberJourney : IJourney
+    public class PanelMemberOrWingerJourney : IJourney
     {
         public List<Page> Journey()
         {
@@ -20,7 +20,7 @@ namespace VideoWeb.AcceptanceTests.Journeys
 
         public void VerifyUserIsApplicableToJourney(UserType userType)
         {
-            userType.Should().Be(UserType.PanelMember);
+            userType.ToString().Should().BeOneOf(UserType.PanelMember.ToString(), UserType.Winger.ToString());
         }
 
         public void VerifyDestinationIsInThatJourney(Page destinationPage)
