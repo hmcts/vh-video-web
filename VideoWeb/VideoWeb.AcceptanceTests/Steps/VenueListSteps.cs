@@ -4,6 +4,7 @@ using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.Test.Helpers;
 using FluentAssertions;
+using OpenQA.Selenium;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
@@ -41,13 +42,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             foreach (var venue in ConverterHelpers.ConvertStringIntoArray(judgeNames))
             {
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesTextBox).SendKeys(venue);
-                _browsers[_c.CurrentUser].ClickCheckbox(VhoVenueAllocationPage.VenueCheckbox(venue));
+                _browsers[_c.CurrentUser].ClickCheckbox(VhoVenueAllocationPage.VenueCheckbox(venue), 5);
             }
         }
 
         [When(@"the VHO confirms their allocation selection")]
         public void ConfirmVenue()
         {
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoVenueAllocationPage.VenuesTextBox).SendKeys(Keys.Escape);
             _browsers[_c.CurrentUser].Click(VhoVenueAllocationPage.VenueConfirmButton);
         }
 
