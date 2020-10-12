@@ -191,6 +191,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     }
 
     onMediaDeviceChangeCancelled() {
+
         this.displayDeviceChangeModal = false;
     }
 

@@ -194,13 +194,17 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         this.displayDeviceChangeModal = true;
     }
 
-    onMediaDeviceChangeCancelled() {
+    async onMediaDeviceChangeCancelled() {
         this.displayDeviceChangeModal = false;
     }
 
-    onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
+    async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
         const cam = selectedMediaDevice.selectedCamera;
         if (cam) {
+            const inMemoryCamera = await this.userMediaService.getPreferredCamera();
+            console.log('DEVICE CHECK selected*************:' + cam.label + ' ' + cam.deviceId);
+            console.log('DEVICE CHECK memory*************:' + inMemoryCamera.label + ' ' + inMemoryCamera.deviceId);
+
             this.videoCallService.updateCameraForCall(cam);
         }
 
@@ -209,4 +213,5 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
             this.videoCallService.updateMicrophoneForCall(mic);
         }
     }
+
 }
