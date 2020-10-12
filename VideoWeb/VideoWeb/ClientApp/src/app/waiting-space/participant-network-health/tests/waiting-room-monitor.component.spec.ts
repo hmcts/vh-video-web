@@ -21,10 +21,10 @@ describe('WaitingRoomMonitorComponent', () => {
     });
 
     it('should subscribe to participant heartbeat', () => {
-        const score = HeartbeatHealth.Good;
+        const score = HeartbeatHealth.Poor;
         const payload = new ParticipantHeartbeat(globalConference.id, globalParticipant.id, score, 'Chrome', '82.0.0');
         heartbeatSubject.next(payload);
-        expect(component.isNetworkGood).toBeTruthy();
+        expect(component.isNetworkPoor).toBeTruthy();
         expect(component.networkHealth).toBe(score);
     });
 });

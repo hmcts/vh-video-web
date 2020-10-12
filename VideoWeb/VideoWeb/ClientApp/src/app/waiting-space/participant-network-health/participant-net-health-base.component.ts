@@ -13,10 +13,6 @@ export abstract class ParticipantNetworkHealthBaseDirective implements OnInit, O
 
     constructor(protected eventsService: EventsService) {}
 
-    get isNetworkGood() {
-        return this.networkHealth && this.networkHealth === HeartbeatHealth.Good;
-    }
-
     get isNetworkPoor() {
         return this.networkHealth && this.networkHealth === HeartbeatHealth.Poor;
     }

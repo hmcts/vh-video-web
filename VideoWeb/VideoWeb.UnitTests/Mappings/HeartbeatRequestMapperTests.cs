@@ -62,7 +62,7 @@ namespace VideoWeb.UnitTests.Mappings
                 {
                     IncomingAudioPercentageLostRecent = 1m,
                     IncomingVideoPercentageLostRecent = 2m,
-                    OutgoingAudioPercentageLostRecent = 30m,
+                    OutgoingAudioPercentageLostRecent = 14m,
                     OutgoingVideoPercentageLostRecent = 4m
                 })
                 .Should().NotBeNull().And.BeAssignableTo<HeartbeatHealth>()
@@ -74,7 +74,7 @@ namespace VideoWeb.UnitTests.Mappings
                     IncomingAudioPercentageLostRecent = 1m,
                     IncomingVideoPercentageLostRecent = 2m,
                     OutgoingAudioPercentageLostRecent = 3m,
-                    OutgoingVideoPercentageLostRecent = 12m
+                    OutgoingVideoPercentageLostRecent = 15m
                 })
                 .Should().NotBeNull().And.BeAssignableTo<HeartbeatHealth>()
                 .And.Be(HeartbeatHealth.Poor);

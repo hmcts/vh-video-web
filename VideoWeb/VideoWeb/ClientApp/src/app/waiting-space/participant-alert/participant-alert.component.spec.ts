@@ -24,7 +24,7 @@ describe('ParticipantAlertComponent', () => {
         const score = HeartbeatHealth.Good;
         const payload = new ParticipantHeartbeat(globalConference.id, globalParticipant.id, score, 'Chrome', '82.0.0');
         heartbeatSubject.next(payload);
-        expect(component.isNetworkGood).toBeTruthy();
+        expect(component.isNetworkPoor).toBeFalsy();
         expect(component.networkHealth).toBe(score);
     });
 });
