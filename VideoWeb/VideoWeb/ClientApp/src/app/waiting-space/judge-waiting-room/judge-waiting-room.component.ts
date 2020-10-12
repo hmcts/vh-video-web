@@ -199,19 +199,22 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     }
 
     async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
-        const cam = selectedMediaDevice.selectedCamera;
-        if (cam) {
-            const inMemoryCamera = await this.userMediaService.getPreferredCamera();
-            console.log('DEVICE CHECK selected*************:' + cam.label + ' ' + cam.deviceId);
-            console.log('DEVICE CHECK memory*************:' + inMemoryCamera.label + ' ' + inMemoryCamera.deviceId);
+        this.disconnect();
+        this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
+        this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
+        await this.updatePexipAudioVideoSource();
+        this.call();
+    }
 
+    async updatePexipAudioVideoSource() {
+        const cam = await this.userMediaService.getPreferredCamera();
+        if (cam) {
             this.videoCallService.updateCameraForCall(cam);
         }
 
-        const mic = selectedMediaDevice.selectedMicrophone;
+        const mic = await this.userMediaService.getPreferredMicrophone();
         if (mic) {
             this.videoCallService.updateMicrophoneForCall(mic);
         }
     }
-
 }

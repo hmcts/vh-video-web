@@ -32,7 +32,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     clockSubscription$: Subscription;
     consultationAccepted$: Subscription;
 
-    @ViewChild(SelectMediaDevicesComponent) selectMediaDevices: SelectMediaDevicesComponent; 
+    @ViewChild(SelectMediaDevicesComponent) selectMediaDevices: SelectMediaDevicesComponent;
 
     constructor(
         protected route: ActivatedRoute,
@@ -191,21 +191,26 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     }
 
     onMediaDeviceChangeCancelled() {
-
         this.displayDeviceChangeModal = false;
     }
 
-    onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
-        const cam = selectedMediaDevice.selectedCamera;
+    async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
+        this.disconnect();
+        this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
+        this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
+        await this.updatePexipAudioVideoSource();
+        this.call();
+    }
+
+    async updatePexipAudioVideoSource() {
+        const cam = await this.userMediaService.getPreferredCamera();
         if (cam) {
             this.videoCallService.updateCameraForCall(cam);
         }
 
-        const mic = selectedMediaDevice.selectedMicrophone;
+        const mic = await this.userMediaService.getPreferredMicrophone();
         if (mic) {
             this.videoCallService.updateMicrophoneForCall(mic);
         }
-
     }
-  
 }
