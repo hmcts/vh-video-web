@@ -1,4 +1,4 @@
-import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
@@ -26,6 +26,8 @@ import { onErrorSubjectMock, videoCallServiceSpy } from 'src/app/testing/mocks/m
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { CallError } from '../../models/video-call-models';
 import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
+import { UserMediaService } from 'src/app/services/user-media.service';
+import { BehaviorSubject } from 'rxjs';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
@@ -49,6 +51,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     const logger: Logger = new MockLogger();
 
     let audioRecordingService: jasmine.SpyObj<AudioRecordingService>;
+    let userMediaService: jasmine.SpyObj<UserMediaService>;
 
     const mockHeartbeat = {
         kill: jasmine.createSpy()
@@ -81,6 +84,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['getBrowserName', 'getBrowserVersion']);
         consultationService = consultationServiceSpyFactory();
         audioRecordingService = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
+        userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
+            'getShowDialogChooseDevice',
+            'updateShowDialogChooseDevice'
+        ]);
     });
 
     beforeEach(async () => {
@@ -96,7 +103,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             deviceTypeService,
             router,
             consultationService,
-            audioRecordingService
+            audioRecordingService,
+            userMediaService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, gloalConference));
@@ -123,9 +131,11 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     it('should init hearing alert and subscribers', fakeAsync(() => {
         component.ngOnInit();
         flushMicrotasks();
+        tick(100);
         expect(component.eventHubSubscription$).toBeDefined();
         expect(component.videoCallSubscription$).toBeDefined();
         expect(videoCallService.setupClient).toHaveBeenCalled();
+        expect(component.consultationAccepted$).toBeDefined();
     }));
 
     it('should return correct conference status text when suspended', async () => {

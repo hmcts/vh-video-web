@@ -1,4 +1,4 @@
-import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { of, Subscription, BehaviorSubject } from 'rxjs';
@@ -73,12 +73,13 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         ]);
 
         consultationService = consultationServiceSpyFactory();
-        consultationService.consultationAcceptedBy = new BehaviorSubject<boolean>(true);
 
         logger = jasmine.createSpyObj<Logger>('Logger', ['debug', 'info', 'warn', 'event', 'error']);
         userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
             'updatePreferredCamera',
-            'updatePreferredMicrophone'
+            'updatePreferredMicrophone',
+            'getShowDialogChooseDevice',
+            'updateShowDialogChooseDevice'
         ]);
     });
 
@@ -115,7 +116,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     it('should init hearing alert and subscribers', fakeAsync(() => {
         component.ngOnInit();
         flushMicrotasks();
-
+        tick(100);
         expect(component.clockSubscription$).toBeDefined();
         expect(component.eventHubSubscription$).toBeDefined();
         expect(component.videoCallSubscription$).toBeDefined();

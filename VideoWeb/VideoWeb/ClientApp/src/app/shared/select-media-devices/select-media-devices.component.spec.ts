@@ -97,10 +97,10 @@ describe('SelectMediaDevicesComponent', () => {
         expect(component.acceptMediaDeviceChange.emit).toHaveBeenCalledTimes(0);
     });
 
-    it('should emit device updated event when form is valid', async () => {
-        spyOn(component.acceptMediaDeviceChange, 'emit');
+    it('should emit close event when dialog is closed', async () => {
+        spyOn(component.cancelMediaDeviceChange, 'emit');
         component.onSubmit();
-        expect(component.acceptMediaDeviceChange.emit).toHaveBeenCalled();
+        expect(component.cancelMediaDeviceChange.emit).toHaveBeenCalled();
     });
 
     it('should update microphone stream on device change', () => {
@@ -133,14 +133,6 @@ describe('SelectMediaDevicesComponent', () => {
     it('should on change device save selected devices and emit device update event', () => {
         spyOn(component.acceptMediaDeviceChange, 'emit');
         component.onChangeDevice();
-        expect(component.acceptMediaDeviceChange.emit).toHaveBeenCalled();
-    });
-    it('should emit cnange device event and close event on submit', async () => {
-        spyOn(component.cancelMediaDeviceChange, 'emit');
-        spyOn(component.acceptMediaDeviceChange, 'emit');
-
-        component.onSubmit();
-        expect(component.cancelMediaDeviceChange.emit).toHaveBeenCalled();
         expect(component.acceptMediaDeviceChange.emit).toHaveBeenCalled();
     });
 });

@@ -100,7 +100,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
 
     subscribeToAcceptConsultation() {
         this.consultationAccepted$ = this.consultationService.consultationAcceptedBy.subscribe(accepted => {
-            if (accepted && this.displayDeviceChangeModal) {
+            if (accepted && this.displayDeviceChangeModal && this.selectMediaDevices) {
                 this.selectMediaDevices.onSubmit();
             }
         });
@@ -188,7 +188,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
 
     showChooseCameraDialog() {
         this.displayDeviceChangeModal = true;
-        this.videoCallService.getVideoSource();
     }
 
     onMediaDeviceChangeCancelled() {
@@ -196,7 +195,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     }
 
     onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
-        this.logger.debug('EVENT  camera and mic *********************');
         const cam = selectedMediaDevice.selectedCamera;
         if (cam) {
             this.videoCallService.updateCameraForCall(cam);
@@ -206,7 +204,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         if (mic) {
             this.videoCallService.updateMicrophoneForCall(mic);
         }
-        this.videoCallService.getVideoSource();
 
     }
   

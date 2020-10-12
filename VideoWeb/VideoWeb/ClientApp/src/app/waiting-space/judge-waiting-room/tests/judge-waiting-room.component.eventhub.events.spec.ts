@@ -35,6 +35,7 @@ import {
 import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
+import { UserMediaService } from 'src/app/services/user-media.service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
@@ -62,6 +63,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     const logger: Logger = new MockLogger();
 
     let audioRecordingService: jasmine.SpyObj<AudioRecordingService>;
+    let userMediaService: jasmine.SpyObj<UserMediaService>;
 
     const jwToken = new TokenResponse({
         expires_on: '06/10/2020 01:13:00',
@@ -106,7 +108,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             deviceTypeService,
             router,
             consultationService,
-            audioRecordingService
+            audioRecordingService,
+            userMediaService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, gloalConference));

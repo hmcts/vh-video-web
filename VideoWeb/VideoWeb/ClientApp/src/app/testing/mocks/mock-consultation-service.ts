@@ -1,4 +1,5 @@
 import { ConsultationService } from 'src/app/services/api/consultation.service';
+import { BehaviorSubject } from 'rxjs';
 
 export function consultationServiceSpyFactory(): jasmine.SpyObj<ConsultationService> {
     const consultationServiceMock = jasmine.createSpyObj<ConsultationService>('ConsultationService', [
@@ -22,5 +23,7 @@ export function consultationServiceSpyFactory(): jasmine.SpyObj<ConsultationServ
     consultationServiceMock.leaveConsultation.and.returnValue(Promise.resolve());
     consultationServiceMock.respondToAdminConsultationRequest.and.returnValue(Promise.resolve());
     consultationServiceMock.startPrivateConsulationWithEndpoint.and.returnValue(Promise.resolve());
+    consultationServiceMock.consultationAcceptedBy = new BehaviorSubject<boolean>(true);
+
     return consultationServiceMock;
 }

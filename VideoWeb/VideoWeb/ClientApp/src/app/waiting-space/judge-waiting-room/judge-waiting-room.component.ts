@@ -29,11 +29,11 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     isRecording: boolean;
     continueWithNoRecording = false;
     showAudioRecordingAlert = false;
-    expanedPanel = true
+    expanedPanel = true;
 
     consultationAccepted$: Subscription;
 
-    @ViewChild(SelectMediaDevicesComponent) selectMediaDevices: SelectMediaDevicesComponent; 
+    @ViewChild(SelectMediaDevicesComponent) selectMediaDevices: SelectMediaDevicesComponent;
 
     constructor(
         protected route: ActivatedRoute,
@@ -49,7 +49,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         protected consultationService: ConsultationService,
         private audioRecordingService: AudioRecordingService,
         private userMediaService: UserMediaService
-
     ) {
         super(
             route,
@@ -75,7 +74,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
             this.startEventHubSubscribers();
             this.getJwtokenAndConnectToPexip();
             this.subscribeToAcceptConsultation();
-
         });
     }
 
@@ -86,7 +84,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
 
     subscribeToAcceptConsultation() {
         this.consultationAccepted$ = this.consultationService.consultationAcceptedBy.subscribe(accepted => {
-            if (accepted && this.displayDeviceChangeModal) {
+            if (accepted && this.displayDeviceChangeModal && this.selectMediaDevices) {
                 this.selectMediaDevices.onSubmit();
             }
         });
@@ -211,5 +209,4 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
             this.videoCallService.updateMicrophoneForCall(mic);
         }
     }
-
 }
