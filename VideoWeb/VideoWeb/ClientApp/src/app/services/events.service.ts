@@ -20,6 +20,7 @@ import { ParticipantStatusMessage } from './models/participant-status-message';
     providedIn: 'root'
 })
 export class EventsService {
+    serverTimeoutTime = 300000; // 5 minutes
     retryDelayTime = 5000;
     connection: signalR.HubConnection;
 
@@ -48,6 +49,7 @@ export class EventsService {
                 accessTokenFactory: () => this.adalService.userInfo.token
             })
             .build();
+        this.connection.serverTimeoutInMilliseconds = this.serverTimeoutTime;
     }
 
     start() {
