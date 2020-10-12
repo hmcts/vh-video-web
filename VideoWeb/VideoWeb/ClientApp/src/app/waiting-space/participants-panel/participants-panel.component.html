@@ -59,7 +59,7 @@
           </div>
           <div class="pntwk">
             <app-participant-alert
-              *ngIf="!isEndpoint(participant)"
+              *ngIf="!isEndpoint(participant) && !participant.isJudge"
               [participant]="mapParticipantToParticipantResponse(participant)"
             ></app-participant-alert>
           </div>

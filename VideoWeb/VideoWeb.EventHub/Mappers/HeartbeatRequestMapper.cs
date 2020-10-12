@@ -39,7 +39,7 @@ namespace VideoWeb.EventHub.Mappers
                 return HeartbeatHealth.Good;
             }
 
-            return max >= 15m ? HeartbeatHealth.Bad : HeartbeatHealth.Poor;
+            return max >= 15m ? HeartbeatHealth.Poor : HeartbeatHealth.Bad;
         }
     }
 }
