@@ -158,6 +158,20 @@ describe('TooltipDirective', () => {
         expect(directive._additionalText).toBe(additionalText);
     });
 
+    it('should set element hearing role if created', () => {
+        const additionalText = ['test', 'test1'];
+        directive.hearingRole = document.createElement('div');
+        directive.additionalText = additionalText;
+        expect(directive.hearingRole.innerText).toBe(additionalText[0]);
+    });
+
+    it('should set element case role if created', () => {
+        const additionalText = ['test', 'test1'];
+        directive.caseRole = document.createElement('div');
+        directive.additionalText = additionalText;
+        expect(directive.caseRole.innerText).toBe(additionalText[1]);
+    });
+
     it('should create tooltip element for hearing role', () => {
         (directive.additionalText = ['hearing role', '']), directive.create();
         expect(directive.hearingRole).toBeDefined();
