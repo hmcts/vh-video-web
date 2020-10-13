@@ -157,5 +157,4 @@ describe('TooltipDirective', () => {
         directive.additionalText = additionalText;
         expect(directive._additionalText).toBe(additionalText);
     });
-
 });
