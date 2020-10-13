@@ -59,6 +59,12 @@ parameters:
       DeviceType: Desktop
       DeviceName:
       TestCaseFilter: TestCategory=Smoketest-Extended
+    - OS: MacOS
+      Browser: EdgeChromium
+      BrowserVersion: Latest
+      DeviceType: Desktop
+      DeviceName:
+      TestCaseFilter: TestCategory=Smoketest-Extended      
     - OS: Windows
       Browser: Ie11
       BrowserVersion: Latest
