@@ -445,6 +445,13 @@ describe('ParticipantsPanelComponent', () => {
         const model = new ParticipantPanelModel(p);
         expect(component.getPanelRowTooltipAdditionalText(model)).toEqual(tooltiptext);
     });
+    it('should getPanelRowTooltipAdditionalText return empty array for judge', () => {
+        const tooltiptext = [];
+        const p = participants[2];
+        p.status = ParticipantStatus.InHearing;
+        const model = new ParticipantPanelModel(p);
+        expect(component.getPanelRowTooltipAdditionalText(model)).toEqual(tooltiptext);
+    });
     it('should get red tooltip when participant is disconnected', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Disconnected;

@@ -172,16 +172,27 @@ describe('TooltipDirective', () => {
         expect(directive.caseRole.innerText).toBe(additionalText[1]);
     });
 
-    it('should create tooltip element for hearing role', () => {
-        (directive.additionalText = ['hearing role', '']), directive.create();
+    it('should create tooltip element for hearing role element', () => {
+        const additionalText = ['hearing role', 'case role'];
+        directive.additionalText = additionalText;
+        directive.create();
         expect(directive.hearingRole).toBeDefined();
         expect(directive.tooltip.classList).toContain('vh-tooltip');
     });
 
-    it('should create tooltip element for case role', () => {
-        (directive.additionalText = ['hearing role', 'case role']), directive.create();
+    it('should create tooltip element for case role element', () => {
+        const additionalText = ['hearing role', 'case role'];
+        directive.additionalText = additionalText;
+        directive.create();
         expect(directive.caseRole).toBeDefined();
-        console.log(directive.caseRole.innerText);
         expect(directive.tooltip.classList).toContain('vh-tooltip');
+    });
+
+    it('should not create tooltip element caserole, hearingrole for judge', () => {
+        const additionalText = [];
+        directive.additionalText = additionalText;
+        directive.create();
+        expect(directive.caseRole).toBeUndefined();
+        expect(directive.hearingRole).toBeUndefined();
     });
 });
