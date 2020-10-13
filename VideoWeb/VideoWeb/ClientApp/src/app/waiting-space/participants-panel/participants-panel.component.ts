@@ -7,6 +7,8 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { CaseTypeGroup } from '../models/case-type-group';
+import { HearingRole } from '../models/hearing-role-model';
 import { PanelModel, ParticipantPanelModel, VideoEndpointPanelModel } from '../models/participant-panel-model';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
@@ -233,6 +235,8 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         participantResponse.display_name = participant.displayName;
         participantResponse.role = participant.role;
         participantResponse.case_type_group = participant.caseTypeGroup;
+        participantResponse.hearing_role = participant.hearingRole;
+        participantResponse.representee = participant.representee;
         return participantResponse;
     }
 
@@ -263,5 +267,32 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         } else {
             return 'grey';
         }
+    }
+
+    getPanelRowTooltipAdditionalText(participant: PanelModel): string[] {
+        const additionalText: string[] = [];
+        if (participant.hearingRole !== HearingRole.JUDGE) {
+            additionalText.push(this.getHearingRole(participant));
+            additionalText.push(this.getCaseRole(participant));
+        }
+        return additionalText;
+    }
+
+    private getHearingRole(participant: PanelModel): string {
+        return participant.representee ? `${participant.hearingRole} for ${participant.representee}` : `${participant.hearingRole}`;
+    }
+
+    private getCaseRole(participant: PanelModel): string {
+        return this.showCaseRole(participant) ? participant.caseTypeGroup : '';
+    }
+
+    private showCaseRole(participant: PanelModel) {
+        return participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === 'endpoint'
+            ? false
+            : true;
     }
 }

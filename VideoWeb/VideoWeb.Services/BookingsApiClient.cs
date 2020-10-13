@@ -474,24 +474,21 @@ namespace VideoWeb.Services.Bookings
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task AnonymiseHearingsAsync(System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Gets a list of hearing by case number</summary>
-        /// <param name="caseNumber">case number to search by</param>
+        /// <summary>Search for hearings by case number. Search will apply fuzzy matching</summary>
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<HearingsByCaseNumberResponse>> GetHearingsByCaseNumberAsync(string caseNumber);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<AudioRecordedHearingsBySearchResponse>> SearchForHearingsAsync(string caseNumber, System.DateTime? date);
     
-        /// <summary>Gets a list of hearing by case number</summary>
-        /// <param name="caseNumber">case number to search by</param>
+        /// <summary>Search for hearings by case number. Search will apply fuzzy matching</summary>
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Collections.Generic.List<HearingsByCaseNumberResponse> GetHearingsByCaseNumber(string caseNumber);
+        System.Collections.Generic.List<AudioRecordedHearingsBySearchResponse> SearchForHearings(string caseNumber, System.DateTime? date);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Gets a list of hearing by case number</summary>
-        /// <param name="caseNumber">case number to search by</param>
+        /// <summary>Search for hearings by case number. Search will apply fuzzy matching</summary>
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<HearingsByCaseNumberResponse>> GetHearingsByCaseNumberAsync(string caseNumber, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<AudioRecordedHearingsBySearchResponse>> SearchForHearingsAsync(string caseNumber, System.DateTime? date, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get all hearing venues available for booking</summary>
         /// <returns>Success</returns>
@@ -2957,36 +2954,37 @@ namespace VideoWeb.Services.Bookings
             }
         }
     
-        /// <summary>Gets a list of hearing by case number</summary>
-        /// <param name="caseNumber">case number to search by</param>
+        /// <summary>Search for hearings by case number. Search will apply fuzzy matching</summary>
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.List<HearingsByCaseNumberResponse>> GetHearingsByCaseNumberAsync(string caseNumber)
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<AudioRecordedHearingsBySearchResponse>> SearchForHearingsAsync(string caseNumber, System.DateTime? date)
         {
-            return GetHearingsByCaseNumberAsync(caseNumber, System.Threading.CancellationToken.None);
+            return SearchForHearingsAsync(caseNumber, date, System.Threading.CancellationToken.None);
         }
     
-        /// <summary>Gets a list of hearing by case number</summary>
-        /// <param name="caseNumber">case number to search by</param>
+        /// <summary>Search for hearings by case number. Search will apply fuzzy matching</summary>
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public System.Collections.Generic.List<HearingsByCaseNumberResponse> GetHearingsByCaseNumber(string caseNumber)
+        public System.Collections.Generic.List<AudioRecordedHearingsBySearchResponse> SearchForHearings(string caseNumber, System.DateTime? date)
         {
-            return System.Threading.Tasks.Task.Run(async () => await GetHearingsByCaseNumberAsync(caseNumber, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+            return System.Threading.Tasks.Task.Run(async () => await SearchForHearingsAsync(caseNumber, date, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Gets a list of hearing by case number</summary>
-        /// <param name="caseNumber">case number to search by</param>
+        /// <summary>Search for hearings by case number. Search will apply fuzzy matching</summary>
         /// <returns>Success</returns>
         /// <exception cref="BookingsApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.List<HearingsByCaseNumberResponse>> GetHearingsByCaseNumberAsync(string caseNumber, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<AudioRecordedHearingsBySearchResponse>> SearchForHearingsAsync(string caseNumber, System.DateTime? date, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/audiorecording/casenumber?");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/audiorecording/search?");
             if (caseNumber != null) 
             {
-                urlBuilder_.Append(System.Uri.EscapeDataString("caseNumber") + "=").Append(System.Uri.EscapeDataString(ConvertToString(caseNumber, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+                urlBuilder_.Append(System.Uri.EscapeDataString("CaseNumber") + "=").Append(System.Uri.EscapeDataString(ConvertToString(caseNumber, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            if (date != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("Date") + "=").Append(System.Uri.EscapeDataString(date.Value.ToString("s", System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             }
             urlBuilder_.Length--;
     
@@ -3018,7 +3016,7 @@ namespace VideoWeb.Services.Bookings
                         var status_ = ((int)response_.StatusCode).ToString();
                         if (status_ == "200") 
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<HearingsByCaseNumberResponse>>(response_, headers_).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.List<AudioRecordedHearingsBySearchResponse>>(response_, headers_).ConfigureAwait(false);
                             return objectResponse_.Object;
                         }
                         else
@@ -3040,7 +3038,7 @@ namespace VideoWeb.Services.Bookings
                             throw new BookingsApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
-                        return default(System.Collections.Generic.List<HearingsByCaseNumberResponse>);
+                        return default(System.Collections.Generic.List<AudioRecordedHearingsBySearchResponse>);
                     }
                     finally
                     {
@@ -5126,7 +5124,7 @@ namespace VideoWeb.Services.Bookings
     
     /// <summary>hearing information queried by case number</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
-    public partial class HearingsByCaseNumberResponse 
+    public partial class AudioRecordedHearingsBySearchResponse 
     {
         /// <summary>Hearing Id</summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]

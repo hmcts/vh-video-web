@@ -416,6 +416,35 @@ describe('ParticipantsPanelComponent', () => {
         expect(component.getPanelRowTooltipText(model)).toContain(p.display_name);
     });
 
+    it('should getPanelRowTooltipAdditionalText return hearing role and case role for an individual', () => {
+        const tooltiptext = ['Applicant LIP', 'applicant'];
+        console.log(participants);
+        const p = participants[1];
+        p.status = ParticipantStatus.InHearing;
+        const model = new ParticipantPanelModel(p);
+        expect(component.getPanelRowTooltipAdditionalText(model)).toEqual(tooltiptext);
+    });
+    it('should getPanelRowTooltipAdditionalText return hearing role and case role for a representative', () => {
+        const tooltiptext = ['Applicant LIP for James Green', 'applicant'];
+        const p = participants[0];
+        p.status = ParticipantStatus.InHearing;
+        const model = new ParticipantPanelModel(p);
+        expect(component.getPanelRowTooltipAdditionalText(model)).toEqual(tooltiptext);
+    });
+    it('should getPanelRowTooltipAdditionalText return hearing role and case role for an observer', () => {
+        const tooltiptext = ['Observer', ''];
+        const p = participants[5];
+        p.status = ParticipantStatus.InHearing;
+        const model = new ParticipantPanelModel(p);
+        expect(component.getPanelRowTooltipAdditionalText(model)).toEqual(tooltiptext);
+    });
+    it('should getPanelRowTooltipAdditionalText return hearing role and case role for a panel member', () => {
+        const tooltiptext = ['Panel Member', ''];
+        const p = participants[6];
+        p.status = ParticipantStatus.InHearing;
+        const model = new ParticipantPanelModel(p);
+        expect(component.getPanelRowTooltipAdditionalText(model)).toEqual(tooltiptext);
+    });
     it('should get red tooltip when participant is disconnected', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Disconnected;

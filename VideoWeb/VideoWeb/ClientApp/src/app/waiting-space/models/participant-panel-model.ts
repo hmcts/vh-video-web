@@ -17,14 +17,26 @@ export abstract class PanelModel {
     public orderInTheList: number;
     public role: Role;
     public caseTypeGroup: string;
+    public hearingRole: string;
+    public representee: string;
 
-    constructor(id: string, displayName: string, role: Role, caseTypeGroup: string, pexipDisplayName: string) {
+    constructor(
+        id: string,
+        displayName: string,
+        role: Role,
+        caseTypeGroup: string,
+        pexipDisplayName: string,
+        hearingRole: string,
+        representee: string
+    ) {
         this.id = id;
         this.displayName = displayName;
         this.role = role;
         this.caseTypeGroup = role === Role.Judge ? 'judge' : caseTypeGroup;
         this.orderInTheList = this.setOrderInTheList();
         this.pexipDisplayName = pexipDisplayName;
+        this.hearingRole = hearingRole;
+        this.representee = representee;
     }
 
     abstract isInHearing(): boolean;
@@ -55,7 +67,15 @@ export class ParticipantPanelModel extends PanelModel {
     public status: ParticipantStatus;
 
     constructor(participant: ParticipantForUserResponse) {
-        super(participant.id, participant.display_name, participant.role, participant.case_type_group, participant.tiled_display_name);
+        super(
+            participant.id,
+            participant.display_name,
+            participant.role,
+            participant.case_type_group,
+            participant.tiled_display_name,
+            participant.hearing_role,
+            participant.representee
+        );
         this.status = participant.status;
     }
 
@@ -76,7 +96,7 @@ export class VideoEndpointPanelModel extends PanelModel {
     public status: EndpointStatus;
 
     constructor(endpoint: VideoEndpointResponse) {
-        super(endpoint.id, endpoint.display_name, Role.Individual, 'Endpoint', endpoint.pexip_display_name);
+        super(endpoint.id, endpoint.display_name, Role.Individual, 'Endpoint', endpoint.pexip_display_name, 'Video access point', '');
         this.status = endpoint.status;
     }
 

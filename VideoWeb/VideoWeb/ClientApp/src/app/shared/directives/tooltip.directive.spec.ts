@@ -151,4 +151,11 @@ describe('TooltipDirective', () => {
         directive.onMouseMove(event);
         expect(directive.hide).toHaveBeenCalledTimes(1);
     });
+
+    it('should set additional tooltip text', () => {
+        const additionalText = ['test', 'test1'];
+        directive.additionalText = additionalText;
+        expect(directive._additionalText).toBe(additionalText);
+    });
+
 });
