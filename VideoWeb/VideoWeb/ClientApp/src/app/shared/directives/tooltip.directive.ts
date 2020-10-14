@@ -6,7 +6,6 @@ import { Directive, ElementRef, HostListener, Input, OnDestroy, Renderer2 } from
 export class TooltipDirective implements OnDestroy {
     _text: string;
     _colour = 'blue';
-    _additionalText: string[];
     @Input() set text(value: string) {
         this._text = value;
         if (this.tooltip) {
@@ -18,18 +17,7 @@ export class TooltipDirective implements OnDestroy {
         this._colour = value;
         this.setTooltipColour(oldColour);
     }
-    @Input() set additionalText(value: string[]) {
-        this._additionalText = value;
-        if (this.hearingRole) {
-            this.setTooltipHearingRoleText();
-        }
-        if (this.caseRole) {
-            this.setTooltipCaseRoleText();
-        }
-    }
     tooltip: HTMLElement;
-    hearingRole: HTMLElement;
-    caseRole: HTMLElement;
 
     constructor(private el: ElementRef, private renderer: Renderer2) {}
     ngOnDestroy(): void {
@@ -96,19 +84,14 @@ export class TooltipDirective implements OnDestroy {
 
     create() {
         this.tooltip = this.renderer.createElement('div');
-        this.renderer.appendChild(this.tooltip, this.renderer.createText(this._text));
-
-        if (this._additionalText) {
-            this.createHearingRole();
-            this.createCaseRole();
-        }
+        this.tooltip.innerHTML = this._text;
         this.renderer.appendChild(document.body, this.tooltip);
         this.renderer.addClass(this.tooltip, 'vh-tooltip');
         this.setTooltipColour(null);
     }
 
     setTooltipText() {
-        this.tooltip.innerText = this._text;
+        this.tooltip.innerHTML = this._text;
     }
 
     setTooltipColour(oldColour: string) {
@@ -119,29 +102,5 @@ export class TooltipDirective implements OnDestroy {
         const tooltipColour = `vh-tooltip-${this._colour}`;
         this.renderer.removeClass(this.tooltip, oldColourColour);
         this.renderer.addClass(this.tooltip, tooltipColour);
-    }
-
-    createHearingRole() {
-        if (this._additionalText.length > 0) {
-            this.hearingRole = this.renderer.createElement('div');
-            this.renderer.appendChild(this.hearingRole, this.renderer.createText(this._additionalText[0]));
-            this.renderer.appendChild(this.tooltip, this.hearingRole);
-        }
-    }
-
-    createCaseRole() {
-        if (this._additionalText.length > 1) {
-            this.caseRole = this.renderer.createElement('div');
-            this.renderer.appendChild(this.caseRole, this.renderer.createText(this._additionalText[1]));
-            this.renderer.appendChild(this.tooltip, this.caseRole);
-        }
-    }
-
-    setTooltipHearingRoleText() {
-        this.hearingRole.innerText = this._additionalText[0];
-    }
-
-    setTooltipCaseRoleText() {
-        this.caseRole.innerText = this._additionalText[1];
     }
 }

@@ -3,7 +3,6 @@
     <div
       appTooltip
       [text]="getPanelRowTooltipText(participant)"
-      [additionalText]="getPanelRowTooltipAdditionalText(participant)"
       [colour]="getPanelRowTooltipColour(participant)"
       [ngClass]="participant.isSpotlighted ? 'spotlighted' : ''"
       *ngFor="let participant of participants; let i = index"

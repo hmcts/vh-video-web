@@ -151,48 +151,4 @@ describe('TooltipDirective', () => {
         directive.onMouseMove(event);
         expect(directive.hide).toHaveBeenCalledTimes(1);
     });
-
-    it('should set additional tooltip text', () => {
-        const additionalText = ['test', 'test1'];
-        directive.additionalText = additionalText;
-        expect(directive._additionalText).toBe(additionalText);
-    });
-
-    it('should set element hearing role if created', () => {
-        const additionalText = ['test', 'test1'];
-        directive.hearingRole = document.createElement('div');
-        directive.additionalText = additionalText;
-        expect(directive.hearingRole.innerText).toBe(additionalText[0]);
-    });
-
-    it('should set element case role if created', () => {
-        const additionalText = ['test', 'test1'];
-        directive.caseRole = document.createElement('div');
-        directive.additionalText = additionalText;
-        expect(directive.caseRole.innerText).toBe(additionalText[1]);
-    });
-
-    it('should create tooltip element for hearing role element', () => {
-        const additionalText = ['hearing role', 'case role'];
-        directive.additionalText = additionalText;
-        directive.create();
-        expect(directive.hearingRole).toBeDefined();
-        expect(directive.tooltip.classList).toContain('vh-tooltip');
-    });
-
-    it('should create tooltip element for case role element', () => {
-        const additionalText = ['hearing role', 'case role'];
-        directive.additionalText = additionalText;
-        directive.create();
-        expect(directive.caseRole).toBeDefined();
-        expect(directive.tooltip.classList).toContain('vh-tooltip');
-    });
-
-    it('should not create tooltip element caserole, hearingrole for judge', () => {
-        const additionalText = [];
-        directive.additionalText = additionalText;
-        directive.create();
-        expect(directive.caseRole).toBeUndefined();
-        expect(directive.hearingRole).toBeUndefined();
-    });
 });

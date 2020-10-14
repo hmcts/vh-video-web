@@ -246,17 +246,19 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
 
     getPanelRowTooltipText(participant: PanelModel) {
         if (participant.isAvailable()) {
-            return participant.displayName + ': Joining';
+            return participant.displayName + ': Joining' + this.getAdditionalText(participant);
         }
         if (!participant.isDisconnected() && !participant.isInHearing()) {
-            return participant.displayName + ': Not joined';
+            return participant.displayName + ': Not joined' + this.getAdditionalText(participant);
         }
-
         if (participant.isDisconnected()) {
-            return participant.displayName + ': DISCONNECTED';
+            return participant.displayName + ': DISCONNECTED' + this.getAdditionalText(participant);
         }
+        return participant.displayName + this.getAdditionalText(participant);
+    }
 
-        return participant.displayName;
+    getAdditionalText(participant: PanelModel): string {
+        return participant.hearingRole !== HearingRole.JUDGE ? this.getHearingRole(participant) + this.getCaseRole(participant) : '';
     }
 
     getPanelRowTooltipColour(participant: PanelModel) {
@@ -269,21 +271,14 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         }
     }
 
-    getPanelRowTooltipAdditionalText(participant: PanelModel): string[] {
-        const additionalText: string[] = [];
-        if (participant.hearingRole !== HearingRole.JUDGE) {
-            additionalText.push(this.getHearingRole(participant));
-            additionalText.push(this.getCaseRole(participant));
-        }
-        return additionalText;
-    }
-
     private getHearingRole(participant: PanelModel): string {
-        return participant.representee ? `${participant.hearingRole} for ${participant.representee}` : `${participant.hearingRole}`;
+        return participant.representee
+            ? `<br/>${participant.hearingRole} for ${participant.representee}`
+            : `<br/>${participant.hearingRole}`;
     }
 
     private getCaseRole(participant: PanelModel): string {
-        return this.showCaseRole(participant) ? participant.caseTypeGroup : '';
+        return this.showCaseRole(participant) ? `<br/>${participant.caseTypeGroup}` : '';
     }
 
     private showCaseRole(participant: PanelModel) {
