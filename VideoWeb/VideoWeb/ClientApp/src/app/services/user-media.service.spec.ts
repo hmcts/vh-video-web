@@ -121,7 +121,7 @@ describe('UserMediaService', () => {
         await expectAsync(service.updateAvailableDevicesList()).toBeRejectedWithError(message);
     });
     it('should get value that is indicated that user fist time in the waiting room in current session', () => {
-        const sessionStorage = new SessionStorage(this.CHOOSE_DEVICES_ON_INIT_IN_WR_KEY);
+        const sessionStorage = new SessionStorage(service.CHOOSE_DEVICES_ON_INIT_IN_WR_KEY);
         sessionStorage.clear();
 
         let flag = service.getShowDialogChooseDevice();
