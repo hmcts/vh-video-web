@@ -68,7 +68,11 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         }
 
         const requester = this.getConsultationRequester();
-        if (requester.hearing_role === HearingRole.OBSERVER || requester.hearing_role === HearingRole.PANEL_MEMBER) {
+        if (
+            requester.hearing_role === HearingRole.OBSERVER ||
+            requester.hearing_role === HearingRole.PANEL_MEMBER ||
+            requester.hearing_role === HearingRole.WINGER
+        ) {
             return false;
         }
 

@@ -1,6 +1,6 @@
 <div class="alert-container">
   <div *ngIf="networkHealth">
-    <img *ngIf="!isNetworkGood" src="/assets/images/alert-1.png" class="panel-icon-alert" alt="Poor connection icon" />
+    <img *ngIf="isNetworkPoor" src="/assets/images/alert-1.png" class="panel-icon-alert" alt="Poor connection icon" />
   </div>
   <div *ngIf="isDisconnected">
     <img src="/assets/images/alert-full.png" class="panel-icon" alt="Disconnected icon" />

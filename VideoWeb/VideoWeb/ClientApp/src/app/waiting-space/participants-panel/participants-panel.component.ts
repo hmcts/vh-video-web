@@ -7,6 +7,8 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { CaseTypeGroup } from '../models/case-type-group';
+import { HearingRole } from '../models/hearing-role-model';
 import { PanelModel, ParticipantPanelModel, VideoEndpointPanelModel } from '../models/participant-panel-model';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
@@ -233,6 +235,8 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         participantResponse.display_name = participant.displayName;
         participantResponse.role = participant.role;
         participantResponse.case_type_group = participant.caseTypeGroup;
+        participantResponse.hearing_role = participant.hearingRole;
+        participantResponse.representee = participant.representee;
         return participantResponse;
     }
 
@@ -242,17 +246,19 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
 
     getPanelRowTooltipText(participant: PanelModel) {
         if (participant.isAvailable()) {
-            return participant.displayName + ': Joining';
+            return participant.displayName + ': Joining' + this.getAdditionalText(participant);
         }
         if (!participant.isDisconnected() && !participant.isInHearing()) {
-            return participant.displayName + ': Not joined';
+            return participant.displayName + ': Not joined' + this.getAdditionalText(participant);
         }
-
         if (participant.isDisconnected()) {
-            return participant.displayName + ': DISCONNECTED';
+            return participant.displayName + ': DISCONNECTED' + this.getAdditionalText(participant);
         }
+        return participant.displayName + this.getAdditionalText(participant);
+    }
 
-        return participant.displayName;
+    getAdditionalText(participant: PanelModel): string {
+        return participant.hearingRole !== HearingRole.JUDGE ? this.getHearingRole(participant) + this.getCaseRole(participant) : '';
     }
 
     getPanelRowTooltipColour(participant: PanelModel) {
@@ -263,5 +269,25 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         } else {
             return 'grey';
         }
+    }
+
+    private getHearingRole(participant: PanelModel): string {
+        return participant.representee
+            ? `<br/>${participant.hearingRole} for ${participant.representee}`
+            : `<br/>${participant.hearingRole}`;
+    }
+
+    private getCaseRole(participant: PanelModel): string {
+        return this.showCaseRole(participant) ? `<br/>${participant.caseTypeGroup}` : '';
+    }
+
+    private showCaseRole(participant: PanelModel) {
+        return participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase() ||
+            participant.caseTypeGroup.toLowerCase() === 'endpoint'
+            ? false
+            : true;
     }
 }

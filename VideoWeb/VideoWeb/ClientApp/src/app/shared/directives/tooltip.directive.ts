@@ -83,16 +83,15 @@ export class TooltipDirective implements OnDestroy {
     }
 
     create() {
-        this.tooltip = this.renderer.createElement('span');
-        this.renderer.appendChild(this.tooltip, this.renderer.createText(this._text));
-
+        this.tooltip = this.renderer.createElement('div');
+        this.tooltip.innerHTML = this._text;
         this.renderer.appendChild(document.body, this.tooltip);
         this.renderer.addClass(this.tooltip, 'vh-tooltip');
         this.setTooltipColour(null);
     }
 
     setTooltipText() {
-        this.tooltip.innerText = this._text;
+        this.tooltip.innerHTML = this._text;
     }
 
     setTooltipColour(oldColour: string) {

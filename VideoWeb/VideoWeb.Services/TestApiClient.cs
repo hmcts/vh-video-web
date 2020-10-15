@@ -3659,6 +3659,9 @@ namespace VideoWeb.Services.TestApi
         [System.Runtime.Serialization.EnumMember(Value = @"PanelMember")]
         PanelMember = 8,
     
+        [System.Runtime.Serialization.EnumMember(Value = @"Winger")]
+        Winger = 9,
+    
     }
     
     /// <summary>Allocate a single user request model</summary>
@@ -4881,6 +4884,10 @@ namespace VideoWeb.Services.TestApi
         [Newtonsoft.Json.JsonProperty("application", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public Application Application { get; set; }
+    
+        /// <summary>Case Type</summary>
+        [Newtonsoft.Json.JsonProperty("case_type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Case_type { get; set; }
     
         /// <summary>Participants need to answer questionnaire before video web</summary>
         [Newtonsoft.Json.JsonProperty("questionnaire_not_required", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
