@@ -78,19 +78,15 @@ export class VideoCallService {
     }
 
     public async retrievePreferredDevices() {
-        console.log(' RETRIEVER devices ******');
         const preferredCam = await this.userMediaService.getPreferredCamera();
         if (preferredCam) {
             this.updateCameraForCall(preferredCam);
-            console.log('Camera : ' + preferredCam.label);
-
         }
 
         const preferredMic = await this.userMediaService.getPreferredMicrophone();
         if (preferredMic) {
             this.updateMicrophoneForCall(preferredMic);
         }
-
     }
 
     /**
