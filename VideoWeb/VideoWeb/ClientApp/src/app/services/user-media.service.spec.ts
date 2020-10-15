@@ -120,4 +120,15 @@ describe('UserMediaService', () => {
         const message = 'enumerateDevices() not supported.';
         await expectAsync(service.updateAvailableDevicesList()).toBeRejectedWithError(message);
     });
+    it('should get value that is indicated that user fist time in the waiting room in current session', () => {
+        const sessionStorage = new SessionStorage(this.CHOOSE_DEVICES_ON_INIT_IN_WR_KEY);
+        sessionStorage.clear();
+
+        let flag = service.getShowDialogChooseDevice();
+        expect(flag).toBeFalsy();
+
+        service.updateShowDialogChooseDevice(true);
+        flag = service.getShowDialogChooseDevice();
+        expect(flag).toBe(true);
+    });
 });
