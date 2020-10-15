@@ -89,7 +89,9 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             'getShowDialogChooseDevice',
             'updateShowDialogChooseDevice',
             'updatePreferredCamera',
-            'updatePreferredMicrophone'
+            'updatePreferredMicrophone',
+            'getPreferredCamera',
+            'getPreferredMicrophone'
         ]);
     });
 
