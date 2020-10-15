@@ -13,7 +13,7 @@ import { UserMediaStreamService } from 'src/app/services/user-media-stream.servi
 export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     @Output() cancelMediaDeviceChange = new EventEmitter();
     @Output() acceptMediaDeviceChange = new EventEmitter<SelectedUserMediaDevice>();
-    @Input() waitingRoomMode: boolean = false;
+    @Input() waitingRoomMode = false;
 
     availableCameraDevices: UserMediaDevice[] = [];
     availableMicrophoneDevices: UserMediaDevice[] = [];

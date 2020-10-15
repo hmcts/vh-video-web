@@ -91,7 +91,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         heartbeatModelMapper = new HeartbeatModelMapper();
         deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['getBrowserName', 'getBrowserVersion']);
         consultationService = consultationServiceSpyFactory();
-
+        userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
+            'getShowDialogChooseDevice',
+            'updateShowDialogChooseDevice'
+        ]);
         audioRecordingService = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
     });
 

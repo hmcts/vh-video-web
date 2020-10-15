@@ -95,7 +95,7 @@ export class UserMediaService {
         return this.showDialogChooseDevicesOnInit.get();
     }
 
-    updateShowDialogChooseDevice(firstTime:boolean) {
+    updateShowDialogChooseDevice(firstTime: boolean) {
         this.showDialogChooseDevicesOnInit.set(firstTime);
     }
 

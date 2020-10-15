@@ -29,7 +29,7 @@
 
                   <div *ngIf="!hasSingleCameraConncted" class="govuk-!-margin-bottom-9">
                       <p class="govuk-body govuk-!-font-weight-bold">
-                          Change your camera?
+                          Change camera
                       </p>
                       <select class="govuk-select govuk-!-width-two-thirds" id="available-cam-list" formControlName="camera" (change)="onChangeDevice()">
                           <option *ngFor="let availableCam of availableCameraDevices" [ngValue]="availableCam">
@@ -46,8 +46,10 @@
 
                   <div *ngIf="!hasSingleMicrophoneConncted">
                       <p class="govuk-body govuk-!-font-weight-bold">
-                          Change your microphone?
+                          Change microphone
+                          <span class="govuk-hint">Make sure the green bar moves when you speak</span>
                       </p>
+
                       <select class="govuk-select govuk-!-width-two-thirds" id="available-mics-list" formControlName="microphone" (change)="onChangeDevice()">
                           <option *ngFor="let availableMic of availableMicrophoneDevices" [ngValue]="availableMic" >
                               {{ availableMic.label }}
