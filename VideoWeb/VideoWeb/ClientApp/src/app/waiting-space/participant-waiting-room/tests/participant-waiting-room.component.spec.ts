@@ -19,6 +19,7 @@ import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-servi
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
 import { SelectedUserMediaDevice } from '../../../shared/models/selected-user-media-device';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { UserMediaDevice } from '../../../shared/models/user-media-device';
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -79,7 +80,9 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             'updatePreferredCamera',
             'updatePreferredMicrophone',
             'getShowDialogChooseDevice',
-            'updateShowDialogChooseDevice'
+            'updateShowDialogChooseDevice',
+            'getPreferredCamera',
+            'getPreferredMicrophone'
         ]);
     });
 
@@ -283,5 +286,25 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             deviceTypeService.getBrowserName.and.returnValue(testcase.browserName);
             expect(component.isSupportedBrowserForNetworkHealth).toBe(testcase.expected);
         });
+    });
+    it('should display change device popup', () => {
+        component.displayDeviceChangeModal = false;
+        component.showChooseCameraDialog();
+        expect(component.displayDeviceChangeModal).toBe(true);
+    });
+    it('should hide change device popup on close popup', () => {
+        component.displayDeviceChangeModal = true;
+        component.onMediaDeviceChangeCancelled();
+        expect(component.displayDeviceChangeModal).toBe(false);
+    });
+    it('should change device on select device', () => {
+        const device = new SelectedUserMediaDevice(
+            new UserMediaDevice('camera1', 'id3445', 'videoinput', '1'),
+            new UserMediaDevice('microphone', 'id123', 'audioinput', '1')
+        );
+        component.onMediaDeviceChangeAccepted(device);
+        expect(userMediaService.updatePreferredCamera).toHaveBeenCalled();
+        expect(userMediaService.updatePreferredMicrophone).toHaveBeenCalled();
+        expect(videoCallService.makeCall).toHaveBeenCalled();
     });
 });

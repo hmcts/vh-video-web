@@ -22,6 +22,8 @@ import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models
 import { VideoCallService } from '../services/video-call.service';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
+import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
+import { UserMediaService } from 'src/app/services/user-media.service';
 
 declare var HeartbeatFactory: any;
 
@@ -63,7 +65,8 @@ export abstract class WaitingRoomBaseComponent {
         protected videoCallService: VideoCallService,
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
-        protected consultationService: ConsultationService
+        protected consultationService: ConsultationService,
+        protected userMediaService: UserMediaService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -415,5 +418,33 @@ export abstract class WaitingRoomBaseComponent {
         this.showVideo = false;
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
+    }
+
+    showChooseCameraDialog() {
+        this.displayDeviceChangeModal = true;
+    }
+
+    onMediaDeviceChangeCancelled() {
+        this.displayDeviceChangeModal = false;
+    }
+
+    async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
+        this.disconnect();
+        this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
+        this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
+        await this.updatePexipAudioVideoSource();
+        this.call();
+    }
+
+    async updatePexipAudioVideoSource() {
+        const cam = await this.userMediaService.getPreferredCamera();
+        if (cam) {
+            this.videoCallService.updateCameraForCall(cam);
+        }
+
+        const mic = await this.userMediaService.getPreferredMicrophone();
+        if (mic) {
+            this.videoCallService.updateMicrophoneForCall(mic);
+        }
     }
 }

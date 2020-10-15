@@ -27,7 +27,8 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { CallError } from '../../models/video-call-models';
 import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
 import { UserMediaService } from 'src/app/services/user-media.service';
-import { BehaviorSubject } from 'rxjs';
+import { SelectedUserMediaDevice } from '../../../shared/models/selected-user-media-device';
+import { UserMediaDevice } from '../../../shared/models/user-media-device';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
@@ -86,7 +87,9 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         audioRecordingService = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
         userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
             'getShowDialogChooseDevice',
-            'updateShowDialogChooseDevice'
+            'updateShowDialogChooseDevice',
+            'updatePreferredCamera',
+            'updatePreferredMicrophone'
         ]);
     });
 
@@ -289,5 +292,25 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         spyOn(component, 'retrieveAudioStreamInfo');
         component.initAudioRecordingInterval();
         expect(component.audioRecordingInterval).toBeDefined();
+    });
+    it('should display change device popup', () => {
+        component.displayDeviceChangeModal = false;
+        component.showChooseCameraDialog();
+        expect(component.displayDeviceChangeModal).toBe(true);
+    });
+    it('should hide change device popup on close popup', () => {
+        component.displayDeviceChangeModal = true;
+        component.onMediaDeviceChangeCancelled();
+        expect(component.displayDeviceChangeModal).toBe(false);
+    });
+    it('should change device on select device', () => {
+        const device = new SelectedUserMediaDevice(
+            new UserMediaDevice('camera1', 'id3445', 'videoinput', '1'),
+            new UserMediaDevice('microphone', 'id123', 'audioinput', '1')
+        );
+        component.onMediaDeviceChangeAccepted(device);
+        expect(userMediaService.updatePreferredCamera).toHaveBeenCalled();
+        expect(userMediaService.updatePreferredMicrophone).toHaveBeenCalled();
+        expect(videoCallService.makeCall).toHaveBeenCalled();
     });
 });
