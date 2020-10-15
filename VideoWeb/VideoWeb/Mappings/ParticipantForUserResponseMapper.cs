@@ -23,6 +23,7 @@ namespace VideoWeb.Mappings
                     CaseTypeGroup = participant.Case_group,
                     FirstName = participant.First_name,
                     LastName = participant.Last_name,
+                    HearingRole = participant.Hearing_role
                 })
                 .ToList();
 

@@ -58,6 +58,7 @@ namespace VideoWeb.UnitTests.Mappings
                 response[index].Representee.Should().BeEquivalentTo(participant.Representee);
                 response[index].CaseTypeGroup.Should().BeEquivalentTo(participant.Case_group);
                 response[index].TiledDisplayName.Should().NotBeNullOrWhiteSpace();
+                response[index].HearingRole.Should().BeEquivalentTo(participant.Hearing_role);
             }
             
             var tiledNames = response.Select(x => x.TiledDisplayName).ToList();
