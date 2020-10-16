@@ -36,6 +36,7 @@ import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-servi
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
@@ -64,6 +65,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
     let audioRecordingService: jasmine.SpyObj<AudioRecordingService>;
     let userMediaService: jasmine.SpyObj<UserMediaService>;
+    let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
 
     const jwToken = new TokenResponse({
         expires_on: '06/10/2020 01:13:00',
@@ -96,6 +98,11 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             'updatePreferredMicrophone'
         ]);
         audioRecordingService = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
+        userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService', [
+            'stopStream',
+            'getStreamForCam',
+            'getStreamForMic'
+        ]);
     });
 
     beforeEach(async () => {
@@ -112,7 +119,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             router,
             consultationService,
             audioRecordingService,
-            userMediaService
+            userMediaService,
+            userMediaStreamService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, gloalConference));

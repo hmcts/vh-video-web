@@ -24,6 +24,7 @@ import { Hearing } from '../../../shared/models/hearing';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../../models/video-call-models';
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 
 describe('ParticipantWaitingRoomComponent video call events', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -52,6 +53,7 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
     let consultationService: jasmine.SpyObj<ConsultationService>;
     const logger: Logger = new MockLogger();
     let userMediaService: jasmine.SpyObj<UserMediaService>;
+    let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
 
     const mockHeartbeat = {
         kill: jasmine.createSpy()
@@ -87,6 +89,11 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
             'updatePreferredCamera',
             'updatePreferredMicrophone'
         ]);
+        userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService', [
+            'stopStream',
+            'getStreamForCam',
+            'getStreamForMic'
+        ]);
     });
 
     beforeEach(async () => {
@@ -103,7 +110,8 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
             router,
             consultationService,
             clockService,
-            userMediaService
+            userMediaService,
+            userMediaStreamService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, gloalConference));

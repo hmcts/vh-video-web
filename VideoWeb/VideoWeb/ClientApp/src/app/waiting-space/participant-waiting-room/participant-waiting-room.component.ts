@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
@@ -15,7 +15,7 @@ import { HeartbeatModelMapper } from '../../shared/mappers/heartbeat-model-mappe
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
 import { UserMediaService } from 'src/app/services/user-media.service';
-import { SelectMediaDevicesComponent } from '../../shared/select-media-devices/select-media-devices.component';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -30,8 +30,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
 
     clockSubscription$: Subscription;
 
-    @ViewChild(SelectMediaDevicesComponent) selectMediaDevices: SelectMediaDevicesComponent;
-
     constructor(
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,
@@ -45,7 +43,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         protected router: Router,
         protected consultationService: ConsultationService,
         private clockService: ClockService,
-        protected userMediaService: UserMediaService
+        protected userMediaService: UserMediaService,
+        protected userMediaStreamService: UserMediaStreamService
     ) {
         super(
             route,
@@ -59,7 +58,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
             deviceTypeService,
             router,
             consultationService,
-            userMediaService
+            userMediaService,
+            userMediaStreamService
         );
     }
 
@@ -91,12 +91,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         this.disconnect();
         this.eventHubSubscription$.unsubscribe();
         this.videoCallSubscription$.unsubscribe();
-    }
-
-    onConsultationAccepted() {
-        if (this.displayDeviceChangeModal && this.selectMediaDevices) {
-            this.selectMediaDevices.onSubmit();
-        }
     }
 
     initHearingAlert() {

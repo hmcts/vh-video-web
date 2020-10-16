@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
@@ -14,8 +14,8 @@ import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-map
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
-import { SelectMediaDevicesComponent } from '../../shared/select-media-devices/select-media-devices.component';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -28,8 +28,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     continueWithNoRecording = false;
     showAudioRecordingAlert = false;
     expanedPanel = true;
-
-    @ViewChild(SelectMediaDevicesComponent) selectMediaDevices: SelectMediaDevicesComponent;
 
     constructor(
         protected route: ActivatedRoute,
@@ -44,7 +42,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         protected router: Router,
         protected consultationService: ConsultationService,
         private audioRecordingService: AudioRecordingService,
-        protected userMediaService: UserMediaService
+        protected userMediaService: UserMediaService,
+        protected userMediaStreamService: UserMediaStreamService
     ) {
         super(
             route,
@@ -58,7 +57,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
             deviceTypeService,
             router,
             consultationService,
-            userMediaService
+            userMediaService,
+            userMediaStreamService
         );
     }
 
@@ -76,12 +76,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     showChooseDeviceDialog() {
         this.displayDeviceChangeModal = !this.getShowDialogChooseDevice();
         this.updateShowDialogChooseDevice(true);
-    }
-
-    onConsultationAccepted() {
-        if (this.displayDeviceChangeModal && this.selectMediaDevices) {
-            this.selectMediaDevices.onSubmit();
-        }
     }
 
     @HostListener('window:beforeunload')

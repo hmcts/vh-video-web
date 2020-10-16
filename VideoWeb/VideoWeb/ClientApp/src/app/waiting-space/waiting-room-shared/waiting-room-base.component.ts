@@ -25,6 +25,7 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { SessionStorage } from 'src/app/services/session-storage';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 
 declare var HeartbeatFactory: any;
 
@@ -69,7 +70,8 @@ export abstract class WaitingRoomBaseComponent {
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
         protected consultationService: ConsultationService,
-        protected userMediaService: UserMediaService
+        protected userMediaService: UserMediaService,
+        protected userMediaStreamService: UserMediaStreamService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -179,7 +181,18 @@ export abstract class WaitingRoomBaseComponent {
         this.eventService.start();
     }
 
-    onConsultationAccepted() {}
+    async onConsultationAccepted() {
+        if (this.displayDeviceChangeModal) {
+            const preferredCamera = await this.userMediaService.getPreferredCamera();
+            const preferredMicrophone = await this.userMediaService.getPreferredMicrophone();
+            const preferredCameraStream = await this.userMediaStreamService.getStreamForCam(preferredCamera);
+            const preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(preferredMicrophone);
+
+            this.userMediaStreamService.stopStream(preferredCameraStream);
+            this.userMediaStreamService.stopStream(preferredMicrophoneStream);
+            this.displayDeviceChangeModal = false;
+        }
+    }
 
     async handleEventHubDisconnection(reconnectionAttempt: number) {
         if (reconnectionAttempt < 7) {

@@ -30,6 +30,8 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { SelectedUserMediaDevice } from '../../../shared/models/selected-user-media-device';
 import { UserMediaDevice } from '../../../shared/models/user-media-device';
 import { SessionStorage } from 'src/app/services/session-storage';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
@@ -54,6 +56,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
     let audioRecordingService: jasmine.SpyObj<AudioRecordingService>;
     let userMediaService: jasmine.SpyObj<UserMediaService>;
+    let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
+    const mockCamStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
+    const mockMicStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getAudioTracks']);
+    const testDataDevice = new MediaDeviceTestData();
 
     const mockHeartbeat = {
         kill: jasmine.createSpy()
@@ -92,6 +98,15 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             'getPreferredCamera',
             'getPreferredMicrophone'
         ]);
+        userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService', [
+            'stopStream',
+            'getStreamForCam',
+            'getStreamForMic'
+        ]);
+        userMediaStreamService.getStreamForCam.and.resolveTo(mockCamStream);
+        userMediaStreamService.getStreamForMic.and.resolveTo(mockMicStream);
+        userMediaService.getPreferredCamera.and.resolveTo(testDataDevice.getListOfCameras()[0]);
+        userMediaService.getPreferredMicrophone.and.resolveTo(testDataDevice.getListOfMicrophones()[0]);
     });
 
     beforeEach(async () => {
@@ -108,7 +123,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             router,
             consultationService,
             audioRecordingService,
-            userMediaService
+            userMediaService,
+            userMediaStreamService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, gloalConference));
@@ -323,5 +339,14 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.updateShowDialogChooseDevice(true);
         flag = component.getShowDialogChooseDevice();
         expect(flag).toBe(true);
+    });
+    it('should on consultation accept stop streams for devices and close choose device popup', async() => {
+        component.displayDeviceChangeModal = true;
+        await component.onConsultationAccepted();
+
+        expect(component.displayDeviceChangeModal).toBe(false);
+        expect(userMediaStreamService.getStreamForMic).toHaveBeenCalled();
+        expect(userMediaStreamService.getStreamForCam).toHaveBeenCalled();
+        expect(userMediaStreamService.stopStream).toHaveBeenCalled();
     });
 });

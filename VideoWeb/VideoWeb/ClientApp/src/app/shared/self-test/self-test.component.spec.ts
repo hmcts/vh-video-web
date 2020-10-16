@@ -161,7 +161,7 @@ describe('SelfTestComponent', () => {
 
         expect(userMediaService.updatePreferredCamera).toHaveBeenCalledWith(selectedDevices.selectedCamera);
         expect(userMediaService.updatePreferredMicrophone).toHaveBeenCalledWith(selectedDevices.selectedMicrophone);
-        expect(component.displayDeviceChangeModal).toBeFalsy();
+        expect(component.displayDeviceChangeModal).toBeTruthy();
     });
 
     it('should emit test complete event', () => {
