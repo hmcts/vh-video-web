@@ -1,16 +1,17 @@
 import {
     ConferenceForIndividualResponse,
+    ConferenceForJudgeResponse,
     ConferenceForVhOfficerResponse,
     ConferenceStatus,
-    Role,
-    ConferenceForJudgeResponse
+    Role
 } from 'src/app/services/clients/api-client';
+import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { HearingBase } from './hearing-base';
 import { ParticipantSummary } from './participant-summary';
 
 export class HearingSummary extends HearingBase {
-    private conference: ConferenceForVhOfficerResponse;
-    private participants: ParticipantSummary[];
+    protected conference: ConferenceForVhOfficerResponse;
+    protected participants: ParticipantSummary[];
 
     constructor(conference: ConferenceForVhOfficerResponse) {
         super();
@@ -83,12 +84,8 @@ export class HearingSummary extends HearingBase {
             .filter(x => x.caseGroup.toLowerCase() === 'respondent' || x.caseGroup.toLowerCase() === 'defendant');
     }
 
-    get observers(): ParticipantSummary[] {
-        return this.participants.filter(x => x.caseGroup !== '').filter(x => x.caseGroup.toLowerCase() === 'observer');
-    }
-
-    get panelMembers(): ParticipantSummary[] {
-        return this.participants.filter(x => x.caseGroup !== '').filter(x => x.caseGroup.toLowerCase() === 'panelmember');
+    get appellants(): ParticipantSummary[] {
+        return this.participants.filter(x => x.hearingRole === HearingRole.APPELLANT || x.hearingRole === HearingRole.APPELLANT_LIP);
     }
 
     get hearingVenueName(): string {

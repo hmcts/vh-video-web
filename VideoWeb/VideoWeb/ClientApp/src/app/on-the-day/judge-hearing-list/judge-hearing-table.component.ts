@@ -24,6 +24,11 @@ export class JudgeHearingTableComponent implements OnInit {
 
     ngOnInit() {
         this.hearings = this.conferenceForJudgeResponse.map(c => new JudgeHearingSummary(c));
+        const last = this.hearings.pop();
+        console.log(last.nonJudicialParticipantsExcludingObservers.map(x => x.hearingRole));
+        console.log(last.getParticipants().map(x => x.hearingRole));
+
+        this.hearings.push(last);
     }
 
     getRepresentative(participants: ParticipantSummary[]): ParticipantSummary {
@@ -32,10 +37,6 @@ export class JudgeHearingTableComponent implements OnInit {
 
     getIndividual(participants: ParticipantSummary[]): ParticipantSummary {
         return participants.find(x => !x.representee || x.representee.trim() === '');
-    }
-
-    getParticipantsCount(hearing: JudgeHearingSummary): number {
-        return hearing.applicants.length + hearing.respondents.length + hearing.observers.length + hearing.panelMembers.length;
     }
 
     signIntoConference(hearing: JudgeHearingSummary) {
