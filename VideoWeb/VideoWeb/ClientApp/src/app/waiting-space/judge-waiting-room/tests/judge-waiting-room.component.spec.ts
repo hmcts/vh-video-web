@@ -340,7 +340,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         flag = component.getShowDialogChooseDevice();
         expect(flag).toBe(true);
     });
-    it('should on consultation accept stop streams for devices and close choose device popup', async() => {
+    it('should on consultation accept stop streams for devices and close choose device popup', async () => {
         component.displayDeviceChangeModal = true;
         await component.onConsultationAccepted();
 
