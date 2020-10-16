@@ -36,6 +36,7 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
 
     async continueParticipantJourney() {
         if (!this.selfTestCompleted) {
+            this.selfTestComponent.disconnect();
             const reason = new DisconnectedCall('Conference terminated by another participant');
             await this.selfTestComponent.handleCallDisconnect(reason);
             await this.raisedSelfTestIncompleted();
