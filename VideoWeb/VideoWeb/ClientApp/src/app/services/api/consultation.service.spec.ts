@@ -108,7 +108,6 @@ describe('ConsultationService', () => {
     });
 
     it('should stop ringing when responding to a request for consulation with "Accepted"', async () => {
-        spyOn(service.consultationAcceptedBy, 'next');
         const conference = new ConferenceTestData().getConferenceDetailFuture();
         const requester = conference.participants[0];
         const requestee = conference.participants[1];
@@ -124,7 +123,6 @@ describe('ConsultationService', () => {
 
         await service.respondToConsultationRequest(conference, requester, requestee, ConsultationAnswer.Accepted);
 
-        expect(service.consultationAcceptedBy.next).toHaveBeenCalled();
         expect(service.waitingForConsultationResponse).toBeFalsy();
         expect(apiClient.handleConsultationRequest).toHaveBeenCalledWith(request);
         expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalled();

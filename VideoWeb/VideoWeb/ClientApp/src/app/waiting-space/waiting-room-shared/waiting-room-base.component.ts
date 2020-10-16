@@ -24,6 +24,7 @@ import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMes
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
 import { UserMediaService } from 'src/app/services/user-media.service';
+import { SessionStorage } from 'src/app/services/session-storage';
 
 declare var HeartbeatFactory: any;
 
@@ -53,6 +54,8 @@ export abstract class WaitingRoomBaseComponent {
 
     CALL_TIMEOUT = 31000; // 31 seconds
     callbackTimeout: NodeJS.Timer;
+    private readonly showDialogChooseDevicesOnInit: SessionStorage<boolean>;
+    readonly CHOOSE_DEVICES_ON_INIT_IN_WR_KEY = 'vh.first.time.in.waitingroom';
 
     protected constructor(
         protected route: ActivatedRoute,
@@ -73,6 +76,7 @@ export abstract class WaitingRoomBaseComponent {
         this.showVideo = false;
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
+        this.showDialogChooseDevicesOnInit = new SessionStorage(this.CHOOSE_DEVICES_ON_INIT_IN_WR_KEY);
     }
 
     // abstract updateShowVideo(): void;
@@ -163,8 +167,19 @@ export abstract class WaitingRoomBaseComponent {
             })
         );
 
+        this.logger.debug('Subscribing to EventHub consultation message');
+        this.eventHubSubscription$.add(
+            this.eventService.getConsultationMessage().subscribe(message => {
+                if (message.result === ConsultationAnswer.Accepted) {
+                    this.onConsultationAccepted();
+                }
+            })
+        );
+
         this.eventService.start();
     }
+
+    onConsultationAccepted() {}
 
     async handleEventHubDisconnection(reconnectionAttempt: number) {
         if (reconnectionAttempt < 7) {
@@ -446,5 +461,12 @@ export abstract class WaitingRoomBaseComponent {
         if (mic) {
             this.videoCallService.updateMicrophoneForCall(mic);
         }
+    }
+    getShowDialogChooseDevice() {
+        return this.showDialogChooseDevicesOnInit.get();
+    }
+
+    updateShowDialogChooseDevice(firstTime: boolean) {
+        this.showDialogChooseDevicesOnInit.set(firstTime);
     }
 }

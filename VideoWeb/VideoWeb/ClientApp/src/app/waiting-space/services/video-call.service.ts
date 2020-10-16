@@ -77,7 +77,7 @@ export class VideoCallService {
         };
     }
 
-    public async retrievePreferredDevices() {
+    private async retrievePreferredDevices() {
         const preferredCam = await this.userMediaService.getPreferredCamera();
         if (preferredCam) {
             this.updateCameraForCall(preferredCam);

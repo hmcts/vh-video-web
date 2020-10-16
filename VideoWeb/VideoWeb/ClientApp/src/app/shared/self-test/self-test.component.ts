@@ -131,7 +131,6 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     }
 
     async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
-        this.displayDeviceChangeModal = false;
         this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
         this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
         await this.updatePexipAudioVideoSource();

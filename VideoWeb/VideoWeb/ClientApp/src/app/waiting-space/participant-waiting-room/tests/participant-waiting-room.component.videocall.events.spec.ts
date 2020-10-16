@@ -23,7 +23,6 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { Hearing } from '../../../shared/models/hearing';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../../models/video-call-models';
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
-import { SelectedUserMediaDevice } from '../../../shared/models/selected-user-media-device';
 import { UserMediaService } from 'src/app/services/user-media.service';
 
 describe('ParticipantWaitingRoomComponent video call events', () => {

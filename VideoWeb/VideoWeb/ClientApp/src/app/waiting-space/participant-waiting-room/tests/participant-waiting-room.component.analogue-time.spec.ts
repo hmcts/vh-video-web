@@ -15,7 +15,6 @@ import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-servi
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { Hearing } from '../../../shared/models/hearing';
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
-import { SelectedUserMediaDevice } from '../../../shared/models/selected-user-media-device';
 import { UserMediaService } from 'src/app/services/user-media.service';
 
 describe('ParticipantWaitingRoomComponent message and clock', () => {

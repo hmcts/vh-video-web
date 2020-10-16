@@ -15,7 +15,6 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
 import { SelectMediaDevicesComponent } from '../../shared/select-media-devices/select-media-devices.component';
-import { Subscription } from 'rxjs';
 import { UserMediaService } from 'src/app/services/user-media.service';
 
 @Component({
@@ -29,8 +28,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     continueWithNoRecording = false;
     showAudioRecordingAlert = false;
     expanedPanel = true;
-
-    consultationAccepted$: Subscription;
 
     @ViewChild(SelectMediaDevicesComponent) selectMediaDevices: SelectMediaDevicesComponent;
 
@@ -73,21 +70,18 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         this.getConference().then(() => {
             this.startEventHubSubscribers();
             this.getJwtokenAndConnectToPexip();
-            this.subscribeToAcceptConsultation();
         });
     }
 
     showChooseDeviceDialog() {
-        this.displayDeviceChangeModal = !this.userMediaService.getShowDialogChooseDevice();
-        this.userMediaService.updateShowDialogChooseDevice(true);
+        this.displayDeviceChangeModal = !this.getShowDialogChooseDevice();
+        this.updateShowDialogChooseDevice(true);
     }
 
-    subscribeToAcceptConsultation() {
-        this.consultationAccepted$ = this.consultationService.consultationAcceptedBy.subscribe(accepted => {
-            if (accepted && this.displayDeviceChangeModal && this.selectMediaDevices) {
-                this.selectMediaDevices.onSubmit();
-            }
-        });
+    onConsultationAccepted() {
+        if (this.displayDeviceChangeModal && this.selectMediaDevices) {
+            this.selectMediaDevices.onSubmit();
+        }
     }
 
     @HostListener('window:beforeunload')

@@ -29,7 +29,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     hearingAlertSound: HTMLAudioElement;
 
     clockSubscription$: Subscription;
-    consultationAccepted$: Subscription;
 
     @ViewChild(SelectMediaDevicesComponent) selectMediaDevices: SelectMediaDevicesComponent;
 
@@ -72,7 +71,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         this.showChooseDeviceDialog();
         this.initHearingAlert();
         this.getConference().then(() => {
-            this.subscribeToAcceptConsultation();
             this.subscribeToClock();
             this.startEventHubSubscribers();
             this.getJwtokenAndConnectToPexip();
@@ -80,8 +78,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     }
 
     showChooseDeviceDialog() {
-        this.displayDeviceChangeModal = !this.userMediaService.getShowDialogChooseDevice();
-        this.userMediaService.updateShowDialogChooseDevice(true);
+        this.displayDeviceChangeModal = !this.getShowDialogChooseDevice();
+        this.updateShowDialogChooseDevice(true);
     }
 
     @HostListener('window:beforeunload')
@@ -93,17 +91,12 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         this.disconnect();
         this.eventHubSubscription$.unsubscribe();
         this.videoCallSubscription$.unsubscribe();
-        if (this.consultationAccepted$) {
-            this.consultationAccepted$.unsubscribe();
-        }
     }
 
-    subscribeToAcceptConsultation() {
-        this.consultationAccepted$ = this.consultationService.consultationAcceptedBy.subscribe(accepted => {
-            if (accepted && this.displayDeviceChangeModal && this.selectMediaDevices) {
-                this.selectMediaDevices.onSubmit();
-            }
-        });
+    onConsultationAccepted() {
+        if (this.displayDeviceChangeModal && this.selectMediaDevices) {
+            this.selectMediaDevices.onSubmit();
+        }
     }
 
     initHearingAlert() {

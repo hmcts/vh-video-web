@@ -13,11 +13,9 @@ export class UserMediaService {
 
     private readonly preferredCamCache: SessionStorage<UserMediaDevice>;
     private readonly preferredMicCache: SessionStorage<UserMediaDevice>;
-    private readonly showDialogChooseDevicesOnInit: SessionStorage<boolean>;
 
     readonly PREFERRED_CAMERA_KEY = 'vh.preferred.camera';
     readonly PREFERRED_MICROPHONE_KEY = 'vh.preferred.microphone';
-    readonly CHOOSE_DEVICES_ON_INIT_IN_WR_KEY = 'vh.first.time.in.waitingroom';
     availableDeviceList: UserMediaDevice[];
 
     connectedDevices: BehaviorSubject<UserMediaDevice[]> = new BehaviorSubject([]);
@@ -25,7 +23,6 @@ export class UserMediaService {
     constructor(private logger: Logger) {
         this.preferredCamCache = new SessionStorage(this.PREFERRED_CAMERA_KEY);
         this.preferredMicCache = new SessionStorage(this.PREFERRED_MICROPHONE_KEY);
-        this.showDialogChooseDevicesOnInit = new SessionStorage(this.CHOOSE_DEVICES_ON_INIT_IN_WR_KEY);
 
         this.navigator.getUserMedia = this.navigator.getUserMedia || this.navigator.webkitGetUserMedia || this.navigator.msGetUserMedia;
 
@@ -89,14 +86,6 @@ export class UserMediaService {
 
     getPreferredMicrophone() {
         return this.getCachedDeviceIfStillConnected(this.preferredMicCache);
-    }
-
-    getShowDialogChooseDevice() {
-        return this.showDialogChooseDevicesOnInit.get();
-    }
-
-    updateShowDialogChooseDevice(firstTime: boolean) {
-        this.showDialogChooseDevicesOnInit.set(firstTime);
     }
 
     async getCachedDeviceIfStillConnected(cache: SessionStorage<UserMediaDevice>): Promise<UserMediaDevice> {

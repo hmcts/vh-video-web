@@ -29,6 +29,7 @@ import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { SelectedUserMediaDevice } from '../../../shared/models/selected-user-media-device';
 import { UserMediaDevice } from '../../../shared/models/user-media-device';
+import { SessionStorage } from 'src/app/services/session-storage';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
@@ -86,8 +87,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         consultationService = consultationServiceSpyFactory();
         audioRecordingService = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
         userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
-            'getShowDialogChooseDevice',
-            'updateShowDialogChooseDevice',
             'updatePreferredCamera',
             'updatePreferredMicrophone',
             'getPreferredCamera',
@@ -140,7 +139,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.eventHubSubscription$).toBeDefined();
         expect(component.videoCallSubscription$).toBeDefined();
         expect(videoCallService.setupClient).toHaveBeenCalled();
-        expect(component.consultationAccepted$).toBeDefined();
     }));
 
     it('should return correct conference status text when suspended', async () => {
@@ -314,5 +312,16 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(userMediaService.updatePreferredCamera).toHaveBeenCalled();
         expect(userMediaService.updatePreferredMicrophone).toHaveBeenCalled();
         expect(videoCallService.makeCall).toHaveBeenCalled();
+    });
+    it('should get value that is indicated that user fist time in the waiting room in current session', () => {
+        const sessionStorage = new SessionStorage(component.CHOOSE_DEVICES_ON_INIT_IN_WR_KEY);
+        sessionStorage.clear();
+
+        let flag = component.getShowDialogChooseDevice();
+        expect(flag).toBeFalsy();
+
+        component.updateShowDialogChooseDevice(true);
+        flag = component.getShowDialogChooseDevice();
+        expect(flag).toBe(true);
     });
 });
