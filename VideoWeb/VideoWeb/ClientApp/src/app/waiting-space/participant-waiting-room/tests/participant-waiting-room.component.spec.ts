@@ -1,7 +1,7 @@
-import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
-import { of, Subscription } from 'rxjs';
+import { of, Subscription, BehaviorSubject } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse, Role, TokenResponse } from 'src/app/services/clients/api-client';
@@ -17,6 +17,12 @@ import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consul
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
+import { SelectedUserMediaDevice } from '../../../shared/models/selected-user-media-device';
+import { UserMediaService } from 'src/app/services/user-media.service';
+import { UserMediaDevice } from '../../../shared/models/user-media-device';
+import { SessionStorage } from 'src/app/services/session-storage';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -37,6 +43,11 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     const videoCallService = videoCallServiceSpy;
     let consultationService: jasmine.SpyObj<ConsultationService>;
     let logger: jasmine.SpyObj<Logger>;
+    let userMediaService: jasmine.SpyObj<UserMediaService>;
+    let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
+    const mockCamStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
+    const mockMicStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getAudioTracks']);
+    const testDataDevice = new MediaDeviceTestData();
 
     const jwToken = new TokenResponse({
         expires_on: '06/10/2020 01:13:00',
@@ -72,6 +83,21 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         consultationService = consultationServiceSpyFactory();
 
         logger = jasmine.createSpyObj<Logger>('Logger', ['debug', 'info', 'warn', 'event', 'error']);
+        userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
+            'updatePreferredCamera',
+            'updatePreferredMicrophone',
+            'getPreferredCamera',
+            'getPreferredMicrophone'
+        ]);
+        userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService', [
+            'stopStream',
+            'getStreamForCam',
+            'getStreamForMic'
+        ]);
+        userMediaStreamService.getStreamForCam.and.resolveTo(mockCamStream);
+        userMediaStreamService.getStreamForMic.and.resolveTo(mockMicStream);
+        userMediaService.getPreferredCamera.and.resolveTo(testDataDevice.getListOfCameras()[0]);
+        userMediaService.getPreferredMicrophone.and.resolveTo(testDataDevice.getListOfMicrophones()[0]);
     });
 
     beforeEach(() => {
@@ -87,7 +113,9 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             deviceTypeService,
             router,
             consultationService,
-            clockService
+            clockService,
+            userMediaService,
+            userMediaStreamService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, gloalConference));
@@ -106,10 +134,11 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     it('should init hearing alert and subscribers', fakeAsync(() => {
         component.ngOnInit();
         flushMicrotasks();
-
+        tick(100);
         expect(component.clockSubscription$).toBeDefined();
         expect(component.eventHubSubscription$).toBeDefined();
         expect(component.videoCallSubscription$).toBeDefined();
+        expect(component.displayDeviceChangeModal).toBeFalsy();
     }));
 
     it('should handle api error with error service', async () => {
@@ -272,5 +301,45 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             deviceTypeService.getBrowserName.and.returnValue(testcase.browserName);
             expect(component.isSupportedBrowserForNetworkHealth).toBe(testcase.expected);
         });
+    });
+    it('should display change device popup', () => {
+        component.displayDeviceChangeModal = false;
+        component.showChooseCameraDialog();
+        expect(component.displayDeviceChangeModal).toBe(true);
+    });
+    it('should hide change device popup on close popup', () => {
+        component.displayDeviceChangeModal = true;
+        component.onMediaDeviceChangeCancelled();
+        expect(component.displayDeviceChangeModal).toBe(false);
+    });
+    it('should change device on select device', () => {
+        const device = new SelectedUserMediaDevice(
+            new UserMediaDevice('camera1', 'id3445', 'videoinput', '1'),
+            new UserMediaDevice('microphone', 'id123', 'audioinput', '1')
+        );
+        component.onMediaDeviceChangeAccepted(device);
+        expect(userMediaService.updatePreferredCamera).toHaveBeenCalled();
+        expect(userMediaService.updatePreferredMicrophone).toHaveBeenCalled();
+        expect(videoCallService.makeCall).toHaveBeenCalled();
+    });
+    it('should get value that is indicated that user fist time in the waiting room in current session', () => {
+        const sessionStorage = new SessionStorage(component.CHOOSE_DEVICES_ON_INIT_IN_WR_KEY);
+        sessionStorage.clear();
+
+        let flag = component.getShowDialogChooseDevice();
+        expect(flag).toBeFalsy();
+
+        component.updateShowDialogChooseDevice(true);
+        flag = component.getShowDialogChooseDevice();
+        expect(flag).toBe(true);
+    });
+    it('should on consultation accept stop streams for devices and close choose device popup', async () => {
+        component.displayDeviceChangeModal = true;
+        await component.onConsultationAccepted();
+
+        expect(component.displayDeviceChangeModal).toBe(false);
+        expect(userMediaStreamService.getStreamForMic).toHaveBeenCalled();
+        expect(userMediaStreamService.getStreamForCam).toHaveBeenCalled();
+        expect(userMediaStreamService.stopStream).toHaveBeenCalled();
     });
 });

@@ -19,9 +19,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly TestContext _c;
         private readonly Dictionary<User, UserBrowser> _browsers;
 
-        public BrowserSteps(TestContext testContext, Dictionary<User, UserBrowser> browsers)
+        public BrowserSteps(TestContext context, Dictionary<User, UserBrowser> browsers)
         {
-            _c = testContext;
+            _c = context;
             _browsers = browsers;
         }
 
@@ -33,19 +33,17 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             SwitchCurrentUser(user);
 
-            var browser = new UserBrowser()
+            _browsers.Add(_c.CurrentUser, new UserBrowser()
                 .SetBaseUrl(_c.VideoWebConfig.VhServices.VideoWebUrl)
                 .SetTargetDevice(_c.VideoWebConfig.TestConfig.TargetDevice)
                 .SetTargetBrowser(_c.VideoWebConfig.TestConfig.TargetBrowser)
-                .SetDriver(_c.Driver);
+                .SetDriver(_c.Driver));
 
-            _browsers.Add(_c.CurrentUser, browser);
-
-            browser.LaunchBrowser();
-            browser.NavigateToPage();
+            _browsers[_c.CurrentUser].LaunchBrowser();
+            _browsers[_c.CurrentUser].NavigateToPage();
 
             if (_c.VideoWebConfig.TestConfig.TargetBrowser != TargetBrowser.Ie11)
-                browser.PageUrl(_c.Test.CommonData.CommonUris.LoginUri);
+                _browsers[_c.CurrentUser].PageUrl(_c.Test.CommonData.CommonUris.LoginUri);
         }
 
         [Given(@"in (.*)'s browser")]

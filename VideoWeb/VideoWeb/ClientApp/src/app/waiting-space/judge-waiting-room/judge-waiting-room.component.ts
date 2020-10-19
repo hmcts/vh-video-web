@@ -14,6 +14,8 @@ import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-map
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
+import { UserMediaService } from 'src/app/services/user-media.service';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -39,7 +41,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
         protected consultationService: ConsultationService,
-        private audioRecordingService: AudioRecordingService
+        private audioRecordingService: AudioRecordingService,
+        protected userMediaService: UserMediaService,
+        protected userMediaStreamService: UserMediaStreamService
     ) {
         super(
             route,
@@ -52,18 +56,27 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
             videoCallService,
             deviceTypeService,
             router,
-            consultationService
+            consultationService,
+            userMediaService,
+            userMediaStreamService
         );
     }
 
     ngOnInit() {
         this.errorCount = 0;
         this.logger.debug('Loading judge waiting room');
+        this.showChooseDeviceDialog();
         this.connected = false;
         this.getConference().then(() => {
             this.startEventHubSubscribers();
-            this.getJwtokenAndConnectToPexip();
+            if (this.getShowDialogChooseDevice()) {
+                this.getJwtokenAndConnectToPexip();
+            }
         });
+    }
+
+    showChooseDeviceDialog() {
+        this.displayDeviceChangeModal = !this.getShowDialogChooseDevice();
     }
 
     @HostListener('window:beforeunload')

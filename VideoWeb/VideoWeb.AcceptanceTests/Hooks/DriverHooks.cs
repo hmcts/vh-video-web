@@ -60,6 +60,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             };
 
             OpenQA.Selenium.Proxy proxy = null;
+
             if (Zap.SetupProxy)
             {
                 proxy = new OpenQA.Selenium.Proxy();

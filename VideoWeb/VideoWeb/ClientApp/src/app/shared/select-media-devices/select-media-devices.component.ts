@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, OnDestroy, Input } from '@angular/core';
 import { SelectedUserMediaDevice } from 'src/app/shared/models/selected-user-media-device';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { FormBuilder, FormGroup, AbstractControl, Validators } from '@angular/forms';
@@ -8,11 +8,12 @@ import { UserMediaStreamService } from 'src/app/services/user-media-stream.servi
 @Component({
     selector: 'app-select-media-devices',
     templateUrl: './select-media-devices.component.html',
-    styleUrls: ['./select-media-devices.component.css']
+    styleUrls: ['./select-media-devices.component.scss']
 })
 export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     @Output() cancelMediaDeviceChange = new EventEmitter();
     @Output() acceptMediaDeviceChange = new EventEmitter<SelectedUserMediaDevice>();
+    @Input() waitingRoomMode = false;
 
     availableCameraDevices: UserMediaDevice[] = [];
     availableMicrophoneDevices: UserMediaDevice[] = [];
@@ -21,6 +22,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     preferredMicrophoneStream: MediaStream;
 
     selectedMediaDevicesForm: FormGroup;
+    deviceIsChanged = false;
 
     constructor(
         private userMediaService: UserMediaService,
@@ -99,18 +101,23 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         return this.selectedMediaDevicesForm.get('microphone');
     }
 
-    onSubmit() {
-        if (this.selectedMediaDevicesForm.invalid) {
-            return;
-        }
+    onChangeDevice() {
+        this.saveSelectedDevices();
+    }
+
+    private saveSelectedDevices() {
+        // save on select device
         const selectedCam = this.getSelectedCamera();
         const selectedMic = this.getSelectedMicrophone();
-        this.userMediaStreamService.stopStream(this.preferredCameraStream);
-        this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
+        this.userMediaService.updatePreferredCamera(selectedCam);
+        this.userMediaService.updatePreferredMicrophone(selectedMic);
         this.acceptMediaDeviceChange.emit(new SelectedUserMediaDevice(selectedCam, selectedMic));
     }
 
-    onCancel() {
+    onSubmit() {
+        // close dialog and stop streams
+        this.userMediaStreamService.stopStream(this.preferredCameraStream);
+        this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
         this.cancelMediaDeviceChange.emit();
     }
 
