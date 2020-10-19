@@ -60,7 +60,7 @@ namespace VideoWeb.Contract.Responses
         public string DisplayName { get; set; }
         
         /// <summary>
-        /// The participant role in conference
+        /// The participant user role in conference
         /// </summary>
         public Role Role { get; set; }
         
@@ -73,5 +73,10 @@ namespace VideoWeb.Contract.Responses
         /// The group a participant belongs to
         /// </summary>
         public string CaseTypeGroup { get; set; }
+        
+        /// <summary>
+        /// The participant hearing role in conference
+        /// </summary>
+        public string HearingRole { get; set; }
     }
 }
