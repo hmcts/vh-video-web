@@ -56,6 +56,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.ChangeDeviceButton).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.ChangeDeviceButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(JudgeWaitingRoomPage.ChangeDeviceButton);
         }
 
         [Then(@"the Judge can see information about their case")]
