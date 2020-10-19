@@ -26,5 +26,8 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By PhoneNumber(string phoneNumber) => CommonLocators.ElementContainingText(phoneNumber);
         public static By CheckEquipmentButton = CommonLocators.ButtonWithInnerText("Check equipment");
         public static By ParticipantCount(Guid conferenceId) => By.Id($"participant-count-{conferenceId:D}");
+        public static By PanelMembersCount(Guid conferenceId) => By.Id($"panel-member-count-{conferenceId:D}");
+        public static By ObserversCount(Guid conferenceId) => By.Id($"observer-count-{conferenceId:D}");
+        public static By WingersCount(Guid conferenceId) => By.Id($"winger-count-{conferenceId:D}");
     }
 }
