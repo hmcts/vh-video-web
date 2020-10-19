@@ -103,7 +103,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Then(@"the Judge can see a list of hearings including the new hearing")]
-        [Then(@"the Judge can see a list of hearings including the new hearing")]
         public void ThenTheJudgeCanSeeAListOfHearingsIncludingTheNewHearing()
         {
             var scheduledDateTime = _c.TimeZone.Adjust(_c.Test.Hearing.Scheduled_date_time);
@@ -183,12 +182,39 @@ namespace VideoWeb.AcceptanceTests.Steps
             AssertParticipantsCount(participantResponses, rowData);
         }
 
-        private static void AssertParticipantsCount(IEnumerable<ParticipantResponse> participantResponses, HearingRow rowData)
+        private static void AssertParticipantsCount(IList<ParticipantResponse> participantResponses, HearingRow rowData)
         {
-            var count = participantResponses.Count(x => x.Hearing_role_name != "Judge");
-            var ending = count > 1 ? "s" : "";
-            var countText = $"{count} Participant{ending}";
-            rowData.ParticipantCount.Should().Be(countText);
+            var participantsCount = participantResponses.Count(x => x.Hearing_role_name == "Individual" || x.Hearing_role_name == "Representative" || x.Hearing_role_name.EndsWith("LIP"));
+            if (participantsCount > 0)
+            {
+                var participantEnding = participantsCount > 1 ? "s" : "";
+                var participantsCountText = $"{participantsCount} Participant{participantEnding}";
+                rowData.ParticipantCount.Should().Be(participantsCountText);
+            }
+
+            var panelMembersCount = participantResponses.Count(x => x.Hearing_role_name == "Panel Member");
+            if (panelMembersCount > 0)
+            {
+                var panelMembersEnding = panelMembersCount > 1 ? "s" : "";
+                var panelMembersCountText = $"{panelMembersCount} Panel Member{panelMembersEnding}";
+                rowData.PanelMembersCount.Should().Be(panelMembersCountText);
+            }
+
+            var observersCount = participantResponses.Count(x => x.Hearing_role_name == "Observer");
+            if (observersCount > 0)
+            {
+                var observersEnding = observersCount > 1 ? "s" : "";
+                var observersCountText = $"{observersCount} Observer{observersEnding}";
+                rowData.ObserversCount.Should().Be(observersCountText);
+            }
+
+            var wingersCount = participantResponses.Count(x => x.Hearing_role_name == "Winger");
+            if (wingersCount > 0)
+            {
+                var wingersEnding = wingersCount > 1 ? "s" : "";
+                var wingersCountText = $"{wingersCount} Winger{wingersEnding}";
+                rowData.WingersCount.Should().Be(wingersCountText);
+            }
         }
     }
 }

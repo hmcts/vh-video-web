@@ -59,6 +59,24 @@ namespace VideoWeb.AcceptanceTests.Helpers
             _hearingRow.ParticipantCount = _browser.Driver.WaitUntilVisible(JudgeHearingListPage.ParticipantCount(_hearingId)).Text.Trim();
         }
 
+        private void GetPanelMembersCount()
+        {
+            var elements = _browser.Driver.FindElements(JudgeHearingListPage.PanelMembersCount(_hearingId));
+            _hearingRow.PanelMembersCount = elements.Count > 0 ? _browser.Driver.WaitUntilVisible(JudgeHearingListPage.PanelMembersCount(_hearingId)).Text.Trim() : "0";
+        }
+
+        private void GetObserversCount()
+        {
+            var elements = _browser.Driver.FindElements(JudgeHearingListPage.ObserversCount(_hearingId));
+            _hearingRow.ObserversCount = elements.Count > 0 ? _browser.Driver.WaitUntilVisible(JudgeHearingListPage.ObserversCount(_hearingId)).Text.Trim() : "0";
+        }
+
+        private void GetWingersCount()
+        {
+            var elements = _browser.Driver.FindElements(JudgeHearingListPage.WingersCount(_hearingId));
+            _hearingRow.WingersCount = elements.Count > 0 ? _browser.Driver.WaitUntilVisible(JudgeHearingListPage.WingersCount(_hearingId)).Text.Trim() : "0";
+        }
+
         public HearingRow Fetch()
         {
             CheckRowIsVisible();
@@ -66,6 +84,9 @@ namespace VideoWeb.AcceptanceTests.Helpers
             GetJudge();
             GetCaseDetails();
             GetParticipantCount();
+            GetPanelMembersCount();
+            GetObserversCount();
+            GetWingersCount();
             return _hearingRow;
         }
     }

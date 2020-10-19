@@ -52,6 +52,32 @@ Scenario: Judge has 1 or more hearings
 	When the user clicks on the Start Hearing button
 	Then the user is on the Waiting Room page
 
+@VIH-6621
+Scenario: Judge has a hearing with observers and panel members
+	Given I have a hearing with an Observer and Panel Member
+	And a new browser is open for a Judge
+	When the user attempts to login with valid credentials
+	Then the user is on the Hearing List page
+	And a phone number for help is provided
+	And the user can see their details at the top of the hearing list 
+	And the Judge can see a list of hearings including the new hearing
+	And contact us details for the Judge are available
+	When the user clicks on the Start Hearing button
+	Then the user is on the Waiting Room page
+
+@VIH-6621
+Scenario: Judge has a hearing on the hearing list with wingers
+	Given I have a CACD hearing with a Winger
+	And a new browser is open for a Judge
+	When the user attempts to login with valid credentials
+	Then the user is on the Hearing List page
+	And a phone number for help is provided
+	And the user can see their details at the top of the hearing list 
+	And the Judge can see a list of hearings including the new hearing
+	And contact us details for the Judge are available
+	When the user clicks on the Start Hearing button
+	Then the user is on the Waiting Room page
+
 @VIH-4156 @VIH-4507 @Smoketest
 Scenario: Video Hearings Officer has 1 or more hearings
   Given the Video Hearings Officer user has progressed to the VHO Hearing List page

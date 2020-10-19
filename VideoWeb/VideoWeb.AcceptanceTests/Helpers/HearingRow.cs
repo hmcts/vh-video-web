@@ -12,5 +12,8 @@ namespace VideoWeb.AcceptanceTests.Helpers
         public string ApplicantRep { get; set; }
         public string RespondentRep { get; set; }
         public string ParticipantCount { get; set; }
+        public string PanelMembersCount { get; set; }
+        public string ObserversCount { get; set; }
+        public string WingersCount { get; set; }
     }
 }
