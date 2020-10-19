@@ -14,5 +14,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By PausedText = CommonLocators.ElementContainingText("Hearing paused");
         public static By ResumeVideoCallButton = CommonLocators.ButtonWithInnerText("Resume video hearing");
         public static By StartVideoHearingButton = CommonLocators.ButtonWithInnerText("Start video hearing");
+        public static By CloseChangeDeviceButton = By.Id("change-device-btn");
     }
 }

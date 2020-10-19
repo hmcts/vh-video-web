@@ -50,6 +50,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantStatus(participant.Id)).Text.ToUpper().Trim().Should().Be(status.ToUpper());
         }
 
+
+        [Then(@"popup change device is open")]
+        public void ThenAPopupChangeDeviceIsOpen()
+        {
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.CloseChangeDeviceButton).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.CloseChangeDeviceButton);
+        }
+
         [Then(@"the Judge can see information about their case")]
         [Then(@"the Judge can see information about their case")]
         public void ThenTheJudgeCanSeeInformationAboutTheirCase()
