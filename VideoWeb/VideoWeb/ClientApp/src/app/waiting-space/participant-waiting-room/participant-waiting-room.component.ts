@@ -14,6 +14,8 @@ import { DeviceTypeService } from '../../services/device-type.service';
 import { HeartbeatModelMapper } from '../../shared/mappers/heartbeat-model-mapper';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
+import { UserMediaService } from 'src/app/services/user-media.service';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -40,7 +42,9 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
         protected consultationService: ConsultationService,
-        private clockService: ClockService
+        private clockService: ClockService,
+        protected userMediaService: UserMediaService,
+        protected userMediaStreamService: UserMediaStreamService
     ) {
         super(
             route,
@@ -53,7 +57,9 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
             videoCallService,
             deviceTypeService,
             router,
-            consultationService
+            consultationService,
+            userMediaService,
+            userMediaStreamService
         );
     }
 
@@ -61,6 +67,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         this.errorCount = 0;
         this.logger.debug('Loading participant waiting room');
         this.connected = false;
+        this.updateShowDialogChooseDevice(true);
         this.initHearingAlert();
         this.getConference().then(() => {
             this.subscribeToClock();

@@ -22,6 +22,10 @@ import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models
 import { VideoCallService } from '../services/video-call.service';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
+import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
+import { UserMediaService } from 'src/app/services/user-media.service';
+import { SessionStorage } from 'src/app/services/session-storage';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 
 declare var HeartbeatFactory: any;
 
@@ -47,9 +51,12 @@ export abstract class WaitingRoomBaseComponent {
     isPrivateConsultation: boolean;
     isAdminConsultation: boolean;
     showConsultationControls: boolean;
+    displayDeviceChangeModal: boolean;
 
     CALL_TIMEOUT = 31000; // 31 seconds
     callbackTimeout: NodeJS.Timer;
+    private readonly showDialogChooseDevicesOnInit: SessionStorage<boolean>;
+    readonly CHOOSE_DEVICES_ON_INIT_IN_WR_KEY = 'vh.first.time.in.waitingroom';
 
     protected constructor(
         protected route: ActivatedRoute,
@@ -62,13 +69,16 @@ export abstract class WaitingRoomBaseComponent {
         protected videoCallService: VideoCallService,
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
-        protected consultationService: ConsultationService
+        protected consultationService: ConsultationService,
+        protected userMediaService: UserMediaService,
+        protected userMediaStreamService: UserMediaStreamService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
         this.showVideo = false;
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
+        this.showDialogChooseDevicesOnInit = new SessionStorage(this.CHOOSE_DEVICES_ON_INIT_IN_WR_KEY);
     }
 
     // abstract updateShowVideo(): void;
@@ -159,7 +169,29 @@ export abstract class WaitingRoomBaseComponent {
             })
         );
 
+        this.logger.debug('Subscribing to EventHub consultation message');
+        this.eventHubSubscription$.add(
+            this.eventService.getConsultationMessage().subscribe(message => {
+                if (message.result === ConsultationAnswer.Accepted) {
+                    this.onConsultationAccepted();
+                }
+            })
+        );
+
         this.eventService.start();
+    }
+
+    async onConsultationAccepted() {
+        if (this.displayDeviceChangeModal) {
+            const preferredCamera = await this.userMediaService.getPreferredCamera();
+            const preferredMicrophone = await this.userMediaService.getPreferredMicrophone();
+            const preferredCameraStream = await this.userMediaStreamService.getStreamForCam(preferredCamera);
+            const preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(preferredMicrophone);
+
+            this.userMediaStreamService.stopStream(preferredCameraStream);
+            this.userMediaStreamService.stopStream(preferredMicrophoneStream);
+            this.displayDeviceChangeModal = false;
+        }
     }
 
     async handleEventHubDisconnection(reconnectionAttempt: number) {
@@ -414,5 +446,44 @@ export abstract class WaitingRoomBaseComponent {
         this.showVideo = false;
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
+    }
+
+    showChooseCameraDialog() {
+        this.displayDeviceChangeModal = true;
+    }
+
+    onMediaDeviceChangeCancelled() {
+        this.displayDeviceChangeModal = false;
+        if (!this.getShowDialogChooseDevice()) {
+            this.updateShowDialogChooseDevice(true);
+            this.getJwtokenAndConnectToPexip();
+        }
+    }
+
+    async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
+        this.disconnect();
+        this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
+        this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
+        await this.updatePexipAudioVideoSource();
+        this.call();
+    }
+
+    async updatePexipAudioVideoSource() {
+        const cam = await this.userMediaService.getPreferredCamera();
+        if (cam) {
+            this.videoCallService.updateCameraForCall(cam);
+        }
+
+        const mic = await this.userMediaService.getPreferredMicrophone();
+        if (mic) {
+            this.videoCallService.updateMicrophoneForCall(mic);
+        }
+    }
+    getShowDialogChooseDevice() {
+        return this.showDialogChooseDevicesOnInit.get();
+    }
+
+    updateShowDialogChooseDevice(firstTime: boolean) {
+        this.showDialogChooseDevicesOnInit.set(firstTime);
     }
 }

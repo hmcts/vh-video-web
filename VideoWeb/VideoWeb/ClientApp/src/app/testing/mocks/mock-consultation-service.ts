@@ -22,5 +22,6 @@ export function consultationServiceSpyFactory(): jasmine.SpyObj<ConsultationServ
     consultationServiceMock.leaveConsultation.and.returnValue(Promise.resolve());
     consultationServiceMock.respondToAdminConsultationRequest.and.returnValue(Promise.resolve());
     consultationServiceMock.startPrivateConsulationWithEndpoint.and.returnValue(Promise.resolve());
+
     return consultationServiceMock;
 }
