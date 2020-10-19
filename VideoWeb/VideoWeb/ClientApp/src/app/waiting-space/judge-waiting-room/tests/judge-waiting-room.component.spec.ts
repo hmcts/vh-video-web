@@ -147,7 +147,16 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             clearInterval(component.callbackTimeout);
         }
     });
+    it('should init hearing alert and not setup Client if popup is on and init first time', fakeAsync(() => {
+        component.updateShowDialogChooseDevice(false);
+        videoWebService.getJwToken.calls.reset();
 
+        component.ngOnInit();
+        flushMicrotasks();
+        tick(100);
+        expect(component.eventHubSubscription$).toBeDefined();
+        expect(videoWebService.getJwToken).toHaveBeenCalledTimes(0);
+    }));
     it('should init hearing alert and subscribers', fakeAsync(() => {
         component.ngOnInit();
         flushMicrotasks();
@@ -348,5 +357,13 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(userMediaStreamService.getStreamForMic).toHaveBeenCalled();
         expect(userMediaStreamService.getStreamForCam).toHaveBeenCalled();
         expect(userMediaStreamService.stopStream).toHaveBeenCalled();
+    });
+    it('should hide change device popup on close popup and set pexip if init first time', () => {
+        component.displayDeviceChangeModal = true;
+        component.updateShowDialogChooseDevice(false);
+
+        component.onMediaDeviceChangeCancelled();
+        expect(component.displayDeviceChangeModal).toBe(false);
+        expect(videoWebService.getJwToken).toHaveBeenCalled();
     });
 });

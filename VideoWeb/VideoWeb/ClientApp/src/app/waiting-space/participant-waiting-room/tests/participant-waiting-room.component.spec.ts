@@ -138,6 +138,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         expect(component.clockSubscription$).toBeDefined();
         expect(component.eventHubSubscription$).toBeDefined();
         expect(component.videoCallSubscription$).toBeDefined();
+        expect(component.displayDeviceChangeModal).toBeFalsy();
     }));
 
     it('should handle api error with error service', async () => {

@@ -67,19 +67,13 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         this.errorCount = 0;
         this.logger.debug('Loading participant waiting room');
         this.connected = false;
-
-        this.showChooseDeviceDialog();
+        this.updateShowDialogChooseDevice(true);
         this.initHearingAlert();
         this.getConference().then(() => {
             this.subscribeToClock();
             this.startEventHubSubscribers();
             this.getJwtokenAndConnectToPexip();
         });
-    }
-
-    showChooseDeviceDialog() {
-        this.displayDeviceChangeModal = !this.getShowDialogChooseDevice();
-        this.updateShowDialogChooseDevice(true);
     }
 
     @HostListener('window:beforeunload')

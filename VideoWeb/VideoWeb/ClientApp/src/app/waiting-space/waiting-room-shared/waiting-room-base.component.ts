@@ -454,6 +454,10 @@ export abstract class WaitingRoomBaseComponent {
 
     onMediaDeviceChangeCancelled() {
         this.displayDeviceChangeModal = false;
+        if (!this.getShowDialogChooseDevice()) {
+            this.updateShowDialogChooseDevice(true);
+            this.getJwtokenAndConnectToPexip();
+        }
     }
 
     async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {

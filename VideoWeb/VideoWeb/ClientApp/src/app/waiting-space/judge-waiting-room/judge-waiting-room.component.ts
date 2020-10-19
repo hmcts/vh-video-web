@@ -69,13 +69,14 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         this.connected = false;
         this.getConference().then(() => {
             this.startEventHubSubscribers();
-            this.getJwtokenAndConnectToPexip();
+            if (this.getShowDialogChooseDevice()) {
+                this.getJwtokenAndConnectToPexip();
+            }
         });
     }
 
     showChooseDeviceDialog() {
         this.displayDeviceChangeModal = !this.getShowDialogChooseDevice();
-        this.updateShowDialogChooseDevice(true);
     }
 
     @HostListener('window:beforeunload')
