@@ -6801,6 +6801,9 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonProperty("case_type_group", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Case_type_group { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("hearing_role", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Hearing_role { get; set; }
+    
     
     }
     

@@ -66,6 +66,11 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 return users.First(x => x.User_type == UserType.VideoHearingsOfficer);
             }
 
+            if (user.Contains("winger"))
+            {
+                return GetAllUsersOfType(users, UserType.Winger)[index];
+            }
+
             throw new DataException($"No matching user could be found from '{user}'");
         }
 
