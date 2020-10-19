@@ -6,9 +6,10 @@ import { JudgeHearingSummary } from 'src/app/shared/models/JudgeHearingSummary';
 
 describe('JudgeHearingTableComponent', () => {
     const component: JudgeHearingTableComponent = new JudgeHearingTableComponent(new MockLogger());
+    const testData = new ConferenceTestData();
 
     beforeEach(() => {
-        component.conferences = new ConferenceTestData().getTestData();
+        component.conferences = testData.getTestData();
         component.ngOnInit();
     });
 
@@ -29,14 +30,6 @@ describe('JudgeHearingTableComponent', () => {
         const hearing = new JudgeHearingSummary(new ConferenceTestData().getConferenceNow());
         const ind = component.getIndividual(hearing.applicants);
         expect(ind.representee).toBeUndefined();
-    });
-
-    it('should get the participant count excluding judge', () => {
-        const hearing = new JudgeHearingSummary(new ConferenceTestData().getConferenceNow());
-        const participantCount = component.getParticipantsCount(hearing);
-        expect(participantCount).toBe(
-            hearing.applicants.length + hearing.respondents.length + hearing.observers.length + hearing.panelMembers.length
-        );
     });
 
     const conferenceStatusVisibilityTestCases = [
