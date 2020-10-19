@@ -155,9 +155,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         );
         this.videoCallSubscription$.add(this.videoCallService.onError().subscribe(callError => this.handleCallError(callError)));
         this.videoCallSubscription$.add(
-            this.videoCallService
-                .onCallDisconnected()
-                .subscribe(async disconnectedCall => await this.handleCallDisconnect(disconnectedCall))
+            this.videoCallService.onCallDisconnected().subscribe(disconnectedCall => this.handleCallDisconnect(disconnectedCall))
         );
 
         await this.videoCallService.setupClient();
@@ -185,7 +183,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
     async handleCallDisconnect(reason: DisconnectedCall) {
         this.displayFeed = false;
-        this.logger.info('Disconnected from pexip. Reason : ' + reason.reason);
+        this.logger.warn('Disconnected from pexip. Reason : ' + reason.reason);
         if (reason.reason === 'Conference terminated by another participant') {
             await this.retrieveSelfTestScore();
         }
