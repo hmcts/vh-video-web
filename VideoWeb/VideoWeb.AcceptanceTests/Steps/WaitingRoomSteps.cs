@@ -51,11 +51,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
 
-        [Then(@"popup change device is open")]
-        public void ThenAPopupChangeDeviceIsOpen()
+        [Then(@"the judge dismisses the change camera popup")]
+        public void TheJudgeDismissesTheChangeCameraPopup()
         {
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.CloseChangeDeviceButton).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.CloseChangeDeviceButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.ChangeDeviceButton).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.ChangeDeviceButton);
         }
 
         [Then(@"the Judge can see information about their case")]
@@ -239,15 +239,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.ClosedTitle).Displayed.Should().BeTrue();
         }
 
-        [When(@"the Judge starts the hearing")]
-        public void ProgressToNextPage()
-        {
-            Thread.Sleep(TimeSpan.FromSeconds(ExtraTimeAfterReachingWaitingRoom));
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.StartVideoHearingButton).Displayed.Should().BeTrue();
-            CheckParticipantsAreStillConnected();
-            _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.StartVideoHearingButton);
-        }
-
         [When(@"the waiting room page has loaded for the (.*)")]
         public void WhenTheWaitingRoomPageHasLoadedForTheUser(string user)
         {
@@ -259,6 +250,16 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 ThenTheUserCanSeeInformationAboutTheirCase();
             }
+        }
+
+        [When(@"the Judge starts the hearing")]
+        public void ProgressToNextPage()
+        {
+            Thread.Sleep(TimeSpan.FromSeconds(ExtraTimeAfterReachingWaitingRoom));
+            TheJudgeDismissesTheChangeCameraPopup();
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.StartVideoHearingButton).Displayed.Should().BeTrue();
+            CheckParticipantsAreStillConnected();
+            _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.StartVideoHearingButton);
         }
 
         private void CheckParticipantsAreStillConnected()
