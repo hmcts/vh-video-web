@@ -98,6 +98,7 @@ describe('ParticipantSelfTestComponent', () => {
         tick();
         expect(logger.error).toHaveBeenCalled();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.CameraWorking, conference.id]);
+        expect(component.continueClicked).toBeTruthy();
     }));
 
     it('should set test in progress to false and test completed to true when test completes', () => {
@@ -118,6 +119,7 @@ describe('ParticipantSelfTestComponent', () => {
         expect(component.testInProgress).toBeFalsy();
         expect(component.hideSelfTest).toBeFalsy();
         expect(selfTestSpy.replayVideo).toHaveBeenCalled();
+        expect(component.continueClicked).toBeFalsy();
     });
     it('should update participant status on log out', fakeAsync(() => {
         const event: any = { returnValue: 'save' };

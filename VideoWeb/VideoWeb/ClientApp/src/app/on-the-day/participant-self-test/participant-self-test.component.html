@@ -17,6 +17,8 @@
 <div class="govuk-!-margin-top-6">
   <button
     id="continue-btn"
+    [disabled]="continueClicked"
+    [ngClass]="{ 'govuk-button--disabled': continueClicked }"
     class="govuk-button govuk-!-margin-right-1"
     data-module="govuk-button"
     (click)="continueParticipantJourney()"

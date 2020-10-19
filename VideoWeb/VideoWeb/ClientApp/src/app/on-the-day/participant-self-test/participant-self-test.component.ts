@@ -17,6 +17,7 @@ import { DisconnectedCall } from 'src/app/waiting-space/models/video-call-models
 })
 export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective {
     selfTestCompleted = false;
+    continueClicked: boolean;
     constructor(
         private router: Router,
         protected route: ActivatedRoute,
@@ -32,11 +33,18 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
     onSelfTestCompleted(testcallScore: TestCallScoreResponse): void {
         super.onSelfTestCompleted(testcallScore);
         this.selfTestCompleted = true;
+        this.continueClicked = false;
     }
 
     async continueParticipantJourney() {
+        if (this.continueClicked) {
+            return;
+        }
+        this.continueClicked = true;
         if (!this.selfTestCompleted) {
+            console.warn('self test finished early');
             this.selfTestComponent.disconnect();
+            console.warn('disconnected from pexip');
             const reason = new DisconnectedCall('Conference terminated by another participant');
             await this.selfTestComponent.handleCallDisconnect(reason);
             await this.raisedSelfTestIncompleted();
@@ -46,6 +54,7 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
     }
 
     restartTest() {
+        this.continueClicked = false;
         this.logger.debug('restarting participant self-test');
         this.selfTestComponent.replayVideo();
     }
