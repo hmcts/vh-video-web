@@ -39,7 +39,7 @@
     "@ng-select/ng-select": "^5.0.3",
     "adal-angular4": "^3.0.16",
     "aspnet-prerendering": "^3.0.1",
-    "chart.js": "^2.9.3",
+    "chart.js": "^2.9.4",
     "classlist.js": "^1.1.20150312",
     "core-js": "^3.6.5",
     "govuk-frontend": "^3.9.1",
