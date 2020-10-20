@@ -57,7 +57,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var micOptions = new SelectElement(_browsers[_c.CurrentUser].Driver.WaitUntilElementExists(PracticeVideoHearingPage.MicsList));
             micOptions.Options.Count.Should().BeGreaterThan(1);
             micOptions.SelectByIndex(micOptions.Options.Count - 1);
-            _browsers[_c.CurrentUser].Click(PracticeVideoHearingPage.ChangeButton);
+            _browsers[_c.CurrentUser].Click(PracticeVideoHearingPage.CloseButton);
         }
 
         [Then(@"the choose your camera and microphone popup should disappear")]
