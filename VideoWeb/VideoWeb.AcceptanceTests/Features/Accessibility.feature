@@ -64,14 +64,23 @@ Scenario: Declaration page accessibility
 	Then the page should be accessible 
 
 @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
-Scenario Outline: Waiting Room page accessibility
-    Given the <Role> user has progressed to the Waiting Room page
-    When the waiting room page has loaded for the <Role>
+Scenario: Change camera and microphone page accessibility
+    Given the Judge user has progressed to the Waiting Room page
+    When the waiting room page has loaded for the Judge
     Then the page should be accessible 
-    Examples: 
-    | Role        |
-    | Judge       |
-    | Participant |
+
+@Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
+Scenario: Judge Waiting Room page accessibility
+    Given the Judge user has progressed to the Waiting Room page
+    When the waiting room page has loaded for the Judge
+    And the judge dismisses the change camera popup
+    Then the page should be accessible 
+
+@Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
+Scenario: Participant Waiting Room page accessibility
+    Given the Participant user has progressed to the Waiting Room page
+    When the waiting room page has loaded for the Participant
+    Then the page should be accessible 
 
 @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
 Scenario: Help page accessibility

@@ -50,7 +50,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantStatus(participant.Id)).Text.ToUpper().Trim().Should().Be(status.ToUpper());
         }
 
-
+        [When(@"the judge dismisses the change camera popup")]
         [Then(@"the judge dismisses the change camera popup")]
         public void TheJudgeDismissesTheChangeCameraPopup()
         {
