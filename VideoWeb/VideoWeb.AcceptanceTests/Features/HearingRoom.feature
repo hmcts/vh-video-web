@@ -95,8 +95,7 @@ Scenario: VHO Monitors Hearing
   Given the first Individual user has progressed to the Waiting Room page for the existing hearing
 	And the Judge user has progressed to the Waiting Room page for the existing hearing
   And in the Video Hearings Officer's browser
-  Then the VHO can see the Judge status is Available
-  And the VHO can see the status of participant the first Individual's is Available
+  Then the VHO can see the status of participant the first Individual's is Available
   And the VHO can see that the first Individual's is in the Waiting Room
   When in the Judge's browser
   And the Judge starts the hearing
