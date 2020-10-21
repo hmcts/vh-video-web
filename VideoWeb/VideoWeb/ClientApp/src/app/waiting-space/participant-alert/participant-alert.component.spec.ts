@@ -22,7 +22,15 @@ describe('ParticipantAlertComponent', () => {
 
     it('should subscribe to participant heartbeat', () => {
         const score = HeartbeatHealth.Good;
-        const payload = new ParticipantHeartbeat(globalConference.id, globalParticipant.id, score, 'Chrome', '82.0.0');
+        const payload = new ParticipantHeartbeat(
+            globalConference.id,
+            globalParticipant.id,
+            score,
+            'Chrome',
+            '82.0.0',
+            'Mac OS X',
+            '10.15.1'
+        );
         heartbeatSubject.next(payload);
         expect(component.isNetworkPoor).toBeFalsy();
         expect(component.networkHealth).toBe(score);

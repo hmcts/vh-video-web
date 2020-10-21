@@ -22,7 +22,7 @@ describe('WaitingRoomMonitorComponent', () => {
 
     it('should subscribe to participant heartbeat', () => {
         const score = HeartbeatHealth.Poor;
-        const payload = new ParticipantHeartbeat(globalConference.id, globalParticipant.id, score, 'Chrome', '82.0.0');
+        const payload = new ParticipantHeartbeat(globalConference.id, globalParticipant.id, score, 'Chrome', '82.0.0', 'Mac OS X', '10.15');
         heartbeatSubject.next(payload);
         expect(component.isNetworkPoor).toBeTruthy();
         expect(component.networkHealth).toBe(score);

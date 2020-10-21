@@ -38,6 +38,7 @@ export class MonitoringGraphComponent implements OnInit {
     participantName: string;
 
     browserInfoString: string;
+    osInfoString: string;
 
     constructor(private monitorGraphService: MonitorGraphService) {}
 
@@ -70,6 +71,7 @@ export class MonitoringGraphComponent implements OnInit {
     transferPackagesLost(packagesLost: PackageLost[]) {
         this.showUnsupportedBrowser = this.isUnsupportedBrowser(packagesLost);
         this.browserInfoString = this.getBrowserInfoString(packagesLost);
+        this.osInfoString = this.getOsInfoString(packagesLost);
         if (!this.showUnsupportedBrowser) {
             this.packagesLostValues = this.monitorGraphService.transferPackagesLost(packagesLost);
             this.lastPoint = this.packagesLostValues[GraphSettings.MAX_RECORDS - 1];
@@ -97,7 +99,13 @@ export class MonitoringGraphComponent implements OnInit {
 
     getBrowserInfoString(packages: PackageLost[]) {
         return packages && packages.length > 0
-            ? `${packages[packages.length - 1].browserName} | ${packages[packages.length - 1].browserVersion}`
+            ? `${packages[packages.length - 1].browserName} ${packages[packages.length - 1].browserVersion}`
             : 'No browser info.';
+    }
+
+    getOsInfoString(packages: PackageLost[]) {
+        return packages && packages.length > 0
+            ? `${packages[packages.length - 1].osName} ${packages[packages.length - 1].osVersion}`
+            : 'No OS info.';
     }
 }

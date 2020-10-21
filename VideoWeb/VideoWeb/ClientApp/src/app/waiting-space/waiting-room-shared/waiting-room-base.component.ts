@@ -81,8 +81,6 @@ export abstract class WaitingRoomBaseComponent {
         this.showDialogChooseDevicesOnInit = new SessionStorage(this.CHOOSE_DEVICES_ON_INIT_IN_WR_KEY);
     }
 
-    // abstract updateShowVideo(): void;
-
     async getConference() {
         const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         return this.videoWebService
@@ -239,7 +237,9 @@ export abstract class WaitingRoomBaseComponent {
             const heartbeatModel = self.heartbeatMapper.map(
                 JSON.parse(heartbeat),
                 self.deviceTypeService.getBrowserName(),
-                self.deviceTypeService.getBrowserVersion()
+                self.deviceTypeService.getBrowserVersion(),
+                self.deviceTypeService.getOSName(),
+                self.deviceTypeService.getOSVersion()
             );
 
             await self.eventService.sendHeartbeat(self.hearing.id, self.participant.id, heartbeatModel);

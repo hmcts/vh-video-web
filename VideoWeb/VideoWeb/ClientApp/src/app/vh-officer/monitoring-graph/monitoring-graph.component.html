@@ -1,13 +1,14 @@
 <div id="monitoring-graph" class="vh-popup-overlay">
   <div class="vh-popup-xsmall govuk-grid-row shadow">
-    <div class="box govuk-grid-row" style="margin-left: 2px;">
+    <div class="box govuk-grid-row" style="margin-left: 2px">
       <div class="boxHead signalHead">
         <div class="signalHeadName">{{ participantName }}</div>
         <div class="signalHeadTitle"></div>
       </div>
       <div class="boxBody">
         <div class="graph-display">
-          <canvas *ngIf="!showUnsupportedBrowser"
+          <canvas
+            *ngIf="!showUnsupportedBrowser"
             baseChart
             width="525"
             height="150"
@@ -24,10 +25,9 @@
         </div>
       </div>
       <div class="boxFoot">
-
         <div
           class="govuk-grid-row graph-panel footer-border"
-          style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px;"
+          style="border-bottom-left-radius: 3px; border-bottom-right-radius: 3px"
           [ngClass]="{
             'graph-footer-yellow': lastPackageLostValue === 'poor',
             'graph-footer-green': lastPackageLostValue === 'good',
@@ -36,32 +36,33 @@
             'graph-footer-black': lastPackageLostValue === 'unsupported'
           }"
         >
-          <span *ngIf="!showUnsupportedBrowser"
+          <span
+            *ngIf="!showUnsupportedBrowser"
             class="govuk-body-s vh-text-panel"
             id="signal-strength"
             [ngClass]="{ 'vh-c': lastPackageLostValue !== 'poor' }"
-            style="color: white; margin-top: 6px;"
+            style="color: white; margin-top: 6px"
           >
             {{ participantGraphInfo.status }}: {{ lastPackageLostValue }} signal
           </span>
-            <span *ngIf="showUnsupportedBrowser"
-                class="govuk-body-s vh-text-panel"
-                id="signal-strength-unsupported"
-                [ngClass]="{ 'vh-c': lastPackageLostValue !== 'poor' }"
-                style="color: white; margin-top: 6px;"
-            >
+          <span
+            *ngIf="showUnsupportedBrowser"
+            class="govuk-body-s vh-text-panel"
+            id="signal-strength-unsupported"
+            [ngClass]="{ 'vh-c': lastPackageLostValue !== 'poor' }"
+            style="color: white; margin-top: 6px"
+          >
             {{ participantGraphInfo.status }}
           </span>
-            <span
-                class="govuk-body-s vh-text-panel"
-                id="signal-strength2"
-                [ngClass]="{ 'vh-c': lastPackageLostValue !== 'poor' }"
-                style="color: white; margin-top: 6px; margin-bottom: 1px; margin-right: 10px; float: right"
-            >
-            {{ browserInfoString }}
+          <span
+            class="govuk-body-s vh-text-panel"
+            id="signal-strength2"
+            [ngClass]="{ 'vh-c': lastPackageLostValue !== 'poor' }"
+            style="color: white; margin-top: 6px; margin-bottom: 1px; margin-right: 10px; float: right"
+          >
+            {{ browserInfoString }} | {{ osInfoString }}
           </span>
         </div>
-
       </div>
     </div>
   </div>

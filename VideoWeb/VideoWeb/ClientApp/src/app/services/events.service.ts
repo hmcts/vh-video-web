@@ -156,9 +156,19 @@ export class EventsService {
                 participantId: string,
                 heartbeatHealth: HeartbeatHealth,
                 browserName: string,
-                browserVersion: string
+                browserVersion: string,
+                osName: string,
+                osVersion: string
             ) => {
-                const heartbeat = new ParticipantHeartbeat(conferenceId, participantId, heartbeatHealth, browserName, browserVersion);
+                const heartbeat = new ParticipantHeartbeat(
+                    conferenceId,
+                    participantId,
+                    heartbeatHealth,
+                    browserName,
+                    browserVersion,
+                    osName,
+                    osVersion
+                );
                 this.logger.event('ReceiveHeartbeat received', heartbeat);
                 this.participantHeartbeat.next(heartbeat);
             }

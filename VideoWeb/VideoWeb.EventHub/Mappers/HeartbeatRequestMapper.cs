@@ -21,6 +21,8 @@ namespace VideoWeb.EventHub.Mappers
                 Outgoing_video_percentage_lost_recent = decimal.ToDouble(heartbeat.OutgoingVideoPercentageLostRecent),
                 Browser_name = heartbeat.BrowserName,
                 Browser_version = heartbeat.BrowserVersion,
+                Operating_system = heartbeat.OperatingSystem,
+                Operating_system_version = heartbeat.OperatingSystemVersion
             };
         }
 
