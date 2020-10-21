@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using AcceptanceTests.Common.Driver.Drivers;
+using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
 using Selenium.Axe;
 using TechTalk.SpecFlow;
@@ -23,6 +24,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the page should be accessible")]
         public void ThenThePageShouldBeAccessible()
         {
+            _browsers[_c.CurrentUser].Driver.WaitForPageToLoad();
             var axeResult = new AxeBuilder(_browsers[_c.CurrentUser].Driver).Analyze();
             axeResult.Violations.Should().BeEmpty();
         }
