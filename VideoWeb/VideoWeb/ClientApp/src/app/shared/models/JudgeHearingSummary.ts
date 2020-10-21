@@ -15,7 +15,8 @@ export class JudgeHearingSummary extends HearingSummary {
                 (x.role === Role.Individual || x.role === Role.Representative) &&
                 x.hearingRole !== HearingRole.OBSERVER &&
                 x.hearingRole !== HearingRole.PANEL_MEMBER &&
-                x.hearingRole !== HearingRole.WINGER
+                x.hearingRole !== HearingRole.WINGER &&
+                x.hearingRole !== HearingRole.WITNESS
         );
         return p;
     }
@@ -30,6 +31,10 @@ export class JudgeHearingSummary extends HearingSummary {
 
     get wingers(): ParticipantSummary[] {
         return this.participants.filter(x => x.hearingRole === HearingRole.WINGER);
+    }
+
+    get witnesses(): ParticipantSummary[] {
+        return this.participants.filter(x => x.hearingRole === HearingRole.WITNESS);
     }
 
     numberOfEndpoints: number;

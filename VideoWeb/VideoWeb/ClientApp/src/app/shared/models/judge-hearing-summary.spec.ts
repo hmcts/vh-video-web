@@ -53,6 +53,13 @@ describe('JudgeHearingSummary', () => {
         expect(wingers.length).toBe(1);
     });
 
+    it('should get witnesses', () => {
+        const hearing = new JudgeHearingSummary(conference);
+        const witnesses = hearing.witnesses;
+        expect(witnesses.filter(x => x.hearingRole !== HearingRole.WITNESS).length).toBe(0);
+        expect(witnesses.length).toBe(1);
+    });
+
     it('should get non judicial participants, excluding observers', () => {
         const hearing = new JudgeHearingSummary(conference);
         const participants = hearing.nonJudicialParticipantsExcludingObservers;
@@ -61,6 +68,7 @@ describe('JudgeHearingSummary', () => {
         expect(participants.filter(x => x.hearingRole === HearingRole.OBSERVER).length).toBe(0);
         expect(participants.filter(x => x.hearingRole === HearingRole.PANEL_MEMBER).length).toBe(0);
         expect(participants.filter(x => x.hearingRole === HearingRole.WINGER).length).toBe(0);
+        expect(participants.filter(x => x.hearingRole === HearingRole.WITNESS).length).toBe(0);
         console.log(participants);
         expect(participants.length).toBe(4);
     });
