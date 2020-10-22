@@ -4,13 +4,17 @@ export class ParticipantHeartbeat {
         participantId: string,
         heartbeatHealth: HeartbeatHealth,
         browserName: string,
-        browserVersion: string
+        browserVersion: string,
+        osName: string,
+        osVersion: string
     ) {
         this.conferenceId = conferenceId;
         this.participantId = participantId;
         this.heartbeatHealth = heartbeatHealth;
         this.browserName = browserName;
         this.browserVersion = browserVersion;
+        this.osName = osName;
+        this.osVersion = osVersion;
     }
 
     conferenceId: string;
@@ -18,6 +22,8 @@ export class ParticipantHeartbeat {
     heartbeatHealth: HeartbeatHealth;
     browserName: string;
     browserVersion: string;
+    osName: string;
+    osVersion: string;
 }
 
 export enum HeartbeatHealth {

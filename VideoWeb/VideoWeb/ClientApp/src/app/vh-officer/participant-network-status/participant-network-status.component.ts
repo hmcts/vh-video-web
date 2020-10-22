@@ -1,6 +1,7 @@
 import { Component, ElementRef, Input, OnInit, ViewChild, AfterContentChecked } from '@angular/core';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { LogEventType } from 'src/app/shared/models/log-event-types';
 import { HeartbeatHealth } from '../../services/models/participant-heartbeat';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { PackageLost } from '../services/models/package-lost';
@@ -52,13 +53,25 @@ export class ParticipantNetworkStatusComponent implements OnInit, AfterContentCh
             this.logger.debug('Graph already displayed or still loading');
             return;
         }
+        this.logger.event(LogEventType.API_CALL, {
+            name: 'getParticipantHeartbeats',
+            conferenceId: this.conferenceId,
+            participantId: this.participant.id
+        });
         try {
             this.loading = true;
             const heartbeatHistory = await this.vhoQuery.getParticipantHeartbeats(this.conferenceId, this.participant.id);
 
             this.loading = false;
             this.packageLostArray = heartbeatHistory.map(x => {
-                return new PackageLost(x.recent_packet_loss, x.browser_name, x.browser_version, x.timestamp.getTime());
+                return new PackageLost(
+                    x.recent_packet_loss,
+                    x.browser_name,
+                    x.browser_version,
+                    x.operating_system,
+                    x.operating_system_version,
+                    x.timestamp.getTime()
+                );
             });
 
             this.monitoringParticipant = new ParticipantGraphInfo(

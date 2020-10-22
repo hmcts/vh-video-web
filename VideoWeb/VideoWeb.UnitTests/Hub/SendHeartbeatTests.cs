@@ -28,7 +28,9 @@ namespace VideoWeb.UnitTests.Hub
             var heartbeat = new Heartbeat
             {
                 BrowserName = "test_browser", BrowserVersion = "1",
-                IncomingAudioPercentageLostRecent = 10.3m
+                IncomingAudioPercentageLostRecent = 10.3m,
+                OperatingSystem = "Mac OS X",
+                OperatingSystemVersion = "10.15"
             };
             
             ConferenceCacheMock.Setup(cache =>
@@ -55,17 +57,18 @@ namespace VideoWeb.UnitTests.Hub
             (
                 x => x.ReceiveHeartbeat
                 (
-                    conferenceId, participantId, HeartbeatHealth.Good, heartbeat.BrowserName, heartbeat.BrowserVersion
+                    conferenceId, participantId, HeartbeatHealth.Good, heartbeat.BrowserName, heartbeat.BrowserVersion, heartbeat.OperatingSystem, heartbeat.OperatingSystemVersion
                 ), 
                 Times.Once
             );
-            
+
             mockParticipantClient.Verify
             (
                 x => x.ReceiveHeartbeat
                 (
-                    conferenceId, participantId, HeartbeatHealth.Good, heartbeat.BrowserName, heartbeat.BrowserVersion
-                ), 
+                    conferenceId, participantId, HeartbeatHealth.Good, heartbeat.BrowserName, heartbeat.BrowserVersion,
+                    heartbeat.OperatingSystem, heartbeat.OperatingSystemVersion
+                ),
                 Times.Once
             );
 
@@ -73,7 +76,8 @@ namespace VideoWeb.UnitTests.Hub
             (
                 x => x.ReceiveHeartbeat
                 (
-                    conferenceId, participantId, HeartbeatHealth.Good, heartbeat.BrowserName, heartbeat.BrowserVersion
+                    conferenceId, participantId, HeartbeatHealth.Good, heartbeat.BrowserName, heartbeat.BrowserVersion,
+                    heartbeat.OperatingSystem, heartbeat.OperatingSystemVersion
                 ),
                 Times.Once
             );
@@ -98,7 +102,9 @@ namespace VideoWeb.UnitTests.Hub
             var heartbeat = new Heartbeat
             {
                 BrowserName = "test_browser", BrowserVersion = "1",
-                IncomingAudioPercentageLostRecent = 10.3m
+                IncomingAudioPercentageLostRecent = 10.3m,
+                OperatingSystem = "Mac OS X",
+                OperatingSystemVersion = "10.15"
             };
 
             ConferenceCacheMock.Setup(cache =>
@@ -125,7 +131,8 @@ namespace VideoWeb.UnitTests.Hub
             (
                 x => x.ReceiveHeartbeat
                 (
-                    conferenceId, judgeId, HeartbeatHealth.Good, heartbeat.BrowserName, heartbeat.BrowserVersion
+                    conferenceId, judgeId, HeartbeatHealth.Good, heartbeat.BrowserName, heartbeat.BrowserVersion,
+                    heartbeat.OperatingSystem, heartbeat.OperatingSystemVersion
                 ),
                 Times.Once
             );
@@ -134,7 +141,8 @@ namespace VideoWeb.UnitTests.Hub
             (
                 x => x.ReceiveHeartbeat
                 (
-                    conferenceId, judgeId, HeartbeatHealth.Good, heartbeat.BrowserName, heartbeat.BrowserVersion
+                    conferenceId, judgeId, HeartbeatHealth.Good, heartbeat.BrowserName, heartbeat.BrowserVersion,
+                    heartbeat.OperatingSystem, heartbeat.OperatingSystemVersion
                 ),
                 Times.Never
             );
@@ -154,7 +162,9 @@ namespace VideoWeb.UnitTests.Hub
             var heartbeat = new Heartbeat
             {
                 BrowserName = "test_browser", BrowserVersion = "1",
-                IncomingAudioPercentageLostRecent = 10.3m
+                IncomingAudioPercentageLostRecent = 10.3m,
+                OperatingSystem = "Mac OS X",
+                OperatingSystemVersion = "10.15"
             };
             
             var mockClient = new Mock<IEventHubClient>();
@@ -163,7 +173,8 @@ namespace VideoWeb.UnitTests.Hub
             mockClient.Setup
             (
                 x => x.ReceiveHeartbeat(conferenceId, participantId, 
-                    HeartbeatHealth.Good, heartbeat.BrowserName, heartbeat.BrowserVersion)
+                    HeartbeatHealth.Good, heartbeat.BrowserName, heartbeat.BrowserVersion,
+                    heartbeat.OperatingSystem, heartbeat.OperatingSystemVersion)
             ).Throws<Exception>();
             
             var addHeartbeatRequest = new AddHeartbeatRequest
