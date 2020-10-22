@@ -184,7 +184,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.displayFeed = false;
         this.logger.warn('Disconnected from pexip. Reason : ' + reason.reason);
         if (reason.reason === 'Conference terminated by another participant') {
-            await this.retrieveSelfTestScore();
+            this.retrieveSelfTestScore();
         }
     }
 
