@@ -184,3 +184,7 @@ $govuk-global-styles: true;
 .vh-tooltip-show {
   visibility: visible;
 }
+
+video {
+  pointer-events: none;
+}
