@@ -73,7 +73,7 @@
             {{ participant.case_type_group }}
           </p>
 
-          <div *ngIf="canCallParticipant(participant)">
+          <div *ngIf="canCallParticipant(participant) && participant.hearing_role !== 'Witness'">
             <img src="/assets/images/glyphicons-181-facetime-video.png" width="20" height="13" alt="video camera icon" />
             <a
               id="p-call-{{ participant.id }}-btn"

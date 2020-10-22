@@ -579,6 +579,23 @@ export class ConferenceTestData {
         return participants;
     }
 
+    getListOfParticipantsWitness(): ParticipantResponseVho[] {
+        const participants: ParticipantResponseVho[] = [];
+        const participant1 = new ParticipantResponseVho({
+            id: 'c8c33015-d164-4a46-a5c9-6b58e892511d',
+            name: 'Mr Chris Witness',
+            status: ParticipantStatus.Available,
+            role: Role.Individual,
+            case_type_group: 'Applicant',
+            display_name: 'Chris Witness',
+            username: 'chris.witness@hearings.net',
+            tiled_display_name: 'T201;Chris Witness;c8c33015-d164-4a46-a5c9-6b58e892511d',
+            hearing_role: 'Witness'
+        });
+        participants.push(participant1);
+        return participants;
+    }
+
     getListOfEndpoints(): VideoEndpointResponse[] {
         const endpoints: VideoEndpointResponse[] = [];
         const point1 = new VideoEndpointResponse({

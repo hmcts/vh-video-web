@@ -32,6 +32,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     let consultationRequestee: Participant;
     let participantsObserverPanelMember: ParticipantResponseVho[];
     let participantsWinger: ParticipantResponseVho[];
+    let participantsWitness: ParticipantResponseVho[];
 
     const mockAdalService = new MockAdalService();
     let adalService;
@@ -56,6 +57,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         logger = jasmine.createSpyObj<Logger>('Logger', ['debug', 'info', 'warn', 'event', 'error']);
         participantsObserverPanelMember = new ConferenceTestData().getListOfParticipantsObserverAndPanelMembers();
         participantsWinger = new ConferenceTestData().getListOfParticipantsWingers();
+        participantsWitness = new ConferenceTestData().getListOfParticipantsWitness();
     });
 
     beforeEach(() => {
@@ -291,6 +293,20 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         adalService.userInfo.userName = wingerMember.username;
 
         expect(component.getConsultationRequester().username).toBe(wingerMember.username);
+
+        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
+        expect(component.canCallParticipant(participant)).toBeFalsy();
+    });
+    it('should not be able to call participant if user iswitness', () => {
+        component.conference.scheduled_date_time = new Date(new Date(Date.now()).getTime() + 31 * 60000);
+
+        participantsWitness.forEach(x => {
+            component.conference.participants.push(x);
+        });
+        const witness = component.conference.participants.find(x => x.hearing_role === HearingRole.WITNESS);
+        adalService.userInfo.userName = witness.username;
+
+        expect(component.getConsultationRequester().username).toBe(witness.username);
 
         const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
         expect(component.canCallParticipant(participant)).toBeFalsy();
