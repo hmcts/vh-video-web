@@ -71,7 +71,8 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         if (
             requester.hearing_role === HearingRole.OBSERVER ||
             requester.hearing_role === HearingRole.PANEL_MEMBER ||
-            requester.hearing_role === HearingRole.WINGER
+            requester.hearing_role === HearingRole.WINGER ||
+            requester.hearing_role === HearingRole.WITNESS
         ) {
             return false;
         }

@@ -133,6 +133,16 @@ describe('WaitingRoom ParticipantList Base', () => {
         expect(component.isCaseTypeNone(pat)).toBeFalsy();
     });
 
+    it('should return true when participant hearing role is Witness', () => {
+        const pat = new ParticipantResponse({
+            id: '9F681318-4955-49AF-A887-DED64554429Q',
+            name: 'John Witness',
+            case_type_group: 'Applicant',
+            hearing_role: 'Witness'
+        });
+        expect(component.isWitness(pat)).toBeTruthy();
+    });
+
     const participantAvailableTestCases = [
         { status: ParticipantStatus.Available, expected: true },
         { status: ParticipantStatus.Disconnected, expected: false },

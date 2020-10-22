@@ -154,6 +154,10 @@ export abstract class WRParticipantStatusListDirective {
         return endpoint.status === EndpointStatus.Connected;
     }
 
+    isWitness(participant: ParticipantResponse): boolean {
+        return participant.hearing_role === HearingRole.WITNESS;
+    }
+
     protected filterNonJudgeParticipants(): void {
         this.nonJudgeParticipants = this.conference.participants.filter(
             x =>
