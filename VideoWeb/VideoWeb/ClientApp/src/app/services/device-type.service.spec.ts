@@ -82,6 +82,18 @@ describe('DeviceType', () => {
         expect(service.getBrowserVersion()).toBe(testBrowserVersion);
     });
 
+    it('should return the os name', () => {
+        const testOsName = 'Mac OS';
+        deviceDetectorService.os = testOsName;
+        expect(service.getOSName()).toBe(testOsName);
+    });
+
+    it('should return the os version', () => {
+        const testOsVersion = '1.2.3.4';
+        deviceDetectorService.os_version = testOsVersion;
+        expect(service.getOSVersion()).toBe(testOsVersion);
+    });
+
     const isSupportedBrowserTestCases = [
         { browser: 'Firefox', expected: true },
         { browser: 'Safari', expected: true },

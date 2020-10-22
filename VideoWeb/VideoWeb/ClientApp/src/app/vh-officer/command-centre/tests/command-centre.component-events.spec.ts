@@ -202,7 +202,9 @@ describe('CommandCentreComponent - Events', () => {
             testHearing.getParticipants()[0].id,
             HeartbeatHealth.Good,
             'Chrome',
-            '80.0.3987.132'
+            '80.0.3987.132',
+            'Mac OS X',
+            '10.15.1'
         );
         mockEventService.participantHeartbeat.next(heartBeat);
         expect(component.hearings[0].getParticipants()[0].participantHertBeatHealth).toBe(heartBeat);
@@ -215,7 +217,9 @@ describe('CommandCentreComponent - Events', () => {
             Guid.create().toString(),
             HeartbeatHealth.Good,
             'Chrome',
-            '80.0.3987.132'
+            '80.0.3987.132',
+            'Mac OS X',
+            '10.15.1'
         );
         mockEventService.participantHeartbeat.next(heartBeat);
 

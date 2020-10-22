@@ -32,7 +32,10 @@ describe('HeartbeatModelMapper', () => {
         const browserName = 'chrome';
         const browserVersion = 'v1.0.1';
 
-        const result = mapper.map(heartbeat, browserName, browserVersion);
+        const os = 'chrome';
+        const osVersion = 'v1.0.1';
+
+        const result = mapper.map(heartbeat, browserName, browserVersion, os, osVersion);
 
         expect(result).not.toBeNull();
         expect(result.outgoingAudioPercentageLost).toBe('1');
@@ -45,6 +48,8 @@ describe('HeartbeatModelMapper', () => {
         expect(result.incomingVideoPercentageLostRecent).toBe('8');
         expect(result.browserName).toBe(browserName);
         expect(result.browserVersion).toBe(browserVersion);
+        expect(result.operatingSystem).toBe(os);
+        expect(result.operatingSystemVersion).toBe(osVersion);
     });
 
     it('should map with no package loss values', () => {
@@ -72,7 +77,9 @@ describe('HeartbeatModelMapper', () => {
 
         const browserName = 'chrome';
         const browserVersion = 'v1.0.1';
-        const result = mapper.map(heartbeat, browserName, browserVersion);
+        const os = 'chrome';
+        const osVersion = 'v1.0.1';
+        const result = mapper.map(heartbeat, browserName, browserVersion, os, osVersion);
 
         expect(result).not.toBeNull();
         expect(result.outgoingAudioPercentageLost).toBe('0');
@@ -85,5 +92,7 @@ describe('HeartbeatModelMapper', () => {
         expect(result.incomingVideoPercentageLostRecent).toBe('0');
         expect(result.browserName).toBe(browserName);
         expect(result.browserVersion).toBe(browserVersion);
+        expect(result.operatingSystem).toBe(os);
+        expect(result.operatingSystemVersion).toBe(osVersion);
     });
 });

@@ -279,13 +279,15 @@ namespace VideoWeb.EventHub.Hub
                 var dto = _heartbeatRequestMapper.MapToHealth(heartbeat);
                 await Clients.Group(VhOfficersGroupName).ReceiveHeartbeat
                 (
-                    conferenceId, participantId, dto, heartbeat.BrowserName, heartbeat.BrowserVersion
+                    conferenceId, participantId, dto, heartbeat.BrowserName, heartbeat.BrowserVersion,
+                    heartbeat.OperatingSystem, heartbeat.OperatingSystemVersion
                 );
                 var conference = await GetConference(conferenceId);
                 var participant = conference.Participants.Single(x => x.Id == participantId);
                 await Clients.Group(participant.Username.ToLowerInvariant()).ReceiveHeartbeat
                 (
-                    conferenceId, participantId, dto, heartbeat.BrowserName, heartbeat.BrowserVersion
+                    conferenceId, participantId, dto, heartbeat.BrowserName, heartbeat.BrowserVersion,
+                    heartbeat.OperatingSystem, heartbeat.OperatingSystemVersion
                 );
 
                 if (!participant.IsJudge())
@@ -293,7 +295,8 @@ namespace VideoWeb.EventHub.Hub
                     var judge = conference.GetJudge();
                     await Clients.Group(judge.Username.ToLowerInvariant()).ReceiveHeartbeat
                     (
-                        conferenceId, participantId, dto, heartbeat.BrowserName, heartbeat.BrowserVersion
+                        conferenceId, participantId, dto, heartbeat.BrowserName, heartbeat.BrowserVersion,
+                        heartbeat.OperatingSystem, heartbeat.OperatingSystemVersion
                     );
                 }
                 var addHeartbeatRequest = _heartbeatRequestMapper.MapToRequest(heartbeat);

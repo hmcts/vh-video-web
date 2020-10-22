@@ -37,7 +37,15 @@ describe('ParticipantNetworkHealthComponent', () => {
 
     isNetworkPoorTestCases.forEach(testcase => {
         it(`should return isNetworkPoor ${testcase.expected} when heartbeat is ${testcase.status}`, () => {
-            const payload = new ParticipantHeartbeat(globalConference.id, globalParticipant.id, testcase.status, 'Chrome', '82.0.0');
+            const payload = new ParticipantHeartbeat(
+                globalConference.id,
+                globalParticipant.id,
+                testcase.status,
+                'Chrome',
+                '82.0.0',
+                'Mac OS X',
+                '10.15.1'
+            );
             heartbeatSubject.next(payload);
             expect(component.isNetworkPoor).toBe(testcase.expected);
         });
@@ -45,7 +53,15 @@ describe('ParticipantNetworkHealthComponent', () => {
 
     it('should ignore heartbeat not for participant', () => {
         component.networkHealth = undefined;
-        const payload = new ParticipantHeartbeat(globalConference.id, Guid.create().toString(), HeartbeatHealth.Good, 'Chrome', '82.0.0');
+        const payload = new ParticipantHeartbeat(
+            globalConference.id,
+            Guid.create().toString(),
+            HeartbeatHealth.Good,
+            'Chrome',
+            '82.0.0',
+            'Mac OS X',
+            '10.15.1'
+        );
         heartbeatSubject.next(payload);
         expect(component.isNetworkPoor).toBeUndefined();
     });

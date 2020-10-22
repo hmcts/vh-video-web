@@ -8,8 +8,8 @@ class GraphTestData {
         const valuesPackageLost: PackageLost[] = [];
         let timePackage = new Date(Date.now()).getTime();
         for (let i = 0; i < 90; i++) {
-            valuesPackageLost.push(new PackageLost(1, 'MS-Edge', '44.19041', timePackage - 5000));
-            valuesPackageLost.push(new PackageLost(10, 'Chrome', '80.0.3987.122', timePackage - 10000));
+            valuesPackageLost.push(new PackageLost(1, 'MS-Edge', '44.19041', undefined, undefined, timePackage - 5000));
+            valuesPackageLost.push(new PackageLost(10, 'Chrome', '80.0.3987.122', 'Mac OS X', '10.15.1', timePackage - 10000));
             timePackage = timePackage - 10000;
         }
 
@@ -20,7 +20,7 @@ class GraphTestData {
         const valuesPackageLost: PackageLost[] = [];
         let timePackage = new Date(Date.now()).getTime();
         for (let i = 0; i < 90; i++) {
-            valuesPackageLost.push(new PackageLost(1, 'MS-Edge', '44.18', timePackage - 5000));
+            valuesPackageLost.push(new PackageLost(1, 'MS-Edge', '44.18', 'Mac OS X', '10.15.1', timePackage - 5000));
             timePackage = timePackage - 10000;
         }
 
@@ -36,24 +36,24 @@ describe('MonitorGraphService', () => {
         expect(service.unsupportedBroswer[0].name).toBe('MS-Edge');
     });
     it('should return true if the user browser is unsupported', () => {
-        const result = service.isUnsupportedBrowser(new PackageLost(10, 'MS-Edge', '23', 1583487492315));
+        const result = service.isUnsupportedBrowser(new PackageLost(10, 'MS-Edge', '23', 'Mac OS X', '10.15.1', 1583487492315));
         expect(result).toBeTruthy();
     });
     it('should return false if the user browser version greater than unsupported version', () => {
-        const result = service.isUnsupportedBrowser(new PackageLost(10, 'Chrome', '80.0.3988.0', 1583487492315));
+        const result = service.isUnsupportedBrowser(new PackageLost(10, 'Chrome', '80.0.3988.0', 'Mac OS X', '10.15.1', 1583487492315));
         service.unsupportedBroswer.push(new UnsupportedBrowserHeartbeat('Chrome', '80.0.3987.122'));
         expect(result).toBe(false);
     });
     it('should return false if the user browser version equal to first supported version', () => {
-        const result = service.isUnsupportedBrowser(new PackageLost(10, 'MS-Edge', '44.19041', 1583487492315));
+        const result = service.isUnsupportedBrowser(new PackageLost(10, 'MS-Edge', '44.19041', 'Mac OS X', '10.15.1', 1583487492315));
         expect(result).toBe(false);
     });
     it('should return true if the user browser version equal to unsupported version', () => {
-        const result = service.isUnsupportedBrowser(new PackageLost(10, 'MS-Edge', '44.18', 1583487492315));
+        const result = service.isUnsupportedBrowser(new PackageLost(10, 'MS-Edge', '44.18', 'Mac OS X', '10.15.1', 1583487492315));
         expect(result).toBe(true);
     });
     it('should return false if the user browser version is supported version', () => {
-        const result = service.isUnsupportedBrowser(new PackageLost(10, 'MS-Edge', '79.0.309', 1583487492315));
+        const result = service.isUnsupportedBrowser(new PackageLost(10, 'MS-Edge', '79.0.309', 'Mac OS X', '10.15.1', 1583487492315));
         expect(result).toBe(false);
     });
     it('should reverse package lost value', () => {

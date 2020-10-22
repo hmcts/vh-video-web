@@ -25,8 +25,6 @@ export class JudgeHearingTableComponent implements OnInit {
     ngOnInit() {
         this.hearings = this.conferenceForJudgeResponse.map(c => new JudgeHearingSummary(c));
         const last = this.hearings.pop();
-        console.log(last.nonJudicialParticipantsExcludingObservers.map(x => x.hearingRole));
-        console.log(last.getParticipants().map(x => x.hearingRole));
 
         this.hearings.push(last);
     }

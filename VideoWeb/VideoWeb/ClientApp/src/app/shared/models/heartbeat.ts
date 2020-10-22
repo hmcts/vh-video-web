@@ -11,4 +11,6 @@ export class Heartbeat {
     incomingVideoPercentageLostRecent: string;
     browserName: string;
     browserVersion: string;
+    operatingSystem: string;
+    operatingSystemVersion: string;
 }

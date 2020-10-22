@@ -9,8 +9,8 @@ class GraphTestData {
         const valuesPackageLost: PackageLost[] = [];
         let timePackage = new Date(Date.now()).getTime();
         for (let i = 0; i < 90; i++) {
-            valuesPackageLost.push(new PackageLost(1, 'Edje', '44.001', timePackage - 5000));
-            valuesPackageLost.push(new PackageLost(10, 'Chrome', '77.02', timePackage - 10000));
+            valuesPackageLost.push(new PackageLost(1, 'Edje', '44.001', 'Mac', '10.15', timePackage - 5000));
+            valuesPackageLost.push(new PackageLost(10, 'Chrome', '77.02', 'Mac', '10.15', timePackage - 10000));
             timePackage = timePackage - 15000;
         }
 
@@ -32,8 +32,8 @@ describe('MonitoringGraphComponent', () => {
     it('should convert package lost values to signal strangth', () => {
         valuesPackageLost = [];
         const timePackage = new Date(Date.now()).getTime();
-        valuesPackageLost.push(new PackageLost(1, 'Edje', '44.001', timePackage - 5000));
-        valuesPackageLost.push(new PackageLost(10, 'Chrome', '', timePackage - 10000));
+        valuesPackageLost.push(new PackageLost(1, 'Edje', '44.001', 'Mac', '10.15', timePackage - 5000));
+        valuesPackageLost.push(new PackageLost(10, 'Chrome', '', 'Mac', '10.15', timePackage - 10000));
         component.transferPackagesLost(valuesPackageLost);
         const newValues = component.packagesLostValues.filter(x => !isNaN(x));
         expect(newValues.length).toBe(2);
@@ -49,7 +49,12 @@ describe('MonitoringGraphComponent', () => {
     it('should get the browser info string', () => {
         valuesPackageLost = GraphTestData.getData();
         component.transferPackagesLost(valuesPackageLost);
-        expect(component.browserInfoString).toBe('Chrome | 77.02');
+        expect(component.browserInfoString).toBe('Chrome 77.02');
+    });
+    it('should get the os info string', () => {
+        valuesPackageLost = GraphTestData.getData();
+        component.transferPackagesLost(valuesPackageLost);
+        expect(component.osInfoString).toBe('Mac 10.15');
     });
     it('should defined the signal strength by the last package lost value as bad ', () => {
         component.lastPoint = 1;
@@ -75,7 +80,7 @@ describe('MonitoringGraphComponent', () => {
         component.showUnsupportedBrowser = true;
         const lastValue = component.lastPackageLostValue;
         expect(lastValue).toBe('unsupported');
-        expect(component.browserInfoString).toBe('Chrome | 77.02');
+        expect(component.browserInfoString).toBe('Chrome 77.02');
     });
     it('should defined the signal strength as disconnected if no data recieved', () => {
         const valuesPackageLoss = [];
