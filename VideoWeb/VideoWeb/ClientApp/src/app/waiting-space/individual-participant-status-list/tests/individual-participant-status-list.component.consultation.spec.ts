@@ -297,7 +297,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
         expect(component.canCallParticipant(participant)).toBeFalsy();
     });
-    it('should not be able to call participant if user iswitness', () => {
+    it('should not be able to call participant if user is witness', () => {
         component.conference.scheduled_date_time = new Date(new Date(Date.now()).getTime() + 31 * 60000);
 
         participantsWitness.forEach(x => {
