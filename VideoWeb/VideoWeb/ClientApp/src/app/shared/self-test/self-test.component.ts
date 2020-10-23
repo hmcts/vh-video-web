@@ -72,6 +72,8 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
         this.initialiseData();
 
+        await this.userMediaService.setDefaultDevicesInCache();
+
         this.displayFeed = false;
         this.displayDeviceChangeModal = false;
         this.scoreSent = false;

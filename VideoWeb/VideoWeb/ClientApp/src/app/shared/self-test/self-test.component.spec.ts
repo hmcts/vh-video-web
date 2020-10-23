@@ -71,7 +71,14 @@ describe('SelfTestComponent', () => {
 
         userMediaService = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
-            ['updatePreferredCamera', 'updatePreferredMicrophone', 'hasMultipleDevices', 'getPreferredCamera', 'getPreferredMicrophone'],
+            [
+                'updatePreferredCamera',
+                'updatePreferredMicrophone',
+                'hasMultipleDevices',
+                'getPreferredCamera',
+                'getPreferredMicrophone',
+                'setDefaultDevicesInCache'
+            ],
             { connectedDevices: new BehaviorSubject(mediaTestData.getListOfDevices()) }
         );
 
