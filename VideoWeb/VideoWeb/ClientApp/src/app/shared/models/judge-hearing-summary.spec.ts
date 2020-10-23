@@ -69,7 +69,6 @@ describe('JudgeHearingSummary', () => {
         expect(participants.filter(x => x.hearingRole === HearingRole.PANEL_MEMBER).length).toBe(0);
         expect(participants.filter(x => x.hearingRole === HearingRole.WINGER).length).toBe(0);
         expect(participants.filter(x => x.hearingRole === HearingRole.WITNESS).length).toBe(0);
-        console.log(participants);
         expect(participants.length).toBe(4);
     });
 });
