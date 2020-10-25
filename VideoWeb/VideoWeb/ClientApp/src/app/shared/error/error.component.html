@@ -7,8 +7,8 @@
 </div>
 <div class="govuk-grid-row govuk-!-padding-top-4" *ngIf="connectionError">
   <div class="govuk-grid-column-full">
-    <h1 class="govuk-heading-xl">{{ errorMessageText }}</h1>
-    <p class="govuk-body">Please reconnect. Call us if you keep seeing this message.</p>
+    <h1 class="govuk-heading-xl">{{ errorMessageTitle }}</h1>
+    <p class="govuk-body">{{ errorMessageBody }}</p>
     <div class="govuk-!-padding-top-4 govuk-!-padding-bottom-4">
       <button
         id="reconnect-btn"
