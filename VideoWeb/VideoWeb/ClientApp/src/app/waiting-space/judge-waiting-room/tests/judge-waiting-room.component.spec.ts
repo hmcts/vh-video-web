@@ -264,7 +264,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.showVideo).toBeFalsy();
         expect(errorService.goToServiceError).toHaveBeenCalledWith(
             'Your camera and microphone are blocked',
-            'Please unblock the camera and microphone or call us if there is a problem.'
+            'Please unblock the camera and microphone or call us if there is a problem.',
+            false
         );
     });
 

@@ -1,9 +1,8 @@
-import { Component, OnDestroy, HostListener, OnInit } from '@angular/core';
-import { Location } from '@angular/common';
-import { Router, NavigationEnd } from '@angular/router';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { SessionStorage } from 'src/app/services/session-storage';
 import { PageTrackerService } from 'src/app/services/page-tracker.service';
+import { SessionStorage } from 'src/app/services/session-storage';
 import { ErrorMessage } from '../models/error-message';
 
 @Component({
@@ -22,8 +21,9 @@ export class ErrorComponent implements OnInit, OnDestroy {
     errorMessageTitle: string;
     errorMessageBody: string;
     connectionError: boolean;
+    showReconnect: boolean;
 
-    constructor(private router: Router, private location: Location, private pageTracker: PageTrackerService) {
+    constructor(private router: Router, private pageTracker: PageTrackerService) {
         this.browserRefresh = false;
         this.subscription = this.router.events.subscribe(event => {
             if (event instanceof NavigationEnd) {
@@ -43,7 +43,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
     }
 
     private goBack(): void {
-        this.location.back();
+        this.reconnect();
     }
 
     private startGoBackTimer(): void {
@@ -67,6 +67,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
         console.log(dto?.title);
         this.errorMessageTitle = dto?.title;
         this.errorMessageBody = dto?.body ? dto.body : defaultBodyMessage;
+        this.showReconnect = dto?.showReconnect;
         return this.errorMessageTitle !== undefined;
     }
 

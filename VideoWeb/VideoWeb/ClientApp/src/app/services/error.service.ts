@@ -56,13 +56,13 @@ export class ErrorService {
         this.router.navigate([pageUrls.NotFound]);
     }
 
-    goToServiceError(title: string, body: string = null) {
-        this.saveToSession(title, body);
+    goToServiceError(title: string, body: string = null, showReconnect = true) {
+        this.saveToSession(title, body, showReconnect);
         this.router.navigate([pageUrls.ServiceError]);
     }
 
-    private saveToSession(title: string, body: string): void {
+    private saveToSession(title: string, body: string, showReconnect = true): void {
         this.errorMessage.clear();
-        this.errorMessage.set(new ErrorMessage(title, body));
+        this.errorMessage.set(new ErrorMessage(title, body, showReconnect));
     }
 }

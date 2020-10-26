@@ -11,6 +11,7 @@
     <p class="govuk-body">{{ errorMessageBody }}</p>
     <div class="govuk-!-padding-top-4 govuk-!-padding-bottom-4">
       <button
+        *ngIf="showReconnect"
         id="reconnect-btn"
         class="govuk-button govuk-!-margin-right-1"
         data-module="govuk-button"
