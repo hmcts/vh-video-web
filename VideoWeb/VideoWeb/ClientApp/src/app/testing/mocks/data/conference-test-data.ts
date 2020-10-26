@@ -284,6 +284,16 @@ export class ConferenceTestData {
             hearing_role: 'Winger'
         });
 
+        const participant9 = new ParticipantForUserResponse({
+            id: '7878-7878-7878-7878',
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'J Doe WITNESS',
+            username: 'jane.doe.wtiness@hearings.net',
+            role: Role.Individual,
+            case_type_group: 'None',
+            hearing_role: 'Witness'
+        });
+
         participants.push(participant1);
         participants.push(participant2);
         participants.push(participant3);
@@ -292,6 +302,7 @@ export class ConferenceTestData {
         participants.push(participant6);
         participants.push(participant7);
         participants.push(participant8);
+        participants.push(participant9);
         return participants;
     }
 

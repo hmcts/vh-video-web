@@ -79,9 +79,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
         clearTimeout(this.callbackTimeout);
-        if (this.heartbeat) {
-            this.heartbeat.kill();
-        }
+        this.stopHeartbeat();
         this.disconnect();
         this.eventHubSubscription$.unsubscribe();
         this.videoCallSubscription$.unsubscribe();

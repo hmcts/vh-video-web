@@ -24,5 +24,9 @@ namespace VideoWeb.EventHub.Models
         public string BrowserName { get; set; }
         [JsonProperty("browserVersion")]
         public string BrowserVersion { get; set; }
+        [JsonProperty("operatingSystem")]
+        public string OperatingSystem { get; set; }
+        [JsonProperty("operatingSystemVersion")]
+        public string OperatingSystemVersion { get; set; }
     }
 }

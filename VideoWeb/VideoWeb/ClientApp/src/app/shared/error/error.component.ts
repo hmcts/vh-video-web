@@ -4,6 +4,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { PageTrackerService } from 'src/app/services/page-tracker.service';
+import { ErrorMessage } from '../models/error-message';
 
 @Component({
     selector: 'app-error',
@@ -17,8 +18,9 @@ export class ErrorComponent implements OnInit, OnDestroy {
     private browserRefresh: boolean;
 
     readonly ERROR_MESSAGE_KEY = 'vh.error.message';
-    errorMessage: SessionStorage<string>;
-    errorMessageText: string;
+    errorMessage: SessionStorage<ErrorMessage>;
+    errorMessageTitle: string;
+    errorMessageBody: string;
     connectionError: boolean;
 
     constructor(private router: Router, private location: Location, private pageTracker: PageTrackerService) {
@@ -59,9 +61,13 @@ export class ErrorComponent implements OnInit, OnDestroy {
     }
 
     private getErrorMessage(): boolean {
-        this.errorMessage = new SessionStorage<string>(this.ERROR_MESSAGE_KEY);
-        this.errorMessageText = this.errorMessage.get();
-        return this.errorMessageText !== null;
+        const defaultBodyMessage = 'Please reconnect. Call us if you keep seeing this message.';
+        this.errorMessage = new SessionStorage<ErrorMessage>(this.ERROR_MESSAGE_KEY);
+        const dto = this.errorMessage.get();
+        console.log(dto?.title);
+        this.errorMessageTitle = dto?.title;
+        this.errorMessageBody = dto?.body ? dto.body : defaultBodyMessage;
+        return this.errorMessageTitle !== undefined;
     }
 
     reconnect(): void {

@@ -130,7 +130,9 @@ describe('ParticipantNetworkStatusComponent', () => {
                 '1111-1111-1111-1111',
                 test.health,
                 test.browser,
-                '80.0.3987.132'
+                '80.0.3987.132',
+                'Mac OS X',
+                '10.15.1'
             );
             component.participant = p;
             expect(component.getParticipantNetworkStatus()).toBe(test.expected);

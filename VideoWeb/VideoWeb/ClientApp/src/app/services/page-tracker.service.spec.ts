@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { NavigationEnd } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Logger } from './logging/logger-base';
+import { MockLogger } from '../testing/mocks/MockLogger';
 
 class MockRouter {
     public ne = new NavigationEnd(0, '/testUrl', null);
@@ -22,7 +24,7 @@ describe('PageTrackerService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [RouterTestingModule],
-            providers: [PageTrackerService, { provide: Router, useClass: MockRouter }]
+            providers: [PageTrackerService, { provide: Router, useClass: MockRouter }, { provide: Logger, useClass: MockLogger }]
         });
 
         router = TestBed.inject(Router);

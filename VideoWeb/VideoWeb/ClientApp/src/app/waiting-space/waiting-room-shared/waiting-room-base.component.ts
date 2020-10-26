@@ -81,8 +81,6 @@ export abstract class WaitingRoomBaseComponent {
         this.showDialogChooseDevicesOnInit = new SessionStorage(this.CHOOSE_DEVICES_ON_INIT_IN_WR_KEY);
     }
 
-    // abstract updateShowVideo(): void;
-
     async getConference() {
         const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         return this.videoWebService
@@ -239,7 +237,9 @@ export abstract class WaitingRoomBaseComponent {
             const heartbeatModel = self.heartbeatMapper.map(
                 JSON.parse(heartbeat),
                 self.deviceTypeService.getBrowserName(),
-                self.deviceTypeService.getBrowserVersion()
+                self.deviceTypeService.getBrowserVersion(),
+                self.deviceTypeService.getOSName(),
+                self.deviceTypeService.getOSVersion()
             );
 
             await self.eventService.sendHeartbeat(self.hearing.id, self.participant.id, heartbeatModel);
@@ -328,19 +328,20 @@ export abstract class WaitingRoomBaseComponent {
     }
 
     handleCallError(error: CallError): void {
-        this.heartbeat.kill();
+        this.stopHeartbeat();
         this.errorCount++;
         this.connected = false;
         this.updateShowVideo();
         this.logger.error(`Error from pexip. Reason : ${error.reason}`, error.reason);
-        if (this.errorCount > 3) {
-            this.errorService.goToServiceError('Your connection was lost');
-        }
+        this.errorService.goToServiceError(
+            'Your camera and microphone are blocked',
+            'Please unblock the camera and microphone or call us if there is a problem.'
+        );
     }
 
     handleCallDisconnect(reason: DisconnectedCall): void {
         this.connected = false;
-        this.heartbeat.kill();
+        this.stopHeartbeat();
         this.updateShowVideo();
         this.logger.warn(`Disconnected from pexip. Reason : ${reason.reason}`);
         if (!this.hearing.isPastClosedTime()) {
@@ -352,6 +353,12 @@ export abstract class WaitingRoomBaseComponent {
 
     handleCallTransfer(): void {
         this.stream = null;
+    }
+
+    stopHeartbeat() {
+        if (this.heartbeat) {
+            this.heartbeat.kill();
+        }
     }
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {

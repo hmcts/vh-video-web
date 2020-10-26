@@ -95,7 +95,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         consultationService = consultationServiceSpyFactory();
         userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
             'updatePreferredCamera',
-            'updatePreferredMicrophone'
+            'updatePreferredMicrophone',
+            'setDefaultDevicesInCache'
         ]);
         audioRecordingService = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
         userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService', [

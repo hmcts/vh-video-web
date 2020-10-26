@@ -196,21 +196,10 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
         expect(component.heartbeat.kill).toHaveBeenCalled();
         expect(component.errorCount).toBeGreaterThan(currentErrorCount);
         expect(component.showVideo).toBeFalsy();
-        expect(errorService.goToServiceError).toHaveBeenCalledTimes(0);
-    });
-
-    it('should go to service error when video call failed more than 3 times', () => {
-        const currentErrorCount = (component.errorCount = 3);
-        const payload = new CallError('test failure intentional');
-        component.heartbeat = mockHeartbeat;
-
-        onErrorSubject.next(payload);
-
-        expect(component.connected).toBeFalsy();
-        expect(component.heartbeat.kill).toHaveBeenCalled();
-        expect(component.errorCount).toBeGreaterThan(currentErrorCount);
-        expect(component.showVideo).toBeFalsy();
-        expect(errorService.goToServiceError).toHaveBeenCalledWith('Your connection was lost');
+        expect(errorService.goToServiceError).toHaveBeenCalledWith(
+            'Your camera and microphone are blocked',
+            'Please unblock the camera and microphone or call us if there is a problem.'
+        );
     });
 
     it('should hide video when video call has disconnected and attempt to connect again', () => {

@@ -57,11 +57,13 @@ describe('JudgeHearingSummary', () => {
         const hearing = new JudgeHearingSummary(conference);
         const participants = hearing.nonJudicialParticipantsExcludingObservers;
 
-        expect(participants.filter(x => x.role !== Role.Individual && x.role !== Role.Representative).length).toBe(0);
+        expect(
+            participants.filter(x => x.role !== Role.Individual && x.role !== Role.Representative && x.hearingRole !== HearingRole.WINGER)
+                .length
+        ).toBe(0);
         expect(participants.filter(x => x.hearingRole === HearingRole.OBSERVER).length).toBe(0);
         expect(participants.filter(x => x.hearingRole === HearingRole.PANEL_MEMBER).length).toBe(0);
         expect(participants.filter(x => x.hearingRole === HearingRole.WINGER).length).toBe(0);
-        console.log(participants);
-        expect(participants.length).toBe(4);
+        expect(participants.length).toBe(5);
     });
 });
