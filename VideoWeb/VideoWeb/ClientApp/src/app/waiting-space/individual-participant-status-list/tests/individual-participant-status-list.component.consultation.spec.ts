@@ -45,7 +45,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     let videoWebService: jasmine.SpyObj<VideoWebService>;
 
     let timer: jasmine.SpyObj<NodeJS.Timeout>;
-    const testdata = new ConferenceTestData()
+    const testdata = new ConferenceTestData();
 
     beforeAll(() => {
         adalService = mockAdalService;
