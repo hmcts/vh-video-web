@@ -45,7 +45,11 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     let videoWebService: jasmine.SpyObj<VideoWebService>;
 
     let timer: jasmine.SpyObj<NodeJS.Timeout>;
+<<<<<<< HEAD
     const testdata = new ConferenceTestData();
+=======
+    const testdata = new ConferenceTestData()
+>>>>>>> VIH-5871 Witness display name prefix with 'W' + witness cannot call other participants
 
     beforeAll(() => {
         adalService = mockAdalService;
