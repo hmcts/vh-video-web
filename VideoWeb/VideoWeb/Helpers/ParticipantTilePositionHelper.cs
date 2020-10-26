@@ -29,7 +29,8 @@ namespace VideoWeb.Helpers
 
         private static string GetTiledDisplayName(ParticipantResponse participant, int position)
         {
-            return $"T{position};{participant.DisplayName};{participant.Id}";
+            var prefix = participant.HearingRole.ToLower().Trim() == "witness" ? "W" : "T";
+            return $"{prefix}{position};{participant.DisplayName};{participant.Id}";
         }
 
         private static void TiledParticipantGreaterThanFour(IEnumerable<ParticipantResponse> participants)
