@@ -120,8 +120,12 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         return this.conference.status === ConferenceStatus.Paused || this.conference.status === ConferenceStatus.Suspended;
     }
 
-    startHearing() {
-        this.videoCallService.startHearing(this.hearing.id, this.videoCallService.getPreferredLayout(this.conference.id));
+    async startHearing() {
+        try {
+            await this.videoCallService.startHearing(this.hearing.id, this.videoCallService.getPreferredLayout(this.conference.id));
+        } catch (err) {
+            this.errorService.handleApiError(err);
+        }
     }
 
     goToJudgeHearingList(): void {

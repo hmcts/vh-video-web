@@ -31,7 +31,10 @@ export class ErrorService {
             case 404:
                 return this.goToNotFound();
             default:
-                return this.goToServiceError(swaggerError.message, swaggerError.response);
+                return this.goToServiceError(
+                    'An unexpected error occurred.',
+                    'Your internet connection has dropped. Call us if you keep seeing this message.'
+                );
         }
     }
 
