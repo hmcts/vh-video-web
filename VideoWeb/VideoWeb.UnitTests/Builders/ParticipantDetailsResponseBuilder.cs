@@ -23,6 +23,12 @@ namespace VideoWeb.UnitTests.Builders
             return this;
         }
 
+        public ParticipantDetailsResponseBuilder WithHearingRole(string hearingRole)
+        {
+            _participant.With(x => x.Hearing_role = hearingRole);
+            return this;
+        }
+
         public ParticipantDetailsResponse Build()
         {
             return _participant.Build();
