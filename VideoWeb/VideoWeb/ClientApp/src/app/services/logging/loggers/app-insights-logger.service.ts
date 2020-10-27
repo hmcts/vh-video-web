@@ -23,11 +23,13 @@ export class AppInsightsLoggerService implements LogAdapter {
 
     constructor(configService: ConfigService, router: Router) {
         this.router = router;
-        this.setupAppInsights(configService);
-        this.trackNavigation();
+        this.setupAppInsights(configService).then(() => {
+            this.trackNavigation();
+        });
     }
 
-    private setupAppInsights(configService: ConfigService) {
+    private async setupAppInsights(configService: ConfigService) {
+        await configService.loadConfig();
         const config = configService.getClientSettings();
         this.appInsights = new ApplicationInsights({
             config: {
