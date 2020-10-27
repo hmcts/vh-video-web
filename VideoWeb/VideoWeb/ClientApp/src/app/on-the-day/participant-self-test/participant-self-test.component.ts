@@ -42,9 +42,7 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
         }
         this.continueClicked = true;
         if (!this.selfTestCompleted) {
-            console.warn('self test finished early');
             this.selfTestComponent.disconnect();
-            console.warn('disconnected from pexip');
             const reason = new DisconnectedCall('Conference terminated by another participant');
             await this.selfTestComponent.handleCallDisconnect(reason);
             await this.raisedSelfTestIncompleted();
