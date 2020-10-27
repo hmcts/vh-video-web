@@ -33,7 +33,7 @@ export class ErrorService {
             default:
                 return this.goToServiceError(
                     'An unexpected error occurred.',
-                    'Your internet connection has dropped. Call us if you keep seeing this message.'
+                    'Please click "Reconnect" to return to the previous page. Call us if you keep seeing this message.'
                 );
         }
     }
