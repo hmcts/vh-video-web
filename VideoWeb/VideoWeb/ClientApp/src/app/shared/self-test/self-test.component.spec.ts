@@ -71,7 +71,14 @@ describe('SelfTestComponent', () => {
 
         userMediaService = jasmine.createSpyObj<UserMediaService>(
             'UserMediaService',
-            ['updatePreferredCamera', 'updatePreferredMicrophone', 'hasMultipleDevices', 'getPreferredCamera', 'getPreferredMicrophone'],
+            [
+                'updatePreferredCamera',
+                'updatePreferredMicrophone',
+                'hasMultipleDevices',
+                'getPreferredCamera',
+                'getPreferredMicrophone',
+                'setDefaultDevicesInCache'
+            ],
             { connectedDevices: new BehaviorSubject(mediaTestData.getListOfDevices()) }
         );
 
@@ -280,7 +287,10 @@ describe('SelfTestComponent', () => {
         onErrorSubject.next(payload);
 
         expect(component.displayFeed).toBeFalsy();
-        expect(errorService.goToServiceError).toHaveBeenCalledWith('Your connection was lost');
+        expect(errorService.goToServiceError).toHaveBeenCalledWith(
+            'Your camera and microphone are blocked',
+            'Please unblock the camera and microphone or call us if there is a problem.'
+        );
     });
 
     it('should hide video when video call has disconnected', () => {

@@ -45,6 +45,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     let videoWebService: jasmine.SpyObj<VideoWebService>;
 
     let timer: jasmine.SpyObj<NodeJS.Timeout>;
+    const testdata = new ConferenceTestData();
 
     beforeAll(() => {
         adalService = mockAdalService;
@@ -55,9 +56,9 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
 
         logger = jasmine.createSpyObj<Logger>('Logger', ['debug', 'info', 'warn', 'event', 'error']);
-        participantsObserverPanelMember = new ConferenceTestData().getListOfParticipantsObserverAndPanelMembers();
-        participantsWinger = new ConferenceTestData().getListOfParticipantsWingers();
-        participantsWitness = new ConferenceTestData().getListOfParticipantsWitness();
+        participantsObserverPanelMember = testdata.getListOfParticipantsObserverAndPanelMembers();
+        participantsWinger = testdata.getListOfParticipantsWingers();
+        participantsWitness = testdata.getListOfParticipantsWitness();
     });
 
     beforeEach(() => {
@@ -297,16 +298,17 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
         expect(component.canCallParticipant(participant)).toBeFalsy();
     });
-    it('should not be able to call participant if user is witness', () => {
+
+    it('should not be able to call participant if user is a witness', () => {
         component.conference.scheduled_date_time = new Date(new Date(Date.now()).getTime() + 31 * 60000);
 
         participantsWitness.forEach(x => {
             component.conference.participants.push(x);
         });
-        const witness = component.conference.participants.find(x => x.hearing_role === HearingRole.WITNESS);
-        adalService.userInfo.userName = witness.username;
+        const witnessMember = component.conference.participants.find(x => x.hearing_role === HearingRole.WITNESS);
+        adalService.userInfo.userName = witnessMember.username;
 
-        expect(component.getConsultationRequester().username).toBe(witness.username);
+        expect(component.getConsultationRequester().username).toBe(witnessMember.username);
 
         const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
         expect(component.canCallParticipant(participant)).toBeFalsy();

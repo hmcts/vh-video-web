@@ -22,7 +22,7 @@ namespace VideoWeb.UnitTests.Mappings
                 new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").Build(),
                 new ParticipantDetailsResponseBuilder(UserRole.Representative, "Defendant").Build(),
                 new ParticipantDetailsResponseBuilder(UserRole.Judge, "None").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.CaseAdmin, "None").Build()
+                new ParticipantDetailsResponseBuilder(UserRole.CaseAdmin, "None").Build(),
             };
 
             var endpoints = new List<EndpointResponse>
@@ -94,14 +94,15 @@ namespace VideoWeb.UnitTests.Mappings
         {
             var participants = new List<ParticipantDetailsResponse>
             {
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Representative, "Defendant").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Judge, "None").Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant").WithHearingRole("Individual LIP").Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").WithHearingRole("Defendant LIP").Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.Representative, "Defendant").WithHearingRole("Representative").Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.Judge, "None").WithHearingRole("Judge").Build(),
                 new ParticipantDetailsResponseBuilder(UserRole.CaseAdmin, "None").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Observer").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Panel Member").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Panel Member").Build()
+                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Observer").WithHearingRole("Observer").Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Panel Member").WithHearingRole("Panel Member").Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Panel Member").WithHearingRole("Panel Member").Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Witness").WithHearingRole("Witness").Build()
             };
 
 
@@ -141,9 +142,12 @@ namespace VideoWeb.UnitTests.Mappings
                 if (position[0].StartsWith("T"))
                 {
                     tiledNames.Count(x => x.StartsWith(position[0])).Should().Be(1);
-
                 }
-
+                if (participantResponse.HearingRole == "Witness" && participantResponse.Role == Role.Individual)
+                {
+                    participantResponse.TiledDisplayName.StartsWith("W").Should().BeTrue();
+                    tiledNames.Count(x => x.StartsWith(position[0])).Should().Be(1);
+                }
             }
 
             var caseTypeGroups = participantsResponse.Select(p => p.CaseTypeGroup).Distinct().ToList();

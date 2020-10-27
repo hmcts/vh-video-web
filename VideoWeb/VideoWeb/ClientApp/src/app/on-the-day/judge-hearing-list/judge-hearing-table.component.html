@@ -64,13 +64,6 @@
                 </span>
               </p>
             </span>
-            <span *ngIf="hearing.witnesses.length > 0">
-              <p class="govuk-!-margin-0 govuk-!-padding-0">
-                <span id="witness-count-{{ hearing.id }}">
-                  {{ hearing.witnesses.length }} Witness{{ hearing.witnesses.length > 1 ? 'es' : '' }}
-                </span>
-              </p>
-            </span>
             <div *ngIf="hearing.numberOfEndpoints > 0">
               <span id="endpoints-count-{{ hearing.id }}">
                 {{ hearing.numberOfEndpoints }} Video access point{{ hearing.numberOfEndpoints > 1 ? 's' : '' }}

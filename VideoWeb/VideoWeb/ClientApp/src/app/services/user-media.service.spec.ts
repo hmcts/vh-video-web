@@ -120,4 +120,21 @@ describe('UserMediaService', () => {
         const message = 'enumerateDevices() not supported.';
         await expectAsync(service.updateAvailableDevicesList()).toBeRejectedWithError(message);
     });
+    it('should update cache with default preferred mic and cam if it was not set', async () => {
+        const sessionStorageMic = new SessionStorage<UserMediaDevice>(service.PREFERRED_MICROPHONE_KEY);
+        const sessionStorageCam = new SessionStorage<UserMediaDevice>(service.PREFERRED_CAMERA_KEY);
+
+        sessionStorageCam.clear();
+        sessionStorageMic.clear();
+        const cachedMics = testData.getListOfMicrophones();
+        const cachedCams = testData.getListOfCameras();
+
+        spyOn(service, 'getListOfVideoDevices').and.returnValue(Promise.resolve(cachedCams));
+        spyOn(service, 'getListOfMicrophoneDevices').and.returnValue(Promise.resolve(cachedMics));
+
+        await service.setDefaultDevicesInCache();
+
+        expect(sessionStorageCam.get().label).toBe(cachedCams[0].label);
+        expect(sessionStorageMic.get().label).toBe(cachedMics[0].label);
+    });
 });

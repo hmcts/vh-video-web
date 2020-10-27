@@ -593,14 +593,14 @@ export class ConferenceTestData {
     getListOfParticipantsWitness(): ParticipantResponseVho[] {
         const participants: ParticipantResponseVho[] = [];
         const participant1 = new ParticipantResponseVho({
-            id: 'c8c33015-d164-4a46-a5c9-6b58e892511d',
+            id: 'c8c33015-d164-4a46-a5c9-6b58e892511a',
             name: 'Mr Chris Witness',
             status: ParticipantStatus.Available,
             role: Role.Individual,
-            case_type_group: 'Applicant',
+            case_type_group: 'None',
             display_name: 'Chris Witness',
             username: 'chris.witness@hearings.net',
-            tiled_display_name: 'T201;Chris Witness;c8c33015-d164-4a46-a5c9-6b58e892511d',
+            tiled_display_name: 'W201;Chris Witness;c8c33015-d164-4a46-a5c9-6b58e892511a',
             hearing_role: 'Witness'
         });
         participants.push(participant1);

@@ -419,7 +419,6 @@ describe('ParticipantsPanelComponent', () => {
         const p = participants[1];
         p.status = ParticipantStatus.InHearing;
         const model = new ParticipantPanelModel(p);
-        console.log(component.getPanelRowTooltipText(model));
         expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>${p.hearing_role}<br/>${p.case_type_group}`);
     });
     it('should getPanelRowTooltipAdditionalText return hearing role and case role for a representative', () => {

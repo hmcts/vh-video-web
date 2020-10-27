@@ -62,9 +62,12 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         );
     }
 
-    ngOnInit() {
+    async ngOnInit() {
         this.errorCount = 0;
         this.logger.debug('Loading judge waiting room');
+
+        await this.userMediaService.setDefaultDevicesInCache();
+
         this.showChooseDeviceDialog();
         this.connected = false;
         this.getConference().then(() => {
@@ -88,9 +91,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     }
 
     executeEndHearingSequence() {
-        if (this.heartbeat) {
-            this.heartbeat.kill();
-        }
+        this.stopHeartbeat();
         clearTimeout(this.callbackTimeout);
         clearInterval(this.audioRecordingInterval);
         this.disconnect();

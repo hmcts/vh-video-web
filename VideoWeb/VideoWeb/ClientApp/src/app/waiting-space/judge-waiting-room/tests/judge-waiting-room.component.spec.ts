@@ -96,7 +96,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             'updatePreferredCamera',
             'updatePreferredMicrophone',
             'getPreferredCamera',
-            'getPreferredMicrophone'
+            'getPreferredMicrophone',
+            'setDefaultDevicesInCache'
         ]);
         userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService', [
             'stopStream',
@@ -261,7 +262,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.heartbeat.kill).toHaveBeenCalled();
         expect(component.errorCount).toBeGreaterThan(currentErrorCount);
         expect(component.showVideo).toBeFalsy();
-        expect(errorService.goToServiceError).toHaveBeenCalledTimes(0);
+        expect(errorService.goToServiceError).toHaveBeenCalledWith(
+            'Your camera and microphone are blocked',
+            'Please unblock the camera and microphone or call us if there is a problem.'
+        );
     });
 
     it('should start the hearing', () => {

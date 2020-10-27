@@ -1,13 +1,14 @@
-import { async, ComponentFixture, TestBed, tick, fakeAsync, waitForAsync } from '@angular/core/testing';
-import { Router, NavigationEnd } from '@angular/router';
 import { Location } from '@angular/common';
-import { ErrorComponent } from './error.component';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ContactUsFoldingComponent } from '../contact-us-folding/contact-us-folding.component';
-import { SessionStorage } from 'src/app/services/session-storage';
-import { PageTrackerService } from 'src/app/services/page-tracker.service';
-import { Observable } from 'rxjs';
 import { Component } from '@angular/core';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import { NavigationEnd, Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Observable } from 'rxjs';
+import { PageTrackerService } from 'src/app/services/page-tracker.service';
+import { SessionStorage } from 'src/app/services/session-storage';
+import { ContactUsFoldingComponent } from '../contact-us-folding/contact-us-folding.component';
+import { ErrorMessage } from '../models/error-message';
+import { ErrorComponent } from './error.component';
 
 class MockRouter {
     public ne = new NavigationEnd(0, '/testUrl-test-error1', null);
@@ -64,20 +65,22 @@ describe('ErrorComponent', () => {
     });
     it('should show default error message if session storage is empty', () => {
         const key = 'vh.error.message';
-        const storedMessage = new SessionStorage<string>(key);
+        const storedMessage = new SessionStorage<ErrorMessage>(key);
         storedMessage.clear();
 
         component.ngOnInit();
-        expect(component.errorMessageText).toBe(null);
+        expect(component.errorMessageTitle).toBeUndefined();
+        expect(component.errorMessageBody).toBe('Please reconnect. Call us if you keep seeing this message.');
         expect(component.connectionError).toBeFalsy();
     });
     it('should show error message if session storage returns a value', () => {
         const key = 'vh.error.message';
-        const storedMessage = new SessionStorage<string>(key);
-        storedMessage.set('disconnected');
+        const storedMessage = new SessionStorage<ErrorMessage>(key);
+        storedMessage.set(new ErrorMessage('disconnected', 'test message'));
 
         component.ngOnInit();
-        expect(component.errorMessageText).not.toBe(null);
+        expect(component.errorMessageTitle).toBe('disconnected');
+        expect(component.errorMessageBody).toBe('test message');
         expect(component.connectionError).toBeTruthy();
     });
     it('should unsubscribe all subcriptions on destroy component', () => {

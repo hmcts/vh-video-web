@@ -72,6 +72,8 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
         this.initialiseData();
 
+        await this.userMediaService.setDefaultDevicesInCache();
+
         this.displayFeed = false;
         this.displayDeviceChangeModal = false;
         this.scoreSent = false;
@@ -177,7 +179,10 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     handleCallError(error: CallError) {
         this.displayFeed = false;
         this.logger.error('Error from pexip. Reason : ' + error.reason, error.reason);
-        this.errorService.goToServiceError('Your connection was lost');
+        this.errorService.goToServiceError(
+            'Your camera and microphone are blocked',
+            'Please unblock the camera and microphone or call us if there is a problem.'
+        );
     }
 
     async handleCallDisconnect(reason: DisconnectedCall) {

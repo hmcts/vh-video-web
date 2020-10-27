@@ -115,4 +115,31 @@ export class UserMediaService {
         this.preferredMicCache.set(microphone);
         this.logger.info(`Updating preferred microphone to ${microphone.label}`);
     }
+
+    async setDefaultDevicesInCache() {
+        const cam = await this.getPreferredCamera();
+        if (!cam) {
+            const cams = await this.getListOfVideoDevices();
+            if (cams.length > 1) {
+                // set first camera in the list as preferred camera if cache is empty
+                const firstCam = cams.find(x => x.label.length > 0);
+                if (firstCam) {
+                    this.logger.info(`Set default camera to ${firstCam.label}`);
+                    this.updatePreferredCamera(firstCam);
+                }
+            }
+        }
+        const mic = await this.getPreferredMicrophone();
+        if (!mic) {
+            const mics = await this.getListOfMicrophoneDevices();
+            if (mics.length > 1) {
+                // set first microphone in the list as preferred microphone if cache is empty
+                const firstMic = mics.find(x => x.label.length > 0);
+                if (firstMic) {
+                    this.logger.info(`Set default microphone to ${firstMic.label}`);
+                    this.updatePreferredMicrophone(firstMic);
+                }
+            }
+        }
+    }
 }
