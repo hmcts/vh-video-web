@@ -1,11 +1,13 @@
 import { Location } from '@angular/common';
 import { Component } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable } from 'rxjs';
+import { EventsService } from 'src/app/services/events.service';
 import { PageTrackerService } from 'src/app/services/page-tracker.service';
 import { SessionStorage } from 'src/app/services/session-storage';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { ContactUsFoldingComponent } from '../contact-us-folding/contact-us-folding.component';
 import { ErrorMessage } from '../models/error-message';
 import { ErrorComponent } from './error.component';
@@ -18,6 +20,9 @@ class MockRouter {
         observer.next(this.ne1);
         observer.complete();
     });
+    navigate(commands: any[], extras?: NavigationExtras): Promise<boolean> {
+        return Promise.resolve(true);
+    }
 }
 
 @Component({ selector: 'app-mock-component', template: '' })
@@ -26,16 +31,18 @@ class Mock1Component {}
 @Component({ selector: 'app-mock-component2', template: '' })
 class Mock2Component {}
 
+let eventsService: jasmine.SpyObj<EventsService>;
+
 describe('ErrorComponent', () => {
     let component: ErrorComponent;
     let fixture: ComponentFixture<ErrorComponent>;
 
-    let location: Location;
     let router: Router;
     let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
 
     beforeEach(
         waitForAsync(() => {
+            eventsService = eventsServiceSpy;
             pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
             pageTrackerSpy.getPreviousUrl.and.returnValue('testUrl-test-error1');
 
@@ -47,14 +54,16 @@ describe('ErrorComponent', () => {
                         { path: 'testUrl-test-error2', component: Mock2Component }
                     ])
                 ],
-                providers: [{ provide: PageTrackerService, useValue: pageTrackerSpy }]
+                providers: [
+                    { provide: PageTrackerService, useValue: pageTrackerSpy },
+                    { provide: EventsService, useValue: eventsService }
+                ]
             }).compileComponents();
         })
     );
 
     beforeEach(() => {
         router = TestBed.inject(Router);
-        location = TestBed.inject(Location);
         fixture = TestBed.createComponent(ErrorComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
@@ -97,11 +106,11 @@ describe('ErrorComponent Refresh', () => {
     let component: ErrorComponent;
     let fixture: ComponentFixture<ErrorComponent>;
 
-    let location: Location;
     let router: Router;
     let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
 
     beforeEach(() => {
+        eventsService = eventsServiceSpy;
         pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
         pageTrackerSpy.getPreviousUrl.and.returnValue('testUrl-test-error1');
 
@@ -110,22 +119,22 @@ describe('ErrorComponent Refresh', () => {
             imports: [RouterTestingModule],
             providers: [
                 { provide: PageTrackerService, useValue: pageTrackerSpy },
-                { provide: Router, useClass: MockRouter }
+                { provide: Router, useClass: MockRouter },
+                { provide: EventsService, useValue: eventsService }
             ]
         }).compileComponents();
         router = TestBed.inject(Router);
-        location = TestBed.inject(Location);
         fixture = TestBed.createComponent(ErrorComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
 
     it('should not navigate back on timer page refresh', fakeAsync(() => {
-        spyOn(location, 'back');
+        spyOn(router, 'navigate');
         fixture.detectChanges();
         tick();
         fixture.detectChanges();
         component.connectionError = true;
-        expect(location.back).toHaveBeenCalledTimes(0);
+        expect(router.navigate).toHaveBeenCalledTimes(0);
     }));
 });

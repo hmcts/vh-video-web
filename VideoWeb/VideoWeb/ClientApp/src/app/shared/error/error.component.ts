@@ -1,9 +1,9 @@
-import { Component, OnDestroy, HostListener, OnInit } from '@angular/core';
-import { Location } from '@angular/common';
-import { Router, NavigationEnd } from '@angular/router';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { SessionStorage } from 'src/app/services/session-storage';
+import { EventsService } from 'src/app/services/events.service';
 import { PageTrackerService } from 'src/app/services/page-tracker.service';
+import { SessionStorage } from 'src/app/services/session-storage';
 import { ErrorMessage } from '../models/error-message';
 
 @Component({
@@ -22,8 +22,9 @@ export class ErrorComponent implements OnInit, OnDestroy {
     errorMessageTitle: string;
     errorMessageBody: string;
     connectionError: boolean;
+    showReconnect: boolean;
 
-    constructor(private router: Router, private location: Location, private pageTracker: PageTrackerService) {
+    constructor(private router: Router, private pageTracker: PageTrackerService, private eventsService: EventsService) {
         this.browserRefresh = false;
         this.subscription = this.router.events.subscribe(event => {
             if (event instanceof NavigationEnd) {
@@ -39,11 +40,12 @@ export class ErrorComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.eventsService.stop();
         this.connectionError = this.getErrorMessage();
     }
 
     private goBack(): void {
-        this.location.back();
+        this.reconnect();
     }
 
     private startGoBackTimer(): void {
@@ -64,9 +66,9 @@ export class ErrorComponent implements OnInit, OnDestroy {
         const defaultBodyMessage = 'Please reconnect. Call us if you keep seeing this message.';
         this.errorMessage = new SessionStorage<ErrorMessage>(this.ERROR_MESSAGE_KEY);
         const dto = this.errorMessage.get();
-        console.log(dto?.title);
         this.errorMessageTitle = dto?.title;
         this.errorMessageBody = dto?.body ? dto.body : defaultBodyMessage;
+        this.showReconnect = dto?.showReconnect;
         return this.errorMessageTitle !== undefined;
     }
 
