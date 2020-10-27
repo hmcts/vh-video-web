@@ -179,11 +179,11 @@
       },
       "Selenium.Axe": {
         "type": "Direct",
-        "requested": "[1.5.2, )",
-        "resolved": "1.5.2",
-        "contentHash": "ZxSl9t0lwFeBfhIvFjGD+5B6aFR8UsjZ2WZKq8ZegHs0byPufw26fO8svcalM4+BQT2HpdJnq4+7zzm6iaI/lA==",
+        "requested": "[2.0.0, )",
+        "resolved": "2.0.0",
+        "contentHash": "N9VU2XRCtWT0DHuysNJJZi0t8U7SwkHz7uSph0s5eTedG7qR3lXSdw15HhaiJV/W7akkfkvPCoZGqWX4mUk+ig==",
         "dependencies": {
-          "HtmlAgilityPack": "1.11.24",
+          "HtmlAgilityPack": "1.11.25",
           "Newtonsoft.Json": "12.0.3",
           "Selenium.WebDriver": "3.141.0"
         }
@@ -232,9 +232,9 @@
       },
       "SpecFlow": {
         "type": "Direct",
-        "requested": "[3.4.14, )",
-        "resolved": "3.4.14",
-        "contentHash": "z+SXMuqjw9XiTnMig0H6kiHTGPyoVO4q9NTv6yjv0h+rVYCGAcJ1ST3R87L4t+toih7C7x7iJdCNzabs0JiB3A==",
+        "requested": "[3.4.31, )",
+        "resolved": "3.4.31",
+        "contentHash": "U+20iH8ihfz1ZKcjgJMa1lcNag4z3f9KT5J0rqP3ye/zeHthvLdTfkx4gwCrChKNHM+fpmoGLOyodC+muieY+Q==",
         "dependencies": {
           "BoDi": "1.4.1",
           "Cucumber.Messages": "[6.0.1, 7.0.0)",
@@ -247,22 +247,22 @@
       },
       "SpecFlow.NUnit": {
         "type": "Direct",
-        "requested": "[3.4.14, )",
-        "resolved": "3.4.14",
-        "contentHash": "FuZZn1npVC77inT/yjAzFole4Dzp4Y6zKsbL3K2B42qQn4R71Wkvx1WjCnnoImRa6q2fXkVPcJS2GrZFw6wmtw==",
+        "requested": "[3.4.31, )",
+        "resolved": "3.4.31",
+        "contentHash": "LaDpuRu4+oaju4UVEifUiTHDLTcEU9yO+Kp7pMo7cnMnGlTB6+9mAm87cBae5qthfqBuEFfzS9FJJZJPvQkUHw==",
         "dependencies": {
           "NUnit": "3.11.0",
-          "SpecFlow": "[3.4.14]",
-          "SpecFlow.Tools.MsBuild.Generation": "[3.4.14]"
+          "SpecFlow": "[3.4.31]",
+          "SpecFlow.Tools.MsBuild.Generation": "[3.4.31]"
         }
       },
       "SpecFlow.Tools.MsBuild.Generation": {
         "type": "Direct",
-        "requested": "[3.4.14, )",
-        "resolved": "3.4.14",
-        "contentHash": "lPGNHjv0oEgHVjL14h1vXQ+wgHmyMpK7AAjyJf3uEbCQq7DZ36icZcPBa935TUMBwbggmnI7WQ/TrAR/7tKIfg==",
+        "requested": "[3.4.31, )",
+        "resolved": "3.4.31",
+        "contentHash": "kN7HV3eLCBTUPtfMszPH2258/x1L+QdPEC8L+EhtDO05FmF5nUpSp2WQCuSRNmZ60gYdbWfjQ+hXvsFT2zEn+g==",
         "dependencies": {
-          "SpecFlow": "[3.4.14]"
+          "SpecFlow": "[3.4.31]"
         }
       },
       "System.Drawing.Common": {
@@ -277,9 +277,9 @@
       },
       "VH.AcceptanceTests.Common": {
         "type": "Direct",
-        "requested": "[1.0.291, )",
-        "resolved": "1.0.291",
-        "contentHash": "RHMxXAT+eesoNsfI1zof9w4Rtt6pzkVkCMWwpvY8PzphOF7Q2y0o7/VVU9SJRP8j7PQPg+cxLfl7IH0a5OV1FA==",
+        "requested": "[1.0.293, )",
+        "resolved": "1.0.293",
+        "contentHash": "8U+oKVPVCh3Wbgjyem8XzIHSr7ESr6ksfUWsGkKY71MklbN3+5WVyEsFXb2tJzgLcS2ImQCco7ksbTetIEXLig==",
         "dependencies": {
           "Appium.WebDriver": "4.2.1",
           "Azure.Storage.Blobs": "12.6.0",
@@ -402,8 +402,8 @@
       },
       "HtmlAgilityPack": {
         "type": "Transitive",
-        "resolved": "1.11.24",
-        "contentHash": "DLcytINO8EfCdBgMGsaz8Tvdgu2Aewoo2XX7WfZuRG9cBQRtbm8JZ4/sMRtFvzehjdIDqubdlQb8TqNfjRMEWg=="
+        "resolved": "1.11.25",
+        "contentHash": "UO02+QzWpKDhz2XApSZ74S+9fylNrK9npqvO4NgtW9LiFLHVRqXQmdI+1tn7JRzGnATkCCbtyIeqbJZl3pSRJQ=="
       },
       "Microsoft.ApplicationInsights": {
         "type": "Transitive",
