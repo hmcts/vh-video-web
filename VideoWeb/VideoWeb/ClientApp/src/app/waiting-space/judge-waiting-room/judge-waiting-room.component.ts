@@ -124,6 +124,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         try {
             await this.videoCallService.startHearing(this.hearing.id, this.videoCallService.getPreferredLayout(this.conference.id));
         } catch (err) {
+            this.logger.error(`Failed to start a hearing for conference ${this.conference.id}`, err);
             this.errorService.handleApiError(err);
         }
     }

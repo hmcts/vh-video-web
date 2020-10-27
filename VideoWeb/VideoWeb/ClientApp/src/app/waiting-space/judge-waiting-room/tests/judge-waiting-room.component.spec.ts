@@ -269,11 +269,20 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         );
     });
 
-    it('should start the hearing', () => {
+    it('should start the hearing', async () => {
         const layout = HearingLayout.TwoPlus21;
         videoCallService.getPreferredLayout.and.returnValue(layout);
-        component.startHearing();
+        await component.startHearing();
         expect(videoCallService.startHearing).toHaveBeenCalledWith(component.conference.id, layout);
+    });
+
+    it('should handle api error when start hearing fails', async () => {
+        const error = { status: 500, isApiException: true };
+        videoCallService.startHearing.and.returnValue(Promise.reject(error));
+        const layout = HearingLayout.TwoPlus21;
+        videoCallService.getPreferredLayout.and.returnValue(layout);
+        await component.startHearing();
+        expect(errorService.handleApiError).toHaveBeenCalledWith(error);
     });
 
     it('should close audio  alert  for judge', () => {
