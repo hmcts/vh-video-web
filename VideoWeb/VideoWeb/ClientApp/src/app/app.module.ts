@@ -2,6 +2,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule, Title } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { AdalGuard, AdalInterceptor, AdalService } from 'adal-angular4';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -42,7 +43,7 @@ export function getSettings(configService: ConfigService) {
         { provide: APP_INITIALIZER, useFactory: getSettings, deps: [ConfigService], multi: true },
         { provide: Logger, useClass: LoggerService },
         { provide: LOG_ADAPTER, useClass: ConsoleLogger, multi: true },
-        { provide: LOG_ADAPTER, useClass: AppInsightsLoggerService, multi: true },
+        { provide: LOG_ADAPTER, useClass: AppInsightsLoggerService, multi: true, deps: [ConfigService, Router] },
         { provide: API_BASE_URL, useFactory: () => '.' },
         AdalService,
         AdalGuard,
