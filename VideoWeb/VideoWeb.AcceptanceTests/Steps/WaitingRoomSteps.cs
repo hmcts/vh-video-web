@@ -42,6 +42,23 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.ResumeVideoCallButton);
         }
 
+        [When(@"the judge opens the change camera and microphone popup")]
+        public void WhenTheJudgeOpensTheChangeCameraAndMicrophonePopup()
+        {
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.ChooseCameraMicrophoneButton).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.ChooseCameraMicrophoneButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.CloseChangeDeviceButton);
+        }
+
+        [When(@"the judge dismisses the change camera popup")]
+        [Then(@"the judge dismisses the change camera popup")]
+        public void TheJudgeDismissesTheChangeCameraPopup()
+        {
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.CloseChangeDeviceButton).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.CloseChangeDeviceButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(JudgeWaitingRoomPage.CloseChangeDeviceButton);
+        }
+
         [Then(@"the participant status for (.*) is displayed as (.*)")]
         public void ThenTheFirstParticipantStatusIsDisplayedAsNotSignedIn(string name, string status)
         {

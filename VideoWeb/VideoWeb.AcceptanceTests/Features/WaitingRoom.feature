@@ -23,6 +23,8 @@ Scenario: Judge waiting room
 	And the Judge can see information about their case 
   And the Judge can see a list of participants and their representatives
 	And the Judge can see other participants status
+  When the judge opens the change camera and microphone popup
+  Then the judge dismisses the change camera popup
 	When the user navigates back to the hearing list
 	Then the user is on the Hearing List page
 	And the users status has updated to Disconnected
