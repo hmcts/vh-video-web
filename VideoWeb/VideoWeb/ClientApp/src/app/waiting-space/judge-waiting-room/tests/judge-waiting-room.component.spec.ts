@@ -148,15 +148,14 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             clearInterval(component.callbackTimeout);
         }
     });
-    it('should init hearing alert and not setup Client if popup is on and init first time', fakeAsync(() => {
-        component.updateShowDialogChooseDevice(false);
+    it('should init hearing alert and setup Client', fakeAsync(() => {
         videoWebService.getJwToken.calls.reset();
 
         component.ngOnInit();
         flushMicrotasks();
         tick(100);
         expect(component.eventHubSubscription$).toBeDefined();
-        expect(videoWebService.getJwToken).toHaveBeenCalledTimes(0);
+        expect(videoWebService.getJwToken).toHaveBeenCalledTimes(1);
     }));
     it('should init hearing alert and subscribers', fakeAsync(() => {
         component.ngOnInit();
@@ -352,17 +351,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(userMediaService.updatePreferredMicrophone).toHaveBeenCalled();
         expect(videoCallService.makeCall).toHaveBeenCalled();
     });
-    it('should get value that is indicated that user fist time in the waiting room in current session', () => {
-        const sessionStorage = new SessionStorage(component.CHOOSE_DEVICES_ON_INIT_IN_WR_KEY);
-        sessionStorage.clear();
 
-        let flag = component.getShowDialogChooseDevice();
-        expect(flag).toBeFalsy();
-
-        component.updateShowDialogChooseDevice(true);
-        flag = component.getShowDialogChooseDevice();
-        expect(flag).toBe(true);
-    });
     it('should on consultation accept stop streams for devices and close choose device popup', async () => {
         component.displayDeviceChangeModal = true;
         await component.onConsultationAccepted();
@@ -372,12 +361,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(userMediaStreamService.getStreamForCam).toHaveBeenCalled();
         expect(userMediaStreamService.stopStream).toHaveBeenCalled();
     });
-    it('should hide change device popup on close popup and set pexip if init first time', () => {
+    it('should hide change device popup on close popup', () => {
         component.displayDeviceChangeModal = true;
-        component.updateShowDialogChooseDevice(false);
 
         component.onMediaDeviceChangeCancelled();
         expect(component.displayDeviceChangeModal).toBe(false);
-        expect(videoWebService.getJwToken).toHaveBeenCalled();
     });
 });

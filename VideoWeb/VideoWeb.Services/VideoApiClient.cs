@@ -7435,6 +7435,15 @@ namespace VideoWeb.Services.Video
         [System.Runtime.Serialization.EnumMember(Value = @"EndpointTransfer")]
         EndpointTransfer = 19,
     
+        [System.Runtime.Serialization.EnumMember(Value = @"ConnectingToEventHub")]
+        ConnectingToEventHub = 20,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"SelectingMedia")]
+        SelectingMedia = 21,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"ConnectingToConference")]
+        ConnectingToConference = 22,
+    
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
