@@ -57,7 +57,6 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
 
     setupSubscribers(): void {
         this.addSharedEventHubSubcribers();
-        this.eventService.start();
     }
 
     canCallParticipant(participant: ParticipantResponse): boolean {
