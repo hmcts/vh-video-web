@@ -42,16 +42,16 @@ export class AppInsightsLoggerService implements LogAdapter {
         });
     }
 
-    debug(message: string): void {
-        this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Verbose });
+    debug(message: string, properties: any = null): void {
+        this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Verbose, properties });
     }
 
-    info(message: string): void {
-        this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Information });
+    info(message: string, properties: any = null): void {
+        this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Information, properties });
     }
 
-    warn(message: string): void {
-        this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Warning });
+    warn(message: string, properties: any = null): void {
+        this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Warning, properties });
     }
 
     trackEvent(eventName: string, properties: any) {
@@ -71,6 +71,10 @@ export class AppInsightsLoggerService implements LogAdapter {
             error: err,
             properties: properties
         });
+    }
+
+    updateUserId(userId: string) {
+        this.appInsights.context.user.id = userId;
     }
 
     private trackNavigation() {

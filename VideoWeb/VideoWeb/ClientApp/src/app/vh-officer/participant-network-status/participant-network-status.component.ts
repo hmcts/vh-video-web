@@ -1,7 +1,6 @@
-import { Component, ElementRef, Input, OnInit, ViewChild, AfterContentChecked } from '@angular/core';
+import { AfterContentChecked, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { LogEventType } from 'src/app/shared/models/log-event-types';
 import { HeartbeatHealth } from '../../services/models/participant-heartbeat';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
 import { PackageLost } from '../services/models/package-lost';
@@ -50,11 +49,10 @@ export class ParticipantNetworkStatusComponent implements OnInit, AfterContentCh
     async showParticipantGraph($event: MouseEvent) {
         this.mouseEvent = $event;
         if (this.displayGraph || this.loading) {
-            this.logger.debug('Graph already displayed or still loading');
+            this.logger.debug('[ParticipantNetworkStatus] - Graph already displayed or still loading');
             return;
         }
-        this.logger.event(LogEventType.API_CALL, {
-            name: 'getParticipantHeartbeats',
+        this.logger.debug('[ParticipantNetworkStatus] - Getting participant heartbeats', {
             conferenceId: this.conferenceId,
             participantId: this.participant.id
         });
@@ -83,10 +81,10 @@ export class ParticipantNetworkStatusComponent implements OnInit, AfterContentCh
             this.updateGraphPosition($event);
         } catch (err) {
             this.loading = false;
-            this.logger.error(
-                `Failed to get heartbeat history for particpant ${this.participant.id} in conference ${this.conferenceId}`,
-                err
-            );
+            this.logger.error(`[ParticipantNetworkStatus] - Failed to get heartbeat history for particpant`, err, {
+                conference: this.conferenceId,
+                participant: this.participant.id
+            });
         }
     }
 

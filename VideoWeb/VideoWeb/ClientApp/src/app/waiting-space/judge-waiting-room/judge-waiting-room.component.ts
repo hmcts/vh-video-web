@@ -64,7 +64,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
 
     async ngOnInit() {
         this.errorCount = 0;
-        this.logger.debug('Loading judge waiting room');
+        this.logger.debug('[Judge WR] - Loading judge waiting room');
 
         await this.userMediaService.setDefaultDevicesInCache();
 
@@ -84,7 +84,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
 
     @HostListener('window:beforeunload')
     async ngOnDestroy(): Promise<void> {
-        this.logger.debug('[Judge WR] - Clearing intervals and subscriptions for judge waiting room');
+        this.logger.debug('[Judge WR] - Clearing intervals and subscriptions for judge waiting room', { conference: this.conference.id });
         this.executeEndHearingSequence();
         this.eventHubSubscription$.unsubscribe();
         this.videoCallSubscription$.unsubscribe();
@@ -122,18 +122,21 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
 
     async startHearing() {
         try {
+            this.logger.debug('[Judge WR] - Judge clicked start/resume hearing', { conference: this.conference.id });
             await this.videoCallService.startHearing(this.hearing.id, this.videoCallService.getPreferredLayout(this.conference.id));
         } catch (err) {
-            this.logger.error(`Failed to start a hearing for conference ${this.conference.id}`, err);
+            this.logger.error(`Failed to start/resume a hearing for conference`, err, { conference: this.conference.id });
             this.errorService.handleApiError(err);
         }
     }
 
     goToJudgeHearingList(): void {
+        this.logger.debug('[Judge WR] - Judge is leaving conference and returning to hearing list', { conference: this.conference.id });
         this.router.navigate([pageUrls.JudgeHearingList]);
     }
 
     checkEquipment() {
+        this.logger.debug('[Judge WR] - Judge is leaving conference and checking equipment', { conference: this.conference.id });
         this.router.navigate([pageUrls.EquipmentCheck, this.conference.id]);
     }
 
@@ -160,26 +163,27 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     }
 
     async retrieveAudioStreamInfo(hearingId): Promise<void> {
-        this.logger.debug(`**** retrieve audio stream info for ${hearingId}`);
+        this.logger.debug(`[Judge WR] - Attempting to retrieve audio stream info for ${hearingId}`);
         try {
             const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId);
-            this.logger.debug('**** Got response: recording: ' + audioStreamWorking);
+            this.logger.debug('[Judge WR] - Got response: recording: ' + audioStreamWorking);
 
             if (!audioStreamWorking && !this.continueWithNoRecording) {
-                this.logger.debug('**** not recording, show alert');
+                this.logger.debug('[Judge WR] - not recording when expected, show alert');
                 this.showAudioRecordingAlert = true;
             }
         } catch (error) {
-            this.logger.debug('**** Got error: ' + JSON.stringify(error));
+            this.logger.error('[Judge WR] - Failed to get audio stream info', error, { conference: this.conference.id });
 
             if (!this.continueWithNoRecording) {
-                this.logger.debug('**** showAudioRecordingAlert FROM catch');
+                this.logger.info('[Judge WR] - Should not continue without a recording. Show alert.', { conference: this.conference.id });
                 this.showAudioRecordingAlert = true;
             }
         }
     }
 
     closeAlert(value) {
+        this.logger.debug('[Judge WR] - Closing alert');
         this.showAudioRecordingAlert = !value;
         this.continueWithNoRecording = true;
         clearInterval(this.audioRecordingInterval);

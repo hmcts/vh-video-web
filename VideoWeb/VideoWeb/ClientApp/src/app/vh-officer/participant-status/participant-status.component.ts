@@ -38,7 +38,7 @@ export class ParticipantStatusComponent implements OnInit {
     }
 
     async loadData() {
-        this.logger.info('Loading VH Officer Dashboard Participant Status list');
+        this.logger.info('[ParticipantStatus] - Loading VH Officer Dashboard Participant Status list');
 
         const participantDetails = await this.getParticipantsByConference(this.conferenceId);
 
@@ -56,7 +56,10 @@ export class ParticipantStatusComponent implements OnInit {
         try {
             return await this.videoWebService.getParticipantsWithContactDetailsByConferenceId(conferenceId);
         } catch (error) {
-            this.logger.error('There was an error getting the VH Officer dashboard participant status list of names', error);
+            this.logger.error(
+                '[ParticipantStatus] - There was an error getting the VH Officer dashboard participant status list of names',
+                error
+            );
             this.loadingData = false;
             this.errorService.handleApiError(error);
         }
@@ -76,17 +79,17 @@ export class ParticipantStatusComponent implements OnInit {
     }
 
     async setupEventHubSubscribers() {
-        this.logger.debug('Subscribing to participant status changes...');
+        this.logger.debug('[ParticipantStatus] - Subscribing to participant status changes...');
         this.eventHubSubscriptions.add(
             this.eventService.getParticipantStatusMessage().subscribe(async message => {
                 await this.handleParticipantStatusChange(message);
             })
         );
 
-        this.logger.debug('Subscribing to EventHub reconnects');
+        this.logger.debug('[ParticipantStatus] - Subscribing to EventHub reconnects');
         this.eventHubSubscriptions.add(
             this.eventService.getServiceReconnected().subscribe(async () => {
-                this.logger.info(`EventHub reconnected for vh officer`);
+                this.logger.info(`[ParticipantStatus] - EventHub reconnected for vh officer`);
                 await this.refreshConferenceDataDuringDisconnect();
             })
         );
@@ -114,7 +117,7 @@ export class ParticipantStatusComponent implements OnInit {
     }
 
     async refreshConferenceDataDuringDisconnect(): Promise<void> {
-        this.logger.warn('EventHub refresh pending...');
+        this.logger.warn('[ParticipantStatus] - EventHub refresh pending...');
         await this.loadData();
     }
 

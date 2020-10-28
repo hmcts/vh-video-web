@@ -61,6 +61,11 @@ export class ConsultationService {
         requester: ParticipantResponse,
         requestee: ParticipantResponse
     ): Promise<void> {
+        this.logger.info(`[ConsultationService] - Requesting private consultation`, {
+            conference: conference.id,
+            requester: requester.id,
+            requestee: requestee.id
+        });
         await this.handleConsultationRequest(
             new PrivateConsultationRequest({
                 conference_id: conference.id,
@@ -86,6 +91,12 @@ export class ConsultationService {
         answer: ConsultationAnswer
     ): Promise<void> {
         this.waitingForConsultationResponse = false;
+        this.logger.info(`[ConsultationService] - Responding to private consultation`, {
+            conference: conference.id,
+            requester: requester.id,
+            requestee: requestee.id,
+            answer: answer
+        });
         await this.handleConsultationRequest(
             new PrivateConsultationRequest({
                 conference_id: conference.id,
@@ -103,6 +114,10 @@ export class ConsultationService {
      * @param endpoint video endpoint to call
      */
     async startPrivateConsulationWithEndpoint(conference: ConferenceResponse, endpoint: VideoEndpointResponse) {
+        this.logger.info(`[ConsultationService] - Starting a private consultation with a video endpoint`, {
+            conference: conference.id,
+            endpoint: endpoint.id
+        });
         try {
             this.stopCallRinging();
             this.clearModals();
@@ -177,6 +192,10 @@ export class ConsultationService {
      * @param participant participant attempting to leave a private consultation
      */
     async leaveConsultation(conference: ConferenceResponse, participant: ParticipantResponse): Promise<void> {
+        this.logger.info(`[ConsultationService] - Leaving a private consultation`, {
+            conference: conference.id,
+            participant: participant.id
+        });
         await this.apiClient
             .leavePrivateConsultation(
                 new LeavePrivateConsultationRequest({
@@ -201,6 +220,11 @@ export class ConsultationService {
         room: RoomType
     ): Promise<void> {
         this.waitingForConsultationResponse = false;
+        this.logger.info(`[ConsultationService] - Responding to private consultation with admin.`, {
+            conference: conference.id,
+            participant: participant.id,
+            answer: answer
+        });
         try {
             this.stopCallRinging();
             this.clearModals();
@@ -225,32 +249,39 @@ export class ConsultationService {
     }
 
     displayOutgoingPrivateConsultationRequestModal() {
+        this.logger.debug('[ConsultationService] - Displaying outgoing consultation request modal.');
         this.displayModal(ConsultationService.REQUEST_PC_MODAL);
     }
 
     async displayIncomingPrivateConsultation() {
+        this.logger.debug('[ConsultationService] - Displaying incoming consultation request modal.');
         this.displayModal(ConsultationService.RECEIVE_PC_MODAL);
         await this.startIncomingCallRingingTimeout();
     }
 
     async displayAdminConsultationRequest() {
+        this.logger.debug('[ConsultationService] - Displaying incoming admin consultation request modal.');
         this.displayModal(ConsultationService.VHO_REQUEST_PC_MODAL);
         await this.startIncomingCallRingingTimeout();
     }
 
     displayNoConsultationRoomAvailableModal() {
+        this.logger.debug('[ConsultationService] - Displaying no consultation rooms available modal.');
         this.displayModal(ConsultationService.NO_ROOM_PC_MODAL);
     }
 
     displayConsultationErrorModal() {
+        this.logger.debug('[ConsultationService] - Displaying consultation error modal.');
         this.displayModal(ConsultationService.ERROR_PC_MODAL);
     }
 
     displayConsultationRejectedModal() {
+        this.logger.debug('[ConsultationService] - Displaying consultation rejected modal.');
         this.displayModal(ConsultationService.REJECTED_PC_MODAL);
     }
 
     clearModals() {
+        this.logger.debug('[ConsultationService] - Closing all modals.');
         this.modalService.closeAll();
     }
 
@@ -270,6 +301,7 @@ export class ConsultationService {
      * @param requestee participant user wishes to speak with
      */
     async startOutgoingCallRingingTimeout(conference: ConferenceResponse, requester: ParticipantResponse, requestee: ParticipantResponse) {
+        this.logger.debug('[ConsultationService] - Start outgoing ringing sound.');
         this.waitingForConsultationResponse = true;
         this.callRingingTimeout = setTimeout(async () => {
             await this.cancelTimedOutConsultationRequest(conference, requester, requestee);
@@ -281,6 +313,7 @@ export class ConsultationService {
      * Begin a timer which starting the call ringing but automatically cancels after a period of no response
      */
     async startIncomingCallRingingTimeout() {
+        this.logger.debug('[ConsultationService] - Start incoming ringing sound.');
         this.callRingingTimeout = setTimeout(() => {
             this.cancelTimedOutIncomingRequest();
         }, this.CALL_TIMEOUT);
@@ -301,7 +334,7 @@ export class ConsultationService {
             return;
         }
         this.waitingForConsultationResponse = false;
-        this.logger.info('Consultation request timed-out. Cancelling call');
+        this.logger.info('[ConsultationService] - Consultation request timed-out. Cancelling call');
         await this.respondToConsultationRequest(conference, requester, requestee, ConsultationAnswer.Cancelled);
         this.displayConsultationRejectedModal();
     }
@@ -313,6 +346,7 @@ export class ConsultationService {
     }
 
     stopCallRinging() {
+        this.logger.debug('[ConsultationService] - Start ringing sound.');
         this.clearOutgoingCallTimeout();
         this.notificationSoundService.stopConsultationRequestRingtone();
     }

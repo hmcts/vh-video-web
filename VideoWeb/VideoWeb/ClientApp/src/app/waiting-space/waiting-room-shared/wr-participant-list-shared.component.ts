@@ -95,14 +95,18 @@ export abstract class WRParticipantStatusListDirective {
     async displayAdminConsultationRequest(message: AdminConsultationMessage) {
         const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
         if (!requestee) {
-            this.logger.info(`Ignoring request for private consultation from Video Hearings Team since participant is not in hearing`);
+            this.logger.info(
+                `[WRParticipantStatusList] - Ignoring request for private consultation from Video Hearings Team since participant is not in hearing`
+            );
             return;
         }
         if (!message.answer && !this.isParticipantAvailable(requestee)) {
-            this.logger.info(`Ignoring request for private consultation from Video Hearings Team since participant is not available`);
+            this.logger.info(
+                `[WRParticipantStatusList] - Ignoring request for private consultation from Video Hearings Team since participant is not available`
+            );
             return;
         }
-        this.logger.info(`Incoming request for private consultation from Video Hearings Team`);
+        this.logger.info(`[WRParticipantStatusList] - Incoming request for private consultation from Video Hearings Team`);
         this.consultationRequestee = new Participant(requestee);
         await this.consultationService.displayAdminConsultationRequest();
     }
@@ -110,7 +114,7 @@ export abstract class WRParticipantStatusListDirective {
     handleAdminConsultationResponse(message: AdminConsultationMessage) {
         const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
         if (message.answer === ConsultationAnswer.Rejected) {
-            this.logger.info(`${requestee.display_name} ******* rejected vho consultation`);
+            this.logger.info(`[WRParticipantStatusList] - ${requestee.display_name} ******* rejected vho consultation`);
             this.consultationService.cancelTimedOutIncomingRequest();
         }
     }
@@ -125,7 +129,11 @@ export abstract class WRParticipantStatusListDirective {
 
     async respondToVhoConsultationRequest(answer: ConsultationAnswer) {
         const displayName = this.videoWebService.getObfuscatedName(this.consultationRequestee.displayName);
-        this.logger.event(`${displayName} responded to vho consultation: ${answer}`);
+        this.logger.info(`[WRParticipantStatusList] - ${displayName} responded to vho consultation: ${answer}`, {
+            conference: this.conference.id,
+            participant: this.consultationRequestee.id,
+            answer: answer
+        });
         try {
             await this.consultationService.respondToAdminConsultationRequest(
                 this.conference,
@@ -134,7 +142,7 @@ export abstract class WRParticipantStatusListDirective {
                 this.adminConsultationMessage.roomType
             );
         } catch (error) {
-            this.logger.error('Failed to respond to admin consultation request', error);
+            this.logger.error('[WRParticipantStatusList] - Failed to respond to admin consultation request', error);
         }
     }
 

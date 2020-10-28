@@ -12,7 +12,7 @@ export class IndividualConsultationControlsComponent {
     constructor(private logger: Logger) {}
 
     closeConsultation() {
-        this.logger.debug('Consultation clicked close');
+        this.logger.debug('[IndividualConsultationControls] - Participant clicked close consultation');
         this.cancelConsulation.emit();
     }
 }

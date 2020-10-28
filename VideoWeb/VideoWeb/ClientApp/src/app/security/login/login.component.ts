@@ -26,14 +26,16 @@ export class LoginComponent implements OnInit {
         if (this.adalSvc.userInfo.authenticated) {
             const returnUrl = this.returnUrlService.popUrl() || '/';
             try {
+                this.logger.debug(`[Login] - User is authenticated. Returning to ${returnUrl}`);
                 await this.router.navigateByUrl(returnUrl);
             } catch (e) {
-                this.logger.error('failed to log in', e);
+                this.logger.error('[Login] - Failed to log in', e);
                 this.router.navigate(['/']);
             }
         } else {
             const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
             this.returnUrlService.setUrl(returnUrl);
+            this.logger.debug('[Login] - User not authenticated. Logging in', { returnUrl });
             this.adalSvc.login();
         }
     }

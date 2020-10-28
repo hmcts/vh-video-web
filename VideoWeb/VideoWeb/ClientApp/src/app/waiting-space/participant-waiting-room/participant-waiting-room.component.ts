@@ -65,7 +65,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
 
     ngOnInit() {
         this.errorCount = 0;
-        this.logger.debug('Loading participant waiting room');
+        this.logger.debug('[Participant WR] - Loading participant waiting room');
         this.connected = false;
         this.updateShowDialogChooseDevice(true);
         this.initHearingAlert();
@@ -78,6 +78,9 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
 
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
+        this.logger.debug('[Participant WR] - Clearing intervals and subscriptions for participant waiting room', {
+            conference: this.conference.id
+        });
         clearTimeout(this.callbackTimeout);
         this.stopHeartbeat();
         this.disconnect();
@@ -129,7 +132,9 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     announceHearingIsAboutToStart(): void {
         const self = this;
         this.hearingAlertSound.play().catch(function (reason) {
-            self.logger.error('Failed to announce hearing starting', reason);
+            self.logger.error('[Participant WR] - Failed to announce hearing starting', reason, {
+                conference: this.conference.id
+            });
         });
         this.hearingStartingAnnounced = true;
     }

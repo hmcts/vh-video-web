@@ -27,11 +27,12 @@ export class TasksTableComponent implements OnInit, OnDestroy {
         this.retrieveConference(this.conferenceId)
             .then(async conference => {
                 this.conference = conference;
+                this.logger.debug('[TasksTable] - Getting tasks for conference', { conference: this.conferenceId });
                 this.tasks = await this.retrieveTasksForConference(this.conference.id);
                 this.loading = false;
             })
             .catch(err => {
-                this.logger.error(`Failed to init tasks list for conference ${this.conferenceId}`, err);
+                this.logger.error(`[TasksTable] - Failed to init tasks list for conference ${this.conferenceId}`, err);
             });
     }
 
@@ -54,12 +55,13 @@ export class TasksTableComponent implements OnInit, OnDestroy {
 
     async completeTask(task: TaskResponse) {
         try {
+            this.logger.debug('[TasksTable] - Attempting to complete task', { conference: this.conference.id, task: task.id });
             const updatedTask = await this.vhoQueryService.completeTask(this.conference.id, task.id);
             this.updateTask(updatedTask);
             const payload = new TaskCompleted(this.conference.id, task.id);
             this.eventbus.emit(new EmitEvent(VHEventType.TaskCompleted, payload));
         } catch (error) {
-            this.logger.error(`Failed to complete task ${task.id}`, error);
+            this.logger.error(`[TasksTable] - Failed to complete task ${task.id}`, error);
         }
     }
 

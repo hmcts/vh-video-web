@@ -58,9 +58,9 @@ export class VenueListComponent implements OnInit {
                 previousFilter.forEach(x => this.updateFilterSelection(x));
             }
             this.courtAccountsAllocationStorage.set(this.filterCourtRoomsAccounts);
-            this.logger.info('Venue selection is changed');
+            this.logger.info('[VenueList] - Venue selection is changed');
         } else {
-            this.logger.warn('No any venues selected');
+            this.logger.warn('[VenueList] - No venues selected');
         }
     }
 

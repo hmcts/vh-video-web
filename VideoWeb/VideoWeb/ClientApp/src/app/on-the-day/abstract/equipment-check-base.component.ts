@@ -54,11 +54,10 @@ export abstract class EquipmentCheckBaseComponentDirective extends ParticipantSt
     }
 
     checkEquipmentAgain() {
-        this.logger.info(
-            `${this.getEquipmentCheck()} check | ConferenceId : ${this.conferenceId} | Participant : ${
-                this.participantName
-            } requested check equipment again.`
-        );
+        this.logger.info(`[${this.getEquipmentCheck()} check] - Requested check equipment again.`, {
+            conference: this.conference.id,
+            participant: this.participantId
+        });
         this.router.navigate([pageUrls.EquipmentCheck, this.conferenceId]);
     }
 
@@ -67,6 +66,10 @@ export abstract class EquipmentCheckBaseComponentDirective extends ParticipantSt
     }
 
     async onSubmit() {
+        const logPayload = {
+            conference: this.conference.id,
+            participant: this.participantId
+        };
         this.submitted = true;
         if (this.form.pristine) {
             return;
@@ -83,13 +86,13 @@ export abstract class EquipmentCheckBaseComponentDirective extends ParticipantSt
                     self_test_failure_reason: this.getFailureReason()
                 })
             );
-
             this.logger.info(
-                `Camera check | ConferenceId : ${this.conferenceId} | Participant : ${this.participantName} responded camera not working.`
+                `[${this.getEquipmentCheck()} check] - ${this.getEquipmentCheck()} not working. Going to GetHelp page`,
+                logPayload
             );
             this.router.navigate([pageUrls.GetHelp]);
         } catch (error) {
-            this.logger.error('Failed to raise "SelfTestFailureEvent"', error);
+            this.logger.error(`[${this.getEquipmentCheck()} check] - Failed to raise "SelfTestFailureEvent"`, error, logPayload);
         }
     }
 }

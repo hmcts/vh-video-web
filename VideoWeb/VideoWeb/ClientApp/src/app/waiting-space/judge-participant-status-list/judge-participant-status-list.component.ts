@@ -148,9 +148,13 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         });
 
         try {
+            this.logger.debug(`[JudgeParticipantStatusList] - Attempting to update judge`, {
+                judge: this.judge.id,
+                displayName: this.judge.display_name
+            });
             await this.videoWebService.updateParticipantDetails(this.conference.id, this.judge.id, updateParticipantRequest);
         } catch (error) {
-            this.logger.error(`There was an error update judge display name ${this.judge.id}`, error);
+            this.logger.error(`[JudgeParticipantStatusList] - There was an error update judge display name ${this.judge.id}`, error);
         }
     }
 }

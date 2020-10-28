@@ -12,18 +12,18 @@ export class ConferenceGuard implements CanActivate {
     constructor(private videoWebService: VideoWebService, private router: Router, private logger: Logger) {}
 
     async canActivate(next: ActivatedRouteSnapshot): Promise<boolean> {
+        const conferenceId = next.paramMap.get('conferenceId');
+        this.logger.debug(`[ConferenceGuard] Checking if user can view conference ${conferenceId}`);
         try {
-            const conferenceId = next.paramMap.get('conferenceId');
-
             const data = await this.videoWebService.getConferenceById(conferenceId);
 
             if (data.status === ConferenceStatus.Closed) {
-                this.logger.info('Conference Guard - Returning back to hearing list because status closed');
+                this.logger.info('[ConferenceGuard] Returning back to hearing list because status closed');
                 this.router.navigate([pageUrls.Home]);
 
                 return false;
             }
-
+            this.logger.debug(`[ConferenceGuard] User can view conference ${conferenceId}`);
             return true;
         } catch (err) {
             return this.handleError(err);
@@ -31,7 +31,7 @@ export class ConferenceGuard implements CanActivate {
     }
 
     private handleError(error) {
-        this.logger.error(`Could not get conference data.`, error);
+        this.logger.error(`[ConferenceGuard] Could not get conference data. Returning home.`, error);
         this.router.navigate([pageUrls.Home]);
 
         return false;

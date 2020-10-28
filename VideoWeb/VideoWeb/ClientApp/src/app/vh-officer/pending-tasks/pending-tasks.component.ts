@@ -21,10 +21,11 @@ export class PendingTasksComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.setupSubscribers();
+        this.logger.debug('[PendingTasks] - Getting tasks for conference', { conference: this.conferenceId });
         this.queryService
             .getTasksForConference(this.conferenceId)
             .then(tasks => (this.tasks = tasks))
-            .catch(err => this.logger.error(`Failed to get tasks for ${this.conferenceId}`, err));
+            .catch(err => this.logger.error(`[PendingTasks] - Failed to get tasks for ${this.conferenceId}`, err));
     }
 
     ngOnDestroy(): void {
@@ -40,6 +41,7 @@ export class PendingTasksComponent implements OnInit, OnDestroy {
     }
 
     handleTaskCompleted(completedTask: TaskCompleted) {
+        this.logger.debug('[PendingTasks] - Marking task as completed', { conference: this.conferenceId, task: completedTask.taskId });
         const task = this.tasks.find(t => t.id === completedTask.taskId);
         if (task) {
             task.status = TaskStatus.Done;

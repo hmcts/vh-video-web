@@ -84,18 +84,17 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             this.filterSubcription.unsubscribe();
         }
         this.eventHubSubscriptions.unsubscribe();
-        // this.eventService.stop();
     }
 
     setupEventHubSubscribers() {
-        this.logger.debug('Subscribing to conference status changes...');
+        this.logger.debug('[CommandCentre] - Subscribing to conference status changes...');
         this.eventHubSubscriptions.add(
             this.eventService.getHearingStatusMessage().subscribe(message => {
                 this.handleConferenceStatusChange(message);
             })
         );
 
-        this.logger.debug('Subscribing to participant status changes...');
+        this.logger.debug('[CommandCentre] - Subscribing to participant status changes...');
         this.eventHubSubscriptions.add(
             this.eventService.getParticipantStatusMessage().subscribe(message => {
                 this.handleParticipantStatusChange(message);
@@ -106,7 +105,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.eventHubSubscriptions.add(
             this.eventService.getServiceDisconnected().subscribe(async reconnectionAttempt => {
                 if (reconnectionAttempt <= 6) {
-                    this.logger.info(`EventHub disconnection for vh officer`);
+                    this.logger.info(`[CommandCentre] - EventHub disconnection for vh officer`);
                     await this.refreshConferenceDataDuringDisconnect();
                 } else {
                     this.errorService.goToServiceError('Your connection was lost');
@@ -114,17 +113,17 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             })
         );
 
-        this.logger.debug('Subscribing to EventHub reconnects');
+        this.logger.debug('[CommandCentre] - Subscribing to EventHub reconnects');
         this.eventHubSubscriptions.add(
             this.eventService.getServiceReconnected().subscribe(async () => {
-                this.logger.info(`EventHub reconnected for vh officer`);
+                this.logger.info(`[CommandCentre] - EventHub reconnected for vh officer`);
                 await this.refreshConferenceDataDuringDisconnect();
             })
         );
 
         this.eventHubSubscriptions.add(
             this.eventService.getHeartbeat().subscribe(heartbeat => {
-                this.logger.info(`Participant Network Heartbeat Captured`);
+                this.logger.info(`[CommandCentre] - Participant Network Heartbeat Captured`);
                 this.persistHeartbeat(heartbeat);
                 this.handleHeartbeat(heartbeat);
             })
@@ -134,7 +133,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     onConferenceSelected(conference: ConferenceForVhOfficerResponse) {
-        this.logger.info(`Conference ${conference.id} selected`);
+        this.logger.info(`[CommandCentre] - Conference ${conference.id} selected`);
         if (!this.isCurrentConference(conference.id)) {
             this.clearSelectedConference();
             this.retrieveConferenceDetails(conference.id);
@@ -183,7 +182,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     async refreshConferenceDataDuringDisconnect() {
-        this.logger.warn('EventHub refresh pending...');
+        this.logger.warn('[CommandCentre] - EventHub refresh pending...');
         this.retrieveHearingsForVhOfficer(true);
         if (this.selectedHearing) {
             await this.retrieveConferenceDetails(this.selectedHearing.id);
@@ -229,7 +228,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
                 this.loadingData = false;
             },
             error => {
-                this.logger.error('There was an error setting up VH Officer dashboard', error);
+                this.logger.error('[CommandCentre] - There was an error setting up VH Officer dashboard', error);
                 this.loadingData = false;
                 this.errorService.handleApiError(error);
             }
@@ -258,7 +257,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             const conference = await this.queryService.getConferenceByIdVHO(conferenceId);
             this.selectedHearing = new Hearing(conference);
         } catch (error) {
-            this.logger.error(`There was an error when selecting conference ${conferenceId}`, error);
+            this.logger.error(`[CommandCentre] - There was an error when selecting conference ${conferenceId}`, error);
             this.errorService.handleApiError(error);
         }
     }
@@ -299,7 +298,9 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             return venue.courtsRooms.some(room => room.selected && participant.lastName === room.courtRoom);
         } else {
             // if the venue could not be found (the venue name is not match the judge first name) will not hide the hearing
-            this.logger.warn(`Venue for judge first name: ${participant.firstName} could not be found in court rooms accounts`);
+            this.logger.warn(
+                `[CommandCentre] - Venue for judge first name: ${participant.firstName} could not be found in court rooms accounts`
+            );
             return false;
         }
     }

@@ -40,35 +40,38 @@ export abstract class BaseSelfTestComponentDirective implements OnInit {
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         if (this.conferenceId) {
+            this.logger.debug('[SelfTest] - Conference id found, initialising test from conference details');
             this.getConference();
         } else {
+            this.logger.debug('[SelfTest] - Conference id not found, initialising test from settings');
             this.getPexipConfig();
         }
         this.testInProgress = false;
     }
 
     async getConference(): Promise<void> {
-        this.logger.debug(`retrieving conference ${this.conferenceId}`);
+        this.logger.debug(`[SelfTest] - retrieving conference ${this.conferenceId}`);
         try {
             this.conference = await this.videoWebService.getConferenceById(this.conferenceId);
-            this.logger.debug(`retrieved conference ${this.conferenceId} successfully`);
+            this.logger.debug(`[SelfTest] - retrieved conference ${this.conferenceId} successfully`);
             this.participant = this.conference.participants.find(
                 x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
             );
             this.loadingData = false;
         } catch (error) {
             this.loadingData = false;
+            this.logger.warn('[SelfTest] - There was a problem getting conference details', { conference: this.conferenceId });
             this.errorService.handleApiError(error);
         }
     }
 
     async getPexipConfig(): Promise<void> {
-        this.logger.debug(`retrieving pexip configuration`);
+        this.logger.debug(`[SelfTest] - retrieving pexip configuration`);
         try {
             this.selfTestPexipConfig = await this.videoWebService.getPexipConfig();
-            this.logger.debug(`retrieved pexip configuration successfully`);
-            this.logger.debug('Self test Pexip cofig: ' + JSON.stringify(this.selfTestPexipConfig));
+            this.logger.debug(`[SelfTest] - Retrieved pexip configuration successfully`, this.selfTestPexipConfig);
         } catch (error) {
+            this.logger.warn('[SelfTest] - There was a problem getting pexip config');
             this.errorService.handleApiError(error);
         }
     }
@@ -78,15 +81,16 @@ export abstract class BaseSelfTestComponentDirective implements OnInit {
     }
 
     restartTest() {
+        this.logger.debug('[SelfTest] - restarting self test');
         this.testInProgress = false;
         this.hideSelfTest = false;
     }
 
     onSelfTestCompleted(testcallScore: TestCallScoreResponse): void {
         this.testInProgress = false;
-        this.logger.debug(`self test completed`);
+        this.logger.debug('[SelfTest] - self test completed');
         if (testcallScore) {
-            this.logger.debug(testcallScore.toJSON());
+            this.logger.debug(`[SelfTest] - ${testcallScore.toJSON()}`);
         }
     }
 }
