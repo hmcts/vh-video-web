@@ -335,7 +335,8 @@ export abstract class WaitingRoomBaseComponent {
         this.logger.error(`Error from pexip. Reason : ${error.reason}`, error.reason);
         this.errorService.goToServiceError(
             'Your camera and microphone are blocked',
-            'Please unblock the camera and microphone or call us if there is a problem.'
+            'Please unblock the camera and microphone or call us if there is a problem.',
+            false
         );
     }
 
