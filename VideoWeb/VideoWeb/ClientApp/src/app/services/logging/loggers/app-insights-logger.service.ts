@@ -46,7 +46,6 @@ export class AppInsightsLoggerService implements LogAdapter {
 
     info(message: string): void {
         this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Information });
-        console.info(`${this.router.url}`);
     }
 
     warn(message: string): void {

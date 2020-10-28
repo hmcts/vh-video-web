@@ -152,9 +152,9 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.TaskDetails(_c.Test.TaskId)).Text.Trim().Should().Be(alertType);
 
-            var timeOfAlert = _c.TimeZone.AdjustAnyOS(_c.Test.AlertTime).ToString(DateFormats.AlertMessageTimestamp);
-            var timeOfAlertMinusAMinute = _c.TimeZone.AdjustAnyOS(_c.Test.AlertTime).AddMinutes(-1).ToString(DateFormats.AlertMessageTimestamp);
-            var timeOfAlertPlusAMinute = _c.TimeZone.AdjustAnyOS(_c.Test.AlertTime).AddMinutes(1).ToString(DateFormats.AlertMessageTimestamp);
+            var timeOfAlert = _c.TimeZone.Adjust(_c.Test.AlertTime).ToString(DateFormats.AlertMessageTimestamp);
+            var timeOfAlertMinusAMinute = _c.TimeZone.Adjust(_c.Test.AlertTime).AddMinutes(-1).ToString(DateFormats.AlertMessageTimestamp);
+            var timeOfAlertPlusAMinute = _c.TimeZone.Adjust(_c.Test.AlertTime).AddMinutes(1).ToString(DateFormats.AlertMessageTimestamp);
 
             _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(AdminPanelPage.TaskCheckbox(_c.Test.TaskId)).Selected.Should().BeFalse();
             _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(AdminPanelPage.TaskCheckbox(_c.Test.TaskId)).Enabled.Should().BeTrue();

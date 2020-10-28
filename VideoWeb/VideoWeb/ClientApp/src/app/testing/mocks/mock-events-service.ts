@@ -23,6 +23,7 @@ export const heartbeatSubjectMock = new Subject<ParticipantHeartbeat>();
 
 eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', [
     'start',
+    'stop',
     'getHearingStatusMessage',
     'getParticipantStatusMessage',
     'getEndpointStatusMessage',
