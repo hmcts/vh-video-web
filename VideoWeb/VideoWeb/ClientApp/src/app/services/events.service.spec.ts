@@ -77,7 +77,6 @@ describe('EventsService', () => {
         }
     });
 
-    
     it('should goto service error on 8th failure', async () => {
         service.reconnectionTimes[6] = 0;
         service.reconnectionAttempt = 7;

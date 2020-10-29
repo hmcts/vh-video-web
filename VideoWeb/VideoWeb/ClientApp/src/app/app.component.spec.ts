@@ -95,7 +95,7 @@ describe('AppComponent', () => {
 
     afterEach(() => {
         mockAdalService.setAuthenticated(false);
-    })
+    });
 
     it('should start event service if authenticated oninit', fakeAsync(() => {
         locationServiceSpy.getCurrentUrl.and.returnValue(pageUrls.AdminVenueList);
