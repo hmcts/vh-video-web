@@ -30,7 +30,7 @@ describe('EventsService', () => {
 
     beforeAll(() => {
         configService = jasmine.createSpyObj<ConfigService>('ConfigService', ['clientSettings', 'getClientSettings', 'loadConfig']);
-        errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError', 'goToUnauthorised']);
+        errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError', 'goToUnauthorised', 'goToServiceError']);
         configService.getClientSettings.and.returnValue(clientSettings);
         adalService = mockAdalService;
         service = new EventsService(adalService, configService, logger, errorServiceSpy);
@@ -70,8 +70,21 @@ describe('EventsService', () => {
         spyOn(service.connection, 'start').and.returnValues(Promise.reject('Unable to connect auto test'), Promise.resolve());
         subscription$.add(service.getServiceDisconnected().subscribe());
         await service.start();
-        expect(service.reconnectionAttempt).toBe(0);
-        expect(service.connection.start).toHaveBeenCalledTimes(2);
+        expect(service.reconnectionAttempt).toBe(1);
+        if (service.reconnectionPromise) {
+            await service.reconnectionPromise;
+            expect(service.connection.start).toHaveBeenCalledTimes(2);
+        }
+    });
+
+    
+    it('should goto service error on 8th failure', async () => {
+        service.reconnectionTimes[6] = 0;
+        service.reconnectionAttempt = 7;
+        spyOn(service.connection, 'start').and.returnValues(Promise.reject('Unable to connect auto test'));
+        subscription$.add(service.getServiceDisconnected().subscribe());
+        await service.start();
+        expect(errorServiceSpy.goToServiceError).toHaveBeenCalledWith('Your connection was lost');
     });
 
     it('should not start if connected', () => {

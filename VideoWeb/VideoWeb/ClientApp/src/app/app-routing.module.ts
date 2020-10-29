@@ -21,6 +21,6 @@ export const routes: Routes = [
 
 @NgModule({
     exports: [RouterModule],
-    imports: [RouterModule.forRoot(routes, { enableTracing: !environment.production, scrollPositionRestoration: 'enabled' })]
+    imports: [RouterModule.forRoot(routes, { enableTracing: !environment.production })]
 })
 export class AppRoutingModule {}

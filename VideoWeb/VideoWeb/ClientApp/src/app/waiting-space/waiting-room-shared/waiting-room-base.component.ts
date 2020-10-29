@@ -199,14 +199,15 @@ export abstract class WaitingRoomBaseComponent {
             participant: this.participant.id,
             connectionAttempt: reconnectionAttempt
         };
-        this.logger.debug(`[WR] - EventHub disconnection`, logPayload);
-        this.logger.info(`[WR] - EventHub disconnection #${reconnectionAttempt}`);
-        try {
-            await this.getConference();
-            this.updateShowVideo();
-        } catch (error) {
-            this.logger.warn(`[WR] - Failed to recover from disconnection`, logPayload);
-            this.errorService.handleApiError(error);
+        if (reconnectionAttempt < 7) {
+            this.logger.debug(`[WR] - EventHub disconnection`, logPayload);
+            try {
+                await this.getConference();
+                this.updateShowVideo();
+            } catch (error) {
+                this.logger.warn(`[WR] - Failed to recover from disconnection`, logPayload);
+                this.errorService.handleApiError(error);
+            }
         }
     }
 
