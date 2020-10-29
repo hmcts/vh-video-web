@@ -20,7 +20,6 @@ import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.com
 import { SelectedUserMediaDevice } from '../../../shared/models/selected-user-media-device';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaDevice } from '../../../shared/models/user-media-device';
-import { SessionStorage } from 'src/app/services/session-storage';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 
@@ -321,17 +320,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         expect(userMediaService.updatePreferredCamera).toHaveBeenCalled();
         expect(userMediaService.updatePreferredMicrophone).toHaveBeenCalled();
         expect(videoCallService.makeCall).toHaveBeenCalled();
-    });
-    it('should get value that is indicated that user fist time in the waiting room in current session', () => {
-        const sessionStorage = new SessionStorage(component.CHOOSE_DEVICES_ON_INIT_IN_WR_KEY);
-        sessionStorage.clear();
-
-        let flag = component.getShowDialogChooseDevice();
-        expect(flag).toBeFalsy();
-
-        component.updateShowDialogChooseDevice(true);
-        flag = component.getShowDialogChooseDevice();
-        expect(flag).toBe(true);
     });
     it('should on consultation accept stop streams for devices and close choose device popup', async () => {
         component.displayDeviceChangeModal = true;

@@ -67,7 +67,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         this.errorCount = 0;
         this.logger.debug('Loading participant waiting room');
         this.connected = false;
-        this.updateShowDialogChooseDevice(true);
         this.initHearingAlert();
         this.getConference().then(() => {
             this.subscribeToClock();

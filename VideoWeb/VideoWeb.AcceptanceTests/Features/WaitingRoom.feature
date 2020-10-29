@@ -18,12 +18,13 @@ Scenario: Participant waiting room
 Scenario: Judge waiting room
 	Given the Judge user has progressed to the Waiting Room page
 	Then the user is on the Waiting Room page
-  And the judge dismisses the change camera popup
 	And a phone number for help is provided
 	And the users status has updated to Available
 	And the Judge can see information about their case 
   And the Judge can see a list of participants and their representatives
 	And the Judge can see other participants status
+  When the judge opens the change camera and microphone popup
+  Then the judge dismisses the change camera popup
 	When the user navigates back to the hearing list
 	Then the user is on the Hearing List page
 	And the users status has updated to Disconnected

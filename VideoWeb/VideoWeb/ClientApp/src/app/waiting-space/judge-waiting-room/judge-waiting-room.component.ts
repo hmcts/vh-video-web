@@ -68,18 +68,11 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
 
         await this.userMediaService.setDefaultDevicesInCache();
 
-        this.showChooseDeviceDialog();
         this.connected = false;
         this.getConference().then(() => {
             this.startEventHubSubscribers();
-            if (this.getShowDialogChooseDevice()) {
-                this.getJwtokenAndConnectToPexip();
-            }
+            this.getJwtokenAndConnectToPexip();
         });
-    }
-
-    showChooseDeviceDialog() {
-        this.displayDeviceChangeModal = !this.getShowDialogChooseDevice();
     }
 
     @HostListener('window:beforeunload')
