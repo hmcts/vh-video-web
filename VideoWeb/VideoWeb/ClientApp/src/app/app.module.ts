@@ -43,7 +43,7 @@ export function getSettings(configService: ConfigService) {
         { provide: APP_INITIALIZER, useFactory: getSettings, deps: [ConfigService], multi: true },
         { provide: Logger, useClass: LoggerService },
         { provide: LOG_ADAPTER, useClass: ConsoleLogger, multi: true },
-        { provide: LOG_ADAPTER, useClass: AppInsightsLoggerService, multi: true, deps: [ConfigService, Router] },
+        { provide: LOG_ADAPTER, useClass: AppInsightsLoggerService, multi: true, deps: [ConfigService, Router, AdalService] },
         { provide: API_BASE_URL, useFactory: () => '.' },
         AdalService,
         AdalGuard,

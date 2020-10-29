@@ -400,9 +400,11 @@ export abstract class WaitingRoomBaseComponent {
             this.participant.status = message.status;
         }
         participant.status = message.status;
-        this.logger.info(
-            `Participant waiting room : Conference : ${this.conference.id}, Case name : ${this.conference.case_name}, Participant status : ${participant.status}`
-        );
+        this.logger.info(`[WR] - Handling participant update status change`, {
+            conference: this.conference.id,
+            participant: participant.id,
+            status: participant.status
+        });
         if (message.status !== ParticipantStatus.InConsultation && isMe) {
             this.isAdminConsultation = false;
         }

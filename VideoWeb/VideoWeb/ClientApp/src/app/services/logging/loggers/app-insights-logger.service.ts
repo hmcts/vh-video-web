@@ -1,17 +1,10 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveEnd, Router, RouterEvent } from '@angular/router';
-import { ApplicationInsights, ITelemetryItem } from '@microsoft/applicationinsights-web';
+import { ApplicationInsights, ITelemetryItem, SeverityLevel } from '@microsoft/applicationinsights-web';
+import { AdalService } from 'adal-angular4';
 import { filter } from 'rxjs/operators';
 import { ConfigService } from '../../api/config.service';
 import { LogAdapter } from '../log-adapter';
-
-enum SeverityLevel {
-    Verbose = 0,
-    Information = 1,
-    Warning = 2,
-    Error = 3,
-    Critical = 4
-}
 
 @Injectable({
     providedIn: 'root'
@@ -21,14 +14,14 @@ export class AppInsightsLoggerService implements LogAdapter {
     router: Router;
     appInsights: ApplicationInsights;
 
-    constructor(configService: ConfigService, router: Router) {
+    constructor(configService: ConfigService, router: Router, adalService: AdalService) {
         this.router = router;
-        this.setupAppInsights(configService).then(() => {
+        this.setupAppInsights(configService, adalService).then(() => {
             this.trackNavigation();
         });
     }
 
-    private async setupAppInsights(configService: ConfigService) {
+    private async setupAppInsights(configService: ConfigService, adalService: AdalService) {
         await configService.loadConfig();
         const config = configService.getClientSettings();
         this.appInsights = new ApplicationInsights({
@@ -39,19 +32,20 @@ export class AppInsightsLoggerService implements LogAdapter {
         this.appInsights.loadAppInsights();
         this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
             envelope.tags['ai.cloud.role'] = 'vh-video-web';
+            envelope.tags['ai.user.id'] = adalService.userInfo.userName.toLowerCase();
         });
     }
 
     debug(message: string, properties: any = null): void {
-        this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Verbose, properties });
+        this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Verbose }, properties);
     }
 
     info(message: string, properties: any = null): void {
-        this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Information, properties });
+        this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Information }, properties);
     }
 
     warn(message: string, properties: any = null): void {
-        this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Warning, properties });
+        this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Warning }, properties);
     }
 
     trackEvent(eventName: string, properties: any) {
