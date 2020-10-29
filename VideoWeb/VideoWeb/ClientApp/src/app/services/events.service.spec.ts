@@ -8,6 +8,7 @@ import { ClientSettingsResponse } from './clients/api-client';
 import { EventsService } from './events.service';
 import { Logger } from './logging/logger-base';
 import { InstantMessage } from './models/instant-message';
+import { ErrorService } from '../services/error.service';
 
 describe('EventsService', () => {
     const clientSettings = new ClientSettingsResponse({
@@ -19,17 +20,20 @@ describe('EventsService', () => {
         event_hub_path: 'eventhub-karma-tests'
     });
     let configService: jasmine.SpyObj<ConfigService>;
+    let errorServiceSpy: jasmine.SpyObj<ErrorService>;
     let service: EventsService;
     const mockAdalService = new MockAdalService();
     let adalService;
     const logger: Logger = new MockLogger();
+
     const subscription$ = new Subscription();
 
     beforeAll(() => {
         configService = jasmine.createSpyObj<ConfigService>('ConfigService', ['clientSettings', 'getClientSettings', 'loadConfig']);
+        errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError', 'goToUnauthorised']);
         configService.getClientSettings.and.returnValue(clientSettings);
         adalService = mockAdalService;
-        service = new EventsService(adalService, configService, logger);
+        service = new EventsService(adalService, configService, logger, errorServiceSpy);
 
         service.connection = new signalR.HubConnectionBuilder()
             .configureLogging(signalR.LogLevel.Debug)
@@ -63,7 +67,6 @@ describe('EventsService', () => {
 
     it('should retry to connect on failure', async () => {
         service.reconnectionAttempt = 0;
-        service.retryDelayTime = 1;
         spyOn(service.connection, 'start').and.returnValues(Promise.reject('Unable to connect auto test'), Promise.resolve());
         subscription$.add(service.getServiceDisconnected().subscribe());
         await service.start();

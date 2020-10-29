@@ -75,7 +75,7 @@ export class EventsService {
                     this.logger.warn(`[EventsService] - Failed to connect to EventHub ${err}`);
                     this.onEventHubErrorOrClose(err);
                     if (this.reconnectionTimes.length >= this.reconnectionAttempt) {
-                        let delayMs = this.reconnectionTimes[this.reconnectionAttempt - 1];
+                        const delayMs = this.reconnectionTimes[this.reconnectionAttempt - 1];
                         this.logger.info(`EventHub reconnecting in ${delayMs}ms`);
                         this.reconnectionPromise = this.delay(delayMs).then(() => {
                             this.reconnectionPromise = null;

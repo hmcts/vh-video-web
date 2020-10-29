@@ -13,6 +13,7 @@ import { LocationService } from './services/location.service';
 import { PageTrackerService } from './services/page-tracker.service';
 import { pageUrls } from './shared/page-url.constants';
 import { MockAdalService } from './testing/mocks/MockAdalService';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -24,6 +25,8 @@ describe('AppComponent', () => {
     let titleServiceSpy: jasmine.SpyObj<Title>;
     let pageTrackerServiceSpy: jasmine.SpyObj<PageTrackerService>;
     const mockAdalService = new MockAdalService();
+    const mockEventsService = eventsServiceSpy;
+    let eventsService;
     let adalService;
     const clientSettings = new ClientSettingsResponse({
         tenant_id: 'tenantid',
@@ -47,6 +50,7 @@ describe('AppComponent', () => {
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['clientSettings', 'getClientSettings', 'loadConfig']);
         configServiceSpy.getClientSettings.and.returnValue(clientSettings);
         adalService = mockAdalService;
+        eventsService = mockEventsService;
         deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isSupportedBrowser']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
         const profile = new UserProfileResponse({ role: Role.Representative });
@@ -74,6 +78,7 @@ describe('AppComponent', () => {
             titleServiceSpy,
             activatedRoute,
             locationServiceSpy,
+            eventsService,
             pageTrackerServiceSpy
         );
 
@@ -87,6 +92,19 @@ describe('AppComponent', () => {
         routerSpy.navigateByUrl.calls.reset();
         profileServiceSpy.getUserProfile.calls.reset();
     });
+
+    afterEach(() => {
+        mockAdalService.setAuthenticated(false);
+    })
+
+    it('should start event service if authenticated oninit', fakeAsync(() => {
+        locationServiceSpy.getCurrentUrl.and.returnValue(pageUrls.AdminVenueList);
+        locationServiceSpy.getCurrentPathName.and.returnValue(`/${pageUrls.AdminVenueList}`);
+        mockAdalService.setAuthenticated(true);
+        component.ngOnInit();
+        flushMicrotasks();
+        expect(eventsService.start).toHaveBeenCalled();
+    }));
 
     it('should prompt user to login if not authenticated', () => {
         component.ngOnInit();
