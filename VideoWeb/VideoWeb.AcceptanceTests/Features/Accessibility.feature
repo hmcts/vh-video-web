@@ -73,8 +73,15 @@ Scenario: Change camera and microphone page accessibility
 Scenario: Judge Waiting Room page accessibility
     Given the Judge user has progressed to the Waiting Room page
     When the waiting room page has loaded for the Judge
-    And the judge dismisses the change camera popup
     Then the page should be accessible 
+
+@Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
+Scenario: Judge Waiting Room Change Camera popup accessibility
+    Given the Judge user has progressed to the Waiting Room page
+    When the waiting room page has loaded for the Judge
+    And the judge opens the change camera and microphone popup
+    Then the page should be accessible 
+    And the judge dismisses the change camera popup
 
 @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
 Scenario: Participant Waiting Room page accessibility
