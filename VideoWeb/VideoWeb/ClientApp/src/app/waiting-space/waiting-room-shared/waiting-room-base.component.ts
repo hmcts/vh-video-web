@@ -81,7 +81,7 @@ export abstract class WaitingRoomBaseComponent {
         this.showDialogChooseDevicesOnInit = new SessionStorage(this.CHOOSE_DEVICES_ON_INIT_IN_WR_KEY);
     }
 
-    async getConference() {
+    getConference() {
         const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         return this.videoWebService
             .getConferenceById(conferenceId)
@@ -270,7 +270,7 @@ export abstract class WaitingRoomBaseComponent {
             await this.setupPexipEventSubscriptionAndClient();
             this.call();
         } catch (error) {
-            this.logger.error(`[WR] - There was an error getting a jwtoken for heartbeat`, error), logPayload;
+            this.logger.error(`[WR] - There was an error getting a jwtoken for heartbeat`, error, logPayload);
             this.errorService.handleApiError(error);
         }
     }

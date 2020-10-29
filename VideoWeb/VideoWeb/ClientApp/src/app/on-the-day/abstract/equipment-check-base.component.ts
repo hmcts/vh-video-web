@@ -55,7 +55,7 @@ export abstract class EquipmentCheckBaseComponentDirective extends ParticipantSt
 
     checkEquipmentAgain() {
         this.logger.info(`[${this.getEquipmentCheck()} check] - Requested check equipment again.`, {
-            conference: this.conference.id,
+            conference: this.conferenceId,
             participant: this.participantId
         });
         this.router.navigate([pageUrls.EquipmentCheck, this.conferenceId]);

@@ -10,7 +10,7 @@ import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ParticipantSelfTestComponent } from './participant-self-test.component';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
-import { fakeAsync, tick } from '@angular/core/testing';
+import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 
 describe('ParticipantSelfTestComponent', () => {
     let component: ParticipantSelfTestComponent;
@@ -70,6 +70,7 @@ describe('ParticipantSelfTestComponent', () => {
         );
         component.conference = conference;
         component.conferenceId = conference.id;
+        component.participant = conference.participants[0];
         component.selfTestComponent = selfTestSpy;
         router.navigate.calls.reset();
     });
@@ -80,12 +81,12 @@ describe('ParticipantSelfTestComponent', () => {
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.CameraWorking, conference.id]);
     });
     it('should navigate to camera working screen if self-test is incompleted', fakeAsync(() => {
-        spyOn(logger, 'info');
+        spyOn(logger, 'warn');
         component.selfTestCompleted = false;
         component.continueParticipantJourney();
         tick();
         expect(videoWebService.raiseSelfTestFailureEvent).toHaveBeenCalled();
-        expect(logger.info).toHaveBeenCalled();
+        expect(logger.warn).toHaveBeenCalled();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.CameraWorking, conference.id]);
         expect(selfTestSpy.disconnect).toHaveBeenCalled();
         expect(selfTestSpy.handleCallDisconnect).toHaveBeenCalled();
@@ -125,9 +126,8 @@ describe('ParticipantSelfTestComponent', () => {
         const event: any = { returnValue: 'save' };
         spyOn(logger, 'info');
         participantStatusUpdateService.postParticipantStatus.and.returnValue(Promise.resolve());
-
         component.beforeunloadHandler(event);
-        tick();
+        flushMicrotasks();
         expect(participantStatusUpdateService.postParticipantStatus).toHaveBeenCalled();
         expect(logger.info).toHaveBeenCalled();
     }));

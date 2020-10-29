@@ -71,7 +71,7 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
         this.participantStatusUpdateService
             .postParticipantStatus(EventType.ParticipantNotSignedIn, null)
             .then(() => {
-                this.logger.debug('[ParticipantSelfTest] - Participant status was updated to not signed in');
+                this.logger.info('[ParticipantSelfTest] - Participant status was updated to not signed in');
             })
             .catch(err => {
                 this.logger.error('[ParticipantSelfTest] - Unable to update status to not signed in', err);
