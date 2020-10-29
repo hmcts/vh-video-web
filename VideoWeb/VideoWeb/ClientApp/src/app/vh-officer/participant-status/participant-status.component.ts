@@ -58,7 +58,8 @@ export class ParticipantStatusComponent implements OnInit {
         } catch (error) {
             this.logger.error(
                 '[ParticipantStatus] - There was an error getting the VH Officer dashboard participant status list of names',
-                error
+                error,
+                { conference: conferenceId }
             );
             this.loadingData = false;
             this.errorService.handleApiError(error);

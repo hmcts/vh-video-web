@@ -99,7 +99,7 @@ export abstract class WaitingRoomBaseComponent {
                 });
             })
             .catch(error => {
-                this.logger.error(`[WR] - There was an error getting a conference ${conferenceId}`, error);
+                this.logger.error(`[WR] - There was an error getting a conference ${conferenceId}`, error, { conference: conferenceId });
                 this.loadingData = false;
                 this.errorService.handleApiError(error);
             });
@@ -433,19 +433,31 @@ export abstract class WaitingRoomBaseComponent {
     }
 
     async onConsultationCancelled() {
-        this.logger.info(
-            `[WR] -: Conference : ${this.conference.id}, Case name : ${this.conference.case_name}. Participant ${this.participant.id} attempting to leave conference: ${this.conference.id}`
-        );
+        const logPayload = {
+            conference: this.conference.id,
+            caseName: this.conference.case_name,
+            participant: this.participant.id
+        };
+        this.logger.info(`[WR] - Participant is attempting to leave the private consultation`, logPayload);
         try {
             await this.consultationService.leaveConsultation(this.conference, this.participant);
         } catch (error) {
-            this.logger.error('[WR] - Failed to leave private consultation', error);
+            this.logger.error('[WR] - Failed to leave private consultation', error, logPayload);
         }
     }
 
     updateShowVideo(): void {
+        const logPaylod = {
+            conference: this.conference.id,
+            caseName: this.conference.case_name,
+            participant: this.participant.id,
+            showingVideo: false,
+            reason: ''
+        };
         if (!this.connected) {
-            this.logger.debug('[WR] - Not showing video because not connecting to node');
+            logPaylod.showingVideo = false;
+            logPaylod.reason = 'Not showing video because not connecting to pexip node';
+            this.logger.debug(`[WR] - ${logPaylod.reason}`, logPaylod);
             this.showVideo = false;
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;
@@ -453,7 +465,9 @@ export abstract class WaitingRoomBaseComponent {
         }
 
         if (this.hearing.isInSession()) {
-            this.logger.debug('[WR] - Showing video because hearing is in session');
+            logPaylod.showingVideo = true;
+            logPaylod.reason = 'Showing video because hearing is in session';
+            this.logger.debug(`[WR] - ${logPaylod.reason}`, logPaylod);
             this.showVideo = true;
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;
@@ -461,14 +475,18 @@ export abstract class WaitingRoomBaseComponent {
         }
 
         if (this.participant.status === ParticipantStatus.InConsultation) {
-            this.logger.debug('[WR] - Showing video because hearing is in consultation');
+            logPaylod.showingVideo = true;
+            logPaylod.reason = 'Showing video because participant is in a consultation';
+            this.logger.debug(`[WR] - ${logPaylod.reason}`, logPaylod);
             this.showVideo = true;
             this.isPrivateConsultation = true;
             this.showConsultationControls = !this.isAdminConsultation;
             return;
         }
 
-        this.logger.debug('[WR] - Not showing video because hearing is not in session and user is not in consultation');
+        logPaylod.showingVideo = false;
+        logPaylod.reason = 'Not showing video because hearing is not in session and user is not in consultation';
+        this.logger.debug(`[WR] - ${logPaylod.reason}`, logPaylod);
         this.showVideo = false;
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;

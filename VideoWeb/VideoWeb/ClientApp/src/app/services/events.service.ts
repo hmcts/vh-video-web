@@ -169,7 +169,6 @@ export class EventsService {
                     osName,
                     osVersion
                 );
-                this.logger.debug('[EventsService] - ReceiveHeartbeat received', heartbeat);
                 this.participantHeartbeat.next(heartbeat);
             }
         );
@@ -266,6 +265,6 @@ export class EventsService {
 
     async sendHeartbeat(conferenceId: string, participantId: string, heartbeat: Heartbeat) {
         await this.connection.send('SendHeartbeat', conferenceId, participantId, heartbeat);
-        this.logger.debug('[EventsService] - Sent heartbeat to EventHub');
+        this.logger.debug('[EventsService] - Sent heartbeat to EventHub', heartbeat);
     }
 }

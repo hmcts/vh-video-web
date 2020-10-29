@@ -133,7 +133,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     onConferenceSelected(conference: ConferenceForVhOfficerResponse) {
-        this.logger.info(`[CommandCentre] - Conference ${conference.id} selected`);
+        this.logger.info(`[CommandCentre] - Conference ${conference.id} selected`, { conference: conference.id });
         if (!this.isCurrentConference(conference.id)) {
             this.clearSelectedConference();
             this.retrieveConferenceDetails(conference.id);
@@ -299,7 +299,8 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         } else {
             // if the venue could not be found (the venue name is not match the judge first name) will not hide the hearing
             this.logger.warn(
-                `[CommandCentre] - Venue for judge first name: ${participant.firstName} could not be found in court rooms accounts`
+                `[CommandCentre] - Venue for judge first name: ${participant.firstName} could not be found in court rooms accounts`,
+                { venue: participant.firstName }
             );
             return false;
         }

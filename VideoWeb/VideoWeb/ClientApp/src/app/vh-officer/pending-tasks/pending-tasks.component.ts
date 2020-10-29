@@ -25,7 +25,9 @@ export class PendingTasksComponent implements OnInit, OnDestroy {
         this.queryService
             .getTasksForConference(this.conferenceId)
             .then(tasks => (this.tasks = tasks))
-            .catch(err => this.logger.error(`[PendingTasks] - Failed to get tasks for ${this.conferenceId}`, err));
+            .catch(err =>
+                this.logger.error(`[PendingTasks] - Failed to get tasks for ${this.conferenceId}`, err, { conference: this.conferenceId })
+            );
     }
 
     ngOnDestroy(): void {
