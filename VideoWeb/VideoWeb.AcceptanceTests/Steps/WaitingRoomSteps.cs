@@ -42,21 +42,29 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.ResumeVideoCallButton);
         }
 
-        [Then(@"the participant status for (.*) is displayed as (.*)")]
-        public void ThenTheFirstParticipantStatusIsDisplayedAsNotSignedIn(string name, string status)
+        [When(@"the judge opens the change camera and microphone popup")]
+        public void WhenTheJudgeOpensTheChangeCameraAndMicrophonePopup()
         {
-            var user = Users.GetUserFromText(name, _c.Test.Users);
-            var participant = _c.Test.ConferenceParticipants.First(x => x.Username.ToLower().Equals(user.Username.ToLower()));
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantStatus(participant.Id)).Text.ToUpper().Trim().Should().Be(status.ToUpper());
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.ChooseCameraMicrophoneButton).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.ChooseCameraMicrophoneButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.CloseChangeDeviceButton);
         }
 
         [When(@"the judge dismisses the change camera popup")]
         [Then(@"the judge dismisses the change camera popup")]
         public void TheJudgeDismissesTheChangeCameraPopup()
         {
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.ChangeDeviceButton).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.ChangeDeviceButton);
-            _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(JudgeWaitingRoomPage.ChangeDeviceButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.CloseChangeDeviceButton).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.CloseChangeDeviceButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(JudgeWaitingRoomPage.CloseChangeDeviceButton);
+        }
+
+        [Then(@"the participant status for (.*) is displayed as (.*)")]
+        public void ThenTheFirstParticipantStatusIsDisplayedAsNotSignedIn(string name, string status)
+        {
+            var user = Users.GetUserFromText(name, _c.Test.Users);
+            var participant = _c.Test.ConferenceParticipants.First(x => x.Username.ToLower().Equals(user.Username.ToLower()));
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantStatus(participant.Id)).Text.ToUpper().Trim().Should().Be(status.ToUpper());
         }
 
         [Then(@"the Judge can see information about their case")]
@@ -257,7 +265,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ProgressToNextPage()
         {
             Thread.Sleep(TimeSpan.FromSeconds(ExtraTimeAfterReachingWaitingRoom));
-            TheJudgeDismissesTheChangeCameraPopup();
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.StartVideoHearingButton).Displayed.Should().BeTrue();
             CheckParticipantsAreStillConnected();
             _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.StartVideoHearingButton);
