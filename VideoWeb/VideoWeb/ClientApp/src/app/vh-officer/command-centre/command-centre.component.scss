@@ -20,7 +20,9 @@
   height: 70vh;
   max-height: 100vh;
   padding: 0px;
-  border-right: 1px solid govuk-colour('light-grey');
+  border-right: 1px solid govuk-colour('light-grey') !important;
+  outline: none;
+  border: 0;
 }
 
 .selected-menu-content {
