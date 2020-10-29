@@ -25,6 +25,7 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { HearingRole } from '../models/hearing-role-model';
 
 declare var HeartbeatFactory: any;
 
@@ -430,8 +431,16 @@ export abstract class WaitingRoomBaseComponent {
             return;
         }
 
-        if (this.hearing.isInSession()) {
+        if (this.hearing.isInSession() && this.participant.hearing_role !== HearingRole.WITNESS) {
             this.logger.debug('Showing video because hearing is in session');
+            this.showVideo = true;
+            this.showConsultationControls = false;
+            this.isPrivateConsultation = false;
+            return;
+        }
+
+        if (this.participant.hearing_role === HearingRole.WITNESS && this.participant.status === ParticipantStatus.InHearing) {
+            this.logger.debug('Showing video because witness is in hearing');
             this.showVideo = true;
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;
