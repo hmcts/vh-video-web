@@ -17,6 +17,8 @@ import { BetaBannerStubComponent } from './testing/stubs/beta-banner-stub';
 import { FooterStubComponent } from './testing/stubs/footer-stub';
 import { HeaderStubComponent } from './testing/stubs/header-stub';
 import { ParticipantStatusUpdateService } from './services/participant-status-update.service';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
+import { EventsService } from './services/events.service';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -69,7 +71,8 @@ describe('AppComponent', () => {
                 { provide: ProfileService, useValue: profileServiceSpy },
                 { provide: LocationService, useValue: locationServiceSpy },
                 { provide: PageTrackerService, useValue: pageTracker },
-                { provide: ParticipantStatusUpdateService, useValue: participantStatusUpdateService }
+                { provide: ParticipantStatusUpdateService, useValue: participantStatusUpdateService },
+                { provide: EventsService, useValue: eventsServiceSpy }
             ]
         });
     });

@@ -57,8 +57,6 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
                 }
             })
         );
-
-        this.eventService.start();
     }
 
     canCallParticipant(participant: ParticipantResponse): boolean {

@@ -109,7 +109,6 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
                 this.handleConferenceStatusChange(message);
             })
         );
-        this.eventsService.start();
     }
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {

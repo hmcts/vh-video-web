@@ -52,7 +52,6 @@ class WrParticipantStatusListTest extends WRParticipantStatusListDirective imple
 
     setupSubscribers(): void {
         this.addSharedEventHubSubcribers();
-        this.eventService.start();
     }
     canCallParticipant(participant: ParticipantResponse): boolean {
         return false;
