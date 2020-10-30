@@ -13,15 +13,15 @@ export class ParticipantWaitingRoomGuard implements CanActivate {
     constructor(private videoWebService: VideoWebService, private router: Router, private logger: Logger) {}
 
     async canActivate(next: ActivatedRouteSnapshot): Promise<boolean> {
+        const conferenceId = next.paramMap.get('conferenceId');
+        this.logger.debug(`[ParticipantWaitingRoomGuard] - Checking if user can view conference ${conferenceId}`);
         try {
-            const conferenceId = next.paramMap.get('conferenceId');
-
             const data = await this.videoWebService.getConferenceById(conferenceId);
             this.hearing = new Hearing(data);
 
             if (this.hearing.isPastClosedTime()) {
                 this.logger.info(
-                    'Participant Closed Conference Guard - Returning back to hearing list because hearing closed over 30 minutes.'
+                    '[ParticipantWaitingRoomGuard] - Returning back to hearing list because hearing has been closed for over 30 minutes.'
                 );
                 this.router.navigate([pageUrls.ParticipantHearingList]);
 
@@ -35,7 +35,7 @@ export class ParticipantWaitingRoomGuard implements CanActivate {
     }
 
     private handleError(error) {
-        this.logger.error(`Could not get conference data.`, error);
+        this.logger.error(`[ParticipantWaitingRoomGuard] Could not get conference data. Returning home.`, error);
         this.router.navigate([pageUrls.Home]);
 
         return false;

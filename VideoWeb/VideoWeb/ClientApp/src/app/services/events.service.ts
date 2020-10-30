@@ -59,14 +59,14 @@ export class EventsService {
                 .start()
                 .then(() => {
                     this.reconnectionAttempt = 0;
-                    this.logger.info('Successfully connected to EventHub');
+                    this.logger.info('[EventsService] - Successfully connected to EventHub');
                     this.connection.onreconnecting(error => this.onEventHubReconnecting(error));
                     this.connection.onreconnected(() => this.onEventHubReconnected());
                     this.connection.onclose(error => this.onEventHubErrorOrClose(error));
                     this.registerHandlers();
                 })
                 .catch(async err => {
-                    this.logger.warn(`Failed to connect to EventHub ${err}`);
+                    this.logger.warn(`[EventsService] - Failed to connect to EventHub ${err}`);
                     this.onEventHubErrorOrClose(err);
                     await this.delay(this.retryDelayTime);
                     this.start();
@@ -87,31 +87,31 @@ export class EventsService {
             'ParticipantStatusMessage',
             (participantId: string, username: string, conferenceId: string, status: ParticipantStatus) => {
                 const message = new ParticipantStatusMessage(participantId, username, conferenceId, status);
-                this.logger.event('ParticipantStatusMessage received', message);
+                this.logger.debug('[EventsService] - ParticipantStatusMessage received', message);
                 this.participantStatusSubject.next(message);
             }
         );
 
         this.connection.on('EndpointStatusMessage', (endpointId: string, conferenceId: string, status: EndpointStatus) => {
             const message = new EndpointStatusMessage(endpointId, conferenceId, status);
-            this.logger.event('EndpointStatusMessage received', message);
+            this.logger.debug('[EventsService] - EndpointStatusMessage received', message);
             this.endpointStatusSubject.next(message);
         });
 
         this.connection.on('ConferenceStatusMessage', (conferenceId: string, status: ConferenceStatus) => {
             const message = new ConferenceStatusMessage(conferenceId, status);
-            this.logger.event('ConferenceStatusMessage received', message);
+            this.logger.debug('[EventsService] - ConferenceStatusMessage received', message);
             this.hearingStatusSubject.next(message);
         });
 
         this.connection.on('CountdownFinished', (conferenceId: string) => {
-            this.logger.event('CountdownFinished received', conferenceId);
+            this.logger.debug('[EventsService] - CountdownFinished received', conferenceId);
             this.hearingCountdownCompleteSubject.next(conferenceId);
         });
 
         this.connection.on('HelpMessage', (conferenceId: string, participantName: string) => {
             const message = new HelpMessage(conferenceId, participantName);
-            this.logger.event('HelpMessage received', message);
+            this.logger.debug('[EventsService] - HelpMessage received', message);
             this.helpMessageSubject.next(message);
         });
 
@@ -119,7 +119,7 @@ export class EventsService {
             'ConsultationMessage',
             (conferenceId: string, requestedBy: string, requestedFor: string, result?: ConsultationAnswer) => {
                 const message = new ConsultationMessage(conferenceId, requestedBy, requestedFor, result);
-                this.logger.event('ConsultationMessage received', message);
+                this.logger.debug('[EventsService] - ConsultationMessage received', message);
                 this.consultationMessageSubject.next(message);
             }
         );
@@ -128,7 +128,7 @@ export class EventsService {
             'AdminConsultationMessage',
             (conferenceId: string, roomType: RoomType, requestedFor: string, answer: ConsultationAnswer) => {
                 const message = new AdminConsultationMessage(conferenceId, roomType, requestedFor, answer);
-                this.logger.event('AdminConsultationMessage received', message);
+                this.logger.debug('[EventsService] - AdminConsultationMessage received', message);
                 this.adminConsultationMessageSubject.next(message);
             }
         );
@@ -138,14 +138,14 @@ export class EventsService {
             (conferenceId: string, from: string, to: string, message: string, timestamp: Date, messageUuid: string) => {
                 const date = new Date(timestamp);
                 const chat = new InstantMessage({ conferenceId, id: messageUuid, to, from, message, timestamp: date });
-                this.logger.event('ReceiveMessage received', chat);
+                this.logger.debug('[EventsService] - ReceiveMessage received', chat);
                 this.messageSubject.next(chat);
             }
         );
 
         this.connection.on('AdminAnsweredChat', (conferenceId: string, participantUsername: string) => {
             const payload = new ConferenceMessageAnswered(conferenceId, participantUsername);
-            this.logger.event('AdminAnsweredChat received', payload);
+            this.logger.debug('[EventsService] - AdminAnsweredChat received', payload);
             this.adminAnsweredChatSubject.next(payload);
         });
 
@@ -169,14 +169,14 @@ export class EventsService {
                     osName,
                     osVersion
                 );
-                this.logger.event('ReceiveHeartbeat received', heartbeat);
                 this.participantHeartbeat.next(heartbeat);
             }
         );
     }
 
     stop() {
-        this.connection.stop().catch(err => this.logger.error('Failed to stop connection to EventHub', err));
+        this.logger.debug('[EventsService] - Ending connection to EventHub');
+        this.connection.stop().catch(err => this.logger.error('[EventsService] - Failed to stop connection to EventHub', err));
     }
 
     async delay(ms: number) {
@@ -185,22 +185,22 @@ export class EventsService {
 
     private onEventHubReconnecting(error: Error) {
         this.reconnectionAttempt++;
-        this.logger.info('Attempting to reconnect to EventHub: attempt #' + this.reconnectionAttempt);
+        this.logger.info('[EventsService] - Attempting to reconnect to EventHub: attempt #' + this.reconnectionAttempt);
         if (error) {
-            this.logger.error('Error during reconnect to EventHub', error);
+            this.logger.error('[EventsService] - Error during reconnect to EventHub', error);
             this.eventHubDisconnectSubject.next(this.reconnectionAttempt);
         }
     }
 
     private onEventHubReconnected() {
-        this.logger.info('Successfully reconnected to EventHub');
+        this.logger.info('[EventsService] - Successfully reconnected to EventHub');
         this.reconnectionAttempt = 0;
         this.eventHubReconnectSubject.next();
     }
 
     private onEventHubErrorOrClose(error: Error) {
         const message = error ? 'EventHub connection error' : 'EventHub connection closed';
-        this.logger.error(message, error);
+        this.logger.error(`[EventsService] - ${message}`, error);
         this.eventHubDisconnectSubject.next(this.reconnectionAttempt);
     }
 
@@ -258,12 +258,13 @@ export class EventsService {
                 instantMessage.id
             );
         } catch (err) {
-            this.logger.error(`Unable to send im from ${instantMessage.from}`, err);
+            this.logger.error(`[EventsService] - Unable to send im from ${instantMessage.from}`, err);
             throw err;
         }
     }
 
     async sendHeartbeat(conferenceId: string, participantId: string, heartbeat: Heartbeat) {
         await this.connection.send('SendHeartbeat', conferenceId, participantId, heartbeat);
+        this.logger.debug('[EventsService] - Sent heartbeat to EventHub', heartbeat);
     }
 }

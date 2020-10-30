@@ -11,16 +11,19 @@ export class JudgeGuard implements CanActivate {
     constructor(private userProfileService: ProfileService, private router: Router, private logger: Logger) {}
 
     async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
+        this.logger.debug(`[JudgeGuard] Checking if user is a judge`);
         try {
             const profile = await this.userProfileService.getUserProfile();
             if (profile.role === Role.Judge) {
+                this.logger.debug(`[JudgeGuard] User is a judge.`);
                 return true;
             } else {
+                this.logger.debug(`[JudgeGuard] User is not a judge. Going back home`);
                 this.router.navigate(['/home']);
                 return false;
             }
         } catch (err) {
-            this.logger.error(`Could not get user identity.`, err);
+            this.logger.error(`[JudgeGuard] Failed to get user profile. Logging out.`, err);
             this.router.navigate(['/logout']);
             return false;
         }

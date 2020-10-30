@@ -149,7 +149,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         const error = { status: 401, isApiException: true };
         videoWebService.getConferenceById.and.rejectWith(error);
         await component.getConference();
-        expect(component).toBeTruthy();
         expect(component.loadingData).toBeFalsy();
         expect(component.hearing).toBeUndefined();
         expect(component.participant).toBeUndefined();
@@ -258,14 +257,14 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     });
 
     it('should log error when playing sound throws error', fakeAsync(() => {
+        component.conference = gloalConference;
         const alertElem = jasmine.createSpyObj<HTMLAudioElement>('HTMLAudioElement', ['play']);
         const reason = 'test failure';
         alertElem.play.and.callFake(() => Promise.reject(reason));
         component.hearingAlertSound = alertElem;
-
         component.announceHearingIsAboutToStart();
         flushMicrotasks();
-        expect(logger.error.calls.mostRecent().args[0]).toBe('Failed to announce hearing starting');
+        expect(logger.error.calls.mostRecent().args[0]).toContain('Failed to announce hearing starting');
         expect(component.hearingStartingAnnounced).toBeTruthy();
     }));
 
@@ -284,7 +283,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         const error = { status: 401, isApiException: true };
         consultationService.leaveConsultation.and.rejectWith(error);
         await component.onConsultationCancelled();
-        expect(logger.error.calls.mostRecent().args[0]).toBe('Failed to leave private consultation');
+        expect(logger.error.calls.mostRecent().args[0]).toContain('Failed to leave private consultation');
     });
 
     const isSupportedBrowserForNetworkHealthTestCases = [

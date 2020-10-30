@@ -30,10 +30,11 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
 
     ngOnInit() {
         this.setupSubscribers();
+        this.logger.debug('[UnreadMessages] - Getting unread message count for conference', { conference: this.hearing.id });
         this.videoWebService
             .getUnreadMessageCountForConference(this.hearing.id)
             .then(response => (this.unreadMessages = response.number_of_unread_messages_conference))
-            .catch(err => this.logger.error(`Failed to get unread vho messages for ${this.hearing.id}`, err));
+            .catch(err => this.logger.error(`[UnreadMessages] - Failed to get unread vho messages for ${this.hearing.id}`, err));
     }
 
     get unreadCount(): number {

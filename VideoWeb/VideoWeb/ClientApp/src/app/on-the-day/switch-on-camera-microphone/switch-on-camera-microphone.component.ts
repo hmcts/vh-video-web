@@ -54,16 +54,19 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
     }
 
     async retrieveProfile(): Promise<void> {
+        this.logger.debug('[SwitchOnCameraMicrophone] - Retrieving profile');
         const profile = await this.profileService.getUserProfile();
         this.isJudge = profile.role === Role.Judge;
         this.participantName = this.videoWebService.getObfuscatedName(profile.first_name + ' ' + profile.last_name);
     }
 
     async getConference(): Promise<void> {
+        this.logger.debug('[SwitchOnCameraMicrophone] - Retrieving conference', { conference: this.conferenceId });
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         try {
             this.conference = await this.videoWebService.getConferenceById(this.conferenceId);
         } catch (error) {
+            this.logger.error('[SwitchOnCameraMicrophone] - Failed to retrieve conference', error, { conference: this.conferenceId });
             this.errorService.handleApiError(error);
         }
     }
@@ -72,28 +75,37 @@ export class SwitchOnCameraMicrophoneComponent extends ParticipantStatusBaseDire
         this.mediaAccepted = await this.userMediaStreamService.requestAccess();
         this.userPrompted = true;
         if (!this.mediaAccepted) {
-            this.logger.info(
-                `Switch on Camera-Microphone | ConferenceId : ${this.conferenceId}, CaseName : ${this.conference.case_name} | Participant : ${this.participantName} denied access to camera.`
-            );
+            this.logger.warn(`[SwitchOnCameraMicrophone] - ${this.participantName} denied access to camera.`, {
+                conference: this.conferenceId,
+                participant: this.participantName
+            });
             this.postPermissionDeniedAlert();
         }
     }
 
     goVideoTest() {
         if (this.isJudge && this.conferenceId) {
+            this.logger.debug('[SwitchOnCameraMicrophone] - Navigating to judge self test video');
             this.router.navigate([pageUrls.JudgeSelfTestVideo, this.conferenceId]);
         } else if (!this.isJudge && this.conferenceId) {
+            this.logger.debug('[SwitchOnCameraMicrophone] - Navigating to participant self test video');
             this.router.navigate([pageUrls.ParticipantSelfTestVideo, this.conferenceId]);
         } else {
+            this.logger.debug('[SwitchOnCameraMicrophone] - Navigating to independent self test video');
             this.router.navigate([pageUrls.IndependentSelfTestVideo]);
         }
     }
 
     async postPermissionDeniedAlert() {
+        const payload = {
+            conference: this.conferenceId,
+            participant: this.participantName
+        };
+        this.logger.debug('[SwitchOnCameraMicrophone] - Raising media permission denied alert', payload);
         try {
             await this.videoWebService.raiseMediaEvent(this.conference.id, new AddMediaEventRequest());
         } catch (error) {
-            this.logger.error('Failed to post media permission denied alert', error);
+            this.logger.error('[SwitchOnCameraMicrophone] - Failed to post media permission denied alert', error, payload);
         }
     }
 }

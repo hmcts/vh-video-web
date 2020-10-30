@@ -23,12 +23,21 @@ export class UnreadMessagesParticipantComponent extends UnreadMessagesComponentB
     }
 
     ngOnInit() {
+        const payload = {
+            conference: this.hearing.id,
+            participant: this.participant.id
+        };
         this.setupSubscribers();
+        this.logger.debug('[UnreadMessagesParticipant] - Getting unread message count for participant', payload);
         this.videoWebService
             .getUnreadMessagesForParticipant(this.hearing.id, this.participant.username)
             .then(response => (this.unreadMessages = response))
             .catch(err =>
-                this.logger.error(`Failed to get unread vho messages for ${this.hearing.id} and participant ${this.participant.id}`, err)
+                this.logger.error(
+                    `[UnreadMessagesParticipant] - Failed to get unread vho messages for participant ${this.hearing.id} and participant ${this.participant.id}`,
+                    err,
+                    payload
+                )
             );
     }
 

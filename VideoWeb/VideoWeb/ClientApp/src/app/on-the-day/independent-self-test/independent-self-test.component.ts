@@ -35,7 +35,7 @@ export class IndependentSelfTestComponent extends BaseSelfTestComponentDirective
     }
 
     restartTest() {
-        this.logger.debug('representative self-test');
+        this.logger.debug('[IndependentSelfTest] - Restarting self test');
         super.restartTest();
         this.showEquipmentFaultMessage = false;
         this.selfTestComponent.replayVideo();

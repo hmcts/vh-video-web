@@ -1,7 +1,8 @@
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule, Title } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { AdalGuard, AdalInterceptor, AdalService } from 'adal-angular4';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -17,9 +18,10 @@ import { LoggerService, LOG_ADAPTER } from './services/logging/logger.service';
 import { AppInsightsLoggerService } from './services/logging/loggers/app-insights-logger.service';
 import { ConsoleLogger } from './services/logging/loggers/console-logger';
 import { PageTrackerService } from './services/page-tracker.service';
+import { ParticipantStatusUpdateService } from './services/participant-status-update.service';
+import { GlobalErrorHandler } from './shared/providers/global-error-handler';
 import { SharedModule } from './shared/shared.module';
 import { WaitingSpaceModule } from './waiting-space/waiting-space.module';
-import { ParticipantStatusUpdateService } from './services/participant-status-update.service';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -41,11 +43,12 @@ export function getSettings(configService: ConfigService) {
         { provide: APP_INITIALIZER, useFactory: getSettings, deps: [ConfigService], multi: true },
         { provide: Logger, useClass: LoggerService },
         { provide: LOG_ADAPTER, useClass: ConsoleLogger, multi: true },
-        { provide: LOG_ADAPTER, useClass: AppInsightsLoggerService, multi: true },
+        { provide: LOG_ADAPTER, useClass: AppInsightsLoggerService, multi: true, deps: [ConfigService, Router, AdalService] },
         { provide: API_BASE_URL, useFactory: () => '.' },
         AdalService,
         AdalGuard,
         { provide: HTTP_INTERCEPTORS, useClass: AdalInterceptor, multi: true },
+        { provide: ErrorHandler, useClass: GlobalErrorHandler },
         ConfigService,
         AuthGuard,
         Title,

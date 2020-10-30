@@ -22,13 +22,11 @@ describe('ParticipantStatusBase', () => {
 
     it('should update participant status on log out', fakeAsync(() => {
         const event: any = { returnValue: 'save' };
-        spyOn(loggerMock, 'info');
         participantStatusUpdateServiceSpy.postParticipantStatus.and.returnValue(Promise.resolve());
 
         component.beforeunloadHandler(event);
         tick();
         expect(participantStatusUpdateServiceSpy.postParticipantStatus).toHaveBeenCalled();
-        expect(loggerMock.info).toHaveBeenCalled();
     }));
     it('should throw error message when update participant status on log out', fakeAsync(() => {
         const event: any = { returnValue: 'save' };
