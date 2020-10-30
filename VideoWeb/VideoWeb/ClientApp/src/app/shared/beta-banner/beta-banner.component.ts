@@ -41,7 +41,6 @@ export class BetaBannerComponent implements OnInit, OnDestroy {
                 }
             })
         );
-        this.eventService.start();
     }
 
     private getInPageFeedbackUrl() {

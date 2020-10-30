@@ -282,7 +282,6 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
     it('should go to service error when disconnected from eventhub more than 7 times', () => {
         eventHubDisconnectSubject.next(8);
         expect(videoWebService.getConferenceById).toHaveBeenCalledTimes(0);
-        expect(errorService.goToServiceError).toHaveBeenCalledWith('Your connection was lost');
     });
 
     it('should get conference on eventhub reconnect', () => {

@@ -177,8 +177,6 @@ export abstract class WaitingRoomBaseComponent {
                 }
             })
         );
-
-        this.eventService.start();
     }
 
     async onConsultationAccepted() {
@@ -203,7 +201,6 @@ export abstract class WaitingRoomBaseComponent {
         };
         if (reconnectionAttempt < 7) {
             this.logger.debug(`[WR] - EventHub disconnection`, logPayload);
-            this.logger.info(`[WR] - EventHub disconnection #${reconnectionAttempt}`);
             try {
                 await this.getConference();
                 this.updateShowVideo();
@@ -211,9 +208,6 @@ export abstract class WaitingRoomBaseComponent {
                 this.logger.warn(`[WR] - Failed to recover from disconnection`, logPayload);
                 this.errorService.handleApiError(error);
             }
-        } else {
-            this.logger.warn(`[WR] - EventHub disconnection too many times (#${reconnectionAttempt}), going to service error`, logPayload);
-            this.errorService.goToServiceError('Your connection was lost');
         }
     }
 

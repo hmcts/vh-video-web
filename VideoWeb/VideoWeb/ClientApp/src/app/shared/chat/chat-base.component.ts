@@ -49,8 +49,6 @@ export abstract class ChatBaseComponent {
                 await this.handleIncomingMessage(message);
             }
         });
-
-        await this.eventService.start();
         return sub;
     }
 
