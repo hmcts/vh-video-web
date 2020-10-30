@@ -474,7 +474,9 @@ export abstract class WaitingRoomBaseComponent {
         }
 
         if (this.participant.hearing_role === HearingRole.WITNESS && this.participant.status === ParticipantStatus.InHearing) {
-            this.logger.debug('Showing video because witness is in hearing');
+            logPaylod.showingVideo = true;
+            logPaylod.reason = 'Showing video because witness is in hearing';
+            this.logger.debug(`[WR] - ${logPaylod.reason}`, logPaylod);
             this.showVideo = true;
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;
