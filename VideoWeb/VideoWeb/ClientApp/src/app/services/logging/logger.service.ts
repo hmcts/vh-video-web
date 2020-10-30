@@ -10,16 +10,16 @@ export const LOG_ADAPTER = new InjectionToken<LogAdapter>('LogAdapter');
 export class LoggerService implements Logger {
     constructor(@Inject(LOG_ADAPTER) private adapters: LogAdapter[]) {}
 
-    debug(message: string): void {
-        this.adapters.forEach(logger => logger.debug(message));
+    debug(message: string, properties?: any): void {
+        this.adapters.forEach(logger => logger.debug(message, properties));
     }
 
-    info(message: string): void {
-        this.adapters.forEach(logger => logger.info(message));
+    info(message: string, properties?: any): void {
+        this.adapters.forEach(logger => logger.info(message, properties));
     }
 
-    warn(message: string): void {
-        this.adapters.forEach(logger => logger.warn(message));
+    warn(message: string, properties?: any): void {
+        this.adapters.forEach(logger => logger.warn(message, properties));
     }
 
     error(message: string, err: Error, properties?: any) {

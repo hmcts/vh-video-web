@@ -128,7 +128,7 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
 
     toggleMute() {
         const muteAudio = this.videoCallService.toggleMute();
-        this.logger.info('Participant mute status :' + muteAudio);
+        this.logger.info('[HearingControls] - Toggling participant mute status to' + muteAudio);
         this.audioMuted = muteAudio;
     }
 
@@ -138,22 +138,24 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
 
     toggleHandRaised() {
         if (this.handRaised) {
-            this.logger.debug('lowering hand');
+            this.logger.debug('[HearingControls] - Lowering own hand');
             this.videoCallService.lowerHand();
         } else {
-            this.logger.debug('raising hand');
+            this.logger.debug('[HearingControls] - Raising hand');
             this.videoCallService.raiseHand();
         }
         this.handRaised = !this.handRaised;
     }
 
     pause() {
+        this.logger.debug('[HearingControls] - Attempting to pause hearing', { conference: this.conferenceId });
         this.videoCallService.pauseHearing(this.conferenceId);
     }
 
     close(answer: boolean) {
         this.displayConfirmPopup = false;
         if (answer) {
+            this.logger.debug('[HearingControls] - Attempting to close hearing', { conference: this.conferenceId });
             this.videoCallService.endHearing(this.conferenceId);
         }
     }

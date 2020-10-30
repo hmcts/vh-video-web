@@ -68,7 +68,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     }
 
     async ngOnInit() {
-        this.logger.debug('loading self test');
+        this.logger.debug('[SelfTest] - Loading self test');
 
         this.initialiseData();
 
@@ -84,11 +84,10 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     initialiseData(): void {
         if (this.participant) {
             this.selfTestParticipantId = this.participant.id;
-            this.logger.debug(this.selfTestParticipantId);
         } else {
             this.selfTestParticipantId = Guid.create().toString();
-            this.logger.debug(this.selfTestParticipantId);
         }
+        this.logger.debug(`[SelfTest] - Participant id for test ${this.selfTestParticipantId}`);
         if (this.conference) {
             this.selfTestPexipNode = this.conference.pexip_self_test_node_uri;
         } else {
@@ -109,11 +108,11 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     }
 
     async setupTestAndCall(): Promise<void> {
-        this.logger.debug('setting up pexip client and call');
+        this.logger.debug('[SelfTest] - Setting up pexip client and calling testCall');
         await this.setupPexipClient();
         try {
             this.token = await this.videoWebService.getSelfTestToken(this.selfTestParticipantId);
-            this.logger.debug('retrieved token for self test');
+            this.logger.debug('[SelfTest] - retrieved token for self test');
             this.call();
         } catch (error) {
             this.errorService.handleApiError(error);
@@ -121,6 +120,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     }
 
     changeDevices() {
+        this.logger.debug('[SelfTest] - Changing devices');
         this.disconnect();
         this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
         this.preferredMicrophoneStream = null;
@@ -148,7 +148,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     }
 
     async setupPexipClient() {
-        this.logger.debug('Setting up pexip client...');
+        this.logger.debug('[SelfTest] - Setting up pexip client and subscriptions');
 
         this.videoCallSubscription$.add(this.videoCallService.onCallSetup().subscribe(setup => this.handleCallSetup(setup)));
         this.videoCallSubscription$.add(
@@ -164,13 +164,13 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     }
 
     handleCallSetup(callSetup: CallSetup) {
-        this.logger.info('running pexip test call setup');
+        this.logger.debug('[SelfTest] - Self test call has setup');
         this.outgoingStream = callSetup.stream;
         this.videoCallService.connect('0000', null);
     }
 
     handleCallConnected(callConnected: ConnectedCall) {
-        this.logger.info('successfully connected');
+        this.logger.debug('[SelfTest] - Self test call has connected');
         this.incomingStream = callConnected.stream;
         this.displayFeed = true;
         this.testStarted.emit();
@@ -178,7 +178,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
     handleCallError(error: CallError) {
         this.displayFeed = false;
-        this.logger.error('Error from pexip. Reason : ' + error.reason, error.reason);
+        this.logger.error('[SelfTest] - Error from pexip. Reason : ' + error.reason, error.reason);
         this.errorService.goToServiceError(
             'Your camera and microphone are blocked',
             'Please unblock the camera and microphone or call us if there is a problem.',
@@ -188,7 +188,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
     async handleCallDisconnect(reason: DisconnectedCall) {
         this.displayFeed = false;
-        this.logger.warn('Disconnected from pexip. Reason : ' + reason.reason);
+        this.logger.warn('[SelfTest] - Disconnected from pexip. Reason : ' + reason.reason);
         if (reason.reason === 'Conference terminated by another participant') {
             this.retrieveSelfTestScore();
         }
@@ -210,6 +210,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     }
 
     async call() {
+        this.logger.debug('[SelfTest] - Starting self test call');
         this.didTestComplete = false;
         const conferenceAlias = 'testcall2';
         const tokenOptions = btoa(`${this.token.expires_on};${this.selfTestParticipantId};${this.token.token}`);
@@ -225,13 +226,14 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     }
 
     replayVideo() {
-        this.logger.debug('replaying self test video');
+        this.logger.debug('[SelfTest] - Replaying self test video');
         this.disconnect();
         this.updatePexipAudioVideoSource();
         this.call();
     }
 
     disconnect() {
+        this.logger.debug('[SelfTest] - Manually disconnecting from self test');
         this.videoCallService.disconnectFromCall();
         this.closeStreams();
         this.incomingStream = null;
@@ -249,31 +251,36 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     }
 
     async retrieveSelfTestScore() {
-        this.logger.debug('retrieving self test score');
         try {
             if (this.conference && this.participant) {
-                this.logger.info(`Self test : ConferenceId : ${this.conference.id} | retrieveSelfTestScore for Participant Id :
-        ${this.participant.id}
-          | Participant : ${this.videoWebService.getObfuscatedName(this.participant.display_name)}`);
+                this.logger.debug(
+                    `[SelfTest] - Retrieving self test score for participant ${this.videoWebService.getObfuscatedName(
+                        this.participant.display_name
+                    )}`,
+                    { conference: this.conference.id, participant: this.participant.id }
+                );
+
                 this.testCallResult = await this.videoWebService.getTestCallScore(this.conference.id, this.selfTestParticipantId);
             } else {
-                this.logger.info(`Self test : independent retrieveSelfTestScore for Participant Id : ${this.selfTestParticipantId}`);
+                this.logger.debug(`[SelfTest] - Retrieving independent self test score`, {
+                    participant: this.selfTestParticipantId
+                });
                 this.testCallResult = await this.videoWebService.getIndependentTestCallScore(this.selfTestParticipantId);
             }
 
-            this.logger.info(`test call score: ${this.testCallResult.score}`);
+            this.logger.info(`[SelfTest] - Test call score: ${this.testCallResult.score}`);
             if (this.testCallResult.score === TestScore.Bad) {
                 await this.raiseFailedSelfTest(SelfTestFailureReason.BadScore);
             }
         } catch (err) {
-            this.logger.error('there was a problem retrieving the self test score', err);
+            this.logger.error('[SelfTest] - There was a problem retrieving the self test score', err);
         }
         this.didTestComplete = true;
         this.publishTestResult();
     }
 
     publishTestResult(): void {
-        this.logger.info('test call completed');
+        this.logger.info('[SelfTest] - Test call completed');
         this.testCompleted.emit(this.testCallResult);
     }
 
@@ -297,16 +304,17 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             return;
         }
 
+        this.logger.info(`[SelfTest] - Raising failed self test score event because ${reason}`);
         const request = new AddSelfTestFailureEventRequest({
             self_test_failure_reason: reason
         });
         if (this.conference && this.participant.role !== Role.Judge) {
             try {
                 await this.videoWebService.raiseSelfTestFailureEvent(this.conference.id, request);
-                this.logger.info(`Notified failed self test because of ${reason}`);
+                this.logger.info(`SelfTest] - Notified failed self test because of ${reason}`);
                 this.scoreSent = true;
             } catch (err) {
-                this.logger.error('There was a problem raising a failed self test event', err);
+                this.logger.error('SelfTest] - There was a problem raising a failed self test event', err);
             }
         }
     }

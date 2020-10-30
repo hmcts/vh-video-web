@@ -58,7 +58,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
 
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
-        this.logger.debug('Clearing intervals and subscriptions for Judge/Clerk');
+        this.logger.debug('[JudgeHearingList] - Clearing intervals and subscriptions for Judge/Clerk');
         clearInterval(this.interval);
         this.conferencesSubscription.unsubscribe();
         this.screenHelper.enableFullScreen(false);
@@ -66,8 +66,10 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
     }
 
     retrieveHearingsForUser() {
+        this.logger.debug('[JudgeHearingList] - Updating hearing list');
         this.conferencesSubscription = this.videoWebService.getConferencesForJudge().subscribe(
             (data: ConferenceForJudgeResponse[]) => {
+                this.logger.debug('[JudgeHearingList] - Got updated list');
                 this.loadingData = false;
                 this.conferences = data;
                 if (this.conferences.length > 0) {
@@ -75,6 +77,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
                 }
             },
             error => {
+                this.logger.warn('[JudgeHearingList] - There was a problem updating the hearing list');
                 this.loadingData = false;
                 this.screenHelper.enableFullScreen(false);
                 this.errorService.handleApiError(error);
@@ -91,11 +94,12 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
     }
 
     onConferenceSelected(conference: ConferenceForJudgeResponse) {
-        this.logger.event('signing into judge waiting room', { conference: conference.id });
+        this.logger.debug('[JudgeHearingList] - Signing into judge waiting room', { conference: conference.id });
         this.router.navigate([pageUrls.JudgeWaitingRoom, conference.id]);
     }
 
     goToEquipmentCheck() {
+        this.logger.debug('[JudgeHearingList] - Going to equipment check from hearing list.');
         this.router.navigate([pageUrls.EquipmentCheck]);
     }
 
@@ -109,6 +113,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
     }
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
+        this.logger.debug('[JudgeHearingList] - Handling conference status message', message);
         const conference = this.conferences.find(c => c.id === message.conferenceId);
         conference.status = message.status;
     }

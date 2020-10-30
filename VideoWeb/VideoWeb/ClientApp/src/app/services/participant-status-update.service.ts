@@ -25,6 +25,10 @@ export class ParticipantStatusUpdateService {
         try {
             const forEventConferenceId = conferenceId || this.checkRouter();
             if (forEventConferenceId) {
+                this.logger.debug(`[ParticipantStatusUpdateService] - Updating participant status`, {
+                    conferenceId: forEventConferenceId,
+                    eventType
+                });
                 await this.apiClient
                     .updateParticipantStatus(
                         forEventConferenceId,
@@ -35,7 +39,9 @@ export class ParticipantStatusUpdateService {
                     .toPromise();
             }
         } catch (error) {
-            this.logger.error('Failed to raise "UpdateParticipantStatusEventRequest"', error);
+            this.logger.error('[ParticipantStatusUpdateService] - Failed to raise "UpdateParticipantStatusEventRequest"', error, {
+                conferenceId
+            });
         }
     }
 

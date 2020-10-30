@@ -17,7 +17,7 @@ export class ErrorService {
     errorMessage: SessionStorage<ErrorMessage>;
 
     handleApiError(error: any, skipRedirect: boolean = false) {
-        this.logger.error('API error', error);
+        this.logger.error('[ErrorService] - API error', error);
         if (skipRedirect) {
             return;
         }
@@ -44,7 +44,7 @@ export class ErrorService {
         }
         const swaggerError: ApiException = error;
         if (swaggerError.status === 401) {
-            this.logger.warn('Returning back to hearing list');
+            this.logger.warn('[ErrorService] - Unauthorised request. Returning back home.');
             this.router.navigate([pageUrls.Home]);
             return true;
         }
@@ -52,10 +52,12 @@ export class ErrorService {
     }
 
     goToUnauthorised() {
+        this.logger.warn('[ErrorService] - Going to unauthorised page.');
         this.router.navigate([pageUrls.Unauthorised]);
     }
 
     goToNotFound() {
+        this.logger.warn('[ErrorService] - Going to not found page.');
         this.router.navigate([pageUrls.NotFound]);
     }
 

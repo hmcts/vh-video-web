@@ -42,18 +42,20 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
         }
         this.continueClicked = true;
         if (!this.selfTestCompleted) {
+            this.logger.warn('[ParticipantSelfTest] - Self test not completed.');
             this.selfTestComponent.disconnect();
             const reason = new DisconnectedCall('Conference terminated by another participant');
             await this.selfTestComponent.handleCallDisconnect(reason);
             await this.raisedSelfTestIncompleted();
         }
         const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+        this.logger.warn('[ParticipantSelfTest] - Navigating to camera check.');
         this.router.navigate([pageUrls.CameraWorking, conferenceId]);
     }
 
     restartTest() {
         this.continueClicked = false;
-        this.logger.debug('restarting participant self-test');
+        this.logger.debug('[ParticipantSelfTest] - Restarting participant self-test');
         this.selfTestComponent.replayVideo();
     }
 
@@ -65,17 +67,24 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
     }
 
     private raiseNotSignedIn() {
+        this.logger.debug('[ParticipantSelfTest] - Raising participant not signed in');
         this.participantStatusUpdateService
             .postParticipantStatus(EventType.ParticipantNotSignedIn, null)
             .then(() => {
-                this.logger.info('Participant status was updated to not signed in');
+                this.logger.info('[ParticipantSelfTest] - Participant status was updated to not signed in');
             })
             .catch(err => {
-                this.logger.error('Unable to update status to not signed in', err);
+                this.logger.error('[ParticipantSelfTest] - Unable to update status to not signed in', err);
             });
     }
 
     async raisedSelfTestIncompleted() {
+        const logPayload = {
+            conference: this.conference.id,
+            participant: this.participant.id,
+            failureReason: SelfTestFailureReason.IncompleteTest
+        };
+        this.logger.debug('[ParticipantSelfTest] - Raising incomplete self-test failure', logPayload);
         try {
             await this.videoWebService.raiseSelfTestFailureEvent(
                 this.conferenceId,
@@ -83,9 +92,9 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
                     self_test_failure_reason: SelfTestFailureReason.IncompleteTest
                 })
             );
-            this.logger.info('Self-test is incompleted.');
+            this.logger.debug('[ParticipantSelfTest] - Raised self-test failure event', logPayload);
         } catch (error) {
-            this.logger.error('Failed to raise "SelfTestFailureEvent"', error);
+            this.logger.error('[ParticipantSelfTest] - Failed to raise "SelfTestFailureEvent"`', error, logPayload);
         }
     }
 }

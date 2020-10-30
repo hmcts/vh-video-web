@@ -44,20 +44,22 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
 
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
-        this.logger.debug('Clearing intervals and subscriptions for individual');
+        this.logger.debug('[ParticipantHearings] - Clearing intervals and subscriptions for individual');
         clearInterval(this.interval);
         this.conferencesSubscription.unsubscribe();
     }
 
     retrieveHearingsForUser() {
+        this.logger.debug('[ParticipantHearings] - Updating hearing list');
         this.conferencesSubscription = this.videoWebService.getConferencesForIndividual().subscribe(
             (data: ConferenceForIndividualResponse[]) => {
+                this.logger.debug('[ParticipantHearings] - Got updated list');
                 this.errorCount = 0;
                 this.loadingData = false;
                 this.conferences = data;
             },
             error => {
-                this.logger.error('Error retrieving conferences for individual', error);
+                this.logger.warn('[ParticipantHearings] - Error retrieving conferences for individual', error);
                 this.handleApiError(error);
             }
         );
@@ -67,6 +69,7 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
         this.errorCount++;
         this.loadingData = false;
         if (this.errorCount > 3) {
+            this.logger.warn('[ParticipantHearings] - Failed to get hearings more than 3 times', error);
             this.errorService.handleApiError(error);
         } else {
             this.errorService.handleApiError(error, true);
@@ -78,10 +81,12 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
     }
 
     goToEquipmentCheck() {
+        this.logger.debug('[ParticipantHearings] - Going to equipment check page');
         this.router.navigate([pageUrls.EquipmentCheck]);
     }
 
     onConferenceSelected(conference: ConferenceForIndividualResponse) {
+        this.logger.debug('[ParticipantHearings] - Loading conference details', { conference: conference.id });
         this.videoWebService.setActiveIndividualConference(conference);
 
         this.videoWebService
@@ -95,12 +100,21 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
                     participant.hearing_role.toLowerCase() === HearingRole.PANEL_MEMBER.toLocaleLowerCase() ||
                     participant.hearing_role.toLowerCase() === HearingRole.WINGER.toLocaleLowerCase()
                 ) {
+                    this.logger.debug('[ParticipantHearings] - User is a Panel Member/ Winger. Skipping to waiting room', {
+                        conference: conference.id,
+                        participant: participant.id
+                    });
                     this.router.navigate([pageUrls.ParticipantWaitingRoom, conference.id]);
                 } else {
+                    this.logger.debug('[ParticipantHearings] - Going to introduction page', {
+                        conference: conference.id,
+                        participant: participant.id
+                    });
                     this.router.navigate([pageUrls.Introduction, conference.id]);
                 }
             })
             .catch(error => {
+                this.logger.warn('[ParticipantHearings] - Error retrieving conferences details', { conference: conference.id });
                 this.errorService.handleApiError(error);
             });
     }

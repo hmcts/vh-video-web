@@ -28,6 +28,7 @@ export class JudgeSelfTestComponent extends BaseSelfTestComponentDirective {
     }
 
     equipmentWorksHandler() {
+        this.logger.debug('[JudgeSelfTest] - Equiptment works clicked. Navigating to Judge hearing list.');
         this.router.navigateByUrl(pageUrls.JudgeHearingList);
         this.hideSelfTest = true;
     }
@@ -39,7 +40,7 @@ export class JudgeSelfTestComponent extends BaseSelfTestComponentDirective {
     }
 
     restartTest() {
-        this.logger.debug('restarting judge self-test');
+        this.logger.debug('[JudgeSelfTest] - Restarting self test.');
         super.restartTest();
         this.showEquipmentFaultMessage = false;
         this.selfTestComponent.replayVideo();
