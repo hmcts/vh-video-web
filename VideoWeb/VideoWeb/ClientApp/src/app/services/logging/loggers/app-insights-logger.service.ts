@@ -61,6 +61,8 @@ export class AppInsightsLoggerService implements LogAdapter {
             ? `${this.errorInfo.error} : ${this.errorInfo.status}
        : ${this.errorInfo.statusText} : ${this.errorInfo.url} : ${this.errorInfo.message}`
             : ``;
+
+        this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Error }, properties);
         this.appInsights.trackException({
             error: err,
             properties: properties

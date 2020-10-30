@@ -13,6 +13,7 @@ import { VideoCallService } from '../services/video-call.service';
     styleUrls: ['./hearing-controls.component.scss']
 })
 export class HearingControlsComponent implements OnInit, OnDestroy {
+    private readonly loggerPrefix = '[HearingControls] -';
     @Input() participant: ParticipantResponse;
     @Input() isPrivateConsultation: boolean;
     @Input() outgoingStream: MediaStream | URL;
@@ -127,35 +128,46 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
     }
 
     toggleMute() {
-        const muteAudio = this.videoCallService.toggleMute();
-        this.logger.info('[HearingControls] - Toggling participant mute status to' + muteAudio);
+        this.logger.info(`${this.loggerPrefix} Participant is attempting to toggle own mute status to ${!this.audioMuted}`);
+        const muteAudio = this.videoCallService.toggleMute(this.conferenceId, this.participant.id);
+        this.logger.info(`${this.loggerPrefix} Participant mute status updated to ${muteAudio}`);
         this.audioMuted = muteAudio;
     }
 
     toggleView(): boolean {
+        this.logger.info(`${this.loggerPrefix} Participant turning self-view ${this.selfViewOpen ? 'off' : 'on'}`, {
+            conference: this.conferenceId,
+            participant: this.participant.id
+        });
         return (this.selfViewOpen = !this.selfViewOpen);
     }
 
     toggleHandRaised() {
         if (this.handRaised) {
-            this.logger.debug('[HearingControls] - Lowering own hand');
-            this.videoCallService.lowerHand();
+            this.videoCallService.lowerHand(this.conferenceId, this.participant.id);
+            this.logger.info(`${this.loggerPrefix} Participant lowered own hand`, {
+                conference: this.conferenceId,
+                participant: this.participant.id
+            });
         } else {
-            this.logger.debug('[HearingControls] - Raising hand');
-            this.videoCallService.raiseHand();
+            this.videoCallService.raiseHand(this.conferenceId, this.participant.id);
+            this.logger.info(`${this.loggerPrefix} Participant raised own hand`, {
+                conference: this.conferenceId,
+                participant: this.participant.id
+            });
         }
         this.handRaised = !this.handRaised;
     }
 
     pause() {
-        this.logger.debug('[HearingControls] - Attempting to pause hearing', { conference: this.conferenceId });
+        this.logger.debug(`${this.loggerPrefix} Attempting to pause hearing`, { conference: this.conferenceId });
         this.videoCallService.pauseHearing(this.conferenceId);
     }
 
     close(answer: boolean) {
         this.displayConfirmPopup = false;
         if (answer) {
-            this.logger.debug('[HearingControls] - Attempting to close hearing', { conference: this.conferenceId });
+            this.logger.debug(`${this.loggerPrefix} Attempting to close hearing`, { conference: this.conferenceId });
             this.videoCallService.endHearing(this.conferenceId);
         }
     }

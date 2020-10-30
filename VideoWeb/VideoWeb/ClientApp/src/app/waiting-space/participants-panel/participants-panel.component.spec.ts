@@ -178,27 +178,27 @@ describe('ParticipantsPanelComponent', () => {
     it('should unmute all participants', () => {
         component.isMuteAll = true;
         component.toggleMuteAll();
-        expect(videocallService.muteAllParticipants).toHaveBeenCalledWith(false);
+        expect(videocallService.muteAllParticipants).toHaveBeenCalledWith(false, component.conferenceId);
     });
 
     it('should mute all participants', () => {
         component.isMuteAll = false;
         component.toggleMuteAll();
-        expect(videocallService.muteAllParticipants).toHaveBeenCalledWith(true);
+        expect(videocallService.muteAllParticipants).toHaveBeenCalledWith(true, component.conferenceId);
     });
 
     it('should mute participant', () => {
         const pat = component.participants[0];
         pat.isMuted = true;
         component.toggleMuteParticipant(pat);
-        expect(videocallService.muteParticipant).toHaveBeenCalledWith(pat.pexipId, false);
+        expect(videocallService.muteParticipant).toHaveBeenCalledWith(pat.pexipId, false, component.conferenceId, pat.id);
     });
 
     it('should spotlight participant', () => {
         const pat = component.participants[1];
         pat.isSpotlighted = false;
         component.toggleSpotlightParticipant(pat);
-        expect(videocallService.spotlightParticipant).toHaveBeenCalledWith(pat.pexipId, true);
+        expect(videocallService.spotlightParticipant).toHaveBeenCalledWith(pat.pexipId, true, component.conferenceId, pat.id);
     });
 
     it('should not mute conference when any of the second last participant is unmuted manually', () => {
@@ -239,7 +239,7 @@ describe('ParticipantsPanelComponent', () => {
         const pat = component.participants[0];
         pat.isMuted = false;
         component.toggleMuteParticipant(pat);
-        expect(videocallService.muteParticipant).toHaveBeenCalledWith(pat.pexipId, true);
+        expect(videocallService.muteParticipant).toHaveBeenCalledWith(pat.pexipId, true, component.conferenceId, pat.id);
     });
 
     it('should unmute conference when last participant is unmuted after a conference mute', () => {
@@ -251,7 +251,7 @@ describe('ParticipantsPanelComponent', () => {
 
         component.toggleMuteParticipant(pat);
 
-        expect(videocallService.muteAllParticipants).toHaveBeenCalledWith(false);
+        expect(videocallService.muteAllParticipants).toHaveBeenCalledWith(false, component.conferenceId);
     });
 
     it('should mute conference when last participant is muted manually', () => {
@@ -266,7 +266,7 @@ describe('ParticipantsPanelComponent', () => {
 
         component.toggleMuteParticipant(lastParticipant);
 
-        expect(videocallService.muteAllParticipants).toHaveBeenCalledWith(true);
+        expect(videocallService.muteAllParticipants).toHaveBeenCalledWith(true, component.conferenceId);
     });
 
     it('should not unmute conference when second last participant is unmuted after a conference mute', () => {
@@ -290,7 +290,7 @@ describe('ParticipantsPanelComponent', () => {
         const pat = component.participants[0];
         pat.handRaised = true;
         component.lowerParticipantHand(pat.id);
-        expect(videocallService.lowerHandById).toHaveBeenCalledWith(pat.pexipId);
+        expect(videocallService.lowerHandById).toHaveBeenCalledWith(pat.pexipId, component.conferenceId, pat.id);
     });
     it('should scroll up to first participant', () => {
         const dummyElement = document.createElement('div');
