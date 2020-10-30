@@ -25,8 +25,6 @@ describe('AppComponent', () => {
     let titleServiceSpy: jasmine.SpyObj<Title>;
     let pageTrackerServiceSpy: jasmine.SpyObj<PageTrackerService>;
     const mockAdalService = new MockAdalService();
-    const mockEventsService = eventsServiceSpy;
-    let eventsService;
     let adalService;
     const clientSettings = new ClientSettingsResponse({
         tenant_id: 'tenantid',
@@ -50,14 +48,11 @@ describe('AppComponent', () => {
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['clientSettings', 'getClientSettings', 'loadConfig']);
         configServiceSpy.getClientSettings.and.returnValue(clientSettings);
         adalService = mockAdalService;
-        eventsService = mockEventsService;
         deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isSupportedBrowser']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
         const profile = new UserProfileResponse({ role: Role.Representative });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
-
         locationServiceSpy = jasmine.createSpyObj<LocationService>('LocationService', ['getCurrentUrl', 'getCurrentPathName']);
-
         routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate', 'navigateByUrl'], {
             events: eventsSubjects.asObservable()
         });
@@ -78,7 +73,7 @@ describe('AppComponent', () => {
             titleServiceSpy,
             activatedRoute,
             locationServiceSpy,
-            eventsService,
+            eventsServiceSpy,
             pageTrackerServiceSpy
         );
 
@@ -103,7 +98,7 @@ describe('AppComponent', () => {
         mockAdalService.setAuthenticated(true);
         component.ngOnInit();
         flushMicrotasks();
-        expect(eventsService.start).toHaveBeenCalled();
+        expect(eventsServiceSpy.start).toHaveBeenCalled();
     }));
 
     it('should prompt user to login if not authenticated', () => {
