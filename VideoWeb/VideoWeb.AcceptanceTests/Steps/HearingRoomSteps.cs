@@ -51,6 +51,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenTheJudgeClosesTheHearing()
         {
             _browsers[_c.CurrentUser].Click(HearingRoomPage.CloseButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.ConfirmClosePopup).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Click(HearingRoomPage.ConfirmCloseButton);
             Thread.Sleep(TimeSpan.FromSeconds(PauseCloseTransferDuration));
         }
