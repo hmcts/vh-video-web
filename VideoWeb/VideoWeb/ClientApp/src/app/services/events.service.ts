@@ -41,7 +41,12 @@ export class EventsService {
     reconnectionAttempt: number;
     reconnectionPromise: Promise<any>;
 
-    constructor(private adalService: AdalService, private configService: ConfigService, private logger: Logger, private errorService: ErrorService) {
+    constructor(
+        private adalService: AdalService,
+        private configService: ConfigService,
+        private logger: Logger,
+        private errorService: ErrorService
+    ) {
         this.reconnectionAttempt = 0;
         const eventhubPath = this.configService.getClientSettings().event_hub_path;
         this.connection = new signalR.HubConnectionBuilder()
@@ -82,7 +87,9 @@ export class EventsService {
                             this.start();
                         });
                     } else {
-                        this.logger.info(`EventHub failed to connect too many times (#${this.reconnectionAttempt}), going to service error`);
+                        this.logger.info(
+                            `EventHub failed to connect too many times (#${this.reconnectionAttempt}), going to service error`
+                        );
                         this.errorService.goToServiceError('Your connection was lost');
                     }
                 });

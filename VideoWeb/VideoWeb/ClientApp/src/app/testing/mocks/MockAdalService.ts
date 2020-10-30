@@ -12,4 +12,3 @@ export class MockAdalService {
         this.userInfo.authenticated = flag;
     }
 }
-
