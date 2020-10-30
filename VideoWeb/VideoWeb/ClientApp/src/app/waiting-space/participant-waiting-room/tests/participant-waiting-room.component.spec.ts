@@ -22,6 +22,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaDevice } from '../../../shared/models/user-media-device';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
+import { HearingRole } from '../../models/hearing-role-model';
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -328,5 +329,15 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         expect(userMediaStreamService.getStreamForMic).toHaveBeenCalled();
         expect(userMediaStreamService.getStreamForCam).toHaveBeenCalled();
         expect(userMediaStreamService.stopStream).toHaveBeenCalled();
+    });
+    it('should return false when the participant is not a witness', () => {
+        component.participant.hearing_role = HearingRole.WINGER;
+
+        expect(component.isWitness).toBeFalsy();
+    });
+    it('should return true when the participant is a witness', () => {
+        component.participant.hearing_role = HearingRole.WITNESS;
+
+        expect(component.isWitness).toBeTruthy();
     });
 });

@@ -19,6 +19,7 @@ import {
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { InstantMessage } from 'src/app/services/models/instant-message';
+import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { AlertFilter, AlertsStatus, HearingsFilter, StatusFilter } from '../../../shared/models/hearings-filter';
 
 export class ConferenceTestData {
@@ -316,7 +317,8 @@ export class ConferenceTestData {
             case_type_group: 'Defendent',
             display_name: 'Greeno',
             username: 'chris.green@hearings.net',
-            tiled_display_name: 'T1;Greeno;9F681318-4955-49AF-A887-DED64554429D'
+            tiled_display_name: 'T1;Greeno;9F681318-4955-49AF-A887-DED64554429D',
+            hearing_role: HearingRole.DEFENDANT_LIP
         });
 
         const participant2 = new ParticipantResponseVho({
@@ -328,7 +330,8 @@ export class ConferenceTestData {
             display_name: 'James Green',
             case_type_group: 'Defendent',
             username: 'james.green@hearings.net',
-            tiled_display_name: 'T2;James Green;9F681318-4955-49AF-A887-DED64554429J'
+            tiled_display_name: 'T2;James Green;9F681318-4955-49AF-A887-DED64554429J',
+            hearing_role: HearingRole.REPRESENTATIVE
         });
 
         const participant3 = new ParticipantResponseVho({
@@ -339,7 +342,8 @@ export class ConferenceTestData {
             display_name: 'Judge Fudge',
             username: 'judge.fudge@hearings.net',
             case_type_group: 'Judge',
-            tiled_display_name: 'T0;Judge Fudge;9F681318-4955-49AF-A887-DED64554429T'
+            tiled_display_name: 'T0;Judge Fudge;9F681318-4955-49AF-A887-DED64554429T',
+            hearing_role: HearingRole.JUDGE
         });
 
         participants.push(participant1);

@@ -14,7 +14,8 @@
   /* thickness of outer border */
 }
 
-.outer_face.isstarting {
+.outer_face.isstarting,
+.outer_face.insession {
   position: relative;
   width: 200px;
   /* width of clock */
@@ -45,6 +46,9 @@
 .outer_face.isstarting::before,
 .outer_face.isstarting::after,
 .outer_face.isstarting .marker.white,
+.outer_face.insession::before,
+.outer_face.insession::after,
+.outer_face.insession .marker.white,
 .outer_face.ontime::before,
 .outer_face.ontime::after,
 .outer_face.ontime .marker.white {
@@ -63,7 +67,8 @@
 }
 
 .outer_face.ontime .marker.white,
-.outer_face.isstarting .marker.white {
+.outer_face.isstarting .marker.white,
+.outer_face.insession .marker.white {
   background: govuk-colour('white');
   width: 2px;
   /* width of all other markers */
@@ -161,7 +166,8 @@
   /* set this value of 1/2 height value*/
 }
 
-.inner_face.isstarting {
+.inner_face.isstarting,
+.inner_face.insession {
   position: relative;
   width: 88%;
   height: 88%;
