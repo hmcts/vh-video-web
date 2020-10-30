@@ -171,14 +171,14 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     });
 
     it('should not announce hearing is starting when already announced', () => {
-        spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => { });
+        spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => {});
         component.hearingStartingAnnounced = true;
         component.checkIfHearingIsStarting();
         expect(component.announceHearingIsAboutToStart).toHaveBeenCalledTimes(0);
     });
 
     it('should not announce hearing is not ready to start', () => {
-        spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => { });
+        spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => {});
         component.hearing = new Hearing(new ConferenceTestData().getConferenceDetailFuture());
         component.hearingStartingAnnounced = false;
         component.checkIfHearingIsStarting();
@@ -186,7 +186,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     });
 
     it('should announce hearing ready to start and not already announced', () => {
-        spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => { });
+        spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => {});
         component.hearing = new Hearing(new ConferenceTestData().getConferenceDetailNow());
         component.hearingStartingAnnounced = false;
         component.checkIfHearingIsStarting();

@@ -165,7 +165,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         if (!this.isWitness && this.hearing.isStarting()) {
             return 'hearing-near-start';
         }
-        if (!this.isWitness && (this.hearing.isDelayed())) {
+        if (!this.isWitness && this.hearing.isDelayed()) {
             return 'hearing-delayed';
         }
         if (this.hearing.isSuspended()) {
