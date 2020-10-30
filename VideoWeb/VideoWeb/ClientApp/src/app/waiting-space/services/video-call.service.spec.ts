@@ -116,7 +116,7 @@ describe('VideoCallService', () => {
 
     it('should not disconnect from pexip when api has not been initialised', () => {
         service.pexipAPI = null;
-        expect(() => service.disconnectFromCall()).toThrowError('Pexip Client has not been initialised');
+        expect(() => service.disconnectFromCall()).toThrowError('[VideoCallService] - Pexip Client has not been initialised.');
     });
 
     it('should call pexip with call details', () => {

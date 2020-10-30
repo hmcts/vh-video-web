@@ -11,16 +11,19 @@ export class ParticipantGuard implements CanActivate {
     constructor(private userProfileService: ProfileService, private router: Router, private logger: Logger) {}
 
     async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
+        this.logger.debug(`[ParticipantGuard] Checking if user is a representative or individual.`);
         try {
             const profile = await this.userProfileService.getUserProfile();
             if (profile.role === Role.Representative || profile.role === Role.Individual) {
+                this.logger.debug(`[ParticipantGuard] User is a representative or individual.`);
                 return true;
             } else {
+                this.logger.debug(`[ParticipantGuard] User is not a representative or individual. Going home.`);
                 this.router.navigate(['/home']);
                 return false;
             }
         } catch (err) {
-            this.logger.error(`Could not get user identity.`, err);
+            this.logger.error(`[ParticipantGuard] Failed to get user profile. Logging out.`, err);
             this.router.navigate(['/logout']);
             return false;
         }

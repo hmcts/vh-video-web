@@ -38,7 +38,7 @@ export class JudgeHearingTableComponent implements OnInit {
     }
 
     signIntoConference(hearing: JudgeHearingSummary) {
-        this.logger.info(`selected conference to sign into: ${hearing.id}`);
+        this.logger.debug(`[JudgeHearingList] - Selected conference ${hearing.id}`);
         const conference = this.conferenceForJudgeResponse.find(x => x.id === hearing.id);
         this.selectedConference.emit(conference);
     }

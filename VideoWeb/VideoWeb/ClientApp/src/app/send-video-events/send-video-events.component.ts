@@ -151,7 +151,7 @@ export class SendVideoEventsComponent implements OnInit {
         try {
             await this.videoWebService.sendEvent(request);
         } catch (error) {
-            this.logger.error('Failed to raise video event on test page', error);
+            this.logger.error('[SendVideoEvents] - Failed to raise video event on test page', error);
         }
     }
 }

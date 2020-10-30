@@ -151,7 +151,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         const participant = conference.participants.find(x => x.username === 'james.green@hearings.net');
         participant.status = ParticipantStatus.Available;
         await component.beginCallWith(participant);
-        expect(logger.error.calls.mostRecent().args[0]).toEqual('Failed to raise consultation request');
+        expect(logger.error.calls.mostRecent().args[0]).toContain('Failed to raise consultation request');
     });
 
     it('should not be able to begin endpoint call', async () => {
@@ -178,7 +178,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         endpoint.defence_advocate_username = adalService.userInfo.userName;
         endpoint.status = EndpointStatus.Connected;
         await component.beginEndpointCallWith(endpoint);
-        expect(logger.error.calls.mostRecent().args[0]).toEqual('Failed to raise private consultation with endpoint');
+        expect(logger.error.calls.mostRecent().args[0]).toContain('Failed to raise private consultation with endpoint');
     });
 
     const getConsultationMessageTestCases = [

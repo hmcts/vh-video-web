@@ -49,7 +49,7 @@ export class UserMediaService {
 
     async updateAvailableDevicesList(): Promise<void> {
         if (!this.navigator.mediaDevices || !this.navigator.mediaDevices.enumerateDevices) {
-            this.logger.error('enumerateDevices() not supported.', new Error('enumerateDevices() not supported.'));
+            this.logger.error('[UserMediaService] - enumerateDevices() not supported.', new Error('enumerateDevices() not supported.'));
             throw new Error('enumerateDevices() not supported.');
         }
 
@@ -100,7 +100,7 @@ export class UserMediaService {
         if (stillConnected) {
             return device;
         } else {
-            this.logger.warn(`Preferred device ${device.label} is no longer connected`);
+            this.logger.warn(`[UserMediaService] - Preferred device ${device.label} is no longer connected`);
             cache.clear();
             return null;
         }
@@ -108,12 +108,12 @@ export class UserMediaService {
 
     updatePreferredCamera(camera: UserMediaDevice) {
         this.preferredCamCache.set(camera);
-        this.logger.info(`Updating preferred camera to ${camera.label}`);
+        this.logger.info(`[UserMediaService] - Updating preferred camera to ${camera.label}`);
     }
 
     updatePreferredMicrophone(microphone: UserMediaDevice) {
         this.preferredMicCache.set(microphone);
-        this.logger.info(`Updating preferred microphone to ${microphone.label}`);
+        this.logger.info(`[UserMediaService] - Updating preferred microphone to ${microphone.label}`);
     }
 
     async setDefaultDevicesInCache() {
@@ -124,7 +124,7 @@ export class UserMediaService {
                 // set first camera in the list as preferred camera if cache is empty
                 const firstCam = cams.find(x => x.label.length > 0);
                 if (firstCam) {
-                    this.logger.info(`Set default camera to ${firstCam.label}`);
+                    this.logger.info(`[UserMediaService] - Setting default camera to ${firstCam.label}`);
                     this.updatePreferredCamera(firstCam);
                 }
             }
@@ -136,7 +136,7 @@ export class UserMediaService {
                 // set first microphone in the list as preferred microphone if cache is empty
                 const firstMic = mics.find(x => x.label.length > 0);
                 if (firstMic) {
-                    this.logger.info(`Set default microphone to ${firstMic.label}`);
+                    this.logger.info(`[UserMediaService] - Setting default microphone to ${firstMic.label}`);
                     this.updatePreferredMicrophone(firstMic);
                 }
             }

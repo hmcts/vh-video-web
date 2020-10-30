@@ -30,7 +30,7 @@ export class UserMediaStreamService {
             this.stopRequestStream();
             return true;
         } catch (exception) {
-            this.logger.error('could not get cam and mic access', exception);
+            this.logger.error('[UserMediaStreamService] - Could not get cam and mic access', exception);
             return false;
         }
     }

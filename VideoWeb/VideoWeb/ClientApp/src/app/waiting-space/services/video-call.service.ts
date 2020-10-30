@@ -102,10 +102,10 @@ export class VideoCallService {
 
     disconnectFromCall() {
         if (this.pexipAPI) {
-            this.logger.info('disconnecting from pexip node');
+            this.logger.info('[VideoCallService] - Disconnecting from pexip node.');
             this.pexipAPI.disconnect();
         } else {
-            throw new Error('Pexip Client has not been initialised');
+            throw new Error('[VideoCallService] - Pexip Client has not been initialised.');
         }
     }
 
@@ -143,12 +143,12 @@ export class VideoCallService {
 
     updateCameraForCall(camera: UserMediaDevice) {
         this.pexipAPI.video_source = camera.deviceId;
-        this.logger.info(`Using preferred camera: ${camera.label}`);
+        this.logger.info(`[VideoCallService] - Using preferred camera: ${camera.label}`);
     }
 
     updateMicrophoneForCall(microphone: UserMediaDevice) {
         this.pexipAPI.audio_source = microphone.deviceId;
-        this.logger.info(`Using preferred microphone: ${microphone.label}`);
+        this.logger.info(`[VideoCallService] - Using preferred microphone: ${microphone.label}`);
     }
 
     toggleMute(): boolean {
@@ -188,6 +188,7 @@ export class VideoCallService {
     }
 
     updatePreferredLayout(conferenceId: string, layout: HearingLayout) {
+        this.logger.info(`[VideoCallService] - Updating preferred layout`, { conference: conferenceId, layout });
         const record = this.preferredLayoutCache.get();
         record[conferenceId] = layout;
         this.preferredLayoutCache.set(record);
@@ -199,6 +200,7 @@ export class VideoCallService {
     }
 
     async startHearing(conferenceId: string, layout: HearingLayout) {
+        this.logger.info(`[VideoCallService] - Attempting to start hearing`, { conference: conferenceId, layout });
         const request = new StartHearingRequest({
             layout: layout
         });
@@ -206,10 +208,12 @@ export class VideoCallService {
     }
 
     async pauseHearing(conferenceId: string) {
+        this.logger.info(`[VideoCallService] - Attempting to pause hearing`, { conference: conferenceId });
         return await this.apiClient.pauseVideoHearing(conferenceId).toPromise();
     }
 
     async endHearing(conferenceId: string) {
+        this.logger.info(`[VideoCallService] - Attempting to end hearing`, { conference: conferenceId });
         await this.apiClient.endVideoHearing(conferenceId).toPromise();
     }
 }

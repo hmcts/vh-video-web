@@ -39,6 +39,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> StartOrResumeVideoHearingAsync(Guid conferenceId, StartHearingRequest request)
         {
+            _logger.LogDebug("StartOrResumeVideoHearing");
             var validatedRequest = await ValidateUserIsJudgeAndInConference(conferenceId);
             if (validatedRequest != null)
             {
@@ -47,6 +48,7 @@ namespace VideoWeb.Controllers
             try
             {
                 await _videoApiClient.StartOrResumeVideoHearingAsync(conferenceId, request);
+                _logger.LogDebug($"Sent request to start / resume conference {conferenceId}");
                 return Accepted();
             }
             catch (VideoApiException ex)
@@ -55,7 +57,7 @@ namespace VideoWeb.Controllers
                 return StatusCode(ex.StatusCode, ex.Response);
             }
         }
-        
+
         /// <summary>
         /// Pause a video hearing
         /// </summary>
@@ -66,6 +68,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> PauseVideoHearingAsync(Guid conferenceId)
         {
+            _logger.LogDebug("PauseVideoHearing");
             var validatedRequest = await ValidateUserIsJudgeAndInConference(conferenceId);
             if (validatedRequest != null)
             {
@@ -74,6 +77,7 @@ namespace VideoWeb.Controllers
             try
             {
                 await _videoApiClient.PauseVideoHearingAsync(conferenceId);
+                _logger.LogDebug($"Sent request to pause conference {conferenceId}");
                 return Accepted();
             }
             catch (VideoApiException ex)
@@ -82,7 +86,7 @@ namespace VideoWeb.Controllers
                 return StatusCode(ex.StatusCode, ex.Response);
             }
         }
-        
+
         /// <summary>
         /// End a video hearing
         /// </summary>
@@ -93,14 +97,17 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> EndVideoHearingAsync(Guid conferenceId)
         {
+            _logger.LogDebug("EndVideoHearing");
             var validatedRequest = await ValidateUserIsJudgeAndInConference(conferenceId);
             if (validatedRequest != null)
             {
                 return validatedRequest;
             }
+
             try
             {
                 await _videoApiClient.EndVideoHearingAsync(conferenceId);
+                _logger.LogDebug($"Sent request to end conference {conferenceId}");
                 return Accepted();
             }
             catch (VideoApiException ex)
@@ -120,7 +127,7 @@ namespace VideoWeb.Controllers
         
         private async Task<bool> IsConferenceJudge(Guid conferenceId)
         {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync
+    var conference = await _conferenceCache.GetOrAddConferenceAsync
             (
                 conferenceId,
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)

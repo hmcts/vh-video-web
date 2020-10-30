@@ -108,17 +108,22 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
 
         this.consultationRequester = new Participant(requester);
         this.consultationRequestee = new Participant(requestee);
-        this.logger.event(`${this.videoWebService.getObfuscatedName(requester.username)} requesting private consultation with
-        ${this.videoWebService.getObfuscatedName(requestee.username)}`);
-        this.logger.info(`Individual participant status list: Conference Id: ${this.conference.id}
-        Participant ${requester.id}, ${this.videoWebService.getObfuscatedName(requester.name)}
-        calling Participant ${requestee.id}, ${this.videoWebService.getObfuscatedName(requestee.name)}`);
+        this.logger.info(
+            `[IndividualParticipantStatusList] - ${this.videoWebService.getObfuscatedName(
+                requester.username
+            )} requesting private consultation with ${this.videoWebService.getObfuscatedName(requestee.username)}`,
+            {
+                conference: this.conference.id,
+                requester: this.consultationRequester.id,
+                requestee: this.consultationRequestee.id
+            }
+        );
 
         try {
             await this.consultationService.raiseConsultationRequest(this.conference, requester, requestee);
-            this.logger.info('Raised consultation request event');
+            this.logger.info('[IndividualParticipantStatusList] - Raised consultation request event');
         } catch (error) {
-            this.logger.error('Failed to raise consultation request', error);
+            this.logger.error('[IndividualParticipantStatusList] - Failed to raise consultation request', error);
         }
     }
 
@@ -126,12 +131,12 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         if (!this.canCallEndpoint(endpoint)) {
             return;
         }
-        this.logger.debug(`attempting to video call ${endpoint.display_name}`);
+        this.logger.debug(`[IndividualParticipantStatusList] - attempting to video call ${endpoint.display_name}`);
         try {
             await this.consultationService.startPrivateConsulationWithEndpoint(this.conference, endpoint);
-            this.logger.info('Starting private consultation with endpoint');
+            this.logger.info('[IndividualParticipantStatusList] - Starting private consultation with endpoint');
         } catch (error) {
-            this.logger.error('Failed to raise private consultation with endpoint', error);
+            this.logger.error('[IndividualParticipantStatusList] - Failed to raise private consultation with endpoint', error);
         }
     }
 
@@ -143,7 +148,7 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         this.initConsultationParticipants(message);
 
         this.logger.info(
-            `Incoming request for private consultation from ${this.videoWebService.getObfuscatedName(
+            `[IndividualParticipantStatusList] - Incoming request for private consultation from ${this.videoWebService.getObfuscatedName(
                 this.consultationRequester.displayName
             )}`
         );
@@ -151,7 +156,20 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
     }
 
     async answerConsultationRequest(consultationAnswer: ConsultationAnswer) {
-        this.logger.event(`${this.consultationRequestee.displayName} responded to consultation: ${consultationAnswer}`);
+        this.logger.info(
+            `[IndividualParticipantStatusList] - ${this.videoWebService.getObfuscatedName(
+                this.consultationRequestee.username
+            )} responded to consultation: ${consultationAnswer}`,
+            {
+                conference: this.conference.id,
+                requester: this.consultationRequester.id,
+                requestee: this.consultationRequestee.id,
+                answer: consultationAnswer
+            }
+        );
+        this.logger.info(
+            `[IndividualParticipantStatusList] - ${this.consultationRequestee.displayName} responded to consultation: ${consultationAnswer}`
+        );
         try {
             await this.consultationService.respondToConsultationRequest(
                 this.conference,
@@ -160,7 +178,7 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
                 consultationAnswer
             );
         } catch (error) {
-            this.logger.error('Failed to respond to consultation request', error);
+            this.logger.error('[IndividualParticipantStatusList] - Failed to respond to consultation request', error);
         }
     }
 

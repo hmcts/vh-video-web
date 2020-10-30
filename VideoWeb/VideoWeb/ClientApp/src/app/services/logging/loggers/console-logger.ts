@@ -3,16 +3,19 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class ConsoleLogger implements LogAdapter {
-    debug(message: string): void {
-        console.debug(message);
+    debug(message: string, properties: any = null): void {
+        const propertiesFormatted = properties ? JSON.stringify(properties) : '';
+        console.debug(`${message} ${propertiesFormatted}`);
     }
 
-    info(message: string): void {
-        console.info(message);
+    info(message: string, properties: any = null): void {
+        const propertiesFormatted = properties ? JSON.stringify(properties) : '';
+        console.info(`${message} ${propertiesFormatted}`);
     }
 
-    warn(message: string): void {
-        console.warn(message);
+    warn(message: string, properties: any = null): void {
+        const propertiesFormatted = properties ? JSON.stringify(properties) : '';
+        console.warn(`${message} ${propertiesFormatted}`);
     }
 
     trackEvent(eventName: string, properties: any = null) {
