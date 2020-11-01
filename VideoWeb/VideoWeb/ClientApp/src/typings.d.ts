@@ -13,9 +13,6 @@ declare interface PexipClient {
     h264_enabled: boolean;
     mutedAudio: boolean;
     mutedVideo: boolean;
-    audioContext: AudioContext;
-    analyser: AnalyserNode;
-    microphone: MediaStreamAudioSourceNode;
     call_uuid: string;
 
     onSetup: (stream: any, pinStatus: any, conferenceExtension: any) => void;
@@ -37,7 +34,6 @@ declare interface PexipClient {
     setBuzz();
     clearBuzz(uuid?: string);
     clearAllBuzz(): () => void;
-    createAudioContext(stream: MediaStream): () => void;
 }
 
 declare interface PexipParticipant {
