@@ -1,10 +1,10 @@
 <div
   id="liveclock"
   class="outer_face"
-  style="display: block; margin: auto;"
+  style="display: block; margin: auto"
   [ngClass]="{
     ontime: hearing.isOnTime() || hearing.isPaused() || hearing.isClosed(),
-    isstarting: hearing.isStarting(),
+    isstarting: hearing.isStarting() || hearing.isInSession(),
     delayed: hearing.isDelayed() || hearing.isSuspended()
   }"
 >
@@ -17,7 +17,7 @@
     class="inner_face"
     [ngClass]="{
       'ontime white': hearing.isOnTime() || hearing.isPaused() || hearing.isClosed(),
-      'isstarting isStartingWhite': hearing.isStarting(),
+      'isstarting isStartingWhite': hearing.isStarting() || hearing.isInSession(),
       'delayed black': hearing.isDelayed() || hearing.isSuspended()
     }"
   >

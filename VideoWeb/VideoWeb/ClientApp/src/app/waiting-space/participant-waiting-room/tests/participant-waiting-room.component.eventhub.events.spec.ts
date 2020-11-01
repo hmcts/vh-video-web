@@ -37,11 +37,15 @@ import { Hearing } from '../../../shared/models/hearing';
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { HearingRole } from '../../models/hearing-role-model';
 
 describe('ParticipantWaitingRoomComponent event hub events', () => {
     let component: ParticipantWaitingRoomComponent;
-    const gloalConference = new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse;
-    const globalParticipant = gloalConference.participants.filter(x => x.role === Role.Individual)[0];
+    let globalConference: ConferenceResponse;
+    let globalParticipant: ParticipantResponse;
+    let globalWitness: ParticipantResponse;
+    let participantsWitness: ParticipantResponse[];
+    const testdata = new ConferenceTestData();
 
     const eventsService = eventsServiceSpy;
     const participantStatusSubject = participantStatusSubjectMock;
@@ -51,7 +55,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
     const eventHubReconnectSubject = eventHubReconnectSubjectMock;
 
     const videoCallService = videoCallServiceSpy;
-    const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: gloalConference.id }) } };
+    let activatedRoute: ActivatedRoute;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
 
     let adalService: jasmine.SpyObj<AdalService>;
@@ -74,12 +78,21 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
     });
 
     beforeAll(() => {
+        globalConference = testdata.getConferenceDetailPast() as ConferenceResponse;
+        participantsWitness = testdata.getListOfParticipantsWitness();
+        participantsWitness.forEach(x => {
+            globalConference.participants.push(x);
+        });
+        globalParticipant = globalConference.participants.filter(x => x.role === Role.Individual)[0];
+        globalWitness = globalConference.participants.filter(x => x.hearing_role === HearingRole.WITNESS)[0];
+        activatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: globalConference.id }) } };
+
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getConferenceById',
             'getObfuscatedName',
             'getJwToken'
         ]);
-        videoWebService.getConferenceById.and.resolveTo(gloalConference);
+        videoWebService.getConferenceById.and.resolveTo(globalConference);
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
         videoWebService.getJwToken.and.resolveTo(jwToken);
 
@@ -121,8 +134,9 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
             userMediaService,
             userMediaStreamService
         );
+        adalService.userInfo.userName = globalParticipant.username;
 
-        const conference = new ConferenceResponse(Object.assign({}, gloalConference));
+        const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
         component.hearing = new Hearing(conference);
         component.conference = conference;
@@ -136,9 +150,9 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         component.eventHubSubscription$.unsubscribe();
     });
 
-    it('should update conference status and show video when "in session" message received', fakeAsync(() => {
+    it('should update conference status and show video when "in session" message received and participant is not a witness', fakeAsync(() => {
         const status = ConferenceStatus.InSession;
-        const message = new ConferenceStatusMessage(gloalConference.id, status);
+        const message = new ConferenceStatusMessage(globalConference.id, status);
 
         hearingStatusSubject.next(message);
         flushMicrotasks();
@@ -149,14 +163,11 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         expect(component.getConferenceStatusText()).toBe('is in session');
     }));
 
-    it('should update conference status and get closeed time when "closed" message received', fakeAsync(() => {
-        const status = ConferenceStatus.Closed;
-        const confWithCloseTime = new ConferenceResponse(Object.assign({}, gloalConference));
-        confWithCloseTime.closed_date_time = new Date();
-        confWithCloseTime.status = status;
-        videoWebService.getConferenceById.and.resolveTo(confWithCloseTime);
-
-        const message = new ConferenceStatusMessage(gloalConference.id, status);
+    it('should update conference status and not show video when "in session" message received and participant is a witness', fakeAsync(() => {
+        adalService.userInfo.userName = globalWitness.username;
+        component.participant = globalWitness;
+        const status = ConferenceStatus.InSession;
+        const message = new ConferenceStatusMessage(globalConference.id, status);
 
         hearingStatusSubject.next(message);
         flushMicrotasks();
@@ -164,13 +175,45 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         expect(component.hearing.status).toBe(status);
         expect(component.conference.status).toBe(status);
         expect(component.showVideo).toBeFalsy();
-        expect(videoWebService.getConferenceById).toHaveBeenCalledWith(gloalConference.id);
+        expect(component.getConferenceStatusText()).toBe('is in session');
+    }));
+
+    it('should show video when participant is witness and status is set to "hearing"', fakeAsync(() => {
+        adalService.userInfo.userName = globalWitness.username;
+        component.participant = globalWitness;
+        component.conference.status = ConferenceStatus.InSession;
+        component.hearing.getConference().status = ConferenceStatus.InSession;
+        const status = ParticipantStatus.InHearing;
+        const message = new ParticipantStatusMessage(globalWitness.id, globalWitness.username, globalConference.id, status);
+
+        participantStatusSubject.next(message);
+        flushMicrotasks();
+
+        expect(component.showVideo).toBeTruthy();
+    }));
+
+    it('should update conference status and get closed time when "closed" message received', fakeAsync(() => {
+        const status = ConferenceStatus.Closed;
+        const confWithCloseTime = new ConferenceResponse(Object.assign({}, globalConference));
+        confWithCloseTime.closed_date_time = new Date();
+        confWithCloseTime.status = status;
+        videoWebService.getConferenceById.and.resolveTo(confWithCloseTime);
+
+        const message = new ConferenceStatusMessage(globalConference.id, status);
+
+        hearingStatusSubject.next(message);
+        flushMicrotasks();
+
+        expect(component.hearing.status).toBe(status);
+        expect(component.conference.status).toBe(status);
+        expect(component.showVideo).toBeFalsy();
+        expect(videoWebService.getConferenceById).toHaveBeenCalledWith(globalConference.id);
         expect(component.getConferenceStatusText()).toBe('is closed');
     }));
 
     it('should return correct conference status text when suspended', fakeAsync(() => {
         const status = ConferenceStatus.Suspended;
-        const message = new ConferenceStatusMessage(gloalConference.id, status);
+        const message = new ConferenceStatusMessage(globalConference.id, status);
 
         hearingStatusSubject.next(message);
         flushMicrotasks();
@@ -183,7 +226,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
 
     it('should return correct conference status text when paused', fakeAsync(() => {
         const status = ConferenceStatus.Paused;
-        const message = new ConferenceStatusMessage(gloalConference.id, status);
+        const message = new ConferenceStatusMessage(globalConference.id, status);
 
         hearingStatusSubject.next(message);
         flushMicrotasks();
@@ -196,7 +239,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
 
     it('should update participant status to available', () => {
         const status = ParticipantStatus.Available;
-        const message = new ParticipantStatusMessage(globalParticipant.id, globalParticipant.username, gloalConference.id, status);
+        const message = new ParticipantStatusMessage(globalParticipant.id, globalParticipant.username, globalConference.id, status);
 
         participantStatusSubject.next(message);
 
@@ -209,7 +252,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
     it('should update logged in participant status to in consultation', () => {
         const status = ParticipantStatus.InConsultation;
         const participant = globalParticipant;
-        const message = new ParticipantStatusMessage(participant.id, participant.username, gloalConference.id, status);
+        const message = new ParticipantStatusMessage(participant.id, participant.username, globalConference.id, status);
         component.connected = true;
 
         participantStatusSubject.next(message);
@@ -221,8 +264,8 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
 
     it('should update non logged in participant status to in consultation', () => {
         const status = ParticipantStatus.InConsultation;
-        const participant = gloalConference.participants.filter(x => x.id !== globalParticipant.id)[0];
-        const message = new ParticipantStatusMessage(participant.id, participant.username, gloalConference.id, status);
+        const participant = globalConference.participants.filter(x => x.id !== globalParticipant.id)[0];
+        const message = new ParticipantStatusMessage(participant.id, participant.username, globalConference.id, status);
         component.connected = true;
         component.participant.status = ParticipantStatus.Available;
         participantStatusSubject.next(message);
@@ -234,7 +277,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
 
     it('should not set isAdminConsultation to true when participant has rejected admin consultation', () => {
         const message = new AdminConsultationMessage(
-            gloalConference.id,
+            globalConference.id,
             RoomType.ConsultationRoom1,
             globalParticipant.username,
             ConsultationAnswer.Rejected
@@ -245,7 +288,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
 
     it('should set isAdminConsultation to true when participant accepts admin consultation', () => {
         const message = new AdminConsultationMessage(
-            gloalConference.id,
+            globalConference.id,
             RoomType.ConsultationRoom1,
             globalParticipant.username,
             ConsultationAnswer.Accepted
@@ -260,7 +303,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
 
         const newParticipantStatus = ParticipantStatus.InConsultation;
         const newConferenceStatus = ConferenceStatus.Paused;
-        const newConference = new ConferenceResponse(Object.assign({}, gloalConference));
+        const newConference = new ConferenceResponse(Object.assign({}, globalConference));
         newConference.status = newConferenceStatus;
         newConference.participants.find(x => x.id === globalParticipant.id).status = newParticipantStatus;
 
@@ -282,7 +325,6 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
     it('should go to service error when disconnected from eventhub more than 7 times', () => {
         eventHubDisconnectSubject.next(8);
         expect(videoWebService.getConferenceById).toHaveBeenCalledTimes(0);
-        expect(errorService.goToServiceError).toHaveBeenCalledWith('Your connection was lost');
     });
 
     it('should get conference on eventhub reconnect', () => {

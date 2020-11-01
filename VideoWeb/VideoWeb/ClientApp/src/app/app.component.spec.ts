@@ -13,6 +13,7 @@ import { LocationService } from './services/location.service';
 import { PageTrackerService } from './services/page-tracker.service';
 import { pageUrls } from './shared/page-url.constants';
 import { MockAdalService } from './testing/mocks/MockAdalService';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -51,9 +52,7 @@ describe('AppComponent', () => {
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
         const profile = new UserProfileResponse({ role: Role.Representative });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
-
         locationServiceSpy = jasmine.createSpyObj<LocationService>('LocationService', ['getCurrentUrl', 'getCurrentPathName']);
-
         routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate', 'navigateByUrl'], {
             events: eventsSubjects.asObservable()
         });
@@ -74,6 +73,7 @@ describe('AppComponent', () => {
             titleServiceSpy,
             activatedRoute,
             locationServiceSpy,
+            eventsServiceSpy,
             pageTrackerServiceSpy
         );
 
@@ -87,6 +87,19 @@ describe('AppComponent', () => {
         routerSpy.navigateByUrl.calls.reset();
         profileServiceSpy.getUserProfile.calls.reset();
     });
+
+    afterEach(() => {
+        mockAdalService.setAuthenticated(false);
+    });
+
+    it('should start event service if authenticated oninit', fakeAsync(() => {
+        locationServiceSpy.getCurrentUrl.and.returnValue(pageUrls.AdminVenueList);
+        locationServiceSpy.getCurrentPathName.and.returnValue(`/${pageUrls.AdminVenueList}`);
+        mockAdalService.setAuthenticated(true);
+        component.ngOnInit();
+        flushMicrotasks();
+        expect(eventsServiceSpy.start).toHaveBeenCalled();
+    }));
 
     it('should prompt user to login if not authenticated', () => {
         component.ngOnInit();

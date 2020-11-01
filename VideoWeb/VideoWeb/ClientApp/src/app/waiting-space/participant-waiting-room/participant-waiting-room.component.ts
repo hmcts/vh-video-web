@@ -16,6 +16,7 @@ import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { HearingRole } from '../models/hearing-role-model';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -158,14 +159,26 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     }
 
     getCurrentTimeClass() {
-        if (this.hearing.isOnTime() || this.hearing.isPaused() || this.hearing.isClosed()) {
+        if (!this.isWitness && (this.hearing.isOnTime() || this.hearing.isPaused() || this.hearing.isClosed())) {
             return 'hearing-on-time';
         }
-        if (this.hearing.isStarting()) {
+        if (!this.isWitness && this.hearing.isStarting()) {
             return 'hearing-near-start';
         }
-        if (this.hearing.isDelayed() || this.hearing.isSuspended()) {
+        if (!this.isWitness && this.hearing.isDelayed()) {
             return 'hearing-delayed';
         }
+        if (this.hearing.isSuspended()) {
+            return 'hearing-delayed';
+        }
+        if (this.isWitness && this.hearing.isInSession()) {
+            return 'hearing-near-start';
+        } else {
+            return 'hearing-on-time';
+        }
+    }
+
+    get isWitness(): boolean {
+        return this.participant.hearing_role === HearingRole.WITNESS;
     }
 }

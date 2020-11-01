@@ -128,8 +128,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
                 this.handleHeartbeat(heartbeat);
             })
         );
-
-        this.eventService.start();
     }
 
     onConferenceSelected(conference: ConferenceForVhOfficerResponse) {

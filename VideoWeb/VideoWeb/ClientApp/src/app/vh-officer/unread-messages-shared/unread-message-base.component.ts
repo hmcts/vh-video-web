@@ -34,7 +34,6 @@ export abstract class UnreadMessagesComponentBase {
                 this.handleImReceived(message);
             })
         );
-        this.eventsService.start();
     }
 
     handleAdminAnsweredChat(message: ConferenceMessageAnswered) {

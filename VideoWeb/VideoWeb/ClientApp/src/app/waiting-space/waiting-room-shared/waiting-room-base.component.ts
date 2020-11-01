@@ -25,6 +25,7 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { HearingRole } from '../models/hearing-role-model';
 
 declare var HeartbeatFactory: any;
 
@@ -177,8 +178,6 @@ export abstract class WaitingRoomBaseComponent {
                 }
             })
         );
-
-        this.eventService.start();
     }
 
     async onConsultationAccepted() {
@@ -203,7 +202,6 @@ export abstract class WaitingRoomBaseComponent {
         };
         if (reconnectionAttempt < 7) {
             this.logger.debug(`[WR] - EventHub disconnection`, logPayload);
-            this.logger.info(`[WR] - EventHub disconnection #${reconnectionAttempt}`);
             try {
                 await this.getConference();
                 this.updateShowVideo();
@@ -211,9 +209,6 @@ export abstract class WaitingRoomBaseComponent {
                 this.logger.warn(`[WR] - Failed to recover from disconnection`, logPayload);
                 this.errorService.handleApiError(error);
             }
-        } else {
-            this.logger.warn(`[WR] - EventHub disconnection too many times (#${reconnectionAttempt}), going to service error`, logPayload);
-            this.errorService.goToServiceError('Your connection was lost');
         }
     }
 
@@ -462,9 +457,19 @@ export abstract class WaitingRoomBaseComponent {
             return;
         }
 
-        if (this.hearing.isInSession()) {
+        if (this.hearing.isInSession() && this.participant.hearing_role !== HearingRole.WITNESS) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because hearing is in session';
+            this.logger.debug(`[WR] - ${logPaylod.reason}`, logPaylod);
+            this.showVideo = true;
+            this.showConsultationControls = false;
+            this.isPrivateConsultation = false;
+            return;
+        }
+
+        if (this.participant.hearing_role === HearingRole.WITNESS && this.participant.status === ParticipantStatus.InHearing) {
+            logPaylod.showingVideo = true;
+            logPaylod.reason = 'Showing video because witness is in hearing';
             this.logger.debug(`[WR] - ${logPaylod.reason}`, logPaylod);
             this.showVideo = true;
             this.showConsultationControls = false;
