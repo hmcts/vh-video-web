@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Mappers;
@@ -46,7 +46,7 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_map_to_health_using_thresholds()
         {
-            // Good
+            // Good if less than 10 
             _mapper.MapToHealth(new Heartbeat
             {
                 IncomingAudioPercentageLostRecent = 1m,
@@ -57,24 +57,24 @@ namespace VideoWeb.UnitTests.Mappings
             .Should().NotBeNull().And.BeAssignableTo<HeartbeatHealth>()
             .And.Be(HeartbeatHealth.Good);
             
-            // Bad
+            // Bad if greater than 15 (include)
             _mapper.MapToHealth(new Heartbeat
                 {
                     IncomingAudioPercentageLostRecent = 1m,
                     IncomingVideoPercentageLostRecent = 2m,
-                    OutgoingAudioPercentageLostRecent = 14m,
+                    OutgoingAudioPercentageLostRecent = 16m,
                     OutgoingVideoPercentageLostRecent = 4m
                 })
                 .Should().NotBeNull().And.BeAssignableTo<HeartbeatHealth>()
                 .And.Be(HeartbeatHealth.Bad);
-            
-            // Poor
+
+            // Poor between 10(inculde) and 15
             _mapper.MapToHealth(new Heartbeat
                 {
                     IncomingAudioPercentageLostRecent = 1m,
                     IncomingVideoPercentageLostRecent = 2m,
                     OutgoingAudioPercentageLostRecent = 3m,
-                    OutgoingVideoPercentageLostRecent = 15m
+                    OutgoingVideoPercentageLostRecent = 14m
                 })
                 .Should().NotBeNull().And.BeAssignableTo<HeartbeatHealth>()
                 .And.Be(HeartbeatHealth.Poor);
