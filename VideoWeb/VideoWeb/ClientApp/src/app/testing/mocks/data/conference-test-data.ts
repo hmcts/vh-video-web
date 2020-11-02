@@ -203,7 +203,7 @@ export class ConferenceTestData {
             representee: 'James Green',
             case_type_group: 'applicant',
             tiled_display_name: 'T4;Mr Chris Green;1111-1111-1111-1111',
-            hearing_role: 'Applicant LIP'
+            hearing_role: 'Litigant in person'
         });
 
         const participant2 = new ParticipantForUserResponse({
@@ -214,7 +214,7 @@ export class ConferenceTestData {
             role: Role.Individual,
             case_type_group: 'applicant',
             tiled_display_name: 'T2;J Green;2222-2222-2222-2222',
-            hearing_role: 'Applicant LIP'
+            hearing_role: 'Litigant in person'
         });
 
         const participant3 = new ParticipantForUserResponse({
@@ -239,7 +239,7 @@ export class ConferenceTestData {
             representee: 'J Doe',
             case_type_group: 'respondent',
             tiled_display_name: 'T4;J Doe;4444-4444-4444-4444',
-            hearing_role: 'Respondent LIP'
+            hearing_role: 'Litigant in person'
         });
 
         const participant5 = new ParticipantForUserResponse({
@@ -250,7 +250,7 @@ export class ConferenceTestData {
             role: Role.Individual,
             case_type_group: 'respondent',
             tiled_display_name: 'T5;Ms J Doe;5555-5555-5555-5555',
-            hearing_role: 'Respondent LIP'
+            hearing_role: 'Litigant in person'
         });
 
         const participant6 = new ParticipantForUserResponse({
@@ -318,7 +318,7 @@ export class ConferenceTestData {
             display_name: 'Greeno',
             username: 'chris.green@hearings.net',
             tiled_display_name: 'T1;Greeno;9F681318-4955-49AF-A887-DED64554429D',
-            hearing_role: HearingRole.DEFENDANT_LIP
+            hearing_role: HearingRole.LITIGANT_IN_PERSON
         });
 
         const participant2 = new ParticipantResponseVho({

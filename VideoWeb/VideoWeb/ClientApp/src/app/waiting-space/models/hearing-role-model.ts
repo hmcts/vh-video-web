@@ -1,10 +1,6 @@
 export enum HearingRole {
     APPELLANT = 'Appellant',
-    APPELLANT_LIP = 'Appellant LIP',
-    APPLICANT_LIP = 'Applicant LIP',
-    CLAIMANT_LIP = 'Claimant LIP',
     DEFENCE_ADVOCATE = 'Defence Advocate',
-    DEFENDANT_LIP = 'Defendant LIP',
     EXPERT = 'Expert',
     INTERPRETER = 'Interpreter',
     JUDGE = 'Judge',
@@ -14,8 +10,7 @@ export enum HearingRole {
     PROSECUTION = 'Prosecution',
     PROSECUTION_ADVOCATE = 'Prosecution Advocate',
     REPRESENTATIVE = 'Representative',
-    RESPONDENT_LIP = 'Respondent LIP',
-    STATE_LIP = 'State LIP',
     WINGER = 'Winger',
-    WITNESS = 'Witness'
+    WITNESS = 'Witness',
+    LITIGANT_IN_PERSON = 'Litigant in person'
 }
