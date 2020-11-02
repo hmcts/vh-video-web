@@ -85,7 +85,7 @@ export class HearingSummary extends HearingBase {
     }
 
     get appellants(): ParticipantSummary[] {
-        return this.participants.filter(x => x.hearingRole === HearingRole.APPELLANT || x.hearingRole === HearingRole.APPELLANT_LIP);
+        return this.participants.filter(x => x.hearingRole === HearingRole.APPELLANT || x.hearingRole === HearingRole.LITIGANT_IN_PERSON);
     }
 
     get hearingVenueName(): string {

@@ -184,7 +184,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private static void AssertParticipantsCount(IList<ParticipantResponse> participantResponses, HearingRow rowData)
         {
-            var participantsCount = participantResponses.Count(x => x.Hearing_role_name == "Individual" || x.Hearing_role_name == "Representative" || x.Hearing_role_name.EndsWith("LIP"));
+            var participantsCount = participantResponses.Count(x => x.Hearing_role_name == "Individual" || x.Hearing_role_name == "Representative" || x.Hearing_role_name == "Litigant in person");
             if (participantsCount > 0)
             {
                 var participantEnding = participantsCount > 1 ? "s" : "";
