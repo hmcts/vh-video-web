@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using AcceptanceTests.Common.Api.Helpers;
 using AcceptanceTests.Common.Driver.Drivers;
+using AcceptanceTests.Common.Driver.Enums;
 using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.Test.Helpers;
 using FluentAssertions;
@@ -21,6 +22,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private const int CountdownDuration = 30;
         private const int ExtraTimeAfterTheCountdown = 10;
         private const int PauseCloseTransferDuration = 15;
+        private const int CloseHearingFirefoxExtraWait = 5;
         private readonly Dictionary<User, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly BrowserSteps _browserSteps;
@@ -52,6 +54,10 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser].Click(HearingRoomPage.CloseButton);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.ConfirmClosePopup).Displayed.Should().BeTrue();
+            if (_c.VideoWebConfig.TestConfig.TargetBrowser == TargetBrowser.Firefox)
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(CloseHearingFirefoxExtraWait));
+            }
             _browsers[_c.CurrentUser].Click(HearingRoomPage.ConfirmCloseButton);
             Thread.Sleep(TimeSpan.FromSeconds(PauseCloseTransferDuration));
         }
