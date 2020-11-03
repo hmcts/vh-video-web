@@ -18,6 +18,10 @@ parameters:
   - Demo
   - Preprod
   - Prod
+  
+- name: dotnetTestMaxRetries
+  type: number
+  default: 3  
 
 - name: deviceConfiguration
   displayName: Device Configurations
