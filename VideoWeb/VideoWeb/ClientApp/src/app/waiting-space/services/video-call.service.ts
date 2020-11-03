@@ -11,6 +11,7 @@ declare var PexRTC: any;
 
 @Injectable()
 export class VideoCallService {
+    private readonly loggerPrefix = '[VideoCallService] -';
     private readonly preferredLayoutCache: SessionStorage<Record<string, HearingLayout>>;
     readonly PREFERRED_LAYOUT_KEY = 'vh.preferred.layout';
 
@@ -102,10 +103,10 @@ export class VideoCallService {
 
     disconnectFromCall() {
         if (this.pexipAPI) {
-            this.logger.info('[VideoCallService] - Disconnecting from pexip node.');
+            this.logger.info(`${this.loggerPrefix} Disconnecting from pexip node.`);
             this.pexipAPI.disconnect();
         } else {
-            throw new Error('[VideoCallService] - Pexip Client has not been initialised.');
+            throw new Error(`${this.loggerPrefix} Pexip Client has not been initialised.`);
         }
     }
 
@@ -143,27 +144,46 @@ export class VideoCallService {
 
     updateCameraForCall(camera: UserMediaDevice) {
         this.pexipAPI.video_source = camera.deviceId;
-        this.logger.info(`[VideoCallService] - Using preferred camera: ${camera.label}`);
+        this.logger.info(`${this.loggerPrefix}  Using preferred camera: ${camera.label}`);
     }
 
     updateMicrophoneForCall(microphone: UserMediaDevice) {
         this.pexipAPI.audio_source = microphone.deviceId;
-        this.logger.info(`[VideoCallService] - Using preferred microphone: ${microphone.label}`);
+        this.logger.info(`${this.loggerPrefix} Using preferred microphone: ${microphone.label}`);
     }
 
-    toggleMute(): boolean {
+    toggleMute(conferenceId: string, participantId): boolean {
+        this.logger.info(`${this.loggerPrefix} Toggling mute`, {
+            currentMuteStatus: this.pexipAPI.mutedAudio,
+            currentVideoStatus: this.pexipAPI.mutedVideo,
+            conference: conferenceId,
+            participant: participantId
+        });
         return this.pexipAPI.muteAudio();
     }
 
-    muteParticipant(participantId: string, mute: boolean) {
-        this.pexipAPI.setParticipantMute(participantId, mute);
+    muteParticipant(pexipParticipantId: string, mute: boolean, conferenceId: string, participantId: string) {
+        this.logger.info(`${this.loggerPrefix} Attempting to set participant status`, {
+            muteEnabled: mute,
+            pexipParticipant: pexipParticipantId,
+            conference: conferenceId,
+            participant: participantId
+        });
+        this.pexipAPI.setParticipantMute(pexipParticipantId, mute);
     }
 
-    spotlightParticipant(participantId: string, spotlight: boolean) {
-        this.pexipAPI.setParticipantSpotlight(participantId, spotlight);
+    spotlightParticipant(pexipParticipantId: string, spotlight: boolean, conferenceId: string, participantId: string) {
+        this.logger.info(`${this.loggerPrefix} Attempting to set participant spotlight`, {
+            spotlightEnabled: spotlight,
+            pexipParticipant: pexipParticipantId,
+            conference: conferenceId,
+            participant: participantId
+        });
+        this.pexipAPI.setParticipantSpotlight(pexipParticipantId, spotlight);
     }
 
-    muteAllParticipants(mute: boolean) {
+    muteAllParticipants(mute: boolean, conferenceId: string) {
+        this.logger.info(`${this.loggerPrefix} Attempting to mute all participants`, { conference: conferenceId });
         this.pexipAPI.setMuteAllGuests(mute);
     }
 
@@ -171,24 +191,32 @@ export class VideoCallService {
         this.pexipAPI.h264_enabled = enable;
     }
 
-    raiseHand() {
+    raiseHand(conferenceId: string, participantId: string) {
+        this.logger.info(`${this.loggerPrefix} Attempting to raise own hand`, { conference: conferenceId, participant: participantId });
         this.pexipAPI.setBuzz();
     }
 
-    lowerHand() {
+    lowerHand(conferenceId: string, participantId: string) {
+        this.logger.info(`${this.loggerPrefix} Attempting to lower own hand`, { conference: conferenceId, participant: participantId });
         this.pexipAPI.clearBuzz();
     }
 
-    lowerHandById(uuid: string) {
-        this.pexipAPI.clearBuzz(uuid);
+    lowerHandById(pexipParticipantId: string, conferenceId: string, participantId: string) {
+        this.logger.info(`${this.loggerPrefix} Attempting to mute all participants`, {
+            pexipId: pexipParticipantId,
+            conference: conferenceId,
+            participant: participantId
+        });
+        this.pexipAPI.clearBuzz(pexipParticipantId);
     }
 
-    lowerAllHands() {
+    lowerAllHands(conferenceId: string) {
+        this.logger.info(`${this.loggerPrefix} Attempting to lower hand for all participants`, { conference: conferenceId });
         this.pexipAPI.clearAllBuzz();
     }
 
     updatePreferredLayout(conferenceId: string, layout: HearingLayout) {
-        this.logger.info(`[VideoCallService] - Updating preferred layout`, { conference: conferenceId, layout });
+        this.logger.info(`${this.loggerPrefix} Updating preferred layout`, { conference: conferenceId, layout });
         const record = this.preferredLayoutCache.get();
         record[conferenceId] = layout;
         this.preferredLayoutCache.set(record);
@@ -200,7 +228,7 @@ export class VideoCallService {
     }
 
     async startHearing(conferenceId: string, layout: HearingLayout) {
-        this.logger.info(`[VideoCallService] - Attempting to start hearing`, { conference: conferenceId, layout });
+        this.logger.info(`${this.loggerPrefix} Attempting to start hearing`, { conference: conferenceId, layout });
         const request = new StartHearingRequest({
             layout: layout
         });
@@ -208,12 +236,12 @@ export class VideoCallService {
     }
 
     async pauseHearing(conferenceId: string) {
-        this.logger.info(`[VideoCallService] - Attempting to pause hearing`, { conference: conferenceId });
+        this.logger.info(`${this.loggerPrefix} Attempting to pause hearing`, { conference: conferenceId });
         return await this.apiClient.pauseVideoHearing(conferenceId).toPromise();
     }
 
     async endHearing(conferenceId: string) {
-        this.logger.info(`[VideoCallService] - Attempting to end hearing`, { conference: conferenceId });
+        this.logger.info(`${this.loggerPrefix} Attempting to end hearing`, { conference: conferenceId });
         await this.apiClient.endVideoHearing(conferenceId).toPromise();
     }
 }

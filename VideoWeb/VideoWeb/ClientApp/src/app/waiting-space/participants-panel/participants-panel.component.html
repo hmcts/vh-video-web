@@ -33,7 +33,7 @@
               src="/assets/images/hand-yellow.png"
               class="panel-icon"
               alt="Hand on icon"
-              (click)="lowerParticipantHand(participant.id); $event.stopPropagation()"
+              (click)="lowerParticipantHand(participant); $event.stopPropagation()"
             />
           </div>
           <div class="pCrest" *ngIf="participant.isJudge">

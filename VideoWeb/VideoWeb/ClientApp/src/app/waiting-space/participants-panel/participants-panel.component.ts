@@ -19,6 +19,7 @@ import { VideoCallService } from '../services/video-call.service';
     styleUrls: ['./participants-panel.component.scss']
 })
 export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDestroy {
+    private readonly loggerPrefix = '[VideoCallService] -';
     participants: PanelModel[] = [];
     isMuteAll = false;
     conferenceId: string;
@@ -71,6 +72,7 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
     }
 
     setupVideoCallSubscribers() {
+        this.logger.debug(`${this.loggerPrefix} Setting up pexip video call subscribers`);
         this.videoCallSubscription$.add(
             this.videoCallService
                 .onParticipantUpdated()
@@ -85,6 +87,7 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
     }
 
     setupEventhubSubscribers() {
+        this.logger.debug(`${this.loggerPrefix} Setting up EventHub subscribers`);
         this.eventhubSubscription$.add(
             this.eventService.getParticipantStatusMessage().subscribe(message => {
                 this.handleParticipantStatusChange(message);
@@ -99,6 +102,10 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
     }
 
     handleUpdatedConferenceVideoCall(updatedConference: ConferenceUpdated): void {
+        this.logger.debug(`${this.loggerPrefix} Conference has been muted`, {
+            conference: this.conferenceId,
+            guestedMuted: updatedConference.guestedMuted
+        });
         this.isMuteAll = updatedConference.guestedMuted;
     }
 
@@ -111,6 +118,14 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         participant.isMuted = updatedParticipant.isRemoteMuted;
         participant.handRaised = updatedParticipant.handRaised;
         participant.isSpotlighted = updatedParticipant.isSpotlighted;
+        this.logger.debug(`${this.loggerPrefix} Participant has been updated in video call`, {
+            conference: this.conferenceId,
+            participant: participant.id,
+            pexipParticipant: participant.pexipId,
+            isMuted: participant.isMuted,
+            handRaised: participant.handRaised,
+            isSpotlighted: participant.isSpotlighted
+        });
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
@@ -118,6 +133,11 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         if (!participant) {
             return;
         }
+        this.logger.debug(`${this.loggerPrefix} Participant status has been updated`, {
+            conference: this.conferenceId,
+            participant: participant.id,
+            status: message.status
+        });
         (<ParticipantPanelModel>participant).status = message.status;
     }
 
@@ -126,6 +146,11 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         if (!endpoint) {
             return;
         }
+        this.logger.debug(`${this.loggerPrefix} Endpoint status has been updated`, {
+            conference: this.conferenceId,
+            endpoint: endpoint.id,
+            status: message.status
+        });
         (<VideoEndpointPanelModel>endpoint).status = message.status;
     }
 
@@ -138,16 +163,18 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
                 const participant = new ParticipantPanelModel(x);
                 this.participants.push(participant);
             });
+            this.logger.debug(`${this.loggerPrefix} Retrieved participants in conference`, { conference: this.conferenceId });
 
             (await eps).forEach(x => {
                 const endpoint = new VideoEndpointPanelModel(x);
                 this.participants.push(endpoint);
             });
+            this.logger.debug(`${this.loggerPrefix} Retrieved endpoints in conference`, { conference: this.conferenceId });
             this.participants.sort((x, z) => {
                 return x.orderInTheList === z.orderInTheList ? 0 : +(x.orderInTheList > z.orderInTheList) || -1;
             });
         } catch (err) {
-            this.logger.error('Failed to get participants for judge hearing panel', err);
+            this.logger.error(`${this.loggerPrefix} Failed to get participants / endpoints`, err, { conference: this.conferenceId });
         }
     }
 
@@ -156,12 +183,24 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
     }
 
     toggleMuteAll() {
-        this.videoCallService.muteAllParticipants(!this.isMuteAll);
+        this.logger.debug(`${this.loggerPrefix} Judge is attempting to toggle mute all status`, {
+            conference: this.conferenceId,
+            current: this.isMuteAll,
+            new: !this.isMuteAll
+        });
+        this.videoCallService.muteAllParticipants(!this.isMuteAll, this.conferenceId);
     }
 
     toggleSpotlightParticipant(participant: PanelModel) {
         const p = this.participants.find(x => x.id === participant.id);
-        this.videoCallService.spotlightParticipant(p.pexipId, !p.isSpotlighted);
+        this.logger.debug(`${this.loggerPrefix} Judge is attempting to toggle spotlight for participant`, {
+            conference: this.conferenceId,
+            participant: p.id,
+            pexipParticipant: p.pexipId,
+            current: p.isSpotlighted,
+            new: !p.isSpotlighted
+        });
+        this.videoCallService.spotlightParticipant(p.pexipId, !p.isSpotlighted, this.conferenceId, p.id);
     }
 
     toggleMuteParticipant(participant: PanelModel) {
@@ -169,26 +208,47 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         const mutedParticipants = hearingParticipants.filter(x => x.isMuted);
         const p = this.participants.find(x => x.id === participant.id);
 
-        this.videoCallService.muteParticipant(p.pexipId, !p.isMuted);
+        this.logger.debug(`${this.loggerPrefix} Judge is attempting to toggle mute for participant`, {
+            conference: this.conferenceId,
+            participant: p.id,
+            pexipParticipant: p.pexipId,
+            current: p.isMuted,
+            new: !p.isMuted
+        });
+        this.videoCallService.muteParticipant(p.pexipId, !p.isMuted, this.conferenceId, p.id);
 
         // check if last person to be unmuted manually
         if (mutedParticipants.length === 1 && this.isMuteAll) {
-            this.videoCallService.muteAllParticipants(false);
+            this.logger.debug(`${this.loggerPrefix} Judge has manually unmuted the last muted participant. Unmuting conference`, {
+                conference: this.conferenceId
+            });
+            this.videoCallService.muteAllParticipants(false, this.conferenceId);
         }
 
         // mute conference if last person manually muted
         if (mutedParticipants.length === hearingParticipants.length - 1 && !p.isMuted) {
-            this.videoCallService.muteAllParticipants(true);
+            this.logger.debug(`${this.loggerPrefix} Judge has manually muted the last unmuted participant. Muting conference`, {
+                conference: this.conferenceId
+            });
+            this.videoCallService.muteAllParticipants(true, this.conferenceId);
         }
     }
 
     lowerAllHands() {
-        this.videoCallService.lowerAllHands();
+        this.logger.debug(`${this.loggerPrefix} Judge is attempting to lower all hands in conference`, {
+            conference: this.conferenceId
+        });
+        this.videoCallService.lowerAllHands(this.conferenceId);
     }
 
     lowerParticipantHand(participantId: string) {
         const participant = this.participants.find(x => x.id === participantId);
-        this.videoCallService.lowerHandById(participant.pexipId);
+        this.logger.debug(`${this.loggerPrefix} Judge is attempting to lower hand for participant`, {
+            conference: this.conferenceId,
+            participant: participant.id,
+            pexipParticipant: participant.pexipId
+        });
+        this.videoCallService.lowerHandById(participant.pexipId, this.conferenceId, participant.id);
     }
 
     onScroll() {
