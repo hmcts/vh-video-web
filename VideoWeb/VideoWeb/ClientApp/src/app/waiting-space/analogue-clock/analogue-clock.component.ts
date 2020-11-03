@@ -9,6 +9,7 @@ import { Hearing } from '../../shared/models/hearing';
 })
 export class AnalogueClockComponent implements OnInit {
     @Input() hearing: Hearing;
+    @Input() isWitness: boolean;
 
     currentTime: Date;
     hourHand: HTMLElement;
