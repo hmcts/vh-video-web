@@ -94,8 +94,8 @@ namespace VideoWeb.UnitTests.Mappings
         {
             var participants = new List<ParticipantDetailsResponse>
             {
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant").WithHearingRole("Individual LIP").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").WithHearingRole("Defendant LIP").Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant").WithHearingRole("Litigant in person").Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").WithHearingRole("Litigant in person").Build(),
                 new ParticipantDetailsResponseBuilder(UserRole.Representative, "Defendant").WithHearingRole("Representative").Build(),
                 new ParticipantDetailsResponseBuilder(UserRole.Judge, "None").WithHearingRole("Judge").Build(),
                 new ParticipantDetailsResponseBuilder(UserRole.CaseAdmin, "None").Build(),
