@@ -11,6 +11,9 @@ declare interface PexipClient {
     video_source: string;
     audio_source: string;
     h264_enabled: boolean;
+    mutedAudio: boolean;
+    mutedVideo: boolean;
+    call_uuid: string;
 
     onSetup: (stream: any, pinStatus: any, conferenceExtension: any) => void;
     onConnect: (stream: MediaStream | URL) => void;
@@ -27,6 +30,7 @@ declare interface PexipClient {
     setParticipantSpotlight(participantId: string, spotlight: boolean);
     setMuteAllGuests(mute: boolean);
     muteAudio(): boolean;
+    muteVideo(): boolean;
     setBuzz();
     clearBuzz(uuid?: string);
     clearAllBuzz(): () => void;

@@ -86,7 +86,7 @@ describe('VideoCallService', () => {
     it('should toggle mute', () => {
         pexipSpy.muteAudio.and.returnValue(true);
         service.pexipAPI = pexipSpy;
-        const result = service.toggleMute();
+        const result = service.toggleMute('conference12', 'participant123');
         expect(result).toBeTruthy();
     });
 
@@ -132,24 +132,24 @@ describe('VideoCallService', () => {
 
     it('should set buzz when hand is raised', () => {
         service.pexipAPI = pexipSpy;
-        service.raiseHand();
+        service.raiseHand('conference12', 'participant123');
         expect(pexipSpy.setBuzz).toHaveBeenCalledTimes(1);
     });
 
     it('should clear buzz when hand is lowered', () => {
         service.pexipAPI = pexipSpy;
-        service.lowerHand();
+        service.lowerHand('conference12', 'participant123');
         expect(pexipSpy.clearBuzz).toHaveBeenCalledTimes(1);
     });
     it('should clear buzz when hand is lowered for participant uuid', () => {
         service.pexipAPI = pexipSpy;
         const uuid = '12345';
-        service.lowerHandById(uuid);
+        service.lowerHandById(uuid, 'conference12', 'participant123');
         expect(pexipSpy.clearBuzz).toHaveBeenCalledWith(uuid);
     });
     it('should clear all buzz when hand is lowered for all participants', () => {
         service.pexipAPI = pexipSpy;
-        service.lowerAllHands();
+        service.lowerAllHands('conference12');
         expect(pexipSpy.clearAllBuzz).toHaveBeenCalledTimes(1);
     });
     it('should make api start call on start hearing', async () => {
