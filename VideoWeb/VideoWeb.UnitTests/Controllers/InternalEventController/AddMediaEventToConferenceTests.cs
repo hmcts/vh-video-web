@@ -3,7 +3,6 @@ using System.Net;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -11,45 +10,20 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Services.Video;
-using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.MediaEventController
 {
-    public class AddMediaEventToConferenceTests
+    public class AddMediaEventToConferenceTests : MediaEventBaseTestSetup
     {
-        private VideoWeb.Controllers.MediaEventController _controller;
+        private VideoWeb.Controllers.InternalEventController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
-        private Mock<IConferenceCache> _conferenceCacheMock;
         private Conference _testConference;
 
         [SetUp]
         public void Setup()
         {
-            _testConference = new EventComponentHelper().BuildConferenceForTest();
-            _testConference.Participants[0].Username = ClaimsPrincipalBuilder.Username;
-            
-            _conferenceCacheMock = new Mock<IConferenceCache>();
-            _videoApiClientMock = new Mock<IVideoApiClient>();
-            var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
-            var context = new ControllerContext
-            {
-                HttpContext = new DefaultHttpContext
-                {
-                    User = claimsPrincipal
-                }
-            };
-
-            _controller =
-                new VideoWeb.Controllers.MediaEventController(_videoApiClientMock.Object, _conferenceCacheMock.Object)
-                {
-                    ControllerContext = context
-                };
-            
-            _conferenceCacheMock
-                .Setup(x => x.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(_testConference);
+            InitSetup();
         }
 
         [Test]

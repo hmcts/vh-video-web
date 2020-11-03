@@ -33,6 +33,7 @@ export class AnalogueClockComponent implements OnInit {
         this.updateClockUI(this.currentTime);
     }
 
+    
     private setCurrentTime(): void {
         // initialise ui
         this.hourHand = document.getElementById('hour-hand');

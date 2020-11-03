@@ -7,3 +7,4 @@ namespace VideoWeb.Contract.Request
         public EventType EventType => EventType.MediaPermissionDenied;
     }
 }
+
