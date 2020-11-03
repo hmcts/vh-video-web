@@ -4,19 +4,13 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Common.Caching;
-using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Services.Video;
 
-namespace VideoWeb.UnitTests.Controllers.MediaEventController
+namespace VideoWeb.UnitTests.Controllers.InternalEventController
 {
     public class AddConnectingToEventHubTests : MediaEventBaseTestSetup
     {
-        private VideoWeb.Controllers.InternalEventController _controller;
-        private Mock<IVideoApiClient> _videoApiClientMock;
-        private Conference _testConference;
-
         [SetUp]
         public void Setup()
         {
@@ -26,13 +20,13 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
         [Test]
         public async Task Should_return_no_content_when_event_is_sent()
         {
-            _videoApiClientMock
+            VideoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .Returns(Task.FromResult(default(object)));
 
-            var conferenceId = _testConference.Id;
+            var conferenceId = TestConference.Id;
             var request = new ConnectingToEventHub();
-            var result = await _controller.AddConnectingToEventHubAsync(conferenceId, request);
+            var result = await Controller.AddConnectingToEventHubAsync(conferenceId, request);
             var typedResult = (NoContentResult)result;
 
             typedResult.Should().NotBeNull();
@@ -44,13 +38,13 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
             var apiException = new VideoApiException<Microsoft.AspNetCore.Mvc.ProblemDetails>("Internal Server Error",
                 (int)HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
-            _videoApiClientMock
+            VideoApiClientMock
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
 
-            var conferenceId = _testConference.Id;
+            var conferenceId = TestConference.Id;
             var request = new ConnectingToEventHub();
-            var result = await _controller.AddConnectingToEventHubAsync(conferenceId, request);
+            var result = await Controller.AddConnectingToEventHubAsync(conferenceId, request);
             var typedResult = (ObjectResult)result;
 
             typedResult.Should().NotBeNull();

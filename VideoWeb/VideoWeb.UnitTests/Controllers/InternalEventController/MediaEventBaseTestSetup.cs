@@ -9,31 +9,31 @@ using VideoWeb.Common.Models;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 
-namespace VideoWeb.UnitTests.Controllers.MediaEventController
+namespace VideoWeb.UnitTests.Controllers.InternalEventController
 {
     public class MediaEventBaseTestSetup
     {
-        private VideoWeb.Controllers.InternalEventController _controller;
-        private Mock<IVideoApiClient> _videoApiClientMock;
-        private Mock<IConferenceCache> _conferenceCacheMock;
-        private Conference _testConference;
-        private Participant _testParticipant;
+        protected VideoWeb.Controllers.InternalEventController Controller;
+        protected Mock<IVideoApiClient> VideoApiClientMock;
+        protected Mock<IConferenceCache> ConferenceCacheMock;
+        protected Conference TestConference;
+        protected Participant TestParticipant;
 
         public void InitSetup()
         {
-            _conferenceCacheMock = new Mock<IConferenceCache>();
-            _videoApiClientMock = new Mock<IVideoApiClient>();
+            ConferenceCacheMock = new Mock<IConferenceCache>();
+            VideoApiClientMock = new Mock<IVideoApiClient>();
 
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
 
-            _testConference = new EventComponentHelper().BuildConferenceForTest();
-            _testParticipant = _testConference.Participants.First(x => !x.IsJudge());
-            _testParticipant.Username = ClaimsPrincipalBuilder.Username;
+            TestConference = new EventComponentHelper().BuildConferenceForTest();
+            TestParticipant = TestConference.Participants.First(x => !x.IsJudge());
+            TestParticipant.Username = ClaimsPrincipalBuilder.Username;
 
-            _conferenceCacheMock
-                .Setup(x => x.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+            ConferenceCacheMock
+                .Setup(x => x.GetOrAddConferenceAsync(TestConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(_testConference);
+                .ReturnsAsync(TestConference);
 
             var context = new ControllerContext
             {
@@ -43,8 +43,8 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
                 }
             };
 
-            _controller =
-                new VideoWeb.Controllers.InternalEventController(_videoApiClientMock.Object, _conferenceCacheMock.Object)
+            Controller =
+                new VideoWeb.Controllers.InternalEventController(VideoApiClientMock.Object, ConferenceCacheMock.Object)
                 {
                     ControllerContext = context
                 };
