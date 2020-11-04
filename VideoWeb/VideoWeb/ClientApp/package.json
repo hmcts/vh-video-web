@@ -35,7 +35,7 @@
     "@angular/router": "^10.1.5",
     "@hmcts/frontend": "^0.0.41-alpha",
     "@microsoft/applicationinsights-web": "^2.5.9",
-    "@microsoft/signalr": "^3.1.8",
+    "@microsoft/signalr": "^3.1.9",
     "@ng-select/ng-select": "^5.0.6",
     "adal-angular4": "^3.0.16",
     "aspnet-prerendering": "^3.0.1",
@@ -55,11 +55,11 @@
     "snyk": "^1.410.2",
     "webrtc-adapter": "^7.7.0",
     "zone.js": "~0.11.1",
-    "tslib": "^2.0.2"
+    "tslib": "^2.0.3"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1002.0",
-    "@angular/cli": "^10.1.5",
+    "@angular/cli": "^10.1.6",
     "@angular/compiler-cli": "^10.1.5",
     "@angular/language-service": "^10.1.5",
     "@testpossessed/ts-data-builder": "^1.0.1",
