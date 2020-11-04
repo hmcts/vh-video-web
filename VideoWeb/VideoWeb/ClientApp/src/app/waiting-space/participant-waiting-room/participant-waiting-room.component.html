@@ -22,6 +22,7 @@
 
 <ng-container *ngIf="connected && showVideo">
   <app-hearing-controls
+    [conferenceId]="conference.id"
     [participant]="participant"
     [isPrivateConsultation]="isPrivateConsultation"
     [outgoingStream]="outgoingStream"

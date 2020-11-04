@@ -181,6 +181,11 @@ $govuk-global-styles: true;
   border: 1px solidgovuk-colour('dark-grey');
 }
 
+.vh-tooltip-green {
+  background: govuk-colour('green');
+  border: 1px solidgovuk-colour('green');
+}
+
 .vh-tooltip-show {
   visibility: visible;
 }
