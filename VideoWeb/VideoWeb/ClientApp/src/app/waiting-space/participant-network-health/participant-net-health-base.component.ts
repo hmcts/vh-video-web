@@ -14,7 +14,7 @@ export abstract class ParticipantNetworkHealthBaseDirective implements OnInit, O
     constructor(protected eventsService: EventsService) {}
 
     get isNetworkPoor() {
-        return this.networkHealth && this.networkHealth === HeartbeatHealth.Poor;
+        return this.networkHealth && (this.networkHealth === HeartbeatHealth.Poor || this.networkHealth === HeartbeatHealth.Bad);
     }
 
     get isVideoOn(): boolean {

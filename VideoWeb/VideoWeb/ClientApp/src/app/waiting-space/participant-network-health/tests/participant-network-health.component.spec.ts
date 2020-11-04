@@ -32,7 +32,7 @@ describe('ParticipantNetworkHealthComponent', () => {
         { status: HeartbeatHealth.None, expected: false },
         { status: HeartbeatHealth.Good, expected: false },
         { status: HeartbeatHealth.Poor, expected: true },
-        { status: HeartbeatHealth.Bad, expected: false }
+        { status: HeartbeatHealth.Bad, expected: true }
     ];
 
     isNetworkPoorTestCases.forEach(testcase => {
