@@ -3,8 +3,8 @@
   class="outer_face"
   style="display: block; margin: auto"
   [ngClass]="{
-    ontime: hearing.isOnTime() || hearing.isPaused() || hearing.isClosed() || (isWitness && hearing.isDelayed()),
-    isstarting: hearing.isStarting() || hearing.isInSession(),
+    ontime: (isWitness && hearing.isStarting) || hearing.isOnTime() || hearing.isPaused() || hearing.isClosed() || (isWitness && hearing.isDelayed()),
+    isstarting: (!isWitness && hearing.isStarting()) || hearing.isInSession(),
     delayed: (!isWitness && hearing.isDelayed()) || hearing.isSuspended()
   }"
 >
@@ -16,8 +16,8 @@
   <div
     class="inner_face"
     [ngClass]="{
-      'ontime white': hearing.isOnTime() || hearing.isPaused() || hearing.isClosed() || (isWitness && hearing.isDelayed()),
-      'isstarting isStartingWhite': hearing.isStarting() || hearing.isInSession(),
+      'ontime white': (isWitness && hearing.isStarting) || hearing.isOnTime() || hearing.isPaused() || hearing.isClosed() || (isWitness && hearing.isDelayed()),
+      'isstarting isStartingWhite': (!isWitness && hearing.isStarting()) || hearing.isInSession(),
       'delayed black': (!isWitness && hearing.isDelayed()) || hearing.isSuspended()
     }"
   >
