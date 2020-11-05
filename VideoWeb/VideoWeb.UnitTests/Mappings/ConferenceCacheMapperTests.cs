@@ -29,22 +29,36 @@ namespace VideoWeb.UnitTests.Mappings
             resultParticipant.Id.Should().Be(participant.Id);
             resultParticipant.Username.Should().Be(participant.Username);
             resultParticipant.Role.Should().Be(participant.User_role);
+            resultParticipant.HearingRole.Should().Be(participant.Hearing_role);
             resultParticipant.DisplayName.Should().Be(participant.Display_name);
             resultParticipant.FirstName.Should().Be(participant.First_name);
             resultParticipant.LastName.Should().Be(participant.Last_name);
             resultParticipant.ContactEmail.Should().Be(participant.Contact_email);
             resultParticipant.ContactTelephone.Should().Be(participant.Contact_telephone);
+
+            var judge = response.Participants.First(x => x.HearingRole == "Judge");
+            judge.IsJudge().Should().BeTrue();
+            judge.IsWitness().Should().BeFalse();
+            
+            var witness = response.Participants.First(x => x.HearingRole == "Witness");
+            witness.IsJudge().Should().BeFalse();
+            witness.IsWitness().Should().BeTrue();
         }
 
         private static ConferenceDetailsResponse BuildConferenceDetailsResponse()
         {
             var participants = new List<ParticipantDetailsResponse>
             {
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Representative, "Defendant").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Judge, "None").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.CaseAdmin, "None").Build()
+                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant")
+                    .WithHearingRole("Litigant in person").Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant")
+                    .WithHearingRole("Litigant in person").Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.Representative, "Defendant")
+                    .WithHearingRole("Professional").Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.Judge, "None").WithHearingRole("Judge").Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.CaseAdmin, "None").Build(),
+                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant").WithHearingRole("Witness")
+                    .Build()
             };
             var endpoints = Builder<EndpointResponse>.CreateListOfSize(2).Build().ToList();
 
