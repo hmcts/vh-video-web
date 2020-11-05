@@ -207,6 +207,10 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             this.videoCallService.updateMicrophoneForCall(mic);
         }
         this.preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(mic);
+        this.logger.info(`[SelfTest] - Update camera and microphone selection`, {
+            cameraId: cam.deviceId,
+            microphoneId: mic.deviceId
+        });
     }
 
     async call() {
