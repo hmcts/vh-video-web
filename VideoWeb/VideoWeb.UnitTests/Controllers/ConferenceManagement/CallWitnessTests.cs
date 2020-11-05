@@ -32,6 +32,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             Controller = SetupControllerWithClaims(user);
 
             var result = await Controller.CallWitnessAsync(TestConference.Id, participant.Id);
+            result.Should().BeOfType<UnauthorizedObjectResult>();
             var typedResult = (UnauthorizedObjectResult) result;
             typedResult.Should().NotBeNull();
 
@@ -79,6 +80,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             Controller = SetupControllerWithClaims(user);
 
             var result = await Controller.CallWitnessAsync(TestConference.Id, witness.Id);
+            result.Should().BeOfType<AcceptedResult>();
             var typedResult = (AcceptedResult) result;
             typedResult.Should().NotBeNull();
 
