@@ -12,6 +12,7 @@ import { ParticipantsPanelComponent } from './participants-panel.component';
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
+import { HearingRole } from '../models/hearing-role-model';
 
 describe('ParticipantsPanelComponent', () => {
     const conferenceId = '1111-1111-1111';
@@ -35,6 +36,7 @@ describe('ParticipantsPanelComponent', () => {
         endpoints.map(endpoint => {
             component.participants = component.participants.concat(new VideoEndpointPanelModel(endpoint));
         });
+        videocallService.muteParticipant.calls.reset();
     });
 
     afterEach(() => {
@@ -131,6 +133,96 @@ describe('ParticipantsPanelComponent', () => {
         expect(component.isParticipantInHearing(pat)).toBeFalsy();
     });
 
+    it('should return call participant in when participant is a witness and available', async () => {
+        videocallService.callParticipantIntoHearing.calls.reset();
+        const p = participants[0];
+        p.hearing_role = HearingRole.WITNESS;
+        p.status = ParticipantStatus.Available;
+        const pat = new ParticipantPanelModel(p);
+        await component.callWitnessIntoHearing(pat);
+        expect(videocallService.callParticipantIntoHearing).toHaveBeenCalledWith(component.conferenceId, p.id);
+    });
+
+    it('should not call a participant in when participant is not a witness', async () => {
+        videocallService.callParticipantIntoHearing.calls.reset();
+        const p = participants[0];
+        p.hearing_role = HearingRole.LITIGANT_IN_PERSON;
+        p.status = ParticipantStatus.Available;
+        const pat = new ParticipantPanelModel(p);
+        await component.callWitnessIntoHearing(pat);
+        expect(videocallService.callParticipantIntoHearing).toHaveBeenCalledTimes(0);
+    });
+
+    it('should not call a participant in when participant is a witness but not available', async () => {
+        videocallService.callParticipantIntoHearing.calls.reset();
+        const p = participants[0];
+        p.hearing_role = HearingRole.WITNESS;
+        p.status = ParticipantStatus.NotSignedIn;
+        const pat = new ParticipantPanelModel(p);
+        await component.callWitnessIntoHearing(pat);
+        expect(videocallService.callParticipantIntoHearing).toHaveBeenCalledTimes(0);
+    });
+
+    it('should call participant in when participant is a witness and available', async () => {
+        videocallService.callParticipantIntoHearing.calls.reset();
+        const p = participants[0];
+        p.hearing_role = HearingRole.WITNESS;
+        p.status = ParticipantStatus.Available;
+        const pat = new ParticipantPanelModel(p);
+        await component.callWitnessIntoHearing(pat);
+        expect(videocallService.callParticipantIntoHearing).toHaveBeenCalledWith(component.conferenceId, p.id);
+    });
+
+    it('should not call a participant in when participant is not a witness', async () => {
+        videocallService.callParticipantIntoHearing.calls.reset();
+        const p = participants[0];
+        p.hearing_role = HearingRole.LITIGANT_IN_PERSON;
+        p.status = ParticipantStatus.Available;
+        const pat = new ParticipantPanelModel(p);
+        await component.callWitnessIntoHearing(pat);
+        expect(videocallService.callParticipantIntoHearing).toHaveBeenCalledTimes(0);
+    });
+
+    it('should not call a participant in when participant is a witness but not available', async () => {
+        videocallService.callParticipantIntoHearing.calls.reset();
+        const p = participants[0];
+        p.hearing_role = HearingRole.WITNESS;
+        p.status = ParticipantStatus.NotSignedIn;
+        const pat = new ParticipantPanelModel(p);
+        await component.callWitnessIntoHearing(pat);
+        expect(videocallService.callParticipantIntoHearing).toHaveBeenCalledTimes(0);
+    });
+
+    it('should dismiss participant in when participant is a witness and in hearing', async () => {
+        videocallService.dismissParticipantFromHearing.calls.reset();
+        const p = participants[0];
+        p.hearing_role = HearingRole.WITNESS;
+        p.status = ParticipantStatus.InHearing;
+        const pat = new ParticipantPanelModel(p);
+        await component.dismissWitnessFromHearing(pat);
+        expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, p.id);
+    });
+
+    it('should not dismiss a participant in when participant is not a witness', async () => {
+        videocallService.dismissParticipantFromHearing.calls.reset();
+        const p = participants[0];
+        p.hearing_role = HearingRole.LITIGANT_IN_PERSON;
+        p.status = ParticipantStatus.InHearing;
+        const pat = new ParticipantPanelModel(p);
+        await component.dismissWitnessFromHearing(pat);
+        expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledTimes(0);
+    });
+
+    it('should not dismiss a participant in when participant is a witness but not in hearing', async () => {
+        videocallService.dismissParticipantFromHearing.calls.reset();
+        const p = participants[0];
+        p.hearing_role = HearingRole.WITNESS;
+        p.status = ParticipantStatus.Available;
+        const pat = new ParticipantPanelModel(p);
+        await component.dismissWitnessFromHearing(pat);
+        expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledTimes(0);
+    });
+
     it('should update conference mute all true', () => {
         component.setupVideoCallSubscribers();
         component.isMuteAll = false;
@@ -160,6 +252,37 @@ describe('ParticipantsPanelComponent', () => {
         expect(result.isMuted).toBeTruthy();
         expect(result.handRaised).toBeTruthy();
         expect(result.isSpotlighted).toBeTruthy();
+    });
+
+    it('should mute a witness when they join the call', () => {
+        component.setupVideoCallSubscribers();
+        const witnessIndex = component.participants.findIndex(x => x.hearingRole === HearingRole.WITNESS);
+        component.participants[witnessIndex].pexipId = undefined;
+        component.participants[witnessIndex].isMuted = undefined;
+        const witness = component.participants[witnessIndex];
+        const payload = new ParticipantUpdated('NO', 0, witness.pexipDisplayName, Guid.create().toString(), 0);
+
+        onParticipantUpdatedMock.next(payload);
+        const result = component.participants.find(x => x.id === witness.id);
+        expect(result.pexipId).toBe(payload.uuid);
+        expect(result.isMuted).toBeFalsy();
+        expect(videocallService.muteParticipant).toHaveBeenCalledWith(result.pexipId, true, component.conferenceId, result.id);
+    });
+
+    it('should not mute a witness when an update is received but they are already in a hearing', () => {
+        component.setupVideoCallSubscribers();
+        const witnessIndex = component.participants.findIndex(x => x.hearingRole === HearingRole.WITNESS);
+        const pexipId = Guid.create.toString();
+        component.participants[witnessIndex].pexipId = pexipId;
+        component.participants[witnessIndex].isMuted = undefined;
+        const witness = component.participants[witnessIndex];
+        const payload = new ParticipantUpdated('NO', 0, witness.pexipDisplayName, pexipId, 0);
+
+        onParticipantUpdatedMock.next(payload);
+        const result = component.participants.find(x => x.id === witness.id);
+        expect(result.pexipId).toBe(payload.uuid);
+        expect(result.isMuted).toBeFalsy();
+        expect(videocallService.muteParticipant).toHaveBeenCalledTimes(0);
     });
 
     it('should not process video call participant updates not in list', () => {
@@ -289,7 +412,7 @@ describe('ParticipantsPanelComponent', () => {
     it('should lower hand of participant', () => {
         const pat = component.participants[0];
         pat.handRaised = true;
-        component.lowerParticipantHand(pat.id);
+        component.lowerParticipantHand(pat);
         expect(videocallService.lowerHandById).toHaveBeenCalledWith(pat.pexipId, component.conferenceId, pat.id);
     });
     it('should scroll up to first participant', () => {

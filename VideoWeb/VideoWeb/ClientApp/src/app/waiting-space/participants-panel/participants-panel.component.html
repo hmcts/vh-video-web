@@ -25,6 +25,19 @@
               (click)="toggleMuteParticipant(participant); $event.stopPropagation()"
             />
           </div>
+          <div class="pmute" *ngIf="participant.isWitness && !participant.isInHearing()">
+            <img
+              *ngIf="!participant.transferringIn"
+              appTooltip
+              [text]="participant.isAvailable() ? 'Call witness' : 'Witness unavailable'"
+              [colour]="participant.isAvailable() ? 'green' : 'grey'"
+              [src]="participant.isAvailable() ? '/assets/images/call.png' : '/assets/images/witness-not-joined.png'"
+              class="panel-icon"
+              [alt]="participant.isAvailable() ? 'Call witness icon' : 'Witness unavilable icon'"
+              (click)="callWitnessIntoHearing(participant); $event.stopPropagation()"
+            />
+            <span *ngIf="participant.transferringIn">Joining...</span>
+          </div>
           <div class="phand" *ngIf="!participant.isJudge && participant.handRaised">
             <img
               appTooltip

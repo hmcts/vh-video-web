@@ -64,7 +64,7 @@ export class EventsService {
             return this.reconnectionPromise;
         }
 
-        if (!this.isConnectedToHub) {
+        if (!this.isConnectedToHub && this.adalService.userInfo.authenticated) {
             this.reconnectionAttempt++;
             return this.connection
                 .start()
