@@ -205,11 +205,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId,
             pexipError: error
         });
-        this.errorService.goToServiceError(
-            'Your camera and microphone are blocked',
-            'Please unblock the camera and microphone or call us if there is a problem.',
-            false
-        );
+        this.errorService.handlePexipError(error);
     }
 
     async handleCallDisconnect(reason: DisconnectedCall) {
