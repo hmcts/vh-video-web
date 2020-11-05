@@ -294,7 +294,11 @@ export abstract class WaitingRoomBaseComponent {
         const pexipNode = this.hearing.getConference().pexip_node_uri;
         const conferenceAlias = this.hearing.getConference().participant_uri;
         const displayName = this.participant.tiled_display_name;
-        this.logger.debug(`${this.loggerPrefix} Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`);
+        const logPayload = {
+            conference: this.conference.id,
+            participant: this.participant.id
+        };
+        this.logger.debug(`${this.loggerPrefix} Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`, logPayload);
         if (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1) {
             this.videoCallService.enableH264(false);
         }
@@ -320,7 +324,11 @@ export abstract class WaitingRoomBaseComponent {
     }
 
     handleCallSetup(callSetup: CallSetup) {
-        this.logger.debug(`${this.loggerPrefix} Conference has setup`);
+        const logPayload = {
+            conference: this.conference.id,
+            participant: this.participant.id
+        };
+        this.logger.debug(`${this.loggerPrefix} Conference has setup`, logPayload);
         this.videoCallService.connect('', null);
         this.outgoingStream = callSetup.stream;
     }
@@ -345,8 +353,14 @@ export abstract class WaitingRoomBaseComponent {
         this.errorCount++;
         this.connected = false;
         this.updateShowVideo();
+        const logPayload = {
+            conference: this.conference.id,
+            participant: this.participant.id
+        };
         this.logger.error(`${this.loggerPrefix} Error from pexip. Reason : ${error.reason}`, new Error(error.reason), {
-            pexipError: error
+            pexipError: error,
+            conference: this.conference.id,
+            participant: this.participant.id
         });
         if (error.reason.includes('Error connecting to conference')) {
             this.errorService.goToServiceError('Your connection was lost');
