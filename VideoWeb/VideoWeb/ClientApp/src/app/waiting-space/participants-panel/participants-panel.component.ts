@@ -20,7 +20,7 @@ import { ToggleMuteParticipantEvent, ToggleSpotlightParticipantEvent, LowerParti
     styleUrls: ['./participants-panel.component.scss']
 })
 export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDestroy {
-    private readonly loggerPrefix = '[VideoCallService] -';
+    private readonly loggerPrefix = '[ParticipantsPanel] -';
     participants: PanelModel[] = [];
     isMuteAll = false;
     conferenceId: string;
@@ -127,6 +127,7 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         if (!participant) {
             return;
         }
+        const participantJoined = !participant.pexipId;
         participant.pexipId = updatedParticipant.uuid;
         participant.isMuted = updatedParticipant.isRemoteMuted;
         participant.handRaised = updatedParticipant.handRaised;
@@ -139,6 +140,14 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
             handRaised: participant.handRaised,
             isSpotlighted: participant.isSpotlighted
         });
+
+        if (participantJoined && participant.hearingRole === HearingRole.WITNESS && !participant.isMuted) {
+            this.logger.debug(`${this.loggerPrefix} Witness has joined video call. Muting them remotely.`, {
+                conference: this.conferenceId,
+                participant: participant.id
+            });
+            this.toggleMuteParticipant(participant);
+        }
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
@@ -152,6 +161,7 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
             status: message.status
         });
         (<ParticipantPanelModel>participant).status = message.status;
+        participant.transferringIn = false;
     }
 
     handleEndpointStatusChange(message: EndpointStatusMessage) {
@@ -261,6 +271,18 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
             pexipParticipant: participant.pexipId
         });
         this.videoCallService.lowerHandById(participant.pexipId, this.conferenceId, participant.id);
+    }
+
+    async callWitnessIntoHearing(participant: PanelModel) {
+        if (!participant.isAvailable() || !participant.isWitness) {
+            return;
+        }
+        this.logger.debug(`${this.loggerPrefix} Judge is attempting to call witness into hearing`, {
+            conference: this.conferenceId,
+            participant: participant.id
+        });
+        participant.transferringIn = true;
+        await this.videoCallService.callParticipantIntoHearing(this.conferenceId, participant.id);
     }
 
     onScroll() {

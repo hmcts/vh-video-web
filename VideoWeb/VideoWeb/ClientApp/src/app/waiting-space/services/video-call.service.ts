@@ -152,7 +152,7 @@ export class VideoCallService {
         this.logger.info(`${this.loggerPrefix} Using preferred microphone: ${microphone.label}`);
     }
 
-    toggleMute(conferenceId: string, participantId): boolean {
+    toggleMute(conferenceId: string, participantId: string): boolean {
         this.logger.info(`${this.loggerPrefix} Toggling mute`, {
             currentMuteStatus: this.pexipAPI.mutedAudio,
             currentVideoStatus: this.pexipAPI.mutedVideo,
@@ -243,5 +243,13 @@ export class VideoCallService {
     async endHearing(conferenceId: string) {
         this.logger.info(`${this.loggerPrefix} Attempting to end hearing`, { conference: conferenceId });
         await this.apiClient.endVideoHearing(conferenceId).toPromise();
+    }
+
+    async callParticipantIntoHearing(conferenceId: string, participantId: string) {
+        this.logger.info(`${this.loggerPrefix} Attempting to call participant into hearing`, {
+            conference: conferenceId,
+            participant: participantId
+        });
+        await this.apiClient.callWitness(conferenceId, participantId).toPromise();
     }
 }

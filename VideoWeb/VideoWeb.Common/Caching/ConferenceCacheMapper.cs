@@ -23,6 +23,7 @@ namespace VideoWeb.Common.Caching
                     ContactTelephone = participant.Contact_telephone,
                     DisplayName = participant.Display_name,
                     Role = (Role) Enum.Parse(typeof(Role), participant.User_role.ToString()),
+                    HearingRole = participant.Hearing_role,
                     ParticipantStatus = (ParticipantStatus) Enum.Parse(typeof(ParticipantStatus),
                         participant.Current_status.ToString()),
                     Username = participant.Username,

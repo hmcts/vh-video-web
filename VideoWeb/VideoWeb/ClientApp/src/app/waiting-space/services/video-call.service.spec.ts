@@ -20,7 +20,12 @@ describe('VideoCallService', () => {
     let preferredMicrophone: UserMediaDevice;
     let pexipSpy: jasmine.SpyObj<PexipClient>;
     beforeAll(() => {
-        apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', ['startOrResumeVideoHearing', 'pauseVideoHearing', 'endVideoHearing']);
+        apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
+            'startOrResumeVideoHearing',
+            'pauseVideoHearing',
+            'endVideoHearing',
+            'callWitness'
+        ]);
 
         userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
             'getListOfVideoDevices',
@@ -160,14 +165,14 @@ describe('VideoCallService', () => {
         expect(apiClient.startOrResumeVideoHearing).toHaveBeenCalledWith(conferenceId, new StartHearingRequest({ layout }));
     });
 
-    it('should make api start call on pause hearing', async () => {
+    it('should make api pause call on pause hearing', async () => {
         apiClient.pauseVideoHearing.and.returnValue(of());
         const conferenceId = Guid.create().toString();
         await service.pauseHearing(conferenceId);
         expect(apiClient.pauseVideoHearing).toHaveBeenCalledWith(conferenceId);
     });
 
-    it('should make api start call on end hearing', async () => {
+    it('should make api end call on end hearing', async () => {
         apiClient.endVideoHearing.and.returnValue(of());
         const conferenceId = Guid.create().toString();
         await service.endHearing(conferenceId);
@@ -183,5 +188,13 @@ describe('VideoCallService', () => {
         service.updatePreferredLayout(conferenceId, layout);
         expect(service.getPreferredLayout(conferenceId)).toBe(layout);
         ss.clear();
+    });
+
+    it('should make api call witness on call witness', async () => {
+        apiClient.callWitness.and.returnValue(of());
+        const conferenceId = Guid.create().toString();
+        const witnessId = Guid.create().toString();
+        await service.callParticipantIntoHearing(conferenceId, witnessId);
+        expect(apiClient.callWitness).toHaveBeenCalledWith(conferenceId, witnessId);
     });
 });
