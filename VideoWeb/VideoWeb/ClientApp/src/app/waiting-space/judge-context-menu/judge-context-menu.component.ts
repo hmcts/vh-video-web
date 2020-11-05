@@ -5,7 +5,8 @@ import {
     ToggleMuteParticipantEvent,
     ToggleSpotlightParticipantEvent,
     LowerParticipantHandEvent,
-    CallWitnessIntoHearingEvent
+    CallWitnessIntoHearingEvent,
+    DismissWitnessFromHearingEvent
 } from 'src/app/shared/models/participant-event';
 import { HearingRole } from '../models/hearing-role-model';
 import { CaseTypeGroup } from '../models/case-type-group';
@@ -28,6 +29,7 @@ export class JudgeContextMenuComponent {
     @Output() toggleSpotlightParticipantEvent = new EventEmitter<ToggleSpotlightParticipantEvent>();
     @Output() lowerParticipantHandEvent = new EventEmitter<LowerParticipantHandEvent>();
     @Output() callWitnessIntoHearingEvent = new EventEmitter<CallWitnessIntoHearingEvent>();
+    @Output() dismissWitnessFromHearingEvent = new EventEmitter<DismissWitnessFromHearingEvent>();
 
     constructor(private logger: Logger, private elementRef: ElementRef) {}
 
@@ -55,6 +57,11 @@ export class JudgeContextMenuComponent {
     callWitnessIntoHearing() {
         this.logger.debug(`${this.loggerPrefix} Attempting to call witness`, { participant: this.participant.id });
         this.callWitnessIntoHearingEvent.emit(new CallWitnessIntoHearingEvent(this.participant));
+    }
+
+    dismissWitnessFromHearing() {
+        this.logger.debug(`${this.loggerPrefix} Attempting to dismiss witness`, { participant: this.participant.id });
+        this.dismissWitnessFromHearingEvent.emit(new DismissWitnessFromHearingEvent(this.participant));
     }
 
     toggleDropdown() {

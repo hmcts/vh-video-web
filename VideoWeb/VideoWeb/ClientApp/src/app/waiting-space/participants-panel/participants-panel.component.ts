@@ -16,7 +16,8 @@ import {
     ToggleMuteParticipantEvent,
     ToggleSpotlightParticipantEvent,
     LowerParticipantHandEvent,
-    CallWitnessIntoHearingEvent
+    CallWitnessIntoHearingEvent,
+    DismissWitnessFromHearingEvent
 } from 'src/app/shared/models/participant-event';
 
 @Component({
@@ -80,6 +81,10 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
 
     callWitnessIntoHearingEventHandler(e: CallWitnessIntoHearingEvent) {
         this.callWitnessIntoHearing(e.participant);
+    }
+
+    dismissWitnessFromHearingEventHandler(e: DismissWitnessFromHearingEvent) {
+        this.dismissWitnessFromHearing(e.participant);
     }
 
     initializeScrolling() {

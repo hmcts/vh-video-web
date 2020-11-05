@@ -15,3 +15,7 @@ export class LowerParticipantHandEvent {
 export class CallWitnessIntoHearingEvent {
     constructor(public participant: PanelModel) {}
 }
+
+export class DismissWitnessFromHearingEvent {
+    constructor(public participant: PanelModel) {}
+}
