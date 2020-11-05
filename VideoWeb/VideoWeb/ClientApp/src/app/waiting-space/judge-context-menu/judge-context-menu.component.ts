@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output, HostListener, ElementRef } from '@angular/core';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { PanelModel } from '../models/participant-panel-model';
-import { ToggleMuteParticipantEvent, ToggleSpotlightParticipantEvent, LowerParticipantHandEvent } from 'src/app/shared/models/participant-event';
+import { ToggleMuteParticipantEvent, ToggleSpotlightParticipantEvent, LowerParticipantHandEvent, CallWitnessIntoHearingEvent } from 'src/app/shared/models/participant-event';
 import { HearingRole } from '../models/hearing-role-model';
 import { CaseTypeGroup } from '../models/case-type-group';
 
@@ -22,6 +22,7 @@ export class JudgeContextMenuComponent {
     @Output() toggleMuteParticipantEvent = new EventEmitter<ToggleMuteParticipantEvent>();
     @Output() toggleSpotlightParticipantEvent = new EventEmitter<ToggleSpotlightParticipantEvent>();
     @Output() lowerParticipantHandEvent = new EventEmitter<LowerParticipantHandEvent>();
+    @Output() callWitnessIntoHearingEvent = new EventEmitter<CallWitnessIntoHearingEvent>();
 
     constructor(private logger: Logger, private elementRef: ElementRef) {}
 
@@ -44,6 +45,11 @@ export class JudgeContextMenuComponent {
     toggleMuteParticipant() {
         this.logger.debug(`${this.loggerPrefix} Attempting to toggle mute`, {participant: this.participant.id});
         this.toggleMuteParticipantEvent.emit(new ToggleMuteParticipantEvent(this.participant));
+    }
+
+    callWitnessIntoHearing() {
+        this.logger.debug(`${this.loggerPrefix} Attempting to call witness`, {participant: this.participant.id});
+        this.callWitnessIntoHearingEvent.emit(new CallWitnessIntoHearingEvent(this.participant))
     }
 
     toggleDropdown() {

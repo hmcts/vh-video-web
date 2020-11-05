@@ -11,3 +11,7 @@ export class ToggleSpotlightParticipantEvent {
 export class LowerParticipantHandEvent {
     constructor(public participant: PanelModel) {}
 }
+
+export class CallWitnessIntoHearingEvent {
+    constructor(public participant: PanelModel) {}
+}

@@ -12,7 +12,7 @@ import { HearingRole } from '../models/hearing-role-model';
 import { PanelModel, ParticipantPanelModel, VideoEndpointPanelModel } from '../models/participant-panel-model';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
-import { ToggleMuteParticipantEvent, ToggleSpotlightParticipantEvent, LowerParticipantHandEvent } from 'src/app/shared/models/participant-event';
+import { ToggleMuteParticipantEvent, ToggleSpotlightParticipantEvent, LowerParticipantHandEvent, CallWitnessIntoHearingEvent } from 'src/app/shared/models/participant-event';
 
 @Component({
     selector: 'app-participants-panel',
@@ -71,6 +71,10 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
 
     lowerParticipantHandEventHandler(e: LowerParticipantHandEvent) {
         this.lowerParticipantHand(e.participant);
+    }
+
+    callWitnessIntoHearingEventHandler(e: CallWitnessIntoHearingEvent) {
+        this.callWitnessIntoHearing(e.participant);
     }
 
     initializeScrolling() {

@@ -5,7 +5,8 @@
     <span [innerHTML]="getAdditionalText()"></span>
   </p>
   <hr>
-  <a (click)="toggleMuteParticipant()">{{participant.isMuted ? 'Unmute':'Mute'}}</a>
-  <a *ngIf="!participant.isJudge && participant.handRaised" (click)="lowerParticipantHand()">Lower hand</a>
-  <a (click)="toggleSpotlightParticipant()">{{participant.isSpotlighted ? 'Unpin':'Pin'}}</a>
+  <a *ngIf="participant.isInHearing()" (click)="toggleMuteParticipant()">{{participant.isMuted ? 'Unmute':'Mute'}}</a>
+  <a *ngIf="participant.isWitness && !participant.isInHearing()" (click)="callWitnessIntoHearing()">{{'Call witness'}}</a>
+  <a *ngIf="!participant.isJudge && participant.handRaised && participant.isInHearing()" (click)="lowerParticipantHand()">Lower hand</a>
+  <a *ngIf="participant.isInHearing()" (click)="toggleSpotlightParticipant()">{{participant.isSpotlighted ? 'Unpin':'Pin'}}</a>
 </div>

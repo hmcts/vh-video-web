@@ -1,14 +1,14 @@
 <div class="participantList">
   <div class="panel-container-list" (scroll)="onScroll()" id="panelList">
     <div
-      appTooltip
-      [text]="getPanelRowTooltipText(participant)"
-      [colour]="getPanelRowTooltipColour(participant)"
-      [ngClass]="participant.isSpotlighted ? 'spotlighted' : ''"
       *ngFor="let participant of participants; let i = index"
     >
       <div class="pGridOpen">
-        <div class="pName" [ngClass]="participant.isDisconnected() ? 'disconnected' : ''" id="panel_participant_{{ i }}">
+        <div class="pName" [ngClass]="participant.isDisconnected() ? 'disconnected' : ''" id="panel_participant_{{ i }}"
+          appTooltip
+            [text]="getPanelRowTooltipText(participant)"
+            [colour]="getPanelRowTooltipColour(participant)"
+            [ngClass]="participant.isSpotlighted ? 'spotlighted' : ''">
           {{ participant.displayName }}
         </div>
 
@@ -73,10 +73,11 @@
           <app-judge-context-menu [participantInput]="participant"
             class="pntwk"
             *ngIf="!participant.isJudge"
-            [hidden]="!isParticipantInHearing(participant)"
+            [hidden]="!isParticipantInHearing(participant) && !participant.isAvailable()"
             (toggleMuteParticipantEvent)="toggleMuteParticipantEventHandler($event)"
             (toggleSpotlightParticipantEvent)="toggleSpotlightParticipantEventHandler($event)"
-            (lowerParticipantHandEvent)="lowerParticipantHandEventHandler($event)"> </app-judge-context-menu>
+            (lowerParticipantHandEvent)="lowerParticipantHandEventHandler($event)"
+            (callWitnessIntoHearingEvent)="callWitnessIntoHearingEventHandler($event)"> </app-judge-context-menu>
           <div class="pntwk">
           <app-participant-alert
             *ngIf="!isEndpoint(participant) && !participant.isJudge"
