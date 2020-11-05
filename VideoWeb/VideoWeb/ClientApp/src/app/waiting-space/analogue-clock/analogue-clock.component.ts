@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ClockService } from 'src/app/services/clock.service';
 import { Hearing } from '../../shared/models/hearing';
 
@@ -34,7 +34,6 @@ export class AnalogueClockComponent implements OnInit {
         this.updateClockUI(this.currentTime);
     }
 
-    
     private setCurrentTime(): void {
         // initialise ui
         this.hourHand = document.getElementById('hour-hand');
