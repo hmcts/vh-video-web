@@ -57,11 +57,18 @@
               (click)="toggleSpotlightParticipant(participant); $event.stopPropagation()"
             />
           </div>
+          <app-judge-context-menu [participantInput]="participant"
+            class="pntwk"
+            *ngIf="!participant.isJudge"
+            [hidden]="!isParticipantInHearing(participant)"
+            (toggleMuteParticipantEvent)="toggleMuteParticipantEventHandler($event)"
+            (toggleSpotlightParticipantEvent)="toggleSpotlightParticipantEventHandler($event)"
+            (lowerParticipantHandEvent)="lowerParticipantHandEventHandler($event)"> </app-judge-context-menu>
           <div class="pntwk">
-            <app-participant-alert
-              *ngIf="!isEndpoint(participant) && !participant.isJudge"
-              [participant]="mapParticipantToParticipantResponse(participant)"
-            ></app-participant-alert>
+          <app-participant-alert
+            *ngIf="!isEndpoint(participant) && !participant.isJudge"
+            [participant]="mapParticipantToParticipantResponse(participant)"
+          ></app-participant-alert>
           </div>
         </ng-container>
         <ng-template #participantDisconnected>

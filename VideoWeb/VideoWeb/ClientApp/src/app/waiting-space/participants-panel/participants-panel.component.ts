@@ -12,6 +12,7 @@ import { HearingRole } from '../models/hearing-role-model';
 import { PanelModel, ParticipantPanelModel, VideoEndpointPanelModel } from '../models/participant-panel-model';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
+import { ToggleMuteParticipantEvent, ToggleSpotlightParticipantEvent, LowerParticipantHandEvent } from 'src/app/shared/models/participant-event';
 
 @Component({
     selector: 'app-participants-panel',
@@ -58,6 +59,18 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
 
     ngAfterViewInit() {
         setTimeout(() => this.initializeScrolling(), 1000);
+    }
+
+    toggleMuteParticipantEventHandler(e: ToggleMuteParticipantEvent) {
+        this.toggleMuteParticipant(e.participant);
+    }
+
+    toggleSpotlightParticipantEventHandler(e: ToggleSpotlightParticipantEvent) {
+        this.toggleSpotlightParticipant(e.participant);
+    }
+
+    lowerParticipantHandEventHandler(e: LowerParticipantHandEvent) {
+        this.lowerParticipantHand(e.participant);
     }
 
     initializeScrolling() {
@@ -241,8 +254,7 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         this.videoCallService.lowerAllHands(this.conferenceId);
     }
 
-    lowerParticipantHand(participantId: string) {
-        const participant = this.participants.find(x => x.id === participantId);
+    lowerParticipantHand(participant: PanelModel) {
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to lower hand for participant`, {
             conference: this.conferenceId,
             participant: participant.id,

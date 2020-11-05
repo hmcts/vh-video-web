@@ -289,7 +289,7 @@ describe('ParticipantsPanelComponent', () => {
     it('should lower hand of participant', () => {
         const pat = component.participants[0];
         pat.handRaised = true;
-        component.lowerParticipantHand(pat.id);
+        component.lowerParticipantHand(pat);
         expect(videocallService.lowerHandById).toHaveBeenCalledWith(pat.pexipId, component.conferenceId, pat.id);
     });
     it('should scroll up to first participant', () => {
