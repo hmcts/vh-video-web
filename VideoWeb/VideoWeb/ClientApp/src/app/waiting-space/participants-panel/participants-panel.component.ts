@@ -273,6 +273,17 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         await this.videoCallService.callParticipantIntoHearing(this.conferenceId, participant.id);
     }
 
+    async dismissWitnessFromHearing(participant: PanelModel) {
+        if (!participant.isInHearing() || !participant.isWitness) {
+            return;
+        }
+        this.logger.debug(`${this.loggerPrefix} Judge is attempting to dismiss witness from hearing`, {
+            conference: this.conferenceId,
+            participant: participant.id
+        });
+        await this.videoCallService.dismissParticipantFromHearing(this.conferenceId, participant.id);
+    }
+
     onScroll() {
         this.setScrollingIndicator();
     }
