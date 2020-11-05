@@ -178,7 +178,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
     handleCallError(error: CallError) {
         this.displayFeed = false;
-        this.logger.error('[SelfTest] - Error from pexip. Reason : ' + error.reason, error.reason);
+        this.logger.error('[SelfTest] - Error from pexip. Reason : ' + error.reason, new Error(error.reason), { pexipError: error });
         this.errorService.goToServiceError(
             'Your camera and microphone are blocked',
             'Please unblock the camera and microphone or call us if there is a problem.',

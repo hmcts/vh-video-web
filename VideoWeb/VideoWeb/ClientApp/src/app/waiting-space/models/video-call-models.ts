@@ -11,7 +11,7 @@ export class DisconnectedCall {
 }
 
 export class CallError {
-    constructor(public reason) {}
+    constructor(public reason: string) {}
 }
 
 export class ParticipantUpdated {
