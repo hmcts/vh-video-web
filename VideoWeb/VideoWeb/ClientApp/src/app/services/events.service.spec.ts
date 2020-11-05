@@ -119,4 +119,16 @@ describe('EventsService', () => {
 
         expect(service.connection.send).toHaveBeenCalledWith('SendMessage', imTest.conferenceId, imTest.message, imTest.to, imTest.id);
     });
+
+    it('should not reconnect if signalR disonnected and user is not logged in', () => {
+        adalService.userInfo.authenticated = false;
+        const spy = spyOnProperty(service.connection, 'state').and.returnValue(signalR.HubConnectionState.Disconnected);
+        spyOn(service.connection, 'start').and.callFake(() => {
+            spy.and.returnValue(signalR.HubConnectionState.Connected);
+            return Promise.resolve();
+        });
+        service.start();
+        service.start();
+        expect(service.connection.start).toHaveBeenCalledTimes(0);
+    });
 });

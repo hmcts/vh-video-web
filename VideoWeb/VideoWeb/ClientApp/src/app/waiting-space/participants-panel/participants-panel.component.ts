@@ -274,7 +274,7 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
     }
 
     lowerParticipantHand(participant: PanelModel) {
-        const p = this.participants.find(x => x.id === participant.id);        
+        const p = this.participants.find(x => x.id === participant.id);
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to lower hand for participant`, {
             conference: this.conferenceId,
             participant: p.id,
