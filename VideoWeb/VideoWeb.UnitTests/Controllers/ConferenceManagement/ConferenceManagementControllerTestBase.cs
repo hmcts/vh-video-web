@@ -63,18 +63,27 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                     Builder<Participant>.CreateNew()
                         .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
                         .With(x => x.Username = Faker.Internet.Email("judge"))
+                        .With(x => x.HearingRole = "Judge")
                         .Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Username = Faker.Internet.Email("individual1"))
+                        .With(x => x.HearingRole = "Litigant in person")
                         .With(x => x.Id = Guid.NewGuid()).Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                         .With(x => x.Username = Faker.Internet.Email("representative1"))
+                        .With(x => x.HearingRole = "Professional")
                         .With(x => x.Id = Guid.NewGuid()).Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Username = Faker.Internet.Email("individual2"))
+                        .With(x => x.HearingRole = "Litigant in person")
                         .With(x => x.Id = Guid.NewGuid()).Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                         .With(x => x.Username = Faker.Internet.Email("representative2"))
+                        .With(x => x.HearingRole = "Professional")
+                        .With(x => x.Id = Guid.NewGuid()).Build(),
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
+                        .With(x => x.HearingRole = "Witness")
+                        .With(x => x.Username = Faker.Internet.Email("witness1"))
                         .With(x => x.Id = Guid.NewGuid()).Build()
                 }
             };

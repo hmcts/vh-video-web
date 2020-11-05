@@ -339,7 +339,11 @@ export abstract class WaitingRoomBaseComponent {
         this.errorCount++;
         this.connected = false;
         this.updateShowVideo();
-        this.logger.error(`[WR] - Error from pexip. Reason : ${error.reason}`, error.reason);
+        this.logger.error(`[WR] - Error from pexip. Reason : ${error.reason}`, new Error(error.reason), { pexipError: error });
+        if (error.reason.includes('Error connecting to conference')) {
+            this.errorService.goToServiceError('Your connection was lost');
+            return;
+        }
         this.errorService.goToServiceError(
             'Your camera and microphone are blocked',
             'Please unblock the camera and microphone or call us if there is a problem.',

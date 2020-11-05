@@ -41,7 +41,12 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         return this.participant.role === Role.Judge;
     }
 
+    get logPayload() {
+        return { conference: this.conferenceId, participant: this.participant.id };
+    }
+
     ngOnInit(): void {
+        this.logger.info(`${this.loggerPrefix} initialising hearing controls`, this.logPayload);
         this.setupVideoCallSubscribers();
         this.setupEventhubSubscribers();
         if (this.isJudge) {
@@ -94,6 +99,7 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         this.remoteMuted = updatedParticipant.isRemoteMuted;
         this.handRaised = updatedParticipant.handRaised;
         if (this.remoteMuted && !this.audioMuted) {
+            this.logger.info(`${this.loggerPrefix} Participant has been remote muted, muting locally too`, this.logPayload);
             this.toggleMute();
         }
         return true;
@@ -104,6 +110,7 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
             return;
         }
         if (message.status === ParticipantStatus.InConsultation) {
+            this.logger.debug(`${this.loggerPrefix} Participant moved to consultation room, unmuting participant`, this.logPayload);
             this.resetMute();
         }
     }
@@ -114,6 +121,7 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         }
 
         if (!this.isJudge && conferenceId === this.conferenceId && !this.audioMuted) {
+            this.logger.info(`${this.loggerPrefix} Countdown complete, muting participant`, this.logPayload);
             this.toggleMute();
         }
     }
@@ -123,51 +131,46 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
      **/
     resetMute() {
         if (this.audioMuted) {
+            this.logger.debug(`${this.loggerPrefix} Resetting participant mute status to muted`, this.logPayload);
             this.toggleMute();
         }
     }
 
     toggleMute() {
-        this.logger.info(`${this.loggerPrefix} Participant is attempting to toggle own mute status to ${!this.audioMuted}`);
+        this.logger.info(
+            `${this.loggerPrefix} Participant is attempting to toggle own mute status to ${!this.audioMuted}`,
+            this.logPayload
+        );
         const muteAudio = this.videoCallService.toggleMute(this.conferenceId, this.participant.id);
-        this.logger.info(`${this.loggerPrefix} Participant mute status updated to ${muteAudio}`);
+        this.logger.info(`${this.loggerPrefix} Participant mute status updated to ${muteAudio}`, this.logPayload);
         this.audioMuted = muteAudio;
     }
 
     toggleView(): boolean {
-        this.logger.info(`${this.loggerPrefix} Participant turning self-view ${this.selfViewOpen ? 'off' : 'on'}`, {
-            conference: this.conferenceId,
-            participant: this.participant.id
-        });
+        this.logger.info(`${this.loggerPrefix} Participant turning self-view ${this.selfViewOpen ? 'off' : 'on'}`, this.logPayload);
         return (this.selfViewOpen = !this.selfViewOpen);
     }
 
     toggleHandRaised() {
         if (this.handRaised) {
             this.videoCallService.lowerHand(this.conferenceId, this.participant.id);
-            this.logger.info(`${this.loggerPrefix} Participant lowered own hand`, {
-                conference: this.conferenceId,
-                participant: this.participant.id
-            });
+            this.logger.info(`${this.loggerPrefix} Participant lowered own hand`, this.logPayload);
         } else {
             this.videoCallService.raiseHand(this.conferenceId, this.participant.id);
-            this.logger.info(`${this.loggerPrefix} Participant raised own hand`, {
-                conference: this.conferenceId,
-                participant: this.participant.id
-            });
+            this.logger.info(`${this.loggerPrefix} Participant raised own hand`, this.logPayload);
         }
         this.handRaised = !this.handRaised;
     }
 
     pause() {
-        this.logger.debug(`${this.loggerPrefix} Attempting to pause hearing`, { conference: this.conferenceId });
+        this.logger.debug(`${this.loggerPrefix} Attempting to pause hearing`, this.logPayload);
         this.videoCallService.pauseHearing(this.conferenceId);
     }
 
     close(answer: boolean) {
         this.displayConfirmPopup = false;
         if (answer) {
-            this.logger.debug(`${this.loggerPrefix} Attempting to close hearing`, { conference: this.conferenceId });
+            this.logger.debug(`${this.loggerPrefix} Attempting to close hearing`, this.logPayload);
             this.videoCallService.endHearing(this.conferenceId);
         }
     }
