@@ -66,6 +66,7 @@ describe('SelfTestComponent', () => {
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
             'goToServiceError',
             'handleApiError',
+            'handlePexipError',
             'returnHomeIfUnauthorised'
         ]);
 
@@ -281,17 +282,14 @@ describe('SelfTestComponent', () => {
     });
 
     it('should hide video when video call failed', () => {
+        errorService.goToServiceError.calls.reset();
         const payload = new CallError('test failure intentional');
 
         component.setupPexipClient();
         onErrorSubject.next(payload);
 
         expect(component.displayFeed).toBeFalsy();
-        expect(errorService.goToServiceError).toHaveBeenCalledWith(
-            'Your camera and microphone are blocked',
-            'Please unblock the camera and microphone or call us if there is a problem.',
-            false
-        );
+        expect(errorService.handlePexipError).toHaveBeenCalledWith(payload);
     });
 
     it('should hide video when video call has disconnected', () => {

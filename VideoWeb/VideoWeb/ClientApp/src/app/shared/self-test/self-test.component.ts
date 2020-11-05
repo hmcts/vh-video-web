@@ -200,11 +200,15 @@ export class SelfTestComponent implements OnInit, OnDestroy {
 
     handleCallError(error: CallError) {
         this.displayFeed = false;
-        this.logger.error(`${this.loggerPrefix} Error from pexip. Reason : ${error.reason}`, error.reason, {
+        this.logger.error(`${this.loggerPrefix} Error from pexip. Reason : ${error.reason}`, new Error(error.reason), {
             conference: this.conference?.id,
             participant: this.selfTestParticipantId,
             pexipError: error
         });
+        if (error.reason.includes('Error connecting to conference')) {
+            this.errorService.goToServiceError('Your connection was lost');
+            return;
+        }
         this.errorService.goToServiceError(
             'Your camera and microphone are blocked',
             'Please unblock the camera and microphone or call us if there is a problem.',

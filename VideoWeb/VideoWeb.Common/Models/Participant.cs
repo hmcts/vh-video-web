@@ -12,6 +12,7 @@ namespace VideoWeb.Common.Models
         public string ContactTelephone { get; set; }
         public string Username { get; set; }
         public Role Role { get; set; }
+        public string HearingRole { get; set; }
         public ParticipantStatus ParticipantStatus { get; set; }
         public string DisplayName { get; set; }
         public string CaseTypeGroup { get; set; }
@@ -20,6 +21,11 @@ namespace VideoWeb.Common.Models
         public bool IsJudge()
         {
             return Role == Role.Judge;
+        }
+
+        public bool IsWitness()
+        {
+            return HearingRole.Trim().Equals("witness", StringComparison.CurrentCultureIgnoreCase);
         }
     }
 }

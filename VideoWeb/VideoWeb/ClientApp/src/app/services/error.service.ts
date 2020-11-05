@@ -32,10 +32,14 @@ export class ErrorService {
                 return this.goToNotFound();
             default:
                 return this.goToServiceError(
-                    'An unexpected error occurred.',
+                    this.hasInternetConnection ? 'An unexpected error occurred.' : 'Your connection was lost',
                     'Please click "Reconnect" to return to the previous page. Call us if you keep seeing this message.'
                 );
         }
+    }
+
+    get hasInternetConnection(): boolean {
+        return window.navigator.onLine;
     }
 
     returnHomeIfUnauthorised(error: any): boolean {
