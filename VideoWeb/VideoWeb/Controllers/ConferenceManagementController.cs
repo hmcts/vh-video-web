@@ -38,7 +38,7 @@ namespace VideoWeb.Controllers
         /// <returns>Accepted status</returns>
         [HttpPost("{conferenceId}/start")]
         [SwaggerOperation(OperationId = "StartOrResumeVideoHearing")]
-        [ProducesResponseType((int) HttpStatusCode.Accepted)]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> StartOrResumeVideoHearingAsync(Guid conferenceId, StartHearingRequest request)
         {
             _logger.LogDebug("StartOrResumeVideoHearing");
@@ -68,7 +68,7 @@ namespace VideoWeb.Controllers
         /// <returns>Accepted status</returns>
         [HttpPost("{conferenceId}/pause")]
         [SwaggerOperation(OperationId = "PauseVideoHearing")]
-        [ProducesResponseType((int) HttpStatusCode.Accepted)]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> PauseVideoHearingAsync(Guid conferenceId)
         {
             _logger.LogDebug("PauseVideoHearing");
@@ -98,7 +98,7 @@ namespace VideoWeb.Controllers
         /// <returns>Accepted status</returns>
         [HttpPost("{conferenceId}/end")]
         [SwaggerOperation(OperationId = "EndVideoHearing")]
-        [ProducesResponseType((int) HttpStatusCode.Accepted)]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> EndVideoHearingAsync(Guid conferenceId)
         {
             _logger.LogDebug("EndVideoHearing");
@@ -129,7 +129,7 @@ namespace VideoWeb.Controllers
         /// <returns>Accepted status</returns>
         [HttpPost("{conferenceId}/participant/{participantId}/call")]
         [SwaggerOperation(OperationId = "CallWitness")]
-        [ProducesResponseType((int) HttpStatusCode.Accepted)]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> CallWitnessAsync(Guid conferenceId, Guid participantId)
         {
             _logger.LogDebug("CallWitness");
@@ -153,6 +153,43 @@ namespace VideoWeb.Controllers
             catch (VideoApiException ex)
             {
                 _logger.LogError(ex, "Unable to call witness {Participant} into video hearing {Conference}",
+                    participantId, conferenceId);
+                return StatusCode(ex.StatusCode, ex.Response);
+            }
+        }
+
+        /// <summary>
+        /// Call a witness into a video hearing
+        /// </summary>
+        /// <param name="conferenceId">conference id</param>
+        /// <param name="participantId">witness id</param>
+        /// <returns>Accepted status</returns>
+        [HttpPost("{conferenceId}/participant/{participantId}/dismiss")]
+        [SwaggerOperation(OperationId = "DismissWitness")]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        public async Task<IActionResult> DismissWitnessAsync(Guid conferenceId, Guid participantId)
+        {
+            _logger.LogDebug("DismissWitness");
+            var validatedRequest = await ValidateWitnessInConference(conferenceId, participantId);
+            if (validatedRequest != null)
+            {
+                return validatedRequest;
+            }
+
+            try
+            {
+                _logger.LogDebug("Sending request to dismiss witness {Participant} from video hearing {Conference}",
+                    participantId, conferenceId);
+                await _videoApiClient.TransferParticipantAsync(conferenceId, new TransferParticipantRequest
+                {
+                    Participant_id = participantId,
+                    Transfer_type = TransferType.Dismiss
+                });
+                return Accepted();
+            }
+            catch (VideoApiException ex)
+            {
+                _logger.LogError(ex, "Unable to dismiss witness {Participant} from video hearing {Conference}",
                     participantId, conferenceId);
                 return StatusCode(ex.StatusCode, ex.Response);
             }
