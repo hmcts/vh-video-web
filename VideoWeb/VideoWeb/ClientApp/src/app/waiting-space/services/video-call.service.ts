@@ -252,4 +252,12 @@ export class VideoCallService {
         });
         await this.apiClient.callWitness(conferenceId, participantId).toPromise();
     }
+
+    async dismissParticipantFromHearing(conferenceId: string, participantId: string) {
+        this.logger.info(`${this.loggerPrefix} Attempting to dismiss participant from hearing`, {
+            conference: conferenceId,
+            participant: participantId
+        });
+        await this.apiClient.dismissWitness(conferenceId, participantId).toPromise();
+    }
 }
