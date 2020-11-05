@@ -97,7 +97,9 @@ export abstract class WaitingRoomBaseComponent {
                 });
             })
             .catch(error => {
-                this.logger.error(`${this.loggerPrefix} There was an error getting a conference ${conferenceId}`, error, { conference: conferenceId });
+                this.logger.error(`${this.loggerPrefix} There was an error getting a conference ${conferenceId}`, error, {
+                    conference: conferenceId
+                });
                 this.loadingData = false;
                 this.errorService.handleApiError(error);
             });
@@ -110,7 +112,10 @@ export abstract class WaitingRoomBaseComponent {
             this.participant = this.conference.participants.find(
                 x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
             );
-            this.logger.info(`${this.loggerPrefix} Conference closed.`, { conference: this.conference.id, participant: this.participant.id });
+            this.logger.info(`${this.loggerPrefix} Conference closed.`, {
+                conference: this.conference.id,
+                participant: this.participant.id
+            });
         } catch (error) {
             this.logger.error(`${this.loggerPrefix} There was an error getting a conference when checking closed time`, error, {
                 conference: this.conference.id,
@@ -340,7 +345,9 @@ export abstract class WaitingRoomBaseComponent {
         this.errorCount++;
         this.connected = false;
         this.updateShowVideo();
-        this.logger.error(`${this.loggerPrefix} Error from pexip. Reason : ${error.reason}`, new Error(error.reason), { pexipError: error });
+        this.logger.error(`${this.loggerPrefix} Error from pexip. Reason : ${error.reason}`, new Error(error.reason), {
+            pexipError: error
+        });
         if (error.reason.includes('Error connecting to conference')) {
             this.errorService.goToServiceError('Your connection was lost');
             return;
