@@ -353,10 +353,6 @@ export abstract class WaitingRoomBaseComponent {
         this.errorCount++;
         this.connected = false;
         this.updateShowVideo();
-        const logPayload = {
-            conference: this.conference.id,
-            participant: this.participant.id
-        };
         this.logger.error(`${this.loggerPrefix} Error from pexip. Reason : ${error.reason}`, new Error(error.reason), {
             pexipError: error,
             conference: this.conference.id,
