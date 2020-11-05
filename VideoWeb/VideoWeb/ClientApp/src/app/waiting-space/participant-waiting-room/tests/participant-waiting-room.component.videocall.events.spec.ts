@@ -78,7 +78,7 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
         adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
             userInfo: <adal.User>{ userName: globalParticipant.username, authenticated: true }
         });
-        errorService = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError', 'handleApiError']);
+        errorService = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError', 'handleApiError', 'handlePexipError']);
 
         clockService = jasmine.createSpyObj<ClockService>('ClockService', ['getClock']);
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
@@ -196,25 +196,7 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
         expect(component.heartbeat.kill).toHaveBeenCalled();
         expect(component.errorCount).toBeGreaterThan(currentErrorCount);
         expect(component.showVideo).toBeFalsy();
-        expect(errorService.goToServiceError).toHaveBeenCalledWith(
-            'Your camera and microphone are blocked',
-            'Please unblock the camera and microphone or call us if there is a problem.',
-            false
-        );
-    });
-
-    it('should capture pexip connection error and go to service error page with correct message', () => {
-        const currentErrorCount = (component.errorCount = 0);
-        const payload = new CallError('Error connecting to conference');
-        component.heartbeat = mockHeartbeat;
-
-        onErrorSubject.next(payload);
-
-        expect(component.connected).toBeFalsy();
-        expect(component.heartbeat.kill).toHaveBeenCalled();
-        expect(component.errorCount).toBeGreaterThan(currentErrorCount);
-        expect(component.showVideo).toBeFalsy();
-        expect(errorService.goToServiceError).toHaveBeenCalledWith('Your connection was lost');
+        expect(errorService.handlePexipError).toHaveBeenCalledWith(payload);
     });
 
     it('should hide video when video call has disconnected and attempt to connect again', () => {
