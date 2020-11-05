@@ -5,6 +5,7 @@ import {
     Role,
     VideoEndpointResponse
 } from '../../services/clients/api-client';
+import { HearingRole } from './hearing-role-model';
 
 export abstract class PanelModel {
     public id: string;
@@ -19,6 +20,7 @@ export abstract class PanelModel {
     public caseTypeGroup: string;
     public hearingRole: string;
     public representee: string;
+    public transferringIn: boolean;
 
     constructor(
         id: string,
@@ -45,6 +47,10 @@ export abstract class PanelModel {
 
     get isJudge(): boolean {
         return this.role === Role.Judge;
+    }
+
+    get isWitness(): boolean {
+        return this.hearingRole === HearingRole.WITNESS;
     }
 
     private setOrderInTheList(): number {

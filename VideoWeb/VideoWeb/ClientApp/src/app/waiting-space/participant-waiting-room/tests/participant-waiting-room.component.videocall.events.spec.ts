@@ -203,6 +203,20 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
         );
     });
 
+    it('should capture pexip connection error and go to service error page with correct message', () => {
+        const currentErrorCount = (component.errorCount = 0);
+        const payload = new CallError('Error connecting to conference');
+        component.heartbeat = mockHeartbeat;
+
+        onErrorSubject.next(payload);
+
+        expect(component.connected).toBeFalsy();
+        expect(component.heartbeat.kill).toHaveBeenCalled();
+        expect(component.errorCount).toBeGreaterThan(currentErrorCount);
+        expect(component.showVideo).toBeFalsy();
+        expect(errorService.goToServiceError).toHaveBeenCalledWith('Your connection was lost');
+    });
+
     it('should hide video when video call has disconnected and attempt to connect again', () => {
         component.heartbeat = mockHeartbeat;
         const payload = new DisconnectedCall('test failure intentional');
