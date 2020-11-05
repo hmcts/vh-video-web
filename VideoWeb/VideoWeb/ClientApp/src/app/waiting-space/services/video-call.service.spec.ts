@@ -24,7 +24,8 @@ describe('VideoCallService', () => {
             'startOrResumeVideoHearing',
             'pauseVideoHearing',
             'endVideoHearing',
-            'callWitness'
+            'callWitness',
+            'dismissWitness'
         ]);
 
         userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
@@ -196,5 +197,13 @@ describe('VideoCallService', () => {
         const witnessId = Guid.create().toString();
         await service.callParticipantIntoHearing(conferenceId, witnessId);
         expect(apiClient.callWitness).toHaveBeenCalledWith(conferenceId, witnessId);
+    });
+
+    it('should make api dismiss witness on dismiss witness', async () => {
+        apiClient.dismissWitness.and.returnValue(of());
+        const conferenceId = Guid.create().toString();
+        const witnessId = Guid.create().toString();
+        await service.dismissParticipantFromHearing(conferenceId, witnessId);
+        expect(apiClient.dismissWitness).toHaveBeenCalledWith(conferenceId, witnessId);
     });
 });
