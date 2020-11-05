@@ -11,16 +11,16 @@
 
 .dropdown-content {
   position: absolute;
-    background-color: govuk-colour('white');
-    width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-    border-radius: 3px;
+  background-color: govuk-colour('white');
+  width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  border-radius: 3px;
 }
 
 .dropdown-content .dropdown-header {
-  padding:8px;
-  margin-bottom:-4px;
+  padding: 8px;
+  margin-bottom: -4px;
 }
 
 .dropdown-content hr {
@@ -31,7 +31,7 @@
 
 .dropdown-content a:hover {
   background-color: govuk-colour('green');
-  color: govuk-colour('white');;
+  color: govuk-colour('white');
 }
 
 .dropdown-content a {

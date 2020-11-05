@@ -12,7 +12,12 @@ import { HearingRole } from '../models/hearing-role-model';
 import { PanelModel, ParticipantPanelModel, VideoEndpointPanelModel } from '../models/participant-panel-model';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
-import { ToggleMuteParticipantEvent, ToggleSpotlightParticipantEvent, LowerParticipantHandEvent, CallWitnessIntoHearingEvent } from 'src/app/shared/models/participant-event';
+import {
+    ToggleMuteParticipantEvent,
+    ToggleSpotlightParticipantEvent,
+    LowerParticipantHandEvent,
+    CallWitnessIntoHearingEvent
+} from 'src/app/shared/models/participant-event';
 
 @Component({
     selector: 'app-participants-panel',
@@ -269,12 +274,13 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
     }
 
     lowerParticipantHand(participant: PanelModel) {
+        const p = this.participants.find(x => x.id === participant.id);        
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to lower hand for participant`, {
             conference: this.conferenceId,
-            participant: participant.id,
-            pexipParticipant: participant.pexipId
+            participant: p.id,
+            pexipParticipant: p.pexipId
         });
-        this.videoCallService.lowerHandById(participant.pexipId, this.conferenceId, participant.id);
+        this.videoCallService.lowerHandById(p.pexipId, this.conferenceId, p.id);
     }
 
     async callWitnessIntoHearing(participant: PanelModel) {

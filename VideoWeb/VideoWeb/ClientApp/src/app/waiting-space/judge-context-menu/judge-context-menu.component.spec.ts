@@ -35,8 +35,7 @@ describe('JudgeContextMenuComponent', () => {
         p.status = ParticipantStatus.InHearing;
         const model = new ParticipantPanelModel(p);
         component.participant = model;
-        expect(component.getAdditionalText()).toEqual(`<br/>${p.hearing_role} for ${p.representee}<br/>${p.case_type_group}`
-        );
+        expect(component.getAdditionalText()).toEqual(`<br/>${p.hearing_role} for ${p.representee}<br/>${p.case_type_group}`);
     });
 
     it('should getAdditionalText return hearing role and case role for an observer', () => {
