@@ -358,15 +358,7 @@ export abstract class WaitingRoomBaseComponent {
             conference: this.conference.id,
             participant: this.participant.id
         });
-        if (error.reason.includes('Error connecting to conference')) {
-            this.errorService.goToServiceError('Your connection was lost');
-            return;
-        }
-        this.errorService.goToServiceError(
-            'Your camera and microphone are blocked',
-            'Please unblock the camera and microphone or call us if there is a problem.',
-            false
-        );
+        this.errorService.handlePexipError(error);
     }
 
     handleCallDisconnect(reason: DisconnectedCall): void {
