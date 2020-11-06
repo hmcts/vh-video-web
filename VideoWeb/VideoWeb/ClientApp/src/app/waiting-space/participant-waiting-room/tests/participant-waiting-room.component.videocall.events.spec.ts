@@ -196,7 +196,11 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
         expect(component.heartbeat.kill).toHaveBeenCalled();
         expect(component.errorCount).toBeGreaterThan(currentErrorCount);
         expect(component.showVideo).toBeFalsy();
-        expect(errorService.handlePexipError).toHaveBeenCalledWith(payload);
+        expect(errorService.goToServiceError).toHaveBeenCalledWith(
+            'Your camera and microphone are blocked',
+            'Please unblock the camera and microphone or call us if there is a problem.',
+            false
+        );
     });
 
     it('should hide video when video call has disconnected and attempt to connect again', () => {
