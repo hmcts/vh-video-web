@@ -52,7 +52,7 @@
     "ngx-moment": "^5.0.0",
     "run-script-os": "^1.1.1",
     "rxjs": "^6.6.3",
-    "snyk": "^1.413.4",
+    "snyk": "^1.414.0",
     "webrtc-adapter": "^7.7.0",
     "zone.js": "~0.11.1",
     "tslib": "^2.0.3"
