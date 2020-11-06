@@ -84,7 +84,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
             userInfo: <adal.User>{ userName: globalParticipant.username, authenticated: true }
         });
-        errorService = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError', 'handleApiError']);
+        errorService = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError', 'handleApiError', 'handlePexipError']);
 
         clockService = jasmine.createSpyObj<ClockService>('ClockService', ['getClock']);
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
@@ -261,11 +261,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.heartbeat.kill).toHaveBeenCalled();
         expect(component.errorCount).toBeGreaterThan(currentErrorCount);
         expect(component.showVideo).toBeFalsy();
-        expect(errorService.goToServiceError).toHaveBeenCalledWith(
-            'Your camera and microphone are blocked',
-            'Please unblock the camera and microphone or call us if there is a problem.',
-            false
-        );
+        expect(errorService.handlePexipError).toHaveBeenCalledWith(payload);
     });
 
     it('should start the hearing', async () => {
