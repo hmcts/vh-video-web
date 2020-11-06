@@ -36,7 +36,9 @@ export class JudgeContextMenuComponent {
     @HostListener('document:click', ['$event'])
     clickout(event) {
         if (!this.elementRef.nativeElement.contains(event.target)) {
-            this.logger.debug(`${this.loggerPrefix} Closing context menu`, { participant: this.participant.id });
+            this.logger.debug(`${this.loggerPrefix} Hiding the context menu, click detected outside of this element`, {
+                participant: this.participant.id
+            });
             this.isDroppedDown = false;
         }
     }
