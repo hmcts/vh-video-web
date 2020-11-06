@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { pageUrls } from '../shared/page-url.constants';
 import { MockLogger } from '../testing/mocks/MockLogger';
+import { CallError } from '../waiting-space/models/video-call-models';
 import { ErrorService } from './error.service';
 import { Logger } from './logging/logger-base';
 
@@ -77,6 +78,59 @@ describe('ErrorService', () => {
             const error = { status: 401, isApiException: true };
             expect(service.returnHomeIfUnauthorised(error)).toBeTruthy();
             expect(router.navigate).toHaveBeenCalledWith([pageUrls.Home]);
+        }
+    ));
+
+    it('should navigate to service error with connection lost message when pexip error message has connection related text', inject(
+        [ErrorService],
+        (service: ErrorService) => {
+            spyOn(service, 'goToServiceError');
+            const error = new CallError('Error connecting to conference');
+            service.handlePexipError(error);
+            expect(service.goToServiceError).toHaveBeenCalledWith('Your connection was lost');
+        }
+    ));
+
+    it('should navigate to service error with connection lost message when pexip error message has firewall or browser extensions issue', inject(
+        [ErrorService],
+        (service: ErrorService) => {
+            spyOn(service, 'goToServiceError');
+            const error = new CallError('Call failed: a firewall may be blocking access.');
+            service.handlePexipError(error);
+            expect(service.goToServiceError).toHaveBeenCalledWith(
+                'Your connection was lost',
+                'Please check your firewall settings and disable any privacy extensions that may block connections.'
+            );
+        }
+    ));
+
+    it('should navigate to service error with media blocked message when pexip return a media related', inject(
+        [ErrorService],
+        (service: ErrorService) => {
+            spyOn(service, 'goToServiceError');
+            const error = new CallError(
+                `Your camera and/or microphone are not available. Please make sure they are not being actively used by another app`
+            );
+            service.handlePexipError(error);
+            expect(service.goToServiceError).toHaveBeenCalledWith(
+                'Your camera and microphone are blocked',
+                'Please unblock the camera and microphone or call us if there is a problem.',
+                false
+            );
+        }
+    ));
+
+    it('should navigate to service error with default message when pexip error message is generic', inject(
+        [ErrorService],
+        (service: ErrorService) => {
+            spyOn(service, 'goToServiceError');
+            spyOnProperty(service, 'hasInternetConnection').and.returnValue(true);
+            const error = new CallError('This meeting has reached the maximum number of participants.');
+            service.handlePexipError(error);
+            expect(service.goToServiceError).toHaveBeenCalledWith(
+                'An unexpected error occurred',
+                'Please click "Reconnect" to return to the previous page. Call us if you keep seeing this message.'
+            );
         }
     ));
 });
