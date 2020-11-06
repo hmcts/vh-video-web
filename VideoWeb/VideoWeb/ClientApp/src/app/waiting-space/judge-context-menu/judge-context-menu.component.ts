@@ -36,6 +36,7 @@ export class JudgeContextMenuComponent {
     @HostListener('document:click', ['$event'])
     clickout(event) {
         if (!this.elementRef.nativeElement.contains(event.target)) {
+            this.logger.debug(`${this.loggerPrefix} Closing context menu`, { participant: this.participant.id });
             this.isDroppedDown = false;
         }
     }
@@ -65,6 +66,9 @@ export class JudgeContextMenuComponent {
     }
 
     toggleDropdown() {
+        this.logger.debug(`${this.loggerPrefix} ${this.isDroppedDown ? 'Hiding the context menu' : 'Showing the context menu'}`, {
+            participant: this.participant.id
+        });
         this.isDroppedDown = !this.isDroppedDown;
     }
 
