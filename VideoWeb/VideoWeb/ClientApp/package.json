@@ -52,14 +52,14 @@
     "ngx-moment": "^5.0.0",
     "run-script-os": "^1.1.1",
     "rxjs": "^6.6.3",
-    "snyk": "^1.413.4",
+    "snyk": "^1.414.0",
     "webrtc-adapter": "^7.7.0",
     "zone.js": "~0.11.1",
     "tslib": "^2.0.3"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1002.0",
-    "@angular/cli": "^10.1.6",
+    "@angular/cli": "^10.1.7",
     "@angular/compiler-cli": "^10.1.6",
     "@angular/language-service": "^10.1.5",
     "@testpossessed/ts-data-builder": "^1.0.1",

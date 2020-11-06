@@ -13,7 +13,7 @@ using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 {
-    public class CallWitnessTests : ConferenceManagementControllerTestBase
+    public class DismissWitnessTests : ConferenceManagementControllerTestBase
     {
         [SetUp]
         public void Setup()
@@ -31,8 +31,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.CallWitnessAsync(TestConference.Id, participant.Id);
-            result.Should().BeOfType<UnauthorizedObjectResult>();
+            var result = await Controller.DismissWitnessAsync(TestConference.Id, participant.Id);
             var typedResult = (UnauthorizedObjectResult) result;
             typedResult.Should().NotBeNull();
 
@@ -61,7 +60,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.IsAny<TransferParticipantRequest>())).ThrowsAsync(apiException);
 
-            var result = await Controller.CallWitnessAsync(TestConference.Id,witness.Id);
+            var result = await Controller.DismissWitnessAsync(TestConference.Id,witness.Id);
             result.Should().BeOfType<ObjectResult>();
             var typedResult = (ObjectResult) result;
             typedResult.Value.Should().Be(responseMessage);
@@ -79,15 +78,14 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.CallWitnessAsync(TestConference.Id, witness.Id);
-            result.Should().BeOfType<AcceptedResult>();
+            var result = await Controller.DismissWitnessAsync(TestConference.Id, witness.Id);
             var typedResult = (AcceptedResult) result;
             typedResult.Should().NotBeNull();
 
             VideoApiClientMock.Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.Is<TransferParticipantRequest>(r =>
-                        r.Participant_id == witness.Id && r.Transfer_type == TransferType.Call)), Times.Once);
+                        r.Participant_id == witness.Id && r.Transfer_type == TransferType.Dismiss)), Times.Once);
         }
     }
 }

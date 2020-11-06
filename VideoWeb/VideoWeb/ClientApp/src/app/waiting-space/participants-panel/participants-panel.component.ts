@@ -251,14 +251,14 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         this.videoCallService.lowerAllHands(this.conferenceId);
     }
 
-    lowerParticipantHand(participantId: string) {
-        const participant = this.participants.find(x => x.id === participantId);
+    lowerParticipantHand(participant: PanelModel) {
+        const p = this.participants.find(x => x.id === participant.id);
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to lower hand for participant`, {
             conference: this.conferenceId,
-            participant: participant.id,
-            pexipParticipant: participant.pexipId
+            participant: p.id,
+            pexipParticipant: p.pexipId
         });
-        this.videoCallService.lowerHandById(participant.pexipId, this.conferenceId, participant.id);
+        this.videoCallService.lowerHandById(p.pexipId, this.conferenceId, p.id);
     }
 
     async callWitnessIntoHearing(participant: PanelModel) {
@@ -271,6 +271,17 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         });
         participant.transferringIn = true;
         await this.videoCallService.callParticipantIntoHearing(this.conferenceId, participant.id);
+    }
+
+    async dismissWitnessFromHearing(participant: PanelModel) {
+        if (!participant.isInHearing() || !participant.isWitness) {
+            return;
+        }
+        this.logger.debug(`${this.loggerPrefix} Judge is attempting to dismiss witness from hearing`, {
+            conference: this.conferenceId,
+            participant: participant.id
+        });
+        await this.videoCallService.dismissParticipantFromHearing(this.conferenceId, participant.id);
     }
 
     onScroll() {
