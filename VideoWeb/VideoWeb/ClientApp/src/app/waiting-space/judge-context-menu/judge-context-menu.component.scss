@@ -1,0 +1,43 @@
+@import '~govuk-frontend/govuk/base';
+
+.panel-icon {
+  width: 24px;
+  cursor: pointer;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-top: 10px;
+  z-index: 130;
+}
+
+.dropdown-content {
+  position: absolute;
+  background-color: govuk-colour('white');
+  width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  border-radius: 3px;
+}
+
+.dropdown-content .dropdown-header {
+  padding: 8px;
+  margin-bottom: -4px;
+}
+
+.dropdown-content hr {
+  border: 0;
+  height: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-content a:hover {
+  background-color: govuk-colour('green');
+  color: govuk-colour('white');
+}
+
+.dropdown-content a {
+  cursor: pointer;
+  color: black;
+  padding: 8px 12px;
+  text-decoration: none;
+  display: block;
+}

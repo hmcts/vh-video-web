@@ -13,6 +13,13 @@ import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { HearingRole } from '../models/hearing-role-model';
+import {
+    ToggleMuteParticipantEvent,
+    ToggleSpotlightParticipantEvent,
+    LowerParticipantHandEvent,
+    CallWitnessIntoHearingEvent,
+    DismissWitnessFromHearingEvent
+} from 'src/app/shared/models/participant-event';
 
 describe('ParticipantsPanelComponent', () => {
     const conferenceId = '1111-1111-1111';
@@ -593,5 +600,71 @@ describe('ParticipantsPanelComponent', () => {
         p.status = ParticipantStatus.NotSignedIn;
         const model = new ParticipantPanelModel(p);
         expect(component.getPanelRowTooltipColour(model)).toBe('grey');
+    });
+
+    it('should toggle mute participant on event', () => {
+        // Arrange
+        const p = participants[0];
+        const model = new ParticipantPanelModel(p);
+        spyOn(component, 'toggleMuteParticipant');
+
+        // Act
+        component.toggleMuteParticipantEventHandler(new ToggleMuteParticipantEvent(model));
+
+        // Assert
+        expect(component.toggleMuteParticipant).toHaveBeenCalled();
+        expect(component.toggleMuteParticipant).toHaveBeenCalledWith(model);
+    });
+    it('should toggle spotlight participant on event', () => {
+        // Arrange
+        const p = participants[0];
+        const model = new ParticipantPanelModel(p);
+        spyOn(component, 'toggleSpotlightParticipant');
+
+        // Act
+        component.toggleSpotlightParticipantEventHandler(new ToggleSpotlightParticipantEvent(model));
+
+        // Assert
+        expect(component.toggleSpotlightParticipant).toHaveBeenCalled();
+        expect(component.toggleSpotlightParticipant).toHaveBeenCalledWith(model);
+    });
+    it('should lower participants hand on event', () => {
+        // Arrange
+        const p = participants[0];
+        const model = new ParticipantPanelModel(p);
+        spyOn(component, 'lowerParticipantHand');
+
+        // Act
+        component.lowerParticipantHandEventHandler(new LowerParticipantHandEvent(model));
+
+        // Assert
+        expect(component.lowerParticipantHand).toHaveBeenCalled();
+        expect(component.lowerParticipantHand).toHaveBeenCalledWith(model);
+    });
+    it('should call witness into hearing on event', () => {
+        // Arrange
+        const p = participants[0];
+        const model = new ParticipantPanelModel(p);
+        spyOn(component, 'callWitnessIntoHearing');
+
+        // Act
+        component.callWitnessIntoHearingEventHandler(new CallWitnessIntoHearingEvent(model));
+
+        // Assert
+        expect(component.callWitnessIntoHearing).toHaveBeenCalled();
+        expect(component.callWitnessIntoHearing).toHaveBeenCalledWith(model);
+    });
+    it('should dismiss witness from hearing on event', () => {
+        // Arrange
+        const p = participants[0];
+        const model = new ParticipantPanelModel(p);
+        spyOn(component, 'dismissWitnessFromHearing');
+
+        // Act
+        component.dismissWitnessFromHearingEventHandler(new DismissWitnessFromHearingEvent(model));
+
+        // Assert
+        expect(component.dismissWitnessFromHearing).toHaveBeenCalled();
+        expect(component.dismissWitnessFromHearing).toHaveBeenCalledWith(model);
     });
 });

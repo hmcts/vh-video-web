@@ -12,6 +12,13 @@ import { HearingRole } from '../models/hearing-role-model';
 import { PanelModel, ParticipantPanelModel, VideoEndpointPanelModel } from '../models/participant-panel-model';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
+import {
+    ToggleMuteParticipantEvent,
+    ToggleSpotlightParticipantEvent,
+    LowerParticipantHandEvent,
+    CallWitnessIntoHearingEvent,
+    DismissWitnessFromHearingEvent
+} from 'src/app/shared/models/participant-event';
 
 @Component({
     selector: 'app-participants-panel',
@@ -58,6 +65,26 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
 
     ngAfterViewInit() {
         setTimeout(() => this.initializeScrolling(), 1000);
+    }
+
+    toggleMuteParticipantEventHandler(e: ToggleMuteParticipantEvent) {
+        this.toggleMuteParticipant(e.participant);
+    }
+
+    toggleSpotlightParticipantEventHandler(e: ToggleSpotlightParticipantEvent) {
+        this.toggleSpotlightParticipant(e.participant);
+    }
+
+    lowerParticipantHandEventHandler(e: LowerParticipantHandEvent) {
+        this.lowerParticipantHand(e.participant);
+    }
+
+    callWitnessIntoHearingEventHandler(e: CallWitnessIntoHearingEvent) {
+        this.callWitnessIntoHearing(e.participant);
+    }
+
+    dismissWitnessFromHearingEventHandler(e: DismissWitnessFromHearingEvent) {
+        this.dismissWitnessFromHearing(e.participant);
     }
 
     initializeScrolling() {
