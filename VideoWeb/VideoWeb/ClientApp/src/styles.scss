@@ -193,3 +193,7 @@ $govuk-global-styles: true;
 video {
   pointer-events: none;
 }
+
+.vh-overflow {
+  overflow-wrap: break-word;
+}
