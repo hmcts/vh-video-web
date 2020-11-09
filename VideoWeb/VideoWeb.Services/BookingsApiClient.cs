@@ -4224,7 +4224,7 @@ namespace VideoWeb.Services.Bookings
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
     public partial class AddEndpointRequest 
     {
-        [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Display_name { get; set; }
     
         [Newtonsoft.Json.JsonProperty("defence_advocate_username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -4245,7 +4245,7 @@ namespace VideoWeb.Services.Bookings
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
     public partial class UpdateEndpointRequest 
     {
-        [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Display_name { get; set; }
     
         [Newtonsoft.Json.JsonProperty("defence_advocate_username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -4408,7 +4408,7 @@ namespace VideoWeb.Services.Bookings
         public string Title { get; set; }
     
         /// <summary>Participant first name.</summary>
-        [Newtonsoft.Json.JsonProperty("first_name", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("first_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string First_name { get; set; }
     
         /// <summary>Participant middle name.</summary>
@@ -4416,11 +4416,11 @@ namespace VideoWeb.Services.Bookings
         public string Middle_names { get; set; }
     
         /// <summary>Participant last name.</summary>
-        [Newtonsoft.Json.JsonProperty("last_name", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("last_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Last_name { get; set; }
     
         /// <summary>Participant Contact Email</summary>
-        [Newtonsoft.Json.JsonProperty("contact_email", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("contact_email", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Contact_email { get; set; }
     
         /// <summary>Participant Telephone number</summary>
@@ -4428,19 +4428,19 @@ namespace VideoWeb.Services.Bookings
         public string Telephone_number { get; set; }
     
         /// <summary>Participant Username</summary>
-        [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Username { get; set; }
     
         /// <summary>Participant Display Name</summary>
-        [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Display_name { get; set; }
     
         /// <summary>The name of the participant's case role</summary>
-        [Newtonsoft.Json.JsonProperty("case_role_name", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("case_role_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Case_role_name { get; set; }
     
         /// <summary>The name of the participant's hearing role</summary>
-        [Newtonsoft.Json.JsonProperty("hearing_role_name", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("hearing_role_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Hearing_role_name { get; set; }
     
         /// <summary>The representee of a representative</summary>
@@ -4467,7 +4467,7 @@ namespace VideoWeb.Services.Bookings
     public partial class AddParticipantsToHearingRequest 
     {
         /// <summary>List of participants</summary>
-        [Newtonsoft.Json.JsonProperty("participants", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("participants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.List<ParticipantRequest> Participants { get; set; }
     
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
@@ -4494,7 +4494,7 @@ namespace VideoWeb.Services.Bookings
         public string Telephone_number { get; set; }
     
         /// <summary>Participant Display Name</summary>
-        [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("display_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Display_name { get; set; }
     
         /// <summary>Participant Organisation</summary>
@@ -4726,11 +4726,11 @@ namespace VideoWeb.Services.Bookings
     public partial class CaseRequest 
     {
         /// <summary>The case number</summary>
-        [Newtonsoft.Json.JsonProperty("number", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Number { get; set; }
     
         /// <summary>The case name</summary>
-        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Name { get; set; }
     
         /// <summary>Is lead case for hearing</summary>
@@ -4761,7 +4761,7 @@ namespace VideoWeb.Services.Bookings
         public int Scheduled_duration { get; set; }
     
         /// <summary>The name of the hearing venue</summary>
-        [Newtonsoft.Json.JsonProperty("hearing_venue_name", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("hearing_venue_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Hearing_venue_name { get; set; }
     
         /// <summary>The hearing room name at the hearing venue</summary>
@@ -4777,7 +4777,7 @@ namespace VideoWeb.Services.Bookings
         public System.Collections.Generic.List<CaseRequest> Cases { get; set; }
     
         /// <summary>User updated the hearing record</summary>
-        [Newtonsoft.Json.JsonProperty("updated_by", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("updated_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Updated_by { get; set; }
     
         /// <summary>QuestionnaireNotRequired</summary>
@@ -4819,7 +4819,7 @@ namespace VideoWeb.Services.Bookings
     public partial class UpdateBookingStatusRequest 
     {
         /// <summary>The user requesting to update the status</summary>
-        [Newtonsoft.Json.JsonProperty("updated_by", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("updated_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Updated_by { get; set; }
     
         [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -4875,23 +4875,23 @@ namespace VideoWeb.Services.Bookings
         public int Scheduled_duration { get; set; }
     
         /// <summary>The name of the hearing venue</summary>
-        [Newtonsoft.Json.JsonProperty("hearing_venue_name", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("hearing_venue_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Hearing_venue_name { get; set; }
     
         /// <summary>The name of the case type</summary>
-        [Newtonsoft.Json.JsonProperty("case_type_name", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("case_type_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Case_type_name { get; set; }
     
         /// <summary>The name of the hearing type</summary>
-        [Newtonsoft.Json.JsonProperty("hearing_type_name", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("hearing_type_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Hearing_type_name { get; set; }
     
         /// <summary>List of cases associated to the hearing</summary>
-        [Newtonsoft.Json.JsonProperty("cases", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("cases", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.List<CaseRequest> Cases { get; set; }
     
         /// <summary>List of participants in hearing</summary>
-        [Newtonsoft.Json.JsonProperty("participants", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("participants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Collections.Generic.List<ParticipantRequest> Participants { get; set; }
     
         /// <summary>The hearing room name at the hearing venue</summary>
