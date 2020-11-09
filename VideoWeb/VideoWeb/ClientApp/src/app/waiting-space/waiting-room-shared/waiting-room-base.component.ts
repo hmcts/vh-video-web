@@ -26,6 +26,8 @@ import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { HearingRole } from '../models/hearing-role-model';
+import { NotificationSoundsService } from '../services/notification-sounds.service';
+import { HearingTransfer, TransferPosition } from 'src/app/services/models/hearing-transfer';
 
 declare var HeartbeatFactory: any;
 
@@ -48,6 +50,7 @@ export abstract class WaitingRoomBaseComponent {
     outgoingStream: MediaStream | URL;
 
     showVideo: boolean;
+    isTransferringIn: boolean = true;
     isPrivateConsultation: boolean;
     isAdminConsultation: boolean;
     showConsultationControls: boolean;
@@ -70,7 +73,8 @@ export abstract class WaitingRoomBaseComponent {
         protected router: Router,
         protected consultationService: ConsultationService,
         protected userMediaService: UserMediaService,
-        protected userMediaStreamService: UserMediaStreamService
+        protected userMediaStreamService: UserMediaStreamService,
+        protected notificationSoundsService: NotificationSoundsService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -182,6 +186,14 @@ export abstract class WaitingRoomBaseComponent {
                 if (message.result === ConsultationAnswer.Accepted) {
                     this.onConsultationAccepted();
                 }
+            })
+        );
+
+        this.logger.debug('[WR] - Subscribing to hearing transfer message');
+        this.eventHubSubscription$.add(
+            this.eventService.getHearingTransfer().subscribe(async message => {
+                this.handleHearingTransferChange(message);
+                this.updateShowVideo();
             })
         );
     }
@@ -431,6 +443,10 @@ export abstract class WaitingRoomBaseComponent {
         this.hearing.getEndpoints()[index].status = message.status;
     }
 
+    handleHearingTransferChange(message: HearingTransfer) {
+        this.isTransferringIn = message.transferDirection == TransferPosition.In;
+    }
+
     protected validateIsForConference(conferenceId: string): boolean {
         if (conferenceId !== this.hearing.id) {
             this.logger.info(`${this.loggerPrefix} message not for current conference`);
@@ -539,5 +555,9 @@ export abstract class WaitingRoomBaseComponent {
             cameraId: cam.deviceId,
             microphoneId: mic.deviceId
         });
+    }
+
+    get showExtraContent(): boolean {
+        return !this.showVideo && !this.isTransferringIn;
     }
 }

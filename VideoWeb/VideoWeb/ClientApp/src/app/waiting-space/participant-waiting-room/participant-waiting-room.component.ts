@@ -46,7 +46,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         private clockService: ClockService,
         protected userMediaService: UserMediaService,
         protected userMediaStreamService: UserMediaStreamService,
-        private notificationSoundsService: NotificationSoundsService
+        protected notificationSoundsService: NotificationSoundsService
     ) {
         super(
             route,
@@ -61,7 +61,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
             router,
             consultationService,
             userMediaService,
-            userMediaStreamService
+            userMediaStreamService,
+            notificationSoundsService
         );
     }
 
@@ -69,6 +70,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         this.errorCount = 0;
         this.logger.debug('[Participant WR] - Loading participant waiting room');
         this.connected = false;
+        this.notificationSoundsService.initHearingAlert();
         this.getConference().then(() => {
             this.subscribeToClock();
             this.startEventHubSubscribers();
@@ -154,6 +156,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     }
 
     get isWitness(): boolean {
-        return this.participant.hearing_role === HearingRole.WITNESS;
+        return this.participant?.hearing_role === HearingRole.WITNESS;
     }
 }

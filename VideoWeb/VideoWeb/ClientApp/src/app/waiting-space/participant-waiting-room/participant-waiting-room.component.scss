@@ -68,3 +68,16 @@
 .remote-container {
   margin-left: -1vw;
 }
+
+#outgoingFeedVideoTransfer {
+  bottom: 5.5vh;
+  width: 259px;
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg); /* Safari and Chrome */
+  -moz-transform: rotateY(180deg); /* Firefox */
+}
+
+.transferFeedImage {
+  height: 123.5px;
+  width: 150px;
+}

@@ -8,7 +8,6 @@ export class NotificationSoundsService {
 
     consultationRequestSound: HTMLAudioElement;
 
-    hearingAlertSound: HTMLAudioElement;
     hearingAlertPlayCount: number;
 
     initConsultationRequestRingtone(): void {
