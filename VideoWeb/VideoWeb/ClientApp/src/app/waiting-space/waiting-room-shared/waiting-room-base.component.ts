@@ -26,6 +26,7 @@ import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { HearingRole } from '../models/hearing-role-model';
+import { NotificationSoundsService } from '../services/notification-sounds.service';
 
 declare var HeartbeatFactory: any;
 
@@ -69,7 +70,8 @@ export abstract class WaitingRoomBaseComponent {
         protected router: Router,
         protected consultationService: ConsultationService,
         protected userMediaService: UserMediaService,
-        protected userMediaStreamService: UserMediaStreamService
+        protected userMediaStreamService: UserMediaStreamService,
+        protected notificationSoundsService: NotificationSoundsService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;

@@ -132,7 +132,8 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
             consultationService,
             clockService,
             userMediaService,
-            userMediaStreamService
+            userMediaStreamService,
+            notificationsSoundsService
         );
         adalService.userInfo.userName = globalParticipant.username;
 
