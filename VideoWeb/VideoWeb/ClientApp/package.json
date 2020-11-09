@@ -52,7 +52,7 @@
     "ngx-moment": "^5.0.0",
     "run-script-os": "^1.1.1",
     "rxjs": "^6.6.3",
-    "snyk": "^1.414.0",
+    "snyk": "^1.414.1",
     "webrtc-adapter": "^7.7.0",
     "zone.js": "~0.11.1",
     "tslib": "^2.0.3"
@@ -64,7 +64,7 @@
     "@angular/language-service": "^10.1.5",
     "@testpossessed/ts-data-builder": "^1.0.1",
     "@types/applicationinsights-js": "^1.0.9",
-    "@types/chart.js": "^2.9.25",
+    "@types/chart.js": "^2.9.26",
     "@types/jasmine": "^3.5.14",
     "@types/jasminewd2": "^2.0.8",
     "@types/node": "~12.12.67",
