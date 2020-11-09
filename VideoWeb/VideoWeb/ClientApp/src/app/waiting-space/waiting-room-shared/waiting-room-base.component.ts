@@ -55,6 +55,7 @@ export abstract class WaitingRoomBaseComponent {
 
     CALL_TIMEOUT = 31000; // 31 seconds
     callbackTimeout: NodeJS.Timer;
+    private readonly loggerPrefix = '[WR] -';
 
     protected constructor(
         protected route: ActivatedRoute,
@@ -90,13 +91,15 @@ export abstract class WaitingRoomBaseComponent {
                 this.participant = data.participants.find(
                     x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
                 );
-                this.logger.debug(`[WR] - Getting conference details`, {
+                this.logger.debug(`${this.loggerPrefix} Getting conference details`, {
                     conference: this.conference.id,
                     participant: this.participant.id
                 });
             })
             .catch(error => {
-                this.logger.error(`[WR] - There was an error getting a conference ${conferenceId}`, error, { conference: conferenceId });
+                this.logger.error(`${this.loggerPrefix} There was an error getting a conference ${conferenceId}`, error, {
+                    conference: conferenceId
+                });
                 this.loadingData = false;
                 this.errorService.handleApiError(error);
             });
@@ -109,9 +112,12 @@ export abstract class WaitingRoomBaseComponent {
             this.participant = this.conference.participants.find(
                 x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
             );
-            this.logger.info(`[WR] - Conference closed.`, { conference: this.conference.id, participant: this.participant.id });
+            this.logger.info(`${this.loggerPrefix} Conference closed.`, {
+                conference: this.conference.id,
+                participant: this.participant.id
+            });
         } catch (error) {
-            this.logger.error(`[WR] - There was an error getting a conference when checking closed time`, error, {
+            this.logger.error(`${this.loggerPrefix} There was an error getting a conference when checking closed time`, error, {
                 conference: this.conference.id,
                 participant: this.participant.id
             });
@@ -119,7 +125,7 @@ export abstract class WaitingRoomBaseComponent {
     }
 
     startEventHubSubscribers() {
-        this.logger.debug('[WR] - Subscribing to conference status changes...');
+        this.logger.debug(`${this.loggerPrefix} Subscribing to conference status changes...`);
         this.eventHubSubscription$.add(
             this.eventService.getHearingStatusMessage().subscribe(message => {
                 this.handleConferenceStatusChange(message);
@@ -127,7 +133,7 @@ export abstract class WaitingRoomBaseComponent {
             })
         );
 
-        this.logger.debug('[WR] - Subscribing to participant status changes...');
+        this.logger.debug(`${this.loggerPrefix} Subscribing to participant status changes...`);
         this.eventHubSubscription$.add(
             this.eventService.getParticipantStatusMessage().subscribe(message => {
                 this.handleParticipantStatusChange(message);
@@ -135,7 +141,7 @@ export abstract class WaitingRoomBaseComponent {
             })
         );
 
-        this.logger.debug('[WR] - Subscribing to endpoint status changes...');
+        this.logger.debug(`${this.loggerPrefix} Subscribing to endpoint status changes...`);
         this.eventHubSubscription$.add(
             this.eventService.getEndpointStatusMessage().subscribe(message => {
                 this.handleEndpointStatusChange(message);
@@ -143,7 +149,7 @@ export abstract class WaitingRoomBaseComponent {
             })
         );
 
-        this.logger.debug('[WR] - Subscribing to admin consultation messages...');
+        this.logger.debug(`${this.loggerPrefix} Subscribing to admin consultation messages...`);
         this.eventHubSubscription$.add(
             this.eventService.getAdminConsultationMessage().subscribe(message => {
                 if (message.answer && message.answer === ConsultationAnswer.Accepted) {
@@ -152,17 +158,17 @@ export abstract class WaitingRoomBaseComponent {
             })
         );
 
-        this.logger.debug('[WR] - Subscribing to EventHub disconnects');
+        this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub disconnects`);
         this.eventHubSubscription$.add(
             this.eventService.getServiceDisconnected().subscribe(async attemptNumber => {
                 await this.handleEventHubDisconnection(attemptNumber);
             })
         );
 
-        this.logger.debug('[WR] - Subscribing to EventHub reconnects');
+        this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub reconnects`);
         this.eventHubSubscription$.add(
             this.eventService.getServiceReconnected().subscribe(() => {
-                this.logger.info(`[WR] - EventHub re-connected`, {
+                this.logger.info(`${this.loggerPrefix} EventHub re-connected`, {
                     conference: this.conference.id,
                     participant: this.participant.id
                 });
@@ -170,7 +176,7 @@ export abstract class WaitingRoomBaseComponent {
             })
         );
 
-        this.logger.debug('[WR] - Subscribing to EventHub consultation message');
+        this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub consultation message`);
         this.eventHubSubscription$.add(
             this.eventService.getConsultationMessage().subscribe(message => {
                 if (message.result === ConsultationAnswer.Accepted) {
@@ -182,7 +188,7 @@ export abstract class WaitingRoomBaseComponent {
 
     async onConsultationAccepted() {
         if (this.displayDeviceChangeModal) {
-            this.logger.debug('[WR] - Participant accepted a consultation. Closing change device modal.');
+            this.logger.debug(`${this.loggerPrefix} Participant accepted a consultation. Closing change device modal.`);
             const preferredCamera = await this.userMediaService.getPreferredCamera();
             const preferredMicrophone = await this.userMediaService.getPreferredMicrophone();
             const preferredCameraStream = await this.userMediaStreamService.getStreamForCam(preferredCamera);
@@ -201,12 +207,12 @@ export abstract class WaitingRoomBaseComponent {
             connectionAttempt: reconnectionAttempt
         };
         if (reconnectionAttempt < 7) {
-            this.logger.debug(`[WR] - EventHub disconnection`, logPayload);
+            this.logger.debug(`${this.loggerPrefix} EventHub disconnection`, logPayload);
             try {
                 await this.getConference();
                 this.updateShowVideo();
             } catch (error) {
-                this.logger.warn(`[WR] - Failed to recover from disconnection`, logPayload);
+                this.logger.warn(`${this.loggerPrefix} Failed to recover from disconnection`, logPayload);
                 this.errorService.handleApiError(error);
             }
         }
@@ -255,19 +261,19 @@ export abstract class WaitingRoomBaseComponent {
             participant: this.participant.id
         };
         try {
-            this.logger.debug('[WR] - Retrieving jwtoken for heartbeat', logPayload);
+            this.logger.debug(`${this.loggerPrefix} Retrieving jwtoken for heartbeat`, logPayload);
             this.token = await this.videoWebService.getJwToken(this.participant.id);
-            this.logger.debug('[WR] - Retrieved jwtoken for heartbeat', logPayload);
+            this.logger.debug(`${this.loggerPrefix} Retrieved jwtoken for heartbeat`, logPayload);
             await this.setupPexipEventSubscriptionAndClient();
             this.call();
         } catch (error) {
-            this.logger.error(`[WR] - There was an error getting a jwtoken for heartbeat`, error, logPayload);
+            this.logger.error(`${this.loggerPrefix} There was an error getting a jwtoken for heartbeat`, error, logPayload);
             this.errorService.handleApiError(error);
         }
     }
 
     async setupPexipEventSubscriptionAndClient() {
-        this.logger.debug('[WR] - Setting up pexip client and event subscriptions');
+        this.logger.debug(`${this.loggerPrefix} Setting up pexip client and event subscriptions`);
 
         this.videoCallSubscription$.add(this.videoCallService.onCallSetup().subscribe(setup => this.handleCallSetup(setup)));
         this.videoCallSubscription$.add(
@@ -284,11 +290,15 @@ export abstract class WaitingRoomBaseComponent {
     }
 
     call() {
-        this.logger.info('[WR] - calling pexip');
+        this.logger.info(`${this.loggerPrefix} calling pexip`);
         const pexipNode = this.hearing.getConference().pexip_node_uri;
         const conferenceAlias = this.hearing.getConference().participant_uri;
         const displayName = this.participant.tiled_display_name;
-        this.logger.debug(`[WR] - Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`);
+        const logPayload = {
+            conference: this.conference.id,
+            participant: this.participant.id
+        };
+        this.logger.debug(`${this.loggerPrefix} Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`, logPayload);
         if (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1) {
             this.videoCallService.enableH264(false);
         }
@@ -314,7 +324,11 @@ export abstract class WaitingRoomBaseComponent {
     }
 
     handleCallSetup(callSetup: CallSetup) {
-        this.logger.debug('[WR] - Conference has setup');
+        const logPayload = {
+            conference: this.conference.id,
+            participant: this.participant.id
+        };
+        this.logger.debug(`${this.loggerPrefix} Conference has setup`, logPayload);
         this.videoCallService.connect('', null);
         this.outgoingStream = callSetup.stream;
     }
@@ -322,7 +336,7 @@ export abstract class WaitingRoomBaseComponent {
     handleCallConnected(callConnected: ConnectedCall): void {
         this.errorCount = 0;
         this.connected = true;
-        this.logger.debug('[WR] - Successfully connected to hearing', { conference: this.conference.id });
+        this.logger.debug(`${this.loggerPrefix} Successfully connected to hearing`, { conference: this.conference.id });
         this.stream = callConnected.stream;
         const incomingFeedElement = document.getElementById('incomingFeed') as any;
         if (this.stream) {
@@ -339,7 +353,11 @@ export abstract class WaitingRoomBaseComponent {
         this.errorCount++;
         this.connected = false;
         this.updateShowVideo();
-        this.logger.error(`[WR] - Error from pexip. Reason : ${error.reason}`, new Error(error.reason), { pexipError: error });
+        this.logger.error(`${this.loggerPrefix} Error from pexip. Reason : ${error.reason}`, new Error(error.reason), {
+            pexipError: error,
+            conference: this.conference.id,
+            participant: this.participant.id
+        });
         this.errorService.handlePexipError(error);
     }
 
@@ -347,7 +365,7 @@ export abstract class WaitingRoomBaseComponent {
         this.connected = false;
         this.stopHeartbeat();
         this.updateShowVideo();
-        this.logger.warn(`[WR] - Disconnected from pexip. Reason : ${reason.reason}`);
+        this.logger.warn(`${this.loggerPrefix} Disconnected from pexip. Reason : ${reason.reason}`);
         if (!this.hearing.isPastClosedTime()) {
             this.callbackTimeout = setTimeout(() => {
                 this.call();
@@ -367,7 +385,7 @@ export abstract class WaitingRoomBaseComponent {
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
         this.logger.debug(
-            `[WR] - Handling conference status message : ${this.conference.id}, Case name : ${this.conference.case_name}, Conference status : ${message.status}`,
+            `${this.loggerPrefix} Handling conference status message : ${this.conference.id}, Case name : ${this.conference.case_name}, Conference status : ${message.status}`,
             message
         );
         if (!this.validateIsForConference(message.conferenceId)) {
@@ -391,7 +409,7 @@ export abstract class WaitingRoomBaseComponent {
             this.participant.status = message.status;
         }
         participant.status = message.status;
-        this.logger.info(`[WR] - Handling participant update status change`, {
+        this.logger.info(`${this.loggerPrefix} Handling participant update status change`, {
             conference: this.conference.id,
             participant: participant.id,
             status: participant.status
@@ -415,7 +433,7 @@ export abstract class WaitingRoomBaseComponent {
 
     protected validateIsForConference(conferenceId: string): boolean {
         if (conferenceId !== this.hearing.id) {
-            this.logger.info('[WR] - message not for current conference');
+            this.logger.info(`${this.loggerPrefix} message not for current conference`);
             return false;
         }
         return true;
@@ -427,11 +445,11 @@ export abstract class WaitingRoomBaseComponent {
             caseName: this.conference.case_name,
             participant: this.participant.id
         };
-        this.logger.info(`[WR] - Participant is attempting to leave the private consultation`, logPayload);
+        this.logger.info(`${this.loggerPrefix} Participant is attempting to leave the private consultation`, logPayload);
         try {
             await this.consultationService.leaveConsultation(this.conference, this.participant);
         } catch (error) {
-            this.logger.error('[WR] - Failed to leave private consultation', error, logPayload);
+            this.logger.error(`${this.loggerPrefix} Failed to leave private consultation`, error, logPayload);
         }
     }
 
@@ -446,7 +464,7 @@ export abstract class WaitingRoomBaseComponent {
         if (!this.connected) {
             logPaylod.showingVideo = false;
             logPaylod.reason = 'Not showing video because not connecting to pexip node';
-            this.logger.debug(`[WR] - ${logPaylod.reason}`, logPaylod);
+            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
             this.showVideo = false;
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;
@@ -456,7 +474,7 @@ export abstract class WaitingRoomBaseComponent {
         if (this.hearing.isInSession() && this.participant.hearing_role !== HearingRole.WITNESS) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because hearing is in session';
-            this.logger.debug(`[WR] - ${logPaylod.reason}`, logPaylod);
+            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
             this.showVideo = true;
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;
@@ -466,7 +484,7 @@ export abstract class WaitingRoomBaseComponent {
         if (this.participant.hearing_role === HearingRole.WITNESS && this.participant.status === ParticipantStatus.InHearing) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because witness is in hearing';
-            this.logger.debug(`[WR] - ${logPaylod.reason}`, logPaylod);
+            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
             this.showVideo = true;
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;
@@ -476,7 +494,7 @@ export abstract class WaitingRoomBaseComponent {
         if (this.participant.status === ParticipantStatus.InConsultation) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because participant is in a consultation';
-            this.logger.debug(`[WR] - ${logPaylod.reason}`, logPaylod);
+            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
             this.showVideo = true;
             this.isPrivateConsultation = true;
             this.showConsultationControls = !this.isAdminConsultation;
@@ -485,7 +503,7 @@ export abstract class WaitingRoomBaseComponent {
 
         logPaylod.showingVideo = false;
         logPaylod.reason = 'Not showing video because hearing is not in session and user is not in consultation';
-        this.logger.debug(`[WR] - ${logPaylod.reason}`, logPaylod);
+        this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
         this.showVideo = false;
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
@@ -517,5 +535,9 @@ export abstract class WaitingRoomBaseComponent {
         if (mic) {
             this.videoCallService.updateMicrophoneForCall(mic);
         }
+        this.logger.info(`${this.loggerPrefix} Update camera and microphone selection`, {
+            cameraId: cam.deviceId,
+            microphoneId: mic.deviceId
+        });
     }
 }
