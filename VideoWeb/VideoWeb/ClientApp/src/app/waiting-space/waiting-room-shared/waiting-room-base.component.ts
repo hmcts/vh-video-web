@@ -50,7 +50,7 @@ export abstract class WaitingRoomBaseComponent {
     outgoingStream: MediaStream | URL;
 
     showVideo: boolean;
-    isTransferringIn: boolean = true;
+    isTransferringIn: boolean;
     isPrivateConsultation: boolean;
     isAdminConsultation: boolean;
     showConsultationControls: boolean;
@@ -444,7 +444,14 @@ export abstract class WaitingRoomBaseComponent {
     }
 
     handleHearingTransferChange(message: HearingTransfer) {
-        this.isTransferringIn = message.transferDirection == TransferPosition.In;
+        this.isTransferringIn = message.transferDirection === TransferPosition.In;
+        this.notificationSoundsService.playHearingAlertSound();
+        this.logger.info(`${this.loggerPrefix} updating transfer status`, {
+            conference: message.conferenceId,
+            transferDirection: message.transferDirection,
+            participant: message.participantId
+        });
+        console.log(this.isTransferringIn);
     }
 
     protected validateIsForConference(conferenceId: string): boolean {
@@ -486,7 +493,7 @@ export abstract class WaitingRoomBaseComponent {
             this.isPrivateConsultation = false;
             return;
         }
-        
+
         if (this.hearing.isInSession() && this.participant.hearing_role !== HearingRole.WITNESS) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because hearing is in session';
@@ -496,7 +503,7 @@ export abstract class WaitingRoomBaseComponent {
             this.isPrivateConsultation = false;
             return;
         }
-        
+
         if (this.participant.hearing_role === HearingRole.WITNESS && this.participant.status === ParticipantStatus.InHearing) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because witness is in hearing';

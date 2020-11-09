@@ -1,9 +1,8 @@
 export class HearingTransfer {
-    constructor(public conferenceId: string, public participantId: string, public transferDirection: TransferPosition) {
-    }
+    constructor(public conferenceId: string, public participantId: string, public transferDirection: TransferPosition) {}
 }
 
 export enum TransferPosition {
-    In,
-    Out
+    In = 'In',
+    Out = 'Out'
 }

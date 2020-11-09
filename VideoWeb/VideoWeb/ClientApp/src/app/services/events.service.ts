@@ -173,11 +173,11 @@ export class EventsService {
             this.adminAnsweredChatSubject.next(payload);
         });
 
-        this.connection.on("HearingTransfer", (conferenceId: string, participantId: string, hearingPosition: TransferPosition) => {
+        this.connection.on('HearingTransfer', (conferenceId: string, participantId: string, hearingPosition: TransferPosition) => {
             const payload = new HearingTransfer(conferenceId, participantId, hearingPosition);
-            this.logger.debug("[EventsService] - HearingTransfer received: ", payload);
+            this.logger.debug('[EventsService] - HearingTransfer received: ', payload);
             this.hearingTransferSubject.next(payload);
-        })
+        });
 
         this.connection.on(
             'ReceiveHeartbeat',

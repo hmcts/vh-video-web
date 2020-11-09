@@ -11,7 +11,6 @@ export class NotificationSoundsService {
     currentPlayCount: number;
     hearingAlertSound: HTMLAudioElement;
 
-    hearingAlertSound: HTMLAudioElement;
     hearingAlertPlayCount: number;
 
     initConsultationRequestRingtone(): void {

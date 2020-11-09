@@ -19,6 +19,7 @@ import {
     CallWitnessIntoHearingEvent,
     DismissWitnessFromHearingEvent
 } from 'src/app/shared/models/participant-event';
+import { TransferPosition as TransferDirection } from 'src/app/services/models/hearing-transfer';
 
 @Component({
     selector: 'app-participants-panel',
@@ -287,9 +288,19 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
             conference: this.conferenceId,
             participant: participant.id
         });
-        participant.transferringIn = true;
+        await this.eventService.sendTransferRequest(this.conferenceId, participant.id, TransferDirection.In);
+        setTimeout(() => {
+            this.initiateTransfer(participant);
+        }, 10000);
+    }
+
+    async initiateTransfer(participant: PanelModel) {
         try {
             await this.videoCallService.callParticipantIntoHearing(this.conferenceId, participant.id);
+            this.logger.debug(`${this.loggerPrefix} 10 second wait completed, initiating witneses transfer now`, {
+                witness: participant.id,
+                conference: this.conferenceId
+            });
         } catch (error) {
             participant.transferringIn = false;
             this.logger.error(`${this.loggerPrefix} Failed to raise request to call witness into hearing`, error, {

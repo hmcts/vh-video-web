@@ -70,7 +70,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         this.errorCount = 0;
         this.logger.debug('[Participant WR] - Loading participant waiting room');
         this.connected = false;
-        this.notificationSoundsService.initHearingAlert();
+        this.notificationSoundsService.initHearingAlertSound();
         this.getConference().then(() => {
             this.subscribeToClock();
             this.startEventHubSubscribers();
