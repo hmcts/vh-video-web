@@ -118,12 +118,13 @@ stages:
           - group: vh-wowza-prod
             env:
              - Prod
+          - group: KinlyConfiguration_Dev
+             - Sandbox
           - group: KinlyConfiguration_Test
             env:
              - Preview
              - Dev
              - AAT
-             - Sandbox
              - Test1
              - Test2
           - group: KinlyConfiguration_Test2
