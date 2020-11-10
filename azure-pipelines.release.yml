@@ -119,6 +119,7 @@ stages:
             env:
              - Prod
           - group: KinlyConfiguration_Dev
+            env:
              - Sandbox
           - group: KinlyConfiguration_Test
             env:
