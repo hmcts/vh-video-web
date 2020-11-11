@@ -99,6 +99,7 @@ export abstract class WaitingRoomBaseComponent {
                     conference: this.conference.id,
                     participant: this.participant.id
                 });
+                this.isTransferringIn = true;
             })
             .catch(error => {
                 this.logger.error(`${this.loggerPrefix} There was an error getting a conference ${conferenceId}`, error, {
@@ -451,7 +452,6 @@ export abstract class WaitingRoomBaseComponent {
             transferDirection: message.transferDirection,
             participant: message.participantId
         });
-        console.log(this.isTransferringIn);
     }
 
     protected validateIsForConference(conferenceId: string): boolean {
@@ -498,6 +498,16 @@ export abstract class WaitingRoomBaseComponent {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because hearing is in session';
             this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
+            this.showVideo = true;
+            this.showConsultationControls = false;
+            this.isPrivateConsultation = false;
+            return;
+        }
+
+        if (this.isTransferringIn && this.participant.hearing_role === HearingRole.WITNESS) {
+            logPaylod.showingVideo = true;
+            logPaylod.reason = 'Showing video because witness is being transferred in';
+            this.logger.debug(`[WR] - ${logPaylod.reason}`, logPaylod);
             this.showVideo = true;
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;
