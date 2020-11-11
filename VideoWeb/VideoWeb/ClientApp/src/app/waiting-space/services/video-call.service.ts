@@ -250,7 +250,7 @@ export class VideoCallService {
             conference: conferenceId,
             participant: participantId
         });
-        await this.apiClient.callWitness(conferenceId, participantId).toPromise();
+        return this.apiClient.callWitness(conferenceId, participantId).toPromise();
     }
 
     async dismissParticipantFromHearing(conferenceId: string, participantId: string) {
@@ -258,6 +258,6 @@ export class VideoCallService {
             conference: conferenceId,
             participant: participantId
         });
-        await this.apiClient.dismissWitness(conferenceId, participantId).toPromise();
+        return this.apiClient.dismissWitness(conferenceId, participantId).toPromise();
     }
 }
