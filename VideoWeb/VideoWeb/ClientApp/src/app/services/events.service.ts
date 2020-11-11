@@ -16,6 +16,7 @@ import { HelpMessage } from './models/help-message';
 import { InstantMessage } from './models/instant-message';
 import { HeartbeatHealth, ParticipantHeartbeat } from './models/participant-heartbeat';
 import { ParticipantStatusMessage } from './models/participant-status-message';
+import { HearingTransfer, TransferPosition } from './models/hearing-transfer';
 
 @Injectable({
     providedIn: 'root'
@@ -37,6 +38,7 @@ export class EventsService {
     private adminAnsweredChatSubject = new Subject<ConferenceMessageAnswered>();
     private eventHubDisconnectSubject = new Subject<number>();
     private eventHubReconnectSubject = new Subject();
+    private hearingTransferSubject = new Subject<HearingTransfer>();
 
     reconnectionAttempt: number;
     reconnectionPromise: Promise<any>;
@@ -171,6 +173,12 @@ export class EventsService {
             this.adminAnsweredChatSubject.next(payload);
         });
 
+        this.connection.on("HearingTransfer", (conferenceId: string, participantId: string, hearingPosition: TransferPosition) => {
+            const payload = new HearingTransfer(conferenceId, participantId, hearingPosition);
+            this.logger.debug("[EventsService] - HearingTransfer received: ", payload);
+            this.hearingTransferSubject.next(payload);
+        })
+
         this.connection.on(
             'ReceiveHeartbeat',
             (
@@ -268,6 +276,10 @@ export class EventsService {
 
     getHeartbeat(): Observable<ParticipantHeartbeat> {
         return this.participantHeartbeat.asObservable();
+    }
+
+    getHearingTransfer(): Observable<HearingTransfer> {
+        return this.hearingTransferSubject.asObservable();
     }
 
     async sendMessage(instantMessage: InstantMessage) {
