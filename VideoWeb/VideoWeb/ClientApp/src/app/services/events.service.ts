@@ -16,7 +16,7 @@ import { HelpMessage } from './models/help-message';
 import { InstantMessage } from './models/instant-message';
 import { HeartbeatHealth, ParticipantHeartbeat } from './models/participant-heartbeat';
 import { ParticipantStatusMessage } from './models/participant-status-message';
-import { HearingTransfer, TransferPosition } from './models/hearing-transfer';
+import { HearingTransfer, TransferDirection } from './models/hearing-transfer';
 
 @Injectable({
     providedIn: 'root'
@@ -173,7 +173,7 @@ export class EventsService {
             this.adminAnsweredChatSubject.next(payload);
         });
 
-        this.connection.on('HearingTransfer', (conferenceId: string, participantId: string, hearingPosition: TransferPosition) => {
+        this.connection.on('HearingTransfer', (conferenceId: string, participantId: string, hearingPosition: TransferDirection) => {
             const payload = new HearingTransfer(conferenceId, participantId, hearingPosition);
             this.logger.debug('[EventsService] - HearingTransfer received: ', payload);
             this.hearingTransferSubject.next(payload);
@@ -302,7 +302,7 @@ export class EventsService {
         this.logger.debug('[EventsService] - Sent heartbeat to EventHub', heartbeat);
     }
 
-    async sendTransferRequest(conferenceId: string, participantId: string, transferDirection: TransferPosition) {
+    async sendTransferRequest(conferenceId: string, participantId: string, transferDirection: TransferDirection) {
         await this.connection.send('sendTransferRequest', conferenceId, participantId, transferDirection);
         this.logger.debug('[EventsService] - Sent transfer request to EventHub', transferDirection);
     }

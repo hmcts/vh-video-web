@@ -19,7 +19,7 @@ import {
     CallWitnessIntoHearingEvent,
     DismissWitnessFromHearingEvent
 } from 'src/app/shared/models/participant-event';
-import { TransferPosition as TransferDirection } from 'src/app/services/models/hearing-transfer';
+import { TransferDirection } from 'src/app/services/models/hearing-transfer';
 
 @Component({
     selector: 'app-participants-panel',
