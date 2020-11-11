@@ -20,6 +20,13 @@
   </div>
 </div>
 
+<div *ngIf="isWitness && showVideo && isPrivateConsultation" class="govuk-grid-row">
+  <div class="video-background"></div>
+  <div class="govuk-grid-column-one-half">
+    <video id="incomingFeedPrivate" autoplay [srcObject]="this.stream" height="auto" poster="/assets/images/witnessenteringhearing.jpg"></video>
+  </div>
+</div>
+
 <ng-container *ngIf="connected && showVideo">
   <app-hearing-controls
     [conferenceId]="conference.id"

@@ -27,6 +27,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { HearingRole } from '../models/hearing-role-model';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
+import { HearingTransfer, TransferPosition } from 'src/app/services/models/hearing-transfer';
 
 declare var HeartbeatFactory: any;
 
@@ -49,6 +50,7 @@ export abstract class WaitingRoomBaseComponent {
     outgoingStream: MediaStream | URL;
 
     showVideo: boolean;
+    isTransferringIn: boolean;
     isPrivateConsultation: boolean;
     isAdminConsultation: boolean;
     showConsultationControls: boolean;
@@ -96,6 +98,7 @@ export abstract class WaitingRoomBaseComponent {
                     conference: this.conference.id,
                     participant: this.participant.id
                 });
+                this.isTransferringIn = true;
             })
             .catch(error => {
                 this.logger.error(`[WR] - There was an error getting a conference ${conferenceId}`, error, { conference: conferenceId });
@@ -178,6 +181,14 @@ export abstract class WaitingRoomBaseComponent {
                 if (message.result === ConsultationAnswer.Accepted) {
                     this.onConsultationAccepted();
                 }
+            })
+        );
+
+        this.logger.debug('[WR] - Subscribing to hearing transfer message');
+        this.eventHubSubscription$.add(
+            this.eventService.getHearingTransfer().subscribe(async message => {
+                this.handleHearingTransferChange(message);
+                this.updateShowVideo();
             })
         );
     }
@@ -415,6 +426,10 @@ export abstract class WaitingRoomBaseComponent {
         this.hearing.getEndpoints()[index].status = message.status;
     }
 
+    handleHearingTransferChange(message: HearingTransfer) {
+        this.isTransferringIn = message.hearingPosition === TransferPosition.In;
+    }
+
     protected validateIsForConference(conferenceId: string): boolean {
         if (conferenceId !== this.hearing.id) {
             this.logger.info('[WR] - message not for current conference');
@@ -458,6 +473,16 @@ export abstract class WaitingRoomBaseComponent {
         if (this.hearing.isInSession() && this.participant.hearing_role !== HearingRole.WITNESS) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because hearing is in session';
+            this.logger.debug(`[WR] - ${logPaylod.reason}`, logPaylod);
+            this.showVideo = true;
+            this.showConsultationControls = false;
+            this.isPrivateConsultation = false;
+            return;
+        }
+
+        if (this.isTransferringIn && this.participant.hearing_role === HearingRole.WITNESS) {
+            logPaylod.showingVideo = true;
+            logPaylod.reason = 'Showing video because witness is being transferred in';
             this.logger.debug(`[WR] - ${logPaylod.reason}`, logPaylod);
             this.showVideo = true;
             this.showConsultationControls = false;
