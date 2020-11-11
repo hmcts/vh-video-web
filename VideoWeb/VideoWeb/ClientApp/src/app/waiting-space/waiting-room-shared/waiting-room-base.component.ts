@@ -486,7 +486,7 @@ export abstract class WaitingRoomBaseComponent {
             this.isPrivateConsultation = false;
             return;
         }
-
+        
         if (this.hearing.isInSession() && this.participant.hearing_role !== HearingRole.WITNESS) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because hearing is in session';
