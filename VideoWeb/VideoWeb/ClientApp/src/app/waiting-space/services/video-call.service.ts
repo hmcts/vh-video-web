@@ -227,22 +227,22 @@ export class VideoCallService {
         return record[conferenceId];
     }
 
-    async startHearing(conferenceId: string, layout: HearingLayout) {
+    startHearing(conferenceId: string, layout: HearingLayout): Promise<void> {
         this.logger.info(`${this.loggerPrefix} Attempting to start hearing`, { conference: conferenceId, layout });
         const request = new StartHearingRequest({
             layout: layout
         });
-        await this.apiClient.startOrResumeVideoHearing(conferenceId, request).toPromise();
+        return this.apiClient.startOrResumeVideoHearing(conferenceId, request).toPromise();
     }
 
-    async pauseHearing(conferenceId: string) {
+    pauseHearing(conferenceId: string): Promise<void> {
         this.logger.info(`${this.loggerPrefix} Attempting to pause hearing`, { conference: conferenceId });
-        return await this.apiClient.pauseVideoHearing(conferenceId).toPromise();
+        return this.apiClient.pauseVideoHearing(conferenceId).toPromise();
     }
 
-    async endHearing(conferenceId: string) {
+    endHearing(conferenceId: string): Promise<void> {
         this.logger.info(`${this.loggerPrefix} Attempting to end hearing`, { conference: conferenceId });
-        await this.apiClient.endVideoHearing(conferenceId).toPromise();
+        return this.apiClient.endVideoHearing(conferenceId).toPromise();
     }
 
     async callParticipantIntoHearing(conferenceId: string, participantId: string) {
@@ -250,7 +250,7 @@ export class VideoCallService {
             conference: conferenceId,
             participant: participantId
         });
-        await this.apiClient.callWitness(conferenceId, participantId).toPromise();
+        return this.apiClient.callWitness(conferenceId, participantId).toPromise();
     }
 
     async dismissParticipantFromHearing(conferenceId: string, participantId: string) {
@@ -258,6 +258,6 @@ export class VideoCallService {
             conference: conferenceId,
             participant: participantId
         });
-        await this.apiClient.dismissWitness(conferenceId, participantId).toPromise();
+        return this.apiClient.dismissWitness(conferenceId, participantId).toPromise();
     }
 }
