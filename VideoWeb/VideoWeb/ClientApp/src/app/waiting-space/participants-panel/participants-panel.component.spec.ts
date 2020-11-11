@@ -140,6 +140,19 @@ describe('ParticipantsPanelComponent', () => {
         expect(component.isParticipantInHearing(pat)).toBeFalsy();
     });
 
+    it('should log error if call witness fails', async () => {
+        videocallService.callParticipantIntoHearing.calls.reset();
+        spyOn(logger, 'error');
+        const error = { status: 401, isApiException: true };
+        videocallService.callParticipantIntoHearing.and.returnValue(Promise.reject(error));
+        const p = participants[0];
+        p.hearing_role = HearingRole.WITNESS;
+        p.status = ParticipantStatus.Available;
+        const pat = new ParticipantPanelModel(p);
+        await component.callWitnessIntoHearing(pat);
+        expect(logger.error).toHaveBeenCalled();
+    });
+
     it('should return call participant in when participant is a witness and available', async () => {
         videocallService.callParticipantIntoHearing.calls.reset();
         const p = participants[0];
@@ -210,6 +223,19 @@ describe('ParticipantsPanelComponent', () => {
         expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, p.id);
     });
 
+    it('should dismiss participant in when participant is a witness and in hearing', async () => {
+        spyOn(logger, 'error');
+        const error = { status: 401, isApiException: true };
+        videocallService.dismissParticipantFromHearing.calls.reset();
+        videocallService.dismissParticipantFromHearing.and.returnValue(Promise.reject(error));
+        const p = participants[0];
+        p.hearing_role = HearingRole.WITNESS;
+        p.status = ParticipantStatus.InHearing;
+        const pat = new ParticipantPanelModel(p);
+        await component.dismissWitnessFromHearing(pat);
+        expect(logger.error).toHaveBeenCalled();
+    });
+
     it('should not dismiss a participant in when participant is not a witness', async () => {
         videocallService.dismissParticipantFromHearing.calls.reset();
         const p = participants[0];
@@ -259,37 +285,6 @@ describe('ParticipantsPanelComponent', () => {
         expect(result.isMuted).toBeTruthy();
         expect(result.handRaised).toBeTruthy();
         expect(result.isSpotlighted).toBeTruthy();
-    });
-
-    it('should mute a witness when they join the call', () => {
-        component.setupVideoCallSubscribers();
-        const witnessIndex = component.participants.findIndex(x => x.hearingRole === HearingRole.WITNESS);
-        component.participants[witnessIndex].pexipId = undefined;
-        component.participants[witnessIndex].isMuted = undefined;
-        const witness = component.participants[witnessIndex];
-        const payload = new ParticipantUpdated('NO', 0, witness.pexipDisplayName, Guid.create().toString(), 0);
-
-        onParticipantUpdatedMock.next(payload);
-        const result = component.participants.find(x => x.id === witness.id);
-        expect(result.pexipId).toBe(payload.uuid);
-        expect(result.isMuted).toBeFalsy();
-        expect(videocallService.muteParticipant).toHaveBeenCalledWith(result.pexipId, true, component.conferenceId, result.id);
-    });
-
-    it('should not mute a witness when an update is received but they are already in a hearing', () => {
-        component.setupVideoCallSubscribers();
-        const witnessIndex = component.participants.findIndex(x => x.hearingRole === HearingRole.WITNESS);
-        const pexipId = Guid.create.toString();
-        component.participants[witnessIndex].pexipId = pexipId;
-        component.participants[witnessIndex].isMuted = undefined;
-        const witness = component.participants[witnessIndex];
-        const payload = new ParticipantUpdated('NO', 0, witness.pexipDisplayName, pexipId, 0);
-
-        onParticipantUpdatedMock.next(payload);
-        const result = component.participants.find(x => x.id === witness.id);
-        expect(result.pexipId).toBe(payload.uuid);
-        expect(result.isMuted).toBeFalsy();
-        expect(videocallService.muteParticipant).toHaveBeenCalledTimes(0);
     });
 
     it('should not process video call participant updates not in list', () => {

@@ -154,8 +154,8 @@ export class VideoCallService {
 
     toggleMute(conferenceId: string, participantId: string): boolean {
         this.logger.info(`${this.loggerPrefix} Toggling mute`, {
-            currentMuteStatus: this.pexipAPI.mutedAudio,
-            currentVideoStatus: this.pexipAPI.mutedVideo,
+            currentAudioMuteStatus: this.pexipAPI.mutedAudio,
+            currentVideoMuteStatus: this.pexipAPI.mutedVideo,
             conference: conferenceId,
             participant: participantId
         });
