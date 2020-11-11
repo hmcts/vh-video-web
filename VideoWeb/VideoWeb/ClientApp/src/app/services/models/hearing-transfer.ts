@@ -1,5 +1,5 @@
 export class HearingTransfer {
-    constructor(public conferenceId: string, public participantId: string, public hearingPosition: TransferPosition) {
+    constructor(public conferenceId: string, public participantId: string, public transferDirection: TransferPosition) {
     }
 }
 

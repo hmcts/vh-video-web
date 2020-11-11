@@ -20,10 +20,12 @@
   </div>
 </div>
 
-<div *ngIf="isWitness && showVideo && isPrivateConsultation" class="govuk-grid-row">
+<div *ngIf="isWitness && isTransferringIn && !isPrivateConsultation" class="govuk-grid-row">
   <div class="video-background"></div>
   <div class="govuk-grid-column-one-half">
-    <video id="incomingFeedPrivate" autoplay [srcObject]="this.stream" height="auto" poster="/assets/images/witnessenteringhearing.jpg"></video>
+    <video id="incomingFeedPrivate" autoplay [srcObject]="this.stream" height="auto" poster="/assets/images/witnessenteringhearing.jpg">
+      Joining now...
+    </video>
   </div>
 </div>
 
@@ -89,7 +91,7 @@
   </div>
 
   <div class="govuk-grid-column-two-thirds">
-    <div *ngIf="!showVideo && currentTime" class="govuk-panel" [ngClass]="getCurrentTimeClass()">
+    <div *ngIf="showExtraContent && currentTime" class="govuk-panel" [ngClass]="getCurrentTimeClass()">
       <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="getCurrentTimeClass()">
         <div *ngIf="!isWitness && hearing.isOnTime()">
           <h2 class="govuk-heading-m white">Please wait</h2>
@@ -165,7 +167,7 @@
 <app-individual-consultation-controls (cancelConsulation)="onConsultationCancelled()" *ngIf="showConsultationControls">
 </app-individual-consultation-controls>
 
-<app-participant-chat *ngIf="hearing && !showVideo" [hearing]="hearing"></app-participant-chat>
+<app-participant-chat *ngIf="hearing && showExtraContent" [hearing]="hearing"></app-participant-chat>
 
 <app-select-media-devices
   *ngIf="displayDeviceChangeModal"

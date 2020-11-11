@@ -50,7 +50,7 @@ export abstract class WaitingRoomBaseComponent {
     outgoingStream: MediaStream | URL;
 
     showVideo: boolean;
-    isTransferringIn: boolean;
+    isTransferringIn: boolean = true;
     isPrivateConsultation: boolean;
     isAdminConsultation: boolean;
     showConsultationControls: boolean;
@@ -98,7 +98,6 @@ export abstract class WaitingRoomBaseComponent {
                     conference: this.conference.id,
                     participant: this.participant.id
                 });
-                this.isTransferringIn = true;
             })
             .catch(error => {
                 this.logger.error(`[WR] - There was an error getting a conference ${conferenceId}`, error, { conference: conferenceId });
@@ -427,7 +426,7 @@ export abstract class WaitingRoomBaseComponent {
     }
 
     handleHearingTransferChange(message: HearingTransfer) {
-        this.isTransferringIn = message.hearingPosition === TransferPosition.In;
+        this.isTransferringIn = message.transferDirection == TransferPosition.In;
     }
 
     protected validateIsForConference(conferenceId: string): boolean {
@@ -479,17 +478,7 @@ export abstract class WaitingRoomBaseComponent {
             this.isPrivateConsultation = false;
             return;
         }
-
-        if (this.isTransferringIn && this.participant.hearing_role === HearingRole.WITNESS) {
-            logPaylod.showingVideo = true;
-            logPaylod.reason = 'Showing video because witness is being transferred in';
-            this.logger.debug(`[WR] - ${logPaylod.reason}`, logPaylod);
-            this.showVideo = true;
-            this.showConsultationControls = false;
-            this.isPrivateConsultation = false;
-            return;
-        }
-
+        
         if (this.participant.hearing_role === HearingRole.WITNESS && this.participant.status === ParticipantStatus.InHearing) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because witness is in hearing';
@@ -544,5 +533,9 @@ export abstract class WaitingRoomBaseComponent {
         if (mic) {
             this.videoCallService.updateMicrophoneForCall(mic);
         }
+    }
+
+    get showExtraContent(): boolean {
+        return !this.showVideo && !this.isTransferringIn;
     }
 }

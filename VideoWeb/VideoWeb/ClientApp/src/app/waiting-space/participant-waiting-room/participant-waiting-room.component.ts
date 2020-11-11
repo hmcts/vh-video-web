@@ -162,6 +162,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     }
 
     get isWitness(): boolean {
-        return this.participant.hearing_role === HearingRole.WITNESS;
+        return this.participant?.hearing_role === HearingRole.WITNESS;
     }
 }

@@ -301,4 +301,9 @@ export class EventsService {
         await this.connection.send('SendHeartbeat', conferenceId, participantId, heartbeat);
         this.logger.debug('[EventsService] - Sent heartbeat to EventHub', heartbeat);
     }
+
+    async sendTransferRequest(conferenceId: string, participantId: string, transferDirection: TransferPosition) {
+        await this.connection.send('sendTransferRequest', conferenceId, participantId, transferDirection);
+        this.logger.debug('[EventsService] - Sent transfer request to EventHub', transferDirection);
+    }
 }
