@@ -185,6 +185,15 @@ namespace VideoWeb.Controllers
                     Participant_id = participantId,
                     Transfer_type = TransferType.Dismiss
                 });
+
+                _logger.LogDebug("Sending alert to vho witness {Participant} dismissed from video hearing {Conference}",
+                    participantId, conferenceId);
+                await _videoApiClient.AddTaskAsync(conferenceId, new AddTaskRequest 
+                { 
+                    Participant_id = participantId, 
+                    Body = "Witness dismissed",
+                    Task_type = TaskType.Participant 
+                });
                 return Accepted();
             }
             catch (VideoApiException ex)

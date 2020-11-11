@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -86,6 +87,26 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.Is<TransferParticipantRequest>(r =>
                         r.Participant_id == witness.Id && r.Transfer_type == TransferType.Dismiss)), Times.Once);
+        }
+
+        [Test]
+        public async Task should_create_an_alert_when_the_witness_is_dismissed()
+        {
+            var judge = TestConference.GetJudge();
+            var witness = TestConference.Participants.First(x => x.HearingRole == "Witness");
+            var user = new ClaimsPrincipalBuilder()
+                .WithUsername(judge.Username)
+                .WithRole(AppRoles.JudgeRole).Build();
+
+            Controller = SetupControllerWithClaims(user);
+
+            var result = await Controller.DismissWitnessAsync(TestConference.Id, witness.Id);
+            var typedResult = (AcceptedResult)result;
+            typedResult.Should().NotBeNull();
+
+            VideoApiClientMock.Verify(x => x.AddTaskAsync(TestConference.Id, 
+                It.Is<AddTaskRequest>(r => r.Participant_id == witness.Id && r.Body == "Witness dismissed" && r.Task_type == TaskType.Participant)), 
+                Times.Once);
         }
     }
 }
