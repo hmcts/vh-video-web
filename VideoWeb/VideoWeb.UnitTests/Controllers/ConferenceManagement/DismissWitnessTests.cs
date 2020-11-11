@@ -108,5 +108,32 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 It.Is<AddTaskRequest>(r => r.Participant_id == witness.Id && r.Body == "Witness dismissed" && r.Task_type == TaskType.Participant)), 
                 Times.Once);
         }
+
+        [Test]
+        public async Task should_return_video_api_error_for_add_task()
+        {
+            var judge = TestConference.GetJudge();
+            var witness = TestConference.Participants.First(x => x.HearingRole == "Witness");
+            var user = new ClaimsPrincipalBuilder()
+                .WithUsername(judge.Username)
+                .WithRole(AppRoles.JudgeRole).Build();
+
+            Controller = SetupControllerWithClaims(user);
+
+            var responseMessage = "Could not add dismiss alert for participant";
+            var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
+                (int)HttpStatusCode.InternalServerError,
+                responseMessage, null, default, null);
+
+            VideoApiClientMock.Setup(
+                x => x.AddTaskAsync(TestConference.Id,
+                    It.IsAny<AddTaskRequest>())).ThrowsAsync(apiException);
+
+            var result = await Controller.DismissWitnessAsync(TestConference.Id, witness.Id);
+            result.Should().BeOfType<ObjectResult>();
+            var typedResult = (ObjectResult)result;
+            typedResult.Value.Should().Be(responseMessage);
+            typedResult.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
+        }
     }
 }
