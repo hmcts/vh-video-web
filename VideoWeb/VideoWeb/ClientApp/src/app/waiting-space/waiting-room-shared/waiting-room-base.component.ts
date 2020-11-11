@@ -27,7 +27,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { HearingRole } from '../models/hearing-role-model';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
-import { HearingTransfer, TransferPosition } from 'src/app/services/models/hearing-transfer';
+import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 
 declare var HeartbeatFactory: any;
 
@@ -50,7 +50,7 @@ export abstract class WaitingRoomBaseComponent {
     outgoingStream: MediaStream | URL;
 
     showVideo: boolean;
-    isTransferringIn: boolean = true;
+    isTransferringIn: boolean;
     isPrivateConsultation: boolean;
     isAdminConsultation: boolean;
     showConsultationControls: boolean;
@@ -444,7 +444,15 @@ export abstract class WaitingRoomBaseComponent {
     }
 
     handleHearingTransferChange(message: HearingTransfer) {
-        this.isTransferringIn = message.transferDirection == TransferPosition.In;
+        this.isTransferringIn = message.transferDirection === TransferDirection.In;
+        if (this.isTransferringIn) {
+            this.notificationSoundsService.playHearingAlertSound();
+        }
+        this.logger.info(`${this.loggerPrefix} updating transfer status`, {
+            conference: message.conferenceId,
+            transferDirection: message.transferDirection,
+            participant: message.participantId
+        });
     }
 
     protected validateIsForConference(conferenceId: string): boolean {
@@ -486,11 +494,21 @@ export abstract class WaitingRoomBaseComponent {
             this.isPrivateConsultation = false;
             return;
         }
-        
+
         if (this.hearing.isInSession() && this.participant.hearing_role !== HearingRole.WITNESS) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because hearing is in session';
             this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
+            this.showVideo = true;
+            this.showConsultationControls = false;
+            this.isPrivateConsultation = false;
+            return;
+        }
+
+        if (this.isTransferringIn && this.participant.hearing_role === HearingRole.WITNESS) {
+            logPaylod.showingVideo = true;
+            logPaylod.reason = 'Showing video because witness is being transferred in';
+            this.logger.debug(`[WR] - ${logPaylod.reason}`, logPaylod);
             this.showVideo = true;
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;

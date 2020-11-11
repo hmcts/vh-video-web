@@ -7,7 +7,8 @@ export class NotificationSoundsService {
     constructor(private logger: Logger) {}
 
     consultationRequestSound: HTMLAudioElement;
-
+    
+    hearingAlertSound: HTMLAudioElement;
     hearingAlertPlayCount: number;
 
     initConsultationRequestRingtone(): void {

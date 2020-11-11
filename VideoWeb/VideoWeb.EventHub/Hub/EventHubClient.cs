@@ -315,8 +315,8 @@ namespace VideoWeb.EventHub.Hub
             {
                 var conference = await GetConference(conferenceId);
 
-                var tranferringParticipant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
-                if (tranferringParticipant == null)
+                var transferringParticipant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
+                if (transferringParticipant == null)
                 {
                     _logger.LogDebug("Participant {participant} does not exist in {conference}", participantId, conferenceId);
                     throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
