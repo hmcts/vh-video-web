@@ -141,7 +141,6 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         if (!participant) {
             return;
         }
-        const participantJoined = !participant.pexipId;
         participant.pexipId = updatedParticipant.uuid;
         participant.isMuted = updatedParticipant.isRemoteMuted;
         participant.handRaised = updatedParticipant.handRaised;
@@ -154,14 +153,6 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
             handRaised: participant.handRaised,
             isSpotlighted: participant.isSpotlighted
         });
-
-        if (participantJoined && participant.hearingRole === HearingRole.WITNESS && !participant.isMuted) {
-            this.logger.debug(`${this.loggerPrefix} Witness has joined video call. Muting them remotely.`, {
-                conference: this.conferenceId,
-                participant: participant.id
-            });
-            this.toggleMuteParticipant(participant);
-        }
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
