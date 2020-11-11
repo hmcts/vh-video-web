@@ -8,19 +8,19 @@ export abstract class HearingBase {
     abstract get scheduledStartTime(): Date;
 
     isReadyToStart(): boolean {
-        return this.timeReader.isReadyToStart(this.scheduledStartTime);
+        return this.timeReader.isReadyToStart(this.scheduledStartTime) && this.isNotStarted();
     }
 
     isOnTime(): boolean {
-        return this.timeReader.isOnTime(this.scheduledStartTime, this.status);
+        return this.timeReader.isOnTime(this.scheduledStartTime, this.status) && this.isNotStarted();
     }
 
     isStarting(): boolean {
-        return this.timeReader.isStarting(this.scheduledStartTime, this.status);
+        return this.timeReader.isStarting(this.scheduledStartTime, this.status) && this.isNotStarted();
     }
 
     isDelayed(): boolean {
-        return this.timeReader.isDelayed(this.scheduledStartTime, this.status);
+        return this.timeReader.isDelayed(this.scheduledStartTime, this.status) && this.isNotStarted();
     }
 
     isNotStarted(): boolean {
