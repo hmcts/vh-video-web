@@ -37,7 +37,9 @@ export class AppInsightsLoggerService implements LogAdapter {
     }
 
     debug(message: string, properties: any = null): void {
-        this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Verbose }, properties);
+        if (this.appInsights) {
+            this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Verbose }, properties);
+        }
     }
 
     info(message: string, properties: any = null): void {
