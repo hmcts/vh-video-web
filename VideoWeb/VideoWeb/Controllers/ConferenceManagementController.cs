@@ -185,16 +185,6 @@ namespace VideoWeb.Controllers
                     Participant_id = participantId,
                     Transfer_type = TransferType.Dismiss
                 });
-
-                _logger.LogDebug("Sending alert to vho witness {Participant} dismissed from video hearing {Conference}",
-                    participantId, conferenceId);
-                await _videoApiClient.AddTaskAsync(conferenceId, new AddTaskRequest 
-                { 
-                    Participant_id = participantId, 
-                    Body = "Witness dismissed",
-                    Task_type = TaskType.Participant 
-                });
-                return Accepted();
             }
             catch (VideoApiException ex)
             {
@@ -202,6 +192,25 @@ namespace VideoWeb.Controllers
                     participantId, conferenceId);
                 return StatusCode(ex.StatusCode, ex.Response);
             }
+
+            try
+            {
+                _logger.LogDebug("Sending alert to vho witness {Participant} dismissed from video hearing {Conference}",
+                    participantId, conferenceId);
+                await _videoApiClient.AddTaskAsync(conferenceId, new AddTaskRequest
+                {
+                    Participant_id = participantId,
+                    Body = "Witness dismissed",
+                    Task_type = TaskType.Participant
+                });
+            }
+            catch (VideoApiException ex)
+            {
+                _logger.LogError(ex, "Unable to add a dismiss witness alert for {Participant} in video hearing {Conference}",
+                    participantId, conferenceId);
+                return StatusCode(ex.StatusCode, ex.Response);
+            }
+            return Accepted();
         }
 
         private async Task<IActionResult> ValidateUserIsJudgeAndInConference(Guid conferenceId)
