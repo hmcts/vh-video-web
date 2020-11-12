@@ -1,10 +1,8 @@
-using System;
 namespace VideoWeb.EventHub.Enums
 {
-    public class TransferDirection
+    public enum TransferDirection
     {
-        public TransferDirection()
-        {
-        }
+        In,
+        Out
     }
 }

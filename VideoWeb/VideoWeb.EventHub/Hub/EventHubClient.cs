@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Common.SignalR;
+using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Mappers;
 using VideoWeb.EventHub.Models;
@@ -305,6 +306,33 @@ namespace VideoWeb.EventHub.Hub
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occured when sending heartbeat");
+            }
+        }
+
+        public async Task SendTransferRequest(Guid conferenceId, Guid participantId, TransferDirection transferDirection)
+        {
+            try
+            {
+                var conference = await GetConference(conferenceId);
+
+                var tranferringParticipant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
+                if (tranferringParticipant == null)
+                {
+                    _logger.LogDebug("Participant {participant} does not exist in {conference}", participantId, conferenceId);
+                    throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
+                }
+
+                foreach (var participant in conference.Participants)
+                {
+                    await Clients.Group(participant.Username.ToLowerInvariant()).HearingTransfer(conferenceId, participantId, transferDirection);
+                }
+
+                await Clients.Group(VhOfficersGroupName).HearingTransfer(conferenceId, participantId, transferDirection);
+                _logger.LogTrace("Participant Transfer: Participant Id: {participant} | Conference Id: {conference} | Direction: {direction}", participantId, conferenceId, transferDirection);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occured when transferring participant");
             }
         }
     }
