@@ -20,6 +20,8 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
@@ -34,10 +36,9 @@ import {
 import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { Hearing } from '../../../shared/models/hearing';
-import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
-import { UserMediaService } from 'src/app/services/user-media.service';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { HearingRole } from '../../models/hearing-role-model';
+import { NotificationSoundsService } from '../../services/notification-sounds.service';
+import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
 
 describe('ParticipantWaitingRoomComponent event hub events', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -70,6 +71,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
     const logger: Logger = new MockLogger();
     let userMediaService: jasmine.SpyObj<UserMediaService>;
     let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
+    let notificationSoundsService: jasmine.SpyObj<NotificationSoundsService>;
 
     const jwToken = new TokenResponse({
         expires_on: '06/10/2020 01:13:00',
@@ -115,6 +117,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
             'getStreamForCam',
             'getStreamForMic'
         ]);
+        notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', ['playHearingAlertSound']);
     });
 
     beforeEach(() => {
@@ -132,7 +135,8 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
             consultationService,
             clockService,
             userMediaService,
-            userMediaStreamService
+            userMediaStreamService,
+            notificationSoundsService
         );
         adalService.userInfo.userName = globalParticipant.username;
 

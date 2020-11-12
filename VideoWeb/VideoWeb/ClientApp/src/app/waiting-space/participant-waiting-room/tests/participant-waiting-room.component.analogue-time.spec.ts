@@ -18,6 +18,7 @@ import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.com
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { HearingRole } from '../../models/hearing-role-model';
+import { NotificationSoundsService } from '../../services/notification-sounds.service';
 
 describe('ParticipantWaitingRoomComponent message and clock', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -38,6 +39,7 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
     const logger: Logger = new MockLogger();
     let userMediaService: jasmine.SpyObj<UserMediaService>;
     let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
+    let notificationSoundsService: jasmine.SpyObj<NotificationSoundsService>;
 
     beforeAll(() => {
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
@@ -61,6 +63,7 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
             'getStreamForCam',
             'getStreamForMic'
         ]);
+        notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', ['playHearingAlertSound']);
     });
 
     beforeEach(() => {
@@ -78,7 +81,8 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
             consultationService,
             clockService,
             userMediaService,
-            userMediaStreamService
+            userMediaStreamService,
+            notificationSoundsService
         );
     });
 
