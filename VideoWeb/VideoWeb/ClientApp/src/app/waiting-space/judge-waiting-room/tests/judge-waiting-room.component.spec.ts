@@ -261,7 +261,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.heartbeat.kill).toHaveBeenCalled();
         expect(component.errorCount).toBeGreaterThan(currentErrorCount);
         expect(component.showVideo).toBeFalsy();
-        expect(errorService.handlePexipError).toHaveBeenCalledWith(payload);
+        expect(errorService.handlePexipError).toHaveBeenCalledWith(payload, component.conference.id);
     });
 
     it('should start the hearing', async () => {

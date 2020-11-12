@@ -288,7 +288,7 @@ describe('SelfTestComponent', () => {
         onErrorSubject.next(payload);
 
         expect(component.displayFeed).toBeFalsy();
-        expect(errorService.handlePexipError).toHaveBeenCalledWith(payload);
+        expect(errorService.handlePexipError).toHaveBeenCalledWith(payload, component.conference.id);
     });
 
     it('should hide video when video call has disconnected', () => {

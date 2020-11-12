@@ -205,7 +205,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             participant: this.selfTestParticipantId,
             pexipError: error
         });
-        this.errorService.handlePexipError(error);
+        this.errorService.handlePexipError(error, this.conference?.id);
     }
 
     async handleCallDisconnect(reason: DisconnectedCall) {
