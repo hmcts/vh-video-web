@@ -19,6 +19,7 @@ import {
     CallWitnessIntoHearingEvent,
     DismissWitnessFromHearingEvent
 } from 'src/app/shared/models/participant-event';
+import { HearingTransfer, TransferPosition } from 'src/app/services/models/hearing-transfer';
 
 @Component({
     selector: 'app-participants-panel',
@@ -126,6 +127,12 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
                 this.handleEndpointStatusChange(message);
             })
         );
+
+        this.eventhubSubscription$.add(
+            this.eventService.getHearingTransfer().subscribe(message => {
+                this.handleHearingTransferChange(message);
+            })
+        )
     }
 
     handleUpdatedConferenceVideoCall(updatedConference: ConferenceUpdated): void {
@@ -175,7 +182,7 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
             status: message.status
         });
         (<ParticipantPanelModel>participant).status = message.status;
-        participant.transferringIn = false;
+        participant.transferringIn = true;
     }
 
     handleEndpointStatusChange(message: EndpointStatusMessage) {
@@ -189,6 +196,19 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
             status: message.status
         });
         (<VideoEndpointPanelModel>endpoint).status = message.status;
+    }
+
+    handleHearingTransferChange(message: HearingTransfer) {
+        const participant = this.participants.find(x => x.id === message.participantId);
+        if (!participant) {
+            return;
+        }
+        this.logger.debug(`${this.loggerPrefix} Participant is being transferred`, {
+            conference: this.conferenceId,
+            participant: participant.id,
+            transferDirection: message.transferDirection
+        });
+        participant.transferringIn = message.transferDirection === TransferPosition.In;
     }
 
     async getParticipantsList() {
@@ -296,8 +316,8 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
             conference: this.conferenceId,
             participant: participant.id
         });
-        participant.transferringIn = true;
-        await this.videoCallService.callParticipantIntoHearing(this.conferenceId, participant.id);
+        this.eventService.sendTransferRequest(this.conferenceId, participant.id, TransferPosition.In);
+       // await this.videoCallService.callParticipantIntoHearing(this.conferenceId, participant.id);
     }
 
     async dismissWitnessFromHearing(participant: PanelModel) {

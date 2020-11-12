@@ -50,7 +50,7 @@ export abstract class WaitingRoomBaseComponent {
     outgoingStream: MediaStream | URL;
 
     showVideo: boolean;
-    isTransferringIn: boolean = true;
+    isTransferringIn: boolean;
     isPrivateConsultation: boolean;
     isAdminConsultation: boolean;
     showConsultationControls: boolean;
