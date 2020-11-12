@@ -27,7 +27,6 @@ import { NotificationSoundsService } from '../services/notification-sounds.servi
 export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
     currentTime: Date;
     hearingStartingAnnounced: boolean;
-    currentPlayCount: number;
     hearingAlertSound: HTMLAudioElement;
 
     clockSubscription$: Subscription;
@@ -113,12 +112,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     }
 
     announceHearingIsAboutToStart(): void {
-        const self = this;
-        this.hearingAlertSound.play().catch(function (reason) {
-            self.logger.error('[Participant WR] - Failed to announce hearing starting', reason, {
-                conference: self.conference.id
-            });
-        });
+        this.notificationSoundsService.playHearingAlertSound();
         this.hearingStartingAnnounced = true;
     }
 
@@ -145,7 +139,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         if (!this.isWitness && (this.hearing.isOnTime() || this.hearing.isPaused() || this.hearing.isClosed())) {
             return 'hearing-on-time';
         }
-        if (!this.isWitness && this.hearing.isStarting()) {
+        if (!this.isWitness && (this.hearing.isStarting() || this.hearing.isInSession())) {
             return 'hearing-near-start';
         }
         if (!this.isWitness && this.hearing.isDelayed()) {

@@ -71,8 +71,11 @@ export class ErrorService {
         this.router.navigate([pageUrls.ServiceError]);
     }
 
-    handlePexipError(error: CallError) {
-        console.log(error);
+    handlePexipError(error: CallError, conferenceId: string) {
+        this.logger.error('[ErrorService] - There was a pexip error', new Error(error.reason), {
+            conference: conferenceId,
+            error
+        });
         const connectionErrors = [
             'Error connecting to',
             'There is no connection',

@@ -25,6 +25,7 @@ import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../../mod
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { NotificationSoundsService } from '../../services/notification-sounds.service';
 
 describe('ParticipantWaitingRoomComponent video call events', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -54,6 +55,7 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
     const logger: Logger = new MockLogger();
     let userMediaService: jasmine.SpyObj<UserMediaService>;
     let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
+    let notificationSoundsService: jasmine.SpyObj<NotificationSoundsService>;
 
     const mockHeartbeat = {
         kill: jasmine.createSpy()
@@ -94,6 +96,7 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
             'getStreamForCam',
             'getStreamForMic'
         ]);
+        notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', ['playHearingAlertSound']);
     });
 
     beforeEach(async () => {
@@ -111,7 +114,8 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
             consultationService,
             clockService,
             userMediaService,
-            userMediaStreamService
+            userMediaStreamService,
+            notificationSoundsService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, gloalConference));
@@ -196,7 +200,7 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
         expect(component.heartbeat.kill).toHaveBeenCalled();
         expect(component.errorCount).toBeGreaterThan(currentErrorCount);
         expect(component.showVideo).toBeFalsy();
-        expect(errorService.handlePexipError).toHaveBeenCalledWith(payload);
+        expect(errorService.handlePexipError).toHaveBeenCalledWith(payload, component.conference.id);
     });
 
     it('should hide video when video call has disconnected and attempt to connect again', () => {

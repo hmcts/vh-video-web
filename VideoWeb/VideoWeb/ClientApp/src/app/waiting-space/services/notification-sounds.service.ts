@@ -1,11 +1,18 @@
 import { Injectable } from '@angular/core';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 @Injectable()
 export class NotificationSoundsService {
+    private readonly loggerPrefix = '[NotificationSoundsService] -';
+    constructor(private logger: Logger) {}
+
     consultationRequestSound: HTMLAudioElement;
     hearingStartingAnnounced: boolean;
     currentPlayCount: number;
     hearingAlertSound: HTMLAudioElement;
+
+    hearingAlertSound: HTMLAudioElement;
+    hearingAlertPlayCount: number;
 
     initConsultationRequestRingtone(): void {
         this.consultationRequestSound = new Audio();
@@ -29,10 +36,16 @@ export class NotificationSoundsService {
         this.consultationRequestSound.currentTime = 0;
     }
 
-    initHearingAlert() {
-        this.hearingStartingAnnounced = false;
-        this.currentPlayCount = 1;
+    playHearingAlertSound() {
+        if (this.hearingAlertPlayCount >= 3) {
+            this.hearingAlertPlayCount = 1;
+        }
+        this.logger.debug(`${this.loggerPrefix} playing hearing starting sound`);
+        return this.hearingAlertSound.play();
+    }
 
+    initHearingAlertSound() {
+        this.hearingAlertPlayCount = 1;
         this.hearingAlertSound = new Audio();
         this.hearingAlertSound.src = '/assets/audio/hearing_starting_soon.mp3';
         this.hearingAlertSound.load();
@@ -40,8 +53,9 @@ export class NotificationSoundsService {
         this.hearingAlertSound.addEventListener(
             'ended',
             function () {
-                self.currentPlayCount++;
-                if (self.currentPlayCount <= 3) {
+                console.log(self.hearingAlertPlayCount);
+                self.hearingAlertPlayCount++;
+                if (self.hearingAlertPlayCount <= 3) {
                     this.play();
                 }
             },
