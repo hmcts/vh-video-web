@@ -1,10 +1,11 @@
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { NotificationSoundsService } from './notification-sounds.service';
 
 describe('NotificationSoundsService', () => {
     let service: NotificationSoundsService;
 
     beforeEach(() => {
-        service = new NotificationSoundsService();
+        service = new NotificationSoundsService(new MockLogger());
     });
 
     it('should init consulation request sound', () => {
@@ -40,5 +41,41 @@ describe('NotificationSoundsService', () => {
 
         expect(audio.pause).toHaveBeenCalled();
         expect(audio.currentTime).toBe(0);
+    });
+
+    it('should init hearing starting sound', () => {
+        service.initHearingAlertSound();
+        expect(service.hearingAlertSound).toBeDefined();
+        expect(service.hearingAlertPlayCount).toBe(1);
+    });
+
+    it('should increment hearing sound play count on end and keep playing until third count', () => {
+        service.initHearingAlertSound();
+        const spy = spyOn(service.hearingAlertSound, 'play').and.resolveTo();
+        service.hearingAlertSound.dispatchEvent(new Event('ended')); // first manual play
+        service.hearingAlertSound.dispatchEvent(new Event('ended')); // auto replay 1
+        service.hearingAlertSound.dispatchEvent(new Event('ended')); // auto replay 2
+        service.hearingAlertSound.dispatchEvent(new Event('ended')); // should do nothing
+        expect(spy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should start playing hearing starting sound', () => {
+        const audio = new Audio();
+        spyOn(audio, 'play');
+        service.hearingAlertSound = audio;
+        service.hearingAlertPlayCount = 1;
+        service.playHearingAlertSound();
+
+        expect(audio.play).toHaveBeenCalled();
+    });
+
+    it('should start playing hearing starting sound', () => {
+        const audio = new Audio();
+        spyOn(audio, 'play');
+        service.hearingAlertSound = audio;
+        service.hearingAlertPlayCount = 1;
+        service.playHearingAlertSound();
+
+        expect(audio.play).toHaveBeenCalled();
     });
 });
