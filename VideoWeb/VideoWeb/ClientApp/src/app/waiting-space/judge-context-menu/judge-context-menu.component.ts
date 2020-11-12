@@ -46,25 +46,30 @@ export class JudgeContextMenuComponent {
     lowerParticipantHand() {
         this.logger.debug(`${this.loggerPrefix} Attempting to lower hand`, { participant: this.participant.id });
         this.lowerParticipantHandEvent.emit(new LowerParticipantHandEvent(this.participant));
+        this.toggleDropdown();
     }
     toggleSpotlightParticipant() {
         this.logger.debug(`${this.loggerPrefix} Attempting to toggle spotlight`, { participant: this.participant.id });
         this.toggleSpotlightParticipantEvent.emit(new ToggleSpotlightParticipantEvent(this.participant));
+        this.toggleDropdown();
     }
 
     toggleMuteParticipant() {
         this.logger.debug(`${this.loggerPrefix} Attempting to toggle mute`, { participant: this.participant.id });
         this.toggleMuteParticipantEvent.emit(new ToggleMuteParticipantEvent(this.participant));
+        this.toggleDropdown();
     }
 
     callWitnessIntoHearing() {
         this.logger.debug(`${this.loggerPrefix} Attempting to call witness`, { participant: this.participant.id });
         this.callWitnessIntoHearingEvent.emit(new CallWitnessIntoHearingEvent(this.participant));
+        this.toggleDropdown();
     }
 
     dismissWitnessFromHearing() {
         this.logger.debug(`${this.loggerPrefix} Attempting to dismiss witness`, { participant: this.participant.id });
         this.dismissWitnessFromHearingEvent.emit(new DismissWitnessFromHearingEvent(this.participant));
+        this.toggleDropdown();
     }
 
     toggleDropdown() {
