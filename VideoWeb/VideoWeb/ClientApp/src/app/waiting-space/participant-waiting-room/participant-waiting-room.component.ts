@@ -17,6 +17,7 @@ import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-ba
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { HearingRole } from '../models/hearing-role-model';
+import { NotificationSoundsService } from '../services/notification-sounds.service';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -26,7 +27,6 @@ import { HearingRole } from '../models/hearing-role-model';
 export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
     currentTime: Date;
     hearingStartingAnnounced: boolean;
-    currentPlayCount: number;
     hearingAlertSound: HTMLAudioElement;
 
     clockSubscription$: Subscription;
@@ -45,7 +45,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         protected consultationService: ConsultationService,
         private clockService: ClockService,
         protected userMediaService: UserMediaService,
-        protected userMediaStreamService: UserMediaStreamService
+        protected userMediaStreamService: UserMediaStreamService,
+        private notificationSoundsService: NotificationSoundsService
     ) {
         super(
             route,
@@ -68,7 +69,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         this.errorCount = 0;
         this.logger.debug('[Participant WR] - Loading participant waiting room');
         this.connected = false;
-        this.initHearingAlert();
         this.getConference().then(() => {
             this.subscribeToClock();
             this.startEventHubSubscribers();
@@ -86,26 +86,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         this.disconnect();
         this.eventHubSubscription$.unsubscribe();
         this.videoCallSubscription$.unsubscribe();
-    }
-
-    initHearingAlert() {
-        this.hearingStartingAnnounced = false;
-        this.currentPlayCount = 1;
-
-        this.hearingAlertSound = new Audio();
-        this.hearingAlertSound.src = '/assets/audio/hearing_starting_soon.mp3';
-        this.hearingAlertSound.load();
-        const self = this;
-        this.hearingAlertSound.addEventListener(
-            'ended',
-            function () {
-                self.currentPlayCount++;
-                if (self.currentPlayCount <= 3) {
-                    this.play();
-                }
-            },
-            false
-        );
     }
 
     subscribeToClock(): void {
@@ -130,12 +110,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     }
 
     announceHearingIsAboutToStart(): void {
-        const self = this;
-        this.hearingAlertSound.play().catch(function (reason) {
-            self.logger.error('[Participant WR] - Failed to announce hearing starting', reason, {
-                conference: self.conference.id
-            });
-        });
+        this.notificationSoundsService.playHearingAlertSound();
         this.hearingStartingAnnounced = true;
     }
 
