@@ -85,10 +85,13 @@
             (dismissWitnessFromHearingEvent)="dismissWitnessFromHearingEventHandler($event)"> </app-judge-context-menu>
         </ng-container>
         <ng-template #participantDisconnected>
-          <div class="pntwk">
+          <div class="pmute">
             <app-participant-alert
               *ngIf="!participant.isJudge && !isEndpoint(participant)"
               [participant]="mapParticipantToParticipantResponse(participant)"
+              appTooltip
+              [text]="'Disconnected'"
+              [colour]="'red'"
             ></app-participant-alert>
           </div>
         </ng-template>

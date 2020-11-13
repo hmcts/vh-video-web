@@ -121,7 +121,10 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
             'getStreamForCam',
             'getStreamForMic'
         ]);
-        notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', ['playHearingAlertSound']);
+        notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', [
+            'playHearingAlertSound',
+            'stopHearingAlertSound'
+        ]);
     });
 
     beforeEach(() => {
@@ -189,10 +192,10 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         expect(component.isTransferringIn).toBeFalsy();
     }));
 
-    it('should update conference status and show video when "in session" message received and participant is not a witness', fakeAsync(() => {
+    it('should update conference status, play hearing sound and show video when "in session" message received and participant is not a witness', fakeAsync(() => {
         const status = ConferenceStatus.InSession;
         const message = new ConferenceStatusMessage(globalConference.id, status);
-
+        notificationSoundsService.playHearingAlertSound.calls.reset();
         hearingStatusSubject.next(message);
         flushMicrotasks();
 
@@ -200,13 +203,15 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         expect(component.conference.status).toBe(status);
         expect(component.showVideo).toBeTruthy();
         expect(component.getConferenceStatusText()).toBe('is in session');
+        expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalled();
     }));
 
-    it('should update conference status and not show video when "in session" message received and participant is a witness', fakeAsync(() => {
+    it('should update conference status, not play hearing sound and not show video when "in session" message received and participant is a witness', fakeAsync(() => {
         adalService.userInfo.userName = globalWitness.username;
         component.participant = globalWitness;
         const status = ConferenceStatus.InSession;
         const message = new ConferenceStatusMessage(globalConference.id, status);
+        notificationSoundsService.playHearingAlertSound.calls.reset();
 
         hearingStatusSubject.next(message);
         flushMicrotasks();
@@ -215,6 +220,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         expect(component.conference.status).toBe(status);
         expect(component.showVideo).toBeFalsy();
         expect(component.getConferenceStatusText()).toBe('is in session');
+        expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalledTimes(0);
     }));
 
     it('should show video when participant is witness and status is set to "hearing"', fakeAsync(() => {
@@ -248,6 +254,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         expect(component.showVideo).toBeFalsy();
         expect(videoWebService.getConferenceById).toHaveBeenCalledWith(globalConference.id);
         expect(component.getConferenceStatusText()).toBe('is closed');
+        expect(notificationSoundsService.stopHearingAlertSound).toHaveBeenCalled();
     }));
 
     it('should return correct conference status text when suspended', fakeAsync(() => {
