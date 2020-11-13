@@ -445,13 +445,21 @@ export abstract class WaitingRoomBaseComponent {
     }
 
     handleHearingTransferChange(message: HearingTransfer) {
-        this.isTransferringIn = message.transferDirection === TransferDirection.In;
-        this.notificationSoundsService.playHearingAlertSound();
-        this.logger.info(`${this.loggerPrefix} updating transfer status`, {
-            conference: message.conferenceId,
-            transferDirection: message.transferDirection,
-            participant: message.participantId
-        });
+        if (!this.validateIsForConference(message.conferenceId)) {
+            return;
+        }
+        const participant = this.hearing.getConference().participants.find(p => p.id === message.participantId);
+        const isMe = participant.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase();
+        if (isMe) {
+            this.isTransferringIn = false;
+            this.isTransferringIn = message.transferDirection === TransferDirection.In;
+            this.notificationSoundsService.playHearingAlertSound();
+            this.logger.info(`${this.loggerPrefix} updating transfer status`, {
+                conference: message.conferenceId,
+                transferDirection: message.transferDirection,
+                participant: message.participantId
+            });
+        }
     }
 
     protected validateIsForConference(conferenceId: string): boolean {

@@ -1,6 +1,7 @@
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
+import { Guid } from 'guid-typescript';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -19,6 +20,7 @@ import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
@@ -31,6 +33,7 @@ import {
     eventHubReconnectSubjectMock,
     eventsServiceSpy,
     hearingStatusSubjectMock,
+    hearingTransferSubjectMock,
     participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
@@ -54,6 +57,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
     const adminConsultationMessageSubject = adminConsultationMessageSubjectMock;
     const eventHubDisconnectSubject = eventHubDisconnectSubjectMock;
     const eventHubReconnectSubject = eventHubReconnectSubjectMock;
+    const hearingTransferSubject = hearingTransferSubjectMock;
 
     const videoCallService = videoCallServiceSpy;
     let activatedRoute: ActivatedRoute;
@@ -153,6 +157,37 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
     afterEach(() => {
         component.eventHubSubscription$.unsubscribe();
     });
+
+    it('should update transferring in when inTransfer message has been received', fakeAsync(() => {
+        const transferDirection = TransferDirection.In;
+        const payload = new HearingTransfer(globalConference.id, globalParticipant.id, transferDirection);
+
+        hearingTransferSubject.next(payload);
+        flushMicrotasks();
+
+        expect(component.isTransferringIn).toBeTruthy();
+    }));
+
+    it('should not update transferring in when inTransfer message has been received and participant is not current user', fakeAsync(() => {
+        const transferDirection = TransferDirection.In;
+        const participant = globalConference.participants.filter(x => x.id !== globalParticipant.id)[0];
+        const payload = new HearingTransfer(globalConference.id, participant.id, transferDirection);
+
+        hearingTransferSubject.next(payload);
+        flushMicrotasks();
+
+        expect(component.isTransferringIn).toBeFalsy();
+    }));
+
+    it('should not update transferring in when inTransfer message has been received and is for a different conference', fakeAsync(() => {
+        const transferDirection = TransferDirection.In;
+        const payload = new HearingTransfer(Guid.create().toString(), globalParticipant.id, transferDirection);
+
+        hearingTransferSubject.next(payload);
+        flushMicrotasks();
+
+        expect(component.isTransferringIn).toBeFalsy();
+    }));
 
     it('should update conference status and show video when "in session" message received and participant is not a witness', fakeAsync(() => {
         const status = ConferenceStatus.InSession;
