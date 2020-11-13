@@ -19,6 +19,7 @@ import {
     CallWitnessIntoHearingEvent,
     DismissWitnessFromHearingEvent
 } from 'src/app/shared/models/participant-event';
+import { TransferDirection } from 'src/app/services/models/hearing-transfer';
 
 @Component({
     selector: 'app-participants-panel',
@@ -38,6 +39,7 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
     lastElement: HTMLElement;
 
     isScrolling = 0;
+    witnessTransferTimeout: NodeJS.Timeout;
 
     constructor(
         private videoWebService: VideoWebService,
@@ -96,6 +98,12 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
     ngOnDestroy(): void {
         this.videoCallSubscription$.unsubscribe();
         this.eventhubSubscription$.unsubscribe();
+        this.resetWitnessTransferTimeout();
+    }
+
+    resetWitnessTransferTimeout() {
+        clearTimeout(this.witnessTransferTimeout);
+        this.witnessTransferTimeout = undefined;
     }
 
     setupVideoCallSubscribers() {
@@ -287,9 +295,20 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
             conference: this.conferenceId,
             participant: participant.id
         });
-        participant.transferringIn = true;
+        await this.eventService.sendTransferRequest(this.conferenceId, participant.id, TransferDirection.In);
+        this.witnessTransferTimeout = setTimeout(() => {
+            this.initiateTransfer(participant);
+        }, 10000);
+    }
+
+    async initiateTransfer(participant: PanelModel) {
         try {
+            this.resetWitnessTransferTimeout();
             await this.videoCallService.callParticipantIntoHearing(this.conferenceId, participant.id);
+            this.logger.debug(`${this.loggerPrefix} 10 second wait completed, initiating witneses transfer now`, {
+                witness: participant.id,
+                conference: this.conferenceId
+            });
         } catch (error) {
             participant.transferringIn = false;
             this.logger.error(`${this.loggerPrefix} Failed to raise request to call witness into hearing`, error, {

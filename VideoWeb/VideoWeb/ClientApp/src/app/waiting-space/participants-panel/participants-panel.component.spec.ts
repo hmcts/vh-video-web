@@ -39,6 +39,8 @@ describe('ParticipantsPanelComponent', () => {
     beforeEach(() => {
         component = new ParticipantsPanelComponent(videoWebServiceSpy, activatedRoute, videocallService, eventService, logger);
         component.participants = participants.map(x => new ParticipantPanelModel(x));
+        component.conferenceId = conferenceId;
+        component.witnessTransferTimeout = undefined;
 
         endpoints.map(endpoint => {
             component.participants = component.participants.concat(new VideoEndpointPanelModel(endpoint));
@@ -149,68 +151,72 @@ describe('ParticipantsPanelComponent', () => {
         p.hearing_role = HearingRole.WITNESS;
         p.status = ParticipantStatus.Available;
         const pat = new ParticipantPanelModel(p);
-        await component.callWitnessIntoHearing(pat);
+        await component.initiateTransfer(pat);
         expect(logger.error).toHaveBeenCalled();
     });
 
-    it('should return call participant in when participant is a witness and available', async () => {
+    it('should log error if call witness fails', async () => {
         videocallService.callParticipantIntoHearing.calls.reset();
         const p = participants[0];
         p.hearing_role = HearingRole.WITNESS;
         p.status = ParticipantStatus.Available;
         const pat = new ParticipantPanelModel(p);
-        await component.callWitnessIntoHearing(pat);
+        await component.initiateTransfer(pat);
         expect(videocallService.callParticipantIntoHearing).toHaveBeenCalledWith(component.conferenceId, p.id);
     });
 
+    it('should return call participant in when participant is a witness and available', async () => {
+        const p = participants[0];
+        p.hearing_role = HearingRole.WITNESS;
+        p.status = ParticipantStatus.Available;
+        const pat = new ParticipantPanelModel(p);
+        await component.callWitnessIntoHearing(pat);
+        expect(component.witnessTransferTimeout).toBeDefined();
+    });
+
     it('should not call a participant in when participant is not a witness', async () => {
-        videocallService.callParticipantIntoHearing.calls.reset();
         const p = participants[0];
         p.hearing_role = HearingRole.LITIGANT_IN_PERSON;
         p.status = ParticipantStatus.Available;
         const pat = new ParticipantPanelModel(p);
         await component.callWitnessIntoHearing(pat);
-        expect(videocallService.callParticipantIntoHearing).toHaveBeenCalledTimes(0);
+        expect(component.witnessTransferTimeout).toBeUndefined();
     });
 
     it('should not call a participant in when participant is a witness but not available', async () => {
-        videocallService.callParticipantIntoHearing.calls.reset();
         const p = participants[0];
         p.hearing_role = HearingRole.WITNESS;
         p.status = ParticipantStatus.NotSignedIn;
         const pat = new ParticipantPanelModel(p);
         await component.callWitnessIntoHearing(pat);
-        expect(videocallService.callParticipantIntoHearing).toHaveBeenCalledTimes(0);
+        expect(component.witnessTransferTimeout).toBeUndefined();
     });
 
     it('should call participant in when participant is a witness and available', async () => {
-        videocallService.callParticipantIntoHearing.calls.reset();
         const p = participants[0];
         p.hearing_role = HearingRole.WITNESS;
         p.status = ParticipantStatus.Available;
         const pat = new ParticipantPanelModel(p);
         await component.callWitnessIntoHearing(pat);
-        expect(videocallService.callParticipantIntoHearing).toHaveBeenCalledWith(component.conferenceId, p.id);
+        expect(component.witnessTransferTimeout).toBeDefined();
     });
 
     it('should not call a participant in when participant is not a witness', async () => {
-        videocallService.callParticipantIntoHearing.calls.reset();
         const p = participants[0];
         p.hearing_role = HearingRole.LITIGANT_IN_PERSON;
         p.status = ParticipantStatus.Available;
         const pat = new ParticipantPanelModel(p);
         await component.callWitnessIntoHearing(pat);
-        expect(videocallService.callParticipantIntoHearing).toHaveBeenCalledTimes(0);
+        expect(component.witnessTransferTimeout).toBeUndefined();
     });
 
     it('should not call a participant in when participant is a witness but not available', async () => {
-        videocallService.callParticipantIntoHearing.calls.reset();
         const p = participants[0];
         p.hearing_role = HearingRole.WITNESS;
         p.status = ParticipantStatus.NotSignedIn;
         const pat = new ParticipantPanelModel(p);
         await component.callWitnessIntoHearing(pat);
-        expect(videocallService.callParticipantIntoHearing).toHaveBeenCalledTimes(0);
+        expect(component.witnessTransferTimeout).toBeUndefined();
     });
 
     it('should dismiss participant in when participant is a witness and in hearing', async () => {

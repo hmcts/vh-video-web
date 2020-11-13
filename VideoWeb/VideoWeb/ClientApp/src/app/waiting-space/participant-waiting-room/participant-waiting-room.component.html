@@ -20,6 +20,23 @@
   </div>
 </div>
 
+<div *ngIf="isWitness && isTransferringIn">
+  <div class="video-background">
+    <div class="transferMessage">
+      <img
+        class="transferFeedImage"
+        id="transferFeedImage"
+        src="/assets/images/UkGovCrestWhite.png"
+        alt="Witness transferring warning image"
+      />
+      <h2 class="govuk-heading-m white govuk-!-margin-top-9">Please wait, You will be joining the hearing shortly</h2>
+      <video id="outgoingFeedVideoTransfer" [muted]="true" [srcObject]="outgoingStream" autoplay height="auto">
+        Your browser does not support Video
+      </video>
+    </div>
+  </div>
+</div>
+
 <ng-container *ngIf="connected && showVideo">
   <app-hearing-controls
     [conferenceId]="conference.id"
@@ -30,7 +47,7 @@
   ></app-hearing-controls>
 </ng-container>
 
-<div *ngIf="!loadingData && hearing" class="govuk-grid-row">
+<div *ngIf="!loadingData && hearing && showExtraContent" class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <div class="govuk-!-padding-top-5" style="margin-bottom: 0">
       <h1 class="govuk-heading-xl govuk-!-padding-top-5">Your video hearing {{ getConferenceStatusText() }}</h1>
@@ -81,8 +98,8 @@
     </table>
   </div>
 
-  <div class="govuk-grid-column-two-thirds">
-    <div *ngIf="!showVideo && currentTime" class="govuk-panel" [ngClass]="getCurrentTimeClass()">
+  <div class="govuk-grid-column-two-thirds" *ngIf="showExtraContent">
+    <div *ngIf="currentTime" class="govuk-panel" [ngClass]="getCurrentTimeClass()">
       <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="getCurrentTimeClass()">
         <div *ngIf="!isWitness && hearing.isOnTime()">
           <h2 class="govuk-heading-m white">Please wait</h2>
@@ -149,7 +166,7 @@
     </div>
   </div>
 
-  <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': showVideo }">
+  <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': !showExtraContent }">
     <app-individual-participant-status-list aria-label="list of participants in hearing" [conference]="hearing.getConference()">
     </app-individual-participant-status-list>
   </div>
@@ -158,7 +175,7 @@
 <app-individual-consultation-controls (cancelConsulation)="onConsultationCancelled()" *ngIf="showConsultationControls">
 </app-individual-consultation-controls>
 
-<app-participant-chat *ngIf="hearing && !showVideo" [hearing]="hearing"></app-participant-chat>
+<app-participant-chat *ngIf="hearing && showExtraContent" [hearing]="hearing"></app-participant-chat>
 
 <app-select-media-devices
   *ngIf="displayDeviceChangeModal"

@@ -4,6 +4,7 @@ import { AdminConsultationMessage } from 'src/app/services/models/admin-consulta
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
+import { HearingTransfer } from 'src/app/services/models/hearing-transfer';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ParticipantHeartbeat } from 'src/app/services/models/participant-heartbeat';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
@@ -20,6 +21,7 @@ export const eventHubReconnectSubjectMock = new Subject();
 export const consultationMessageSubjectMock = new Subject<ConsultationMessage>();
 export const messageSubjectMock = new Subject<InstantMessage>();
 export const heartbeatSubjectMock = new Subject<ParticipantHeartbeat>();
+export const hearingTransferSubjectMock = new Subject<HearingTransfer>();
 
 eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', [
     'start',
@@ -35,7 +37,9 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', [
     'getConsultationMessage',
     'getChatMessage',
     'sendMessage',
-    'getHeartbeat'
+    'getHeartbeat',
+    'getHearingTransfer',
+    'sendTransferRequest'
 ]);
 
 eventsServiceSpy.getHearingStatusMessage.and.returnValue(hearingStatusSubjectMock.asObservable());
@@ -48,3 +52,4 @@ eventsServiceSpy.getServiceReconnected.and.returnValue(eventHubReconnectSubjectM
 eventsServiceSpy.getConsultationMessage.and.returnValue(consultationMessageSubjectMock.asObservable());
 eventsServiceSpy.getChatMessage.and.returnValue(messageSubjectMock.asObservable());
 eventsServiceSpy.getHeartbeat.and.returnValue(heartbeatSubjectMock.asObservable());
+eventsServiceSpy.getHearingTransfer.and.returnValue(hearingTransferSubjectMock.asObservable());

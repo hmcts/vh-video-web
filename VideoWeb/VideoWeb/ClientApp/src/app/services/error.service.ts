@@ -102,7 +102,11 @@ export class ErrorService {
             );
             return;
         }
-        const extensionsOrFirewallIssues = ['a firewall may be blocking access', 'Please disable any privacy extensions on your browser'];
+        const extensionsOrFirewallIssues = [
+            'a firewall may be blocking access',
+            'Please disable any privacy extensions on your browser',
+            'Failed to gather IP addresses'
+        ];
         const isExtensionOrFirewallIssue =
             extensionsOrFirewallIssues.filter(x => error.reason.toLowerCase().includes(x.toLowerCase())).length > 0;
         if (isExtensionOrFirewallIssue) {

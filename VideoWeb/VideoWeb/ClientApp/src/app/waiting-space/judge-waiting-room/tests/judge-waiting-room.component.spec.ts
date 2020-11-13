@@ -32,6 +32,7 @@ import { UserMediaDevice } from '../../../shared/models/user-media-device';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
+import { NotificationSoundsService } from '../../services/notification-sounds.service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
@@ -59,6 +60,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
     const mockCamStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getVideoTracks']);
     const mockMicStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getAudioTracks']);
+    let notificationSoundsService: jasmine.SpyObj<NotificationSoundsService>;
     const testDataDevice = new MediaDeviceTestData();
 
     const mockHeartbeat = {
@@ -108,6 +110,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         userMediaStreamService.getStreamForMic.and.resolveTo(mockMicStream);
         userMediaService.getPreferredCamera.and.resolveTo(testDataDevice.getListOfCameras()[0]);
         userMediaService.getPreferredMicrophone.and.resolveTo(testDataDevice.getListOfMicrophones()[0]);
+        notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', ['playHearingAlertSound']);
     });
 
     beforeEach(async () => {
@@ -125,7 +128,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             consultationService,
             audioRecordingService,
             userMediaService,
-            userMediaStreamService
+            userMediaStreamService,
+            notificationSoundsService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, gloalConference));

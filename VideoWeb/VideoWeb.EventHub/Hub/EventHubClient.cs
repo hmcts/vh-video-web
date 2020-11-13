@@ -309,7 +309,7 @@ namespace VideoWeb.EventHub.Hub
             }
         }
 
-        public async Task SendTransferRequest(Guid conferenceId, Guid participantId, TransferDirection transferDirection)
+        public async Task SendTransferRequest(Guid conferenceId, Guid participantId, TransferDirection transferDirection) 
         {
             try
             {

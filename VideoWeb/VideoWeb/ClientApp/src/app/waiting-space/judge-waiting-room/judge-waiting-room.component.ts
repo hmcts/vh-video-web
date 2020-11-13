@@ -16,6 +16,7 @@ import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { NotificationSoundsService } from '../services/notification-sounds.service';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -43,7 +44,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         protected consultationService: ConsultationService,
         private audioRecordingService: AudioRecordingService,
         protected userMediaService: UserMediaService,
-        protected userMediaStreamService: UserMediaStreamService
+        protected userMediaStreamService: UserMediaStreamService,
+        protected notificationSoundsService: NotificationSoundsService
     ) {
         super(
             route,
@@ -58,7 +60,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
             router,
             consultationService,
             userMediaService,
-            userMediaStreamService
+            userMediaStreamService,
+            notificationSoundsService
         );
     }
 

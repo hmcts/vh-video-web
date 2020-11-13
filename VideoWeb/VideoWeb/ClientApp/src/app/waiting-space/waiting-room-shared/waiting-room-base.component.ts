@@ -26,6 +26,8 @@ import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { HearingRole } from '../models/hearing-role-model';
+import { NotificationSoundsService } from '../services/notification-sounds.service';
+import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 
 declare var HeartbeatFactory: any;
 
@@ -48,6 +50,7 @@ export abstract class WaitingRoomBaseComponent {
     outgoingStream: MediaStream | URL;
 
     showVideo: boolean;
+    isTransferringIn: boolean;
     isPrivateConsultation: boolean;
     isAdminConsultation: boolean;
     showConsultationControls: boolean;
@@ -70,7 +73,8 @@ export abstract class WaitingRoomBaseComponent {
         protected router: Router,
         protected consultationService: ConsultationService,
         protected userMediaService: UserMediaService,
-        protected userMediaStreamService: UserMediaStreamService
+        protected userMediaStreamService: UserMediaStreamService,
+        protected notificationSoundsService: NotificationSoundsService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -182,6 +186,14 @@ export abstract class WaitingRoomBaseComponent {
                 if (message.result === ConsultationAnswer.Accepted) {
                     this.onConsultationAccepted();
                 }
+            })
+        );
+
+        this.logger.debug('[WR] - Subscribing to hearing transfer message');
+        this.eventHubSubscription$.add(
+            this.eventService.getHearingTransfer().subscribe(async message => {
+                this.handleHearingTransferChange(message);
+                this.updateShowVideo();
             })
         );
     }
@@ -407,6 +419,7 @@ export abstract class WaitingRoomBaseComponent {
         const isMe = participant.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase();
         if (isMe) {
             this.participant.status = message.status;
+            this.isTransferringIn = false;
         }
         participant.status = message.status;
         this.logger.info(`${this.loggerPrefix} Handling participant update status change`, {
@@ -429,6 +442,24 @@ export abstract class WaitingRoomBaseComponent {
             return;
         }
         this.hearing.getEndpoints()[index].status = message.status;
+    }
+
+    handleHearingTransferChange(message: HearingTransfer) {
+        if (!this.validateIsForConference(message.conferenceId)) {
+            return;
+        }
+        const participant = this.hearing.getConference().participants.find(p => p.id === message.participantId);
+        const isMe = participant.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase();
+        if (isMe) {
+            this.isTransferringIn = false;
+            this.isTransferringIn = message.transferDirection === TransferDirection.In;
+            this.notificationSoundsService.playHearingAlertSound();
+            this.logger.info(`${this.loggerPrefix} updating transfer status`, {
+                conference: message.conferenceId,
+                transferDirection: message.transferDirection,
+                participant: message.participantId
+            });
+        }
     }
 
     protected validateIsForConference(conferenceId: string): boolean {
@@ -539,5 +570,9 @@ export abstract class WaitingRoomBaseComponent {
             cameraId: cam.deviceId,
             microphoneId: mic.deviceId
         });
+    }
+
+    get showExtraContent(): boolean {
+        return !this.showVideo && !this.isTransferringIn;
     }
 }

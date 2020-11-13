@@ -101,8 +101,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         userMediaService.getPreferredCamera.and.resolveTo(testDataDevice.getListOfCameras()[0]);
         userMediaService.getPreferredMicrophone.and.resolveTo(testDataDevice.getListOfMicrophones()[0]);
         notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', [
-            'initHearingAlertSound',
-            'playHearingAlertSound'
+            'playHearingAlertSound',
+            'initHearingAlertSound'
         ]);
     });
 
@@ -335,5 +335,34 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.participant.hearing_role = HearingRole.WITNESS;
 
         expect(component.isWitness).toBeTruthy();
+    });
+    it('should return false when the participant is not a witness', () => {
+        component.participant.hearing_role = HearingRole.JUDGE;
+
+        expect(component.isWitness).toBeFalsy();
+    });
+    it('should show extra content when not showing video and witness is not being transferred in', () => {
+        component.isTransferringIn = false;
+        component.showVideo = false;
+
+        expect(component.showExtraContent).toBeTruthy();
+    });
+    it('should not show extra content when we are showing video and witness is not being transferred in', () => {
+        component.isTransferringIn = false;
+        component.showVideo = true;
+
+        expect(component.showExtraContent).toBeFalsy();
+    });
+    it('should not show extra content when we are not showing video and witness is being transferred in', () => {
+        component.isTransferringIn = true;
+        component.showVideo = false;
+
+        expect(component.showExtraContent).toBeFalsy();
+    });
+    it('should not show extra content when we are showing video and witness is being transferred in', () => {
+        component.isTransferringIn = true;
+        component.showVideo = true;
+
+        expect(component.showExtraContent).toBeFalsy();
     });
 });
