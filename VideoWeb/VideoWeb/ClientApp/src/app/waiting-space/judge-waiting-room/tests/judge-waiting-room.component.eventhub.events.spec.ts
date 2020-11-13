@@ -37,6 +37,7 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { NotificationSoundsService } from '../../services/notification-sounds.service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
@@ -66,6 +67,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     let audioRecordingService: jasmine.SpyObj<AudioRecordingService>;
     let userMediaService: jasmine.SpyObj<UserMediaService>;
     let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
+    let notificationSoundsService: jasmine.SpyObj<NotificationSoundsService>;
 
     const jwToken = new TokenResponse({
         expires_on: '06/10/2020 01:13:00',
@@ -104,6 +106,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             'getStreamForCam',
             'getStreamForMic'
         ]);
+        notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', ['playHearingAlertSound']);
     });
 
     beforeEach(async () => {
@@ -121,7 +124,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             consultationService,
             audioRecordingService,
             userMediaService,
-            userMediaStreamService
+            userMediaStreamService,
+            notificationSoundsService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, gloalConference));
