@@ -358,7 +358,7 @@ export abstract class WaitingRoomBaseComponent {
             conference: this.conference.id,
             participant: this.participant.id
         });
-        this.errorService.handlePexipError(error);
+        this.errorService.handlePexipError(error, this.conference.id);
     }
 
     handleCallDisconnect(reason: DisconnectedCall): void {

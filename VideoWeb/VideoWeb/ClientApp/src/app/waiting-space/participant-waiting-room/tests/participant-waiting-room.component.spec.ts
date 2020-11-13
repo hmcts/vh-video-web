@@ -23,6 +23,7 @@ import { UserMediaDevice } from '../../../shared/models/user-media-device';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { HearingRole } from '../../models/hearing-role-model';
+import { NotificationSoundsService } from '../../services/notification-sounds.service';
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -42,6 +43,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let deviceTypeService: jasmine.SpyObj<DeviceTypeService>;
     const videoCallService = videoCallServiceSpy;
     let consultationService: jasmine.SpyObj<ConsultationService>;
+    let notificationSoundsService: jasmine.SpyObj<NotificationSoundsService>;
     let logger: jasmine.SpyObj<Logger>;
     let userMediaService: jasmine.SpyObj<UserMediaService>;
     let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
@@ -98,6 +100,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         userMediaStreamService.getStreamForMic.and.resolveTo(mockMicStream);
         userMediaService.getPreferredCamera.and.resolveTo(testDataDevice.getListOfCameras()[0]);
         userMediaService.getPreferredMicrophone.and.resolveTo(testDataDevice.getListOfMicrophones()[0]);
+        notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', ['playHearingAlertSound']);
     });
 
     beforeEach(() => {
@@ -115,7 +118,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             consultationService,
             clockService,
             userMediaService,
-            userMediaStreamService
+            userMediaStreamService,
+            notificationSoundsService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, gloalConference));
@@ -256,18 +260,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.announceHearingIsAboutToStart();
         expect(component.hearingStartingAnnounced).toBeTruthy();
     });
-
-    it('should log error when playing sound throws error', fakeAsync(() => {
-        component.conference = gloalConference;
-        const alertElem = jasmine.createSpyObj<HTMLAudioElement>('HTMLAudioElement', ['play']);
-        const reason = 'test failure';
-        alertElem.play.and.callFake(() => Promise.reject(reason));
-        component.hearingAlertSound = alertElem;
-        component.announceHearingIsAboutToStart();
-        flushMicrotasks();
-        expect(logger.error.calls.mostRecent().args[0]).toContain('Failed to announce hearing starting');
-        expect(component.hearingStartingAnnounced).toBeTruthy();
-    }));
 
     it('should get token and connect to video call', async () => {
         await component.getJwtokenAndConnectToPexip();

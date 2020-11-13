@@ -1,6 +1,7 @@
 import { inject, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Guid } from 'guid-typescript';
 import { pageUrls } from '../shared/page-url.constants';
 import { MockLogger } from '../testing/mocks/MockLogger';
 import { CallError } from '../waiting-space/models/video-call-models';
@@ -86,7 +87,8 @@ describe('ErrorService', () => {
         (service: ErrorService) => {
             spyOn(service, 'goToServiceError');
             const error = new CallError('Error connecting to conference');
-            service.handlePexipError(error);
+            const conferenceId = Guid.create().toString();
+            service.handlePexipError(error, conferenceId);
             expect(service.goToServiceError).toHaveBeenCalledWith('Your connection was lost');
         }
     ));
@@ -96,7 +98,8 @@ describe('ErrorService', () => {
         (service: ErrorService) => {
             spyOn(service, 'goToServiceError');
             const error = new CallError('Call failed: a firewall may be blocking access.');
-            service.handlePexipError(error);
+            const conferenceId = Guid.create().toString();
+            service.handlePexipError(error, conferenceId);
             expect(service.goToServiceError).toHaveBeenCalledWith(
                 'Your connection was lost',
                 'Please check your firewall settings and disable any privacy extensions that may block connections.'
@@ -111,7 +114,8 @@ describe('ErrorService', () => {
             const error = new CallError(
                 `Your camera and/or microphone are not available. Please make sure they are not being actively used by another app`
             );
-            service.handlePexipError(error);
+            const conferenceId = Guid.create().toString();
+            service.handlePexipError(error, conferenceId);
             expect(service.goToServiceError).toHaveBeenCalledWith(
                 'Your camera and microphone are blocked',
                 'Please unblock the camera and microphone or call us if there is a problem.',
@@ -126,7 +130,8 @@ describe('ErrorService', () => {
             spyOn(service, 'goToServiceError');
             spyOnProperty(service, 'hasInternetConnection').and.returnValue(true);
             const error = new CallError('This meeting has reached the maximum number of participants.');
-            service.handlePexipError(error);
+            const conferenceId = Guid.create().toString();
+            service.handlePexipError(error, conferenceId);
             expect(service.goToServiceError).toHaveBeenCalledWith(
                 'An unexpected error occurred',
                 'Please click "Reconnect" to return to the previous page. Call us if you keep seeing this message.'
