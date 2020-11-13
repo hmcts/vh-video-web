@@ -49,6 +49,28 @@ describe('NotificationSoundsService', () => {
         expect(service.hearingAlertPlayCount).toBe(1);
     });
 
+    it('should init hearing starting sound on play if not already initialised', () => {
+        const audio = new Audio();
+        spyOn(audio, 'play');
+
+        service.hearingAlertSound = undefined;
+        spyOn(service, 'initHearingAlertSound').and.callFake(() => {
+            service.hearingAlertSound = audio;
+            service.hearingAlertPlayCount = 1;
+        });
+        service.playHearingAlertSound();
+        expect(audio.play).toHaveBeenCalled();
+    });
+
+    it('should reset play count on play hearing sound', () => {
+        const audio = new Audio();
+        spyOn(audio, 'play');
+        service.hearingAlertSound = audio;
+        service.hearingAlertPlayCount = 4;
+        service.playHearingAlertSound();
+        expect(service.hearingAlertPlayCount).toBe(1);
+    });
+
     it('should increment hearing sound play count on end and keep playing until third count', () => {
         service.initHearingAlertSound();
         const spy = spyOn(service.hearingAlertSound, 'play').and.resolveTo();
@@ -77,5 +99,19 @@ describe('NotificationSoundsService', () => {
         service.playHearingAlertSound();
 
         expect(audio.play).toHaveBeenCalled();
+    });
+
+    it('should pause and reset play count when hearing starting sound is stopped', () => {
+        const audio = new Audio();
+        spyOn(audio, 'pause');
+        audio.currentTime = 4;
+        service.hearingAlertPlayCount = 4;
+        service.hearingAlertSound = audio;
+
+        service.stopHearingAlertSound();
+
+        expect(audio.pause).toHaveBeenCalled();
+        expect(audio.currentTime).toBe(0);
+        expect(service.hearingAlertPlayCount).toBe(1);
     });
 });

@@ -18,6 +18,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { HearingRole } from '../models/hearing-role-model';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -69,6 +70,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         this.errorCount = 0;
         this.logger.debug('[Participant WR] - Loading participant waiting room');
         this.connected = false;
+        this.notificationSoundsService.initHearingAlertSound();
         this.getConference().then(() => {
             this.subscribeToClock();
             this.startEventHubSubscribers();
@@ -155,5 +157,17 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
 
     get isWitness(): boolean {
         return this.participant.hearing_role === HearingRole.WITNESS;
+    }
+
+    handleConferenceStatusChange(message: ConferenceStatusMessage) {
+        super.handleConferenceStatusChange(message);
+        if (!this.validateIsForConference(message.conferenceId)) {
+            return;
+        }
+        if (message.status === ConferenceStatus.InSession && !this.isWitness) {
+            this.notificationSoundsService.playHearingAlertSound();
+        } else {
+            this.notificationSoundsService.stopHearingAlertSound();
+        }
     }
 }
