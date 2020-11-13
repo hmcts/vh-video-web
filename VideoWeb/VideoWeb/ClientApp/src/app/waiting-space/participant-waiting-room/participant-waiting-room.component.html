@@ -23,15 +23,14 @@
 <div *ngIf="isWitness && isTransferringIn">
   <div class="video-background">
     <div class="transferMessage">
-      <img class="transferFeedImage" id="transferFeedImage" src="/assets/images/UkGovCrestWhite.png" alt="Witness transferring warning image" />
+      <img
+        class="transferFeedImage"
+        id="transferFeedImage"
+        src="/assets/images/UkGovCrestWhite.png"
+        alt="Witness transferring warning image"
+      />
       <h2 class="govuk-heading-m white govuk-!-margin-top-9">Please wait, You will be joining the hearing shortly</h2>
-      <video
-        id="outgoingFeedVideoTransfer"
-        [muted]="true"
-        [srcObject]="outgoingStream"
-        autoplay
-        height="auto"
-      >
+      <video id="outgoingFeedVideoTransfer" [muted]="true" [srcObject]="outgoingStream" autoplay height="auto">
         Your browser does not support Video
       </video>
     </div>

@@ -419,6 +419,7 @@ export abstract class WaitingRoomBaseComponent {
         const isMe = participant.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase();
         if (isMe) {
             this.participant.status = message.status;
+            this.isTransferringIn = false;
         }
         participant.status = message.status;
         this.logger.info(`${this.loggerPrefix} Handling participant update status change`, {
@@ -492,21 +493,11 @@ export abstract class WaitingRoomBaseComponent {
             this.isPrivateConsultation = false;
             return;
         }
-        
+
         if (this.hearing.isInSession() && this.participant.hearing_role !== HearingRole.WITNESS) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because hearing is in session';
             this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
-            this.showVideo = true;
-            this.showConsultationControls = false;
-            this.isPrivateConsultation = false;
-            return;
-        }
-
-        if (this.isTransferringIn && this.participant.hearing_role === HearingRole.WITNESS) {
-            logPaylod.showingVideo = true;
-            logPaylod.reason = 'Showing video because witness is being transferred in';
-            this.logger.debug(`[WR] - ${logPaylod.reason}`, logPaylod);
             this.showVideo = true;
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;
