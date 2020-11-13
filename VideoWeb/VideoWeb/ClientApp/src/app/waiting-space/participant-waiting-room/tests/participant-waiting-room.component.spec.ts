@@ -100,7 +100,10 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         userMediaStreamService.getStreamForMic.and.resolveTo(mockMicStream);
         userMediaService.getPreferredCamera.and.resolveTo(testDataDevice.getListOfCameras()[0]);
         userMediaService.getPreferredMicrophone.and.resolveTo(testDataDevice.getListOfMicrophones()[0]);
-        notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', ['playHearingAlertSound']);
+        notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', [
+            'initHearingAlertSound',
+            'playHearingAlertSound'
+        ]);
     });
 
     beforeEach(() => {
@@ -143,6 +146,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         expect(component.eventHubSubscription$).toBeDefined();
         expect(component.videoCallSubscription$).toBeDefined();
         expect(component.displayDeviceChangeModal).toBeFalsy();
+        expect(notificationSoundsService.initHearingAlertSound).toHaveBeenCalled();
     }));
 
     it('should handle api error with error service', async () => {

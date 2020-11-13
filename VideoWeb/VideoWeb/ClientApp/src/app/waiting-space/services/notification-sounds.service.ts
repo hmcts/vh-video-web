@@ -34,11 +34,20 @@ export class NotificationSoundsService {
     }
 
     playHearingAlertSound() {
+        if (!this.hearingAlertSound) {
+            this.initHearingAlertSound();
+        }
         if (this.hearingAlertPlayCount >= 3) {
             this.hearingAlertPlayCount = 1;
         }
         this.logger.debug(`${this.loggerPrefix} playing hearing starting sound`);
         return this.hearingAlertSound.play();
+    }
+
+    stopHearingAlertSound() {
+        this.hearingAlertSound.pause();
+        this.hearingAlertSound.currentTime = 0;
+        this.hearingAlertPlayCount = 1;
     }
 
     initHearingAlertSound() {
@@ -50,7 +59,6 @@ export class NotificationSoundsService {
         this.hearingAlertSound.addEventListener(
             'ended',
             function () {
-                console.log(self.hearingAlertPlayCount);
                 self.hearingAlertPlayCount++;
                 if (self.hearingAlertPlayCount <= 3) {
                     this.play();
