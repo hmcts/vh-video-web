@@ -27,7 +27,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { HearingRole } from '../models/hearing-role-model';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
-import { HearingTransfer, TransferPosition } from 'src/app/services/models/hearing-transfer';
+import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 
 declare var HeartbeatFactory: any;
 
@@ -99,7 +99,6 @@ export abstract class WaitingRoomBaseComponent {
                     conference: this.conference.id,
                     participant: this.participant.id
                 });
-                this.isTransferringIn = true;
             })
             .catch(error => {
                 this.logger.error(`${this.loggerPrefix} There was an error getting a conference ${conferenceId}`, error, {
@@ -445,7 +444,7 @@ export abstract class WaitingRoomBaseComponent {
     }
 
     handleHearingTransferChange(message: HearingTransfer) {
-        this.isTransferringIn = message.transferDirection === TransferPosition.In;
+        this.isTransferringIn = message.transferDirection === TransferDirection.In;
         this.notificationSoundsService.playHearingAlertSound();
         this.logger.info(`${this.loggerPrefix} updating transfer status`, {
             conference: message.conferenceId,
