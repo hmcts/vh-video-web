@@ -114,6 +114,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     beforeEach(async () => {
+        userMediaService.setDefaultDevicesInCache.and.returnValue(Promise.resolve());
         component = new JudgeWaitingRoomComponent(
             activatedRoute,
             videoWebService,
@@ -160,6 +161,15 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         tick(100);
         expect(component.eventHubSubscription$).toBeDefined();
         expect(videoWebService.getJwToken).toHaveBeenCalledTimes(1);
+    }));
+    it('should handle error when unable to setup default devices', fakeAsync(() => {
+        errorService.handlePexipError.calls.reset();
+        const error = new Error('Permission error');
+        userMediaService.setDefaultDevicesInCache.and.rejectWith(error);
+
+        component.ngOnInit();
+        flushMicrotasks();
+        expect(errorService.handlePexipError).toHaveBeenCalledTimes(1);
     }));
     it('should init hearing alert and subscribers', fakeAsync(() => {
         component.ngOnInit();

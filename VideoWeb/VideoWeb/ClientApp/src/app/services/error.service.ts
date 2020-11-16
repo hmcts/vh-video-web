@@ -92,7 +92,14 @@ export class ErrorService {
             this.goToServiceError('Your connection was lost');
             return;
         }
-        const mediaBlockingIssues = ['Your camera and/or microphone are not available'];
+        const mediaBlockingIssues = [
+            'Your camera and/or microphone are not available',
+            'Permission denied',
+            'NotAllowedError',
+            'PermissionDeniedError',
+            'OverconstrainedError',
+            'The request is not allowed by the user agent or the platform in the current context.'
+        ];
         const isMediaBlockingIssue = mediaBlockingIssues.filter(x => error.reason.toLowerCase().includes(x.toLowerCase())).length > 0;
         if (isMediaBlockingIssue) {
             this.goToServiceError(

@@ -4,6 +4,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { FormBuilder, FormGroup, AbstractControl, Validators } from '@angular/forms';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 @Component({
     selector: 'app-select-media-devices',
@@ -11,6 +12,7 @@ import { UserMediaStreamService } from 'src/app/services/user-media-stream.servi
     styleUrls: ['./select-media-devices.component.scss']
 })
 export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
+    private readonly loggerPrefix = '[SelectMediaDevices] -';
     @Output() cancelMediaDeviceChange = new EventEmitter();
     @Output() acceptMediaDeviceChange = new EventEmitter<SelectedUserMediaDevice>();
     @Input() waitingRoomMode = false;
@@ -27,15 +29,25 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     constructor(
         private userMediaService: UserMediaService,
         private userMediaStreamService: UserMediaStreamService,
-        private formBuilder: FormBuilder
+        private formBuilder: FormBuilder,
+        private logger: Logger
     ) {}
 
     async ngOnInit() {
-        return this.requestMedia().then(() => {
-            this.updateDeviceList().then(async () => {
-                this.selectedMediaDevicesForm = await this.initNewDeviceSelectionForm();
-                this.subscribeToDeviceSelectionChange();
-            });
+        this.logger.debug(`${this.loggerPrefix} Initialising media device selection`);
+        return this.requestMedia().then(permissionGranted => {
+            if (!permissionGranted) {
+                this.logger.warn(`${this.loggerPrefix} Could not get all media permissions. Check logs`);
+            }
+            this.logger.debug(`${this.loggerPrefix} Updating device list`);
+            this.updateDeviceList()
+                .then(async () => {
+                    this.selectedMediaDevicesForm = await this.initNewDeviceSelectionForm();
+                    this.subscribeToDeviceSelectionChange();
+                })
+                .catch(error => {
+                    this.logger.error(`${this.loggerPrefix} Failed to update device selection`, error);
+                });
         });
     }
 
@@ -56,7 +68,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     }
 
     async requestMedia() {
-        await this.userMediaStreamService.requestAccess();
+        return this.userMediaStreamService.requestAccess();
     }
 
     private async initNewDeviceSelectionForm(): Promise<FormGroup> {
