@@ -9,7 +9,8 @@ import { SessionStorage } from './session-storage';
     providedIn: 'root'
 })
 export class UserMediaService {
-    navigator = <any>navigator;
+    private readonly loggerPrefix = '[UserMediaService] -';
+    navigator: Navigator = navigator;
 
     private readonly preferredCamCache: SessionStorage<UserMediaDevice>;
     private readonly preferredMicCache: SessionStorage<UserMediaDevice>;
@@ -23,8 +24,6 @@ export class UserMediaService {
     constructor(private logger: Logger) {
         this.preferredCamCache = new SessionStorage(this.PREFERRED_CAMERA_KEY);
         this.preferredMicCache = new SessionStorage(this.PREFERRED_MICROPHONE_KEY);
-
-        this.navigator.getUserMedia = this.navigator.getUserMedia || this.navigator.webkitGetUserMedia || this.navigator.msGetUserMedia;
 
         this.navigator.mediaDevices.ondevicechange = async () => {
             await this.updateAvailableDevicesList();
@@ -49,23 +48,22 @@ export class UserMediaService {
 
     async updateAvailableDevicesList(): Promise<void> {
         if (!this.navigator.mediaDevices || !this.navigator.mediaDevices.enumerateDevices) {
-            this.logger.error('[UserMediaService] - enumerateDevices() not supported.', new Error('enumerateDevices() not supported.'));
-            throw new Error('enumerateDevices() not supported.');
+            const erroMessage = 'enumerateDevices() not supported.';
+            const error = new Error(erroMessage);
+            this.logger.error(`${this.loggerPrefix} enumerateDevices() not supported.`, error);
+            throw error;
         }
-
+        this.logger.debug(`${this.loggerPrefix} Attempting to update available media devices.`);
         let updatedDevices: MediaDeviceInfo[] = [];
         const stream: MediaStream = await this.navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-
         if (stream && stream.getVideoTracks().length > 0 && stream.getAudioTracks().length > 0) {
-            updatedDevices = await navigator.mediaDevices.enumerateDevices();
+            updatedDevices = await this.navigator.mediaDevices.enumerateDevices();
         }
-
         updatedDevices = updatedDevices.filter(x => x.deviceId !== 'default' && x.kind !== 'audiooutput');
         this.availableDeviceList = Array.from(
             updatedDevices,
             device => new UserMediaDevice(device.label, device.deviceId, device.kind, device.groupId)
         );
-
         if (stream) {
             stream.getTracks().forEach(track => {
                 track.stop();
@@ -100,7 +98,7 @@ export class UserMediaService {
         if (stillConnected) {
             return device;
         } else {
-            this.logger.warn(`[UserMediaService] - Preferred device ${device.label} is no longer connected`);
+            this.logger.warn(`${this.loggerPrefix} Preferred device ${device.label} is no longer connected`);
             cache.clear();
             return null;
         }
@@ -108,38 +106,43 @@ export class UserMediaService {
 
     updatePreferredCamera(camera: UserMediaDevice) {
         this.preferredCamCache.set(camera);
-        this.logger.info(`[UserMediaService] - Updating preferred camera to ${camera.label}`);
+        this.logger.info(`${this.loggerPrefix} Updating preferred camera to ${camera.label}`);
     }
 
     updatePreferredMicrophone(microphone: UserMediaDevice) {
         this.preferredMicCache.set(microphone);
-        this.logger.info(`[UserMediaService] - Updating preferred microphone to ${microphone.label}`);
+        this.logger.info(`${this.loggerPrefix} Updating preferred microphone to ${microphone.label}`);
     }
 
     async setDefaultDevicesInCache() {
-        const cam = await this.getPreferredCamera();
-        if (!cam) {
-            const cams = await this.getListOfVideoDevices();
-            if (cams.length > 1) {
-                // set first camera in the list as preferred camera if cache is empty
-                const firstCam = cams.find(x => x.label.length > 0);
-                if (firstCam) {
-                    this.logger.info(`[UserMediaService] - Setting default camera to ${firstCam.label}`);
-                    this.updatePreferredCamera(firstCam);
+        try {
+            const cam = await this.getPreferredCamera();
+            if (!cam) {
+                const cams = await this.getListOfVideoDevices();
+                if (cams.length > 1) {
+                    // set first camera in the list as preferred camera if cache is empty
+                    const firstCam = cams.find(x => x.label.length > 0);
+                    if (firstCam) {
+                        this.logger.info(`${this.loggerPrefix} Setting default camera to ${firstCam.label}`);
+                        this.updatePreferredCamera(firstCam);
+                    }
                 }
             }
-        }
-        const mic = await this.getPreferredMicrophone();
-        if (!mic) {
-            const mics = await this.getListOfMicrophoneDevices();
-            if (mics.length > 1) {
-                // set first microphone in the list as preferred microphone if cache is empty
-                const firstMic = mics.find(x => x.label.length > 0);
-                if (firstMic) {
-                    this.logger.info(`[UserMediaService] - Setting default microphone to ${firstMic.label}`);
-                    this.updatePreferredMicrophone(firstMic);
+            const mic = await this.getPreferredMicrophone();
+            if (!mic) {
+                const mics = await this.getListOfMicrophoneDevices();
+                if (mics.length > 1) {
+                    // set first microphone in the list as preferred microphone if cache is empty
+                    const firstMic = mics.find(x => x.label.length > 0);
+                    if (firstMic) {
+                        this.logger.info(`${this.loggerPrefix} Setting default microphone to ${firstMic.label}`);
+                        this.updatePreferredMicrophone(firstMic);
+                    }
                 }
             }
+        } catch (error) {
+            this.logger.error(`${this.loggerPrefix} Failed to set default devices in cache.`, error);
+            throw error;
         }
     }
 }

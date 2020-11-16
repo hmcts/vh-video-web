@@ -32,9 +32,9 @@ export class ParticipantStatusComponent implements OnInit {
         this.loadingData = true;
     }
 
-    async ngOnInit(): Promise<any> {
-        await this.setupEventHubSubscribers();
-        await this.loadData();
+    ngOnInit() {
+        this.setupEventHubSubscribers();
+        this.loadData();
     }
 
     async loadData() {
@@ -79,7 +79,7 @@ export class ParticipantStatusComponent implements OnInit {
         }
     }
 
-    async setupEventHubSubscribers() {
+    setupEventHubSubscribers() {
         this.logger.debug('[ParticipantStatus] - Subscribing to participant status changes...');
         this.eventHubSubscriptions.add(
             this.eventService.getParticipantStatusMessage().subscribe(async message => {
@@ -96,7 +96,7 @@ export class ParticipantStatusComponent implements OnInit {
         );
     }
 
-    async handleParticipantStatusChange(message: ParticipantStatusMessage): Promise<void> {
+    handleParticipantStatusChange(message: ParticipantStatusMessage): Promise<void> {
         if (!this.participants) {
             return;
         }

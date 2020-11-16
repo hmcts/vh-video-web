@@ -205,8 +205,10 @@ export class EventsService {
     }
 
     stop() {
-        this.logger.debug('[EventsService] - Ending connection to EventHub');
-        this.connection.stop().catch(err => this.logger.error('[EventsService] - Failed to stop connection to EventHub', err));
+        if (this.isConnectedToHub) {
+            this.logger.debug('[EventsService] - Ending connection to EventHub');
+            this.connection.stop().catch(err => this.logger.error('[EventsService] - Failed to stop connection to EventHub', err));
+        }
     }
 
     async delay(ms: number) {

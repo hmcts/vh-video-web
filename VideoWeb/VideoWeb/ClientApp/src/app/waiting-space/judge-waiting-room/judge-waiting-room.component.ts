@@ -17,6 +17,7 @@ import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-ba
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
+import { CallError } from '../models/video-call-models';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -24,6 +25,7 @@ import { NotificationSoundsService } from '../services/notification-sounds.servi
     styleUrls: ['./judge-waiting-room.component.scss', '../waiting-room-global-styles.scss']
 })
 export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
+    private readonly loggerPrefixJudge = '[Judge WR] -';
     audioRecordingInterval: NodeJS.Timer;
     isRecording: boolean;
     continueWithNoRecording = false;
@@ -65,22 +67,31 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         );
     }
 
-    async ngOnInit() {
+    ngOnInit() {
         this.errorCount = 0;
-        this.logger.debug('[Judge WR] - Loading judge waiting room');
-
-        await this.userMediaService.setDefaultDevicesInCache();
-
-        this.connected = false;
-        this.getConference().then(() => {
-            this.startEventHubSubscribers();
-            this.getJwtokenAndConnectToPexip();
-        });
+        this.logger.debug(`${this.loggerPrefixJudge} Loading judge waiting room`);
+        this.userMediaService
+            .setDefaultDevicesInCache()
+            .then(() => {
+                this.logger.debug(`${this.loggerPrefixJudge} Defined default devices in cache`);
+                this.connected = false;
+                this.getConference().then(() => {
+                    this.startEventHubSubscribers();
+                    this.getJwtokenAndConnectToPexip();
+                });
+            })
+            .catch((error: Error | MediaStreamError) => {
+                this.logger.error(`${this.loggerPrefixJudge} Failed to initialise the judge waiting room`, error);
+                const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
+                this.errorService.handlePexipError(new CallError(error.name), conferenceId);
+            });
     }
 
     @HostListener('window:beforeunload')
     async ngOnDestroy(): Promise<void> {
-        this.logger.debug('[Judge WR] - Clearing intervals and subscriptions for judge waiting room', { conference: this.conference.id });
+        this.logger.debug(`${this.loggerPrefixJudge} Clearing intervals and subscriptions for judge waiting room`, {
+            conference: this.conference.id
+        });
         this.executeEndHearingSequence();
         this.eventHubSubscription$.unsubscribe();
         this.videoCallSubscription$.unsubscribe();
@@ -117,22 +128,33 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     }
 
     async startHearing() {
+        const action = this.isNotStarted() ? 'start' : 'resume';
         try {
-            this.logger.debug('[Judge WR] - Judge clicked start/resume hearing', { conference: this.conference.id });
+            this.logger.debug(`${this.loggerPrefixJudge} - Judge clicked ${action} hearing`, {
+                conference: this.conference.id,
+                status: this.conference.status
+            });
             await this.videoCallService.startHearing(this.hearing.id, this.videoCallService.getPreferredLayout(this.conference.id));
         } catch (err) {
-            this.logger.error(`Failed to start/resume a hearing for conference`, err, { conference: this.conference.id });
+            this.logger.error(`${this.loggerPrefixJudge} Failed to ${action} a hearing for conference`, err, {
+                conference: this.conference.id,
+                status: this.conference.status
+            });
             this.errorService.handleApiError(err);
         }
     }
 
     goToJudgeHearingList(): void {
-        this.logger.debug('[Judge WR] - Judge is leaving conference and returning to hearing list', { conference: this.conference.id });
+        this.logger.debug(`${this.loggerPrefixJudge} Judge is leaving conference and returning to hearing list`, {
+            conference: this.conference.id
+        });
         this.router.navigate([pageUrls.JudgeHearingList]);
     }
 
     checkEquipment() {
-        this.logger.debug('[Judge WR] - Judge is leaving conference and checking equipment', { conference: this.conference.id });
+        this.logger.debug(`${this.loggerPrefixJudge} Judge is leaving conference and checking equipment`, {
+            conference: this.conference.id
+        });
         this.router.navigate([pageUrls.EquipmentCheck, this.conference.id]);
     }
 
@@ -159,27 +181,29 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     }
 
     async retrieveAudioStreamInfo(hearingId): Promise<void> {
-        this.logger.debug(`[Judge WR] - Attempting to retrieve audio stream info for ${hearingId}`);
+        this.logger.debug(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
         try {
             const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId);
-            this.logger.debug('[Judge WR] - Got response: recording: ' + audioStreamWorking);
+            this.logger.debug(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
 
             if (!audioStreamWorking && !this.continueWithNoRecording) {
-                this.logger.debug('[Judge WR] - not recording when expected, show alert');
+                this.logger.debug(`${this.loggerPrefixJudge} not recording when expected, show alert`);
                 this.showAudioRecordingAlert = true;
             }
         } catch (error) {
-            this.logger.error('[Judge WR] - Failed to get audio stream info', error, { conference: this.conference.id });
+            this.logger.error(`${this.loggerPrefixJudge} Failed to get audio stream info`, error, { conference: this.conference.id });
 
             if (!this.continueWithNoRecording) {
-                this.logger.info('[Judge WR] - Should not continue without a recording. Show alert.', { conference: this.conference.id });
+                this.logger.info(`${this.loggerPrefixJudge} Should not continue without a recording. Show alert.`, {
+                    conference: this.conference.id
+                });
                 this.showAudioRecordingAlert = true;
             }
         }
     }
 
     closeAlert(value) {
-        this.logger.debug('[Judge WR] - Closing alert');
+        this.logger.debug(`${this.loggerPrefixJudge} Closing alert`);
         this.showAudioRecordingAlert = !value;
         this.continueWithNoRecording = true;
         clearInterval(this.audioRecordingInterval);
