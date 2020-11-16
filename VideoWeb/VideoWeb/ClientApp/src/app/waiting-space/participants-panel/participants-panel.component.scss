@@ -265,3 +265,12 @@
   height: 0;
   border-bottom: 0.5px solid rgba(255, 255, 255, 0.2);
 }
+
+.panel-witness-joining {
+  width: 24px;
+  color: govuk-colour('yellow');
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-top: 10px;
+  z-index: 130;
+}
