@@ -77,6 +77,7 @@ export class AppComponent implements OnInit, OnDestroy {
             this.router.events.subscribe((event: NavigationEnd) => {
                 if (event instanceof NavigationEnd) {
                     // If the connection has failed and passed the max number of retries, we need to trigger a manual reconnect attempt.
+                    console.info('[App] - Navigation end. Starting event service');
                     this.eventsService.start();
                     this.scrollToTop();
                 }

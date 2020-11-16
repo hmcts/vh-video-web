@@ -69,6 +69,10 @@ describe('ErrorComponent', () => {
         fixture.detectChanges();
     });
 
+    afterEach(() => {
+        component.ngOnDestroy();
+    });
+
     it('should create', () => {
         expect(component).toBeTruthy();
     });
@@ -96,9 +100,44 @@ describe('ErrorComponent', () => {
         component.ngOnDestroy();
         expect(component.subscription.closed).toBeTruthy();
     });
-    it('should navigate to previous page on reconnect click', () => {
+    it('should navigate to previous page on reconnect click and internet connection', () => {
+        pageTrackerSpy.getPreviousUrl.calls.reset();
+        spyOnProperty(window.navigator, 'onLine').and.returnValue(true);
         component.reconnect();
         expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalled();
+    });
+
+    it('should navigate to previous page on reconnect click and no internet connection', () => {
+        component.returnTimeout = undefined;
+        pageTrackerSpy.getPreviousUrl.calls.reset();
+        spyOnProperty(window.navigator, 'onLine').and.returnValue(false);
+        component.reconnect();
+        expect(component.returnTimeout).toBeDefined();
+        expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalledTimes(0);
+    });
+
+    it('should return true when browser has an internet connection', () => {
+        spyOnProperty(window.navigator, 'onLine').and.returnValue(true);
+        expect(component.hasInternetConnection).toBeTruthy();
+    });
+
+    it('should return false when browser does not have an internet connection', () => {
+        spyOnProperty(window.navigator, 'onLine').and.returnValue(false);
+        expect(component.hasInternetConnection).toBeFalsy();
+    });
+
+    it('should go back on timeout complete and no connection error', () => {
+        spyOn(component, 'reconnect');
+        component.connectionError = false;
+        component.executeGoBackTimeout();
+        expect(component.reconnect).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not go back on timeout complete and has connection error', () => {
+        spyOn(component, 'reconnect');
+        component.connectionError = true;
+        component.executeGoBackTimeout();
+        expect(component.reconnect).toHaveBeenCalledTimes(0);
     });
 });
 
