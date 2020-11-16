@@ -33,7 +33,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         private logger: Logger
     ) {}
 
-    async ngOnInit() {
+    ngOnInit() {
         this.logger.debug(`${this.loggerPrefix} Initialising media device selection`);
         return this.requestMedia().then(permissionGranted => {
             if (!permissionGranted) {

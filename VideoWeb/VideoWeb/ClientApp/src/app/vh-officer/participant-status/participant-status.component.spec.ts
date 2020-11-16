@@ -1,3 +1,4 @@
+import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { Participant } from 'src/app/shared/models/participant';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -55,12 +56,13 @@ describe('ParticipantStatusComponent', () => {
         );
     });
 
-    it('should initalise data', async () => {
-        await component.ngOnInit();
+    it('should initalise data', fakeAsync(() => {
+        component.ngOnInit();
+        flushMicrotasks();
         expect(component.participants).not.toBeNull();
         expect(component.participants.length).toBe(4);
         expect(component.loadingData).toBeFalsy();
-    });
+    }));
 
     it('should return loadData', async () => {
         await component.loadData();

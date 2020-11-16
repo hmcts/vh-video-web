@@ -138,6 +138,13 @@ describe('ErrorComponent', () => {
         component.executeGoBackTimeout();
         expect(component.reconnect).toHaveBeenCalledTimes(0);
     });
+
+    it('should not go back if already reconnecting in progress', () => {
+        component.attemptingReconnect = true;
+        pageTrackerSpy.getPreviousUrl.calls.reset();
+        component.reconnect();
+        expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalledTimes(0);
+    });
 });
 
 describe('ErrorComponent Refresh', () => {

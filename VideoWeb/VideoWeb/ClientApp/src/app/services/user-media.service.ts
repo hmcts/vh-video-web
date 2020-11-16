@@ -53,7 +53,6 @@ export class UserMediaService {
             this.logger.error(`${this.loggerPrefix} enumerateDevices() not supported.`, error);
             throw error;
         }
-        console.log('updateAvailableDevicesList');
         this.logger.debug(`${this.loggerPrefix} Attempting to update available media devices.`);
         let updatedDevices: MediaDeviceInfo[] = [];
         const stream: MediaStream = await this.navigator.mediaDevices.getUserMedia({ audio: true, video: true });

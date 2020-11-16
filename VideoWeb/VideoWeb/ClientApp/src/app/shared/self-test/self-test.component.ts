@@ -68,18 +68,27 @@ export class SelfTestComponent implements OnInit, OnDestroy {
         this.didTestComplete = false;
     }
 
-    async ngOnInit() {
+    ngOnInit() {
         this.logger.debug(`${this.loggerPrefix} Loading self test`);
 
         this.initialiseData();
 
-        await this.userMediaService.setDefaultDevicesInCache();
-
-        this.displayFeed = false;
-        this.displayDeviceChangeModal = false;
-        this.scoreSent = false;
-        this.setupSubscribers();
-        this.setupTestAndCall();
+        this.userMediaService
+            .setDefaultDevicesInCache()
+            .then(() => {
+                this.displayFeed = false;
+                this.displayDeviceChangeModal = false;
+                this.scoreSent = false;
+                this.setupSubscribers();
+                this.setupTestAndCall();
+            })
+            .catch((error: Error | MediaStreamError) => {
+                this.logger.error(`${this.loggerPrefix} Failed to initialise the self-test`, error, {
+                    conference: this.conference?.id,
+                    participant: this.selfTestParticipantId
+                });
+                this.errorService.handlePexipError(new CallError(error.name), this.conference?.id);
+            });
     }
 
     initialiseData(): void {

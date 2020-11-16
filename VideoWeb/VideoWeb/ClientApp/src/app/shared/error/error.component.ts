@@ -114,7 +114,6 @@ export class ErrorComponent implements OnInit, OnDestroy {
         this.attemptingReconnect = true;
         if (this.hasInternetConnection) {
             const previousPage = this.pageTracker.getPreviousUrl();
-            console.log(previousPage);
             this.logger.debug(`${this.loggerPrefix} Internet connection detected. Navigating to previous page`, {
                 returnUrl: previousPage
             });
