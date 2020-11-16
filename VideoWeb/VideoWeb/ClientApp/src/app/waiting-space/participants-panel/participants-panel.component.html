@@ -40,7 +40,7 @@
               [alt]="participant.isAvailable() ? 'Call witness icon' : 'Witness unavilable icon'"
               (click)="callWitnessIntoHearing(participant); $event.stopPropagation()"
             />
-            <span *ngIf="participant.transferringIn">Joining...</span>
+            <div *ngIf="participant.transferringIn" class="panel-witness-joining">Joining...</div>
           </div>
           <div class="phand" *ngIf="!participant.isJudge && participant.handRaised">
             <img
