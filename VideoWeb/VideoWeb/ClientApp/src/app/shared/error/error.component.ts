@@ -43,9 +43,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.attemptingReconnect = false;
-        if (this.eventsService.isConnectedToHub) {
-            this.eventsService.stop();
-        }
+        this.eventsService.stop();
         this.connectionError = this.getErrorMessage();
     }
 

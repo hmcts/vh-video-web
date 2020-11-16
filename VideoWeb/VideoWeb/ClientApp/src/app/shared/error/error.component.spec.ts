@@ -75,12 +75,6 @@ describe('ErrorComponent', () => {
         component.ngOnDestroy();
     });
 
-    it('should stop eventhub connection if still connected to eventhub', () => {
-        eventsService.stop.calls.reset();
-        component.ngOnInit();
-        expect(eventsService.stop).toHaveBeenCalled();
-    });
-
     it('should show default error message if session storage is empty', () => {
         const key = 'vh.error.message';
         const storedMessage = new SessionStorage<ErrorMessage>(key);
