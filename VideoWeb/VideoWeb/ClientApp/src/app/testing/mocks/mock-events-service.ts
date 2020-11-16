@@ -22,25 +22,32 @@ export const consultationMessageSubjectMock = new Subject<ConsultationMessage>()
 export const messageSubjectMock = new Subject<InstantMessage>();
 export const heartbeatSubjectMock = new Subject<ParticipantHeartbeat>();
 export const hearingTransferSubjectMock = new Subject<HearingTransfer>();
+export let isConnectedSpy = true;
 
-eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', [
-    'start',
-    'stop',
-    'getHearingStatusMessage',
-    'getParticipantStatusMessage',
-    'getEndpointStatusMessage',
-    'getHearingCountdownCompleteMessage',
-    'getAdminConsultationMessage',
-    'getServiceDisconnected',
-    'getServiceReconnected',
-    'sendHeartbeat',
-    'getConsultationMessage',
-    'getChatMessage',
-    'sendMessage',
-    'getHeartbeat',
-    'getHearingTransfer',
-    'sendTransferRequest'
-]);
+eventsServiceSpy = jasmine.createSpyObj<EventsService>(
+    'EventsService',
+    [
+        'start',
+        'stop',
+        'getHearingStatusMessage',
+        'getParticipantStatusMessage',
+        'getEndpointStatusMessage',
+        'getHearingCountdownCompleteMessage',
+        'getAdminConsultationMessage',
+        'getServiceDisconnected',
+        'getServiceReconnected',
+        'sendHeartbeat',
+        'getConsultationMessage',
+        'getChatMessage',
+        'sendMessage',
+        'getHeartbeat',
+        'getHearingTransfer',
+        'sendTransferRequest'
+    ],
+    {
+        isConnectedToHub: isConnectedSpy
+    }
+);
 
 eventsServiceSpy.getHearingStatusMessage.and.returnValue(hearingStatusSubjectMock.asObservable());
 eventsServiceSpy.getParticipantStatusMessage.and.returnValue(participantStatusSubjectMock.asObservable());

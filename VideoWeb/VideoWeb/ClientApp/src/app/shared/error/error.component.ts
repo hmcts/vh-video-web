@@ -25,6 +25,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
     errorMessageBody: string;
     connectionError: boolean;
     showReconnect: boolean;
+    attemptingReconnect: boolean;
 
     constructor(
         private router: Router,
@@ -33,26 +34,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
         private logger: Logger
     ) {
         this.browserRefresh = false;
-        this.subscription.add(
-            this.router.events.subscribe(
-                event => {
-                    if (event instanceof NavigationEnd) {
-                        this.browserRefresh = event.id === 1 && event.url === event.urlAfterRedirects;
-                    }
-
-                    if (this.browserRefresh) {
-                        this.logger.debug(`${this.loggerPrefix} Page refresh detected. Navigating back`);
-                        this.goBack();
-                    } else {
-                        this.startGoBackTimer();
-                    }
-                },
-                error => {
-                    console.error(`${this.loggerPrefix} Problem subscribing to router events`);
-                    console.error(error);
-                }
-            )
-        );
+        this.checkForRefresh();
     }
 
     get hasInternetConnection(): boolean {
@@ -60,21 +42,34 @@ export class ErrorComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.attemptingReconnect = false;
         if (this.eventsService.isConnectedToHub) {
             this.eventsService.stop();
         }
         this.connectionError = this.getErrorMessage();
     }
 
-    private goBack(): void {
-        this.logger.debug(`${this.loggerPrefix} Attempting to go back`);
-        this.reconnect();
+    private checkForRefresh() {
+        this.subscription.add(
+            this.router.events.subscribe(event => {
+                if (event instanceof NavigationEnd) {
+                    this.browserRefresh = event.id === 1 && event.url === event.urlAfterRedirects;
+
+                    if (this.browserRefresh) {
+                        this.logger.debug(`${this.loggerPrefix} Page refresh detected. Navigating back.`);
+                        this.reconnect();
+                    } else {
+                        this.logger.debug(`${this.loggerPrefix} No Page refresh detected. Starting timer.`);
+                        this.startGoBackTimer();
+                    }
+                }
+            })
+        );
     }
 
     private startGoBackTimer(): void {
         this.logger.debug(`${this.loggerPrefix} Starting timer to automatically navigate to previous page`);
         this.stopGoBacktimer();
-        const self = this;
         this.returnTimeout = setTimeout(async () => {
             this.executeGoBackTimeout();
         }, this.CALL_TIMEOUT);
@@ -91,7 +86,8 @@ export class ErrorComponent implements OnInit, OnDestroy {
     executeGoBackTimeout() {
         this.logger.debug(`${this.loggerPrefix} Attempting execute automatic go back`);
         if (!this.connectionError) {
-            this.goBack();
+            this.stopGoBacktimer();
+            this.reconnect();
         }
     }
 
@@ -99,6 +95,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.stopGoBacktimer();
         this.subscription.unsubscribe();
+        this.attemptingReconnect = false;
     }
 
     private getErrorMessage(): boolean {
@@ -112,20 +109,18 @@ export class ErrorComponent implements OnInit, OnDestroy {
     }
 
     reconnect(): void {
+        if (this.attemptingReconnect) {
+            this.logger.debug(`${this.loggerPrefix} Reconnection already in progress`);
+            return;
+        }
+        this.attemptingReconnect = true;
         if (this.hasInternetConnection) {
             const previousPage = this.pageTracker.getPreviousUrl();
+            console.log(previousPage);
             this.logger.debug(`${this.loggerPrefix} Internet connection detected. Navigating to previous page`, {
                 returnUrl: previousPage
             });
-            this.router
-                .navigate([previousPage])
-                .then(() => {
-                    console.info(`${this.loggerPrefix} Reconnect complete`);
-                })
-                .catch(error => {
-                    console.error(`${this.loggerPrefix} Problem navigating to previous page`);
-                    console.error(error);
-                });
+            this.router.navigate([previousPage]);
         } else {
             this.logger.debug(`${this.loggerPrefix} No internet connection detected. Restarting timer`);
             this.startGoBackTimer();
