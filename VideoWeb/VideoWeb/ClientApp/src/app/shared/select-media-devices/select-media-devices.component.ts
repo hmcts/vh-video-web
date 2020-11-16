@@ -123,6 +123,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         const selectedMic = this.getSelectedMicrophone();
         this.userMediaService.updatePreferredCamera(selectedCam);
         this.userMediaService.updatePreferredMicrophone(selectedMic);
+        this.logger.debug(`${this.loggerPrefix} Accepting new media device change`);
         this.acceptMediaDeviceChange.emit(new SelectedUserMediaDevice(selectedCam, selectedMic));
     }
 
@@ -130,6 +131,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         // close dialog and stop streams
         this.userMediaStreamService.stopStream(this.preferredCameraStream);
         this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
+        this.logger.debug(`${this.loggerPrefix} Cancelling media device change`);
         this.cancelMediaDeviceChange.emit();
     }
 
@@ -172,11 +174,14 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy() {
+        this.logger.debug(`${this.loggerPrefix} Closing select media device change`);
         if (this.preferredCameraStream) {
+            this.logger.debug(`${this.loggerPrefix} Closing camera stream`);
             this.userMediaStreamService.stopStream(this.preferredCameraStream);
         }
         this.preferredCameraStream = null;
         if (this.preferredMicrophoneStream) {
+            this.logger.debug(`${this.loggerPrefix} Closing microphone stream`);
             this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
         }
         this.preferredMicrophoneStream = null;
