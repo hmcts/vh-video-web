@@ -171,7 +171,6 @@ describe('ParticipantsPanelComponent', () => {
         p.status = ParticipantStatus.Available;
         const pat = new ParticipantPanelModel(p);
         await component.callWitnessIntoHearing(pat);
-        expect(pat.transferringIn).toBeUndefined();
         expect(component.witnessTransferTimeout).toBeUndefined();
     });
 
@@ -181,7 +180,6 @@ describe('ParticipantsPanelComponent', () => {
         p.status = ParticipantStatus.NotSignedIn;
         const pat = new ParticipantPanelModel(p);
         await component.callWitnessIntoHearing(pat);
-        expect(pat.transferringIn).toBeUndefined();
         expect(component.witnessTransferTimeout).toBeUndefined();
     });
 
@@ -191,7 +189,6 @@ describe('ParticipantsPanelComponent', () => {
         p.status = ParticipantStatus.Available;
         const pat = new ParticipantPanelModel(p);
         await component.callWitnessIntoHearing(pat);
-        expect(pat.transferringIn).toBeTrue();
         expect(component.witnessTransferTimeout).toBeDefined();
     });
 
@@ -201,7 +198,6 @@ describe('ParticipantsPanelComponent', () => {
         p.status = ParticipantStatus.Available;
         const pat = new ParticipantPanelModel(p);
         await component.callWitnessIntoHearing(pat);
-        expect(pat.transferringIn).toBeUndefined();
         expect(component.witnessTransferTimeout).toBeUndefined();
     });
 
@@ -211,7 +207,6 @@ describe('ParticipantsPanelComponent', () => {
         p.status = ParticipantStatus.NotSignedIn;
         const pat = new ParticipantPanelModel(p);
         await component.callWitnessIntoHearing(pat);
-        expect(pat.transferringIn).toBeUndefined();
         expect(component.witnessTransferTimeout).toBeUndefined();
     });
 
