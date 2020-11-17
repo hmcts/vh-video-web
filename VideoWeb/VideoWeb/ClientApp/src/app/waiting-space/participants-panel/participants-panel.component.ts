@@ -19,7 +19,7 @@ import {
     CallWitnessIntoHearingEvent,
     DismissWitnessFromHearingEvent
 } from 'src/app/shared/models/participant-event';
-import { TransferDirection } from 'src/app/services/models/hearing-transfer';
+import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 
 @Component({
     selector: 'app-participants-panel',
@@ -134,6 +134,25 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
                 this.handleEndpointStatusChange(message);
             })
         );
+
+        this.eventhubSubscription$.add(
+            this.eventService.getHearingTransfer().subscribe(async message => {
+                this.handleHearingTransferChange(message);
+            })
+        );
+    }
+
+    handleHearingTransferChange(message: HearingTransfer) {
+        const participant = this.participants.find(x => x.id === message.participantId);
+        if (!participant) {
+            return;
+        }
+        this.logger.debug(`${this.loggerPrefix} Participant status has been updated`, {
+            conference: this.conferenceId,
+            participant: participant.id,
+            transferDirection: message.transferDirection
+        });
+        participant.transferringIn = message.transferDirection === TransferDirection.In;
     }
 
     handleUpdatedConferenceVideoCall(updatedConference: ConferenceUpdated): void {
