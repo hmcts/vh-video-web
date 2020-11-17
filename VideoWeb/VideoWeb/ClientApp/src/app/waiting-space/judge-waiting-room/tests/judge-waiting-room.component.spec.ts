@@ -16,23 +16,22 @@ import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { onErrorSubjectMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { CallError } from '../../models/video-call-models';
-import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
-import { UserMediaService } from 'src/app/services/user-media.service';
 import { SelectedUserMediaDevice } from '../../../shared/models/selected-user-media-device';
 import { UserMediaDevice } from '../../../shared/models/user-media-device';
-import { SessionStorage } from 'src/app/services/session-storage';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
-import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
+import { CallError } from '../../models/video-call-models';
 import { NotificationSoundsService } from '../../services/notification-sounds.service';
+import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
@@ -114,6 +113,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     beforeEach(async () => {
+        userMediaService.setDefaultDevicesInCache.and.returnValue(Promise.resolve());
         component = new JudgeWaitingRoomComponent(
             activatedRoute,
             videoWebService,
@@ -160,6 +160,15 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         tick(100);
         expect(component.eventHubSubscription$).toBeDefined();
         expect(videoWebService.getJwToken).toHaveBeenCalledTimes(1);
+    }));
+    it('should handle error when unable to setup default devices', fakeAsync(() => {
+        errorService.handlePexipError.calls.reset();
+        const error = new Error('Permission error');
+        userMediaService.setDefaultDevicesInCache.and.rejectWith(error);
+
+        component.ngOnInit();
+        flushMicrotasks();
+        expect(errorService.handlePexipError).toHaveBeenCalledTimes(1);
     }));
     it('should init hearing alert and subscribers', fakeAsync(() => {
         component.ngOnInit();

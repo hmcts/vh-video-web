@@ -85,7 +85,6 @@ describe('SelfTestComponent', () => {
 
         userMediaService.getPreferredCamera.and.resolveTo(mediaTestData.getListOfCameras()[0]);
         userMediaService.getPreferredMicrophone.and.resolveTo(mediaTestData.getListOfMicrophones()[0]);
-
         userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService', [
             'requestAccess',
             'stopStream',
@@ -97,6 +96,7 @@ describe('SelfTestComponent', () => {
     });
 
     beforeEach(() => {
+        userMediaService.setDefaultDevicesInCache.and.returnValue(Promise.resolve());
         conference = testData.getConferenceDetailFuture();
         component = new SelfTestComponent(
             logger,
@@ -121,7 +121,7 @@ describe('SelfTestComponent', () => {
         component.ngOnDestroy();
     });
 
-    it('should use participant id if provided', () => {
+    it('should use participant id if provided', fakeAsync(() => {
         const testConference = testData.getConferenceDetailNow() as ConferenceResponse;
         testConference.pexip_self_test_node_uri = 'conference.node.selftest';
         const participant = testConference.participants[0];
@@ -129,20 +129,29 @@ describe('SelfTestComponent', () => {
         component.conference = testConference;
 
         component.ngOnInit();
+        flushMicrotasks();
 
         expect(component.selfTestParticipantId).toBe(participant.id);
         expect(component.selfTestPexipNode).toBe(testConference.pexip_self_test_node_uri);
-    });
+    }));
 
-    it('should generate participant id if not provided', () => {
+    it('should handle error when unable to setup devices', fakeAsync(() => {
+        userMediaService.setDefaultDevicesInCache.and.rejectWith(new Error('NotAllowedError'));
+        component.ngOnInit();
+        flushMicrotasks();
+        expect(errorService.handlePexipError).toHaveBeenCalled();
+    }));
+
+    it('should generate participant id if not provided', fakeAsync(() => {
         component.participant = null;
         component.conference = null;
 
         component.ngOnInit();
+        flushMicrotasks();
 
         expect(component.selfTestParticipantId).toBeDefined();
         expect(component.selfTestPexipNode).toBe(pexipConfig.pexip_self_test_node);
-    });
+    }));
 
     it('should stop stream and display modal when user selects device change', () => {
         const mockMicStream = jasmine.createSpyObj<MediaStream>('MediaStream', ['getAudioTracks']);

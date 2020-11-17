@@ -33,7 +33,8 @@ export class ErrorService {
                 return this.goToNotFound();
             default:
                 return this.goToServiceError(
-                    this.hasInternetConnection ? 'An unexpected error occurred.' : 'Your connection was lost',
+                    // tslint:disable-next-line: quotemark
+                    this.hasInternetConnection ? 'An unexpected error occurred' : "There's a problem with your connection",
                     'Please click "Reconnect" to return to the previous page. Call us if you keep seeing this message.'
                 );
         }
@@ -89,10 +90,19 @@ export class ErrorService {
         ];
         const isConnectionError = connectionErrors.filter(x => error.reason.toLowerCase().includes(x.toLowerCase())).length > 0;
         if (isConnectionError) {
-            this.goToServiceError('Your connection was lost');
+            // tslint:disable-next-line: quotemark
+            this.goToServiceError(this.hasInternetConnection ? 'Your connection was lost' : "There's a problem with your connection");
             return;
         }
-        const mediaBlockingIssues = ['Your camera and/or microphone are not available'];
+        const mediaBlockingIssues = [
+            'Your camera and/or microphone are not available',
+            'Could not get access to camera/microphone',
+            'Permission denied',
+            'NotAllowedError',
+            'PermissionDeniedError',
+            'OverconstrainedError',
+            'The request is not allowed by the user agent or the platform in the current context.'
+        ];
         const isMediaBlockingIssue = mediaBlockingIssues.filter(x => error.reason.toLowerCase().includes(x.toLowerCase())).length > 0;
         if (isMediaBlockingIssue) {
             this.goToServiceError(
