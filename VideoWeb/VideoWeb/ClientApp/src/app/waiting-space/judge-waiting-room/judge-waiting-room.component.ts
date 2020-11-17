@@ -90,7 +90,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     @HostListener('window:beforeunload')
     async ngOnDestroy(): Promise<void> {
         this.logger.debug(`${this.loggerPrefixJudge} Clearing intervals and subscriptions for judge waiting room`, {
-            conference: this.conference.id
+            conference: this.conferenceId
         });
         this.executeEndHearingSequence();
         this.eventHubSubscription$.unsubscribe();
@@ -131,13 +131,13 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         const action = this.isNotStarted() ? 'start' : 'resume';
         try {
             this.logger.debug(`${this.loggerPrefixJudge} - Judge clicked ${action} hearing`, {
-                conference: this.conference.id,
+                conference: this.conferenceId,
                 status: this.conference.status
             });
-            await this.videoCallService.startHearing(this.hearing.id, this.videoCallService.getPreferredLayout(this.conference.id));
+            await this.videoCallService.startHearing(this.hearing.id, this.videoCallService.getPreferredLayout(this.conferenceId));
         } catch (err) {
             this.logger.error(`${this.loggerPrefixJudge} Failed to ${action} a hearing for conference`, err, {
-                conference: this.conference.id,
+                conference: this.conferenceId,
                 status: this.conference.status
             });
             this.errorService.handleApiError(err);
@@ -146,16 +146,16 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
 
     goToJudgeHearingList(): void {
         this.logger.debug(`${this.loggerPrefixJudge} Judge is leaving conference and returning to hearing list`, {
-            conference: this.conference.id
+            conference: this.conferenceId
         });
         this.router.navigate([pageUrls.JudgeHearingList]);
     }
 
     checkEquipment() {
         this.logger.debug(`${this.loggerPrefixJudge} Judge is leaving conference and checking equipment`, {
-            conference: this.conference.id
+            conference: this.conferenceId
         });
-        this.router.navigate([pageUrls.EquipmentCheck, this.conference.id]);
+        this.router.navigate([pageUrls.EquipmentCheck, this.conferenceId]);
     }
 
     hearingSuspended(): boolean {
@@ -191,11 +191,11 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
                 this.showAudioRecordingAlert = true;
             }
         } catch (error) {
-            this.logger.error(`${this.loggerPrefixJudge} Failed to get audio stream info`, error, { conference: this.conference.id });
+            this.logger.error(`${this.loggerPrefixJudge} Failed to get audio stream info`, error, { conference: this.conferenceId });
 
             if (!this.continueWithNoRecording) {
                 this.logger.info(`${this.loggerPrefixJudge} Should not continue without a recording. Show alert.`, {
-                    conference: this.conference.id
+                    conference: this.conferenceId
                 });
                 this.showAudioRecordingAlert = true;
             }

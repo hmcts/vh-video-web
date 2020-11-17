@@ -83,10 +83,16 @@ export abstract class WaitingRoomBaseComponent {
         this.isPrivateConsultation = false;
     }
 
+    get conferenceId(): string {
+        if (this.conference) {
+            return this.conference.id;
+        }
+        return this.route.snapshot.paramMap.get('conferenceId');
+    }
+
     getConference() {
-        const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         return this.videoWebService
-            .getConferenceById(conferenceId)
+            .getConferenceById(this.conferenceId)
             .then((data: ConferenceResponse) => {
                 this.errorCount = 0;
                 this.loadingData = false;
@@ -96,13 +102,13 @@ export abstract class WaitingRoomBaseComponent {
                     x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
                 );
                 this.logger.debug(`${this.loggerPrefix} Getting conference details`, {
-                    conference: this.conference.id,
+                    conference: this.conferenceId,
                     participant: this.participant.id
                 });
             })
             .catch(error => {
-                this.logger.error(`${this.loggerPrefix} There was an error getting a conference ${conferenceId}`, error, {
-                    conference: conferenceId
+                this.logger.error(`${this.loggerPrefix} There was an error getting a conference ${this.conferenceId}`, error, {
+                    conference: this.conferenceId
                 });
                 this.loadingData = false;
                 this.errorService.handleApiError(error);
@@ -117,12 +123,12 @@ export abstract class WaitingRoomBaseComponent {
                 x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
             );
             this.logger.info(`${this.loggerPrefix} Conference closed.`, {
-                conference: this.conference.id,
+                conference: this.conferenceId,
                 participant: this.participant.id
             });
         } catch (error) {
             this.logger.error(`${this.loggerPrefix} There was an error getting a conference when checking closed time`, error, {
-                conference: this.conference.id,
+                conference: this.conferenceId,
                 participant: this.participant.id
             });
         }
@@ -173,7 +179,7 @@ export abstract class WaitingRoomBaseComponent {
         this.eventHubSubscription$.add(
             this.eventService.getServiceReconnected().subscribe(() => {
                 this.logger.info(`${this.loggerPrefix} EventHub re-connected`, {
-                    conference: this.conference.id,
+                    conference: this.conferenceId,
                     participant: this.participant.id
                 });
                 this.getConference().then(() => this.updateShowVideo());
@@ -214,7 +220,7 @@ export abstract class WaitingRoomBaseComponent {
 
     async handleEventHubDisconnection(reconnectionAttempt: number) {
         const logPayload = {
-            conference: this.conference.id,
+            conference: this.conferenceId,
             participant: this.participant.id,
             connectionAttempt: reconnectionAttempt
         };
@@ -232,12 +238,12 @@ export abstract class WaitingRoomBaseComponent {
 
     setupParticipantHeartbeat() {
         const baseUrl = this.conference.pexip_node_uri.replace('sip.', '');
-        const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${this.conference.id}`;
+        const url = `https://${baseUrl}/virtual-court/api/v1/hearing/${this.conferenceId}`;
         const bearerToken = `Bearer ${this.token.token}`;
         this.heartbeat = new HeartbeatFactory(
             this.videoCallService.pexipAPI,
             url,
-            this.conference.id,
+            this.conferenceId,
             this.participant.id,
             bearerToken,
             this.handleHeartbeat(this)
@@ -269,7 +275,7 @@ export abstract class WaitingRoomBaseComponent {
 
     async getJwtokenAndConnectToPexip(): Promise<void> {
         const logPayload = {
-            conference: this.conference.id,
+            conference: this.conferenceId,
             participant: this.participant.id
         };
         try {
@@ -307,7 +313,7 @@ export abstract class WaitingRoomBaseComponent {
         const conferenceAlias = this.hearing.getConference().participant_uri;
         const displayName = this.participant.tiled_display_name;
         const logPayload = {
-            conference: this.conference.id,
+            conference: this.conferenceId,
             participant: this.participant.id
         };
         this.logger.debug(`${this.loggerPrefix} Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`, logPayload);
@@ -337,7 +343,7 @@ export abstract class WaitingRoomBaseComponent {
 
     handleCallSetup(callSetup: CallSetup) {
         const logPayload = {
-            conference: this.conference.id,
+            conference: this.conferenceId,
             participant: this.participant.id
         };
         this.logger.debug(`${this.loggerPrefix} Conference has setup`, logPayload);
@@ -348,7 +354,7 @@ export abstract class WaitingRoomBaseComponent {
     handleCallConnected(callConnected: ConnectedCall): void {
         this.errorCount = 0;
         this.connected = true;
-        this.logger.debug(`${this.loggerPrefix} Successfully connected to hearing`, { conference: this.conference.id });
+        this.logger.debug(`${this.loggerPrefix} Successfully connected to hearing`, { conference: this.conferenceId });
         this.stream = callConnected.stream;
         const incomingFeedElement = document.getElementById('incomingFeed') as any;
         if (this.stream) {
@@ -367,10 +373,10 @@ export abstract class WaitingRoomBaseComponent {
         this.updateShowVideo();
         this.logger.error(`${this.loggerPrefix} Error from pexip. Reason : ${error.reason}`, new Error(error.reason), {
             pexipError: error,
-            conference: this.conference.id,
+            conference: this.conferenceId,
             participant: this.participant.id
         });
-        this.errorService.handlePexipError(error, this.conference.id);
+        this.errorService.handlePexipError(error, this.conferenceId);
     }
 
     handleCallDisconnect(reason: DisconnectedCall): void {
@@ -397,7 +403,7 @@ export abstract class WaitingRoomBaseComponent {
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
         this.logger.debug(
-            `${this.loggerPrefix} Handling conference status message : ${this.conference.id}, Case name : ${this.conference.case_name}, Conference status : ${message.status}`,
+            `${this.loggerPrefix} Handling conference status message : ${this.conferenceId}, Case name : ${this.conference.case_name}, Conference status : ${message.status}`,
             message
         );
         if (!this.validateIsForConference(message.conferenceId)) {
@@ -423,7 +429,7 @@ export abstract class WaitingRoomBaseComponent {
         }
         participant.status = message.status;
         this.logger.info(`${this.loggerPrefix} Handling participant update status change`, {
-            conference: this.conference.id,
+            conference: this.conferenceId,
             participant: participant.id,
             status: participant.status
         });
@@ -472,7 +478,7 @@ export abstract class WaitingRoomBaseComponent {
 
     async onConsultationCancelled() {
         const logPayload = {
-            conference: this.conference.id,
+            conference: this.conferenceId,
             caseName: this.conference.case_name,
             participant: this.participant.id
         };
@@ -486,7 +492,7 @@ export abstract class WaitingRoomBaseComponent {
 
     updateShowVideo(): void {
         const logPaylod = {
-            conference: this.conference.id,
+            conference: this.conferenceId,
             caseName: this.conference.case_name,
             participant: this.participant.id,
             showingVideo: false,
