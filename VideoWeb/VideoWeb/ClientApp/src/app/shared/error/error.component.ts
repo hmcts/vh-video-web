@@ -83,10 +83,8 @@ export class ErrorComponent implements OnInit, OnDestroy {
 
     executeGoBackTimeout() {
         this.logger.debug(`${this.loggerPrefix} Attempting execute automatic go back`);
-        if (!this.connectionError) {
-            this.stopGoBacktimer();
-            this.reconnect();
-        }
+        this.stopGoBacktimer();
+        this.reconnect();
     }
 
     @HostListener('window:beforeunload')
@@ -117,8 +115,10 @@ export class ErrorComponent implements OnInit, OnDestroy {
             this.logger.debug(`${this.loggerPrefix} Internet connection detected. Navigating to previous page`, {
                 returnUrl: previousPage
             });
+            this.attemptingReconnect = false;
             this.router.navigate([previousPage]);
         } else {
+            this.attemptingReconnect = false;
             this.logger.debug(`${this.loggerPrefix} No internet connection detected. Restarting timer`);
             this.startGoBackTimer();
         }
