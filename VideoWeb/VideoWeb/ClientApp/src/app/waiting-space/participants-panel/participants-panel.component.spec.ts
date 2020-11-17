@@ -20,6 +20,7 @@ import {
     CallWitnessIntoHearingEvent,
     DismissWitnessFromHearingEvent
 } from 'src/app/shared/models/participant-event';
+import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 
 describe('ParticipantsPanelComponent', () => {
     const conferenceId = '1111-1111-1111';
@@ -120,12 +121,31 @@ describe('ParticipantsPanelComponent', () => {
     it('should not process eventhub endpoint updates not in list', () => {
         component.setupEventhubSubscribers();
         const status = EndpointStatus.InConsultation;
-        const ep = endpoints[0];
         const message = new EndpointStatusMessage(Guid.create().toString(), conferenceId, status);
 
         endpointStatusSubjectMock.next(message);
 
         expect(component.participants.find(x => x.id === message.endpointId)).toBeUndefined();
+    });
+
+    it('should set transferring in when HearingTransfer In event received', () => {
+        const p = participants[0];
+        component.handleHearingTransferChange(new HearingTransfer(component.conferenceId, p.id, TransferDirection.In));
+
+        var resultParticipant = component.participants.find(x => x.id === p.id);
+        expect(resultParticipant.transferringIn).toBeTrue();
+    });
+
+    it('should set transferring in when HearingTransfer Out event received', () => {
+        const p = participants[0];
+        component.handleHearingTransferChange(new HearingTransfer(component.conferenceId, p.id, TransferDirection.Out));
+
+        var resultParticipant = component.participants.find(x => x.id === p.id);
+        expect(resultParticipant.transferringIn).toBeFalse();
+    });
+
+    it('should handle invalid participant id - HearingTransfer', () => {
+        component.handleHearingTransferChange(new HearingTransfer(component.conferenceId, 'InvalidId', TransferDirection.In));
     });
 
     it('should return true when participant is in hearing', () => {
