@@ -258,7 +258,10 @@ namespace VideoWeb.AcceptanceTests.Steps
                 User_types = userTypes
             };
 
-            Thread.Sleep(TimeSpan.FromSeconds(GetRandomNumberForParallelExecution(8)));
+            if (_c.VideoWebConfig.SauceLabsConfiguration.RunningOnSauceLabs())
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(GetRandomNumberForParallelExecution(15)));
+            }
 
             var response = _c.Apis.TestApi.AllocateUsers(request);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
