@@ -132,7 +132,7 @@ describe('ParticipantsPanelComponent', () => {
         const p = participants[0];
         component.handleHearingTransferChange(new HearingTransfer(component.conferenceId, p.id, TransferDirection.In));
 
-        var resultParticipant = component.participants.find(x => x.id === p.id);
+        const resultParticipant = component.participants.find(x => x.id === p.id);
         expect(resultParticipant.transferringIn).toBeTrue();
     });
 
@@ -140,7 +140,7 @@ describe('ParticipantsPanelComponent', () => {
         const p = participants[0];
         component.handleHearingTransferChange(new HearingTransfer(component.conferenceId, p.id, TransferDirection.Out));
 
-        var resultParticipant = component.participants.find(x => x.id === p.id);
+        const resultParticipant = component.participants.find(x => x.id === p.id);
         expect(resultParticipant.transferringIn).toBeFalse();
     });
 
