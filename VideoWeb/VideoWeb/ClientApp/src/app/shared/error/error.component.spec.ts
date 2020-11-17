@@ -132,13 +132,6 @@ describe('ErrorComponent', () => {
         expect(component.reconnect).toHaveBeenCalledTimes(1);
     });
 
-    it('should not go back on timeout complete and has connection error', () => {
-        spyOn(component, 'reconnect');
-        component.connectionError = true;
-        component.executeGoBackTimeout();
-        expect(component.reconnect).toHaveBeenCalledTimes(0);
-    });
-
     it('should not go back if already reconnecting in progress', () => {
         component.attemptingReconnect = true;
         pageTrackerSpy.getPreviousUrl.calls.reset();
