@@ -97,10 +97,17 @@ describe('EventsService', () => {
         expect(service.connection.start).toHaveBeenCalledTimes(1);
     });
 
-    it('should stop', () => {
+    it('should stop eventhub connection if connected to eventhub', () => {
         spyOn(service.connection, 'stop').and.callFake(() => Promise.resolve());
+        spyOnProperty(service.connection, 'state').and.returnValue(signalR.HubConnectionState.Connected);
         service.stop();
         expect(service.connection.stop).toHaveBeenCalled();
+    });
+
+    it('should not stop eventhub connection if not connected to eventhub', () => {
+        spyOn(service.connection, 'stop');
+        spyOnProperty(service.connection, 'state').and.returnValue(signalR.HubConnectionState.Disconnected);
+        expect(service.connection.stop).toHaveBeenCalledTimes(0);
     });
 
     it('should send im to "SendMessage" method', async () => {

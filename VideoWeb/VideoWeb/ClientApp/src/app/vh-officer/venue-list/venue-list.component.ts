@@ -33,7 +33,7 @@ export class VenueListComponent implements OnInit {
         this.courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
     }
 
-    async ngOnInit() {
+    ngOnInit() {
         this.venueListLoading = false;
         this.videoWebService.getDistinctJudgeNames().then(response => {
             this.judges = response.first_names;

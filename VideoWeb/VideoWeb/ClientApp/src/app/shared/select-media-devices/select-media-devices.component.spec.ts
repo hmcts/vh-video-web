@@ -4,6 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { SelectMediaDevicesComponent } from './select-media-devices.component';
 
 describe('SelectMediaDevicesComponent', () => {
@@ -46,7 +47,7 @@ describe('SelectMediaDevicesComponent', () => {
     });
 
     beforeEach(fakeAsync(() => {
-        component = new SelectMediaDevicesComponent(userMediaService, userMediaStreamService, fb);
+        component = new SelectMediaDevicesComponent(userMediaService, userMediaStreamService, fb, new MockLogger());
         component.ngOnInit();
         tick();
     }));

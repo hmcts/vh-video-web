@@ -106,6 +106,10 @@ export class EventsService {
         );
     }
 
+    get isDisconnectedFromHub(): boolean {
+        return this.connection.state === signalR.HubConnectionState.Disconnected;
+    }
+
     registerHandlers(): void {
         this.connection.on(
             'ParticipantStatusMessage',
@@ -205,13 +209,15 @@ export class EventsService {
     }
 
     stop() {
-        this.logger.debug(`[EventsService] - Ending connection to EventHub. Current state: ${this.connection.state}`);
-        this.connection
-            .stop()
-            .then(() => {
-                this.logger.debug(`[EventsService] - Connection stopped, new state: ${this.connection.state}`);
-            })
-            .catch(err => this.logger.error('[EventsService] - Failed to stop connection to EventHub', err));
+        if (!this.isDisconnectedFromHub) {
+            this.logger.debug(`[EventsService] - Ending connection to EventHub. Current state: ${this.connection.state}`);
+            this.connection
+                .stop()
+                .then(() => {
+                    this.logger.debug(`[EventsService] - Connection stopped, new state: ${this.connection.state}`);
+                })
+                .catch(err => this.logger.error('[EventsService] - Failed to stop connection to EventHub', err));
+        }
     }
 
     async delay(ms: number) {

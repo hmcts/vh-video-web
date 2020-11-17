@@ -26,11 +26,11 @@ export class IntroductionComponent extends ParticipantStatusBaseDirective implem
         super(participantStatusUpdateService, logger);
     }
 
-    async ngOnInit() {
-        return this.getConference();
+    ngOnInit() {
+        this.getConference();
     }
 
-    async getConference() {
+    getConference() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         this.conference = this.videoWebService.getActiveIndividualConference();
     }
