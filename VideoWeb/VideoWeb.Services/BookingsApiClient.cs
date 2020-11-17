@@ -5037,6 +5037,10 @@ namespace VideoWeb.Services.Bookings
         [Newtonsoft.Json.JsonProperty("group_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.Guid? Group_id { get; set; }
     
+        /// <summary>Gets or sets Judge/Court account (username).</summary>
+        [Newtonsoft.Json.JsonProperty("court_room_account", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Court_room_account { get; set; }
+    
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     
         [Newtonsoft.Json.JsonExtensionData]
