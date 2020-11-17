@@ -3,7 +3,12 @@ import { Guid } from 'guid-typescript';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { endpointStatusSubjectMock, eventsServiceSpy, participantStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
+import {
+    endpointStatusSubjectMock,
+    eventsServiceSpy,
+    participantStatusSubjectMock,
+    hearingTransferSubjectMock
+} from 'src/app/testing/mocks/mock-events-service';
 import { videoCallServiceSpy, onConferenceUpdatedMock, onParticipantUpdatedMock } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { EndpointStatus, ParticipantStatus, Role } from '../../services/clients/api-client';
@@ -20,6 +25,7 @@ import {
     CallWitnessIntoHearingEvent,
     DismissWitnessFromHearingEvent
 } from 'src/app/shared/models/participant-event';
+import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 
 describe('ParticipantsPanelComponent', () => {
     const conferenceId = '1111-1111-1111';
@@ -120,12 +126,34 @@ describe('ParticipantsPanelComponent', () => {
     it('should not process eventhub endpoint updates not in list', () => {
         component.setupEventhubSubscribers();
         const status = EndpointStatus.InConsultation;
-        const ep = endpoints[0];
         const message = new EndpointStatusMessage(Guid.create().toString(), conferenceId, status);
 
         endpointStatusSubjectMock.next(message);
 
         expect(component.participants.find(x => x.id === message.endpointId)).toBeUndefined();
+    });
+
+    it('should set transferring in when HearingTransfer In event received', () => {
+        component.setupEventhubSubscribers();
+        const p = participants[0];
+        hearingTransferSubjectMock.next(new HearingTransfer(component.conferenceId, p.id, TransferDirection.In));
+
+        const resultParticipant = component.participants.find(x => x.id === p.id);
+        expect(resultParticipant.transferringIn).toBeTrue();
+    });
+
+    it('should set transferring in when HearingTransfer Out event received', () => {
+        component.setupEventhubSubscribers();
+        const p = participants[0];
+        hearingTransferSubjectMock.next(new HearingTransfer(component.conferenceId, p.id, TransferDirection.Out));
+
+        const resultParticipant = component.participants.find(x => x.id === p.id);
+        expect(resultParticipant.transferringIn).toBeFalse();
+    });
+
+    it('should handle invalid participant id - HearingTransfer', () => {
+        component.setupEventhubSubscribers();
+        hearingTransferSubjectMock.next(new HearingTransfer(component.conferenceId, 'InvalidId', TransferDirection.In));
     });
 
     it('should return true when participant is in hearing', () => {
@@ -163,15 +191,6 @@ describe('ParticipantsPanelComponent', () => {
         const pat = new ParticipantPanelModel(p);
         await component.initiateTransfer(pat);
         expect(videocallService.callParticipantIntoHearing).toHaveBeenCalledWith(component.conferenceId, p.id);
-    });
-
-    it('should return call participant in when participant is a witness and available', async () => {
-        const p = participants[0];
-        p.hearing_role = HearingRole.WITNESS;
-        p.status = ParticipantStatus.Available;
-        const pat = new ParticipantPanelModel(p);
-        await component.callWitnessIntoHearing(pat);
-        expect(component.witnessTransferTimeout).toBeDefined();
     });
 
     it('should not call a participant in when participant is not a witness', async () => {
