@@ -295,6 +295,7 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
             conference: this.conferenceId,
             participant: participant.id
         });
+        participant.transferringIn = true;
         await this.eventService.sendTransferRequest(this.conferenceId, participant.id, TransferDirection.In);
         this.witnessTransferTimeout = setTimeout(() => {
             this.initiateTransfer(participant);
