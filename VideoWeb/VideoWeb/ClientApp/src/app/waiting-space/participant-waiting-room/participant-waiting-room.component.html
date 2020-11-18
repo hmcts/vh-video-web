@@ -29,7 +29,10 @@
         src="/assets/images/UkGovCrestWhite.png"
         alt="Witness transferring warning image"
       />
-      <h2 class="govuk-heading-m white govuk-!-margin-top-9">Please wait, You will be joining the hearing shortly</h2>
+      <h2 class="govuk-heading-m white govuk-!-margin-top-5">
+        Please get ready <br />
+        You'll join the hearing in a few seconds
+      </h2>
       <video id="outgoingFeedVideoTransfer" [muted]="true" [srcObject]="outgoingStream" autoplay height="auto">
         Your browser does not support Video
       </video>
@@ -132,16 +135,16 @@
         <div *ngIf="isWitness && hearing.isInSession()">
           <h2 class="govuk-heading-m white">The hearing has started</h2>
           <p class="white">
-            The judge will bring you into the hearing when they are ready for you. An alert will sound and a countdown timer will appear on
-            the screen.
+            The judge will bring you into the hearing when they are ready for you. An alert will sound and you will join the hearing a few
+            seconds later.
           </p>
         </div>
 
         <div *ngIf="isWitness && (hearing.isOnTime() || hearing.isStarting() || hearing.isDelayed())">
           <h2 class="govuk-heading-m white">Please wait</h2>
           <p class="white">
-            The judge will bring you into the hearing when they are ready for you. An alert will sound and a countdown timer will appear on
-            the screen.
+            The judge will bring you into the hearing when they are ready for you. An alert will sound and you will join the hearing a few
+            seconds later.
           </p>
         </div>
       </div>
