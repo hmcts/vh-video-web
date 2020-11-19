@@ -39,7 +39,7 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
     lastElement: HTMLElement;
 
     isScrolling = 0;
-    witnessTransferTimeout: NodeJS.Timeout;
+    witnessTransferTimeout: {[id: string] : NodeJS.Timeout;} = {};
 
     constructor(
         private videoWebService: VideoWebService,
@@ -98,12 +98,18 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
     ngOnDestroy(): void {
         this.videoCallSubscription$.unsubscribe();
         this.eventhubSubscription$.unsubscribe();
-        this.resetWitnessTransferTimeout();
+        this.resetAllWitnessTransferTimeouts();
     }
 
-    resetWitnessTransferTimeout() {
-        clearTimeout(this.witnessTransferTimeout);
-        this.witnessTransferTimeout = undefined;
+    resetWitnessTransferTimeout(participantId: string) {
+        clearTimeout(this.witnessTransferTimeout[participantId]);
+        this.witnessTransferTimeout[participantId] = undefined;
+    }
+
+    resetAllWitnessTransferTimeouts() {
+        for (let participantId in this.witnessTransferTimeout) {
+            this.resetWitnessTransferTimeout(participantId);
+        }
     }
 
     setupVideoCallSubscribers() {
@@ -315,14 +321,14 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
             participant: participant.id
         });
         await this.eventService.sendTransferRequest(this.conferenceId, participant.id, TransferDirection.In);
-        this.witnessTransferTimeout = setTimeout(() => {
+        this.witnessTransferTimeout[participant.id] = setTimeout(() => {
             this.initiateTransfer(participant);
         }, 10000);
     }
 
     async initiateTransfer(participant: PanelModel) {
         try {
-            this.resetWitnessTransferTimeout();
+            this.resetWitnessTransferTimeout(participant.id);
             await this.videoCallService.callParticipantIntoHearing(this.conferenceId, participant.id);
             this.logger.debug(`${this.loggerPrefix} 10 second wait completed, initiating witneses transfer now`, {
                 witness: participant.id,
