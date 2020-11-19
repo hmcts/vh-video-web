@@ -39,7 +39,7 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
     lastElement: HTMLElement;
 
     isScrolling = 0;
-    witnessTransferTimeout: {[id: string] : NodeJS.Timeout;} = {};
+    witnessTransferTimeout: { [id: string]: NodeJS.Timeout } = {};
 
     constructor(
         private videoWebService: VideoWebService,
@@ -107,7 +107,7 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
     }
 
     resetAllWitnessTransferTimeouts() {
-        for (let participantId in this.witnessTransferTimeout) {
+        for (const participantId of Object.keys(this.witnessTransferTimeout)) {
             this.resetWitnessTransferTimeout(participantId);
         }
     }
