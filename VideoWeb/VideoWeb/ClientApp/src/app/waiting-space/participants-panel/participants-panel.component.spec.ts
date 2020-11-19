@@ -46,7 +46,7 @@ describe('ParticipantsPanelComponent', () => {
         component = new ParticipantsPanelComponent(videoWebServiceSpy, activatedRoute, videocallService, eventService, logger);
         component.participants = participants.map(x => new ParticipantPanelModel(x));
         component.conferenceId = conferenceId;
-        component.witnessTransferTimeout = undefined;
+        component.witnessTransferTimeout = {};
 
         endpoints.map(endpoint => {
             component.participants = component.participants.concat(new VideoEndpointPanelModel(endpoint));
@@ -199,7 +199,7 @@ describe('ParticipantsPanelComponent', () => {
         p.status = ParticipantStatus.Available;
         const pat = new ParticipantPanelModel(p);
         await component.callWitnessIntoHearing(pat);
-        expect(component.witnessTransferTimeout).toBeUndefined();
+        expect(component.witnessTransferTimeout[p.id]).toBeUndefined();
     });
 
     it('should not call a participant in when participant is a witness but not available', async () => {
@@ -208,7 +208,7 @@ describe('ParticipantsPanelComponent', () => {
         p.status = ParticipantStatus.NotSignedIn;
         const pat = new ParticipantPanelModel(p);
         await component.callWitnessIntoHearing(pat);
-        expect(component.witnessTransferTimeout).toBeUndefined();
+        expect(component.witnessTransferTimeout[p.id]).toBeUndefined();
     });
 
     it('should call participant in when participant is a witness and available', async () => {
@@ -217,7 +217,7 @@ describe('ParticipantsPanelComponent', () => {
         p.status = ParticipantStatus.Available;
         const pat = new ParticipantPanelModel(p);
         await component.callWitnessIntoHearing(pat);
-        expect(component.witnessTransferTimeout).toBeDefined();
+        expect(component.witnessTransferTimeout[p.id]).toBeDefined();
     });
 
     it('should not call a participant in when participant is not a witness', async () => {
@@ -226,7 +226,7 @@ describe('ParticipantsPanelComponent', () => {
         p.status = ParticipantStatus.Available;
         const pat = new ParticipantPanelModel(p);
         await component.callWitnessIntoHearing(pat);
-        expect(component.witnessTransferTimeout).toBeUndefined();
+        expect(component.witnessTransferTimeout[p.id]).toBeUndefined();
     });
 
     it('should not call a participant in when participant is a witness but not available', async () => {
@@ -235,7 +235,7 @@ describe('ParticipantsPanelComponent', () => {
         p.status = ParticipantStatus.NotSignedIn;
         const pat = new ParticipantPanelModel(p);
         await component.callWitnessIntoHearing(pat);
-        expect(component.witnessTransferTimeout).toBeUndefined();
+        expect(component.witnessTransferTimeout[p.id]).toBeUndefined();
     });
 
     it('should dismiss participant in when participant is a witness and in hearing', async () => {
