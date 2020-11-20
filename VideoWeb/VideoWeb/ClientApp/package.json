@@ -28,7 +28,7 @@
     "@angular/compiler": "^10.1.5",
     "@angular/core": "^10.1.5",
     "@angular/forms": "^10.1.5",
-    "@angular/localize": "^10.1.5",
+    "@angular/localize": "^11.0.2",
     "@angular/platform-browser": "^10.1.5",
     "@angular/platform-browser-dynamic": "^10.1.5",
     "@angular/platform-server": "^10.1.5",
@@ -82,7 +82,7 @@
     "node-sass": "^4.14.1",
     "nswag": "^13.8.2",
     "prettier": "^2.1.2",
-    "puppeteer": "^5.4.0",
+    "puppeteer": "^5.4.1",
     "typescript": "~4.0.5"
   },
   "optionalDependencies": {
