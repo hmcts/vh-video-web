@@ -15,17 +15,16 @@ namespace VideoWeb.EventHub.Handlers
     public class ParticipantNotSignedInEventHandler : EventHandlerBase
     {
         public ParticipantNotSignedInEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
-    IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient) : base(
-    hubContext, conferenceCache, logger, videoApiClient)
+            IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient) : base(
+            hubContext, conferenceCache, logger, videoApiClient)
         {
         }
 
         public override EventType EventType => EventType.ParticipantNotSignedIn;
 
-        protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
+        protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            var participantState = ParticipantState.NotSignedIn;
-            await PublishParticipantStatusMessage(participantState);
+            return PublishParticipantStatusMessage(ParticipantState.NotSignedIn);
         }
     }
 }

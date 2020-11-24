@@ -20,9 +20,9 @@ namespace VideoWeb.EventHub.Handlers
 
         public override EventType EventType => EventType.Help;
 
-        protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
+        protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
+            return HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .HelpMessage(SourceConference.Id, SourceParticipant?.DisplayName);
         }
     }

@@ -43,30 +43,31 @@ namespace VideoWeb.Controllers
         {
             try
             {
+                _logger.LogTrace("Received callback from Kinly.");
+                _logger.LogTrace($"ConferenceId: {request.Conference_id}, EventType: {request.Event_type}, Participant ID : {request.Participant_id}");
+
                 var conferenceId = Guid.Parse(request.Conference_id);
                 var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
                 {
                     _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
-
                     return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
                 });
-
                 
-                _logger.LogTrace("Received callback from Kinly.");
-                _logger.LogTrace(
-                    $"ConferenceId: {request.Conference_id}, EventType: {request.Event_type}, Participant ID : {request.Participant_id}");
                 var callbackEvent = CallbackEventMapper.MapConferenceEventToCallbackEventModel(request, conference);
                 request.Event_type = Enum.Parse<VAEventType>(callbackEvent.EventType.ToString());
                 if (callbackEvent.EventType != EventType.VhoCall)
                 {
-                    _logger.LogTrace(
-                        $"Raising video event: ConferenceId: {request.Conference_id}, EventType: {request.Event_type}");
+                    _logger.LogTrace($"Raising video event: ConferenceId: {request.Conference_id}, EventType: {request.Event_type}");
                     await _videoApiClient.RaiseVideoEventAsync(request);
+                }
+
+                if (!string.IsNullOrEmpty(request.Phone))
+                {
+                    return NoContent();
                 }
 
                 var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
                 await handler.HandleAsync(callbackEvent);
-
                 return NoContent();
             }
             catch (VideoApiException e)

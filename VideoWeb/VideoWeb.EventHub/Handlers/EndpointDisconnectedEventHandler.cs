@@ -20,9 +20,10 @@ namespace VideoWeb.EventHub.Handlers
         }
 
         public override EventType EventType => EventType.EndpointDisconnected;
-        protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
+
+        protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            await PublishEndpointStatusMessage(EndpointState.Disconnected);
+            return PublishEndpointStatusMessage(EndpointState.Disconnected);
         }
     }
 }

@@ -17,7 +17,8 @@ import {
     UpdateParticipantRequest,
     ConferenceResponseVho,
     JudgeNameListResponse,
-    VideoEndpointResponse
+    VideoEndpointResponse,
+    ParticipantForUserResponse
 } from 'src/app/services/clients/api-client';
 import { Observable, of } from 'rxjs';
 import { ConferenceTestData } from './data/conference-test-data';
@@ -25,6 +26,9 @@ import { TasksTestData } from './data/tasks-test-data';
 
 export class MockVideoWebService implements IVideoWebApiService {
     username: string;
+    getParticipantsByConferenceId(conferenceId: string): Promise<ParticipantForUserResponse[]> {
+        throw new Error('Method not implemented.');
+    }
     getConferencesForVHOfficer(): Observable<ConferenceForVhOfficerResponse[]> {
         throw new Error('Method not implemented.');
     }
