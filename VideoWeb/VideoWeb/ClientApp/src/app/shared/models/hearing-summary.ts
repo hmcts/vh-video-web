@@ -123,4 +123,8 @@ export class HearingSummary extends HearingBase {
     get judgeName(): string {
         return this.participants.find(x => x.role === Role.Judge).displayName;
     }
+
+    get telephoneConferenceId(): string {
+        return this.conference.telephone_conference_id;
+    }
 }

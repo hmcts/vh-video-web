@@ -45,6 +45,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.Participants.Count.Should().Be(participants.Count);
             response.StartedDateTime.Should().Be(conference.Started_date_time);
             response.ClosedDateTime.Should().Be(conference.Closed_date_time);
+            response.TelephoneConferenceId.Should().Be(conference.Telephone_conference_id);
         }
     }
 }

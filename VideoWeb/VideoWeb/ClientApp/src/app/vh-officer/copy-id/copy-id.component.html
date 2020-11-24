@@ -2,6 +2,7 @@
   <img
     appTooltip
     [text]="tooltip"
+    (tooltipShown)="resetText()"
     class="icons"
     src="/assets/images/share.png"
     alt="copy-conference-id-icon"

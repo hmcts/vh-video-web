@@ -29,6 +29,7 @@ import { VhoChatComponent } from './vho-chat/vho-chat.component';
 import { VhoHearingListComponent } from './vho-hearing-list/vho-hearing-list.component';
 import { VhoHearingsFilterComponent } from './vho-hearings-filter/vho-hearings-filter.component';
 import { CourtRoomsFiltersComponent } from './court-rooms-filters/court-rooms-filters.component';
+import { CopyTelephoneIdComponent } from './copy-telephone-id/copy-telephone-id.component';
 
 @NgModule({
     declarations: [
@@ -52,7 +53,8 @@ import { CourtRoomsFiltersComponent } from './court-rooms-filters/court-rooms-fi
         HearingStatusComponent,
         CopyIdComponent,
         UnreadMessagesParticipantComponent,
-        CourtRoomsFiltersComponent
+        CourtRoomsFiltersComponent,
+        CopyTelephoneIdComponent
     ],
     imports: [CommonModule, SharedModule, ChartsModule, ClipboardModule, VhOfficerRoutingModule, NgSelectModule],
     providers: [HearingsFilterOptionsService, ParticipantStatusReader, VhoQueryService],

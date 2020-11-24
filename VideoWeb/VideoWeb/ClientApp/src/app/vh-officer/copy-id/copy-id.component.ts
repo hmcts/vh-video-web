@@ -15,11 +15,15 @@ export class CopyIdComponent implements OnInit {
     constructor(private clipboardService: ClipboardService) {}
 
     ngOnInit(): void {
-        this.tooltip = 'Copy conference ID to clipboard';
+        this.resetText();
     }
 
     copyToClipboard(conference: HearingSummary) {
         this.clipboardService.copyFromContent(conference.id);
         this.tooltip = 'Conference ID copied to clipboard';
+    }
+
+    resetText() {
+        this.tooltip = 'Copy conference ID to clipboard';
     }
 }
