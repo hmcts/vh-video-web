@@ -21,10 +21,9 @@ namespace VideoWeb.EventHub.Handlers
 
         public override EventType EventType => EventType.Joined;
 
-        protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
+        protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            var participantState = ParticipantState.Available;
-            await PublishParticipantStatusMessage(participantState).ConfigureAwait(false);
+            return PublishParticipantStatusMessage(ParticipantState.Available);
         }
     }
 }
