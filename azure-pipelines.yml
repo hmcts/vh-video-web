@@ -206,7 +206,7 @@ resources:
         - repository: templates
           type: github
           name: hmcts/azure-devops-templates
-          ref: refs/heads/master
+          ref: refs/heads/feature/support-nuget-config
           endpoint: hmcts_shaed
     containers:
         - container: dotnetsdk
