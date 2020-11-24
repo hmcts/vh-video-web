@@ -21,9 +21,9 @@ namespace VideoWeb.EventHub.Handlers
 
         public override EventType EventType => EventType.Leave;
 
-        protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
+        protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            await PublishParticipantStatusMessage(ParticipantState.Disconnected);
+            return PublishParticipantStatusMessage(ParticipantState.Disconnected);
         }
     }
 }

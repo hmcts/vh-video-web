@@ -23,10 +23,10 @@ namespace VideoWeb.EventHub.Handlers
 
         public override EventType EventType => EventType.Transfer;
 
-        protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
+        protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             var participantStatus = DeriveParticipantStatusForTransferEvent(callbackEvent);
-            await PublishParticipantStatusMessage(participantStatus).ConfigureAwait(false);
+            return PublishParticipantStatusMessage(participantStatus);
         }
 
         private static ParticipantState DeriveParticipantStatusForTransferEvent(CallbackEvent callbackEvent)

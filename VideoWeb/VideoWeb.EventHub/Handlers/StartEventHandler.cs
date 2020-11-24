@@ -21,10 +21,9 @@ namespace VideoWeb.EventHub.Handlers
 
         public override EventType EventType => EventType.Start;
 
-        protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
+        protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            var conferenceState = ConferenceStatus.InSession;
-            await PublishConferenceStatusMessage(conferenceState);
+            return PublishConferenceStatusMessage(ConferenceStatus.InSession);
         }
     }
 }

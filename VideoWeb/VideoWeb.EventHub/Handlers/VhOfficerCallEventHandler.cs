@@ -22,10 +22,10 @@ namespace VideoWeb.EventHub.Handlers
 
         public override EventType EventType => EventType.VhoCall;
 
-        protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
+        protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             var targetRoom = ValidationConsultationRoom(callbackEvent);
-            await HubContext.Clients.Group(SourceParticipant.Username.ToLowerInvariant())
+            return HubContext.Clients.Group(SourceParticipant.Username.ToLowerInvariant())
                 .AdminConsultationMessage(SourceConference.Id, targetRoom,
                     SourceParticipant.Username.ToLowerInvariant());
         }

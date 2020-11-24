@@ -3,22 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using Endpoint = VideoWeb.Common.Models.Endpoint;
-using EventComponentHelper = VideoWeb.UnitTests.Builders.EventComponentHelper;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 using RoomType = VideoWeb.Services.Video.RoomType;
 
@@ -26,26 +25,16 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
 {
     public class SendHearingEventTests
     {
-        private VideoEventsController _controller;
-        private Mock<IVideoApiClient> _videoApiClientMock;
+        private VideoEventsController _sut;
         private Conference _testConference;
-        private Mock<ILogger<VideoEventsController>> _mockLogger;
-        private Mock<IConferenceCache> _mockConferenceCache;
+        private AutoMock _mocker;
 
         [SetUp]
         public void Setup()
         {
-            _videoApiClientMock = new Mock<IVideoApiClient>();
-            _testConference = BuildConferenceForTest();
-            var helper = new EventComponentHelper();
-            _mockLogger = new Mock<ILogger<VideoEventsController>>();
-            _mockConferenceCache = new Mock<IConferenceCache>();
+            _mocker = AutoMock.GetLoose();
 
-            var handlerList = helper.GetHandlers();
-            helper.Cache.Set(_testConference.Id, _testConference);
-            helper.RegisterUsersForHubContext(_testConference.Participants);
-            
-            var eventHandlerFactory = new EventHandlerFactory(handlerList);
+            _testConference = BuildConferenceForTest();
             
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
@@ -55,31 +44,49 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                     User = claimsPrincipal
                 }
             };
-            
-            _controller = new VideoEventsController(_videoApiClientMock.Object, eventHandlerFactory, 
-                _mockConferenceCache.Object, _mockLogger.Object)
-            {
-                ControllerContext = context
-            };
+
+            _sut = _mocker.Create<VideoEventsController>();
+            _sut.ControllerContext = context;
 
             var conference = CreateValidConferenceResponse(null);
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
-            _mockConferenceCache.Setup(cache => cache.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+            _mocker.Mock<IConferenceCache>().Setup(cache => cache.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(_testConference);
+            _mocker.Mock<IEventHandlerFactory>().Setup(x => x.Get(It.IsAny<EventHub.Enums.EventType>())).Returns(_mocker.Mock<IEventHandler>().Object);
         }
 
         [Test]
         public async Task Should_return_no_content_when_event_is_sent()
         {
-            _videoApiClientMock
-                .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
-                .Returns(Task.FromResult(default(object)));
-            
-            var result = await _controller.SendHearingEventAsync(CreateRequest());
+            // Arrange
+            var request = CreateRequest();
+
+            // Act
+            var result = await _sut.SendHearingEventAsync(request);
+
+            // Assert
+            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
+            result.Should().BeOfType<NoContentResult>();
             var typedResult = (NoContentResult) result;
+            typedResult.Should().NotBeNull();
+        }
+
+        [Test]
+        public async Task Should_return_no_content_phone_shouldnt_call_handler()
+        {
+            // Arrange
+            var request = CreateRequest("0123456789");
+
+            // Act
+            var result = await _sut.SendHearingEventAsync(request);
+
+            // Assert
+            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Never);
+            result.Should().BeOfType<NoContentResult>();
+            var typedResult = (NoContentResult)result;
             typedResult.Should().NotBeNull();
         }
 
@@ -89,41 +96,57 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         public async Task Should_return_no_content_when_endpoint_event_is_sent(EventType incomingEventType,
             EventType expectedEventType)
         {
-            _videoApiClientMock.Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
-                .Returns(Task.FromResult(default(object)));
+            // Arrange
+            var request = CreateEndpointRequest(incomingEventType);
 
-            var result = await _controller.SendHearingEventAsync(CreateEndpointRequest(incomingEventType));
+            // Act
+            var result = await _sut.SendHearingEventAsync(request);
+            
+            // Assert
+            result.Should().BeOfType<NoContentResult>();
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
-
-            _videoApiClientMock.Verify(x =>
+            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
+            _mocker.Mock<IVideoApiClient>().Verify(x =>
                 x.RaiseVideoEventAsync(It.Is<ConferenceEventRequest>(r => r.Event_type == expectedEventType)));
         }
 
         [Test]
         public async Task Should_return_bad_request()
-        {
+        { 
+            // Arrange
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id", null, default, null);
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
-            
-            var result = await _controller.SendHearingEventAsync(CreateRequest());
-            var typedResult = (ObjectResult) result;
+            var request = CreateRequest();
+
+            // Act
+            var result = await _sut.SendHearingEventAsync(request);
+
+            // Assert
+            result.Should().BeOfType<ObjectResult>();
+            var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
         }
         
         [Test]
         public async Task Should_return_exception()
         {
+            // Arrange
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
+            var request = CreateRequest();
 
-            var result = await _controller.SendHearingEventAsync(CreateRequest());
+            // Act
+            var result = await _sut.SendHearingEventAsync(request);
+
+            // Assert
+            result.Should().BeOfType<ObjectResult>();
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
         }
@@ -131,24 +154,31 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         [Test]
         public async Task Should_return_exception_when_cache_func_throws_video_exception()
         {
+            // Arrange
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
-            _mockConferenceCache
+            _mocker.Mock<IConferenceCache>()
                 .Setup(x => x.GetOrAddConferenceAsync(It.IsAny<Guid>(), It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .ThrowsAsync(apiException);
+            var request = CreateRequest();
 
-            var result = await _controller.SendHearingEventAsync(CreateRequest());
+            // Act
+            var result = await _sut.SendHearingEventAsync(request);
+
+            // Assert
+            result.Should().BeOfType<ObjectResult>();
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
             typedResult.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
         }
 
-        private ConferenceEventRequest CreateRequest()
+        private ConferenceEventRequest CreateRequest(string phone = null)
         {
             return Builder<ConferenceEventRequest>.CreateNew()
                 .With(x => x.Conference_id = _testConference.Id.ToString())
                 .With(x => x.Participant_id = _testConference.Participants[0].Id.ToString())
                 .With(x => x.Event_type = EventType.Joined)
+                .With(x => x.Phone = phone)
                 .Build();
         }
         
@@ -160,6 +190,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 .With(x => x.Event_type = incomingEventType)
                 .With(x => x.Transfer_to = RoomType.ConsultationRoom1)
                 .With(x => x.Transfer_from = RoomType.WaitingRoom)
+                .With(x => x.Phone = null)
                 .Build();
         }
         

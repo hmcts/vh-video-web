@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using VideoWeb.Common.Caching;
@@ -21,10 +21,9 @@ namespace VideoWeb.EventHub.Handlers
 
         public override EventType EventType => EventType.ParticipantJoining;
 
-        protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
+        protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            var participantState = ParticipantState.Joining;
-            await PublishParticipantStatusMessage(participantState);
+            return PublishParticipantStatusMessage(ParticipantState.Joining);
         }
     }
 }
