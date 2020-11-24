@@ -1,4 +1,4 @@
-import { Directive, ElementRef, HostListener, Input, OnDestroy, Renderer2 } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Output, Renderer2 } from '@angular/core';
 
 @Directive({
     selector: '[appTooltip]'
@@ -17,6 +17,8 @@ export class TooltipDirective implements OnDestroy {
         this._colour = value;
         this.setTooltipColour(oldColour);
     }
+    @Output() tooltipShown = new EventEmitter();
+
     tooltip: HTMLElement;
 
     constructor(private el: ElementRef, private renderer: Renderer2) {}
@@ -73,6 +75,7 @@ export class TooltipDirective implements OnDestroy {
     show() {
         if (this.tooltip) {
             this.renderer.addClass(this.tooltip, 'vh-tooltip-show');
+            this.tooltipShown.emit();
         }
     }
 
