@@ -248,6 +248,30 @@ describe('ParticipantsPanelComponent', () => {
         expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, p.id);
     });
 
+    it('should dismiss participant in when participant is a witness and in hearing and lower hand', async () => {
+        videocallService.dismissParticipantFromHearing.calls.reset();
+        const p = participants[0];
+        p.hearing_role = HearingRole.WITNESS;
+        p.status = ParticipantStatus.InHearing;
+        const pat = new ParticipantPanelModel(p);
+        pat.handRaised = true;
+        await component.dismissWitnessFromHearing(pat);
+        expect(pat.handRaised).toBeFalse();
+        expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, p.id);
+    });
+
+    it('should dismiss participant in when participant is a witness and in hearing and unpin', async () => {
+        videocallService.dismissParticipantFromHearing.calls.reset();
+        const p = participants[0];
+        p.hearing_role = HearingRole.WITNESS;
+        p.status = ParticipantStatus.InHearing;
+        const pat = new ParticipantPanelModel(p);
+        pat.isSpotlighted = true;
+        await component.dismissWitnessFromHearing(pat);
+        expect(pat.isSpotlighted).toBeFalse();
+        expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, p.id);
+    });
+
     it('should dismiss participant in when participant is a witness and in hearing', async () => {
         spyOn(logger, 'error');
         const error = { status: 401, isApiException: true };
