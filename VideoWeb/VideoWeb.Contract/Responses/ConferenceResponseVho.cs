@@ -73,5 +73,10 @@ namespace VideoWeb.Contract.Responses
         /// The name of venue
         /// </summary>
         public string HearingVenueName { get; set; }
+
+        /// <summary>
+        /// The telephone Id of the conference
+        /// </summary>
+        public string TelephoneConferenceId { get; set; }
     }
 }

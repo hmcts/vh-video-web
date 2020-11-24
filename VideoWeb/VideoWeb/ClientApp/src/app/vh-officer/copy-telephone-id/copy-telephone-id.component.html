@@ -1,0 +1,10 @@
+<div>
+  <img
+    appTooltip
+    [text]="tooltip"
+    class="icons"
+    src="/assets/images/phone.png"
+    alt="copy joining by phone details to clipboard"
+    (click)="copyToClipboard(); $event.stopPropagation()"
+  />
+</div>
