@@ -3,7 +3,6 @@ parameters:
       displayName: Package App
       type: boolean
       default: true
-
     - name: PackageACTests
       displayName: Package Acceptance Tests
       type: boolean
