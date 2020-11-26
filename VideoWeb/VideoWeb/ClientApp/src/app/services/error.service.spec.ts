@@ -27,7 +27,7 @@ describe('ErrorService', () => {
 
         router = TestBed.inject(Router);
         healthCheckResponse = new HealthCheckResponse();
-        let videoApiCheck = new HealthCheck();
+        const videoApiCheck = new HealthCheck();
         videoApiCheck.successful = true;
         healthCheckResponse.video_api_health = videoApiCheck;
         healthCheckService = jasmine.createSpyObj<HealthCheckService>('HealthCheckService', ['getHealthCheckStatus']);

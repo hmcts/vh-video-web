@@ -8,7 +8,7 @@ describe('HealthCheckService', () => {
     let healthCheckResponse: HealthCheckResponse;
 
     healthCheckResponse = new HealthCheckResponse();
-    let videoapiCheck = new HealthCheck();
+    const videoapiCheck = new HealthCheck();
     videoapiCheck.successful = true;
     healthCheckResponse.video_api_health = videoapiCheck;
 

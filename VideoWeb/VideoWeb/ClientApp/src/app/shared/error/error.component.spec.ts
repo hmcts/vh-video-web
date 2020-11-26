@@ -46,7 +46,7 @@ describe('ErrorComponent', () => {
     let healthCheckResponse: HealthCheckResponse;
 
     healthCheckResponse = new HealthCheckResponse();
-    let videoApiCheck = new HealthCheck();
+    const videoApiCheck = new HealthCheck();
     videoApiCheck.successful = true;
     healthCheckResponse.video_api_health = videoApiCheck;
 
@@ -134,11 +134,9 @@ describe('ErrorComponent', () => {
     });
 
     it('should return false when browser does not have an internet connection', () => {
-        videoApiCheck.successful = true;
+        videoApiCheck.successful = false;
         healthCheckResponse.video_api_health = videoApiCheck;
         healthCheckService.getHealthCheckStatus.and.returnValue(Promise.resolve(healthCheckResponse));
-        // component.isOnline = false;
-        console.log('==========================');
         expect(component.hasInternetConnection).toBeFalsy();
     });
 
@@ -171,7 +169,7 @@ describe('ErrorComponent Refresh', () => {
         pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
         pageTrackerSpy.getPreviousUrl.and.returnValue('testUrl-test-error1');
         healthCheckResponse = new HealthCheckResponse();
-        let videoApiCheck = new HealthCheck();
+        const videoApiCheck = new HealthCheck();
         videoApiCheck.successful = true;
         healthCheckResponse.video_api_health = videoApiCheck;
         healthCheckService = jasmine.createSpyObj<HealthCheckService>('HealthCheckService', ['getHealthCheckStatus']);
