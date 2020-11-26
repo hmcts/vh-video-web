@@ -4017,6 +4017,9 @@ namespace VideoWeb.Services.TestApi
         [Newtonsoft.Json.JsonProperty("pexip_self_test_node", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Pexip_self_test_node { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("telephone_conference_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Telephone_conference_id { get; set; }
+    
     
     }
     
@@ -4441,6 +4444,15 @@ namespace VideoWeb.Services.TestApi
         [System.Runtime.Serialization.EnumMember(Value = @"EndpointTransfer")]
         EndpointTransfer = 19,
     
+        [System.Runtime.Serialization.EnumMember(Value = @"ConnectingToEventHub")]
+        ConnectingToEventHub = 20,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"SelectingMedia")]
+        SelectingMedia = 21,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"ConnectingToConference")]
+        ConnectingToConference = 22,
+    
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
@@ -4492,6 +4504,9 @@ namespace VideoWeb.Services.TestApi
     
         [Newtonsoft.Json.JsonProperty("reason", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Reason { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("phone", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Phone { get; set; }
     
     
     }
@@ -4806,7 +4821,7 @@ namespace VideoWeb.Services.TestApi
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
     public partial class UpdateBookingStatusRequest 
     {
-        [Newtonsoft.Json.JsonProperty("updated_by", Required = Newtonsoft.Json.Required.AllowNull)]
+        [Newtonsoft.Json.JsonProperty("updated_by", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Updated_by { get; set; }
     
         [Newtonsoft.Json.JsonProperty("status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]

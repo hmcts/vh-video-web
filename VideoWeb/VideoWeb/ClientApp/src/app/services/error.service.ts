@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ErrorMessage } from '../shared/models/error-message';
 import { pageUrls } from '../shared/page-url.constants';
 import { CallError } from '../waiting-space/models/video-call-models';
+import { HealthCheckService } from './api/healthcheck.service';
 import { ApiException } from './clients/api-client';
 import { Logger } from './logging/logger-base';
 import { SessionStorage } from './session-storage';
@@ -11,8 +12,11 @@ import { SessionStorage } from './session-storage';
     providedIn: 'root'
 })
 export class ErrorService {
-    constructor(private router: Router, private logger: Logger) {
+    private readonly loggerPrefix = '[ErrorService] -';
+    isOnline: boolean;
+    constructor(private router: Router, private logger: Logger, private checkConnection: HealthCheckService) {
         this.errorMessage = new SessionStorage<ErrorMessage>(this.ERROR_MESSAGE_KEY);
+        this.checkInternetConnection();
     }
     readonly ERROR_MESSAGE_KEY = 'vh.error.message';
     errorMessage: SessionStorage<ErrorMessage>;
@@ -40,8 +44,26 @@ export class ErrorService {
         }
     }
 
+    async checkInternetConnection() {
+        await this.checkConnection
+            .getHealthCheckStatus()
+            .then(data => {
+                if (data.video_api_health.successful) {
+                    this.logger.debug(`${this.loggerPrefix} Checking internet connection .... Connected!`);
+                    this.isOnline = true;
+                } else {
+                    this.logger.debug(`${this.loggerPrefix} Checking internet connection .... Disonnected!`);
+                    this.isOnline = false;
+                }
+            })
+            .catch(err => {
+                this.isOnline = false;
+                this.logger.error(`${this.loggerPrefix} Failed to connect to internet`, err, '');
+            });
+    }
+
     get hasInternetConnection(): boolean {
-        return window.navigator.onLine;
+        return this.isOnline;
     }
 
     returnHomeIfUnauthorised(error: any): boolean {

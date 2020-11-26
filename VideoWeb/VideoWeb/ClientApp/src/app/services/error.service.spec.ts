@@ -5,19 +5,33 @@ import { Guid } from 'guid-typescript';
 import { pageUrls } from '../shared/page-url.constants';
 import { MockLogger } from '../testing/mocks/MockLogger';
 import { CallError } from '../waiting-space/models/video-call-models';
+import { HealthCheckService } from './api/healthcheck.service';
+import { HealthCheck, HealthCheckResponse } from './clients/api-client';
 import { ErrorService } from './error.service';
 import { Logger } from './logging/logger-base';
 
 describe('ErrorService', () => {
     let router: Router;
+    let healthCheckService: jasmine.SpyObj<HealthCheckService>;
+    let healthCheckResponse: HealthCheckResponse;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [RouterTestingModule],
-            providers: [ErrorService, { provide: Logger, useClass: MockLogger }]
+            providers: [
+                ErrorService,
+                { provide: Logger, useClass: MockLogger },
+                { provide: HealthCheckService, useValue: healthCheckService }
+            ]
         });
 
         router = TestBed.inject(Router);
+        healthCheckResponse = new HealthCheckResponse();
+        let videoApiCheck = new HealthCheck();
+        videoApiCheck.successful = true;
+        healthCheckResponse.video_api_health = videoApiCheck;
+        healthCheckService = jasmine.createSpyObj<HealthCheckService>('HealthCheckService', ['getHealthCheckStatus']);
+        healthCheckService.getHealthCheckStatus.and.returnValue(Promise.resolve(healthCheckResponse));
     });
 
     it('should do nothing if skip redirect is true', inject([ErrorService], (service: ErrorService) => {
@@ -86,12 +100,22 @@ describe('ErrorService', () => {
         [ErrorService],
         (service: ErrorService) => {
             spyOn(service, 'goToServiceError');
+            spyOnProperty(service, 'hasInternetConnection').and.returnValue(true);
             const error = new CallError('Error connecting to conference');
             const conferenceId = Guid.create().toString();
             service.handlePexipError(error, conferenceId);
             expect(service.goToServiceError).toHaveBeenCalledWith('Your connection was lost');
         }
     ));
+
+    it('should navigate to service error with connection lost message ', inject([ErrorService], (service: ErrorService) => {
+        spyOn(service, 'goToServiceError');
+        spyOnProperty(service, 'hasInternetConnection').and.returnValue(false);
+        const error = new CallError('Error connecting to conference');
+        const conferenceId = Guid.create().toString();
+        service.handlePexipError(error, conferenceId);
+        expect(service.goToServiceError).toHaveBeenCalledWith("There's a problem with your connection");
+    }));
 
     it('should navigate to service error with connection lost message when pexip error message has firewall or browser extensions issue', inject(
         [ErrorService],
