@@ -22,7 +22,8 @@ namespace VideoWeb.Mappings
                 HearingVenueName = conference.Hearing_venue_name,
                 Participants = ParticipantForUserResponseMapper.MapParticipants(conference.Participants),
                 StartedDateTime = conference.Started_date_time,
-                ClosedDateTime = conference.Closed_date_time
+                ClosedDateTime = conference.Closed_date_time,
+                TelephoneConferenceId = conference.Telephone_conference_id
             };
             return response;
         }

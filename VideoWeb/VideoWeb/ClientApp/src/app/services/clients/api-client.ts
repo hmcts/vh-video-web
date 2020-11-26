@@ -3874,6 +3874,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
     hearing_venue_name?: string | undefined;
     started_date_time?: Date | undefined;
     closed_date_time?: Date | undefined;
+    telephone_conference_id?: string | undefined;
 
     constructor(data?: IConferenceForVhOfficerResponse) {
         if (data) {
@@ -3899,6 +3900,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
             this.hearing_venue_name = _data['hearing_venue_name'];
             this.started_date_time = _data['started_date_time'] ? new Date(_data['started_date_time'].toString()) : <any>undefined;
             this.closed_date_time = _data['closed_date_time'] ? new Date(_data['closed_date_time'].toString()) : <any>undefined;
+            this.telephone_conference_id = _data['telephone_conference_id'];
         }
     }
 
@@ -3925,6 +3927,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
         data['hearing_venue_name'] = this.hearing_venue_name;
         data['started_date_time'] = this.started_date_time ? this.started_date_time.toISOString() : <any>undefined;
         data['closed_date_time'] = this.closed_date_time ? this.closed_date_time.toISOString() : <any>undefined;
+        data['telephone_conference_id'] = this.telephone_conference_id;
         return data;
     }
 }
@@ -3944,6 +3947,7 @@ export interface IConferenceForVhOfficerResponse {
     hearing_venue_name?: string | undefined;
     started_date_time?: Date | undefined;
     closed_date_time?: Date | undefined;
+    telephone_conference_id?: string | undefined;
 }
 
 /** Information about a participant in a conference */
@@ -3964,6 +3968,7 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
     /** The representee the participant is acting on behalf */
     representee?: string | undefined;
     hearing_role?: string | undefined;
+    telephone_conference_id?: string | undefined;
 
     constructor(data?: IParticipantResponseVho) {
         if (data) {
@@ -3985,6 +3990,7 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
             this.case_type_group = _data['case_type_group'];
             this.representee = _data['representee'];
             this.hearing_role = _data['hearing_role'];
+            this.telephone_conference_id = _data['telephone_conference_id'];
         }
     }
 
@@ -4007,6 +4013,7 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
         data['case_type_group'] = this.case_type_group;
         data['representee'] = this.representee;
         data['hearing_role'] = this.hearing_role;
+        data['telephone_conference_id'] = this.telephone_conference_id;
         return data;
     }
 }

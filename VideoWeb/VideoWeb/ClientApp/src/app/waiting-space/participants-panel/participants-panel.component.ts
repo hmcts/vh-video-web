@@ -347,10 +347,15 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         if (!participant.isInHearing() || !participant.isWitness) {
             return;
         }
+
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to dismiss witness from hearing`, {
             conference: this.conferenceId,
             participant: participant.id
         });
+
+        participant.handRaised = false;
+        participant.isSpotlighted = false;
+
         try {
             await this.videoCallService.dismissParticipantFromHearing(this.conferenceId, participant.id);
         } catch (error) {

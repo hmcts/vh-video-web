@@ -54,7 +54,7 @@
     "rxjs": "^6.6.3",
     "snyk": "^1.425.4",
     "webrtc-adapter": "^7.7.0",
-    "zone.js": "~0.11.2",
+    "zone.js": "~0.11.3",
     "tslib": "^2.0.3"
   },
   "devDependencies": {
@@ -65,7 +65,7 @@
     "@testpossessed/ts-data-builder": "^1.0.1",
     "@types/applicationinsights-js": "^1.0.9",
     "@types/chart.js": "^2.9.27",
-    "@types/jasmine": "^3.6.0",
+    "@types/jasmine": "^3.6.1",
     "@types/jasminewd2": "^2.0.8",
     "@types/node": "~12.19.3",
     "@types/webrtc": "^0.0.26",

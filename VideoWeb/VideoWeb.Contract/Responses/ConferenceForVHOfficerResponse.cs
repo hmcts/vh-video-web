@@ -60,5 +60,10 @@ namespace VideoWeb.Contract.Responses
         /// Closed date time as UTC
         /// </summary>
         public DateTime? ClosedDateTime { get; set; }
+
+        /// <summary>
+        /// The telephone Id of the conference
+        /// </summary>
+        public string TelephoneConferenceId { get; set; }
     }
 }

@@ -28,6 +28,7 @@ namespace VideoWeb.EventHub.Handlers
                     .CountdownFinished(SourceConference.Id);
                 Logger.LogTrace($"Conference Countdown finished: Conference Id: { SourceConference.Id }");
             }
+
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .CountdownFinished(SourceConference.Id);
         }

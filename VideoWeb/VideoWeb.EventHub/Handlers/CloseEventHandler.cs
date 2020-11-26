@@ -20,10 +20,10 @@ namespace VideoWeb.EventHub.Handlers
 
         public override EventType EventType => EventType.Close;
 
-        protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
+        protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             var conferenceState = ConferenceStatus.Closed;
-            await PublishConferenceStatusMessage(conferenceState);
+            return PublishConferenceStatusMessage(conferenceState);
        
 
         }
