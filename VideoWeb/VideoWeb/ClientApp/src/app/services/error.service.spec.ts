@@ -6,14 +6,12 @@ import { pageUrls } from '../shared/page-url.constants';
 import { MockLogger } from '../testing/mocks/MockLogger';
 import { CallError } from '../waiting-space/models/video-call-models';
 import { HealthCheckService } from './api/healthcheck.service';
-import { HealthCheck, HealthCheckResponse } from './clients/api-client';
 import { ErrorService } from './error.service';
 import { Logger } from './logging/logger-base';
 
 describe('ErrorService', () => {
     let router: Router;
     let healthCheckService: jasmine.SpyObj<HealthCheckService>;
-    let healthCheckResponse: HealthCheckResponse;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
