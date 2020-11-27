@@ -138,4 +138,24 @@ describe('ErrorService', () => {
             );
         }
     ));
+    it('should navigate to media device error with camera and microphone in use message when pexip return a media related error', inject(
+        [ErrorService],
+        (service: ErrorService) => {
+            spyOn(service, 'goToMediaDeviceError');
+            const error = new CallError(`NotReadableError`);
+            const conferenceId = Guid.create().toString();
+            service.handlePexipError(error, conferenceId);
+            expect(service.goToMediaDeviceError).toHaveBeenCalledWith('DevicesInUse');
+        }
+    ));
+    it('should navigate to media device error with camera and microphone not found message when pexip return a media related error', inject(
+        [ErrorService],
+        (service: ErrorService) => {
+            spyOn(service, 'goToMediaDeviceError');
+            const error = new CallError(`OverconstrainedError`);
+            const conferenceId = Guid.create().toString();
+            service.handlePexipError(error, conferenceId);
+            expect(service.goToMediaDeviceError).toHaveBeenCalledWith('DevicesNotFound');
+        }
+    ));
 });
