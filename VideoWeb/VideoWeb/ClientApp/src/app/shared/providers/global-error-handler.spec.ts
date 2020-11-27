@@ -1,4 +1,4 @@
-import { Injector, Type } from '@angular/core';
+import { Injector } from '@angular/core';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { GlobalErrorHandler } from './global-error-handler';
 
@@ -13,6 +13,7 @@ describe('GlobalErrorHandler', () => {
     });
 
     beforeEach(() => {
+        // tslint:disable-next-line
         injector.get.and.returnValue(logger);
         errorHandler = new GlobalErrorHandler(injector);
     });
