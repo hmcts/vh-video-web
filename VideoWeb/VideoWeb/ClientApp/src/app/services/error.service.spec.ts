@@ -108,13 +108,13 @@ describe('ErrorService', () => {
         }
     ));
 
-    it('should navigate to service error with connection lost message ', inject([ErrorService], (service: ErrorService) => {
+    it('should navigate to service error with connection lost message', inject([ErrorService], (service: ErrorService) => {
         spyOn(service, 'goToServiceError');
         spyOnProperty(service, 'hasInternetConnection').and.returnValue(false);
         const error = new CallError('Error connecting to conference');
         const conferenceId = Guid.create().toString();
         service.handlePexipError(error, conferenceId);
-        expect(service.goToServiceError).toHaveBeenCalledWith("There's a problem with your connection");
+        expect(service.goToServiceError).toHaveBeenCalled();
     }));
 
     it('should navigate to service error with connection lost message when pexip error message has firewall or browser extensions issue', inject(
