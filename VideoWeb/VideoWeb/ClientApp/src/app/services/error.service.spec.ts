@@ -26,12 +26,9 @@ describe('ErrorService', () => {
         });
 
         router = TestBed.inject(Router);
-        healthCheckResponse = new HealthCheckResponse();
-        const videoApiCheck = new HealthCheck();
-        videoApiCheck.successful = true;
-        healthCheckResponse.video_api_health = videoApiCheck;
+
         healthCheckService = jasmine.createSpyObj<HealthCheckService>('HealthCheckService', ['getHealthCheckStatus']);
-        healthCheckService.getHealthCheckStatus.and.returnValue(Promise.resolve(healthCheckResponse));
+        healthCheckService.getHealthCheckStatus.and.returnValue(Promise.resolve(true));
     });
 
     it('should do nothing if skip redirect is true', inject([ErrorService], (service: ErrorService) => {
