@@ -55,55 +55,45 @@ export class UserMediaStreamService {
     }
 
     async getStreamForMic(device: UserMediaDevice): Promise<MediaStream> {
-        if (device) {
-            try {
+        try {
+            if (device) {
                 const stream = await this.navigator.mediaDevices.getUserMedia({ audio: { deviceId: { exact: device.deviceId } } });
                 return stream;
-            } catch (error) {
-                this.logger.error('[UserMediaStreamService] - Could not get audio stream for microphone', error);
-                this.errorService.handlePexipError(new CallError(error.name), null);
+            } else {
+                return this.getDefaultMicStream();
             }
-        } else {
-            return this.getDefaultMicStream();
+        } catch (error) {
+            this.logger.error('[UserMediaStreamService] - Could not get audio stream for microphone', error);
+            this.errorService.handlePexipError(new CallError(error.name), null);
         }
     }
 
     async getStreamForCam(device: UserMediaDevice): Promise<MediaStream> {
-        if (device) {
-            try {
+        try {
+            if (device) {
                 const stream = await this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } });
                 return stream;
-            } catch (error) {
-                this.logger.error('[UserMediaStreamService] - Could not get video stream for camera', error);
-                this.errorService.handlePexipError(new CallError(error.name), null);
+            } else {
+                return this.getDefaultCamStream();
             }
-        } else {
-            return this.getDefaultCamStream();
+        } catch (error) {
+            this.logger.error('[UserMediaStreamService] - Could not get video stream for camera', error);
+            this.errorService.handlePexipError(new CallError(error.name), null);
         }
     }
 
     private async getDefaultCamStream(): Promise<MediaStream> {
-        try {
-            return await this.navigator.mediaDevices.getUserMedia({
-                audio: false,
-                video: true
-            });
-        } catch (error) {
-            this.logger.error('[UserMediaStreamService] - Could not get default video stream for camera', error);
-            this.errorService.handlePexipError(new CallError(error.name), null);
-        }
+        return await this.navigator.mediaDevices.getUserMedia({
+            audio: false,
+            video: true
+        });
     }
 
     private async getDefaultMicStream(): Promise<MediaStream> {
-        try {
-            return await this.navigator.mediaDevices.getUserMedia({
-                audio: true,
-                video: false
-            });
-        } catch (error) {
-            this.logger.error('[UserMediaStreamService] - Could not get default audio stream for microphone', error);
-            this.errorService.handlePexipError(new CallError(error.name), null);
-        }
+        return await this.navigator.mediaDevices.getUserMedia({
+            audio: true,
+            video: false
+        });
     }
 
     stopStream(stream: MediaStream) {
