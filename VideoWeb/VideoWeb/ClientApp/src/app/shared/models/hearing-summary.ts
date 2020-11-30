@@ -127,4 +127,8 @@ export class HearingSummary extends HearingBase {
     get telephoneConferenceId(): string {
         return this.conference.telephone_conference_id;
     }
+
+    get telephoneConferenceNumber(): string {
+        return this.conference.telephone_conference_number;
+    }
 }

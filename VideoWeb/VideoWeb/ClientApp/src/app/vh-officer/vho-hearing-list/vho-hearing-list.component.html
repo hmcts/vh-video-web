@@ -7,7 +7,12 @@
     id="{{ conference.id }}-summary"
   >
     <div class="shareIcon"><app-copy-id [conference]="conference"></app-copy-id></div>
-    <div class="phoneIcon"><app-copy-telephone-id [telephoneId]="conference.telephoneConferenceId"></app-copy-telephone-id></div>
+    <div class="phoneIcon">
+      <app-copy-telephone-id
+        [telephoneId]="conference.telephoneConferenceId"
+        [telephoneNumber]="conference.telephoneConferenceNumber"
+      ></app-copy-telephone-id>
+    </div>
     <div class="time listItem" id="{{ conference.id }}-time">{{ conference.scheduledDateTime | date: 'HH:mm' }}</div>
     <ng-container *ngIf="conference.startedDateTime">
       <div class="started listItemGreySmall" id="{{ conference.id }}-started">started</div>

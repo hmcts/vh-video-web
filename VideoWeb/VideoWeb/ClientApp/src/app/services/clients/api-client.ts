@@ -7,10 +7,10 @@
 //----------------------
 // ReSharper disable InconsistentNaming
 
+import { mergeMap as _observableMergeMap, catchError as _observableCatch } from 'rxjs/operators';
+import { Observable, throwError as _observableThrow, of as _observableOf } from 'rxjs';
+import { Injectable, Inject, Optional, InjectionToken } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
-import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
-import { Observable, of as _observableOf, throwError as _observableThrow } from 'rxjs';
-import { catchError as _observableCatch, mergeMap as _observableMergeMap } from 'rxjs/operators';
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
@@ -3875,6 +3875,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
     started_date_time?: Date | undefined;
     closed_date_time?: Date | undefined;
     telephone_conference_id?: string | undefined;
+    telephone_conference_number?: string | undefined;
 
     constructor(data?: IConferenceForVhOfficerResponse) {
         if (data) {
@@ -3901,6 +3902,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
             this.started_date_time = _data['started_date_time'] ? new Date(_data['started_date_time'].toString()) : <any>undefined;
             this.closed_date_time = _data['closed_date_time'] ? new Date(_data['closed_date_time'].toString()) : <any>undefined;
             this.telephone_conference_id = _data['telephone_conference_id'];
+            this.telephone_conference_number = _data['telephone_conference_number'];
         }
     }
 
@@ -3928,6 +3930,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
         data['started_date_time'] = this.started_date_time ? this.started_date_time.toISOString() : <any>undefined;
         data['closed_date_time'] = this.closed_date_time ? this.closed_date_time.toISOString() : <any>undefined;
         data['telephone_conference_id'] = this.telephone_conference_id;
+        data['telephone_conference_number'] = this.telephone_conference_number;
         return data;
     }
 }
@@ -3948,6 +3951,7 @@ export interface IConferenceForVhOfficerResponse {
     started_date_time?: Date | undefined;
     closed_date_time?: Date | undefined;
     telephone_conference_id?: string | undefined;
+    telephone_conference_number?: string | undefined;
 }
 
 /** Information about a participant in a conference */
@@ -3968,7 +3972,6 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
     /** The representee the participant is acting on behalf */
     representee?: string | undefined;
     hearing_role?: string | undefined;
-    telephone_conference_id?: string | undefined;
 
     constructor(data?: IParticipantResponseVho) {
         if (data) {
@@ -3990,7 +3993,6 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
             this.case_type_group = _data['case_type_group'];
             this.representee = _data['representee'];
             this.hearing_role = _data['hearing_role'];
-            this.telephone_conference_id = _data['telephone_conference_id'];
         }
     }
 
@@ -4013,7 +4015,6 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
         data['case_type_group'] = this.case_type_group;
         data['representee'] = this.representee;
         data['hearing_role'] = this.hearing_role;
-        data['telephone_conference_id'] = this.telephone_conference_id;
         return data;
     }
 }
@@ -5749,6 +5750,7 @@ export class ConferenceEventRequest implements IConferenceEventRequest {
     transfer_from?: RoomType2 | undefined;
     transfer_to?: RoomType2 | undefined;
     reason?: string | undefined;
+    phone?: string | undefined;
 
     constructor(data?: IConferenceEventRequest) {
         if (data) {
@@ -5768,6 +5770,7 @@ export class ConferenceEventRequest implements IConferenceEventRequest {
             this.transfer_from = _data['transfer_from'];
             this.transfer_to = _data['transfer_to'];
             this.reason = _data['reason'];
+            this.phone = _data['phone'];
         }
     }
 
@@ -5788,6 +5791,7 @@ export class ConferenceEventRequest implements IConferenceEventRequest {
         data['transfer_from'] = this.transfer_from;
         data['transfer_to'] = this.transfer_to;
         data['reason'] = this.reason;
+        data['phone'] = this.phone;
         return data;
     }
 }
@@ -5801,6 +5805,7 @@ export interface IConferenceEventRequest {
     transfer_from?: RoomType2 | undefined;
     transfer_to?: RoomType2 | undefined;
     reason?: string | undefined;
+    phone?: string | undefined;
 }
 
 export class ApiException extends Error {

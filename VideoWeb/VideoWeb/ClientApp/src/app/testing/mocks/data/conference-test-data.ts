@@ -56,7 +56,9 @@ export class ConferenceTestData {
             scheduled_date_time: pastDate,
             scheduled_duration: 50,
             status: ConferenceStatus.NotStarted,
-            participants: this.getListOfParticipants()
+            participants: this.getListOfParticipants(),
+            telephone_conference_id: '0345855',
+            telephone_conference_number: '+441234567890'
         });
         return conference;
     }
@@ -72,7 +74,9 @@ export class ConferenceTestData {
             scheduled_date_time: pastDate,
             scheduled_duration: 50,
             status: ConferenceStatus.NotStarted,
-            participants: this.getListOfParticipants()
+            participants: this.getListOfParticipants(),
+            telephone_conference_id: '0345855',
+            telephone_conference_number: '+441234567890'
         });
         return conference;
     }
@@ -91,7 +95,9 @@ export class ConferenceTestData {
             participants: this.getListOfParticipants(),
             hearing_venue_name: 'Manchester',
             started_date_time: null,
-            closed_date_time: null
+            closed_date_time: null,
+            telephone_conference_id: '0345855',
+            telephone_conference_number: '+441234567890'
         });
         return conference;
     }
