@@ -110,8 +110,14 @@ export class ErrorService {
             'PermissionDeniedError',
             'The request is not allowed by the user agent or the platform in the current context.'
         ];
-        const mediaInUseIssues = ['Could not get access to camera/microphone', 'AbortError', 'NotReadableError'];
-        const mediaNotFoundIssues = ['OverconstrainedError', 'NotFoundError', 'TypeError'];
+        const mediaInUseIssues = ['Could not get access to camera/microphone', 'AbortError', 'NotReadableError', 'TrackStartError'];
+        const mediaNotFoundIssues = [
+            'OverconstrainedError',
+            'NotFoundError',
+            'TypeError',
+            'DevicesNotFoundError',
+            'ConstraintNotSatisfiedError'
+        ];
 
         const isMediaInUseIssue = mediaInUseIssues.filter(x => error.reason.toLowerCase().includes(x.toLowerCase())).length > 0;
         if (isMediaInUseIssue) {
