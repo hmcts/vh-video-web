@@ -21,7 +21,7 @@ parameters:
   
 - name: dotnetTestMaxRetries
   type: number
-  default: 3  
+  default: 4  
 
 - name: deviceConfiguration
   displayName: Device Configurations
