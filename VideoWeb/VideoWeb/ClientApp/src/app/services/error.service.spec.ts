@@ -6,6 +6,7 @@ import { pageUrls } from '../shared/page-url.constants';
 import { MockLogger } from '../testing/mocks/MockLogger';
 import { CallError } from '../waiting-space/models/video-call-models';
 import { HealthCheckService } from './api/healthcheck.service';
+import { HealthCheck, HealthCheckResponse } from './clients/api-client';
 import { ErrorService } from './error.service';
 import { Logger } from './logging/logger-base';
 
@@ -25,8 +26,12 @@ describe('ErrorService', () => {
 
         router = TestBed.inject(Router);
 
+        const videoApiHealth = new HealthCheck();
+        videoApiHealth.successful = true;
+        const healthCheckResponse = new HealthCheckResponse();
+        healthCheckResponse.video_api_health = videoApiHealth;
         healthCheckService = jasmine.createSpyObj<HealthCheckService>('HealthCheckService', ['getHealthCheckStatus']);
-        healthCheckService.getHealthCheckStatus.and.returnValue(Promise.resolve(true));
+        healthCheckService.getHealthCheckStatus.and.returnValue(Promise.resolve(healthCheckResponse));
     });
 
     it('should do nothing if skip redirect is true', inject([ErrorService], (service: ErrorService) => {

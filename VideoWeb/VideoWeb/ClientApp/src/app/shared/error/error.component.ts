@@ -42,7 +42,13 @@ export class ErrorComponent implements OnInit, OnDestroy {
     }
 
     private async checkInternetConnection() {
-        this.isOnline = await this.checkConnection.getHealthCheckStatus();
+        try {
+            const response = await this.checkConnection.getHealthCheckStatus();
+            this.isOnline = response.video_api_health.successful;
+        } catch (err) {
+            this.isOnline = false;
+            this.logger.error(`${this.loggerPrefix} Failed to connect to internet`, err, '');
+        }
     }
 
     get hasInternetConnection(): boolean {

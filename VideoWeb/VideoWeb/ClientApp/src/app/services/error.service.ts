@@ -12,6 +12,7 @@ import { SessionStorage } from './session-storage';
     providedIn: 'root'
 })
 export class ErrorService {
+    private readonly loggerPrefix = '[ErrorService] -';
     isOnline: boolean;
     constructor(private router: Router, private logger: Logger, private checkConnection: HealthCheckService) {
         this.errorMessage = new SessionStorage<ErrorMessage>(this.ERROR_MESSAGE_KEY);
@@ -44,7 +45,13 @@ export class ErrorService {
     }
 
     async checkInternetConnection() {
-        this.isOnline = await this.checkConnection.getHealthCheckStatus();
+        try {
+            const response = await this.checkConnection.getHealthCheckStatus();
+            this.isOnline = response.video_api_health.successful;
+        } catch (err) {
+            this.isOnline = false;
+            this.logger.error(`${this.loggerPrefix} Failed to connect to internet`, err, '');
+        }
     }
 
     get hasInternetConnection(): boolean {

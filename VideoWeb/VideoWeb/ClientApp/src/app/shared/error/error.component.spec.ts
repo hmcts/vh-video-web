@@ -4,6 +4,7 @@ import { NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable } from 'rxjs';
 import { HealthCheckService } from 'src/app/services/api/healthcheck.service';
+import { HealthCheck, HealthCheckResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { PageTrackerService } from 'src/app/services/page-tracker.service';
@@ -49,8 +50,13 @@ describe('ErrorComponent', () => {
             pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
             pageTrackerSpy.getPreviousUrl.and.returnValue('testUrl-test-error1');
 
+            const videoApiHealth = new HealthCheck();
+            videoApiHealth.successful = true;
+            const healthCheckResponse = new HealthCheckResponse();
+            healthCheckResponse.video_api_health = videoApiHealth;
+
             healthCheckService = jasmine.createSpyObj<HealthCheckService>('HealthCheckService', ['getHealthCheckStatus']);
-            healthCheckService.getHealthCheckStatus.and.returnValue(Promise.resolve(true));
+            healthCheckService.getHealthCheckStatus.and.returnValue(Promise.resolve(healthCheckResponse));
 
             TestBed.configureTestingModule({
                 declarations: [ErrorComponent, ContactUsFoldingComponent, Mock1Component, Mock2Component],
@@ -127,7 +133,11 @@ describe('ErrorComponent', () => {
     });
 
     it('should return false when browser does not have an internet connection', () => {
-        healthCheckService.getHealthCheckStatus.and.returnValue(Promise.resolve(false));
+        const videoApiHealth = new HealthCheck();
+        videoApiHealth.successful = false;
+        const healthCheckResponse = new HealthCheckResponse();
+        healthCheckResponse.video_api_health = videoApiHealth;
+        healthCheckService.getHealthCheckStatus.and.returnValue(Promise.resolve(healthCheckResponse));
         expect(component.hasInternetConnection).toBeFalsy();
     });
 
@@ -159,8 +169,13 @@ describe('ErrorComponent Refresh', () => {
         pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
         pageTrackerSpy.getPreviousUrl.and.returnValue('testUrl-test-error1');
 
+        const videoApiHealth = new HealthCheck();
+        videoApiHealth.successful = true;
+        const healthCheckResponse = new HealthCheckResponse();
+        healthCheckResponse.video_api_health = videoApiHealth;
+
         healthCheckService = jasmine.createSpyObj<HealthCheckService>('HealthCheckService', ['getHealthCheckStatus']);
-        healthCheckService.getHealthCheckStatus.and.returnValue(Promise.resolve(true));
+        healthCheckService.getHealthCheckStatus.and.returnValue(Promise.resolve(healthCheckResponse));
 
         TestBed.configureTestingModule({
             declarations: [ErrorComponent, ContactUsFoldingComponent],
