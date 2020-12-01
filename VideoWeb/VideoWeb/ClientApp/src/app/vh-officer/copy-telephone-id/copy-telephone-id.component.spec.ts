@@ -8,6 +8,8 @@ describe('CopyIdComponent', () => {
     let mouseEvent: MouseEvent;
     let clipboardServiceSpy: jasmine.SpyObj<ClipboardService>;
     let copyID: HTMLDivElement;
+    const conference = new ConferenceTestData().getConferenceFuture();
+    const hearing = new HearingSummary(conference);
 
     beforeAll(() => {
         mouseEvent = document.createEvent('MouseEvent');
@@ -18,6 +20,8 @@ describe('CopyIdComponent', () => {
 
     beforeEach(() => {
         component = new CopyTelephoneIdComponent(clipboardServiceSpy);
+        component.telephoneId = hearing.telephoneConferenceId;
+        component.telephoneNumber = hearing.telephoneConferenceNumber;
         component.ngOnInit();
         copyID = document.createElement('div');
     });
@@ -27,10 +31,9 @@ describe('CopyIdComponent', () => {
     });
 
     it('should copy the telephone conference id to the clipboard', () => {
-        const conference = new ConferenceTestData().getConferenceFuture();
-        const hearing = new HearingSummary(conference);
         component.copyToClipboard();
-        expect(clipboardServiceSpy.copyFromContent).toHaveBeenCalledWith(hearing.telephoneConferenceId);
+        const expectedContent = `${hearing.telephoneConferenceNumber} (ID: ${hearing.telephoneConferenceId})`;
+        expect(clipboardServiceSpy.copyFromContent).toHaveBeenCalledWith(expectedContent);
         expect(component.tooltip).toBe('Details copied to clipboard');
     });
 });

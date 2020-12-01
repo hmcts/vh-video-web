@@ -65,5 +65,10 @@ namespace VideoWeb.Contract.Responses
         /// The telephone Id of the conference
         /// </summary>
         public string TelephoneConferenceId { get; set; }
+
+        /// <summary>
+        /// The telephone conference number to dial
+        /// </summary>
+        public string TelephoneConferenceNumber { get; set; }
     }
 }
