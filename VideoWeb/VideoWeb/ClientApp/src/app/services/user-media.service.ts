@@ -4,6 +4,8 @@ import 'webrtc-adapter';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
 import { SessionStorage } from './session-storage';
+import { ErrorService } from '../services/error.service';
+import { CallError } from '../waiting-space/models/video-call-models';
 
 @Injectable({
     providedIn: 'root'
@@ -21,7 +23,7 @@ export class UserMediaService {
 
     connectedDevices: BehaviorSubject<UserMediaDevice[]> = new BehaviorSubject([]);
 
-    constructor(private logger: Logger) {
+    constructor(private logger: Logger, private errorService: ErrorService) {
         this.preferredCamCache = new SessionStorage(this.PREFERRED_CAMERA_KEY);
         this.preferredMicCache = new SessionStorage(this.PREFERRED_MICROPHONE_KEY);
 
@@ -142,7 +144,7 @@ export class UserMediaService {
             }
         } catch (error) {
             this.logger.error(`${this.loggerPrefix} Failed to set default devices in cache.`, error);
-            throw error;
+            this.errorService.handlePexipError(new CallError(error.name), null);
         }
     }
 }

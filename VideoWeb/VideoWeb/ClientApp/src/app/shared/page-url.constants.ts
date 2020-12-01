@@ -36,5 +36,6 @@ export const pageUrls = {
     GetHelp: 'get-help',
     UnsupportedBrowser: 'unsupported-browser',
     PrivacyPolicy: 'privacy-policy',
-    Accessibility: 'accessibility'
+    Accessibility: 'accessibility',
+    ErrorCameraMicrophone: 'error-camera-microphone'
 };

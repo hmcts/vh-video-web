@@ -25,6 +25,7 @@ import { SelfTestComponent } from './self-test/self-test.component';
 import { SharedRoutingModule } from './shared-routing.module';
 import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-browser.component';
 import { TooltipDirective } from './directives/tooltip.directive';
+import { ErrorCameraMicrophoneComponent } from './error-camera-microphone/error-camera-microphone.component';
 
 @NgModule({
     imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, SharedRoutingModule],
@@ -48,7 +49,8 @@ import { TooltipDirective } from './directives/tooltip.directive';
         BackNavigationComponent,
         ChatInputBoxComponent,
         ChatBodyWindowComponent,
-        TooltipDirective
+        TooltipDirective,
+        ErrorCameraMicrophoneComponent
     ],
     providers: [WindowScrolling, ScreenHelper],
     exports: [
@@ -69,7 +71,8 @@ import { TooltipDirective } from './directives/tooltip.directive';
         BackNavigationComponent,
         ChatInputBoxComponent,
         ChatBodyWindowComponent,
-        TooltipDirective
+        TooltipDirective,
+        ErrorCameraMicrophoneComponent
     ]
 })
 export class SharedModule {}
