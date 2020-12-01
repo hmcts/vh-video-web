@@ -85,6 +85,7 @@ describe('ErrorComponent', () => {
         expect(component.errorMessageBody).toBe('Please reconnect. Call us if you keep seeing this message.');
         expect(component.connectionError).toBeFalsy();
     });
+
     it('should show error message if session storage returns a value', () => {
         const key = 'vh.error.message';
         const storedMessage = new SessionStorage<ErrorMessage>(key);
@@ -95,10 +96,12 @@ describe('ErrorComponent', () => {
         expect(component.errorMessageBody).toBe('test message');
         expect(component.connectionError).toBeTruthy();
     });
+
     it('should unsubscribe all subcriptions on destroy component', () => {
         component.ngOnDestroy();
         expect(component.subscription.closed).toBeTruthy();
     });
+
     it('should navigate to previous page on reconnect click and internet connection', () => {
         pageTrackerSpy.getPreviousUrl.calls.reset();
         spyOnProperty(window.navigator, 'onLine').and.returnValue(true);
