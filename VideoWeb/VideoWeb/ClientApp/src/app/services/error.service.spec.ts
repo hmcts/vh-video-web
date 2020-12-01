@@ -179,14 +179,11 @@ describe('ErrorService', () => {
             expect(service.goToMediaDeviceError).toHaveBeenCalledWith('DevicesNotFound');
         }
     ));
-    it('should get the error type message from storage for media devices', inject(
-        [ErrorService],
-        (service: ErrorService) => {
-            const store = new SessionStorage<string>(service.ERROR_CAMERA_MIC_MESSAGE_KEY);
-            const expected = 'MessageType-1';
-            store.set(expected);
-            const messageType = service.getMediaDeviceErrorMessageTypeFromStorage();
-            expect(messageType).toBe(expected);
-        }
-    ));
+    it('should get the error type message from storage for media devices', inject([ErrorService], (service: ErrorService) => {
+        const store = new SessionStorage<string>(service.ERROR_CAMERA_MIC_MESSAGE_KEY);
+        const expected = 'MessageType-1';
+        store.set(expected);
+        const messageType = service.getMediaDeviceErrorMessageTypeFromStorage();
+        expect(messageType).toBe(expected);
+    }));
 });
