@@ -18,7 +18,8 @@ module.exports = function (config) {
             clearContext: false, // leave Jasmine Spec Runner output visible in browser
             jasmine: {
                 //tells jasmine to run specs in semi random order, false is default
-                random: false
+                random: false,
+                failSpecWithNoExpectations: true
             }
         },
         coverageIstanbulReporter: {
