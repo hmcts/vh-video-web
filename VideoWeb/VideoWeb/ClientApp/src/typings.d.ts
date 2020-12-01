@@ -14,6 +14,7 @@ declare interface PexipClient {
     mutedAudio: boolean;
     mutedVideo: boolean;
     call_uuid: string;
+    call_tag: string;
 
     onSetup: (stream: any, pinStatus: any, conferenceExtension: any) => void;
     onConnect: (stream: MediaStream | URL) => void;

@@ -133,7 +133,14 @@ describe('VideoCallService', () => {
         service.pexipAPI = pexipSpy;
 
         service.makeCall(node, conferenceAlias, participantDisplayName, maxBandwidth);
+        expect(pexipSpy.call_tag).toBeDefined();
         expect(pexipSpy.makeCall).toHaveBeenCalledWith(node, conferenceAlias, participantDisplayName, maxBandwidth);
+    });
+
+    it('should init the call tag', () => {
+        service.pexipAPI.call_tag = null;
+        service.initCallTag();
+        expect(service.pexipAPI.call_tag).toBeDefined();
     });
 
     it('should set buzz when hand is raised', () => {

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Guid } from 'guid-typescript';
 import { Observable, Subject } from 'rxjs';
 import { ApiClient, HearingLayout, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -40,6 +41,7 @@ export class VideoCallService {
         const self = this;
         this.pexipAPI = new PexRTC();
         await this.retrievePreferredDevices();
+        this.initCallTag();
 
         this.pexipAPI.onSetup = function (stream, pinStatus, conferenceExtension) {
             self.onSetupSubject.next(new CallSetup(stream));
@@ -78,6 +80,10 @@ export class VideoCallService {
         };
     }
 
+    initCallTag() {
+        this.pexipAPI.call_tag = Guid.create().toString();
+    }
+
     private async retrievePreferredDevices() {
         const preferredCam = await this.userMediaService.getPreferredCamera();
         if (preferredCam) {
@@ -98,6 +104,7 @@ export class VideoCallService {
      * @param maxBandwidth the maximum bandwith
      */
     makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
+        this.initCallTag();
         this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth);
     }
 
