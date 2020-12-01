@@ -13,9 +13,14 @@ import { SessionStorage } from './session-storage';
 export class ErrorService {
     constructor(private router: Router, private logger: Logger) {
         this.errorMessage = new SessionStorage<ErrorMessage>(this.ERROR_MESSAGE_KEY);
+        this.errorCameraMicMessage = new SessionStorage<string>(this.ERROR_CAMERA_MIC_MESSAGE_KEY);
+
     }
     readonly ERROR_MESSAGE_KEY = 'vh.error.message';
+    readonly ERROR_CAMERA_MIC_MESSAGE_KEY = 'vh.error.camera.mic.message';
+
     errorMessage: SessionStorage<ErrorMessage>;
+    errorCameraMicMessage: SessionStorage<string>;
 
     handleApiError(error: any, skipRedirect: boolean = false) {
         this.logger.error('[ErrorService] - API error', error);
@@ -72,6 +77,15 @@ export class ErrorService {
         this.router.navigate([pageUrls.ServiceError]);
     }
 
+    goToMediaDeviceError(errorType: string) {
+        this.saveDeviceToSession(errorType);
+        this.router.navigate([pageUrls.ErrorCameraMicrophone]);
+    }
+
+    getMediaDeviceErrorMessageTypeFromStorage() {
+        return this.errorCameraMicMessage.get();
+    }
+
     handlePexipError(error: CallError, conferenceId: string) {
         this.logger.error('[ErrorService] - There was a pexip error', new Error(error.reason), {
             conference: conferenceId,
@@ -96,13 +110,32 @@ export class ErrorService {
         }
         const mediaBlockingIssues = [
             'Your camera and/or microphone are not available',
-            'Could not get access to camera/microphone',
             'Permission denied',
             'NotAllowedError',
             'PermissionDeniedError',
-            'OverconstrainedError',
             'The request is not allowed by the user agent or the platform in the current context.'
         ];
+        const mediaInUseIssues = ['Could not get access to camera/microphone', 'AbortError', 'NotReadableError', 'TrackStartError'];
+        const mediaNotFoundIssues = [
+            'OverconstrainedError',
+            'NotFoundError',
+            'TypeError',
+            'DevicesNotFoundError',
+            'ConstraintNotSatisfiedError'
+        ];
+
+        const isMediaInUseIssue = mediaInUseIssues.filter(x => error.reason.toLowerCase().includes(x.toLowerCase())).length > 0;
+        if (isMediaInUseIssue) {
+            this.goToMediaDeviceError('DevicesInUse');
+            return;
+        }
+
+        const isMediaNotFoundIssue = mediaNotFoundIssues.filter(x => error.reason.toLowerCase().includes(x.toLowerCase())).length > 0;
+        if (isMediaNotFoundIssue) {
+            this.goToMediaDeviceError('DevicesNotFound');
+            return;
+        }
+
         const isMediaBlockingIssue = mediaBlockingIssues.filter(x => error.reason.toLowerCase().includes(x.toLowerCase())).length > 0;
         if (isMediaBlockingIssue) {
             this.goToServiceError(
@@ -112,6 +145,7 @@ export class ErrorService {
             );
             return;
         }
+
         const extensionsOrFirewallIssues = [
             'a firewall may be blocking access',
             'Please disable any privacy extensions on your browser',
@@ -136,5 +170,10 @@ export class ErrorService {
     private saveToSession(title: string, body: string, showReconnect = true): void {
         this.errorMessage.clear();
         this.errorMessage.set(new ErrorMessage(title, body, showReconnect));
+    }
+
+    private saveDeviceToSession(message: string): void {
+        this.errorCameraMicMessage.clear();
+        this.errorCameraMicMessage.set(message);
     }
 }

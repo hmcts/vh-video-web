@@ -9,6 +9,7 @@ import { pageUrls } from './page-url.constants';
 import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-browser.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { AccessibilityComponent } from './accessibility/accessibility.component';
+import { ErrorCameraMicrophoneComponent } from './error-camera-microphone/error-camera-microphone.component';
 
 export const routes: Routes = [
     { path: `${pageUrls.ContactUs}`, component: ContactUsComponent, canActivate: [AuthGuard] },
@@ -16,7 +17,8 @@ export const routes: Routes = [
     { path: `${pageUrls.NotFound}`, component: NotFoundComponent },
     { path: `${pageUrls.UnsupportedBrowser}`, component: UnsupportedBrowserComponent },
     { path: `${pageUrls.PrivacyPolicy}`, component: PrivacyPolicyComponent },
-    { path: `${pageUrls.Accessibility}`, component: AccessibilityComponent }
+    { path: `${pageUrls.Accessibility}`, component: AccessibilityComponent },
+    { path: `${pageUrls.ErrorCameraMicrophone}`, component: ErrorCameraMicrophoneComponent }
 ];
 
 @NgModule({
