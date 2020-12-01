@@ -35,7 +35,7 @@
     "@angular/router": "^10.2.2",
     "@hmcts/frontend": "^0.0.41-alpha",
     "@microsoft/applicationinsights-web": "^2.5.9",
-    "@microsoft/signalr": "^3.1.9",
+    "@microsoft/signalr": "^3.1.10",
     "@ng-select/ng-select": "^5.0.6",
     "adal-angular4": "^3.0.16",
     "aspnet-prerendering": "^3.0.1",
