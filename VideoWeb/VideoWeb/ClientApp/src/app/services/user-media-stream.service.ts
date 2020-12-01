@@ -15,6 +15,7 @@ export class UserMediaStreamService {
     };
 
     navigator = <any>navigator;
+    private readonly loggerPrefix = '[UserMediaStreamService] -';
 
     private requestStream: MediaStream;
 
@@ -32,7 +33,7 @@ export class UserMediaStreamService {
             this.stopRequestStream();
             return true;
         } catch (exception) {
-            this.logger.error('[UserMediaStreamService] - Could not get cam and mic access', exception);
+            this.logger.error(`${this.loggerPrefix} Could not get cam and mic access`, exception);
             return false;
         }
     }
@@ -49,7 +50,7 @@ export class UserMediaStreamService {
             this.requestStream = await this.navigator.mediaDevices.getUserMedia(this.permissionConstraints);
             return this.requestStream;
         } catch (error) {
-            this.logger.error('[UserMediaStreamService] - Could not get media stream', error);
+            this.logger.error(`${this.loggerPrefix} Could not get media stream`, error);
             this.errorService.handlePexipError(new CallError(error.name), null);
         }
     }
@@ -63,7 +64,7 @@ export class UserMediaStreamService {
                 return this.getDefaultMicStream();
             }
         } catch (error) {
-            this.logger.error('[UserMediaStreamService] - Could not get audio stream for microphone', error);
+            this.logger.error(`${this.loggerPrefix} Could not get audio stream for microphone`, error);
             this.errorService.handlePexipError(new CallError(error.name), null);
         }
     }
@@ -77,7 +78,7 @@ export class UserMediaStreamService {
                 return this.getDefaultCamStream();
             }
         } catch (error) {
-            this.logger.error('[UserMediaStreamService] - Could not get video stream for camera', error);
+            this.logger.error(`${this.loggerPrefix} Could not get video stream for camera`, error);
             this.errorService.handlePexipError(new CallError(error.name), null);
         }
     }
