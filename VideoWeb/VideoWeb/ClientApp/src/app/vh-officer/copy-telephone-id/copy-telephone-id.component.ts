@@ -7,6 +7,7 @@ import { ClipboardService } from 'ngx-clipboard';
     styleUrls: ['./copy-telephone-id.component.scss']
 })
 export class CopyTelephoneIdComponent implements OnInit {
+    @Input() telephoneNumber: string;
     @Input() telephoneId: string;
     tooltip: string;
 
@@ -17,7 +18,8 @@ export class CopyTelephoneIdComponent implements OnInit {
     }
 
     copyToClipboard() {
-        this.clipboardService.copyFromContent(this.telephoneId);
+        const text = `${this.telephoneNumber} (ID: ${this.telephoneId})`;
+        this.clipboardService.copyFromContent(text);
         this.tooltip = 'Details copied to clipboard';
     }
 
