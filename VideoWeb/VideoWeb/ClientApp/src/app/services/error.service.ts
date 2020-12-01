@@ -89,6 +89,10 @@ export class ErrorService {
         this.router.navigate([pageUrls.ErrorCameraMicrophone]);
     }
 
+    getMediaDeviceErrorMessageTypeFromStorage() {
+        return this.errorCameraMicMessage.get();
+    }
+
     handlePexipError(error: CallError, conferenceId: string) {
         this.logger.error('[ErrorService] - There was a pexip error', new Error(error.reason), {
             conference: conferenceId,
