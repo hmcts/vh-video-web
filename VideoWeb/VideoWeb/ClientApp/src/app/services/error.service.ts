@@ -14,7 +14,6 @@ export class ErrorService {
     constructor(private router: Router, private logger: Logger) {
         this.errorMessage = new SessionStorage<ErrorMessage>(this.ERROR_MESSAGE_KEY);
         this.errorCameraMicMessage = new SessionStorage<string>(this.ERROR_CAMERA_MIC_MESSAGE_KEY);
-
     }
     readonly ERROR_MESSAGE_KEY = 'vh.error.message';
     readonly ERROR_CAMERA_MIC_MESSAGE_KEY = 'vh.error.camera.mic.message';
