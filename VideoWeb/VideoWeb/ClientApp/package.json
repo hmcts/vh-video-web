@@ -60,7 +60,7 @@
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1002.0",
     "@angular/cli": "^10.2.0",
-    "@angular/compiler-cli": "^10.2.2",
+    "@angular/compiler-cli": "^10.2.3",
     "@angular/language-service": "^10.2.2",
     "@testpossessed/ts-data-builder": "^1.0.1",
     "@types/applicationinsights-js": "^1.0.9",
