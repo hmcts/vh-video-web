@@ -12,6 +12,10 @@
   box-shadow: 0 0 8px 3px govuk-colour('dark-grey');
 }
 
+.chat-window-always-on {
+  z-index: 250;
+}
+
 .chevron {
   float: right;
 }
