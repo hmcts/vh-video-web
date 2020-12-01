@@ -142,7 +142,7 @@ describe('ParticipantsPanelComponent', () => {
         expect(resultParticipant.transferringIn).toBeTrue();
     });
 
-    it('should set transferring in when HearingTransfer Out event received', () => {
+    it('should set transferring in to false when HearingTransfer Out event received', () => {
         component.setupEventhubSubscribers();
         const p = participants[0];
         hearingTransferSubjectMock.next(new HearingTransfer(component.conferenceId, p.id, TransferDirection.Out));
@@ -153,7 +153,10 @@ describe('ParticipantsPanelComponent', () => {
 
     it('should handle invalid participant id - HearingTransfer', () => {
         component.setupEventhubSubscribers();
+        const currentTrasnferringStatuses = component.participants.map(x => x.transferringIn);
         hearingTransferSubjectMock.next(new HearingTransfer(component.conferenceId, 'InvalidId', TransferDirection.In));
+        const afterTrasnferringStatuses = component.participants.map(x => x.transferringIn);
+        expect(afterTrasnferringStatuses).toEqual(currentTrasnferringStatuses);
     });
 
     it('should return true when participant is in hearing', () => {

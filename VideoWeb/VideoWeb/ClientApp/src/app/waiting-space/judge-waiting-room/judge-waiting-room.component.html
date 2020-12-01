@@ -161,7 +161,7 @@
 <app-individual-consultation-controls (cancelConsulation)="onConsultationCancelled()" *ngIf="showConsultationControls">
 </app-individual-consultation-controls>
 
-<app-participant-chat *ngIf="hearing && !showVideo" [hearing]="hearing"></app-participant-chat>
+<app-participant-chat *ngIf="hearing" [hearing]="hearing" [alwaysOn]="true"></app-participant-chat>
 
 <app-select-media-devices
   *ngIf="displayDeviceChangeModal"
