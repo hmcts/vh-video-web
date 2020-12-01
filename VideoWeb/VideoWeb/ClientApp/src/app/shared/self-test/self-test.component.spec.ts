@@ -374,4 +374,16 @@ describe('SelfTestComponent', () => {
         component.incomingStream = undefined;
         expect(component.streamsActive).toBeFalsy();
     });
+    it('should log the trace message if mic and cam were updated', async () => {
+        spyOn(logger, 'info');
+        await component.updatePexipAudioVideoSource();
+        expect(logger.info).toHaveBeenCalled();
+    });
+    it('should log the trace message if mic and cam were updated with null value', async () => {
+        userMediaService.getPreferredCamera.and.returnValue(Promise.resolve(null));
+        userMediaService.getPreferredCamera.and.returnValue(Promise.resolve(null));
+        spyOn(logger, 'info');
+        await component.updatePexipAudioVideoSource();
+        expect(logger.info).toHaveBeenCalled();
+    });
 });

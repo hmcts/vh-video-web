@@ -8,6 +8,7 @@ import { CallError } from '../waiting-space/models/video-call-models';
 import { HealthCheckService } from './api/healthcheck.service';
 import { ErrorService } from './error.service';
 import { Logger } from './logging/logger-base';
+import { SessionStorage } from './session-storage';
 
 describe('ErrorService', () => {
     let router: Router;
@@ -158,4 +159,31 @@ describe('ErrorService', () => {
             );
         }
     ));
+    it('should navigate to media device error with camera and microphone in use message when pexip return a media related error', inject(
+        [ErrorService],
+        (service: ErrorService) => {
+            spyOn(service, 'goToMediaDeviceError');
+            const error = new CallError(`NotReadableError`);
+            const conferenceId = Guid.create().toString();
+            service.handlePexipError(error, conferenceId);
+            expect(service.goToMediaDeviceError).toHaveBeenCalledWith('DevicesInUse');
+        }
+    ));
+    it('should navigate to media device error with camera and microphone not found message when pexip return a media related error', inject(
+        [ErrorService],
+        (service: ErrorService) => {
+            spyOn(service, 'goToMediaDeviceError');
+            const error = new CallError(`OverconstrainedError`);
+            const conferenceId = Guid.create().toString();
+            service.handlePexipError(error, conferenceId);
+            expect(service.goToMediaDeviceError).toHaveBeenCalledWith('DevicesNotFound');
+        }
+    ));
+    it('should get the error type message from storage for media devices', inject([ErrorService], (service: ErrorService) => {
+        const store = new SessionStorage<string>(service.ERROR_CAMERA_MIC_MESSAGE_KEY);
+        const expected = 'MessageType-1';
+        store.set(expected);
+        const messageType = service.getMediaDeviceErrorMessageTypeFromStorage();
+        expect(messageType).toBe(expected);
+    }));
 });

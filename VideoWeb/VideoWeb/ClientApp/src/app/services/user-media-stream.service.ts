@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import 'webrtc-adapter';
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { Logger } from './logging/logger-base';
+import { ErrorService } from '../services/error.service';
+import { CallError } from '../waiting-space/models/video-call-models';
 
 @Injectable({
     providedIn: 'root'
@@ -13,10 +15,11 @@ export class UserMediaStreamService {
     };
 
     navigator = <any>navigator;
+    private readonly loggerPrefix = '[UserMediaStreamService] -';
 
     private requestStream: MediaStream;
 
-    constructor(private logger: Logger) {
+    constructor(private logger: Logger, private errorService: ErrorService) {
         this.navigator.getUserMedia = this.navigator.getUserMedia || this.navigator.webkitGetUserMedia || this.navigator.msGetUserMedia;
     }
 
@@ -30,7 +33,8 @@ export class UserMediaStreamService {
             this.stopRequestStream();
             return true;
         } catch (exception) {
-            this.logger.error('[UserMediaStreamService] - Could not get cam and mic access', exception);
+            this.logger.error(`${this.loggerPrefix} Could not get cam and mic access`, exception);
+
             return false;
         }
     }
@@ -43,26 +47,40 @@ export class UserMediaStreamService {
         if (this.requestStream) {
             this.stopStream(this.requestStream);
         }
-
-        this.requestStream = await this.navigator.mediaDevices.getUserMedia(this.permissionConstraints);
-        return this.requestStream;
+        try {
+            this.requestStream = await this.navigator.mediaDevices.getUserMedia(this.permissionConstraints);
+            return this.requestStream;
+        } catch (error) {
+            this.logger.error(`${this.loggerPrefix} Could not get media stream`, error);
+            this.errorService.handlePexipError(new CallError(error.name), null);
+        }
     }
 
     async getStreamForMic(device: UserMediaDevice): Promise<MediaStream> {
-        if (device) {
-            const stream = await this.navigator.mediaDevices.getUserMedia({ audio: { deviceId: { exact: device.deviceId } } });
-            return stream;
-        } else {
-            return this.getDefaultMicStream();
+        try {
+            if (device) {
+                const stream = await this.navigator.mediaDevices.getUserMedia({ audio: { deviceId: { exact: device.deviceId } } });
+                return stream;
+            } else {
+                return this.getDefaultMicStream();
+            }
+        } catch (error) {
+            this.logger.error(`${this.loggerPrefix} Could not get audio stream for microphone`, error);
+            this.errorService.handlePexipError(new CallError(error.name), null);
         }
     }
 
     async getStreamForCam(device: UserMediaDevice): Promise<MediaStream> {
-        if (device) {
-            const stream = await this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } });
-            return stream;
-        } else {
-            return this.getDefaultCamStream();
+        try {
+            if (device) {
+                const stream = await this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } });
+                return stream;
+            } else {
+                return this.getDefaultCamStream();
+            }
+        } catch (error) {
+            this.logger.error(`${this.loggerPrefix} Could not get video stream for camera`, error);
+            this.errorService.handlePexipError(new CallError(error.name), null);
         }
     }
 

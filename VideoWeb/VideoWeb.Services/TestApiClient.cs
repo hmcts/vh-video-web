@@ -409,7 +409,7 @@ namespace VideoWeb.Services.TestApi
         /// <param name="body">A list of suitability answers to update</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task SuitabilityAnswersAsync(System.Guid hearingId, System.Guid participantId, System.Collections.Generic.IEnumerable<SuitabilityAnswersRequest> body);
+        System.Threading.Tasks.Task UpdateSuitabilityAnswersAsync(System.Guid hearingId, System.Guid participantId, System.Collections.Generic.IEnumerable<SuitabilityAnswersRequest> body);
     
         /// <summary>Updates suitability answers for the participant</summary>
         /// <param name="hearingId">Id of hearing</param>
@@ -417,7 +417,7 @@ namespace VideoWeb.Services.TestApi
         /// <param name="body">A list of suitability answers to update</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        void SuitabilityAnswers(System.Guid hearingId, System.Guid participantId, System.Collections.Generic.IEnumerable<SuitabilityAnswersRequest> body);
+        void UpdateSuitabilityAnswers(System.Guid hearingId, System.Guid participantId, System.Collections.Generic.IEnumerable<SuitabilityAnswersRequest> body);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Updates suitability answers for the participant</summary>
@@ -426,26 +426,26 @@ namespace VideoWeb.Services.TestApi
         /// <param name="body">A list of suitability answers to update</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task SuitabilityAnswersAsync(System.Guid hearingId, System.Guid participantId, System.Collections.Generic.IEnumerable<SuitabilityAnswersRequest> body, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task UpdateSuitabilityAnswersAsync(System.Guid hearingId, System.Guid participantId, System.Collections.Generic.IEnumerable<SuitabilityAnswersRequest> body, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get suitability answers for the person</summary>
         /// <param name="username">Username of the person</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<PersonSuitabilityAnswerResponse>> SuitabilityAnswersAsync(string username);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<PersonSuitabilityAnswerResponse>> GetSuitabilityAnswersAsync(string username);
     
         /// <summary>Get suitability answers for the person</summary>
         /// <param name="username">Username of the person</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Collections.Generic.List<PersonSuitabilityAnswerResponse> SuitabilityAnswers(string username);
+        System.Collections.Generic.List<PersonSuitabilityAnswerResponse> GetSuitabilityAnswers(string username);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get suitability answers for the person</summary>
         /// <param name="username">Username of the person</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<System.Collections.Generic.List<PersonSuitabilityAnswerResponse>> SuitabilityAnswersAsync(string username, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.List<PersonSuitabilityAnswerResponse>> GetSuitabilityAnswersAsync(string username, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get person by username</summary>
         /// <param name="username">Username of the person</param>
@@ -2044,7 +2044,7 @@ namespace VideoWeb.Services.TestApi
         public async System.Threading.Tasks.Task<HealthResponse> CheckServiceHealthAsync(System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/Health/health");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/health/health");
     
             var client_ = _httpClient;
             try
@@ -2618,9 +2618,9 @@ namespace VideoWeb.Services.TestApi
         /// <param name="body">A list of suitability answers to update</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task SuitabilityAnswersAsync(System.Guid hearingId, System.Guid participantId, System.Collections.Generic.IEnumerable<SuitabilityAnswersRequest> body)
+        public System.Threading.Tasks.Task UpdateSuitabilityAnswersAsync(System.Guid hearingId, System.Guid participantId, System.Collections.Generic.IEnumerable<SuitabilityAnswersRequest> body)
         {
-            return SuitabilityAnswersAsync(hearingId, participantId, body, System.Threading.CancellationToken.None);
+            return UpdateSuitabilityAnswersAsync(hearingId, participantId, body, System.Threading.CancellationToken.None);
         }
     
         /// <summary>Updates suitability answers for the participant</summary>
@@ -2629,9 +2629,9 @@ namespace VideoWeb.Services.TestApi
         /// <param name="body">A list of suitability answers to update</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public void SuitabilityAnswers(System.Guid hearingId, System.Guid participantId, System.Collections.Generic.IEnumerable<SuitabilityAnswersRequest> body)
+        public void UpdateSuitabilityAnswers(System.Guid hearingId, System.Guid participantId, System.Collections.Generic.IEnumerable<SuitabilityAnswersRequest> body)
         {
-            System.Threading.Tasks.Task.Run(async () => await SuitabilityAnswersAsync(hearingId, participantId, body, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+            System.Threading.Tasks.Task.Run(async () => await UpdateSuitabilityAnswersAsync(hearingId, participantId, body, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -2641,7 +2641,7 @@ namespace VideoWeb.Services.TestApi
         /// <param name="body">A list of suitability answers to update</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task SuitabilityAnswersAsync(System.Guid hearingId, System.Guid participantId, System.Collections.Generic.IEnumerable<SuitabilityAnswersRequest> body, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task UpdateSuitabilityAnswersAsync(System.Guid hearingId, System.Guid participantId, System.Collections.Generic.IEnumerable<SuitabilityAnswersRequest> body, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingId == null)
                 throw new System.ArgumentNullException("hearingId");
@@ -2650,7 +2650,7 @@ namespace VideoWeb.Services.TestApi
                 throw new System.ArgumentNullException("participantId");
     
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/{hearingId}/participants/{participantId}/suitability-answers");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/{hearingId}/participants/{participantId}/update-suitability-answers");
             urlBuilder_.Replace("{hearingId}", System.Uri.EscapeDataString(ConvertToString(hearingId, System.Globalization.CultureInfo.InvariantCulture)));
             urlBuilder_.Replace("{participantId}", System.Uri.EscapeDataString(ConvertToString(participantId, System.Globalization.CultureInfo.InvariantCulture)));
     
@@ -2727,18 +2727,18 @@ namespace VideoWeb.Services.TestApi
         /// <param name="username">Username of the person</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.List<PersonSuitabilityAnswerResponse>> SuitabilityAnswersAsync(string username)
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<PersonSuitabilityAnswerResponse>> GetSuitabilityAnswersAsync(string username)
         {
-            return SuitabilityAnswersAsync(username, System.Threading.CancellationToken.None);
+            return GetSuitabilityAnswersAsync(username, System.Threading.CancellationToken.None);
         }
     
         /// <summary>Get suitability answers for the person</summary>
         /// <param name="username">Username of the person</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public System.Collections.Generic.List<PersonSuitabilityAnswerResponse> SuitabilityAnswers(string username)
+        public System.Collections.Generic.List<PersonSuitabilityAnswerResponse> GetSuitabilityAnswers(string username)
         {
-            return System.Threading.Tasks.Task.Run(async () => await SuitabilityAnswersAsync(username, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+            return System.Threading.Tasks.Task.Run(async () => await GetSuitabilityAnswersAsync(username, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
@@ -2746,10 +2746,10 @@ namespace VideoWeb.Services.TestApi
         /// <param name="username">Username of the person</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.List<PersonSuitabilityAnswerResponse>> SuitabilityAnswersAsync(string username, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.List<PersonSuitabilityAnswerResponse>> GetSuitabilityAnswersAsync(string username, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/suitabilityAnswers/{username}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/hearings/get-suitability-answers/{username}");
             urlBuilder_.Replace("{username}", System.Uri.EscapeDataString(ConvertToString(username, System.Globalization.CultureInfo.InvariantCulture)));
     
             var client_ = _httpClient;
@@ -4311,6 +4311,9 @@ namespace VideoWeb.Services.TestApi
     
         [Newtonsoft.Json.JsonProperty("hearing_venue_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Hearing_venue_name { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("telephone_conference_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Telephone_conference_id { get; set; }
     
     
     }
