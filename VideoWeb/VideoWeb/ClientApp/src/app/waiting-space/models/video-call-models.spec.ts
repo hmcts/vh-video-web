@@ -1,43 +1,84 @@
-import { ParticipantUpdated, ConferenceUpdated } from './video-call-models';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { Guid } from 'guid-typescript';
+import { VideoCallTestData } from 'src/app/testing/mocks/data/video-call-test-data';
+import { ConferenceUpdated, ParticipantUpdated } from './video-call-models';
 
 describe('ParticipantUpdated', () => {
     const participantDisplayName = new ConferenceTestData().getConferenceDetailNow().participants[0].tiled_display_name;
-    let participantUpdated: ParticipantUpdated;
-    let conferenceUpdated: ConferenceUpdated;
+    const testData = new VideoCallTestData();
 
     it('should return muted status', () => {
-        participantUpdated = new ParticipantUpdated('YES', 1234, participantDisplayName, Guid.create().toString(), 0);
+        const pexipParticipant = testData.getExamplePexipParticipant(participantDisplayName);
+        pexipParticipant.is_muted = 'Yes';
+        const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         expect(participantUpdated.isRemoteMuted).toBeTruthy();
         expect(participantUpdated.pexipDisplayName).toBe(participantDisplayName);
     });
     it('should return unmuted status', () => {
-        participantUpdated = new ParticipantUpdated('NO', 1234, participantDisplayName, Guid.create().toString(), 0);
+        const pexipParticipant = testData.getExamplePexipParticipant(participantDisplayName);
+        pexipParticipant.is_muted = 'NO';
+        const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         expect(participantUpdated.isRemoteMuted).toBeFalsy();
     });
     it('shuld return hand not raised', () => {
-        participantUpdated = new ParticipantUpdated('YES', 1234, participantDisplayName, Guid.create().toString(), 0);
-        expect(participantUpdated.handRaised).toBeTruthy();
-    });
-    it('shuld return hand raised', () => {
-        participantUpdated = new ParticipantUpdated('YES', 0, participantDisplayName, Guid.create().toString(), 0);
+        const pexipParticipant = testData.getExamplePexipParticipant(participantDisplayName);
+        pexipParticipant.buzz_time = 0;
+        const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+        console.log(pexipParticipant);
+        console.log(participantUpdated);
         expect(participantUpdated.handRaised).toBeFalsy();
     });
+    it('shuld return hand raised', () => {
+        const pexipParticipant = testData.getExamplePexipParticipant(participantDisplayName);
+        pexipParticipant.buzz_time = new Date().getTime();
+        const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+        expect(participantUpdated.handRaised).toBeTruthy();
+    });
     it('should create conference updated model for muted status', () => {
-        conferenceUpdated = new ConferenceUpdated(true);
+        const conferenceUpdated = new ConferenceUpdated(true);
         expect(conferenceUpdated).toBeTruthy();
     });
     it('should create conference updated model for unmuted status', () => {
-        conferenceUpdated = new ConferenceUpdated(false);
+        const conferenceUpdated = new ConferenceUpdated(false);
         expect(conferenceUpdated).toBeTruthy();
     });
     it('should return spotlighted true', () => {
-        participantUpdated = new ParticipantUpdated('YES', 1234, participantDisplayName, Guid.create().toString(), 1);
+        const pexipParticipant = testData.getExamplePexipParticipant(participantDisplayName);
+        pexipParticipant.spotlight = new Date().getTime();
+        const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         expect(participantUpdated.isSpotlighted).toBeTruthy();
     });
     it('should return spotlighted false', () => {
-        participantUpdated = new ParticipantUpdated('NO', 1234, participantDisplayName, Guid.create().toString(), 0);
+        const pexipParticipant = testData.getExamplePexipParticipant(participantDisplayName);
+        pexipParticipant.spotlight = 0;
+        const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+        expect(participantUpdated.isSpotlighted).toBeFalsy();
+    });
+
+    it('should return is audio only call true', () => {
+        const pexipParticipant = testData.getExamplePexipParticipant(participantDisplayName);
+        pexipParticipant.is_audio_only_call = 'Yes';
+        const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+        expect(participantUpdated.isSpotlighted).toBeFalsy();
+    });
+
+    it('should return is audio only call false', () => {
+        const pexipParticipant = testData.getExamplePexipParticipant(participantDisplayName);
+        pexipParticipant.is_audio_only_call = 'No';
+        const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+        expect(participantUpdated.isSpotlighted).toBeFalsy();
+    });
+
+    it('should return is video call true', () => {
+        const pexipParticipant = testData.getExamplePexipParticipant(participantDisplayName);
+        pexipParticipant.is_video_call = 'Yes';
+        const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+        expect(participantUpdated.isSpotlighted).toBeFalsy();
+    });
+
+    it('should return is video call false', () => {
+        const pexipParticipant = testData.getExamplePexipParticipant(participantDisplayName);
+        pexipParticipant.is_video_call = 'No';
+        const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         expect(participantUpdated.isSpotlighted).toBeFalsy();
     });
 });

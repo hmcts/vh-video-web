@@ -3,6 +3,7 @@ import { ConferenceResponse, ParticipantStatus, Role } from 'src/app/services/cl
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { VideoCallTestData } from 'src/app/testing/mocks/data/video-call-test-data';
 import {
     eventsServiceSpy,
     hearingCountdownCompleteSubjectMock,
@@ -25,6 +26,8 @@ describe('HearingControlsComponent', () => {
     const onParticipantUpdatedSubject = onParticipantUpdatedMock;
 
     const logger: Logger = new MockLogger();
+
+    const testData = new VideoCallTestData();
 
     beforeEach(() => {
         component = new HearingControlsComponent(videoCallService, eventsService, logger);
@@ -71,16 +74,29 @@ describe('HearingControlsComponent', () => {
     });
 
     it('should show raised hand on hand lowered', () => {
-        const payload = new ParticipantUpdated('YES', 0, globalParticipant.tiled_display_name, Guid.create().toString(), 0);
+        const pexipParticipant = testData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
+        pexipParticipant.buzz_time = 0;
+        const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         onParticipantUpdatedSubject.next(payload);
-        expect(component.remoteMuted).toBeTruthy();
         expect(component.handRaised).toBeFalsy();
         expect(component.handToggleText).toBe('Raise my hand');
     });
 
+    it('should show remote muted when muted by host', () => {
+        const pexipParticipant = testData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
+        pexipParticipant.is_muted = 'Yes';
+        const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+        onParticipantUpdatedSubject.next(payload);
+        expect(component.remoteMuted).toBeTruthy();
+    });
+
     it('should not show raised hand on hand lowered for another participant', () => {
         const otherParticipant = gloalConference.participants.filter(x => x.role === Role.Representative)[0];
-        const payload = new ParticipantUpdated('YES', 0, otherParticipant.tiled_display_name, Guid.create().toString(), 0);
+        const pexipParticipant = testData.getExamplePexipParticipant(otherParticipant.tiled_display_name);
+        pexipParticipant.is_muted = 'YES';
+        pexipParticipant.buzz_time = 0;
+        pexipParticipant.spotlight = 0;
+        const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         component.handRaised = true;
         component.remoteMuted = false;
         onParticipantUpdatedSubject.next(payload);
@@ -90,7 +106,9 @@ describe('HearingControlsComponent', () => {
     });
 
     it('should show lower hand on hand raised', () => {
-        const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name, Guid.create().toString(), 0);
+        const pexipParticipant = testData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
+        pexipParticipant.buzz_time = 123;
+        const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         onParticipantUpdatedSubject.next(payload);
         expect(component.handRaised).toBeTruthy();
         expect(component.handToggleText).toBe('Lower my hand');
@@ -98,7 +116,11 @@ describe('HearingControlsComponent', () => {
 
     it('should not show lower hand when hand raised for another participant', () => {
         const otherParticipant = gloalConference.participants.filter(x => x.role === Role.Representative)[0];
-        const payload = new ParticipantUpdated('YES', 0, otherParticipant.tiled_display_name, Guid.create().toString(), 0);
+        // const payload = new ParticipantUpdated('YES', 0, otherParticipant.tiled_display_name, Guid.create().toString(), 0);
+        const pexipParticipant = testData.getExamplePexipParticipant(otherParticipant.tiled_display_name);
+        pexipParticipant.buzz_time = 123;
+        const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+
         component.handRaised = false;
         onParticipantUpdatedSubject.next(payload);
         expect(component.handRaised).toBeFalsy();
@@ -107,15 +129,21 @@ describe('HearingControlsComponent', () => {
 
     it('should mute locally if remote muted and not muted locally', () => {
         videoCallService.toggleMute.calls.reset();
-        const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name, Guid.create().toString(), 0);
+        const pexipParticipant = testData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
+        pexipParticipant.is_muted = 'Yes';
+        const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         component.audioMuted = false;
+
         component.handleParticipantUpdatedInVideoCall(payload);
+
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(1);
     });
 
     it('should skip mute locally if remote muted and already muted locally', () => {
         videoCallService.toggleMute.calls.reset();
-        const payload = new ParticipantUpdated('YES', 123, globalParticipant.tiled_display_name, Guid.create().toString(), 0);
+        const pexipParticipant = testData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
+        pexipParticipant.is_muted = 'Yes';
+        const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         component.audioMuted = true;
         component.handleParticipantUpdatedInVideoCall(payload);
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(0);
