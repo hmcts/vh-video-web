@@ -32,7 +32,8 @@ import { HearingTransfer, TransferDirection } from 'src/app/services/models/hear
 declare var HeartbeatFactory: any;
 
 export abstract class WaitingRoomBaseComponent {
-    protected maxBandwidth = 768;
+    protected maxBandwidth = null;
+    protected audioOnly: boolean;
 
     loadingData: boolean;
     errorCount: number;
@@ -320,7 +321,7 @@ export abstract class WaitingRoomBaseComponent {
         if (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1) {
             this.videoCallService.enableH264(false);
         }
-        this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth);
+        this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth, this.audioOnly);
     }
 
     disconnect() {
@@ -358,10 +359,13 @@ export abstract class WaitingRoomBaseComponent {
         this.stream = callConnected.stream;
         const incomingFeedElement = document.getElementById('incomingFeed') as any;
         if (this.stream) {
+            console.warn(`${this.loggerPrefix} have incoming stream`);
             this.updateShowVideo();
             if (incomingFeedElement) {
                 this.assignStream(incomingFeedElement, callConnected.stream);
             }
+        } else {
+            console.warn(`${this.loggerPrefix} no incoming stream`);
         }
         this.setupParticipantHeartbeat();
     }

@@ -8,8 +8,8 @@ declare interface PexRTC {
 }
 
 declare interface PexipClient {
-    video_source: string;
-    audio_source: string;
+    video_source: any;
+    audio_source: any;
     h264_enabled: boolean;
     mutedAudio: boolean;
     mutedVideo: boolean;
@@ -104,4 +104,6 @@ declare interface PexRTCCall {
     stream: MediaStream | URL;
     recv_audio: boolean;
     recv_video: boolean;
+    video_source: any;
+    audio_source: any;
 }
