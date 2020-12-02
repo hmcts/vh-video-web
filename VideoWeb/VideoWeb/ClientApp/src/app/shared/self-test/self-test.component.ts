@@ -283,12 +283,19 @@ export class SelfTestComponent implements OnInit, OnDestroy {
             conference: this.conference?.id,
             participant: this.selfTestParticipantId
         });
-        this.videoCallService.disconnectFromCall();
-        this.closeStreams();
-        this.incomingStream = null;
-        this.outgoingStream = null;
-        this.didTestComplete = true;
-        this.displayFeed = false;
+        try {
+            this.videoCallService.disconnectFromCall();
+        } catch (error) {
+            this.logger.warn(
+                `${this.loggerPrefix} Attempted to disconnect from pexip before the client had initialised. Moving on from self-test`
+            );
+        } finally {
+            this.closeStreams();
+            this.incomingStream = null;
+            this.outgoingStream = null;
+            this.didTestComplete = true;
+            this.displayFeed = false;
+        }
     }
 
     closeStreams() {
