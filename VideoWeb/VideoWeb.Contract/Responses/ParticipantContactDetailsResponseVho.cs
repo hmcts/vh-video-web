@@ -9,12 +9,12 @@ namespace VideoWeb.Contract.Responses
         /// The participant id in a conference
         /// </summary>
         public Guid Id { get; set; }
-        
+
         /// <summary>
         /// The conference id
         /// </summary>
         public Guid ConferenceId { get; set; }
-        
+
         /// <summary>
         /// The participant's full name
         /// </summary>
@@ -26,10 +26,15 @@ namespace VideoWeb.Contract.Responses
         public string Username { get; set; }
 
         /// <summary>
-        /// The participant's role
+        /// The participant's user role
         /// </summary>
         public Role Role { get; set; }
-        
+
+        /// <summary>
+        /// The participant's hearing role
+        /// </summary>
+        public string HearingRole { get; set; }
+
         /// <summary>
         /// The participant's status
         /// </summary>
@@ -39,12 +44,12 @@ namespace VideoWeb.Contract.Responses
         /// The participant's display name
         /// </summary>
         public string DisplayName { get; set; }
-        
+
         /// <summary>
         /// The group a participant belongs to in a case
         /// </summary>
         public string CaseTypeGroup { get; set; }
-        
+
         /// <summary>
         /// The participant hearing ref id in a booking
         /// </summary>
@@ -69,12 +74,12 @@ namespace VideoWeb.Contract.Responses
         /// The participant's contact telephone number
         /// </summary>
         public string ContactTelephone { get; set; }
-        
+
         /// <summary>
         /// The hearing venue this participant is assigned to
         /// </summary>
         public string HearingVenueName { get; set; }
-        
+
         /// <summary>
         /// The Judge is In Another Hearing
         /// </summary>

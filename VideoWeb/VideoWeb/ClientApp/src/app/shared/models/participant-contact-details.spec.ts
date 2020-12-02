@@ -13,6 +13,7 @@ describe('ParticipantContactDetails', () => {
         expect(participant.name).toBe(p.name);
         expect(participant.status).toBe(p.status);
         expect(participant.role).toBe(p.role);
+        expect(participant.hearing_role).toBe(p.hearingRole);
         expect(participant.case_type_group).toBe(p.caseGroup);
         expect(participant.display_name).toBe(p.displayName);
         expect(participant.username).toBe(p.username);
