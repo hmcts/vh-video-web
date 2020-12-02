@@ -25,7 +25,7 @@ declare interface PexipClient {
     onConferenceUpdate: (conferenceUpdate: PexipConference) => void;
     onCallTransfer: (reason: any) => void;
 
-    makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number);
+    makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number, callType: string);
     connect(pin: string, extension: string);
     disconnect();
     setParticipantMute(participantId: string, mute: boolean);
