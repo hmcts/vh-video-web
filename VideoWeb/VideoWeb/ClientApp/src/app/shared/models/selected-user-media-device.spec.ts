@@ -28,4 +28,12 @@ describe('SelectedUserMediaDevice', () => {
         };
         expect(action).toThrowError(TypeError, /is not a camera/);
     });
+
+    it('should set audio only property', () => {
+        const cam = testData.getSingleCamera()[0];
+        const mic = testData.getSingleMicrophone()[0];
+        const audioOnly = true;
+        const selectedDevices = new SelectedUserMediaDevice(cam, mic, audioOnly);
+        expect(selectedDevices.audioOnly).toBe(audioOnly);
+    });
 });

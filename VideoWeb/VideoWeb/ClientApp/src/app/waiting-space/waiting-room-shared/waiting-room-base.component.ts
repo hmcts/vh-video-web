@@ -33,7 +33,7 @@ declare var HeartbeatFactory: any;
 
 export abstract class WaitingRoomBaseComponent {
     protected maxBandwidth = null;
-    protected audioOnly: boolean;
+    audioOnly: boolean;
 
     loadingData: boolean;
     errorCount: number;
@@ -359,13 +359,10 @@ export abstract class WaitingRoomBaseComponent {
         this.stream = callConnected.stream;
         const incomingFeedElement = document.getElementById('incomingFeed') as any;
         if (this.stream) {
-            console.warn(`${this.loggerPrefix} have incoming stream`);
             this.updateShowVideo();
             if (incomingFeedElement) {
                 this.assignStream(incomingFeedElement, callConnected.stream);
             }
-        } else {
-            console.warn(`${this.loggerPrefix} no incoming stream`);
         }
         this.setupParticipantHeartbeat();
     }
@@ -559,9 +556,11 @@ export abstract class WaitingRoomBaseComponent {
     }
 
     async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
+        this.logger.debug(`${this.loggerPrefix} Updated device settings`, { selectedMediaDevice });
         this.disconnect();
         this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
         this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
+        this.audioOnly = selectedMediaDevice.audioOnly;
         await this.updatePexipAudioVideoSource();
         this.call();
     }

@@ -16,12 +16,15 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     @Output() cancelMediaDeviceChange = new EventEmitter();
     @Output() acceptMediaDeviceChange = new EventEmitter<SelectedUserMediaDevice>();
     @Input() waitingRoomMode = false;
+    @Input() showAudioOnlySetting = false;
+    @Input() cameraOn = true;
 
     availableCameraDevices: UserMediaDevice[] = [];
     availableMicrophoneDevices: UserMediaDevice[] = [];
 
     preferredCameraStream: MediaStream;
     preferredMicrophoneStream: MediaStream;
+    connectWithCameraOn: boolean;
 
     selectedMediaDevicesForm: FormGroup;
     deviceIsChanged = false;
@@ -34,6 +37,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     ) {}
 
     ngOnInit() {
+        this.connectWithCameraOn = this.cameraOn;
         this.logger.debug(`${this.loggerPrefix} Initialising media device selection`);
         return this.requestMedia().then(permissionGranted => {
             if (!permissionGranted) {
@@ -89,6 +93,10 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         });
     }
 
+    get audioOnlyToggleText(): string {
+        return this.connectWithCameraOn ? 'ON' : 'OFF';
+    }
+
     get hasSingleCameraConncted(): boolean {
         return this.availableCameraDevices.length === 1;
     }
@@ -121,10 +129,11 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         // save on select device
         const selectedCam = this.getSelectedCamera();
         const selectedMic = this.getSelectedMicrophone();
+        const audioOnly = !this.connectWithCameraOn;
         this.userMediaService.updatePreferredCamera(selectedCam);
         this.userMediaService.updatePreferredMicrophone(selectedMic);
         this.logger.debug(`${this.loggerPrefix} Accepting new media device change`);
-        this.acceptMediaDeviceChange.emit(new SelectedUserMediaDevice(selectedCam, selectedMic));
+        this.acceptMediaDeviceChange.emit(new SelectedUserMediaDevice(selectedCam, selectedMic, audioOnly));
     }
 
     onSubmit() {
@@ -133,6 +142,13 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
         this.logger.debug(`${this.loggerPrefix} Cancelling media device change`);
         this.cancelMediaDeviceChange.emit();
+    }
+
+    toggleSwitch() {
+        this.connectWithCameraOn = !this.connectWithCameraOn;
+        this.logger.debug(`${this.loggerPrefix} Toggle camera switch to ${this.connectWithCameraOn ? 'on' : 'off'}`);
+
+        this.saveSelectedDevices();
     }
 
     getSelectedCamera(): UserMediaDevice {

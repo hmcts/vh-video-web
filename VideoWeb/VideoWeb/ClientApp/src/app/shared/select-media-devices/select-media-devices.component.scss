@@ -1,3 +1,5 @@
+@import '~govuk-frontend/govuk/base';
+
 .modal {
   display: block;
   /* Hidden by default */
@@ -48,4 +50,70 @@
   transform: rotateY(180deg);
   -webkit-transform: rotateY(180deg); /* Safari and Chrome */
   -moz-transform: rotateY(180deg); /* Firefox */
+}
+
+.camSwitchTitle {
+  margin-top: -25px;
+}
+
+// Rounded sliders
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 24px;
+  margin-bottom: 30px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: govuk-colour('mid-grey');
+  -webkit-transition: 0.2s;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: '';
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: govuk-colour('white');
+  -webkit-transition: 0.2s;
+  transition: 0.2s;
+}
+
+input:checked + .slider {
+  background-color: govuk-colour('green');
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(15px);
+  -ms-transform: translateX(15px);
+  transform: translateX(15px);
+}
+
+.slider.round {
+  border-radius: 99px;
+}
+
+.slider.round:before {
+  border-radius: 90%;
+}
+
+.toggle-text {
+  margin-left: 44px;
+  font-size: 20px;
 }
