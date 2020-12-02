@@ -64,6 +64,10 @@ export class ParticipantContactDetails {
         return this.participant.role;
     }
 
+    get hearingRole(): string {
+        return this.participant.hearing_role;
+    }
+
     get isJudge(): boolean {
         return this.participant.role === Role.Judge;
     }

@@ -374,7 +374,8 @@ export class ConferenceTestData {
             contact_telephone: '123',
             first_name: 'Chris',
             last_name: 'Green',
-            ref_id: 'B505FA9D-8072-4F96-8CA6-4F0489DD6E08'
+            ref_id: 'B505FA9D-8072-4F96-8CA6-4F0489DD6E08',
+            hearing_role: HearingRole.LITIGANT_IN_PERSON
         });
 
         const participant2 = new ParticipantContactDetailsResponseVho({
@@ -391,7 +392,8 @@ export class ConferenceTestData {
             contact_telephone: '456',
             first_name: 'James',
             last_name: 'Green',
-            ref_id: '072D80ED-6816-42AF-A0C0-2FAE0F65E17A'
+            ref_id: '072D80ED-6816-42AF-A0C0-2FAE0F65E17A',
+            hearing_role: HearingRole.REPRESENTATIVE
         });
 
         const participant3 = new ParticipantContactDetailsResponseVho({
@@ -409,7 +411,8 @@ export class ConferenceTestData {
             first_name: 'Judge',
             last_name: 'Fudge',
             ref_id: '9B4737C9-5D8A-4B67-8569-EF8185FFE6E3',
-            judge_in_another_hearing: true
+            judge_in_another_hearing: true,
+            hearing_role: HearingRole.JUDGE
         });
 
         const participant4 = new ParticipantContactDetailsResponseVho({
@@ -426,7 +429,8 @@ export class ConferenceTestData {
             contact_telephone: '910',
             first_name: 'Judge',
             last_name: 'Fudge',
-            ref_id: '9B4737C9-5D8A-4B67-8569-EF8185FFE6E3'
+            ref_id: '9B4737C9-5D8A-4B67-8569-EF8185FFE6E3',
+            hearing_role: HearingRole.JUDGE
         });
 
         participants.push(participant1);

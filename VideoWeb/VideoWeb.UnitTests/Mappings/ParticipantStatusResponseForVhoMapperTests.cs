@@ -76,6 +76,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.ConferenceId.Should().Be(conferenceId);
             response.Name.Should().Be(participant.Name);
             response.Role.Should().Be(participant.Role);
+            response.HearingRole.Should().Be(participant.HearingRole);
             response.Username.Should().Be(participant.Username);
             response.CaseTypeGroup.Should().Be(participant.CaseTypeGroup);
             response.RefId.Should().Be(participant.RefId);
