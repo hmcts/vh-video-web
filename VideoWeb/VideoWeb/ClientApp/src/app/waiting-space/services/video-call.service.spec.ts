@@ -1,14 +1,13 @@
+import { Guid } from 'guid-typescript';
+import { of } from 'rxjs';
+import { ApiClient, HearingLayout, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { SessionStorage } from 'src/app/services/session-storage';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { VideoCallService } from './video-call.service';
-import { Guid } from 'guid-typescript';
-import { ApiClient, StartHearingRequest } from 'src/app/services/clients/api-client';
-import { of } from 'rxjs';
-import { HearingLayout } from 'src/app/services/clients/api-client';
-import { SessionStorage } from 'src/app/services/session-storage';
 
 describe('VideoCallService', () => {
     let service: VideoCallService;
@@ -144,13 +143,12 @@ describe('VideoCallService', () => {
         expect(pexipSpy.makeCall).toHaveBeenCalledWith(node, conferenceAlias, participantDisplayName, maxBandwidth, null);
         expect(pexipSpy.call_tag).toBeDefined();
     });
-  
 
     it('should init the call tag', () => {
         service.pexipAPI.call_tag = null;
         service.initCallTag();
         expect(service.pexipAPI.call_tag).toBeDefined();
-          });
+    });
 
     it('should call pexip with with audio only', () => {
         const node = 'node124';
