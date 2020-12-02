@@ -1,7 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { HealthCheckService } from 'src/app/services/api/healthcheck.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { PageTrackerService } from 'src/app/services/page-tracker.service';
@@ -27,26 +26,19 @@ export class ErrorComponent implements OnInit, OnDestroy {
     connectionError: boolean;
     showReconnect: boolean;
     attemptingReconnect: boolean;
-    isOnline: boolean;
 
     constructor(
         private router: Router,
         private pageTracker: PageTrackerService,
         private eventsService: EventsService,
-        private logger: Logger,
-        private checkConnection: HealthCheckService
+        private logger: Logger
     ) {
-        this.checkInternetConnection();
         this.browserRefresh = false;
         this.checkForRefresh();
     }
 
-    private async checkInternetConnection() {
-        this.isOnline = await this.checkConnection.getHealthCheckStatus();
-    }
-
     get hasInternetConnection(): boolean {
-        return this.isOnline;
+        return window.navigator.onLine;
     }
 
     ngOnInit(): void {
@@ -113,7 +105,6 @@ export class ErrorComponent implements OnInit, OnDestroy {
     }
 
     reconnect(): void {
-        this.checkInternetConnection();
         if (this.attemptingReconnect) {
             this.logger.debug(`${this.loggerPrefix} Reconnection already in progress`);
             return;
