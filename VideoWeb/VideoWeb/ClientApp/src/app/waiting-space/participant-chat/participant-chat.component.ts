@@ -23,6 +23,7 @@ export class ParticipantChatComponent extends ChatBaseComponent implements OnIni
     showChat: boolean;
     unreadMessageCount: number;
     loading: boolean;
+    @Input() alwaysOn = false;
 
     @ViewChild('content', { static: false }) content: ElementRef;
 
