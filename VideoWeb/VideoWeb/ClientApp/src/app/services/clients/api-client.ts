@@ -5353,8 +5353,9 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
     name?: string | undefined;
     /** The participant's username */
     username?: string | undefined;
-    /** The participant's role */
+    /** The participant's user role */
     role?: Role;
+    hearing_role?: string | undefined;
     /** The participant's status */
     status?: ParticipantStatus;
     display_name?: string | undefined;
@@ -5382,6 +5383,7 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
             this.name = _data['name'];
             this.username = _data['username'];
             this.role = _data['role'];
+            this.hearing_role = _data['hearing_role'];
             this.status = _data['status'];
             this.display_name = _data['display_name'];
             this.case_type_group = _data['case_type_group'];
@@ -5409,6 +5411,7 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
         data['name'] = this.name;
         data['username'] = this.username;
         data['role'] = this.role;
+        data['hearing_role'] = this.hearing_role;
         data['status'] = this.status;
         data['display_name'] = this.display_name;
         data['case_type_group'] = this.case_type_group;
@@ -5431,8 +5434,9 @@ export interface IParticipantContactDetailsResponseVho {
     name?: string | undefined;
     /** The participant's username */
     username?: string | undefined;
-    /** The participant's role */
+    /** The participant's user role */
     role?: Role;
+    hearing_role?: string | undefined;
     /** The participant's status */
     status?: ParticipantStatus;
     display_name?: string | undefined;

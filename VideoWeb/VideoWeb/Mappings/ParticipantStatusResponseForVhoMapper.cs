@@ -31,6 +31,7 @@ namespace VideoWeb.Mappings
                         ConferenceId = conferenceId,
                         Name = x.Name,
                         Role = x.Role,
+                        HearingRole = x.HearingRole,
                         Username = x.Username,
                         CaseTypeGroup = x.CaseTypeGroup,
                         RefId = x.RefId,
