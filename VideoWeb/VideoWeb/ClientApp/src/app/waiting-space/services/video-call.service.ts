@@ -97,8 +97,9 @@ export class VideoCallService {
      * @param participantDisplayName the tiled display name (i.e. tile position and display name for video call)
      * @param maxBandwidth the maximum bandwith
      */
-    makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
-        this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth);
+    makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number, audioOnly: boolean = false) {
+        const callType = audioOnly ? 'audioonly' : null;
+        this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, callType);
     }
 
     disconnectFromCall() {
@@ -160,6 +161,16 @@ export class VideoCallService {
             participant: participantId
         });
         return this.pexipAPI.muteAudio();
+    }
+
+    toggleVideo(conferenceId: string, participantId: string): boolean {
+        this.logger.info(`${this.loggerPrefix} Toggling outgoing video`, {
+            currentAudioMuteStatus: this.pexipAPI.mutedAudio,
+            currentVideoMuteStatus: this.pexipAPI.mutedVideo,
+            conference: conferenceId,
+            participant: participantId
+        });
+        return this.pexipAPI.muteVideo();
     }
 
     muteParticipant(pexipParticipantId: string, mute: boolean, conferenceId: string, participantId: string) {
