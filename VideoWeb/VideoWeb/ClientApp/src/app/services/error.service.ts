@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { ErrorMessage } from '../shared/models/error-message';
 import { pageUrls } from '../shared/page-url.constants';
 import { CallError } from '../waiting-space/models/video-call-models';
-import { HealthCheckService } from './api/healthcheck.service';
 import { ApiException } from './clients/api-client';
 import { Logger } from './logging/logger-base';
 import { SessionStorage } from './session-storage';
@@ -12,12 +11,9 @@ import { SessionStorage } from './session-storage';
     providedIn: 'root'
 })
 export class ErrorService {
-    isOnline: boolean;
-    constructor(private router: Router, private logger: Logger, private checkConnection: HealthCheckService) {
+    constructor(private router: Router, private logger: Logger) {
         this.errorMessage = new SessionStorage<ErrorMessage>(this.ERROR_MESSAGE_KEY);
         this.errorCameraMicMessage = new SessionStorage<string>(this.ERROR_CAMERA_MIC_MESSAGE_KEY);
-
-        this.checkInternetConnection();
     }
     readonly ERROR_MESSAGE_KEY = 'vh.error.message';
     readonly ERROR_CAMERA_MIC_MESSAGE_KEY = 'vh.error.camera.mic.message';
@@ -48,12 +44,8 @@ export class ErrorService {
         }
     }
 
-    async checkInternetConnection() {
-        this.isOnline = await this.checkConnection.getHealthCheckStatus();
-    }
-
     get hasInternetConnection(): boolean {
-        return this.isOnline;
+        return window.navigator.onLine;
     }
 
     returnHomeIfUnauthorised(error: any): boolean {

@@ -3,12 +3,11 @@ import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angul
 import { NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable } from 'rxjs';
-import { HealthCheckService } from 'src/app/services/api/healthcheck.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { PageTrackerService } from 'src/app/services/page-tracker.service';
 import { SessionStorage } from 'src/app/services/session-storage';
-import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
+import { eventsServiceSpy, isConnectedSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ContactUsFoldingComponent } from '../contact-us-folding/contact-us-folding.component';
 import { ErrorMessage } from '../models/error-message';
@@ -41,16 +40,12 @@ describe('ErrorComponent', () => {
 
     let router: Router;
     let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
-    let healthCheckService: jasmine.SpyObj<HealthCheckService>;
 
     beforeEach(
         waitForAsync(() => {
             eventsService = eventsServiceSpy;
             pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
             pageTrackerSpy.getPreviousUrl.and.returnValue('testUrl-test-error1');
-
-            healthCheckService = jasmine.createSpyObj<HealthCheckService>('HealthCheckService', ['getHealthCheckStatus']);
-            healthCheckService.getHealthCheckStatus.and.returnValue(Promise.resolve(true));
 
             TestBed.configureTestingModule({
                 declarations: [ErrorComponent, ContactUsFoldingComponent, Mock1Component, Mock2Component],
@@ -63,8 +58,7 @@ describe('ErrorComponent', () => {
                 providers: [
                     { provide: PageTrackerService, useValue: pageTrackerSpy },
                     { provide: EventsService, useValue: eventsService },
-                    { provide: Logger, useClass: MockLogger },
-                    { provide: HealthCheckService, useValue: healthCheckService }
+                    { provide: Logger, useClass: MockLogger }
                 ]
             }).compileComponents();
         })
@@ -91,6 +85,7 @@ describe('ErrorComponent', () => {
         expect(component.errorMessageBody).toBe('Please reconnect. Call us if you keep seeing this message.');
         expect(component.connectionError).toBeFalsy();
     });
+
     it('should show error message if session storage returns a value', () => {
         const key = 'vh.error.message';
         const storedMessage = new SessionStorage<ErrorMessage>(key);
@@ -101,13 +96,15 @@ describe('ErrorComponent', () => {
         expect(component.errorMessageBody).toBe('test message');
         expect(component.connectionError).toBeTruthy();
     });
+
     it('should unsubscribe all subcriptions on destroy component', () => {
         component.ngOnDestroy();
         expect(component.subscription.closed).toBeTruthy();
     });
+
     it('should navigate to previous page on reconnect click and internet connection', () => {
         pageTrackerSpy.getPreviousUrl.calls.reset();
-        component.isOnline = true;
+        spyOnProperty(window.navigator, 'onLine').and.returnValue(true);
         component.reconnect();
         expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalled();
     });
@@ -115,19 +112,19 @@ describe('ErrorComponent', () => {
     it('should navigate to previous page on reconnect click and no internet connection', () => {
         component.returnTimeout = undefined;
         pageTrackerSpy.getPreviousUrl.calls.reset();
-        component.isOnline = false;
+        spyOnProperty(window.navigator, 'onLine').and.returnValue(false);
         component.reconnect();
         expect(component.returnTimeout).toBeDefined();
         expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalledTimes(0);
     });
 
     it('should return true when browser has an internet connection', () => {
-        component.isOnline = true;
+        spyOnProperty(window.navigator, 'onLine').and.returnValue(true);
         expect(component.hasInternetConnection).toBeTruthy();
     });
 
     it('should return false when browser does not have an internet connection', () => {
-        healthCheckService.getHealthCheckStatus.and.returnValue(Promise.resolve(false));
+        spyOnProperty(window.navigator, 'onLine').and.returnValue(false);
         expect(component.hasInternetConnection).toBeFalsy();
     });
 
@@ -152,15 +149,11 @@ describe('ErrorComponent Refresh', () => {
 
     let router: Router;
     let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
-    let healthCheckService: jasmine.SpyObj<HealthCheckService>;
 
     beforeEach(() => {
         eventsService = eventsServiceSpy;
         pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
         pageTrackerSpy.getPreviousUrl.and.returnValue('testUrl-test-error1');
-
-        healthCheckService = jasmine.createSpyObj<HealthCheckService>('HealthCheckService', ['getHealthCheckStatus']);
-        healthCheckService.getHealthCheckStatus.and.returnValue(Promise.resolve(true));
 
         TestBed.configureTestingModule({
             declarations: [ErrorComponent, ContactUsFoldingComponent],
@@ -169,8 +162,7 @@ describe('ErrorComponent Refresh', () => {
                 { provide: PageTrackerService, useValue: pageTrackerSpy },
                 { provide: Router, useClass: MockRouter },
                 { provide: EventsService, useValue: eventsService },
-                { provide: Logger, useClass: MockLogger },
-                { provide: HealthCheckService, useValue: healthCheckService }
+                { provide: Logger, useClass: MockLogger }
             ]
         }).compileComponents();
         router = TestBed.inject(Router);
