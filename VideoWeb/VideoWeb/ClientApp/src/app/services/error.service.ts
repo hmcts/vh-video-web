@@ -13,9 +13,8 @@ import { SessionStorage } from './session-storage';
 })
 export class ErrorService {
     isOnline: boolean;
-    constructor(private router: Router, private logger: Logger, private checkConnection: HealthCheckService) {
+    constructor(private router: Router, private logger: Logger) {
         this.errorMessage = new SessionStorage<ErrorMessage>(this.ERROR_MESSAGE_KEY);
-        this.checkInternetConnection();
     }
     readonly ERROR_MESSAGE_KEY = 'vh.error.message';
     errorMessage: SessionStorage<ErrorMessage>;
@@ -43,12 +42,8 @@ export class ErrorService {
         }
     }
 
-    async checkInternetConnection() {
-        this.isOnline = await this.checkConnection.getHealthCheckStatus();
-    }
-
     get hasInternetConnection(): boolean {
-        return this.isOnline;
+        return window.navigator.onLine;
     }
 
     returnHomeIfUnauthorised(error: any): boolean {

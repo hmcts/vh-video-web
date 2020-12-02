@@ -11,22 +11,14 @@ import { Logger } from './logging/logger-base';
 
 describe('ErrorService', () => {
     let router: Router;
-    let healthCheckService: jasmine.SpyObj<HealthCheckService>;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [RouterTestingModule],
-            providers: [
-                ErrorService,
-                { provide: Logger, useClass: MockLogger },
-                { provide: HealthCheckService, useValue: healthCheckService }
-            ]
+            providers: [ErrorService, { provide: Logger, useClass: MockLogger }]
         });
 
         router = TestBed.inject(Router);
-
-        healthCheckService = jasmine.createSpyObj<HealthCheckService>('HealthCheckService', ['getHealthCheckStatus']);
-        healthCheckService.getHealthCheckStatus.and.returnValue(Promise.resolve(true));
     });
 
     it('should do nothing if skip redirect is true', inject([ErrorService], (service: ErrorService) => {
