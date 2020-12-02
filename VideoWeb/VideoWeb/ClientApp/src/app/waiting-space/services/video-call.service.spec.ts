@@ -50,6 +50,7 @@ describe('VideoCallService', () => {
             'connect',
             'makeCall',
             'muteAudio',
+            'muteVideo',
             'disconnect',
             'setBuzz',
             'clearBuzz',
@@ -96,6 +97,13 @@ describe('VideoCallService', () => {
         expect(result).toBeTruthy();
     });
 
+    it('should toggle video', () => {
+        pexipSpy.muteVideo.and.returnValue(true);
+        service.pexipAPI = pexipSpy;
+        const result = service.toggleVideo('conference12', 'participant123');
+        expect(result).toBeTruthy();
+    });
+
     it('should enable H264', () => {
         service.pexipAPI = pexipSpy;
         service.enableH264(true);
@@ -133,7 +141,18 @@ describe('VideoCallService', () => {
         service.pexipAPI = pexipSpy;
 
         service.makeCall(node, conferenceAlias, participantDisplayName, maxBandwidth);
-        expect(pexipSpy.makeCall).toHaveBeenCalledWith(node, conferenceAlias, participantDisplayName, maxBandwidth);
+        expect(pexipSpy.makeCall).toHaveBeenCalledWith(node, conferenceAlias, participantDisplayName, maxBandwidth, null);
+    });
+
+    it('should call pexip with with audio only', () => {
+        const node = 'node124';
+        const conferenceAlias = 'WR173674fff';
+        const participantDisplayName = 'T1;John Doe';
+        const maxBandwidth = 767;
+        service.pexipAPI = pexipSpy;
+
+        service.makeCall(node, conferenceAlias, participantDisplayName, maxBandwidth, true);
+        expect(pexipSpy.makeCall).toHaveBeenCalledWith(node, conferenceAlias, participantDisplayName, maxBandwidth, 'audioonly');
     });
 
     it('should set buzz when hand is raised', () => {
