@@ -116,7 +116,6 @@ describe('HearingControlsComponent', () => {
 
     it('should not show lower hand when hand raised for another participant', () => {
         const otherParticipant = gloalConference.participants.filter(x => x.role === Role.Representative)[0];
-        // const payload = new ParticipantUpdated('YES', 0, otherParticipant.tiled_display_name, Guid.create().toString(), 0);
         const pexipParticipant = testData.getExamplePexipParticipant(otherParticipant.tiled_display_name);
         pexipParticipant.buzz_time = 123;
         const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
