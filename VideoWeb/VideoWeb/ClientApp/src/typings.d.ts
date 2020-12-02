@@ -14,6 +14,8 @@ declare interface PexipClient {
     mutedAudio: boolean;
     mutedVideo: boolean;
     call_uuid: string;
+    call_tag: string;
+    call: PexRTCCall;
 
     onSetup: (stream: any, pinStatus: any, conferenceExtension: any) => void;
     onConnect: (stream: MediaStream | URL) => void;
@@ -59,7 +61,7 @@ declare interface PexipParticipant {
     spotlight: number;
 
     /** Set to "YES" if the participant can be muted, "NO" if not. */
-    mute_supported;
+    mute_supported: string;
 
     /** Boolean indicating if it is an external participant, e.g. coming in from a Skype for Business / Lync meeting. */
     is_external: boolean;
@@ -72,6 +74,15 @@ declare interface PexipParticipant {
 
     /** Boolean indicating whether the user has media capabilities. */
     has_media: boolean;
+
+    /** An optional call tag that is assigned to this participant. */
+    call_tag: string;
+
+    /** Set to "YES" if the call is audio only. */
+    is_audio_only_call: string;
+
+    /** Set to "YES" if the call has video capability. */
+    is_video_call: string;
 }
 
 declare interface PexipConference {
@@ -83,4 +94,14 @@ declare interface PexipConference {
 
     /** Whether the conference has been started. */
     started: boolean;
+}
+
+declare interface PexRTCCall {
+    mutedAudio: boolean;
+    mutedVideo: boolean;
+    call_type: string;
+    localStream: MediaStream | URL;
+    stream: MediaStream | URL;
+    recv_audio: boolean;
+    recv_video: boolean;
 }

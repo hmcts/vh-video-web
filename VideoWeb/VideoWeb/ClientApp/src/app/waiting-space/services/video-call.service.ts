@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Guid } from 'guid-typescript';
 import { Observable, Subject } from 'rxjs';
 import { ApiClient, HearingLayout, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -40,6 +41,7 @@ export class VideoCallService {
         const self = this;
         this.pexipAPI = new PexRTC();
         await this.retrievePreferredDevices();
+        this.initCallTag();
 
         this.pexipAPI.onSetup = function (stream, pinStatus, conferenceExtension) {
             self.onSetupSubject.next(new CallSetup(stream));
@@ -58,15 +60,7 @@ export class VideoCallService {
         };
 
         this.pexipAPI.onParticipantUpdate = function (participantUpdate) {
-            self.onParticipantUpdatedSubject.next(
-                new ParticipantUpdated(
-                    participantUpdate.is_muted,
-                    participantUpdate.buzz_time,
-                    participantUpdate.display_name,
-                    participantUpdate.uuid,
-                    participantUpdate.spotlight
-                )
-            );
+            self.onParticipantUpdatedSubject.next(ParticipantUpdated.fromPexipParticipant(participantUpdate));
         };
 
         this.pexipAPI.onConferenceUpdate = function (conferenceUpdate) {
@@ -76,6 +70,10 @@ export class VideoCallService {
         this.pexipAPI.onCallTransfer = function (alias) {
             self.onCallTransferSubject.next(alias);
         };
+    }
+
+    initCallTag() {
+        this.pexipAPI.call_tag = Guid.create().toString();
     }
 
     private async retrievePreferredDevices() {
@@ -98,6 +96,7 @@ export class VideoCallService {
      * @param maxBandwidth the maximum bandwith
      */
     makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number, audioOnly: boolean = false) {
+        this.initCallTag();
         const callType = audioOnly ? 'audioonly' : null;
         this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, callType);
     }

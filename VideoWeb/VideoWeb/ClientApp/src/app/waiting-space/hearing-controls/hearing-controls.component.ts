@@ -93,7 +93,7 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
     }
 
     handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): boolean {
-        if (this.participant.tiled_display_name !== updatedParticipant.pexipDisplayName) {
+        if (!updatedParticipant.pexipDisplayName.includes(this.participant.id)) {
             return false;
         }
         this.remoteMuted = updatedParticipant.isRemoteMuted;

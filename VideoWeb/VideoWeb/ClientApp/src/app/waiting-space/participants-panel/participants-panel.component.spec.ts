@@ -26,11 +26,13 @@ import {
     DismissWitnessFromHearingEvent
 } from 'src/app/shared/models/participant-event';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
+import { VideoCallTestData } from 'src/app/testing/mocks/data/video-call-test-data';
 
 describe('ParticipantsPanelComponent', () => {
     const conferenceId = '1111-1111-1111';
     const participants = new ConferenceTestData().getListOfParticipants();
     const endpoints = new ConferenceTestData().getListOfEndpoints();
+    const videoCallTestData = new VideoCallTestData();
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     videoWebServiceSpy = jasmine.createSpyObj('VideoWebService', ['getParticipantsByConferenceId', 'getEndpointsForConference']);
     videoWebServiceSpy.getParticipantsByConferenceId.and.returnValue(Promise.resolve(participants));
@@ -329,7 +331,11 @@ describe('ParticipantsPanelComponent', () => {
     it('should process video call participant updates', () => {
         component.setupVideoCallSubscribers();
         const pat = component.participants.filter(x => x.role !== Role.Judge)[0];
-        const payload = new ParticipantUpdated('YES', 1, pat.pexipDisplayName, Guid.create().toString(), 1);
+        const pexipParticipant = videoCallTestData.getExamplePexipParticipant(pat.pexipDisplayName);
+        pexipParticipant.is_muted = 'YES';
+        pexipParticipant.buzz_time = 1;
+        pexipParticipant.spotlight = 1;
+        const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
 
         onParticipantUpdatedMock.next(payload);
         const result = component.participants.find(x => x.id === pat.id);
@@ -342,7 +348,11 @@ describe('ParticipantsPanelComponent', () => {
     it('should not process video call participant updates not in list', () => {
         component.setupVideoCallSubscribers();
         const pat = component.participants.filter(x => x.role !== Role.Judge)[1];
-        const payload = new ParticipantUpdated('YES', 1, 'do_not_exist_display_name', Guid.create().toString(), 0);
+        const pexipParticipant = videoCallTestData.getExamplePexipParticipant();
+        pexipParticipant.is_muted = 'YES';
+        pexipParticipant.buzz_time = 1;
+        pexipParticipant.spotlight = 1;
+        const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
 
         onParticipantUpdatedMock.next(payload);
         const result = component.participants.find(x => x.id === pat.id);

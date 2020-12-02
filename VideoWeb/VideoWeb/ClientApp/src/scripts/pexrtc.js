@@ -1332,7 +1332,7 @@ PexRTCCall.prototype.remoteDescriptionActive = function() {
 PexRTCCall.prototype.ackReceived = function() {
     var self = this;
 
-    if (self.firefox_ver > 43 && self.is_screenshare && !self.stream) {
+    if ((self.firefox_ver > 43 || self.safari_ver > 11) && self.is_screenshare && !self.stream) {
         // Firefox does not add a stream/track for outbound screensharing so self.stream is not populated
         if (self.parent.return_media_stream) {
             self.onConnect(self.localStream, self.call_uuid);
@@ -1480,7 +1480,7 @@ PexRTCCall.prototype.muteAudio = function(setting) {
         } else {
             self.audioSender.replaceTrack(null);
         }
-    } else if (self.pc && (self.firefox_ver > 47 || (self.safari_ver >= 12 && !self.pc.getLocalStreams) || self.chrome_ver > 71)) {
+    } else if (self.pc && (self.firefox_ver > 47 || self.safari_ver >= 12 || self.chrome_ver > 71)) {
         var senders = self.pc.getSenders();
         for (var i=0; i<senders.length; i++) {
             if (senders[i].track && senders[i].track.kind == 'audio') {
@@ -2225,6 +2225,7 @@ function PexRTC() {
     self.remote_call_type = null;
     self.guests_can_present = true;
     self.conference_name = null;
+    self.call_tag = null;
 
     self.dtmf_queue = {};
     self.fecc_queue = {};
@@ -2417,6 +2418,7 @@ PexRTC.prototype.sendRequest = function(request, params, cb, req_method, retries
             self.outstanding_requests[request] = setTimeout(function() { self.sendRequest(request, params, cb, method, retries, xhr_timeout); }, retries * 500);
         }
     };
+    xhr.onabort = xhr.onerror;
     if (async) {
         xhr.timeout = xhr_timeout;
         xhr.ontimeout = function() {
@@ -2469,6 +2471,9 @@ PexRTC.prototype.requestToken = function(cb) {
         }
         if (self.conference_extension) {
             params.conference_extension = self.conference_extension;
+        }
+        if (self.call_tag) {
+            params.call_tag = self.call_tag;
         }
 
         self.sendRequest("request_token", params, function(evt) { self.tokenRequested(evt, cb); }, "POST", 10, 60000);
@@ -3272,7 +3277,9 @@ PexRTC.prototype.addCall = function(call_type, flash) {
             if (self.mutedAudio) {
                 self.muteAudio(self.mutedAudio);
             }
-            if (self.mutedVideo) {
+            if (self.video_source === false) {
+                self.videoMuted();
+            } else if (self.mutedVideo) {
                 self.muteVideo(self.mutedVideo);
             }
             self.onConnect(stream);
@@ -3568,9 +3575,9 @@ PexRTC.prototype.getPresentationURL = function() {
         if (self.png_presentation) {
             url = "https://" + self.node + "/api/client/v2/conferences/" + self.conference_uri + "/presentation.png?id=" + self.presentation_event_id + "&token=" + self.token;
         } else {
-	    if (self.bandwidth_in > 512) {
-		presentation_image = "presentation_high.jpeg";
-	    }
+            if (self.bandwidth_in > 384) {
+                presentation_image = "presentation_high.jpeg";
+            }
             url = "https://" + self.node + "/api/client/v2/conferences/" + self.conference_uri + "/" + presentation_image + "?id=" + self.presentation_event_id + "&token=" + self.token;
         }
     }
@@ -3682,7 +3689,12 @@ PexRTC.prototype.disconnect = function(reason, referral) {
         }
         if (navigator.sendBeacon) {
             var beaconUrl = "https://" + self.node + "/api/client/v2/conferences/" + self.conference_uri + "/release_token?token=" + self.token;
-            navigator.sendBeacon(beaconUrl, JSON.stringify(params));
+            if (self.chrome_ver > 59 && self.chrome_ver < 81) {
+                navigator.sendBeacon(beaconUrl, JSON.stringify(params));
+            } else {
+                var beaconBlob = new Blob([JSON.stringify(params)], {type : 'application/json'});
+                navigator.sendBeacon(beaconUrl, beaconBlob);
+            }
         } else {
             self.sendRequest("release_token", params, false);
         }
