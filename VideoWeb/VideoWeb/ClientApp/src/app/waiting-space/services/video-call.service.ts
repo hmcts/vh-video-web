@@ -44,6 +44,9 @@ export class VideoCallService {
         this.initCallTag();
 
         this.pexipAPI.onSetup = function (stream, pinStatus, conferenceExtension) {
+            // Although a participant may connect as audio only, they should still be able to see the video hearing like anyone else
+            self.pexipAPI.call.recv_video = true;
+            self.pexipAPI.call.video_source = self.pexipAPI.video_source;
             self.onSetupSubject.next(new CallSetup(stream));
         };
 

@@ -23,8 +23,6 @@ describe('ParticipantUpdated', () => {
         const pexipParticipant = testData.getExamplePexipParticipant(participantDisplayName);
         pexipParticipant.buzz_time = 0;
         const participantUpdated = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
-        console.log(pexipParticipant);
-        console.log(participantUpdated);
         expect(participantUpdated.handRaised).toBeFalsy();
     });
     it('shuld return hand raised', () => {

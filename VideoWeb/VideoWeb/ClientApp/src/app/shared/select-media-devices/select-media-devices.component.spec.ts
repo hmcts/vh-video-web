@@ -48,12 +48,17 @@ describe('SelectMediaDevicesComponent', () => {
 
     beforeEach(fakeAsync(() => {
         component = new SelectMediaDevicesComponent(userMediaService, userMediaStreamService, fb, new MockLogger());
+        component.cameraOn = false;
         component.ngOnInit();
         tick();
     }));
 
     afterEach(() => {
         component.ngOnDestroy();
+    });
+
+    it('should init connectWithCameraOn with input', () => {
+        expect(component.connectWithCameraOn).toBeFalsy();
     });
 
     it('should initialise the device form on init', async () => {
@@ -135,5 +140,24 @@ describe('SelectMediaDevicesComponent', () => {
         spyOn(component.acceptMediaDeviceChange, 'emit');
         component.onChangeDevice();
         expect(component.acceptMediaDeviceChange.emit).toHaveBeenCalled();
+    });
+
+    it('should get camera text "OFF" when connectWithCameraOn is false', () => {
+        component.connectWithCameraOn = false;
+        expect(component.audioOnlyToggleText).toBe('OFF');
+    });
+
+    it('should get camera text "ON" when connectWithCameraOn is true', () => {
+        component.connectWithCameraOn = true;
+        expect(component.audioOnlyToggleText).toBe('ON');
+    });
+
+    it('should publish camera setting on toggle switch', () => {
+        const spy = spyOn(component.acceptMediaDeviceChange, 'emit');
+        component.connectWithCameraOn = true;
+        component.toggleSwitch();
+        expect(component.connectWithCameraOn).toBe(false);
+        expect(component.acceptMediaDeviceChange.emit).toHaveBeenCalled();
+        expect(spy.calls.mostRecent().args[0].audioOnly).toBe(true);
     });
 });
