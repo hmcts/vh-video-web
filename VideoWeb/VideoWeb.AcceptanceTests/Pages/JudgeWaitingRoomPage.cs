@@ -16,5 +16,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By StartVideoHearingButton = CommonLocators.ButtonWithInnerText("Start video hearing");
         public static By ChooseCameraMicrophoneButton = By.Id("changeCameraButton");
         public static By CloseChangeDeviceButton = By.Id("change-device-btn");
+        public static By ConfirmStartHearingButton = By.Id("btnConfirmStart");
+        public static By CancelStartHearingButton = By.Id("btnCancelStart");
     }
 }

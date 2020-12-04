@@ -136,7 +136,7 @@
         *ngIf="isNotStarted()"
         type="submit"
         class="govuk-button govuk-button--start"
-        (click)="startHearing()"
+        (click)="displayConfirmStartPopup()"
       >
         Start video hearing
       </button>
@@ -145,7 +145,7 @@
         *ngIf="hearingPaused() || hearingSuspended()"
         type="submit"
         class="govuk-button govuk-button--start"
-        (click)="startHearing()"
+        (click)="displayConfirmStartPopup()"
       >
         Resume video hearing
       </button>
@@ -170,3 +170,9 @@
   (acceptMediaDeviceChange)="onMediaDeviceChangeAccepted($event)"
   #selectMediaDevices
 ></app-select-media-devices>
+
+<app-confirm-start-hearing-popup
+  *ngIf="displayConfirmStartHearingPopup"
+  [hearingStarted]="!hearing.isNotStarted()"
+  (popupAnswered)="onStartConfirmAnswered($event)"
+></app-confirm-start-hearing-popup>

@@ -40,6 +40,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             Thread.Sleep(TimeSpan.FromSeconds(ExtraTimeInWaitingRoomAfterThePause));
             _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.ResumeVideoCallButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.ConfirmStartHearingButton).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.ConfirmStartHearingButton);
         }
 
         [When(@"the judge opens the change camera and microphone popup")]
@@ -268,6 +270,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.StartVideoHearingButton).Displayed.Should().BeTrue();
             CheckParticipantsAreStillConnected();
             _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.StartVideoHearingButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.ConfirmStartHearingButton).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.ConfirmStartHearingButton);
         }
 
         private void CheckParticipantsAreStillConnected()
