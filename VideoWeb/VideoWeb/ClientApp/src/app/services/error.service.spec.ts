@@ -166,4 +166,14 @@ describe('ErrorService', () => {
         const messageType = service.getMediaDeviceErrorMessageTypeFromStorage();
         expect(messageType).toBe(expected);
     }));
+    it('should navigate to error with camera and microphone not found message when pexip return preferred device is not connected', inject(
+        [ErrorService],
+        (service: ErrorService) => {
+            spyOn(service, 'goToMediaDeviceError');
+            const error = new CallError(`Preferred device is no longer connected`);
+            const conferenceId = Guid.create().toString();
+            service.handlePexipError(error, conferenceId);
+            expect(service.goToMediaDeviceError).toHaveBeenCalledWith('DevicesNotFound');
+        }
+    ));
 });
