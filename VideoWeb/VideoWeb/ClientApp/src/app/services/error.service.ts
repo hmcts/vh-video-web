@@ -120,7 +120,8 @@ export class ErrorService {
             'NotFoundError',
             'TypeError',
             'DevicesNotFoundError',
-            'ConstraintNotSatisfiedError'
+            'ConstraintNotSatisfiedError',
+            'Preferred device is no longer connected'
         ];
 
         const isMediaInUseIssue = mediaInUseIssues.filter(x => error.reason.toLowerCase().includes(x.toLowerCase())).length > 0;

@@ -75,6 +75,7 @@ describe('UserMediaService', () => {
 
         const result = await service.getCachedDeviceIfStillConnected(sessionStorage);
 
+        expect(errrorServiceSpy.handlePexipError).toHaveBeenCalled();
         expect(result).toBeNull();
     });
 
