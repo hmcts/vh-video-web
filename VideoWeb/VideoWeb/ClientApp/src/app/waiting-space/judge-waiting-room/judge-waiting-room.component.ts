@@ -80,6 +80,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
                 this.getConference().then(() => {
                     this.startEventHubSubscribers();
                     this.getJwtokenAndConnectToPexip();
+                    if (this.conference.audio_recording_required) {
+                        setTimeout(() => this.initAudioRecordingInterval(), 60000);
+                    }
                 });
             })
             .catch((error: Error | MediaStreamError) => {
