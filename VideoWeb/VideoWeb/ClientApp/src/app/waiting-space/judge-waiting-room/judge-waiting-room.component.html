@@ -145,7 +145,7 @@
         *ngIf="hearingPaused() || hearingSuspended()"
         type="submit"
         class="govuk-button govuk-button--start"
-        (click)="startHearing()"
+        (click)="displayConfirmStartPopup()"
       >
         Resume video hearing
       </button>
@@ -173,5 +173,6 @@
 
 <app-confirm-start-hearing-popup
   *ngIf="displayConfirmStartHearingPopup"
+  [hearingStarted]="!hearing.isNotStarted()"
   (popupAnswered)="onStartConfirmAnswered($event)"
 ></app-confirm-start-hearing-popup>
