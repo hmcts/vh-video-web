@@ -10,7 +10,7 @@ module.exports = function (config) {
             require('karma-jasmine'),
             require('karma-chrome-launcher'),
             require('karma-jasmine-html-reporter'),
-            require('karma-coverage-istanbul-reporter'),
+            require('karma-coverage'),
             require('karma-junit-reporter'),
             require('@angular-devkit/build-angular/plugins/karma')
         ],
@@ -22,9 +22,9 @@ module.exports = function (config) {
                 failSpecWithNoExpectations: true
             }
         },
-        coverageIstanbulReporter: {
+        coverageReporter: {
             dir: require('path').join(__dirname, '../coverage'),
-            reports: ['html', 'lcovonly', 'cobertura'],
+            reporters: [{ type: 'html' }, { type: 'lcovonly' }, { type: 'cobertura' }],
             fixWebpackSourcePaths: true
         },
         junitReporter: {
@@ -40,7 +40,7 @@ module.exports = function (config) {
         reporters: ['progress', 'kjhtml', 'junit'],
         port: 9876,
         colors: true,
-        logLevel: config.LOG_DEBUG,
+        logLevel: config.LOG_INFO,
         autoWatch: true,
         browsers: [
             'ChromeNoPrompt'
@@ -49,24 +49,17 @@ module.exports = function (config) {
         customLaunchers: {
             ChromeNoPrompt: {
                 base: 'Chrome',
-                flags: [
-                    '--remote-debugging-port=9222',
-                    '--use-fake-ui-for-media-stream',
-                    '--mute-audio'
-                ]
+                flags: ['--remote-debugging-port=9222', '--use-fake-ui-for-media-stream', '--mute-audio']
             },
             ChromeHeadlessNoPrompt: {
                 base: 'ChromeHeadless',
-                flags: [
-                    '--remote-debugging-port=9222',
-                    '--use-fake-ui-for-media-stream',
-                    '--mute-audio'
-                ]
+                flags: ['--remote-debugging-port=9222', '--use-fake-ui-for-media-stream', '--mute-audio']
             }
         },
         browserDisconnectTimeout: 10000,
         browserDisconnectTolerance: 3,
         browserNoActivityTimeout: 60000,
-        singleRun: false
+        singleRun: false,
+        restartOnFileChange: true
     });
 };
