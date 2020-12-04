@@ -31,6 +31,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     continueWithNoRecording = false;
     showAudioRecordingAlert = false;
     expanedPanel = true;
+    displayConfirmStartHearingPopup: boolean;
 
     constructor(
         protected route: ActivatedRoute,
@@ -65,6 +66,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
             userMediaStreamService,
             notificationSoundsService
         );
+        this.displayConfirmStartHearingPopup = false;
     }
 
     ngOnInit() {
@@ -127,10 +129,30 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         return this.conference.status === ConferenceStatus.Paused || this.conference.status === ConferenceStatus.Suspended;
     }
 
+    displayConfirmStartPopup() {
+        this.logger.debug(`${this.loggerPrefixJudge} Display start hearing confirmation popup`, {
+            conference: this.conferenceId,
+            status: this.conference.status
+        });
+        this.displayConfirmStartHearingPopup = true;
+    }
+
+    onStartConfirmAnswered(actionConfirmed: boolean) {
+        this.logger.debug(`${this.loggerPrefixJudge} Judge responded to start hearing confirmation`, {
+            conference: this.conferenceId,
+            status: this.conference.status,
+            confirmStart: actionConfirmed
+        });
+        this.displayConfirmStartHearingPopup = false;
+        if (actionConfirmed) {
+            this.startHearing();
+        }
+    }
+
     async startHearing() {
         const action = this.isNotStarted() ? 'start' : 'resume';
         try {
-            this.logger.debug(`${this.loggerPrefixJudge} - Judge clicked ${action} hearing`, {
+            this.logger.debug(`${this.loggerPrefixJudge} Judge clicked ${action} hearing`, {
                 conference: this.conferenceId,
                 status: this.conference.status
             });

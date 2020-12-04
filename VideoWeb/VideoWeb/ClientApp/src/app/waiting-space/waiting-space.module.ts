@@ -25,8 +25,9 @@ import { ParticipantsPanelComponent } from './participants-panel/participants-pa
 import { JudgeContextMenuComponent } from './judge-context-menu/judge-context-menu.component';
 import { ParticipantAlertComponent } from './participant-alert/participant-alert.component';
 import { SelectHearingLayoutComponent } from './select-hearing-layout/select-hearing-layout.component';
-import { ConfirmCloseHearingPopupComponent } from './confirm-close-hearing-popup/confirm-close-hearing-popup.component';
+import { ConfirmCloseHearingPopupComponent } from './confirmation/confirm-close-hearing-popup.component';
 import { HearingLayoutComponent } from './select-hearing-layout/hearing-layout.component';
+import { ConfirmStartHearingPopupComponent } from './confirmation/confirm-start-hearing-popup.component';
 
 @NgModule({
     imports: [SharedModule, WaitingSpaceRoutingModule],
@@ -53,6 +54,7 @@ import { HearingLayoutComponent } from './select-hearing-layout/hearing-layout.c
         ParticipantAlertComponent,
         SelectHearingLayoutComponent,
         ConfirmCloseHearingPopupComponent,
+        ConfirmStartHearingPopupComponent,
         HearingLayoutComponent,
         JudgeContextMenuComponent
     ],

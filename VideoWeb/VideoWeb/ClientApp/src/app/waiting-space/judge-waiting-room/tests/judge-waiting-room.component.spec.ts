@@ -376,4 +376,26 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.onMediaDeviceChangeCancelled();
         expect(component.displayDeviceChangeModal).toBe(false);
     });
+
+    it('should display popup on start clicked', () => {
+        component.displayConfirmStartHearingPopup = false;
+        component.displayConfirmStartPopup();
+        expect(component.displayConfirmStartHearingPopup).toBeTruthy();
+    });
+
+    it('should start hearing when confirmation answered no', () => {
+        component.displayConfirmStartHearingPopup = true;
+        videoCallService.startHearing.calls.reset();
+        component.onStartConfirmAnswered(false);
+        expect(component.displayConfirmStartHearingPopup).toBeFalsy();
+        expect(videoCallService.startHearing).toHaveBeenCalledTimes(0);
+    });
+
+    it('should start hearing when confirmation answered yes', () => {
+        component.displayConfirmStartHearingPopup = true;
+        videoCallService.startHearing.calls.reset();
+        component.onStartConfirmAnswered(true);
+        expect(component.displayConfirmStartHearingPopup).toBeFalsy();
+        expect(videoCallService.startHearing).toHaveBeenCalled();
+    });
 });

@@ -1,0 +1,30 @@
+<div id="confirmationDialog" class="vh-popup-overlay">
+  <div class="vh-popup">
+    <h1 class="govuk-heading-m">You are about to start this hearing</h1>
+
+    <p class="govuk-body">Participants will see a countdown timer before the hearing begins.</p>
+    <p class="govuk-body govuk-!-margin-bottom-9">Any participants in private consultations will automatically brought into the hearing.</p>
+
+    <button
+      id="btnConfirmClose"
+      class="govuk-button govuk-!-margin-right-1"
+      type="button"
+      data-module="govuk-button"
+      aria-label="Confirm start hearing"
+      (click)="respondWithYes()"
+    >
+      Start hearing
+    </button>
+
+    <button
+      id="btnCancelClose"
+      class="govuk-button govuk-button--secondary govuk-!-margin-left-2"
+      type="button"
+      data-module="govuk-button"
+      aria-label="Cancel start hearing"
+      (click)="respondWithNo()"
+    >
+      Cancel
+    </button>
+  </div>
+</div>
