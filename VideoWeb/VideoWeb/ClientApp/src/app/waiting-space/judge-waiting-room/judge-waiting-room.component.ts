@@ -30,6 +30,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     isRecording: boolean;
     continueWithNoRecording = false;
     showAudioRecordingAlert = false;
+    audioRecordingStreamCheckIntervalSeconds = 10;
+    conferenceInSessionForSeconds = 0;
     expanedPanel = true;
     displayConfirmStartHearingPopup: boolean;
 
@@ -81,7 +83,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
                     this.startEventHubSubscribers();
                     this.getJwtokenAndConnectToPexip();
                     if (this.conference.audio_recording_required) {
-                        setTimeout(() => this.initAudioRecordingInterval(), 60000);
+                        this.initAudioRecordingInterval();
                     }
                 });
             })
@@ -202,27 +204,35 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     initAudioRecordingInterval() {
         this.audioRecordingInterval = setInterval(async () => {
             await this.retrieveAudioStreamInfo(this.conference.hearing_ref_id);
-        }, 10000);
+        }, this.audioRecordingStreamCheckIntervalSeconds * 1000);
     }
 
     async retrieveAudioStreamInfo(hearingId): Promise<void> {
-        this.logger.debug(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
-        try {
-            const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId);
-            this.logger.debug(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
+        if (this.conference.status === ConferenceStatus.InSession) {
+            this.conferenceInSessionForSeconds += this.audioRecordingStreamCheckIntervalSeconds;
+        } else {
+            this.conferenceInSessionForSeconds = 0;
+        }
 
-            if (!audioStreamWorking && !this.continueWithNoRecording) {
-                this.logger.debug(`${this.loggerPrefixJudge} not recording when expected, show alert`);
-                this.showAudioRecordingAlert = true;
-            }
-        } catch (error) {
-            this.logger.error(`${this.loggerPrefixJudge} Failed to get audio stream info`, error, { conference: this.conferenceId });
+        if (this.conferenceInSessionForSeconds > 60) {
+            this.logger.debug(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
+            try {
+                const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId);
+                this.logger.debug(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
 
-            if (!this.continueWithNoRecording) {
-                this.logger.info(`${this.loggerPrefixJudge} Should not continue without a recording. Show alert.`, {
-                    conference: this.conferenceId
-                });
-                this.showAudioRecordingAlert = true;
+                if (!audioStreamWorking && !this.continueWithNoRecording) {
+                    this.logger.debug(`${this.loggerPrefixJudge} not recording when expected, show alert`);
+                    this.showAudioRecordingAlert = true;
+                }
+            } catch (error) {
+                this.logger.error(`${this.loggerPrefixJudge} Failed to get audio stream info`, error, { conference: this.conferenceId });
+
+                if (!this.continueWithNoRecording) {
+                    this.logger.info(`${this.loggerPrefixJudge} Should not continue without a recording. Show alert.`, {
+                        conference: this.conferenceId
+                    });
+                    this.showAudioRecordingAlert = true;
+                }
             }
         }
     }
