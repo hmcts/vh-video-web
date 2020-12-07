@@ -34,4 +34,12 @@ export class AdminImListComponent implements OnInit {
         this.currentParticipant = participant;
         this.selectedParticipant.emit(participant);
     }
+
+    isParticipantAvailable(participant: Participant): boolean {
+        if (participant.isJudge) {
+            return participant.status !== ParticipantStatus.Disconnected;
+        } else {
+            return participant.status === ParticipantStatus.Available;
+        }
+    }
 }
