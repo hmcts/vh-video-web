@@ -6,7 +6,9 @@
     <p class="govuk-!-margin-bottom-1">{{ participant.hearingVenueName }}</p>
   </div>
   <div class="govuk-grid-column-full">
-    <p id="tooltip-hearing-role-{{ participant.id }}" class="govuk-!-margin-bottom-1">{{ participant.hearingRole }}</p>
+    <p *ngIf="participant.caseGroup !== 'None'" id="tooltip-hearing-role-{{ participant.id }}" class="govuk-!-margin-bottom-1">
+      {{ participant.hearingRole }}
+    </p>
   </div>
   <div class="govuk-grid-column-full">
     <a id="tooltip-email-{{ participant.id }}" class="govuk-body-s govuk-link vh-overflow" href="mailto:{{ participant.contactEmail }}">{{
