@@ -212,9 +212,11 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
             this.conferenceRecordingInSessionForSeconds += this.audioRecordingStreamCheckIntervalSeconds;
         } else {
             this.conferenceRecordingInSessionForSeconds = 0;
+            this.showAudioRecordingAlert = false;
+            this.continueWithNoRecording = false;
         }
 
-        if (this.conferenceRecordingInSessionForSeconds > 60) {
+        if (this.conferenceRecordingInSessionForSeconds > 60 && !this.continueWithNoRecording) {
             this.logger.debug(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
             try {
                 const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId);
@@ -241,6 +243,5 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         this.logger.debug(`${this.loggerPrefixJudge} Closing alert`);
         this.showAudioRecordingAlert = !value;
         this.continueWithNoRecording = true;
-        clearInterval(this.audioRecordingInterval);
     }
 }
