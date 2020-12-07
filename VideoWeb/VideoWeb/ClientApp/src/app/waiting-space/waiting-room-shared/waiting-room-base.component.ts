@@ -82,6 +82,7 @@ export abstract class WaitingRoomBaseComponent {
         this.showVideo = false;
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
+        this.errorCount = 0;
     }
 
     get conferenceId(): string {
@@ -583,5 +584,16 @@ export abstract class WaitingRoomBaseComponent {
 
     get showExtraContent(): boolean {
         return !this.showVideo && !this.isTransferringIn;
+    }
+
+    executeWaitingRoomCleanup() {
+        this.logger.debug(`${this.loggerPrefix} - Clearing intervals and subscriptions for waiting room`, {
+            conference: this.conference?.id
+        });
+        clearTimeout(this.callbackTimeout);
+        this.stopHeartbeat();
+        this.disconnect();
+        this.eventHubSubscription$.unsubscribe();
+        this.videoCallSubscription$.unsubscribe();
     }
 }

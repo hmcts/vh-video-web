@@ -104,7 +104,7 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
                         conference: conference.id,
                         participant: participant.id
                     });
-                    this.router.navigate([pageUrls.ParticipantWaitingRoom, conference.id]);
+                    this.router.navigate([pageUrls.JOHWaitingRoom, conference.id]);
                 } else {
                     this.logger.debug('[ParticipantHearings] - Going to introduction page', {
                         conference: conference.id,

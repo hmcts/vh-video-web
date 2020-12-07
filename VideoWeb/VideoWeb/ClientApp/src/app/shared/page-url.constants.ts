@@ -21,6 +21,8 @@ export const pageUrls = {
     // participant
     ParticipantHearingList: 'participant/hearing-list',
     ParticipantWaitingRoom: 'participant/waiting-room',
+    // joh
+    JOHWaitingRoom: 'judicialofficeholder/waiting-room',
     // representative
     IndependentSelfTestVideo: 'representative/practice-video-hearing',
     // vh officer
