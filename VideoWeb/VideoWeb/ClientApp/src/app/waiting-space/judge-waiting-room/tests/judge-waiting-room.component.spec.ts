@@ -90,7 +90,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         clockService = jasmine.createSpyObj<ClockService>('ClockService', ['getClock']);
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
         heartbeatModelMapper = new HeartbeatModelMapper();
-        deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['getBrowserName', 'getBrowserVersion']);
+        deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['getBrowserName', 'getBrowserVersion', 'isIpad']);
         consultationService = consultationServiceSpyFactory();
         audioRecordingService = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
         userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
@@ -397,5 +397,35 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.onStartConfirmAnswered(true);
         expect(component.displayConfirmStartHearingPopup).toBeFalsy();
         expect(videoCallService.startHearing).toHaveBeenCalled();
+    });
+
+    it('should not enable IM when hearing has not been initalised', () => {
+        component.hearing = null;
+        expect(component.isIMEnabled()).toBeFalsy();
+    });
+
+    it('should enable IM for non ipad devices', () => {
+        deviceTypeService.isIpad.and.returnValue(false);
+        expect(component.isIMEnabled()).toBeTruthy();
+    });
+
+    it('should enable IM for ipad devices not in session and video is not on screen', () => {
+        deviceTypeService.isIpad.and.returnValue(true);
+        component.showVideo = false;
+        expect(component.isIMEnabled()).toBeFalsy();
+    });
+
+    it('should not enable IM for ipad devices not in session and video is on screen', () => {
+        deviceTypeService.isIpad.and.returnValue(true);
+        component.hearing.getConference().status = ConferenceStatus.Paused;
+        component.showVideo = true;
+        expect(component.isIMEnabled()).toBeFalsy();
+    });
+
+    it('should not enable IM for ipad devices in session and video is on screen', () => {
+        deviceTypeService.isIpad.and.returnValue(true);
+        component.hearing.getConference().status = ConferenceStatus.InSession;
+        component.showVideo = true;
+        expect(component.isIMEnabled()).toBeFalsy();
     });
 });
