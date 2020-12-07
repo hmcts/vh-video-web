@@ -236,7 +236,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
             return false;
         }
         if (this.deviceTypeService.isIpad()) {
-            return !this.hearing.isInSession() && this.showVideo;
+            return !this.showVideo;
         }
         return true;
     }

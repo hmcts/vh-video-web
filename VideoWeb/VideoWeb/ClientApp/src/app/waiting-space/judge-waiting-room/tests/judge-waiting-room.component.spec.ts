@@ -409,22 +409,14 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.isIMEnabled()).toBeTruthy();
     });
 
-    it('should enable IM for ipad devices not in session and video is not on screen', () => {
+    it('should enable IM for ipad devices and video is not on screen', () => {
         deviceTypeService.isIpad.and.returnValue(true);
         component.showVideo = false;
-        expect(component.isIMEnabled()).toBeFalsy();
+        expect(component.isIMEnabled()).toBeTruthy();
     });
 
-    it('should not enable IM for ipad devices not in session and video is on screen', () => {
+    it('should not enable IM for ipad devices and video is on screen', () => {
         deviceTypeService.isIpad.and.returnValue(true);
-        component.hearing.getConference().status = ConferenceStatus.Paused;
-        component.showVideo = true;
-        expect(component.isIMEnabled()).toBeFalsy();
-    });
-
-    it('should not enable IM for ipad devices in session and video is on screen', () => {
-        deviceTypeService.isIpad.and.returnValue(true);
-        component.hearing.getConference().status = ConferenceStatus.InSession;
         component.showVideo = true;
         expect(component.isIMEnabled()).toBeFalsy();
     });
