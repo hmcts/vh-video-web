@@ -31,7 +31,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     continueWithNoRecording = false;
     showAudioRecordingAlert = false;
     audioRecordingStreamCheckIntervalSeconds = 10;
-    conferenceInSessionForSeconds = 0;
+    conferenceRecordingInSessionForSeconds = 0;
     expanedPanel = true;
     displayConfirmStartHearingPopup: boolean;
 
@@ -209,12 +209,12 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
 
     async retrieveAudioStreamInfo(hearingId): Promise<void> {
         if (this.conference.status === ConferenceStatus.InSession) {
-            this.conferenceInSessionForSeconds += this.audioRecordingStreamCheckIntervalSeconds;
+            this.conferenceRecordingInSessionForSeconds += this.audioRecordingStreamCheckIntervalSeconds;
         } else {
-            this.conferenceInSessionForSeconds = 0;
+            this.conferenceRecordingInSessionForSeconds = 0;
         }
 
-        if (this.conferenceInSessionForSeconds > 60) {
+        if (this.conferenceRecordingInSessionForSeconds > 60) {
             this.logger.debug(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
             try {
                 const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId);
