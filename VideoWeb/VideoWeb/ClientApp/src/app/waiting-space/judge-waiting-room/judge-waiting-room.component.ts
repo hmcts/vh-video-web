@@ -30,6 +30,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     isRecording: boolean;
     continueWithNoRecording = false;
     showAudioRecordingAlert = false;
+    audioRecordingStreamCheckIntervalSeconds = 10;
+    conferenceRecordingInSessionForSeconds = 0;
     expanedPanel = true;
     displayConfirmStartHearingPopup: boolean;
 
@@ -80,6 +82,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
                 this.getConference().then(() => {
                     this.startEventHubSubscribers();
                     this.getJwtokenAndConnectToPexip();
+                    if (this.conference.audio_recording_required) {
+                        this.initAudioRecordingInterval();
+                    }
                 });
             })
             .catch((error: Error | MediaStreamError) => {
@@ -199,27 +204,37 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     initAudioRecordingInterval() {
         this.audioRecordingInterval = setInterval(async () => {
             await this.retrieveAudioStreamInfo(this.conference.hearing_ref_id);
-        }, 10000);
+        }, this.audioRecordingStreamCheckIntervalSeconds * 1000);
     }
 
     async retrieveAudioStreamInfo(hearingId): Promise<void> {
-        this.logger.debug(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
-        try {
-            const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId);
-            this.logger.debug(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
+        if (this.conference.status === ConferenceStatus.InSession) {
+            this.conferenceRecordingInSessionForSeconds += this.audioRecordingStreamCheckIntervalSeconds;
+        } else {
+            this.conferenceRecordingInSessionForSeconds = 0;
+            this.showAudioRecordingAlert = false;
+            this.continueWithNoRecording = false;
+        }
 
-            if (!audioStreamWorking && !this.continueWithNoRecording) {
-                this.logger.debug(`${this.loggerPrefixJudge} not recording when expected, show alert`);
-                this.showAudioRecordingAlert = true;
-            }
-        } catch (error) {
-            this.logger.error(`${this.loggerPrefixJudge} Failed to get audio stream info`, error, { conference: this.conferenceId });
+        if (this.conferenceRecordingInSessionForSeconds > 60 && !this.continueWithNoRecording) {
+            this.logger.debug(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
+            try {
+                const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId);
+                this.logger.debug(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
 
-            if (!this.continueWithNoRecording) {
-                this.logger.info(`${this.loggerPrefixJudge} Should not continue without a recording. Show alert.`, {
-                    conference: this.conferenceId
-                });
-                this.showAudioRecordingAlert = true;
+                if (!audioStreamWorking && !this.continueWithNoRecording) {
+                    this.logger.debug(`${this.loggerPrefixJudge} not recording when expected, show alert`);
+                    this.showAudioRecordingAlert = true;
+                }
+            } catch (error) {
+                this.logger.error(`${this.loggerPrefixJudge} Failed to get audio stream info`, error, { conference: this.conferenceId });
+
+                if (!this.continueWithNoRecording) {
+                    this.logger.info(`${this.loggerPrefixJudge} Should not continue without a recording. Show alert.`, {
+                        conference: this.conferenceId
+                    });
+                    this.showAudioRecordingAlert = true;
+                }
             }
         }
     }
@@ -228,7 +243,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         this.logger.debug(`${this.loggerPrefixJudge} Closing alert`);
         this.showAudioRecordingAlert = !value;
         this.continueWithNoRecording = true;
-        clearInterval(this.audioRecordingInterval);
     }
 
     isIMEnabled(): boolean {
