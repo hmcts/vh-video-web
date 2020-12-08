@@ -201,6 +201,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
 
         expect(component.hearing.status).toBe(status);
         expect(component.conference.status).toBe(status);
+        expect(component.displayDeviceChangeModal).toBeFalsy();
         expect(component.showVideo).toBeTruthy();
         expect(component.getConferenceStatusText()).toBe('is in session');
         expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalled();
@@ -234,6 +235,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         participantStatusSubject.next(message);
         flushMicrotasks();
 
+        expect(component.displayDeviceChangeModal).toBeFalsy();
         expect(component.showVideo).toBeTruthy();
     }));
 
@@ -304,6 +306,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         participantStatusSubject.next(message);
 
         expect(component.participant.status).toBe(message.status);
+        expect(component.displayDeviceChangeModal).toBeFalsy();
         expect(component.showVideo).toBeTruthy();
         expect(component.isAdminConsultation).toBeFalsy();
     });
