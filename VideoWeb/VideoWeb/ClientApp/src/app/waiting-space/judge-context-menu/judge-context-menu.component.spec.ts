@@ -1,4 +1,3 @@
-import { fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ParticipantStatus } from '../../services/clients/api-client';
@@ -11,14 +10,19 @@ import {
     CallWitnessIntoHearingEvent,
     DismissWitnessFromHearingEvent
 } from 'src/app/shared/models/participant-event';
+import { ElementRef } from '@angular/core';
 
 describe('JudgeContextMenuComponent', () => {
     const participants = new ConferenceTestData().getListOfParticipants();
     const logger = new MockLogger();
+    let elementRef: ElementRef<HTMLDivElement>;
+    let nativeElement: HTMLDivElement;
 
     let component: JudgeContextMenuComponent;
     beforeEach(() => {
-        component = new JudgeContextMenuComponent(logger, null);
+        nativeElement = document.createElement('div');
+        elementRef = new ElementRef<HTMLDivElement>(nativeElement);
+        component = new JudgeContextMenuComponent(logger, elementRef);
         component.participant = new ParticipantPanelModel(participants[0]);
     });
 
@@ -148,5 +152,93 @@ describe('JudgeContextMenuComponent', () => {
         // Assert
         expect(component.dismissWitnessFromHearingEvent.emit).toHaveBeenCalled();
         expect(component.dismissWitnessFromHearingEvent.emit).toHaveBeenCalledWith(new DismissWitnessFromHearingEvent(model));
+    });
+
+    it('should close context menu if click is outside of the menu', () => {
+        // Arrange
+        spyOn(component, 'isClickedOutsideOfOpenMenu').and.returnValue(true);
+        component.isDroppedDown = true;
+        const event = new MouseEvent('click', {
+            clientX: 15,
+            clientY: 15
+        });
+
+        // Act
+        component.clickout(event);
+
+        // Assert
+        expect(component.isDroppedDown).toBeFalsy();
+    });
+
+    it('should not close context menu if click is inside of the menu', () => {
+        // Arrange
+        spyOn(component, 'isClickedOutsideOfOpenMenu').and.returnValue(false);
+        component.isDroppedDown = true;
+        const event = new MouseEvent('click', {
+            clientX: 15,
+            clientY: 15
+        });
+
+        // Act
+        component.clickout(event);
+
+        // Assert
+        expect(component.isDroppedDown).toBeTruthy();
+    });
+
+    it('should return isClickedOutsideOfOpenMenu true when click event is outside element and menu is open', () => {
+        // Arrange
+        component.isDroppedDown = true;
+        spyOn(elementRef.nativeElement, 'contains').and.returnValue(false);
+        const event = new MouseEvent('click');
+        spyOnProperty(event, 'target').and.returnValue(new EventTarget());
+
+        // Act
+        const result = component.isClickedOutsideOfOpenMenu(event);
+
+        // Assert
+        expect(result).toBeTruthy();
+    });
+
+    it('should return isClickedOutsideOfOpenMenu false when click event is outside element and menu is closed', () => {
+        // Arrange
+        component.isDroppedDown = false;
+        spyOn(elementRef.nativeElement, 'contains').and.returnValue(false);
+        const event = new MouseEvent('click');
+        spyOnProperty(event, 'target').and.returnValue(new EventTarget());
+
+        // Act
+        const result = component.isClickedOutsideOfOpenMenu(event);
+
+        // Assert
+        expect(result).toBeFalsy();
+    });
+
+    it('should return isClickedOutsideOfOpenMenu false when click event is inside element and menu is open', () => {
+        // Arrange
+        component.isDroppedDown = true;
+        spyOn(elementRef.nativeElement, 'contains').and.returnValue(true);
+        const event = new MouseEvent('click');
+        spyOnProperty(event, 'target').and.returnValue(new EventTarget());
+
+        // Act
+        const result = component.isClickedOutsideOfOpenMenu(event);
+
+        // Assert
+        expect(result).toBeFalsy();
+    });
+
+    it('should return isClickedOutsideOfOpenMenu false when click event is inside element and menu is closed', () => {
+        // Arrange
+        component.isDroppedDown = false;
+        spyOn(elementRef.nativeElement, 'contains').and.returnValue(false);
+        const event = new MouseEvent('click');
+        spyOnProperty(event, 'target').and.returnValue(new EventTarget());
+
+        // Act
+        const result = component.isClickedOutsideOfOpenMenu(event);
+
+        // Assert
+        expect(result).toBeFalsy();
     });
 });

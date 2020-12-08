@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ParticipantContactDetails } from '../../shared/models/participant-contact-details';
 
 @Component({
@@ -6,9 +6,7 @@ import { ParticipantContactDetails } from '../../shared/models/participant-conta
     templateUrl: './participant-info-tooltip.component.html',
     styleUrls: ['../vho-global-styles.scss']
 })
-export class ParticipantInfoTooltipComponent implements OnInit {
+export class ParticipantInfoTooltipComponent {
     @Input() participant: ParticipantContactDetails;
     constructor() {}
-
-    ngOnInit() {}
 }

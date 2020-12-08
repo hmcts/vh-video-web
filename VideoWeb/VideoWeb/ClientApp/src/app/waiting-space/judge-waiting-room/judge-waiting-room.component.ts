@@ -10,14 +10,14 @@ import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { pageUrls } from 'src/app/shared/page-url.constants';
+import { CallError } from '../models/video-call-models';
+import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
-import { UserMediaService } from 'src/app/services/user-media.service';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
-import { NotificationSoundsService } from '../services/notification-sounds.service';
-import { CallError } from '../models/video-call-models';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -30,7 +30,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     isRecording: boolean;
     continueWithNoRecording = false;
     showAudioRecordingAlert = false;
+    audioRecordingStreamCheckIntervalSeconds = 10;
+    conferenceRecordingInSessionForSeconds = 0;
     expanedPanel = true;
+    displayConfirmStartHearingPopup: boolean;
 
     constructor(
         protected route: ActivatedRoute,
@@ -65,6 +68,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
             userMediaStreamService,
             notificationSoundsService
         );
+        this.displayConfirmStartHearingPopup = false;
     }
 
     ngOnInit() {
@@ -78,6 +82,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
                 this.getConference().then(() => {
                     this.startEventHubSubscribers();
                     this.getJwtokenAndConnectToPexip();
+                    if (this.conference.audio_recording_required) {
+                        this.initAudioRecordingInterval();
+                    }
                 });
             })
             .catch((error: Error | MediaStreamError) => {
@@ -127,10 +134,30 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         return this.conference.status === ConferenceStatus.Paused || this.conference.status === ConferenceStatus.Suspended;
     }
 
+    displayConfirmStartPopup() {
+        this.logger.debug(`${this.loggerPrefixJudge} Display start hearing confirmation popup`, {
+            conference: this.conferenceId,
+            status: this.conference.status
+        });
+        this.displayConfirmStartHearingPopup = true;
+    }
+
+    onStartConfirmAnswered(actionConfirmed: boolean) {
+        this.logger.debug(`${this.loggerPrefixJudge} Judge responded to start hearing confirmation`, {
+            conference: this.conferenceId,
+            status: this.conference.status,
+            confirmStart: actionConfirmed
+        });
+        this.displayConfirmStartHearingPopup = false;
+        if (actionConfirmed) {
+            this.startHearing();
+        }
+    }
+
     async startHearing() {
         const action = this.isNotStarted() ? 'start' : 'resume';
         try {
-            this.logger.debug(`${this.loggerPrefixJudge} - Judge clicked ${action} hearing`, {
+            this.logger.debug(`${this.loggerPrefixJudge} Judge clicked ${action} hearing`, {
                 conference: this.conferenceId,
                 status: this.conference.status
             });
@@ -177,27 +204,37 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     initAudioRecordingInterval() {
         this.audioRecordingInterval = setInterval(async () => {
             await this.retrieveAudioStreamInfo(this.conference.hearing_ref_id);
-        }, 10000);
+        }, this.audioRecordingStreamCheckIntervalSeconds * 1000);
     }
 
     async retrieveAudioStreamInfo(hearingId): Promise<void> {
-        this.logger.debug(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
-        try {
-            const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId);
-            this.logger.debug(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
+        if (this.conference.status === ConferenceStatus.InSession) {
+            this.conferenceRecordingInSessionForSeconds += this.audioRecordingStreamCheckIntervalSeconds;
+        } else {
+            this.conferenceRecordingInSessionForSeconds = 0;
+            this.showAudioRecordingAlert = false;
+            this.continueWithNoRecording = false;
+        }
 
-            if (!audioStreamWorking && !this.continueWithNoRecording) {
-                this.logger.debug(`${this.loggerPrefixJudge} not recording when expected, show alert`);
-                this.showAudioRecordingAlert = true;
-            }
-        } catch (error) {
-            this.logger.error(`${this.loggerPrefixJudge} Failed to get audio stream info`, error, { conference: this.conferenceId });
+        if (this.conferenceRecordingInSessionForSeconds > 60 && !this.continueWithNoRecording) {
+            this.logger.debug(`${this.loggerPrefixJudge} Attempting to retrieve audio stream info for ${hearingId}`);
+            try {
+                const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId);
+                this.logger.debug(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
 
-            if (!this.continueWithNoRecording) {
-                this.logger.info(`${this.loggerPrefixJudge} Should not continue without a recording. Show alert.`, {
-                    conference: this.conferenceId
-                });
-                this.showAudioRecordingAlert = true;
+                if (!audioStreamWorking && !this.continueWithNoRecording) {
+                    this.logger.debug(`${this.loggerPrefixJudge} not recording when expected, show alert`);
+                    this.showAudioRecordingAlert = true;
+                }
+            } catch (error) {
+                this.logger.error(`${this.loggerPrefixJudge} Failed to get audio stream info`, error, { conference: this.conferenceId });
+
+                if (!this.continueWithNoRecording) {
+                    this.logger.info(`${this.loggerPrefixJudge} Should not continue without a recording. Show alert.`, {
+                        conference: this.conferenceId
+                    });
+                    this.showAudioRecordingAlert = true;
+                }
             }
         }
     }
@@ -206,6 +243,15 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         this.logger.debug(`${this.loggerPrefixJudge} Closing alert`);
         this.showAudioRecordingAlert = !value;
         this.continueWithNoRecording = true;
-        clearInterval(this.audioRecordingInterval);
+    }
+
+    isIMEnabled(): boolean {
+        if (!this.hearing) {
+            return false;
+        }
+        if (this.deviceTypeService.isIpad()) {
+            return !this.showVideo;
+        }
+        return true;
     }
 }

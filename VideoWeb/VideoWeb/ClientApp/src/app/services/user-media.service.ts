@@ -102,6 +102,7 @@ export class UserMediaService {
         } else {
             this.logger.warn(`${this.loggerPrefix} Preferred device ${device.label} is no longer connected`);
             cache.clear();
+            this.errorService.handlePexipError(new CallError('Preferred device is no longer connected'), null);
             return null;
         }
     }

@@ -136,7 +136,7 @@
         *ngIf="isNotStarted()"
         type="submit"
         class="govuk-button govuk-button--start"
-        (click)="startHearing()"
+        (click)="displayConfirmStartPopup()"
       >
         Start video hearing
       </button>
@@ -145,7 +145,7 @@
         *ngIf="hearingPaused() || hearingSuspended()"
         type="submit"
         class="govuk-button govuk-button--start"
-        (click)="startHearing()"
+        (click)="displayConfirmStartPopup()"
       >
         Resume video hearing
       </button>
@@ -161,7 +161,7 @@
 <app-individual-consultation-controls (cancelConsulation)="onConsultationCancelled()" *ngIf="showConsultationControls">
 </app-individual-consultation-controls>
 
-<app-participant-chat *ngIf="hearing" [hearing]="hearing" [alwaysOn]="true"></app-participant-chat>
+<app-participant-chat *ngIf="isIMEnabled()" [hearing]="hearing" [alwaysOn]="false"></app-participant-chat>
 
 <app-select-media-devices
   *ngIf="displayDeviceChangeModal"
@@ -170,3 +170,13 @@
   (acceptMediaDeviceChange)="onMediaDeviceChangeAccepted($event)"
   #selectMediaDevices
 ></app-select-media-devices>
+
+<app-confirm-start-hearing-popup
+  *ngIf="displayConfirmStartHearingPopup"
+  [hearingStarted]="!hearing.isNotStarted()"
+  (popupAnswered)="onStartConfirmAnswered($event)"
+></app-confirm-start-hearing-popup>
+
+<div *ngIf="showAudioRecordingAlert">
+  <app-audio-alert (alertClose)="closeAlert($event)"></app-audio-alert>
+</div>

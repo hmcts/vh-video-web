@@ -34,13 +34,19 @@ export class JudgeContextMenuComponent {
     constructor(private logger: Logger, private elementRef: ElementRef) {}
 
     @HostListener('document:click', ['$event'])
-    clickout(event) {
-        if (!this.elementRef.nativeElement.contains(event.target)) {
+    clickout(event: Event) {
+        if (this.isClickedOutsideOfOpenMenu(event)) {
             this.logger.debug(`${this.loggerPrefix} Hiding the context menu, click detected outside of this element`, {
                 participant: this.participant.id
             });
             this.isDroppedDown = false;
         }
+    }
+
+    isClickedOutsideOfOpenMenu(event: Event) {
+        const outsideElement = !this.elementRef.nativeElement.contains(event.target);
+        const isClickedOutsideOfOpenElement = outsideElement && this.isDroppedDown;
+        return isClickedOutsideOfOpenElement;
     }
 
     lowerParticipantHand() {
