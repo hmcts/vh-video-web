@@ -52,13 +52,13 @@
     "ngx-moment": "^5.0.0",
     "run-script-os": "^1.1.3",
     "rxjs": "^6.6.3",
-    "snyk": "^1.425.4",
+    "snyk": "^1.426.0",
     "webrtc-adapter": "^7.7.0",
     "zone.js": "~0.11.3",
     "tslib": "^2.0.3"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.1100.0",
+    "@angular-devkit/build-angular": "~0.1100.1",
     "@angular/cli": "^10.2.0",
     "@angular/compiler-cli": "^10.2.3",
     "@angular/language-service": "^10.2.3",
