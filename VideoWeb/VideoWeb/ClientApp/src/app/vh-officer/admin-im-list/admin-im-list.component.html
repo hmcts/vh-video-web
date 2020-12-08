@@ -10,7 +10,7 @@
     <app-unread-messages-participant [hearing]="hearing" [participant]="participant"></app-unread-messages-participant>
   </div>
   <div *ngIf="participant.isJudge" class="judge-icon"><img src="assets/images/black_crest.png" height="20" alt="judge-icon" /></div>
-  <div class="name list-item" [ngClass]="participant.status === participantStatus.Available ? 'available' : 'unavailable'">
+  <div class="name list-item" [ngClass]="isParticipantAvailable(participant) ? 'available' : 'unavailable'">
     {{ participant.displayName }}
   </div>
 
@@ -19,7 +19,7 @@
     <div class="repname list-item">{{ participant.representee }}</div>
   </ng-container>
 
-  <ng-container *ngIf="participant.status !== participantStatus.Available">
+  <ng-container *ngIf="!isParticipantAvailable(participant)">
     <div class="pStatus list-item unavailable small">Unavailable</div>
   </ng-container>
 
