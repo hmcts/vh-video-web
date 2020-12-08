@@ -10,14 +10,14 @@ import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { pageUrls } from 'src/app/shared/page-url.constants';
+import { CallError } from '../models/video-call-models';
+import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
-import { UserMediaService } from 'src/app/services/user-media.service';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
-import { NotificationSoundsService } from '../services/notification-sounds.service';
-import { CallError } from '../models/video-call-models';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -229,5 +229,15 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         this.showAudioRecordingAlert = !value;
         this.continueWithNoRecording = true;
         clearInterval(this.audioRecordingInterval);
+    }
+
+    isIMEnabled(): boolean {
+        if (!this.hearing) {
+            return false;
+        }
+        if (this.deviceTypeService.isIpad()) {
+            return !this.showVideo;
+        }
+        return true;
     }
 }
