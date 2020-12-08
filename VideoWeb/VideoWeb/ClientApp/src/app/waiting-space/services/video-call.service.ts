@@ -16,7 +16,7 @@ export class VideoCallService {
     private readonly loggerPrefix = '[VideoCallService] -';
     private readonly preferredLayoutCache: SessionStorage<Record<string, HearingLayout>>;
     private readonly videoCallPreferences: SessionStorage<VideoCallPreferences>;
-    readonly VIDEO_CALL_PREFERENCE_KET = 'vh.videocall.preferences';
+    readonly VIDEO_CALL_PREFERENCE_KEY = 'vh.videocall.preferences';
     readonly PREFERRED_LAYOUT_KEY = 'vh.preferred.layout';
 
     private onSetupSubject = new Subject<CallSetup>();
@@ -31,7 +31,7 @@ export class VideoCallService {
 
     constructor(private logger: Logger, private userMediaService: UserMediaService, private apiClient: ApiClient) {
         this.preferredLayoutCache = new SessionStorage(this.PREFERRED_LAYOUT_KEY);
-        this.videoCallPreferences = new SessionStorage(this.VIDEO_CALL_PREFERENCE_KET);
+        this.videoCallPreferences = new SessionStorage(this.VIDEO_CALL_PREFERENCE_KEY);
         if (!this.preferredLayoutCache.get()) {
             this.preferredLayoutCache.set({});
         }
@@ -281,7 +281,7 @@ export class VideoCallService {
         return this.apiClient.dismissWitness(conferenceId, participantId).toPromise();
     }
 
-    retrieveVideoCallPreferences() {
+    retrieveVideoCallPreferences(): VideoCallPreferences {
         return this.videoCallPreferences.get();
     }
 
