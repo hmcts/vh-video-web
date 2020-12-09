@@ -34,7 +34,7 @@
     "@angular/platform-server": "^10.2.3",
     "@angular/router": "^10.2.3",
     "@hmcts/frontend": "^0.0.41-alpha",
-    "@microsoft/applicationinsights-web": "^2.5.9",
+    "@microsoft/applicationinsights-web": "^2.5.10",
     "@microsoft/signalr": "^3.1.10",
     "@ng-select/ng-select": "^5.0.6",
     "adal-angular4": "^3.0.16",
