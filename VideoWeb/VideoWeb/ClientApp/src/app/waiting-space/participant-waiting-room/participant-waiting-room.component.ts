@@ -28,7 +28,6 @@ import { ConferenceStatusMessage } from 'src/app/services/models/conference-stat
 export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
     currentTime: Date;
     hearingStartingAnnounced: boolean;
-    hearingAlertSound: HTMLAudioElement;
 
     clockSubscription$: Subscription;
 
@@ -113,8 +112,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         }
     }
 
-    announceHearingIsAboutToStart(): void {
-        this.notificationSoundsService.playHearingAlertSound();
+    async announceHearingIsAboutToStart(): Promise<void> {
+        await this.notificationSoundsService.playHearingAlertSound();
         this.hearingStartingAnnounced = true;
     }
 

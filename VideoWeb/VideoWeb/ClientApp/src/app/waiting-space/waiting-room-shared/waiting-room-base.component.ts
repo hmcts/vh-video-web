@@ -319,9 +319,6 @@ export abstract class WaitingRoomBaseComponent {
             participant: this.participant.id
         };
         this.logger.debug(`${this.loggerPrefix} Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`, logPayload);
-        if (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1) {
-            this.videoCallService.enableH264(false);
-        }
         this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth, this.audioOnly);
     }
 
@@ -566,7 +563,7 @@ export abstract class WaitingRoomBaseComponent {
         this.call();
     }
 
-    async updatePexipAudioVideoSource() {
+    private async updatePexipAudioVideoSource() {
         const cam = await this.userMediaService.getPreferredCamera();
         if (cam) {
             this.videoCallService.updateCameraForCall(cam);

@@ -101,9 +101,9 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseComponent implements
         }
     }
 
-    announceHearingIsAboutToStart(): void {
-        this.notificationSoundsService.playHearingAlertSound();
+    async announceHearingIsAboutToStart(): Promise<void> {
         this.hearingStartingAnnounced = true;
+        await this.notificationSoundsService.playHearingAlertSound();
     }
 
     getConferenceStatusText(): string {

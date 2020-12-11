@@ -1,69 +1,32 @@
-import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
-import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
-import { ClockService } from 'src/app/services/clock.service';
-import { DeviceTypeService } from 'src/app/services/device-type.service';
-import { ErrorService } from 'src/app/services/error.service';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
-import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
-import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { Hearing } from '../../../shared/models/hearing';
-import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
-import { UserMediaService } from 'src/app/services/user-media.service';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { HearingRole } from '../../models/hearing-role-model';
-import { NotificationSoundsService } from '../../services/notification-sounds.service';
+import {
+    activatedRoute,
+    adalService,
+    clockService,
+    consultationService,
+    deviceTypeService,
+    errorService,
+    eventsService,
+    heartbeatModelMapper,
+    initAllWRDependencies,
+    logger,
+    notificationSoundsService,
+    router,
+    userMediaService,
+    userMediaStreamService,
+    videoCallService,
+    videoWebService
+} from '../../waiting-room-shared/tests/waiting-room-base-setup';
+import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
 
 describe('ParticipantWaitingRoomComponent message and clock', () => {
     let component: ParticipantWaitingRoomComponent;
-    const gloalConference = new ConferenceTestData().getConferenceDetailPast();
-    const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: gloalConference.id }) } };
-    let videoWebService: jasmine.SpyObj<VideoWebService>;
-    const eventsService = eventsServiceSpy;
-
-    let adalService: jasmine.SpyObj<AdalService>;
-    let errorService: jasmine.SpyObj<ErrorService>;
-
-    let clockService: jasmine.SpyObj<ClockService>;
-    let router: jasmine.SpyObj<Router>;
-    let heartbeatModelMapper: HeartbeatModelMapper;
-    let deviceTypeService: jasmine.SpyObj<DeviceTypeService>;
-    const videoCallService = videoCallServiceSpy;
-    let consultationService: jasmine.SpyObj<ConsultationService>;
-    const logger: Logger = new MockLogger();
-    let userMediaService: jasmine.SpyObj<UserMediaService>;
-    let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
-    let notificationSoundsService: jasmine.SpyObj<NotificationSoundsService>;
 
     beforeAll(() => {
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
-            'getConferenceById',
-            'getObfuscatedName',
-            'getJwToken'
-        ]);
-        adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut']);
-        errorService = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError', 'handleApiError']);
-        clockService = jasmine.createSpyObj<ClockService>('ClockService', ['getClock']);
-        router = jasmine.createSpyObj<Router>('Router', ['navigate']);
-        heartbeatModelMapper = new HeartbeatModelMapper();
-        deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['getBrowserName', 'getBrowserVersion']);
-        consultationService = consultationServiceSpyFactory();
-        userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
-            'updatePreferredCamera',
-            'updatePreferredMicrophone'
-        ]);
-        userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService', [
-            'stopStream',
-            'getStreamForCam',
-            'getStreamForMic'
-        ]);
-        notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', ['playHearingAlertSound']);
+        initAllWRDependencies();
     });
 
     beforeEach(() => {
