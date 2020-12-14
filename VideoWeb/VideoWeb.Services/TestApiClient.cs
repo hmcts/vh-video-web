@@ -558,24 +558,43 @@ namespace VideoWeb.Services.TestApi
         /// <exception cref="TestApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task CacheAsync(System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Delete hearings by partial case name or number</summary>
-        /// <param name="body">Partial case name or number text for the hearing</param>
+        /// <summary>Reset user password</summary>
+        /// <param name="body">Details of the required user</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<int> RemoveTestDataAsync(DeleteTestHearingDataRequest body);
+        System.Threading.Tasks.Task<UpdateUserResponse> PasswordAsync(ResetUserPasswordRequest body);
+    
+        /// <summary>Reset user password</summary>
+        /// <param name="body">Details of the required user</param>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        UpdateUserResponse Password(ResetUserPasswordRequest body);
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Reset user password</summary>
+        /// <param name="body">Details of the required user</param>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task<UpdateUserResponse> PasswordAsync(ResetUserPasswordRequest body, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Delete hearings by partial case name or number</summary>
         /// <param name="body">Partial case name or number text for the hearing</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        int RemoveTestData(DeleteTestHearingDataRequest body);
+        System.Threading.Tasks.Task<DeletedResponse> RemoveTestDataAsync(DeleteTestHearingDataRequest body);
+    
+        /// <summary>Delete hearings by partial case name or number</summary>
+        /// <param name="body">Partial case name or number text for the hearing</param>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        DeletedResponse RemoveTestData(DeleteTestHearingDataRequest body);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Delete hearings by partial case name or number</summary>
         /// <param name="body">Partial case name or number text for the hearing</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<int> RemoveTestDataAsync(DeleteTestHearingDataRequest body, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<DeletedResponse> RemoveTestDataAsync(DeleteTestHearingDataRequest body, System.Threading.CancellationToken cancellationToken);
     
     }
     
@@ -3392,11 +3411,112 @@ namespace VideoWeb.Services.TestApi
             }
         }
     
+        /// <summary>Reset user password</summary>
+        /// <param name="body">Details of the required user</param>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task<UpdateUserResponse> PasswordAsync(ResetUserPasswordRequest body)
+        {
+            return PasswordAsync(body, System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Reset user password</summary>
+        /// <param name="body">Details of the required user</param>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        public UpdateUserResponse Password(ResetUserPasswordRequest body)
+        {
+            return System.Threading.Tasks.Task.Run(async () => await PasswordAsync(body, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Reset user password</summary>
+        /// <param name="body">Details of the required user</param>
+        /// <returns>Success</returns>
+        /// <exception cref="TestApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task<UpdateUserResponse> PasswordAsync(ResetUserPasswordRequest body, System.Threading.CancellationToken cancellationToken)
+        {
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/users/aad/password");
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    var content_ = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject(body, _settings.Value));
+                    content_.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("application/json");
+                    request_.Content = content_;
+                    request_.Method = new System.Net.Http.HttpMethod("PATCH");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json"));
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<UpdateUserResponse>(response_, headers_).ConfigureAwait(false);
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == "404") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new TestApiException<ProblemDetails>("Not Found", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "400") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<ProblemDetails>(response_, headers_).ConfigureAwait(false);
+                            throw new TestApiException<ProblemDetails>("Bad Request", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ == "401") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new TestApiException("Unauthorized", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new TestApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+            
+                        return default(UpdateUserResponse);
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
         /// <summary>Delete hearings by partial case name or number</summary>
         /// <param name="body">Partial case name or number text for the hearing</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<int> RemoveTestDataAsync(DeleteTestHearingDataRequest body)
+        public System.Threading.Tasks.Task<DeletedResponse> RemoveTestDataAsync(DeleteTestHearingDataRequest body)
         {
             return RemoveTestDataAsync(body, System.Threading.CancellationToken.None);
         }
@@ -3405,7 +3525,7 @@ namespace VideoWeb.Services.TestApi
         /// <param name="body">Partial case name or number text for the hearing</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public int RemoveTestData(DeleteTestHearingDataRequest body)
+        public DeletedResponse RemoveTestData(DeleteTestHearingDataRequest body)
         {
             return System.Threading.Tasks.Task.Run(async () => await RemoveTestDataAsync(body, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
@@ -3415,7 +3535,7 @@ namespace VideoWeb.Services.TestApi
         /// <param name="body">Partial case name or number text for the hearing</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<int> RemoveTestDataAsync(DeleteTestHearingDataRequest body, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<DeletedResponse> RemoveTestDataAsync(DeleteTestHearingDataRequest body, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/utilities/removeTestData");
@@ -3451,7 +3571,7 @@ namespace VideoWeb.Services.TestApi
                         var status_ = ((int)response_.StatusCode).ToString();
                         if (status_ == "200") 
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<int>(response_, headers_).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<DeletedResponse>(response_, headers_).ConfigureAwait(false);
                             return objectResponse_.Object;
                         }
                         else
@@ -3473,7 +3593,7 @@ namespace VideoWeb.Services.TestApi
                             throw new TestApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
-                        return default(int);
+                        return default(DeletedResponse);
                     }
                     finally
                     {
@@ -3884,6 +4004,9 @@ namespace VideoWeb.Services.TestApi
     
         [System.Runtime.Serialization.EnumMember(Value = @"Representative")]
         Representative = 6,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"JudicialOfficeHolder")]
+        JudicialOfficeHolder = 7,
     
     }
     
@@ -5092,6 +5215,26 @@ namespace VideoWeb.Services.TestApi
     
     }
     
+    /// <summary>Reset user password request</summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class ResetUserPasswordRequest 
+    {
+        /// <summary>Username of user to reset</summary>
+        [Newtonsoft.Json.JsonProperty("username", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Username { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class UpdateUserResponse 
+    {
+        [Newtonsoft.Json.JsonProperty("new_password", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string New_password { get; set; }
+    
+    
+    }
+    
     /// <summary>Remove Hearing data request</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
     public partial class DeleteTestHearingDataRequest 
@@ -5100,13 +5243,20 @@ namespace VideoWeb.Services.TestApi
         [Newtonsoft.Json.JsonProperty("partial_hearing_case_name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Partial_hearing_case_name { get; set; }
     
-        /// <summary>Partial Hearing Case Number (must contain 'Test')</summary>
-        [Newtonsoft.Json.JsonProperty("partial_hearing_case_number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string Partial_hearing_case_number { get; set; }
-    
         /// <summary>The limit of how many hearings to search through for the title. Default is 1000</summary>
         [Newtonsoft.Json.JsonProperty("limit", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int? Limit { get; set; }
+    
+    
+    }
+    
+    /// <summary>Delete test hearings via the utility response</summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class DeletedResponse 
+    {
+        /// <summary>Number of deleted hearings</summary>
+        [Newtonsoft.Json.JsonProperty("number_of_deleted_hearings", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int Number_of_deleted_hearings { get; set; }
     
     
     }
