@@ -2,7 +2,9 @@ import { Component } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AdalService } from 'adal-angular4';
 import { Observable } from 'rxjs';
+import { ProfileService } from 'src/app/services/api/profile.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { PageTrackerService } from 'src/app/services/page-tracker.service';
@@ -40,12 +42,17 @@ describe('ErrorComponent', () => {
 
     let router: Router;
     let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
+    let adalServiceSpy: jasmine.SpyObj<AdalService>;
+    let profileServiceSpy: jasmine.SpyObj<ProfileService>;
 
     beforeEach(
         waitForAsync(() => {
             eventsService = eventsServiceSpy;
             pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
             pageTrackerSpy.getPreviousUrl.and.returnValue('testUrl-test-error1');
+
+            adalServiceSpy = jasmine.createSpyObj<AdalService>('AdalService', ['userInfo']);
+            profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getProfileByUsername']);
 
             TestBed.configureTestingModule({
                 declarations: [ErrorComponent, ContactUsFoldingComponent, Mock1Component, Mock2Component],
@@ -58,7 +65,9 @@ describe('ErrorComponent', () => {
                 providers: [
                     { provide: PageTrackerService, useValue: pageTrackerSpy },
                     { provide: EventsService, useValue: eventsService },
-                    { provide: Logger, useClass: MockLogger }
+                    { provide: Logger, useClass: MockLogger },
+                    { provide: AdalService, useValue: adalServiceSpy },
+                    { provide: ProfileService, useValue: profileServiceSpy }
                 ]
             }).compileComponents();
         })
@@ -104,7 +113,7 @@ describe('ErrorComponent', () => {
 
     it('should navigate to previous page on reconnect click and internet connection', () => {
         pageTrackerSpy.getPreviousUrl.calls.reset();
-        spyOnProperty(window.navigator, 'onLine').and.returnValue(true);
+        component.isOnline = true;
         component.reconnect();
         expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalled();
     });
@@ -112,19 +121,19 @@ describe('ErrorComponent', () => {
     it('should navigate to previous page on reconnect click and no internet connection', () => {
         component.returnTimeout = undefined;
         pageTrackerSpy.getPreviousUrl.calls.reset();
-        spyOnProperty(window.navigator, 'onLine').and.returnValue(false);
+        component.isOnline = false;
         component.reconnect();
         expect(component.returnTimeout).toBeDefined();
         expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalledTimes(0);
     });
 
     it('should return true when browser has an internet connection', () => {
-        spyOnProperty(window.navigator, 'onLine').and.returnValue(true);
+        component.isOnline = true;
         expect(component.hasInternetConnection).toBeTruthy();
     });
 
     it('should return false when browser does not have an internet connection', () => {
-        spyOnProperty(window.navigator, 'onLine').and.returnValue(false);
+        component.isOnline = false;
         expect(component.hasInternetConnection).toBeFalsy();
     });
 
@@ -150,10 +159,15 @@ describe('ErrorComponent Refresh', () => {
     let router: Router;
     let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
 
+    let adalServiceSpy: jasmine.SpyObj<AdalService>;
+    let profileServiceSpy: jasmine.SpyObj<ProfileService>;
+
     beforeEach(() => {
         eventsService = eventsServiceSpy;
         pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
         pageTrackerSpy.getPreviousUrl.and.returnValue('testUrl-test-error1');
+        adalServiceSpy = jasmine.createSpyObj<AdalService>('AdalService', ['userInfo']);
+        profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getProfileByUsername']);
 
         TestBed.configureTestingModule({
             declarations: [ErrorComponent, ContactUsFoldingComponent],
@@ -162,7 +176,9 @@ describe('ErrorComponent Refresh', () => {
                 { provide: PageTrackerService, useValue: pageTrackerSpy },
                 { provide: Router, useClass: MockRouter },
                 { provide: EventsService, useValue: eventsService },
-                { provide: Logger, useClass: MockLogger }
+                { provide: Logger, useClass: MockLogger },
+                { provide: AdalService, useValue: adalServiceSpy },
+                { provide: ProfileService, useValue: profileServiceSpy }
             ]
         }).compileComponents();
         router = TestBed.inject(Router);

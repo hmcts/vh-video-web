@@ -1,24 +1,35 @@
 import { inject, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AdalService } from 'adal-angular4';
 import { Guid } from 'guid-typescript';
 import { pageUrls } from '../shared/page-url.constants';
 import { MockLogger } from '../testing/mocks/MockLogger';
 import { CallError } from '../waiting-space/models/video-call-models';
+import { ProfileService } from './api/profile.service';
 import { ErrorService } from './error.service';
 import { Logger } from './logging/logger-base';
 import { SessionStorage } from './session-storage';
 
 describe('ErrorService', () => {
     let router: Router;
+    let adalServiceSpy: jasmine.SpyObj<AdalService>;
+    let profileServiceSpy: jasmine.SpyObj<ProfileService>;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
             imports: [RouterTestingModule],
-            providers: [ErrorService, { provide: Logger, useClass: MockLogger }]
+            providers: [
+                ErrorService,
+                { provide: Logger, useClass: MockLogger },
+                { provide: AdalService, useValue: adalServiceSpy },
+                { provide: ProfileService, useValue: profileServiceSpy }
+            ]
         });
 
         router = TestBed.inject(Router);
+        adalServiceSpy = jasmine.createSpyObj<AdalService>('AdalService', ['userInfo']);
+        profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getProfileByUsername']);
     });
 
     it('should do nothing if skip redirect is true', inject([ErrorService], (service: ErrorService) => {
@@ -87,12 +98,23 @@ describe('ErrorService', () => {
         [ErrorService],
         (service: ErrorService) => {
             spyOn(service, 'goToServiceError');
+            spyOnProperty(service, 'hasInternetConnection').and.returnValue(true);
             const error = new CallError('Error connecting to conference');
             const conferenceId = Guid.create().toString();
             service.handlePexipError(error, conferenceId);
             expect(service.goToServiceError).toHaveBeenCalledWith('Your connection was lost');
         }
     ));
+
+    it('should navigate to service error with connection lost message', inject([ErrorService], (service: ErrorService) => {
+        spyOn(service, 'goToServiceError');
+        spyOnProperty(service, 'hasInternetConnection').and.returnValue(false);
+        const error = new CallError('Error connecting to conference');
+        const conferenceId = Guid.create().toString();
+        service.handlePexipError(error, conferenceId);
+        // tslint:disable-next-line: quotemark
+        expect(service.goToServiceError).toHaveBeenCalledWith("There's a problem with your connection");
+    }));
 
     it('should navigate to service error with connection lost message when pexip error message has firewall or browser extensions issue', inject(
         [ErrorService],

@@ -1,6 +1,8 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
+import { ProfileService } from 'src/app/services/api/profile.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { PageTrackerService } from 'src/app/services/page-tracker.service';
@@ -26,19 +28,31 @@ export class ErrorComponent implements OnInit, OnDestroy {
     connectionError: boolean;
     showReconnect: boolean;
     attemptingReconnect: boolean;
+    isOnline: boolean;
 
     constructor(
         private router: Router,
         private pageTracker: PageTrackerService,
         private eventsService: EventsService,
-        private logger: Logger
+        private logger: Logger,
+        protected profileService: ProfileService,
+        protected adalService: AdalService
     ) {
+        this.checkIntenetConnection();
         this.browserRefresh = false;
         this.checkForRefresh();
     }
 
+    private async checkIntenetConnection(): Promise<void> {
+        try {
+            await this.profileService.getProfileByUsername(this.adalService.userInfo.userName);
+            this.isOnline = true;
+        } catch (err) {
+            this.isOnline = false;
+        }
+    }
     get hasInternetConnection(): boolean {
-        return window.navigator.onLine;
+        return this.isOnline;
     }
 
     ngOnInit(): void {
@@ -105,6 +119,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
     }
 
     reconnect(): void {
+        this.checkIntenetConnection();
         if (this.attemptingReconnect) {
             this.logger.debug(`${this.loggerPrefix} Reconnection already in progress`);
             return;
