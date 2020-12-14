@@ -564,8 +564,15 @@ export abstract class WaitingRoomBaseComponent {
         this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
         this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
         this.audioOnly = selectedMediaDevice.audioOnly;
+        this.updateAudioOnlyPreference(this.audioOnly);
         await this.updatePexipAudioVideoSource();
         this.call();
+    }
+
+    protected updateAudioOnlyPreference(audioOnly: boolean) {
+        const videoCallPrefs = this.videoCallService.retrieveVideoCallPreferences();
+        videoCallPrefs.audioOnly = audioOnly;
+        this.videoCallService.updateVideoCallPreferences(videoCallPrefs);
     }
 
     async updatePexipAudioVideoSource() {

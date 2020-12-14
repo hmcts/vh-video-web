@@ -68,7 +68,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     }
 
     ngOnInit() {
-        this.audioOnly = false;
+        this.audioOnly = this.videoCallService.retrieveVideoCallPreferences().audioOnly;
         this.errorCount = 0;
         this.logger.debug('[Participant WR] - Loading participant waiting room');
         this.connected = false;
