@@ -5,7 +5,6 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceForIndividualResponse, Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { ProfileService } from '../../services/api/profile.service';
 import { pageUrls } from '../../shared/page-url.constants';
 

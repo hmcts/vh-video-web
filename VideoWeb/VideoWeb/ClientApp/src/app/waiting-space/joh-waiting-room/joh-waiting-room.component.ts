@@ -23,7 +23,7 @@ import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-ba
 @Component({
     selector: 'app-joh-waiting-room',
     templateUrl: './joh-waiting-room.component.html',
-    styleUrls: ['./joh-waiting-room.component.scss', '../waiting-room-global-styles.scss']
+    styleUrls: ['../waiting-room-global-styles.scss']
 })
 export class JohWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
     private readonly loggerPrefixJOH = '[JOH WR] -';

@@ -24,7 +24,7 @@ const conferenceTestData = new ConferenceTestData();
 
 export let component: WRTestComponent;
 
-export const globalConference = conferenceTestData.getConferenceDetailPast() as ConferenceResponse;
+export const globalConference = conferenceTestData.getConferenceDetailPast();
 export const participantsWitness = conferenceTestData.getListOfParticipantsWitness();
 participantsWitness.forEach(x => {
     globalConference.participants.push(x);
