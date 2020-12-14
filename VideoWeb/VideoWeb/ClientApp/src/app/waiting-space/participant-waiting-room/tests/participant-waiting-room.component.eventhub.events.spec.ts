@@ -196,11 +196,14 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         const status = ConferenceStatus.InSession;
         const message = new ConferenceStatusMessage(globalConference.id, status);
         notificationSoundsService.playHearingAlertSound.calls.reset();
+        component.displayDeviceChangeModal = true;
+
         hearingStatusSubject.next(message);
         flushMicrotasks();
 
         expect(component.hearing.status).toBe(status);
         expect(component.conference.status).toBe(status);
+        expect(component.displayDeviceChangeModal).toBeFalsy();
         expect(component.showVideo).toBeTruthy();
         expect(component.getConferenceStatusText()).toBe('is in session');
         expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalled();
@@ -230,10 +233,12 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         component.hearing.getConference().status = ConferenceStatus.InSession;
         const status = ParticipantStatus.InHearing;
         const message = new ParticipantStatusMessage(globalWitness.id, globalWitness.username, globalConference.id, status);
+        component.displayDeviceChangeModal = true;
 
         participantStatusSubject.next(message);
         flushMicrotasks();
 
+        expect(component.displayDeviceChangeModal).toBeFalsy();
         expect(component.showVideo).toBeTruthy();
     }));
 
@@ -300,10 +305,12 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         const participant = globalParticipant;
         const message = new ParticipantStatusMessage(participant.id, participant.username, globalConference.id, status);
         component.connected = true;
+        component.displayDeviceChangeModal = true;
 
         participantStatusSubject.next(message);
 
         expect(component.participant.status).toBe(message.status);
+        expect(component.displayDeviceChangeModal).toBeFalsy();
         expect(component.showVideo).toBeTruthy();
         expect(component.isAdminConsultation).toBeFalsy();
     });

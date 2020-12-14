@@ -151,6 +151,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         expect(component.hearing.status).toBe(status);
         expect(component.conference.status).toBe(status);
+        expect(component.displayDeviceChangeModal).toBeFalsy();
         expect(component.showVideo).toBeTruthy();
         expect(component.getConferenceStatusText()).toBe('Hearing is in session');
         expect(router.navigate).toHaveBeenCalledTimes(0);
