@@ -511,6 +511,7 @@ export abstract class WaitingRoomBaseComponent {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because hearing is in session';
             this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
+            this.displayDeviceChangeModal = false;
             this.showVideo = true;
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;
@@ -521,6 +522,7 @@ export abstract class WaitingRoomBaseComponent {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because witness is in hearing';
             this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
+            this.displayDeviceChangeModal = false;
             this.showVideo = true;
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;
@@ -531,6 +533,7 @@ export abstract class WaitingRoomBaseComponent {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because participant is in a consultation';
             this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
+            this.displayDeviceChangeModal = false;
             this.showVideo = true;
             this.isPrivateConsultation = true;
             this.showConsultationControls = !this.isAdminConsultation;
@@ -559,8 +562,15 @@ export abstract class WaitingRoomBaseComponent {
         this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
         this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
         this.audioOnly = selectedMediaDevice.audioOnly;
+        this.updateAudioOnlyPreference(this.audioOnly);
         await this.updatePexipAudioVideoSource();
         this.call();
+    }
+
+    protected updateAudioOnlyPreference(audioOnly: boolean) {
+        const videoCallPrefs = this.videoCallService.retrieveVideoCallPreferences();
+        videoCallPrefs.audioOnly = audioOnly;
+        this.videoCallService.updateVideoCallPreferences(videoCallPrefs);
     }
 
     private async updatePexipAudioVideoSource() {

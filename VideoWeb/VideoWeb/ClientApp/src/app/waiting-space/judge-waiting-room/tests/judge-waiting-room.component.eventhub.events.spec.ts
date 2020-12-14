@@ -72,6 +72,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     it('should return to judge hearing list when "closed" message received', fakeAsync(() => {
+        expect(component.displayDeviceChangeModal).toBeFalsy();
         const status = ConferenceStatus.Closed;
         const confWithCloseTime = new ConferenceResponse(Object.assign({}, globalConference));
         confWithCloseTime.closed_date_time = new Date();

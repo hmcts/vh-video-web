@@ -5,6 +5,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { HearingRole } from '../../models/hearing-role-model';
+import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
 import {
     activatedRoute,
     adalService,
@@ -33,6 +34,10 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
     beforeAll(() => {
         initAllWRDependencies();
+
+        const preferences = new VideoCallPreferences();
+        preferences.audioOnly = false;
+        videoCallService.retrieveVideoCallPreferences.and.returnValue(preferences);
     });
 
     beforeEach(() => {

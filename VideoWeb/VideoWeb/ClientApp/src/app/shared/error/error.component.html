@@ -1,33 +1,58 @@
 <div class="govuk-grid-row govuk-!-padding-top-4" *ngIf="!connectionError">
-  <div class="govuk-grid-column-full">
-    <h1 class="govuk-heading-xl">Sorry, there is a problem with the service</h1>
-    <p class="govuk-body">Please try again later.</p>
-    <p class="govuk-body">If you need to speak to someone please contact us using the options below.</p>
-  </div>
+    <div class="govuk-grid-column-full">
+        <h1 class="govuk-heading-xl">Sorry, there is a problem with the service</h1>
+        <p class="govuk-body">Please try again later.</p>
+        <p class="govuk-body">If you need to speak to someone please contact us using the options below.</p>
+    </div>
 </div>
 <div class="govuk-grid-row govuk-!-padding-top-4" *ngIf="connectionError">
-  <div class="govuk-grid-column-full">
-    <h1 class="govuk-heading-xl">{{ errorMessageTitle }}</h1>
-    <p *ngIf="hasInternetConnection" class="govuk-body">{{ errorMessageBody }}</p>
-    <p *ngIf="!hasInternetConnection" class="govuk-body">
-      You are not connected to the internet. You will not be able to join your video hearing until you are reconnected. Please call the
-      Video Hearings Team to let them know you cannot connect to our service.
-    </p>
-    <div class="govuk-!-padding-top-4 govuk-!-padding-bottom-4">
-      <button
-        *ngIf="showReconnect"
-        id="reconnect-btn"
-        class="govuk-button govuk-!-margin-right-1"
-        data-module="govuk-button"
-        type="button"
-        (click)="reconnect()"
-        aria-label="Continue to the next page"
-      >
-        Reconnect
-      </button>
+    <div class="govuk-grid-column-full">
+        <div *ngIf="!isExtensionOrFirewallIssue; else firewallError">
+            <h1 class="govuk-heading-xl">{{ errorMessageTitle }}</h1>
+            <p *ngIf="hasInternetConnection" class="govuk-body">{{ errorMessageBody }}</p>
+            <p *ngIf="!hasInternetConnection" class="govuk-body">
+                You are not connected to the internet. You will not be able to join your video hearing until you are reconnected. Please call the
+                Video Hearings Team to let them know you cannot connect to our service.
+            </p>
+        </div>
+        <ng-template #firewallError>
+            <h1 class="govuk-heading-xl">There's a problem with your connection</h1>
+            <p class="govuk-body">Please check that your security settings are not blocking the connection.</p>
+            <p class="govuk-body">If you keep seeing this message contact the video hearing team.</p>
+            <div class="govuk-body govuk-!-margin-top-8">
+                Find out more about your computer set-up and internet connection at:
+                <a class="govuk-link vh-new-line" target="_blank"
+                   href="https://www.gov.uk/guidance/hmcts-video-hearings-service-guidance-for-joining-a-hearing"
+                   rel="noopener">
+                    https://www.gov.uk/guidance/hmcts-video-hearings-service-guidance-for-joining-a-hearing
+                </a>
+            </div>
+            <div class="govuk-body">
+                If your computer is part of a network, your IT support will find guidance and firewall settings at:
+
+                <a class="govuk-link vh-new-line" target="_blank"
+                   href="https://www.gov.uk/government/publications/video-hearings-service-join-from-a-corporate-network"
+                   rel="noopener">
+                    https://www.gov.uk/government/publications/video-hearings-service-join-from-a-corporate-network
+                </a>
+            </div>
+        </ng-template>
+
+        <div class="govuk-!-padding-top-4 govuk-!-padding-bottom-4">
+            <button *ngIf="showReconnect"
+                    id="reconnect-btn"
+                    class="govuk-button govuk-!-margin-right-1"
+                    data-module="govuk-button"
+                    type="button"
+                    (click)="reconnect()"
+                    aria-label="Continue to the next page">
+                Reconnect
+            </button>
+        </div>
+        <h2 class="govuk-heading-m">Contact us for help</h2>
+        <p class="govuk-body">Call the Video Hearings team on <strong>0300 303 0655</strong></p>
+
     </div>
-    <h2 class="govuk-heading-m">Helpline: 0300 303 0655</h2>
-  </div>
 </div>
 
 <app-contact-us-folding></app-contact-us-folding>

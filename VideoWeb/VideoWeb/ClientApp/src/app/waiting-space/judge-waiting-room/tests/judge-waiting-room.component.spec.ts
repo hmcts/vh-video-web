@@ -5,6 +5,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SelectedUserMediaDevice } from '../../../shared/models/selected-user-media-device';
 import { UserMediaDevice } from '../../../shared/models/user-media-device';
+import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
 import {
     activatedRoute,
     adalService,
@@ -33,6 +34,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     beforeAll(() => {
         initAllWRDependencies();
         audioRecordingService = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
+        videoCallService.retrieveVideoCallPreferences.and.returnValue(new VideoCallPreferences());
     });
 
     beforeEach(async () => {

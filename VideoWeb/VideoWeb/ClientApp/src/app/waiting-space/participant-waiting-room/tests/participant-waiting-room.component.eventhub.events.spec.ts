@@ -77,9 +77,12 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         const message = new ConferenceStatusMessage(globalConference.id, status);
         notificationSoundsService.playHearingAlertSound.calls.reset();
 
+        component.displayDeviceChangeModal = true;
+
         hearingStatusSubject.next(message);
         flushMicrotasks();
 
+        expect(component.displayDeviceChangeModal).toBeFalsy();
         expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalled();
     }));
 
@@ -98,6 +101,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         adalService.userInfo.userName = globalWitness.username;
         component.participant = globalWitness;
         const status = ConferenceStatus.InSession;
+        component.displayDeviceChangeModal = true;
         const message = new ConferenceStatusMessage(globalConference.id, status);
         notificationSoundsService.playHearingAlertSound.calls.reset();
 
@@ -105,5 +109,6 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         flushMicrotasks();
 
         expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalledTimes(0);
+        expect(component.displayDeviceChangeModal).toBeTruthy();
     }));
 });
