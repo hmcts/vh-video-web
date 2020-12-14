@@ -3,7 +3,7 @@ import { AdalService } from 'adal-angular4';
 import { of } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, Role, TokenResponse } from 'src/app/services/clients/api-client';
+import { Role, TokenResponse } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
