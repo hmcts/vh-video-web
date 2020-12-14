@@ -8,12 +8,12 @@ import { ProfileService } from 'src/app/services/api/profile.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { PageTrackerService } from 'src/app/services/page-tracker.service';
-import { SessionStorage } from 'src/app/services/session-storage';
 import { eventsServiceSpy, isConnectedSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ContactUsFoldingComponent } from '../contact-us-folding/contact-us-folding.component';
 import { ErrorMessage } from '../models/error-message';
 import { ErrorComponent } from './error.component';
+import { ErrorService } from 'src/app/services/error.service';
 
 class MockRouter {
     public ne = new NavigationEnd(0, '/testUrl-test-error1', null);
@@ -42,6 +42,7 @@ describe('ErrorComponent', () => {
 
     let router: Router;
     let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
+    let errorServiceSpy: jasmine.SpyObj<ErrorService>;
     let adalServiceSpy: jasmine.SpyObj<AdalService>;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
 
@@ -50,6 +51,7 @@ describe('ErrorComponent', () => {
             eventsService = eventsServiceSpy;
             pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
             pageTrackerSpy.getPreviousUrl.and.returnValue('testUrl-test-error1');
+            errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['getErrorMessageFromStorage']);
 
             adalServiceSpy = jasmine.createSpyObj<AdalService>('AdalService', ['userInfo']);
             profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getProfileByUsername']);
@@ -66,6 +68,7 @@ describe('ErrorComponent', () => {
                     { provide: PageTrackerService, useValue: pageTrackerSpy },
                     { provide: EventsService, useValue: eventsService },
                     { provide: Logger, useClass: MockLogger },
+                    { provide: ErrorService, useValue: errorServiceSpy },
                     { provide: AdalService, useValue: adalServiceSpy },
                     { provide: ProfileService, useValue: profileServiceSpy }
                 ]
@@ -85,25 +88,23 @@ describe('ErrorComponent', () => {
     });
 
     it('should show default error message if session storage is empty', () => {
-        const key = 'vh.error.message';
-        const storedMessage = new SessionStorage<ErrorMessage>(key);
-        storedMessage.clear();
+        errorServiceSpy.getErrorMessageFromStorage.and.returnValue(null);
 
         component.ngOnInit();
         expect(component.errorMessageTitle).toBeUndefined();
         expect(component.errorMessageBody).toBe('Please reconnect. Call us if you keep seeing this message.');
         expect(component.connectionError).toBeFalsy();
+        expect(component.isExtensionOrFirewallIssue).toBeFalsy();
     });
 
     it('should show error message if session storage returns a value', () => {
-        const key = 'vh.error.message';
-        const storedMessage = new SessionStorage<ErrorMessage>(key);
-        storedMessage.set(new ErrorMessage('disconnected', 'test message'));
+        errorServiceSpy.getErrorMessageFromStorage.and.returnValue(new ErrorMessage('disconnected', 'test message'));
 
         component.ngOnInit();
         expect(component.errorMessageTitle).toBe('disconnected');
         expect(component.errorMessageBody).toBe('test message');
         expect(component.connectionError).toBeTruthy();
+        expect(component.isExtensionOrFirewallIssue).toBeFalsy();
     });
 
     it('should unsubscribe all subcriptions on destroy component', () => {
@@ -150,6 +151,14 @@ describe('ErrorComponent', () => {
         component.reconnect();
         expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalledTimes(0);
     });
+    it('should show error message for firewall issue if session storage returns a value', () => {
+        errorServiceSpy.getErrorMessageFromStorage.and.returnValue(new ErrorMessage('FirewallProblem', null, true));
+
+        component.ngOnInit();
+        expect(component.errorMessageTitle).toBe('FirewallProblem');
+        expect(component.connectionError).toBeTruthy();
+        expect(component.isExtensionOrFirewallIssue).toBeTruthy();
+    });
 });
 
 describe('ErrorComponent Refresh', () => {
@@ -158,6 +167,7 @@ describe('ErrorComponent Refresh', () => {
 
     let router: Router;
     let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
+    let errorServiceSpy: jasmine.SpyObj<ErrorService>;
 
     let adalServiceSpy: jasmine.SpyObj<AdalService>;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
@@ -166,6 +176,7 @@ describe('ErrorComponent Refresh', () => {
         eventsService = eventsServiceSpy;
         pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
         pageTrackerSpy.getPreviousUrl.and.returnValue('testUrl-test-error1');
+        errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['getErrorMessageFromStorage']);
         adalServiceSpy = jasmine.createSpyObj<AdalService>('AdalService', ['userInfo']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getProfileByUsername']);
 
@@ -177,6 +188,7 @@ describe('ErrorComponent Refresh', () => {
                 { provide: Router, useClass: MockRouter },
                 { provide: EventsService, useValue: eventsService },
                 { provide: Logger, useClass: MockLogger },
+                { provide: ErrorService, useValue: errorServiceSpy },
                 { provide: AdalService, useValue: adalServiceSpy },
                 { provide: ProfileService, useValue: profileServiceSpy }
             ]

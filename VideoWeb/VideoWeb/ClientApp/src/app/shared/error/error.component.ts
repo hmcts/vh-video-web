@@ -6,8 +6,7 @@ import { ProfileService } from 'src/app/services/api/profile.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { PageTrackerService } from 'src/app/services/page-tracker.service';
-import { SessionStorage } from 'src/app/services/session-storage';
-import { ErrorMessage } from '../models/error-message';
+import { ErrorService } from 'src/app/services/error.service';
 
 @Component({
     selector: 'app-error',
@@ -21,13 +20,12 @@ export class ErrorComponent implements OnInit, OnDestroy {
     private readonly CALL_TIMEOUT = 30000;
     private browserRefresh: boolean;
 
-    readonly ERROR_MESSAGE_KEY = 'vh.error.message';
-    errorMessage: SessionStorage<ErrorMessage>;
     errorMessageTitle: string;
     errorMessageBody: string;
     connectionError: boolean;
     showReconnect: boolean;
     attemptingReconnect: boolean;
+    isExtensionOrFirewallIssue = false;
     isOnline: boolean;
 
     constructor(
@@ -35,6 +33,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
         private pageTracker: PageTrackerService,
         private eventsService: EventsService,
         private logger: Logger,
+        private errorService: ErrorService,
         protected profileService: ProfileService,
         protected adalService: AdalService
     ) {
@@ -58,7 +57,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.attemptingReconnect = false;
         this.eventsService.stop();
-        this.connectionError = this.getErrorMessage();
+        this.getErrorMessage();
     }
 
     private checkForRefresh() {
@@ -108,14 +107,14 @@ export class ErrorComponent implements OnInit, OnDestroy {
         this.attemptingReconnect = false;
     }
 
-    private getErrorMessage(): boolean {
+    private getErrorMessage(): void {
         const defaultBodyMessage = 'Please reconnect. Call us if you keep seeing this message.';
-        this.errorMessage = new SessionStorage<ErrorMessage>(this.ERROR_MESSAGE_KEY);
-        const dto = this.errorMessage.get();
+        const dto = this.errorService.getErrorMessageFromStorage();
         this.errorMessageTitle = dto?.title;
+        this.isExtensionOrFirewallIssue = this.errorMessageTitle === 'FirewallProblem';
         this.errorMessageBody = dto?.body ? dto.body : defaultBodyMessage;
         this.showReconnect = dto?.showReconnect;
-        return this.errorMessageTitle !== undefined;
+        this.connectionError = this.errorMessageTitle !== undefined;
     }
 
     reconnect(): void {

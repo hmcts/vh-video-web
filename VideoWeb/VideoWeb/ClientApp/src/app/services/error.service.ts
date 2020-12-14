@@ -102,6 +102,10 @@ export class ErrorService {
         return this.errorCameraMicMessage.get();
     }
 
+    getErrorMessageFromStorage() {
+        return this.errorMessage.get();
+    }
+
     handlePexipError(error: CallError, conferenceId: string) {
         this.logger.error('[ErrorService] - There was a pexip error', new Error(error.reason), {
             conference: conferenceId,
@@ -171,10 +175,7 @@ export class ErrorService {
         const isExtensionOrFirewallIssue =
             extensionsOrFirewallIssues.filter(x => error.reason.toLowerCase().includes(x.toLowerCase())).length > 0;
         if (isExtensionOrFirewallIssue) {
-            this.goToServiceError(
-                'Your connection was lost',
-                'Please check your firewall settings and disable any privacy extensions that may block connections.'
-            );
+            this.goToServiceError('FirewallProblem');
             return;
         }
 
