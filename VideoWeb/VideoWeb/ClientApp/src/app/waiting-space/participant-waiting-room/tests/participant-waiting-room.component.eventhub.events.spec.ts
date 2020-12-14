@@ -196,6 +196,8 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         const status = ConferenceStatus.InSession;
         const message = new ConferenceStatusMessage(globalConference.id, status);
         notificationSoundsService.playHearingAlertSound.calls.reset();
+        component.displayDeviceChangeModal = true;
+
         hearingStatusSubject.next(message);
         flushMicrotasks();
 
@@ -231,6 +233,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         component.hearing.getConference().status = ConferenceStatus.InSession;
         const status = ParticipantStatus.InHearing;
         const message = new ParticipantStatusMessage(globalWitness.id, globalWitness.username, globalConference.id, status);
+        component.displayDeviceChangeModal = true;
 
         participantStatusSubject.next(message);
         flushMicrotasks();
@@ -302,6 +305,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         const participant = globalParticipant;
         const message = new ParticipantStatusMessage(participant.id, participant.username, globalConference.id, status);
         component.connected = true;
+        component.displayDeviceChangeModal = true;
 
         participantStatusSubject.next(message);
 
