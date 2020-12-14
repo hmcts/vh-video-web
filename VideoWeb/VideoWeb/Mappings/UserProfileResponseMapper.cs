@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using VideoWeb.Common.Models;
@@ -10,8 +9,6 @@ namespace VideoWeb.Mappings
 {
     public static class UserProfileResponseMapper
     {
-
-
         const string Vhofficer = "VhOfficer";
         const string Representative = "Representative";
         const string Individual = "Individual";
@@ -53,42 +50,41 @@ namespace VideoWeb.Mappings
                 LastName = user.Claims.First(c => c.Type == ClaimTypes.Surname).Value,
                 DisplayName = user.Claims.First(c => c.Type == "name").Value,
                 Username = user.Identity?.Name?.ToLower().Trim(),
+                Role = DetermineRoleFromClaims(user)
             };
-            var roleClaims = user.Claims.Where(c => c.Type == ClaimTypes.Role).ToList();
-            response.Role = DetermineRoleFromClaims(roleClaims);
             return response;
         }
 
-        private static Role DetermineRoleFromClaims(List<Claim> roleClaims)
+        private static Role DetermineRoleFromClaims(ClaimsPrincipal user)
         {
-            if (roleClaims.Exists(x => x.Value == AppRoles.VhOfficerRole))
+            if (user.IsInRole(AppRoles.VhOfficerRole))
             {
                 return Role.VideoHearingsOfficer;
             }
 
-            if (roleClaims.Exists(x => x.Value == AppRoles.JudgeRole))
+            if (user.IsInRole(AppRoles.JudgeRole))
             {
                 return Role.Judge;
             }
 
-            if (roleClaims.Exists(x => x.Value == AppRoles.RepresentativeRole))
+            if (user.IsInRole(AppRoles.JudicialOfficeHolderRole))
+            {
+                return Role.JudicialOfficeHolder;
+            }
+
+            if (user.IsInRole(AppRoles.RepresentativeRole))
             {
                 return Role.Representative;
             }
 
-            if (roleClaims.Exists(x => x.Value == AppRoles.CitizenRole))
+            if (user.IsInRole(AppRoles.CitizenRole))
             {
                 return Role.Individual;
             }
 
-            if (roleClaims.Exists(x => x.Value == AppRoles.CaseAdminRole))
+            if (user.IsInRole(AppRoles.CaseAdminRole))
             {
                 return Role.CaseAdmin;
-            }
-
-            if (roleClaims.Exists(x => x.Value == AppRoles.JudicialOfficeHolderRole))
-            {
-                return Role.JudicialOfficeHolder;
             }
 
             throw new NotSupportedException($"Role is not supported for this application");
