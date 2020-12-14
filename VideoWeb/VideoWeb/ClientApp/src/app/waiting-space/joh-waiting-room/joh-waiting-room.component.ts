@@ -70,7 +70,7 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseComponent implements
     ngOnInit(): void {
         this.audioOnly = false;
         this.errorCount = 0;
-        this.logger.debug(`${this.loggerPrefixJOH} Loading participant waiting room`);
+        this.logger.debug(`${this.loggerPrefixJOH} Loading JOH waiting room`);
         this.connected = false;
         this.notificationSoundsService.initHearingAlertSound();
         this.getConference().then(() => {
@@ -137,6 +137,9 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseComponent implements
 
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
+        this.logger.debug(`${this.loggerPrefixJOH} Clearing intervals and subscriptions for JOH waiting room`, {
+            conference: this.conference?.id
+        });
         this.executeWaitingRoomCleanup();
     }
 }

@@ -84,11 +84,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         this.logger.debug('[Participant WR] - Clearing intervals and subscriptions for participant waiting room', {
             conference: this.conference?.id
         });
-        clearTimeout(this.callbackTimeout);
-        this.stopHeartbeat();
-        this.disconnect();
-        this.eventHubSubscription$.unsubscribe();
-        this.videoCallSubscription$.unsubscribe();
+        this.executeWaitingRoomCleanup();
     }
 
     subscribeToClock(): void {
