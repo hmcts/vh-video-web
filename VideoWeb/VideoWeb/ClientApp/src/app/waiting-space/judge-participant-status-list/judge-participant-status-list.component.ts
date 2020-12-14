@@ -102,19 +102,11 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
 
     private filterRepresentatives(): void {
         this.representativeParticipants = this.conference.participants.filter(
-            x =>
-                x.role === Role.Representative &&
-                x.hearing_role !== HearingRole.OBSERVER &&
-                x.hearing_role !== HearingRole.PANEL_MEMBER &&
-                x.hearing_role !== HearingRole.WINGER
+            x => x.role === Role.Representative && x.hearing_role !== HearingRole.OBSERVER
         );
         this.litigantInPerson = this.representativeParticipants.length === 0;
         this.individualParticipants = this.conference.participants.filter(
-            x =>
-                x.role === Role.Individual &&
-                x.hearing_role !== HearingRole.OBSERVER &&
-                x.hearing_role !== HearingRole.PANEL_MEMBER &&
-                x.hearing_role !== HearingRole.WINGER
+            x => x.role === Role.Individual && x.hearing_role !== HearingRole.OBSERVER
         );
     }
 

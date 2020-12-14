@@ -39,7 +39,7 @@ describe('ParticipantHearingList', () => {
         display_name: 'J Doe Winger',
         first_name: 'Jane',
         last_name: 'Doe Winger',
-        role: Role.Individual,
+        role: Role.JudicialOfficeHolder,
         username: 'jane.doe.Winger@hearings.net'
     });
 

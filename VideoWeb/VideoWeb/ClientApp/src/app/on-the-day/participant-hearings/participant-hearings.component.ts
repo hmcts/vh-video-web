@@ -2,7 +2,7 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceForIndividualResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { ConferenceForIndividualResponse, Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
@@ -96,11 +96,8 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
                 const participant = conferenceResponse.participants.find(
                     p => p.username.toLowerCase() === this.profile.username.toLowerCase()
                 );
-                if (
-                    participant.hearing_role.toLowerCase() === HearingRole.PANEL_MEMBER.toLocaleLowerCase() ||
-                    participant.hearing_role.toLowerCase() === HearingRole.WINGER.toLocaleLowerCase()
-                ) {
-                    this.logger.debug('[ParticipantHearings] - User is a Panel Member/ Winger. Skipping to waiting room', {
+                if (participant.role === Role.JudicialOfficeHolder) {
+                    this.logger.debug('[ParticipantHearings] - User is a Judicial Office Holder. Skipping to waiting room', {
                         conference: conference.id,
                         participant: participant.id
                     });

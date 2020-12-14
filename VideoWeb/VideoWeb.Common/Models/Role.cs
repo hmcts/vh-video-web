@@ -8,6 +8,7 @@ namespace VideoWeb.Common.Models
         HearingFacilitationSupport = 3,
         Judge = 4,
         Individual = 5,
-        Representative = 6
+        Representative = 6,
+        JudicialOfficeHolder = 7
     }
 }

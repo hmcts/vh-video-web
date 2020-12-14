@@ -16,6 +16,7 @@ namespace VideoWeb.UnitTests.Mappings
         [TestCase("Individual", Role.Individual)]
         [TestCase("Judge", Role.Judge)]
         [TestCase("CaseAdmin", Role.CaseAdmin)]
+        [TestCase("JudicialOfficeHolder", Role.JudicialOfficeHolder)]
         public void Should_map_to_user_role(string role, Role expectedRole)
         {
             var profile = new UserProfile
@@ -33,7 +34,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.DisplayName.Should().Be(profile.Display_name);
             response.Username.Should().Be(profile.User_name);
         }
-        
+
         [Test]
         public void Should_throw_exception_when_role_is_unsupported()
         {
@@ -50,6 +51,7 @@ namespace VideoWeb.UnitTests.Mappings
         [TestCase(AppRoles.CitizenRole, Role.Individual)]
         [TestCase(AppRoles.JudgeRole, Role.Judge)]
         [TestCase(AppRoles.CaseAdminRole, Role.CaseAdmin)]
+        [TestCase(AppRoles.JudicialOfficeHolderRole, Role.JudicialOfficeHolder)]
         public void should_map_claim_to_profile(string role, Role expectedRole)
         {
             const string firstName = "John";
@@ -63,7 +65,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .WithUsername(username)
                 .WithRole(role).Build();
 
-            
+
             var response = UserProfileResponseMapper.MapUserToResponseModel(user);
             response.Role.Should().Be(expectedRole);
             response.FirstName.Should().Be(firstName);
@@ -71,7 +73,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.DisplayName.Should().Be(displayName);
             response.Username.Should().Be(username);
         }
-        
+
         [Test]
         public void Should_throw_exception_when_claim_role_is_unsupported()
         {

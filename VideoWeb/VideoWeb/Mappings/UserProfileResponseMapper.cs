@@ -10,13 +10,14 @@ namespace VideoWeb.Mappings
 {
     public static class UserProfileResponseMapper
     {
-       
-        
+
+
         const string Vhofficer = "VhOfficer";
         const string Representative = "Representative";
         const string Individual = "Individual";
         const string Judge = "Judge";
         const string CaseAdmin = "CaseAdmin";
+        const string JudicialOfficeHolder = "JudicialOfficeHolder";
 
         public static UserProfileResponse MapToResponseModel(UserProfile profile)
         {
@@ -37,6 +38,7 @@ namespace VideoWeb.Mappings
                 Individual => Role.Individual,
                 Judge => Role.Judge,
                 CaseAdmin => Role.CaseAdmin,
+                JudicialOfficeHolder => Role.JudicialOfficeHolder,
                 _ => throw new NotSupportedException($"Role {userRole} is not supported for this application")
             };
 
@@ -68,20 +70,25 @@ namespace VideoWeb.Mappings
             {
                 return Role.Judge;
             }
-            
+
             if (roleClaims.Exists(x => x.Value == AppRoles.RepresentativeRole))
             {
                 return Role.Representative;
             }
-            
+
             if (roleClaims.Exists(x => x.Value == AppRoles.CitizenRole))
             {
                 return Role.Individual;
             }
-            
+
             if (roleClaims.Exists(x => x.Value == AppRoles.CaseAdminRole))
             {
                 return Role.CaseAdmin;
+            }
+
+            if (roleClaims.Exists(x => x.Value == AppRoles.JudicialOfficeHolderRole))
+            {
+                return Role.JudicialOfficeHolder;
             }
 
             throw new NotSupportedException($"Role is not supported for this application");
