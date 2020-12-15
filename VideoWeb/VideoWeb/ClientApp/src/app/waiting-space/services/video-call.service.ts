@@ -7,6 +7,7 @@ import { SessionStorage } from 'src/app/services/session-storage';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { CallError, CallSetup, ConferenceUpdated, ConnectedCall, DisconnectedCall, ParticipantUpdated } from '../models/video-call-models';
+import { VideoCallPreferences } from './video-call-preferences.mode';
 
 declare var PexRTC: any;
 
@@ -14,6 +15,8 @@ declare var PexRTC: any;
 export class VideoCallService {
     private readonly loggerPrefix = '[VideoCallService] -';
     private readonly preferredLayoutCache: SessionStorage<Record<string, HearingLayout>>;
+    private readonly videoCallPreferences: SessionStorage<VideoCallPreferences>;
+    readonly VIDEO_CALL_PREFERENCE_KEY = 'vh.videocall.preferences';
     readonly PREFERRED_LAYOUT_KEY = 'vh.preferred.layout';
 
     private onSetupSubject = new Subject<CallSetup>();
@@ -28,8 +31,12 @@ export class VideoCallService {
 
     constructor(private logger: Logger, private userMediaService: UserMediaService, private apiClient: ApiClient) {
         this.preferredLayoutCache = new SessionStorage(this.PREFERRED_LAYOUT_KEY);
+        this.videoCallPreferences = new SessionStorage(this.VIDEO_CALL_PREFERENCE_KEY);
         if (!this.preferredLayoutCache.get()) {
             this.preferredLayoutCache.set({});
+        }
+        if (!this.videoCallPreferences.get()) {
+            this.videoCallPreferences.set(new VideoCallPreferences());
         }
     }
 
@@ -272,5 +279,13 @@ export class VideoCallService {
             participant: participantId
         });
         return this.apiClient.dismissWitness(conferenceId, participantId).toPromise();
+    }
+
+    retrieveVideoCallPreferences(): VideoCallPreferences {
+        return this.videoCallPreferences.get();
+    }
+
+    updateVideoCallPreferences(updatedPreferences: VideoCallPreferences) {
+        this.videoCallPreferences.set(updatedPreferences);
     }
 }

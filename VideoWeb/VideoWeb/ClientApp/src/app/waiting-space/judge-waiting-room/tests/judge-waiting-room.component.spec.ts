@@ -31,6 +31,7 @@ import { SelectedUserMediaDevice } from '../../../shared/models/selected-user-me
 import { UserMediaDevice } from '../../../shared/models/user-media-device';
 import { CallError } from '../../models/video-call-models';
 import { NotificationSoundsService } from '../../services/notification-sounds.service';
+import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
 import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
@@ -110,6 +111,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         userMediaService.getPreferredCamera.and.resolveTo(testDataDevice.getListOfCameras()[0]);
         userMediaService.getPreferredMicrophone.and.resolveTo(testDataDevice.getListOfMicrophones()[0]);
         notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', ['playHearingAlertSound']);
+        videoCallService.retrieveVideoCallPreferences.and.returnValue(new VideoCallPreferences());
     });
 
     beforeEach(async () => {

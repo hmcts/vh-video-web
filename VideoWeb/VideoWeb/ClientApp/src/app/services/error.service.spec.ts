@@ -8,6 +8,7 @@ import { CallError } from '../waiting-space/models/video-call-models';
 import { ErrorService } from './error.service';
 import { Logger } from './logging/logger-base';
 import { SessionStorage } from './session-storage';
+import { ErrorMessage } from '../shared/models/error-message';
 
 describe('ErrorService', () => {
     let router: Router;
@@ -101,10 +102,7 @@ describe('ErrorService', () => {
             const error = new CallError('Call failed: a firewall may be blocking access.');
             const conferenceId = Guid.create().toString();
             service.handlePexipError(error, conferenceId);
-            expect(service.goToServiceError).toHaveBeenCalledWith(
-                'Your connection was lost',
-                'Please check your firewall settings and disable any privacy extensions that may block connections.'
-            );
+            expect(service.goToServiceError).toHaveBeenCalledWith('FirewallProblem');
         }
     ));
 
@@ -176,4 +174,11 @@ describe('ErrorService', () => {
             expect(service.goToMediaDeviceError).toHaveBeenCalledWith('DevicesNotFound');
         }
     ));
+    it('should get the error type message from storage for firewall issue', inject([ErrorService], (service: ErrorService) => {
+        const store = new SessionStorage<ErrorMessage>(service.ERROR_MESSAGE_KEY);
+        const expected = new ErrorMessage('Firewall', null, true);
+        store.set(expected);
+        const messageType = service.getErrorMessageFromStorage();
+        expect(messageType.title).toEqual(expected.title);
+    }));
 });
