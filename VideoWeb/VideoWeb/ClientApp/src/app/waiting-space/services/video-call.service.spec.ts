@@ -7,6 +7,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { VideoCallPreferences } from './video-call-preferences.mode';
 import { VideoCallService } from './video-call.service';
 
 describe('VideoCallService', () => {
@@ -230,5 +231,13 @@ describe('VideoCallService', () => {
         const witnessId = Guid.create().toString();
         await service.dismissParticipantFromHearing(conferenceId, witnessId);
         expect(apiClient.dismissWitness).toHaveBeenCalledWith(conferenceId, witnessId);
+    });
+
+    it('should return updated video call preferences', () => {
+        const prefs = new VideoCallPreferences({
+            audioOnly: true
+        });
+        service.updateVideoCallPreferences(prefs);
+        expect(service.retrieveVideoCallPreferences().audioOnly).toEqual(prefs.audioOnly);
     });
 });

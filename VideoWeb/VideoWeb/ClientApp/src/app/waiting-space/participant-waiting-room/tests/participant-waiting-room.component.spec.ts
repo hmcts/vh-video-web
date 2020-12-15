@@ -24,6 +24,7 @@ import { UserMediaStreamService } from 'src/app/services/user-media-stream.servi
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { HearingRole } from '../../models/hearing-role-model';
 import { NotificationSoundsService } from '../../services/notification-sounds.service';
+import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -104,6 +105,10 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             'playHearingAlertSound',
             'initHearingAlertSound'
         ]);
+
+        const preferences = new VideoCallPreferences();
+        preferences.audioOnly = false;
+        videoCallService.retrieveVideoCallPreferences.and.returnValue(preferences);
     });
 
     beforeEach(() => {
@@ -312,10 +317,12 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             new UserMediaDevice('camera1', 'id3445', 'videoinput', '1'),
             new UserMediaDevice('microphone', 'id123', 'audioinput', '1')
         );
+        device.audioOnly = true;
         component.onMediaDeviceChangeAccepted(device);
         expect(userMediaService.updatePreferredCamera).toHaveBeenCalled();
         expect(userMediaService.updatePreferredMicrophone).toHaveBeenCalled();
         expect(videoCallService.makeCall).toHaveBeenCalled();
+        expect(videoCallService.updateVideoCallPreferences.calls.mostRecent().args[0].audioOnly).toBeTruthy();
     });
     it('should on consultation accept stop streams for devices and close choose device popup', async () => {
         component.displayDeviceChangeModal = true;
