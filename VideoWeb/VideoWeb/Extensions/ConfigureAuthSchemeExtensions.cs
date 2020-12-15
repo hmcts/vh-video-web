@@ -73,19 +73,19 @@ namespace VideoWeb.Extensions
             serviceCollection.AddMemoryCache();
             serviceCollection.AddAuthPolicies();
         }
-        
+
         private static void AddAuthPolicies(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddAuthorization(AddPolicies);
             serviceCollection.AddMvc(AddMvcPolicies);
         }
-        
+
         private static void AddPolicies(AuthorizationOptions options)
         {
-            var allRoles = new []
+            var allRoles = new[]
             {
                 AppRoles.CitizenRole, AppRoles.JudgeRole, AppRoles.RepresentativeRole, AppRoles.CaseAdminRole,
-                AppRoles.VhOfficerRole
+                AppRoles.VhOfficerRole, AppRoles.JudicialOfficeHolderRole
             };
             options.AddPolicy("Default", new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
@@ -103,31 +103,31 @@ namespace VideoWeb.Extensions
                 .RequireAuthenticatedUser()
                 .AddAuthenticationSchemes("Callback")
                 .Build());
-            
+
             options.AddPolicy(AppRoles.JudgeRole, new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .RequireRole(AppRoles.JudgeRole)
                 .AddAuthenticationSchemes("Default")
                 .Build());
-            
+
             options.AddPolicy(AppRoles.VhOfficerRole, new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .RequireRole(AppRoles.VhOfficerRole)
                 .AddAuthenticationSchemes("Default")
                 .Build());
-            
+
             options.AddPolicy("Individual", new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .RequireRole(AppRoles.CitizenRole, AppRoles.RepresentativeRole)
                 .AddAuthenticationSchemes("Default")
                 .Build());
-            
+
             options.AddPolicy(AppRoles.RepresentativeRole, new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .RequireRole(AppRoles.RepresentativeRole)
                 .AddAuthenticationSchemes("Default")
                 .Build());
-            
+
             options.AddPolicy(AppRoles.CitizenRole, new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .RequireRole(AppRoles.CitizenRole)

@@ -1,14 +1,13 @@
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
-import { pageUrls } from 'src/app/shared/page-url.constants';
 import { hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import {
     activatedRoute,
     adalService,
+    clockService,
     consultationService,
     deviceTypeService,
     errorService,
@@ -24,21 +23,19 @@ import {
     userMediaStreamService,
     videoCallService,
     videoWebService
-} from '../../waiting-room-shared/tests/waiting-room-base-setup';
-import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
+} from '../waiting-room-shared/tests/waiting-room-base-setup';
+import { JohWaitingRoomComponent } from './joh-waiting-room.component';
 
-describe('JudgeWaitingRoomComponent when conference exists', () => {
-    let component: JudgeWaitingRoomComponent;
+describe('JohWaitingRoomComponent eventhub events', () => {
+    let component: JohWaitingRoomComponent;
     const hearingStatusSubject = hearingStatusSubjectMock;
-    let audioRecordingService: jasmine.SpyObj<AudioRecordingService>;
 
     beforeAll(() => {
         initAllWRDependencies();
-        audioRecordingService = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
     });
 
     beforeEach(async () => {
-        component = new JudgeWaitingRoomComponent(
+        component = new JohWaitingRoomComponent(
             activatedRoute,
             videoWebService,
             eventsService,
@@ -50,11 +47,12 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             deviceTypeService,
             router,
             consultationService,
-            audioRecordingService,
+            clockService,
             userMediaService,
             userMediaStreamService,
             notificationSoundsService
         );
+        adalService.userInfo.userName = globalParticipant.username;
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
@@ -64,46 +62,42 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.connected = true; // assume connected to pexip
         component.startEventHubSubscribers();
         videoWebService.getConferenceById.calls.reset();
-        router.navigate.calls.reset();
     });
 
     afterEach(() => {
-        component.eventHubSubscription$.unsubscribe();
+        component.ngOnDestroy();
     });
 
-    it('should return to judge hearing list when "closed" message received', fakeAsync(() => {
-        expect(component.displayDeviceChangeModal).toBeFalsy();
-        const status = ConferenceStatus.Closed;
-        const confWithCloseTime = new ConferenceResponse(Object.assign({}, globalConference));
-        confWithCloseTime.closed_date_time = new Date();
-        confWithCloseTime.status = status;
-        videoWebService.getConferenceById.and.resolveTo(confWithCloseTime);
-
+    it('should play hearing starting sound when "in session" message received', fakeAsync(() => {
+        const status = ConferenceStatus.InSession;
         const message = new ConferenceStatusMessage(globalConference.id, status);
+        notificationSoundsService.playHearingAlertSound.calls.reset();
 
         hearingStatusSubject.next(message);
         flushMicrotasks();
 
-        expect(component.hearing.status).toBe(status);
-        expect(component.conference.status).toBe(status);
-        expect(component.showVideo).toBeFalsy();
-        expect(videoWebService.getConferenceById).toHaveBeenCalledWith(globalConference.id);
-        expect(component.getConferenceStatusText()).toBe('Hearing is closed');
-        expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeHearingList]);
+        expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalled();
     }));
 
-    it('should ignore "closed" message for another conference', fakeAsync(() => {
-        const status = ConferenceStatus.Closed;
-        const confWithCloseTime = new ConferenceResponse(Object.assign({}, globalConference));
-        confWithCloseTime.closed_date_time = new Date();
-        confWithCloseTime.status = status;
-        router.navigate.calls.reset();
-
-        const message = new ConferenceStatusMessage(Guid.create().toString(), status);
+    it('should stop hearing starting sound when conference status message received is not "in session"', fakeAsync(() => {
+        const status = ConferenceStatus.Paused;
+        const message = new ConferenceStatusMessage(globalConference.id, status);
+        notificationSoundsService.stopHearingAlertSound.calls.reset();
 
         hearingStatusSubject.next(message);
         flushMicrotasks();
 
-        expect(router.navigate).toHaveBeenCalledTimes(0);
+        expect(notificationSoundsService.stopHearingAlertSound).toHaveBeenCalled();
+    }));
+
+    it('should ignore hearing message received for other conferences', fakeAsync(() => {
+        const status = ConferenceStatus.InSession;
+        const message = new ConferenceStatusMessage(Guid.create().toString(), status);
+        notificationSoundsService.playHearingAlertSound.calls.reset();
+
+        hearingStatusSubject.next(message);
+        flushMicrotasks();
+
+        expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalledTimes(0);
     }));
 });

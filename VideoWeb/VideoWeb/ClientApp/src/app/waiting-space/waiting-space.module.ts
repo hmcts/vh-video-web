@@ -28,6 +28,7 @@ import { SelectHearingLayoutComponent } from './select-hearing-layout/select-hea
 import { ConfirmCloseHearingPopupComponent } from './confirmation/confirm-close-hearing-popup.component';
 import { HearingLayoutComponent } from './select-hearing-layout/hearing-layout.component';
 import { ConfirmStartHearingPopupComponent } from './confirmation/confirm-start-hearing-popup.component';
+import { JohWaitingRoomComponent } from './joh-waiting-room/joh-waiting-room.component';
 
 @NgModule({
     imports: [SharedModule, WaitingSpaceRoutingModule],
@@ -56,7 +57,8 @@ import { ConfirmStartHearingPopupComponent } from './confirmation/confirm-start-
         ConfirmCloseHearingPopupComponent,
         ConfirmStartHearingPopupComponent,
         HearingLayoutComponent,
-        JudgeContextMenuComponent
+        JudgeContextMenuComponent,
+        JohWaitingRoomComponent
     ],
     providers: [VideoCallService, NotificationSoundsService]
 })

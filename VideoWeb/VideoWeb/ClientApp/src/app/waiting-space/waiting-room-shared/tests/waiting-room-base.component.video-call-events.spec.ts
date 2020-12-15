@@ -1,106 +1,54 @@
-import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
-import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse, Role, TokenResponse } from 'src/app/services/clients/api-client';
-import { ClockService } from 'src/app/services/clock.service';
-import { DeviceTypeService } from 'src/app/services/device-type.service';
-import { ErrorService } from 'src/app/services/error.service';
-import { Logger } from 'src/app/services/logging/logger-base';
-import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
+import { ConferenceResponse, ConferenceStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
+import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
-import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import {
-    onCallTransferredMock,
+    onSetupSubjectMock,
     onConnectedSubjectMock,
     onDisconnectedSubjectMock,
     onErrorSubjectMock,
-    onSetupSubjectMock,
-    videoCallServiceSpy
+    onCallTransferredMock
 } from 'src/app/testing/mocks/mock-video-call-service';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { Hearing } from '../../../shared/models/hearing';
-import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../../models/video-call-models';
-import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
-import { UserMediaService } from 'src/app/services/user-media.service';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
-import { NotificationSoundsService } from '../../services/notification-sounds.service';
+import { CallSetup, ConnectedCall, CallError, DisconnectedCall } from '../../models/video-call-models';
+import {
+    activatedRoute,
+    adalService,
+    clockService,
+    consultationService,
+    deviceTypeService,
+    errorService,
+    eventsService,
+    globalConference,
+    globalParticipant,
+    heartbeatModelMapper,
+    initAllWRDependencies,
+    logger,
+    notificationSoundsService,
+    router,
+    userMediaService,
+    userMediaStreamService,
+    videoCallService,
+    videoWebService
+} from './waiting-room-base-setup';
+import { WRTestComponent } from './WRTestComponent';
 
-describe('ParticipantWaitingRoomComponent video call events', () => {
-    let component: ParticipantWaitingRoomComponent;
-    const gloalConference = new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse;
-    const globalParticipant = gloalConference.participants.filter(x => x.role === Role.Individual)[0];
+describe('WaitingRoomComponent Video Call', () => {
+    let component: WRTestComponent;
+    const mockHeartbeat = {
+        kill: jasmine.createSpy()
+    };
 
     const onSetupSubject = onSetupSubjectMock;
     const onConnectedSubject = onConnectedSubjectMock;
     const onDisconnectedSubject = onDisconnectedSubjectMock;
     const onErrorSubject = onErrorSubjectMock;
     const onTransferSubject = onCallTransferredMock;
-    const videoCallService = videoCallServiceSpy;
-
-    const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: gloalConference.id }) } };
-    let videoWebService: jasmine.SpyObj<VideoWebService>;
-    const eventsService = eventsServiceSpy;
-
-    let adalService: jasmine.SpyObj<AdalService>;
-    let errorService: jasmine.SpyObj<ErrorService>;
-
-    let clockService: jasmine.SpyObj<ClockService>;
-    let router: jasmine.SpyObj<Router>;
-    let heartbeatModelMapper: HeartbeatModelMapper;
-    let deviceTypeService: jasmine.SpyObj<DeviceTypeService>;
-
-    let consultationService: jasmine.SpyObj<ConsultationService>;
-    const logger: Logger = new MockLogger();
-    let userMediaService: jasmine.SpyObj<UserMediaService>;
-    let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
-    let notificationSoundsService: jasmine.SpyObj<NotificationSoundsService>;
-
-    const mockHeartbeat = {
-        kill: jasmine.createSpy()
-    };
-
-    const jwToken = new TokenResponse({
-        expires_on: '06/10/2020 01:13:00',
-        token:
-            'eyJhbGciOiJIUzUxMuIsInR5cCI6IkpXRCJ9.eyJ1bmlxdWVfbmFtZSI6IjA0NjllNGQzLTUzZGYtNGExYS04N2E5LTA4OGI0MmExMTQxMiIsIm5iZiI6MTU5MTcyMjcyMCwiZXhwIjoxNTkxNzUxNjQwLCJpYXQiOjE1OTE3MjI3ODAsImlzcyI6ImhtY3RzLnZpZGVvLmhlYXJpbmdzLnNlcnZpY2UifO.USebpA7R7GUiPwF-uSuAd7Sx-bveOFi8LNE3oV7SLxdxASTlq7MfwhgYJhaC69OQAhWcrV7wSdcZ2OS-ZHkSUg'
-    });
 
     beforeAll(() => {
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
-            'getConferenceById',
-            'getObfuscatedName',
-            'getJwToken'
-        ]);
-        videoWebService.getConferenceById.and.resolveTo(gloalConference);
-        videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
-        videoWebService.getJwToken.and.resolveTo(jwToken);
-
-        adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
-            userInfo: <adal.User>{ userName: globalParticipant.username, authenticated: true }
-        });
-        errorService = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError', 'handleApiError', 'handlePexipError']);
-
-        clockService = jasmine.createSpyObj<ClockService>('ClockService', ['getClock']);
-        router = jasmine.createSpyObj<Router>('Router', ['navigate']);
-        heartbeatModelMapper = new HeartbeatModelMapper();
-        deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', ['getBrowserName', 'getBrowserVersion']);
-        consultationService = consultationServiceSpyFactory();
-        userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
-            'updatePreferredCamera',
-            'updatePreferredMicrophone'
-        ]);
-        userMediaStreamService = jasmine.createSpyObj<UserMediaStreamService>('UserMediaStreamService', [
-            'stopStream',
-            'getStreamForCam',
-            'getStreamForMic'
-        ]);
-        notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', ['playHearingAlertSound']);
+        initAllWRDependencies();
     });
 
     beforeEach(async () => {
-        component = new ParticipantWaitingRoomComponent(
+        component = new WRTestComponent(
             activatedRoute,
             videoWebService,
             eventsService,
@@ -118,7 +66,7 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
             notificationSoundsService
         );
 
-        const conference = new ConferenceResponse(Object.assign({}, gloalConference));
+        const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
         component.hearing = new Hearing(conference);
         component.conference = conference;
@@ -133,6 +81,14 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
         if (component.callbackTimeout) {
             clearTimeout(component.callbackTimeout);
         }
+    });
+
+    it('should get token and connect to video call', async () => {
+        videoCallService.makeCall.calls.reset();
+
+        await component.getJwtokenAndConnectToPexip();
+        expect(component.token).toBeDefined();
+        expect(videoCallService.makeCall).toHaveBeenCalled();
     });
 
     it('should init pexip setup to be called on start', () => {
@@ -154,9 +110,6 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
 
         spyOn(component, 'setupParticipantHeartbeat').and.callFake(() => (component.heartbeat = mockHeartbeat));
         spyOn(component, 'assignStream');
-        spyOnProperty(window, 'navigator').and.returnValue({
-            userAgent: 'Chrome'
-        });
         const incomingStream = <any>{};
         const payload = new ConnectedCall(incomingStream);
 
@@ -173,9 +126,6 @@ describe('ParticipantWaitingRoomComponent video call events', () => {
     it('should not define incoming stream when video call has connected but not stream if given', () => {
         spyOn(component, 'setupParticipantHeartbeat').and.callFake(() => (component.heartbeat = mockHeartbeat));
         spyOn(component, 'assignStream');
-        spyOnProperty(window, 'navigator').and.returnValue({
-            userAgent: 'Chrome'
-        });
         const incomingStream = null;
         const payload = new ConnectedCall(incomingStream);
 

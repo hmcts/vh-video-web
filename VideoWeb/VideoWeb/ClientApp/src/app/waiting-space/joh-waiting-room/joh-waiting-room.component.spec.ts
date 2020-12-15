@@ -4,8 +4,6 @@ import { ConferenceResponse, ConferenceStatus, ParticipantResponse } from 'src/a
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { HearingRole } from '../../models/hearing-role-model';
-import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
 import {
     activatedRoute,
     adalService,
@@ -25,23 +23,19 @@ import {
     userMediaStreamService,
     videoCallService,
     videoWebService
-} from '../../waiting-room-shared/tests/waiting-room-base-setup';
-import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
+} from '../waiting-room-shared/tests/waiting-room-base-setup';
+import { JohWaitingRoomComponent } from './joh-waiting-room.component';
 
-describe('ParticipantWaitingRoomComponent when conference exists', () => {
-    let component: ParticipantWaitingRoomComponent;
+describe('JohWaitingRoomComponent', () => {
+    let component: JohWaitingRoomComponent;
     const conferenceTestData = new ConferenceTestData();
 
     beforeAll(() => {
         initAllWRDependencies();
-
-        const preferences = new VideoCallPreferences();
-        preferences.audioOnly = false;
-        videoCallService.retrieveVideoCallPreferences.and.returnValue(preferences);
     });
 
-    beforeEach(() => {
-        component = new ParticipantWaitingRoomComponent(
+    beforeEach(async () => {
+        component = new JohWaitingRoomComponent(
             activatedRoute,
             videoWebService,
             eventsService,
@@ -58,7 +52,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             userMediaStreamService,
             notificationSoundsService
         );
-
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
         component.hearing = new Hearing(conference);
@@ -106,6 +99,13 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         expect(component.announceHearingIsAboutToStart).toHaveBeenCalledTimes(1);
     });
 
+    it('should set hearing announced to true when hearing sound has played', async () => {
+        notificationSoundsService.playHearingAlertSound.calls.reset();
+        await component.announceHearingIsAboutToStart();
+        expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalled();
+        expect(component.hearingStartingAnnounced).toBeTruthy();
+    });
+
     it('should clear subscription and go to hearing list when conference is past closed time', () => {
         const conf = new ConferenceTestData().getConferenceDetailNow();
         const status = ConferenceStatus.Closed;
@@ -124,8 +124,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
     const getConferenceStatusTextTestCases = [
         { conference: conferenceTestData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: '' },
-        { conference: conferenceTestData.getConferenceDetailNow(), status: ConferenceStatus.NotStarted, expected: 'is about to begin' },
-        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.NotStarted, expected: 'is delayed' },
         { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.InSession, expected: 'is in session' },
         { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Paused, expected: 'is paused' },
         { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Suspended, expected: 'is suspended' },
@@ -140,50 +138,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         });
     });
 
-    it('should set hearing announced to true when hearing sound has played', async () => {
-        notificationSoundsService.playHearingAlertSound.calls.reset();
-        await component.announceHearingIsAboutToStart();
-        expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalled();
-        expect(component.hearingStartingAnnounced).toBeTruthy();
-    });
-
-    it('should return false when the participant is not a witness', () => {
-        component.participant.hearing_role = HearingRole.WINGER;
-
-        expect(component.isWitness).toBeFalsy();
-    });
-    it('should return true when the participant is a witness', () => {
-        component.participant.hearing_role = HearingRole.WITNESS;
-
-        expect(component.isWitness).toBeTruthy();
-    });
-    it('should return false when the participant is not a witness', () => {
-        component.participant.hearing_role = HearingRole.JUDGE;
-
-        expect(component.isWitness).toBeFalsy();
-    });
-    it('should show extra content when not showing video and witness is not being transferred in', () => {
-        component.isTransferringIn = false;
-        component.showVideo = false;
-
-        expect(component.showExtraContent).toBeTruthy();
-    });
-    it('should not show extra content when we are showing video and witness is not being transferred in', () => {
-        component.isTransferringIn = false;
-        component.showVideo = true;
-
-        expect(component.showExtraContent).toBeFalsy();
-    });
-    it('should not show extra content when we are not showing video and witness is being transferred in', () => {
-        component.isTransferringIn = true;
-        component.showVideo = false;
-
-        expect(component.showExtraContent).toBeFalsy();
-    });
-    it('should not show extra content when we are showing video and witness is being transferred in', () => {
-        component.isTransferringIn = true;
-        component.showVideo = true;
-
-        expect(component.showExtraContent).toBeFalsy();
+    it('should return "hearing-on-time" class despite whatever status', () => {
+        expect(component.getCurrentTimeClass()).toBe('hearing-on-time');
     });
 });
