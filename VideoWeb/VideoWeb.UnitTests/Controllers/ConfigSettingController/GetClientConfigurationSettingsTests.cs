@@ -1,3 +1,4 @@
+using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -5,6 +6,7 @@ using NUnit.Framework;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
+using VideoWeb.Mappings;
 
 namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
 {
@@ -28,7 +30,7 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
             };
 
             var configSettingsController = new ConfigSettingsController(Options.Create(securitySettings),
-                Options.Create(servicesConfiguration));
+                Options.Create(servicesConfiguration), new ClientSettingsResponseMapper());
 
             var actionResult = (OkObjectResult)configSettingsController.GetClientConfigurationSettings().Result;
             var clientSettings = (ClientSettingsResponse)actionResult.Value;

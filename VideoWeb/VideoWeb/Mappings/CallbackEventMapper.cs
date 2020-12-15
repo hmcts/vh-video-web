@@ -8,9 +8,9 @@ using RoomType = VideoWeb.Common.Models.RoomType;
 
 namespace VideoWeb.Mappings
 {
-    public static class CallbackEventMapper
+    public class CallbackEventMapper : IMapTo<CallbackEvent, ConferenceEventRequest, Conference>
     {
-        public static CallbackEvent MapConferenceEventToCallbackEventModel(ConferenceEventRequest request, Conference conference)
+        public CallbackEvent Map(ConferenceEventRequest request, Conference conference)
         {
             var eventType = Enum.Parse<EventType>(request.Event_type.ToString());
             var conferenceId = Guid.Parse(request.Conference_id);
@@ -49,25 +49,25 @@ namespace VideoWeb.Mappings
             return callbackEvent;
         }
 
-        private static bool IsEndpointJoined(CallbackEvent callbackEvent, Conference conference)
+        private bool IsEndpointJoined(CallbackEvent callbackEvent, Conference conference)
         {
             return callbackEvent.EventType == EventType.Joined &&
                    conference.Endpoints.Any(x => x.Id == callbackEvent.ParticipantId);
         }
         
-        private static bool IsEndpointDisconnected(CallbackEvent callbackEvent, Conference conference)
+        private bool IsEndpointDisconnected(CallbackEvent callbackEvent, Conference conference)
         {
             return callbackEvent.EventType == EventType.Disconnected &&
                    conference.Endpoints.Any(x => x.Id == callbackEvent.ParticipantId);
         }
         
-        private static bool IsEndpointTransferred(CallbackEvent callbackEvent, Conference conference)
+        private bool IsEndpointTransferred(CallbackEvent callbackEvent, Conference conference)
         {
             return callbackEvent.EventType == EventType.Transfer &&
                    conference.Endpoints.Any(x => x.Id == callbackEvent.ParticipantId);
         }
 
-        private static RoomType? MapRoom(string room)
+        private RoomType? MapRoom(string room)
         {
             if (string.IsNullOrWhiteSpace(room))
             {

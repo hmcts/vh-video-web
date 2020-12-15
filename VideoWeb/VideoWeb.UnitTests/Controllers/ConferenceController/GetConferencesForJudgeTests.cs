@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Common.Caching;
 using VideoWeb.Controllers;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
@@ -20,23 +19,20 @@ using UserRole = VideoWeb.Services.Video.UserRole;
 using Conference = VideoWeb.Services.Video.ConferenceForJudgeResponse;
 using Participant = VideoWeb.Services.Video.ParticipantForJudgeResponse;
 using ConferenceForJudgeResponse = VideoWeb.Contract.Responses.ConferenceForJudgeResponse;
+using Autofac.Extras.Moq;
+using VideoWeb.Mappings;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
     public class GetConferencesForJudgeTests
     {
+        private AutoMock _mocker;
         private ConferencesController _controller;
-        private Mock<IVideoApiClient> _videoApiClientMock;
-        private Mock<ILogger<ConferencesController>> _mockLogger;
-        private Mock<IConferenceCache> _mockConferenceCache;
 
         [SetUp]
         public void Setup()
         {
-            _videoApiClientMock = new Mock<IVideoApiClient>();
-            _mockLogger = new Mock<ILogger<ConferencesController>>();
-            _mockConferenceCache = new Mock<IConferenceCache>();
-
+            _mocker = AutoMock.GetLoose();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
             {
@@ -46,13 +42,20 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 }
             };
 
-            _controller = new ConferencesController(_videoApiClientMock.Object,
-                _mockLogger.Object, _mockConferenceCache.Object)
-            {
-                ControllerContext = context
-            };
-
-            _mockConferenceCache.Setup(x => x.AddConferenceAsync(It.IsAny<ConferenceDetailsResponse>()));
+            var parameters = new ParameterBuilder(_mocker)
+                .AddTypedParameters<ParticipantResponseMapper>()
+                .AddTypedParameters<EndpointsResponseMapper>()
+                .AddTypedParameters<ParticipantForJudgeResponseMapper>()
+                .AddTypedParameters<ParticipantResponseForVhoMapper>()
+                .AddTypedParameters<ParticipantForUserResponseMapper>()
+                .AddTypedParameters<ConferenceForJudgeResponseMapper>()
+                .AddTypedParameters<ConferenceForIndividualResponseMapper>()
+                .AddTypedParameters<ConferenceForVhOfficerResponseMapper>()
+                .AddTypedParameters<ConferenceResponseVhoMapper>()
+                .AddTypedParameters<ConferenceResponseMapper>()
+                .Build();
+            _controller = _mocker.Create<ConferencesController>(parameters);
+            _controller.ControllerContext = context;
         }
 
         [Test]
@@ -70,8 +73,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .With(x => x.Status = ConferenceState.NotStarted)
                 .With(x => x.Participants = participants)
                 .Build().ToList();
-            
-            _videoApiClientMock
+
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferencesTodayForJudgeByUsernameAsync(It.IsAny<string>()))
                 .ReturnsAsync(conferences);
 
@@ -94,7 +97,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public async Task Should_return_ok_with_no_conferences()
         {
             var conferences = new List<Conference>();
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferencesTodayForJudgeByUsernameAsync(It.IsAny<string>()))
                 .ReturnsAsync(conferences);
 
@@ -112,7 +115,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         {
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
                 "Please provide a valid email", null, default, null);
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferencesTodayForJudgeByUsernameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
@@ -128,7 +131,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var apiException = new VideoApiException<ProblemDetails>("Unauthorised Token",
                 (int) HttpStatusCode.Unauthorized,
                 "Invalid Client ID", null, default, null);
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferencesTodayForJudgeByUsernameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
@@ -144,7 +147,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
                 (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferencesTodayForJudgeByUsernameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 

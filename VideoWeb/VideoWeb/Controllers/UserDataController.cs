@@ -20,11 +20,16 @@ namespace VideoWeb.Controllers
     {
         private readonly IUserApiClient _userApiClient;
         private readonly ILogger<UserDataController> _logger;
+        private readonly IMapTo<List<CourtRoomsAccountResponse>, IEnumerable<UserResponse>, IEnumerable<string>> _courtRoomsAccountResponsesMapper;
 
-        public UserDataController(IUserApiClient userApiClient, ILogger<UserDataController> logger)
+        public UserDataController(
+            IUserApiClient userApiClient,
+            ILogger<UserDataController> logger,
+            IMapTo<List<CourtRoomsAccountResponse>, IEnumerable<UserResponse>, IEnumerable<string>> courtRoomsAccountResponsesMapper)
         {
             _userApiClient = userApiClient;
             _logger = logger;
+            _courtRoomsAccountResponsesMapper = courtRoomsAccountResponsesMapper;
         }
 
         /// <summary>
@@ -39,7 +44,7 @@ namespace VideoWeb.Controllers
             {
                 var response = await _userApiClient.GetJudgesAsync();
 
-                var accountList = CourtRoomsAccountResponseMapper.MapUserToCourtRoomsAccount(response, query.UserNames);
+                var accountList = _courtRoomsAccountResponsesMapper.Map(response, query.UserNames);
 
                 return Ok(accountList);
             }

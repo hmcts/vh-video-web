@@ -1,16 +1,23 @@
 using System;
 using System.Linq;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Responses;
 using Conference = VideoWeb.Services.Video.ConferenceForJudgeResponse;
-using Participant = VideoWeb.Services.Video.ParticipantForJudgeResponse;
 using ConferenceForJudgeResponse = VideoWeb.Contract.Responses.ConferenceForJudgeResponse;
-using ParticipantForJudgeResponse = VideoWeb.Contract.Responses.ParticipantForJudgeResponse;
+using Participant = VideoWeb.Services.Video.ParticipantForJudgeResponse;
 
 namespace VideoWeb.Mappings
 {
-    public static class ConferenceForJudgeResponseMapper
+    public class ConferenceForJudgeResponseMapper : IMapTo<ConferenceForJudgeResponse, Conference>
     {
-        public static ConferenceForJudgeResponse MapConferenceSummaryToModel(Conference conference)
+        private readonly IMapTo<ParticipantForJudgeResponse, Participant> _participantForJudgeResponseMapper;
+
+        public ConferenceForJudgeResponseMapper(IMapTo<ParticipantForJudgeResponse, Participant> participantForJudgeResponseMapper)
+        {
+            _participantForJudgeResponseMapper = participantForJudgeResponseMapper;
+        }
+
+        public ConferenceForJudgeResponse Map(Conference conference)
         {
             return new ConferenceForJudgeResponse
             {
@@ -21,24 +28,8 @@ namespace VideoWeb.Mappings
                 CaseType = conference.Case_type,
                 ScheduledDuration = conference.Scheduled_duration,
                 ScheduledDateTime = conference.Scheduled_date_time,
-                Participants = conference.Participants
-                    .Select(ParticipantForJudgeResponseMapper.MapParticipantSummaryToModel).ToList(),
+                Participants = conference.Participants.Select(_participantForJudgeResponseMapper.Map).ToList(),
                 NumberOfEndpoints = conference.Number_of_endpoints
-            };
-        }
-    }
-
-    public static class ParticipantForJudgeResponseMapper
-    {
-        public static ParticipantForJudgeResponse MapParticipantSummaryToModel(Participant participant)
-        {
-            return new ParticipantForJudgeResponse
-            {
-                Role = Enum.Parse<Role>(participant.Role.ToString()),
-                DisplayName = participant.Display_name,
-                Representee = participant.Representee,
-                CaseTypeGroup = participant.Case_type_group,
-                HearingRole = participant.Hearing_role
             };
         }
     }

@@ -5,13 +5,21 @@ using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
+using VideoWeb.UnitTests.Builders;
 using Conference = VideoWeb.Services.Video.ConferenceForJudgeResponse;
 using Participant = VideoWeb.Services.Video.ParticipantForJudgeResponse;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class ConferenceForJudgeResponseMapperTests
+    public class ConferenceForJudgeResponseMapperTests : BaseMockerSutTestSetup<ConferenceForJudgeResponseMapper>
     {
+        [SetUp]
+        public void Setup()
+        {
+            var parameters = new ParameterBuilder(_mocker).AddTypedParameters<ParticipantForJudgeResponseMapper>().Build();
+            _sut = _mocker.Create<ConferenceForJudgeResponseMapper>(parameters);
+        }
+
         [Test]
         public void Should_map_all_properties()
         {
@@ -29,7 +37,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Number_of_endpoints = 2)
                 .Build();
 
-            var response = ConferenceForJudgeResponseMapper.MapConferenceSummaryToModel(conference);
+            var response = _sut.Map(conference);
 
             response.Id.Should().Be(conference.Id);
             response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);

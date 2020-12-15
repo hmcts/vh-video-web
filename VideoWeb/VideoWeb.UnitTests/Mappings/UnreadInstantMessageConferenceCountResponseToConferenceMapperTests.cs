@@ -11,7 +11,7 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class UnreadInstantMessageConferenceResponseMapperTests
+    public class UnreadInstantMessageConferenceCountResponseToConferenceMapperTests : BaseMockerSutTestSetup<UnreadInstantMessageConferenceCountResponseMapper>
     {
         [Test]
         public void Should_map_and_count_number_of_messages_since_vho_message()
@@ -48,8 +48,7 @@ namespace VideoWeb.UnitTests.Mappings
                     {From = judge.Username, Message_text = "judge - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-7), To = vho1Username},
             };
 
-            var response =
-                UnreadInstantMessageConferenceResponseMapper.MapToResponseModel(conference, messages);
+            var response = _sut.Map(conference, messages);
 
             response.NumberOfUnreadMessagesConference[0].NumberOfUnreadMessages = 2;
             response.NumberOfUnreadMessagesConference[0].ParticipantUsername = judge.Username;

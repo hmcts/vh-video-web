@@ -4,14 +4,20 @@ using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Services.Video;
-using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
 using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.Mappings
 {
-    public static class ConferenceResponseVhoMapper
+    public class ConferenceResponseVhoMapper : IMapTo<ConferenceResponseVho, ConferenceDetailsResponse>
     {
-        public static ConferenceResponseVho MapConferenceDetailsToResponseModel(ConferenceDetailsResponse conference)
+        private readonly IMapTo<ParticipantResponseVho, ParticipantDetailsResponse> _participantResponseVhoMapper;
+
+        public ConferenceResponseVhoMapper(IMapTo<ParticipantResponseVho, ParticipantDetailsResponse> participantResponseVhoMapper)
+        {
+            _participantResponseVhoMapper = participantResponseVhoMapper;
+        }
+
+        public ConferenceResponseVho Map(ConferenceDetailsResponse conference)
         {
             if (!Enum.TryParse(conference.Current_status.ToString(), true, out ConferenceStatus status))
             {
@@ -22,7 +28,7 @@ namespace VideoWeb.Mappings
 
             var participants = conference.Participants
                 .OrderBy(x => x.Case_type_group)
-                .Select(ParticipantResponseForVhoMapper.MapParticipantToResponseModel)
+                .Select(_participantResponseVhoMapper.Map)
                 .ToList();
 
             var response = new ConferenceResponseVho
@@ -50,7 +56,7 @@ namespace VideoWeb.Mappings
             return response;
         }
 
-        private static void AssignTilePositions(ConferenceDetailsResponse conference, ConferenceResponseVho response)
+        private void AssignTilePositions(ConferenceDetailsResponse conference, ConferenceResponseVho response)
         {
             var tiledParticipants = conference.Participants.Where(x =>
                 x.User_role == UserRole.Individual || x.User_role == UserRole.Representative).ToList();

@@ -5,10 +5,9 @@ using VideoWeb.Services.User;
 
 namespace VideoWeb.Mappings
 {
-    public static class CourtRoomsAccountResponseMapper
+    public class CourtRoomsAccountResponseMapper : IMapTo<List<CourtRoomsAccountResponse>, IEnumerable<UserResponse>, IEnumerable<string>>
     {
-
-        public static List<CourtRoomsAccountResponse> MapUserToCourtRoomsAccount(IEnumerable<UserResponse> userResponses, IEnumerable<string> userNames)
+        public List<CourtRoomsAccountResponse> Map(IEnumerable<UserResponse> userResponses, IEnumerable<string> userNames)
         {
             var accountList = userResponses
                 .Where(x => userNames.Any(s => x.First_name == s))

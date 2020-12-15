@@ -11,6 +11,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Helpers;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 
@@ -26,14 +27,26 @@ namespace VideoWeb.Controllers
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<InstantMessagesController> _logger;
         private readonly IMessageDecoder _messageDecoder;
+        private readonly IMapTo<UnreadInstantMessageConferenceCountResponse, Conference, IList<InstantMessageResponse>> _unreadInstantMessageConferenceCountResponseMapper;
+        private readonly IMapTo<UnreadAdminMessageResponse, Conference, IList<InstantMessageResponse>> _unreadAdminMessageResponseMapper;
+        private readonly IMapTo<ChatResponse, InstantMessageResponse, string, bool> _chatResponseMapper;
 
-        public InstantMessagesController(IVideoApiClient videoApiClient, ILogger<InstantMessagesController> logger,
-            IMessageDecoder messageDecoder, IConferenceCache conferenceCache)
+        public InstantMessagesController(
+            IVideoApiClient videoApiClient,
+            ILogger<InstantMessagesController> logger,
+            IMessageDecoder messageDecoder,
+            IConferenceCache conferenceCache,
+            IMapTo<UnreadInstantMessageConferenceCountResponse, Conference, IList<InstantMessageResponse>> unreadInstantMessageConferenceCountResponseMapper,
+            IMapTo<UnreadAdminMessageResponse, Conference, IList<InstantMessageResponse>> unreadAdminMessageResponseMapper,
+            IMapTo<ChatResponse, InstantMessageResponse, string, bool> chatResponseMapper)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _messageDecoder = messageDecoder;
             _conferenceCache = conferenceCache;
+            _unreadInstantMessageConferenceCountResponseMapper = unreadInstantMessageConferenceCountResponseMapper;
+            _unreadAdminMessageResponseMapper = unreadAdminMessageResponseMapper;
+            _chatResponseMapper = chatResponseMapper;
         }
 
         /// <summary>
@@ -95,7 +108,7 @@ namespace VideoWeb.Controllers
                     () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
                 );
 
-                var response = UnreadInstantMessageConferenceResponseMapper.MapToResponseModel(conference, messages);
+                var response = _unreadInstantMessageConferenceCountResponseMapper.Map(conference, messages);
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -132,7 +145,7 @@ namespace VideoWeb.Controllers
                     () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
                 );
 
-                var response = UnreadAdminMessageResponseMapper.MapToResponseModel(conference, messages);
+                var response = _unreadAdminMessageResponseMapper.Map(conference, messages);
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -171,7 +184,7 @@ namespace VideoWeb.Controllers
                 {
                     fromDisplayName = await _messageDecoder.GetMessageOriginatorAsync(conference, message);
                 }
-                var mapped = ChatResponseMapper.MapToResponseModel(message, fromDisplayName, isUser);
+                var mapped = _chatResponseMapper.Map(message, fromDisplayName, isUser);
                 response.Add(mapped);
             }
 

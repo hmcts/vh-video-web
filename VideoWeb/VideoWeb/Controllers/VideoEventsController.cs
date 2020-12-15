@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using EventType = VideoWeb.EventHub.Enums.EventType;
@@ -24,15 +26,17 @@ namespace VideoWeb.Controllers
         private readonly IEventHandlerFactory _eventHandlerFactory;
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<VideoEventsController> _logger;
+        private readonly IMapTo<CallbackEvent, ConferenceEventRequest, Conference> _callbackEventMapper;
 
         public VideoEventsController(IVideoApiClient videoApiClient,
             IEventHandlerFactory eventHandlerFactory, IConferenceCache conferenceCache,
-            ILogger<VideoEventsController> logger)
+            ILogger<VideoEventsController> logger, IMapTo<CallbackEvent, ConferenceEventRequest, Conference> callbackEventMapper)
         {
             _videoApiClient = videoApiClient;
             _eventHandlerFactory = eventHandlerFactory;
             _conferenceCache = conferenceCache;
             _logger = logger;
+            _callbackEventMapper = callbackEventMapper;
         }
 
         [HttpPost]
@@ -53,7 +57,7 @@ namespace VideoWeb.Controllers
                     return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
                 });
                 
-                var callbackEvent = CallbackEventMapper.MapConferenceEventToCallbackEventModel(request, conference);
+                var callbackEvent = _callbackEventMapper.Map(request, conference);
                 request.Event_type = Enum.Parse<VAEventType>(callbackEvent.EventType.ToString());
                 if (callbackEvent.EventType != EventType.VhoCall)
                 {

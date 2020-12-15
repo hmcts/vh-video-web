@@ -4,19 +4,19 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Autofac.Extras.Moq;
 using Faker;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
+using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
@@ -26,22 +26,16 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
     public class GetConferencesForVhOfficerTests
     {
+        private AutoMock _mocker;
         private ConferencesController _controller;
-        private Mock<IVideoApiClient> _videoApiClientMock;
-        private Mock<ILogger<ConferencesController>> _mockLogger;
-        private Mock<IConferenceCache> _mockConferenceCache;
 
         [SetUp]
         public void Setup()
         {
-            _videoApiClientMock = new Mock<IVideoApiClient>();
-            _mockLogger = new Mock<ILogger<ConferencesController>>();
-            _mockConferenceCache = new Mock<IConferenceCache>();
+            _mocker = AutoMock.GetLoose();
 
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.VhOfficerRole).Build();
             _controller = SetupControllerWithClaims(claimsPrincipal);
-
-            _mockConferenceCache.Setup(x => x.AddConferenceAsync(It.IsAny<ConferenceDetailsResponse>()));
         }
 
         [Test]
@@ -50,7 +44,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
                 (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferencesTodayForAdminAsync(It.IsAny<IEnumerable<string>>()))
                 .ThrowsAsync(apiException);
 
@@ -93,8 +87,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                     DateTime.Compare(x.Closed_date_time.GetValueOrDefault(), closedConferenceTimeLimit) < 0)
                 .Select(x => x.Id).ToList();
 
-
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferencesTodayForAdminAsync(It.IsAny<IEnumerable<string>>()))
                 .ReturnsAsync(conferences);
 
@@ -116,11 +109,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
             foreach (var conference in conferences)
             {
-                _videoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conference.Id))
+                _mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryAsync(conference.Id))
                     .ReturnsAsync(new List<InstantMessageResponse>());
             }
 
-            _videoApiClientMock.Setup(x => x.GetInstantMessageHistoryAsync(conferenceWithMessages.Id))
+            _mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryAsync(conferenceWithMessages.Id))
                 .ReturnsAsync(messages);
 
             var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery());
@@ -139,7 +132,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             }
 
             // paused hearings in sessions cannot chat, no need to get history
-            _videoApiClientMock.Verify(x => x.GetInstantMessageHistoryAsync(conferences.Last().Id), Times.Never);
+            _mocker.Mock<IVideoApiClient>().Verify(x => x.GetInstantMessageHistoryAsync(conferences.Last().Id), Times.Never);
         }
 
         private ConferencesController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)
@@ -152,11 +145,21 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 }
             };
 
-            return new ConferencesController(_videoApiClientMock.Object,
-                _mockLogger.Object, _mockConferenceCache.Object)
-            {
-                ControllerContext = context
-            };
+            var parameters = new ParameterBuilder(_mocker)
+                .AddTypedParameters<ParticipantResponseMapper>()
+                .AddTypedParameters<EndpointsResponseMapper>()
+                .AddTypedParameters<ParticipantForJudgeResponseMapper>()
+                .AddTypedParameters<ParticipantResponseForVhoMapper>()
+                .AddTypedParameters<ParticipantForUserResponseMapper>()
+                .AddTypedParameters<ConferenceForJudgeResponseMapper>()
+                .AddTypedParameters<ConferenceForIndividualResponseMapper>()
+                .AddTypedParameters<ConferenceForVhOfficerResponseMapper>()
+                .AddTypedParameters<ConferenceResponseVhoMapper>()
+                .AddTypedParameters<ConferenceResponseMapper>()
+                .Build();
+            var controller = _mocker.Create<ConferencesController>(parameters);
+            controller.ControllerContext = context;
+            return controller;
         }
 
     }

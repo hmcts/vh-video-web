@@ -5,7 +5,7 @@ using VideoWeb.Mappings;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class BadRequestModelResponseTests
+    public class BadRequestModelResponseTests : BaseMockerSutTestSetup<BadRequestResponseMapper>
     {
         [Test]
         public void should_map_dictionary_to_response()
@@ -14,7 +14,7 @@ namespace VideoWeb.UnitTests.Mappings
             var errorArray = new[] {"No consultation room available"};
             var errors = new Dictionary<string, string[]> {{title, errorArray}};
 
-            var result = BadRequestResponseMapper.MapToResponse(errors);
+            var result = _sut.Map(errors);
 
             result.Errors[0].Title.Should().BeEquivalentTo(title);
             result.Errors[0].Errors.Should().BeEquivalentTo(errorArray);

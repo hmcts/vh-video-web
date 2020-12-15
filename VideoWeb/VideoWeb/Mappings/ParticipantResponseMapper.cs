@@ -6,9 +6,9 @@ using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
 
 namespace VideoWeb.Mappings
 {
-    public static class ParticipantResponseMapper
+    public class ParticipantResponseMapper : IMapTo<ParticipantResponse, ParticipantDetailsResponse>
     {
-        public static ParticipantResponse MapParticipantToResponseModel(ParticipantDetailsResponse participant)
+        public ParticipantResponse Map(ParticipantDetailsResponse participant)
         {
             var status = Enum.Parse<ParticipantStatus>(participant.Current_status.ToString());
             var role = Enum.Parse<Role>(participant.User_role.ToString());

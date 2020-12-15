@@ -4,17 +4,18 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
+using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
@@ -23,22 +24,16 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
     public class GetConferenceByIdVhoTests
     {
-        private ConferencesController _controller;
-        private Mock<IVideoApiClient> _videoApiClientMock;
-        private Mock<ILogger<ConferencesController>> _mockLogger;
-        private Mock<IConferenceCache> _mockConferenceCache;
+        private AutoMock _mocker;
+        private ConferencesController _sut;
 
         [SetUp]
         public void Setup()
         {
-            _videoApiClientMock = new Mock<IVideoApiClient>();
-            _mockLogger = new Mock<ILogger<ConferencesController>>(MockBehavior.Loose);
-            _mockConferenceCache = new Mock<IConferenceCache>();
+            _mocker = AutoMock.GetLoose();
             
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.VhOfficerRole).Build();
-            _controller = SetupControllerWithClaims(claimsPrincipal);
-           
-            _mockConferenceCache.Setup(x => x.AddConferenceAsync(It.IsAny<ConferenceDetailsResponse>()));
+            _sut = SetupControllerWithClaims(claimsPrincipal);
         }
 
         [Test]
@@ -46,14 +41,14 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         {
             var conference = CreateValidConferenceResponse(null);
             conference.Participants[0].User_role = UserRole.Individual;
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(conference);
 
-            var result = await _controller.GetConferenceByIdVHOAsync(conference.Id);
+            var result = await _sut.GetConferenceByIdVHOAsync(conference.Id);
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
-            _mockConferenceCache.Verify(x => x.AddConferenceAsync(new ConferenceDetailsResponse()), Times.Never);
+            _mocker.Mock<IConferenceCache>().Verify(x => x.AddConferenceAsync(new ConferenceDetailsResponse()), Times.Never);
             var response = (ConferenceResponseVho)typedResult.Value;
             response.CaseNumber.Should().Be(conference.Case_number);
             response.Participants[0].Role.Should().Be(UserRole.Individual);
@@ -64,11 +59,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         {
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id", null, default, null);
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferenceByIdVHOAsync(Guid.Empty);
+            var result = await _sut.GetConferenceByIdVHOAsync(Guid.Empty);
 
             var typedResult = (BadRequestObjectResult)result.Result;
             typedResult.Should().NotBeNull();
@@ -80,11 +75,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var apiException = new VideoApiException<ProblemDetails>("Unauthorised Token",
                 (int)HttpStatusCode.Unauthorized,
                 "Invalid Client ID", null, default, null);
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferenceByIdVHOAsync(Guid.NewGuid());
+            var result = await _sut.GetConferenceByIdVHOAsync(Guid.NewGuid());
 
             var typedResult = (ObjectResult)result.Result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
@@ -96,11 +91,11 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
                 (int)HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetConferenceByIdVHOAsync(Guid.NewGuid());
+            var result = await _sut.GetConferenceByIdVHOAsync(Guid.NewGuid());
             var typedResult = result.Value;
             typedResult.Should().BeNull();
         }
@@ -137,12 +132,21 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                     User = claimsPrincipal
                 }
             };
-
-            return new ConferencesController(_videoApiClientMock.Object,
-                _mockLogger.Object, _mockConferenceCache.Object)
-            {
-                ControllerContext = context
-            };
+            var parameters = new ParameterBuilder(_mocker)
+                .AddTypedParameters<ParticipantResponseMapper>()
+                .AddTypedParameters<EndpointsResponseMapper>()
+                .AddTypedParameters<ParticipantForJudgeResponseMapper>()
+                .AddTypedParameters<ParticipantResponseForVhoMapper>()
+                .AddTypedParameters<ParticipantForUserResponseMapper>()
+                .AddTypedParameters<ConferenceForJudgeResponseMapper>()
+                .AddTypedParameters<ConferenceForIndividualResponseMapper>()
+                .AddTypedParameters<ConferenceForVhOfficerResponseMapper>()
+                .AddTypedParameters<ConferenceResponseVhoMapper>()
+                .AddTypedParameters<ConferenceResponseMapper>()
+               .Build();
+            var controller = _mocker.Create<ConferencesController>(parameters);
+            controller.ControllerContext = context;
+            return controller;
         }
 
     }

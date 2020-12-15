@@ -5,13 +5,12 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Services.Video;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
-using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
 
 namespace VideoWeb.Mappings
 {
-    public static class ParticipantStatusResponseForVhoMapper
+    public class ParticipantStatusResponseForVhoMapper : IMapTo<IEnumerable<ParticipantContactDetailsResponseVho>, Conference, IEnumerable<JudgeInHearingResponse>>
     {
-        public static IEnumerable<ParticipantContactDetailsResponseVho> MapParticipantsTo(
+        public IEnumerable<ParticipantContactDetailsResponseVho> Map(
             Conference conference,
             IEnumerable<JudgeInHearingResponse> judgesInHearings)
         {

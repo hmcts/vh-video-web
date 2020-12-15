@@ -8,9 +8,9 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings
 {
-    public static class ParticipantForUserResponseMapper
+    public class ParticipantForUserResponseMapper : IMapTo<List<ParticipantForUserResponse>, IEnumerable<ParticipantSummaryResponse>>
     {
-        public static List<ParticipantForUserResponse> MapParticipants(IEnumerable<ParticipantSummaryResponse> participants)
+        public List<ParticipantForUserResponse> Map(IEnumerable<ParticipantSummaryResponse> participants)
         {
             var mappedParticipants = participants.Select(participant => new ParticipantForUserResponse
                 {

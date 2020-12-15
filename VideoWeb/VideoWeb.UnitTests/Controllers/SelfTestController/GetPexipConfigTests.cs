@@ -1,10 +1,11 @@
-﻿using System.Net;
+using System.Net;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
@@ -15,13 +16,11 @@ namespace VideoWeb.UnitTests.Controllers.SelfTestController
     {
         private VideoWeb.Controllers.SelfTestController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
-        private Mock<ILogger<VideoWeb.Controllers.SelfTestController>> _mockLogger;
 
         [SetUp]
         public void Setup()
         {
             _videoApiClientMock = new Mock<IVideoApiClient>();
-            _mockLogger = new Mock<ILogger<VideoWeb.Controllers.SelfTestController>>();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
             {
@@ -30,7 +29,7 @@ namespace VideoWeb.UnitTests.Controllers.SelfTestController
                     User = claimsPrincipal
                 }
             };
-            _controller = new VideoWeb.Controllers.SelfTestController(_videoApiClientMock.Object, _mockLogger.Object)
+            _controller = new VideoWeb.Controllers.SelfTestController(_videoApiClientMock.Object, new PexipServiceConfigurationResponseMapper())
             {
                 ControllerContext = context
             };

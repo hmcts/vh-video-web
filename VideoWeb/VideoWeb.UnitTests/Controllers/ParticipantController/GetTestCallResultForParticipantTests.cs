@@ -1,6 +1,8 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using Autofac;
+using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +15,7 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using EventComponentHelper = VideoWeb.UnitTests.Builders.EventComponentHelper;
@@ -22,24 +25,20 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {
     public class GetTestCallResultForParticipantTests
     {
+        private AutoMock _mocker;
         private ParticipantsController _controller;
-        private Mock<IVideoApiClient> _videoApiClientMock;
         private EventComponentHelper _eventComponentHelper;
         private Conference _testConference;
-        private MemoryCache _memoryCache;
-        private IConferenceCache _conferenceCache;
-        private Mock<ILogger<ParticipantsController>> _mockLogger;
 
         [SetUp]
         public void Setup()
         {
-            _memoryCache = new MemoryCache(new MemoryCacheOptions());
-            _conferenceCache = new ConferenceCache(_memoryCache);
+            _mocker = AutoMock.GetLoose();
+            var memoryCache = new MemoryCache(new MemoryCacheOptions());
+            var conferenceCache = new ConferenceCache(memoryCache);
             _eventComponentHelper = new EventComponentHelper();
-            _videoApiClientMock = new Mock<IVideoApiClient>();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             _testConference = _eventComponentHelper.BuildConferenceForTest();
-            _mockLogger = new Mock<ILogger<ParticipantsController>>();
 
             var context = new ControllerContext
             {
@@ -50,11 +49,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             };
 
             var eventHandlerFactory = new EventHandlerFactory(_eventComponentHelper.GetHandlers());
-            _controller = new ParticipantsController(_videoApiClientMock.Object, eventHandlerFactory, _conferenceCache,
-                _mockLogger.Object)
-            {
-                ControllerContext = context
-            };
+            _controller = _mocker.Create<ParticipantsController>(new TypedParameter(typeof(IEventHandlerFactory), eventHandlerFactory), new TypedParameter(typeof(IConferenceCache), conferenceCache));
+            _controller.ControllerContext = context;
             _eventComponentHelper.Cache.Set(_testConference.Id, _testConference);
             _eventComponentHelper.RegisterUsersForHubContext(_testConference.Participants);
         }
@@ -65,7 +61,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var testCallResponse = Builder<TestCallScoreResponse>.CreateNew().Build();
             var conferenceId = Guid.NewGuid();
             var participantId = Guid.NewGuid();
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetTestCallResultForParticipantAsync(conferenceId, participantId))
                 .Returns(Task.FromResult(testCallResponse));
 
@@ -82,7 +78,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 "Please provide a valid conference Id", null, default, null);
             var conferenceId = Guid.NewGuid();
             var participantId = Guid.NewGuid();
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetTestCallResultForParticipantAsync(conferenceId, participantId))
                 .ThrowsAsync(apiException);
 
@@ -96,7 +92,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         {
             var testCallResponse = Builder<TestCallScoreResponse>.CreateNew().Build();
             var participantId = Guid.NewGuid();
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetIndependentTestCallResultAsync(participantId))
                 .Returns(Task.FromResult(testCallResponse));
 
@@ -112,7 +108,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var apiException = new VideoApiException<Microsoft.AspNetCore.Mvc.ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
                 "Please provide a valid participant Id", null, default, null);
             var participantId = Guid.NewGuid();
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetIndependentTestCallResultAsync(participantId))
                 .ThrowsAsync(apiException);
 

@@ -8,9 +8,19 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings
 {
-    public static class ConferenceResponseMapper
+    public class ConferenceResponseMapper : IMapTo<ConferenceResponse, ConferenceDetailsResponse>
     {
-        public static ConferenceResponse MapConferenceDetailsToResponseModel(ConferenceDetailsResponse conference)
+        private readonly IMapTo<ParticipantResponse, ParticipantDetailsResponse> _participantResponseMapper;
+
+        private readonly IMapTo<VideoEndpointResponse, EndpointResponse, int> _videoEndpointResponseMapper;
+
+        public ConferenceResponseMapper(IMapTo<ParticipantResponse, ParticipantDetailsResponse> participantResponseMapper, IMapTo<VideoEndpointResponse, EndpointResponse, int> videoEndpointResponseMapper)
+        {
+            _participantResponseMapper = participantResponseMapper;
+            _videoEndpointResponseMapper = videoEndpointResponseMapper;
+        }
+
+        public ConferenceResponse Map(ConferenceDetailsResponse conference)
         {
             var response = new ConferenceResponse
             {
@@ -42,7 +52,7 @@ namespace VideoWeb.Mappings
             return response;
         }
 
-        private static ConferenceStatus GetStatus(ConferenceState state)
+        private ConferenceStatus GetStatus(ConferenceState state)
         {
             if (!Enum.TryParse(state.ToString(), true, out ConferenceStatus status))
             {
@@ -52,19 +62,19 @@ namespace VideoWeb.Mappings
             return status;
         }
 
-        private static List<ParticipantResponse> MapParticipants(ConferenceDetailsResponse conference)
+        private List<ParticipantResponse> MapParticipants(ConferenceDetailsResponse conference)
         {
             conference.Participants ??= new List<ParticipantDetailsResponse>();
             return conference.Participants
                 .OrderBy(x => x.Case_type_group)
-                .Select(ParticipantResponseMapper.MapParticipantToResponseModel)
+                .Select(_participantResponseMapper.Map)
                 .ToList();
         }
 
-        private static List<VideoEndpointResponse> MapEndpoints(ConferenceDetailsResponse conference)
+        private List<VideoEndpointResponse> MapEndpoints(ConferenceDetailsResponse conference)
         {
             conference.Endpoints ??= new List<EndpointResponse>();
-            return conference.Endpoints.Select(EndpointsResponseMapper.Map).ToList();
+            return conference.Endpoints.Select(_videoEndpointResponseMapper.Map).ToList();
         }
     }
 }

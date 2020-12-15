@@ -1,12 +1,12 @@
 using System;
+using Autofac.Extras.Moq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
+using VideoWeb.Helpers;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
@@ -15,19 +15,13 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
 {
     public abstract class InstantMessageControllerTestBase
     {
-        protected InstantMessagesController Controller;
-        protected Mock<IVideoApiClient> VideoApiClientMock;
-        protected Mock<IMessageDecoder> MessageDecoder;
-        protected Mock<ILogger<InstantMessagesController>> MockLogger;
-        protected Mock<IConferenceCache> ConferenceCache;
+        protected AutoMock mocker;
+        protected InstantMessagesController sut;
 
         [SetUp]
         public void Setup()
         {
-            ConferenceCache = new Mock<IConferenceCache>();
-            VideoApiClientMock = new Mock<IVideoApiClient>();
-            MessageDecoder = new Mock<IMessageDecoder>();
-            MockLogger = new Mock<ILogger<InstantMessagesController>>();
+            mocker = AutoMock.GetLoose();
 
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
@@ -38,19 +32,20 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
                 }
             };
 
-            Controller =
-                new InstantMessagesController(VideoApiClientMock.Object, MockLogger.Object, MessageDecoder.Object,
-                    ConferenceCache.Object)
-                {
-                    ControllerContext = context
-                };
+            var parameters = new ParameterBuilder(mocker)
+                .AddTypedParameters<UnreadInstantMessageConferenceCountResponseMapper>()
+                .AddTypedParameters<UnreadAdminMessageResponseMapper>()
+                .AddTypedParameters<ChatResponseMapper>()
+                .Build();
+            sut = mocker.Create<InstantMessagesController>(parameters);
+            sut.ControllerContext = context;
 
-            MessageDecoder.Setup(x =>
+            mocker.Mock<IMessageDecoder>().Setup(x =>
                     x.GetMessageOriginatorAsync(It.IsAny<Conference>(),
                         It.IsAny<InstantMessageResponse>()))
                 .ReturnsAsync("Johnny");
 
-            MessageDecoder.Setup(x => x.IsMessageFromUser(It.IsAny<InstantMessageResponse>(), It.IsAny<string>()))
+            mocker.Mock<IMessageDecoder>().Setup(x => x.IsMessageFromUser(It.IsAny<InstantMessageResponse>(), It.IsAny<string>()))
                 .Returns<InstantMessageResponse, string>((message, loggedInUsername) =>
                     message.From.Equals(loggedInUsername, StringComparison.InvariantCultureIgnoreCase));
         }

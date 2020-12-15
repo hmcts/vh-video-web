@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -19,12 +20,21 @@ namespace VideoWeb.Controllers
         private readonly IUserApiClient _userApiClient;
         private readonly IUserCache _userCache;
         private readonly ILogger<ProfilesController> _logger;
+        private readonly IMapTo<UserProfileResponse, ClaimsPrincipal> _claimsPrincipalToUserProfileResponseMapper;
+        private readonly IMapTo<UserProfileResponse, UserProfile> _userProfileToUserProfileResponseMapper;
 
-        public ProfilesController(IUserApiClient userApiClient, ILogger<ProfilesController> logger, IUserCache userCache)
+        public ProfilesController(
+            IUserApiClient userApiClient,
+            ILogger<ProfilesController> logger,
+            IUserCache userCache,
+            IMapTo<UserProfileResponse, ClaimsPrincipal> claimsPrincipalToUserProfileResponseMapper,
+            IMapTo<UserProfileResponse, UserProfile> userProfileToUserProfileResponseMapper)
         {
             _userApiClient = userApiClient;
             _logger = logger;
             _userCache = userCache;
+            _claimsPrincipalToUserProfileResponseMapper = claimsPrincipalToUserProfileResponseMapper;
+            _userProfileToUserProfileResponseMapper = userProfileToUserProfileResponseMapper;
         }
 
         /// <summary>
@@ -38,7 +48,7 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var response = UserProfileResponseMapper.MapUserToResponseModel(User);
+                var response = _claimsPrincipalToUserProfileResponseMapper.Map(User);
                 return Ok(response);
             }
             catch (Exception e)
@@ -64,9 +74,9 @@ namespace VideoWeb.Controllers
             {
                 var userProfile = await _userCache.GetOrAddAsync
                 (
-                    usernameClean, async key => await _userApiClient.GetUserByAdUserNameAsync(usernameClean)
+                    usernameClean, key => _userApiClient.GetUserByAdUserNameAsync(usernameClean)
                 );
-                var response = UserProfileResponseMapper.MapToResponseModel(userProfile);
+                var response = _userProfileToUserProfileResponseMapper.Map(userProfile);
                 return Ok(response);
             }
             catch (UserApiException e)

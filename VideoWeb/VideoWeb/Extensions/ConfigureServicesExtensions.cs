@@ -19,13 +19,16 @@ using Swashbuckle.AspNetCore.Swagger;
 using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Configuration;
+using VideoWeb.Common.Helpers;
 using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Common.SignalR;
 using VideoWeb.Contract.Request;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Mappers;
+using VideoWeb.Helpers;
 using VideoWeb.Mappings;
+using VideoWeb.Mappings.Decorators;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
@@ -97,6 +100,9 @@ namespace VideoWeb.Extensions
             services.AddScoped<IMessageDecoder, MessageFromDecoder>();
             services.AddScoped<IHeartbeatRequestMapper, HeartbeatRequestMapper>();
             services.AddSingleton<IUserCache, DistributedUserCache>();
+            services.AddScoped<ILoggingDataExtractor, LoggingDataExtractor>();
+
+            RegisterMappers(services);
 
             var container = services.BuildServiceProvider();
             var servicesConfiguration = container.GetService<IOptions<HearingServicesConfiguration>>().Value;
@@ -138,6 +144,44 @@ namespace VideoWeb.Extensions
 
             services.AddStackExchangeRedisCache(options => { options.Configuration = connectionStrings.RedisCache; });
             return services;
+        }
+
+        private static void RegisterMappers(IServiceCollection serviceCollection)
+        {
+            serviceCollection.Scan(scan => scan.FromAssembliesOf(typeof(IMapTo<,>))
+                .AddClasses(classes => classes.AssignableTo(typeof(IMapTo<,>))
+                    .Where(_ => !_.IsGenericType))
+                .AsImplementedInterfaces()
+                .WithTransientLifetime());
+            serviceCollection.Decorate(typeof(IMapTo<,>), typeof(MapperLoggingDecorator<,>));
+
+            serviceCollection.Scan(scan => scan.FromAssembliesOf(typeof(IMapTo<,,>))
+                .AddClasses(classes => classes.AssignableTo(typeof(IMapTo<,,>))
+                    .Where(_ => !_.IsGenericType))
+                .AsImplementedInterfaces()
+                .WithTransientLifetime());
+            serviceCollection.Decorate(typeof(IMapTo<,,>), typeof(MapperLoggingDecorator<,,>));
+
+            serviceCollection.Scan(scan => scan.FromAssembliesOf(typeof(IMapTo<,,,>))
+                .AddClasses(classes => classes.AssignableTo(typeof(IMapTo<,,,>))
+                    .Where(_ => !_.IsGenericType))
+                .AsImplementedInterfaces()
+                .WithTransientLifetime());
+            serviceCollection.Decorate(typeof(IMapTo<,,,>), typeof(MapperLoggingDecorator<,,,>));
+
+            serviceCollection.Scan(scan => scan.FromAssembliesOf(typeof(IMapTo<,,,,>))
+                .AddClasses(classes => classes.AssignableTo(typeof(IMapTo<,,,,>))
+                    .Where(_ => !_.IsGenericType))
+                .AsImplementedInterfaces()
+                .WithTransientLifetime());
+            serviceCollection.Decorate(typeof(IMapTo<,,,,>), typeof(MapperLoggingDecorator<,,,,>));
+
+            serviceCollection.Scan(scan => scan.FromAssembliesOf(typeof(IMapTo<,,,,,>))
+                .AddClasses(classes => classes.AssignableTo(typeof(IMapTo<,,,,,>))
+                    .Where(_ => !_.IsGenericType))
+                .AsImplementedInterfaces()
+                .WithTransientLifetime());
+            serviceCollection.Decorate(typeof(IMapTo<,,,,,>), typeof(MapperLoggingDecorator<,,,,,>));
         }
 
         /// <summary>

@@ -11,6 +11,7 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
+using VideoWeb.Mappings;
 using VideoWeb.Services.User;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.User.ProblemDetails;
@@ -86,7 +87,7 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
                 }
             };
 
-            return new ProfilesController(_userApiClientMock.Object, _mockLogger.Object, new DictionaryUserCache())
+            return new ProfilesController(_userApiClientMock.Object, _mockLogger.Object, new DictionaryUserCache(), new ClaimsPrincipalToUserProfileResponseMapper(), new UserProfileToUserProfileResponseMapper())
             {
                 ControllerContext = context
             };

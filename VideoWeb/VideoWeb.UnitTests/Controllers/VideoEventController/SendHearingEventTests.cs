@@ -15,6 +15,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
+using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using Endpoint = VideoWeb.Common.Models.Endpoint;
@@ -45,7 +46,8 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 }
             };
 
-            _sut = _mocker.Create<VideoEventsController>();
+            var parameters = new ParameterBuilder(_mocker).AddTypedParameters<CallbackEventMapper>().Build();
+            _sut = _mocker.Create<VideoEventsController>(parameters);
             _sut.ControllerContext = context;
 
             var conference = CreateValidConferenceResponse(null);

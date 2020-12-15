@@ -1,7 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Autofac;
+using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -14,6 +16,7 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
@@ -22,25 +25,22 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {
     public class GetHeartbeatDataForParticipantTests
     {
-        private ParticipantsController _controller;
-        private Mock<IVideoApiClient> _videoApiClientMock;
+        private AutoMock _mocker;
+        private ParticipantsController _sut;
         private EventComponentHelper _eventComponentHelper;
         private Conference _testConference;
         private MemoryCache _memoryCache;
         private IConferenceCache _conferenceCache;
-        private Mock<ILogger<ParticipantsController>> _mockLogger;
         
         [SetUp]
         public void Setup()
         {
+            _mocker = AutoMock.GetLoose();
             _memoryCache = new MemoryCache(new MemoryCacheOptions());
             _conferenceCache = new ConferenceCache(_memoryCache);
             _eventComponentHelper = new EventComponentHelper();
-            _videoApiClientMock = new Mock<IVideoApiClient>();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
-            _testConference = _eventComponentHelper.BuildConferenceForTest();
-            _mockLogger = new Mock<ILogger<ParticipantsController>>();
-            
+            _testConference = _eventComponentHelper.BuildConferenceForTest();            
 
             var context = new ControllerContext
             {
@@ -51,11 +51,9 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             };
 
             var eventHandlerFactory = new EventHandlerFactory(_eventComponentHelper.GetHandlers());
-            _controller = new ParticipantsController(_videoApiClientMock.Object, eventHandlerFactory, _conferenceCache,
-                _mockLogger.Object)
-            {
-                ControllerContext = context
-            };
+            _sut = _mocker.Create<ParticipantsController>(new TypedParameter(typeof(IEventHandlerFactory), eventHandlerFactory), new TypedParameter(typeof(IConferenceCache), _conferenceCache));
+            _sut.ControllerContext = context;
+
             _eventComponentHelper.Cache.Set(_testConference.Id, _testConference);
             _eventComponentHelper.RegisterUsersForHubContext(_testConference.Participants);
         }
@@ -66,11 +64,11 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var responses = Builder<List<ParticipantHeartbeatResponse>>.CreateNew().Build();
             var conferenceId = Guid.NewGuid();
             var participantId = Guid.NewGuid();
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetHeartbeatDataForParticipantAsync(conferenceId, participantId))
                 .Returns(Task.FromResult(responses));
 
-            var result = await _controller.GetHeartbeatDataForParticipantAsync(conferenceId, participantId);
+            var result = await _sut.GetHeartbeatDataForParticipantAsync(conferenceId, participantId);
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().BeEquivalentTo(responses);
@@ -83,11 +81,11 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 "Please provide a valid participant Id", null, default, null);
             var conferenceId = Guid.NewGuid();
             var participantId = Guid.NewGuid();
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetHeartbeatDataForParticipantAsync(conferenceId, participantId))
                 .Throws(apiException);
 
-            var result = await _controller.GetHeartbeatDataForParticipantAsync(conferenceId, participantId);
+            var result = await _sut.GetHeartbeatDataForParticipantAsync(conferenceId, participantId);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }

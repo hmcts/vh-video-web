@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -24,34 +25,28 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 {
     public class RequestConsultationTests
     {
+        private AutoMock _mocker;
         private ConsultationsController _controller;
-        private Mock<IVideoApiClient> _videoApiClientMock;
-        private Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> _eventHubContextMock;
-        private Mock<IConferenceCache> _conferenceCacheMock;
         private Conference _testConference;
-        private Mock<IEventHubClient> _eventHubClientMock;
-        private Mock<ILogger<ConsultationsController>> _loggerMock;
 
         [SetUp]
         public void Setup()
         {
-            _videoApiClientMock = new Mock<IVideoApiClient>();
+            _mocker = AutoMock.GetLoose();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
-            _eventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>();
-            _conferenceCacheMock = new Mock<IConferenceCache>();
-            _eventHubClientMock = new Mock<IEventHubClient>();
-            _loggerMock = new Mock<ILogger<ConsultationsController>>();
+            var eventHubContextMock = _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>();
+            var eventHubClientMock = _mocker.Mock<IEventHubClient>();
 
             _testConference = ConsultationHelper.BuildConferenceForTest();
 
             foreach (var participant in _testConference.Participants)
             {
-                _eventHubContextMock.Setup(x => x.Clients.Group(participant.Username.ToLowerInvariant()))
-                    .Returns(_eventHubClientMock.Object);
+                eventHubContextMock.Setup(x => x.Clients.Group(participant.Username.ToLowerInvariant()))
+                    .Returns(eventHubClientMock.Object);
             }
 
-            _eventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
-                .Returns(_eventHubClientMock.Object);
+            eventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
+                .Returns(eventHubClientMock.Object);
 
             var context = new ControllerContext
             {
@@ -61,27 +56,24 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 }
             };
 
-            _conferenceCacheMock.Setup(cache =>
+            _mocker.Mock<IConferenceCache>().Setup(cache =>
                     cache.GetOrAddConferenceAsync(_testConference.Id,
                         It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(_testConference);
 
-            _controller = new ConsultationsController(_videoApiClientMock.Object, _eventHubContextMock.Object,
-                _conferenceCacheMock.Object, _loggerMock.Object)
-            {
-                ControllerContext = context
-            };
+            _controller = _mocker.Create<ConsultationsController>();
+            _controller.ControllerContext = context;
         }
 
         [Test]
         public async Task Should_return_participant_not_found_when_request_is_sent()
         {
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .Returns(Task.FromResult(default(object)));
             var conference = new Conference {Id = Guid.NewGuid()};
-            _conferenceCacheMock.Setup(cache =>
+            _mocker.Mock<IConferenceCache>().Setup(cache =>
                     cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
@@ -97,7 +89,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [Test]
         public async Task Should_return_no_content_when_request_is_sent()
         {
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .Returns(Task.FromResult(default(object)));
 
@@ -106,7 +98,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                     ConsultationHelper.GetConsultationRequest(_testConference));
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
-            _eventHubClientMock.Verify(
+            _mocker.Mock<IEventHubClient>().Verify(
                 x => x.AdminConsultationMessage
                     (It.IsAny<Guid>(), It.IsAny<RoomType>(), It.IsAny<string>(), It.IsAny<ConsultationAnswer>()),
                 Times.Never);
@@ -117,7 +109,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         {
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
                 "{\"ConsultationRoom\":[\"No consultation room available\"]}", null, default, null);
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .ThrowsAsync(apiException);
 
@@ -133,7 +125,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         {
             var apiException = new VideoApiException("Internal Server Error",
                 (int) HttpStatusCode.InternalServerError, "The server collapse due to unhandled error", default, null);
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .ThrowsAsync(apiException);
 
@@ -147,7 +139,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [Test]
         public async Task Should_send_message_to_other_party_when_requested()
         {
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .Returns(Task.FromResult(HttpStatusCode.NoContent));
 
@@ -156,7 +148,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
 
-            _eventHubClientMock.Verify(x => x.ConsultationMessage(_testConference.Id,
+            _mocker.Mock<IEventHubClient>().Verify(x => x.ConsultationMessage(_testConference.Id,
                 _testConference.Participants[1].Username,
                 _testConference.Participants[2].Username, null));
         }
@@ -166,7 +158,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [TestCase(ConsultationAnswer.Rejected)]
         public async Task Should_send_message_to_other_party_when_answered(ConsultationAnswer answer)
         {
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .Returns(Task.FromResult(HttpStatusCode.NoContent));
 
@@ -176,7 +168,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
 
-            _eventHubClientMock.Verify(x => x.ConsultationMessage(_testConference.Id,
+            _mocker.Mock<IEventHubClient>().Verify(x => x.ConsultationMessage(_testConference.Id,
                 _testConference.Participants[1].Username,
                 _testConference.Participants[2].Username, answer));
         }
@@ -184,7 +176,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [Test]
         public void Should_throw_InvalidOperationException_two_participants_with_the_same_requeste_by_found()
         {
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .Returns(Task.FromResult(default(object)));
 
@@ -200,7 +192,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [Test]
         public void Should_throw_InvalidOperationException_two_participants_with_the_same_requeste_for_found()
         {
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .Returns(Task.FromResult(default(object)));
 
@@ -217,7 +209,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [Test]
         public async Task Should_throw_InvalidOperationException_no_participants_requested_by_found()
         {
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .Returns(Task.FromResult(default(object)));
 
@@ -236,7 +228,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [Test]
         public async Task Should_throw_InvalidOperationException_no_participants_requested_for_found()
         {
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.HandleConsultationRequestAsync(It.IsAny<ConsultationRequest>()))
                 .Returns(Task.FromResult(default(object)));
 

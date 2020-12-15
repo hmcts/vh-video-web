@@ -3,8 +3,9 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings.Requests
 {
-    public static class LeavePrivateConsultationRequestMapper {
-        public static LeaveConsultationRequest MapToLeaveConsultationRequest(LeavePrivateConsultationRequest request)
+    public class LeavePrivateConsultationRequestMapper : IMapTo<LeaveConsultationRequest, LeavePrivateConsultationRequest>
+    {
+        public LeaveConsultationRequest Map(LeavePrivateConsultationRequest request)
         {
             return new LeaveConsultationRequest
             {

@@ -1,14 +1,19 @@
+using Autofac;
+using Autofac.Core;
+using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
+using VideoWeb.Mappings;
 using VideoWeb.Services.User;
 using VideoWeb.UnitTests.Builders;
 
@@ -16,16 +21,15 @@ namespace VideoWeb.UnitTests.Controllers
 {
     public class UserDataControllerTest
     {
-        private UserDataController _controller;
-        private Mock<IUserApiClient> _userApiClientMock;
-        private Mock<ILogger<UserDataController>> _mockLogger;
+        private AutoMock _mocker;
+        private UserDataController _sut;
 
         [SetUp]
         public void Setup()
         {
-            _userApiClientMock = new Mock<IUserApiClient>();
-            _mockLogger = new Mock<ILogger<UserDataController>>();
-            _controller = new UserDataController(_userApiClientMock.Object, _mockLogger.Object);
+            _mocker = AutoMock.GetLoose();
+            var parameters = new ParameterBuilder(_mocker).AddTypedParameters<CourtRoomsAccountResponseMapper>().Build();
+            _sut = _mocker.Create<UserDataController>(parameters);
         }
 
         [Test]
@@ -34,9 +38,9 @@ namespace VideoWeb.UnitTests.Controllers
             var accounts = UserResponseBuilder.BuildData();
             var usernames = new VhoConferenceFilterQuery { UserNames = new List<string> { "Manual01", "Manual03" } };
 
-            _userApiClientMock.Setup(x => x.GetJudgesAsync()).ReturnsAsync(accounts);
+            _mocker.Mock<IUserApiClient>().Setup(x => x.GetJudgesAsync()).ReturnsAsync(accounts);
 
-            var result = await _controller.GetCourtRoomsAccounts(usernames);
+            var result = await _sut.GetCourtRoomsAccounts(usernames);
 
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
@@ -64,11 +68,11 @@ namespace VideoWeb.UnitTests.Controllers
 
             var apiException = new UserApiException("Court rooms accounts not found", (int)HttpStatusCode.BadRequest,
                 "Error", null, null);
-            _userApiClientMock
+            _mocker.Mock<IUserApiClient>()
                 .Setup(x => x.GetJudgesAsync())
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetCourtRoomsAccounts(usernames);
+            var result = await _sut.GetCourtRoomsAccounts(usernames);
             var typedResult = (ObjectResult)result.Result;
             typedResult.Should().NotBeNull();
             typedResult.StatusCode.Should().Be(apiException.StatusCode);

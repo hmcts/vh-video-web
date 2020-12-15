@@ -5,9 +5,9 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings
 {
-    public static class EndpointsResponseMapper
+    public class EndpointsResponseMapper : IMapTo<VideoEndpointResponse, EndpointResponse, int>
     {
-        public static VideoEndpointResponse Map(EndpointResponse endpoint, int index)
+        public VideoEndpointResponse Map(EndpointResponse endpoint, int index)
         {
             var pexipDisplayName = $"T{100 + index};{endpoint.Display_name};{endpoint.Id}";
             return new VideoEndpointResponse
