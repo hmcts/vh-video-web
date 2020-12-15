@@ -7,5 +7,6 @@ namespace VideoWeb.Common.Models
         public const string CitizenRole = "Citizen";
         public const string JudgeRole = "Judge";
         public const string CaseAdminRole = "CaseAdmin";
+        public const string JudicialOfficeHolderRole = "JudicialOfficeHolder";
     }
 }

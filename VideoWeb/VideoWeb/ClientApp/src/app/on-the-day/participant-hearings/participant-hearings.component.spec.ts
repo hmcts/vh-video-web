@@ -39,7 +39,7 @@ describe('ParticipantHearingList', () => {
         display_name: 'J Doe Winger',
         first_name: 'Jane',
         last_name: 'Doe Winger',
-        role: Role.Individual,
+        role: Role.JudicialOfficeHolder,
         username: 'jane.doe.Winger@hearings.net'
     });
 
@@ -138,7 +138,7 @@ describe('ParticipantHearingList', () => {
         tick(100);
         expect(videoWebService.setActiveIndividualConference).toHaveBeenCalledWith(conference);
         expect(videoWebService.getConferenceById).toHaveBeenCalledWith(conference.id);
-        expect(router.navigate).toHaveBeenCalledWith([pageUrls.ParticipantWaitingRoom, conference.id]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.JOHWaitingRoom, conference.id]);
     }));
 
     it('should navigate to Waiting room page when conference is selected for observer', fakeAsync(() => {
@@ -174,6 +174,6 @@ describe('ParticipantHearingList', () => {
         tick(100);
         expect(videoWebService.setActiveIndividualConference).toHaveBeenCalledWith(conference);
         expect(videoWebService.getConferenceById).toHaveBeenCalledWith(conference.id);
-        expect(router.navigate).toHaveBeenCalledWith([pageUrls.ParticipantWaitingRoom, conference.id]);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.JOHWaitingRoom, conference.id]);
     }));
 });
