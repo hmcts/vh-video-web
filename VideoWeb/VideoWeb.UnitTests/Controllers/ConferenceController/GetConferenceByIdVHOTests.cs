@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
@@ -16,7 +17,6 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
-using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
@@ -107,7 +107,16 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
         private ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@doe.com")
         {
-            var participants = Builder<ParticipantDetailsResponse>.CreateListOfSize(2).Build().ToList();
+            var judge = new ParticipantDetailsResponseBuilder(UserRole.Judge, "Judge").Build();
+            var individualDefendant = new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").Build();
+            var individualClaimant = new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant").Build();
+            var repClaimant = new ParticipantDetailsResponseBuilder(UserRole.Representative, "Claimant").Build();
+            var panelMember =
+                new ParticipantDetailsResponseBuilder(UserRole.JudicialOfficeHolder, "Panel Member").Build();
+            var participants = new List<ParticipantDetailsResponse>()
+            {
+                individualDefendant, individualClaimant, repClaimant, judge, panelMember
+            };
             if (!string.IsNullOrWhiteSpace(username))
             {
                 participants.First().Username = username;

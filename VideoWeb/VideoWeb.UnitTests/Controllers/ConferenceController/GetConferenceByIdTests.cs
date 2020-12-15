@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Services.Video;
@@ -67,6 +69,10 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var response = (ConferenceResponse)typedResult.Value;
             response.CaseNumber.Should().Be(conference.Case_number);
             response.Participants[0].Role.Should().Be(UserRole.Individual);
+            response.Participants.Any(x => x.Role == Role.Individual).Should().BeTrue();
+            response.Participants.Any(x => x.Role == Role.Representative).Should().BeTrue();
+            response.Participants.Any(x => x.Role == Role.Judge).Should().BeTrue();
+            response.Participants.Any(x => x.Role == Role.JudicialOfficeHolder).Should().BeTrue();
         }
 
         [Test]
@@ -144,7 +150,16 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
 
         private ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@doe.com")
         {
-            var participants = Builder<ParticipantDetailsResponse>.CreateListOfSize(2).Build().ToList();
+            var judge = new ParticipantDetailsResponseBuilder(UserRole.Judge, "Judge").Build();
+            var individualDefendant = new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").Build();
+            var individualClaimant = new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant").Build();
+            var repClaimant = new ParticipantDetailsResponseBuilder(UserRole.Representative, "Claimant").Build();
+            var panelMember =
+                new ParticipantDetailsResponseBuilder(UserRole.JudicialOfficeHolder, "Panel Member").Build();
+            var participants = new List<ParticipantDetailsResponse>()
+            {
+                individualDefendant, individualClaimant, repClaimant, judge, panelMember
+            };
             var endpoints = Builder<EndpointResponse>.CreateListOfSize(2).Build().ToList();
             if (!string.IsNullOrWhiteSpace(username))
             {
