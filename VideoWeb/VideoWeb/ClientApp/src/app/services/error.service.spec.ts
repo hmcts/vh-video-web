@@ -11,11 +11,11 @@ import { ErrorService } from './error.service';
 import { Logger } from './logging/logger-base';
 import { SessionStorage } from './session-storage';
 import { ErrorMessage } from '../shared/models/error-message';
+import { MockAdalService } from '../testing/mocks/MockAdalService';
+import { MockProfileService } from '../testing/mocks/MockProfileService';
 
 describe('ErrorService', () => {
     let router: Router;
-    let adalServiceSpy: jasmine.SpyObj<AdalService>;
-    let profileServiceSpy: jasmine.SpyObj<ProfileService>;
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -23,14 +23,12 @@ describe('ErrorService', () => {
             providers: [
                 ErrorService,
                 { provide: Logger, useClass: MockLogger },
-                { provide: AdalService, useValue: adalServiceSpy },
-                { provide: ProfileService, useValue: profileServiceSpy }
+                { provide: AdalService, useValue: MockAdalService },
+                { provide: ProfileService, useValue: MockProfileService }
             ]
         });
 
         router = TestBed.inject(Router);
-        adalServiceSpy = jasmine.createSpyObj<AdalService>('AdalService', ['userInfo']);
-        profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getProfileByUsername']);
     });
 
     it('should do nothing if skip redirect is true', inject([ErrorService], (service: ErrorService) => {
