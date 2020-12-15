@@ -127,11 +127,11 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     }
 
     isNotStarted(): boolean {
-        return this.conference.status === ConferenceStatus.NotStarted;
+        return this.hearing.isNotStarted();
     }
 
     isPaused(): boolean {
-        return this.conference.status === ConferenceStatus.Paused || this.conference.status === ConferenceStatus.Suspended;
+        return this.hearing.isPaused() || this.hearing.isSuspended();
     }
 
     displayConfirmStartPopup() {

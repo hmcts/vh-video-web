@@ -168,11 +168,7 @@ export abstract class WRParticipantStatusListDirective {
 
     protected filterNonJudgeParticipants(): void {
         this.nonJudgeParticipants = this.conference.participants.filter(
-            x =>
-                x.role !== Role.Judge &&
-                x.hearing_role !== HearingRole.OBSERVER &&
-                x.hearing_role !== HearingRole.PANEL_MEMBER &&
-                x.hearing_role !== HearingRole.WINGER
+            x => x.role !== Role.Judge && x.role !== Role.JudicialOfficeHolder && x.hearing_role !== HearingRole.OBSERVER
         );
     }
 

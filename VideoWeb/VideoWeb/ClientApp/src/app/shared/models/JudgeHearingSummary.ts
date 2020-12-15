@@ -11,11 +11,7 @@ export class JudgeHearingSummary extends HearingSummary {
 
     get nonJudicialParticipantsExcludingObservers(): ParticipantSummary[] {
         const p = this.participants.filter(
-            x =>
-                (x.role === Role.Individual || x.role === Role.Representative) &&
-                x.hearingRole !== HearingRole.OBSERVER &&
-                x.hearingRole !== HearingRole.PANEL_MEMBER &&
-                x.hearingRole !== HearingRole.WINGER
+            x => (x.role === Role.Individual || x.role === Role.Representative) && x.hearingRole !== HearingRole.OBSERVER
         );
         return p;
     }
@@ -25,11 +21,11 @@ export class JudgeHearingSummary extends HearingSummary {
     }
 
     get panelMembers(): ParticipantSummary[] {
-        return this.participants.filter(x => x.hearingRole === HearingRole.PANEL_MEMBER);
+        return this.participants.filter(x => x.hearingRole === HearingRole.PANEL_MEMBER && x.role === Role.JudicialOfficeHolder);
     }
 
     get wingers(): ParticipantSummary[] {
-        return this.participants.filter(x => x.hearingRole === HearingRole.WINGER);
+        return this.participants.filter(x => x.hearingRole === HearingRole.WINGER && x.role === Role.JudicialOfficeHolder);
     }
 
     numberOfEndpoints: number;
