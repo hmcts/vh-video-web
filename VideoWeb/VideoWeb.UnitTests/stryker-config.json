@@ -10,6 +10,7 @@
     "project-file": "VideoWeb.csproj",
     "max-concurrent-test-runners": 4,
     "threshold-high": 95,
+    "version": "0.20.0",
     "threshold-low": 90,
     "threshold-break": 85,
     "files-to-exclude": [
