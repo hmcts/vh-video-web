@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
 import { ErrorMessage } from '../shared/models/error-message';
 import { pageUrls } from '../shared/page-url.constants';
 import { CallError } from '../waiting-space/models/video-call-models';
@@ -14,12 +13,7 @@ import { SessionStorage } from './session-storage';
 })
 export class ErrorService {
     isOnline: boolean;
-    constructor(
-        private router: Router,
-        private logger: Logger,
-        protected profileService: ProfileService,
-        protected adalService: AdalService
-    ) {
+    constructor(private router: Router, private logger: Logger, protected profileService: ProfileService) {
         this.errorMessage = new SessionStorage<ErrorMessage>(this.ERROR_MESSAGE_KEY);
         this.errorCameraMicMessage = new SessionStorage<string>(this.ERROR_CAMERA_MIC_MESSAGE_KEY);
         this.checkIntenetConnection();
@@ -55,7 +49,7 @@ export class ErrorService {
 
     private async checkIntenetConnection(): Promise<void> {
         try {
-            await this.profileService.getProfileByUsername(this.adalService.userInfo.userName);
+            await this.profileService.getUserProfile();
             this.isOnline = true;
         } catch (err) {
             this.isOnline = false;

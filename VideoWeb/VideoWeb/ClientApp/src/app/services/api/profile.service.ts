@@ -11,9 +11,7 @@ export class ProfileService {
     constructor(private apiClient: ApiClient) {}
 
     async getUserProfile(): Promise<UserProfileResponse> {
-        if (!this.profile) {
-            this.profile = await this.apiClient.getUserProfile().toPromise();
-        }
+        this.profile = await this.apiClient.getUserProfile().toPromise();
         return this.profile;
     }
 

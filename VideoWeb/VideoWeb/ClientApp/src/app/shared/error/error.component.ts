@@ -1,6 +1,5 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -34,8 +33,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
         private eventsService: EventsService,
         private logger: Logger,
         private errorService: ErrorService,
-        protected profileService: ProfileService,
-        protected adalService: AdalService
+        protected profileService: ProfileService
     ) {
         this.checkIntenetConnection();
         this.browserRefresh = false;
@@ -44,7 +42,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
 
     private async checkIntenetConnection(): Promise<void> {
         try {
-            await this.profileService.getProfileByUsername(this.adalService.userInfo.userName);
+            await this.profileService.getUserProfile();
             this.isOnline = true;
         } catch (err) {
             this.isOnline = false;

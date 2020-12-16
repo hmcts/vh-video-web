@@ -7,7 +7,6 @@ import { ErrorService } from './error.service';
 import { Logger } from './logging/logger-base';
 import { SessionStorage } from './session-storage';
 import { ErrorMessage } from '../shared/models/error-message';
-import { MockAdalService } from '../testing/mocks/MockAdalService';
 import { MockProfileService } from '../testing/mocks/MockProfileService';
 
 describe('ErrorService', () => {
@@ -18,12 +17,9 @@ describe('ErrorService', () => {
     let profileService;
     const mockProfileService = new MockProfileService();
     profileService = mockProfileService;
-    let adalService;
-    const mockAdalService = new MockAdalService();
-    adalService = mockAdalService;
 
     beforeEach(() => {
-        component = new ErrorService(router, logger, profileService, adalService);
+        component = new ErrorService(router, logger, profileService);
     });
 
     it('should do nothing if skip redirect is true', () => {

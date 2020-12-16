@@ -18,14 +18,7 @@ describe('ProfileService', () => {
         service = new ProfileService(apiClient);
     });
 
-    it('should not call api when profile is already set', async () => {
-        service.profile = knownProfile;
-        const result = await service.getUserProfile();
-        expect(result).toBe(knownProfile);
-        expect(apiClient.getUserProfile).toHaveBeenCalledTimes(0);
-    });
-
-    it('should call api when profile is not set', async () => {
+    it('should call api and retrieve the profile information', async () => {
         service.profile = null;
         const result = await service.getUserProfile();
         expect(result).toBe(knownProfile);
