@@ -67,7 +67,7 @@
     "@types/chart.js": "^2.9.28",
     "@types/jasmine": "^3.6.2",
     "@types/jasminewd2": "^2.0.8",
-    "@types/node": "~12.19.5",
+    "@types/node": "~12.19.7",
     "@types/webrtc": "^0.0.26",
     "codelyzer": "^6.0.1",
     "install-peers": "^1.0.3",
@@ -80,7 +80,7 @@
     "karma-jasmine-html-reporter": "^1.5.4",
     "karma-junit-reporter": "^2.0.1",
     "node-sass": "^4.14.1",
-    "nswag": "^13.9.3",
+    "nswag": "^13.9.4",
     "prettier": "^2.1.2",
     "puppeteer": "^5.5.0",
     "typescript": "~4.0.5"
