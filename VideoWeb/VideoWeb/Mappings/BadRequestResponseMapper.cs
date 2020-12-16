@@ -3,7 +3,7 @@ using VideoWeb.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
-    public class BadRequestResponseMapper : IMapTo<BadRequestModelResponse, Dictionary<string, string[]>>
+    public class BadRequestResponseMapper : IMapTo<Dictionary<string, string[]>, BadRequestModelResponse>
     {
         public BadRequestModelResponse Map(Dictionary<string, string[]> errors)
         {

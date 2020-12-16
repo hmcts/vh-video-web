@@ -2,7 +2,7 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings
 {
-    public class EventTypeReasonMapper : IMapTo<string, EventType>
+    public class EventTypeReasonMapper : IMapTo<EventType, string>
     { 
         public string Map(EventType eventType)
         {

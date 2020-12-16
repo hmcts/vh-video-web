@@ -30,29 +30,20 @@ namespace VideoWeb.Controllers
         private readonly IHubContext<EventHub.Hub.EventHub, IEventHubClient> _hubContext;
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<ConsultationsController> _logger;
-        private readonly IMapTo<ConsultationRequest, PrivateConsultationRequest> _consultationRequestMapper;
-        private readonly IMapTo<BadRequestModelResponse, Dictionary<string, string[]>> _badRequestModelResponseMapper;
-        private readonly IMapTo<LeaveConsultationRequest, LeavePrivateConsultationRequest> _leaveConsultationRequestMapper;
-        private readonly IMapTo<AdminConsultationRequest, PrivateAdminConsultationRequest> _adminConsultationRequestMapper;
+        private readonly IMapperFactory _mapperFactory;
 
         public ConsultationsController(
             IVideoApiClient videoApiClient,
             IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext,
             IConferenceCache conferenceCache,
             ILogger<ConsultationsController> logger,
-            IMapTo<ConsultationRequest, PrivateConsultationRequest> consultationRequestMapper,
-            IMapTo<BadRequestModelResponse, Dictionary<string, string[]>> badRequestModelResponseMapper,
-            IMapTo<LeaveConsultationRequest, LeavePrivateConsultationRequest> leaveConsultationRequestMapper,
-            IMapTo<AdminConsultationRequest, PrivateAdminConsultationRequest> adminConsultationRequestMapper)
+            IMapperFactory mapperFactory)
         {
             _videoApiClient = videoApiClient;
             _hubContext = hubContext;
             _conferenceCache = conferenceCache;
             _logger = logger;
-            _consultationRequestMapper = consultationRequestMapper;
-            _badRequestModelResponseMapper = badRequestModelResponseMapper;
-            _leaveConsultationRequestMapper = leaveConsultationRequestMapper;
-            _adminConsultationRequestMapper = adminConsultationRequestMapper;
+            _mapperFactory = mapperFactory;
         }
 
         /// <summary>
@@ -96,7 +87,8 @@ namespace VideoWeb.Controllers
 
             try
             {
-                var mappedRequest = _consultationRequestMapper.Map(request);
+                var consultationRequestMapper = _mapperFactory.Get<PrivateConsultationRequest, ConsultationRequest>();
+                var mappedRequest = consultationRequestMapper.Map(request);
                 await _videoApiClient.HandleConsultationRequestAsync(mappedRequest);
                 return NoContent();
             }
@@ -105,9 +97,9 @@ namespace VideoWeb.Controllers
                 object value;
                 if (e is VideoApiException<ProblemDetails>)
                 {
-                    var errors =
-                        Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string[]>>(e.Response);
-                    value = _badRequestModelResponseMapper.Map(errors);
+                    var errors = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string[]>>(e.Response);
+                    var badRequestModelResponseMapper = _mapperFactory.Get<Dictionary<string, string[]>, BadRequestModelResponse>();
+                    value = badRequestModelResponseMapper.Map(errors);
                     await NotifyParticipantsConsultationRoomOccupied(request.ConferenceId, requestedBy.Username,
                         requestedFor.Username);
                 }
@@ -138,7 +130,8 @@ namespace VideoWeb.Controllers
                     return NotFound();
                 }
 
-                var mappedRequest = _leaveConsultationRequestMapper.Map(request);
+                var leaveConsultationRequestMapper = _mapperFactory.Get<LeavePrivateConsultationRequest, LeaveConsultationRequest>();
+                var mappedRequest = leaveConsultationRequestMapper.Map(request);
                 await _videoApiClient.LeavePrivateConsultationAsync(mappedRequest);
                 return NoContent();
             }
@@ -177,7 +170,8 @@ namespace VideoWeb.Controllers
                     return NotFound();
                 }
 
-                var mappedRequest = _adminConsultationRequestMapper.Map(request);
+                var adminConsultationRequestMapper = _mapperFactory.Get<PrivateAdminConsultationRequest, AdminConsultationRequest>();
+                var mappedRequest = adminConsultationRequestMapper.Map(request);
                 await _videoApiClient.RespondToAdminConsultationRequestAsync(mappedRequest);
                 if (request.Answer != ConsultationAnswer.Accepted) return NoContent();
                 var roomType = Enum.Parse<RoomType>(request.ConsultationRoom.ToString());

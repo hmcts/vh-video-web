@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Security.Claims;
 using VideoWeb.Common.Models;
@@ -6,7 +6,7 @@ using VideoWeb.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
-    public class ClaimsPrincipalToUserProfileResponseMapper : IMapTo<UserProfileResponse, ClaimsPrincipal>
+    public class ClaimsPrincipalToUserProfileResponseMapper : IMapTo<ClaimsPrincipal, UserProfileResponse>
     {
         public UserProfileResponse Map(ClaimsPrincipal user)
         {

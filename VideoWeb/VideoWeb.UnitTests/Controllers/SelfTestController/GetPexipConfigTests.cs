@@ -1,4 +1,5 @@
 using System.Net;
+using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,13 +15,13 @@ namespace VideoWeb.UnitTests.Controllers.SelfTestController
 {
     public class GetPexipConfigTests
     {
-        private VideoWeb.Controllers.SelfTestController _controller;
-        private Mock<IVideoApiClient> _videoApiClientMock;
+        private AutoMock _mocker;
+        private VideoWeb.Controllers.SelfTestController _sut;
 
         [SetUp]
         public void Setup()
         {
-            _videoApiClientMock = new Mock<IVideoApiClient>();
+            _mocker = AutoMock.GetLoose();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
             {
@@ -29,16 +30,14 @@ namespace VideoWeb.UnitTests.Controllers.SelfTestController
                     User = claimsPrincipal
                 }
             };
-            _controller = new VideoWeb.Controllers.SelfTestController(_videoApiClientMock.Object, new PexipServiceConfigurationResponseMapper())
-            {
-                ControllerContext = context
-            };
+            _sut = _mocker.Create<VideoWeb.Controllers.SelfTestController>();
+            _sut.ControllerContext = context;
         }
 
         [Test]
         public void Should_return_ok_with_pexipnode()
         {
-            var result = _controller.GetPexipConfig();
+            var result = _sut.GetPexipConfig();
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
         }
@@ -48,11 +47,11 @@ namespace VideoWeb.UnitTests.Controllers.SelfTestController
         {
             var apiException = new VideoApiException<ProblemDetails>("User not found", (int)HttpStatusCode.NotFound,
                 "Config Not Found", null, default, null);
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetPexipServicesConfiguration())
                 .Throws(apiException);
 
-            var result = _controller.GetPexipConfig();
+            var result = _sut.GetPexipConfig();
             var typedResult = (ObjectResult)result.Result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
         }

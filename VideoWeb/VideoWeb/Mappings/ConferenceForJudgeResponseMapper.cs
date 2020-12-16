@@ -8,11 +8,11 @@ using Participant = VideoWeb.Services.Video.ParticipantForJudgeResponse;
 
 namespace VideoWeb.Mappings
 {
-    public class ConferenceForJudgeResponseMapper : IMapTo<ConferenceForJudgeResponse, Conference>
+    public class ConferenceForJudgeResponseMapper : IMapTo<Conference, ConferenceForJudgeResponse>
     {
-        private readonly IMapTo<ParticipantForJudgeResponse, Participant> _participantForJudgeResponseMapper;
+        private readonly IMapTo<Participant, ParticipantForJudgeResponse> _participantForJudgeResponseMapper;
 
-        public ConferenceForJudgeResponseMapper(IMapTo<ParticipantForJudgeResponse, Participant> participantForJudgeResponseMapper)
+        public ConferenceForJudgeResponseMapper(IMapTo<Participant, ParticipantForJudgeResponse> participantForJudgeResponseMapper)
         {
             _participantForJudgeResponseMapper = participantForJudgeResponseMapper;
         }

@@ -6,11 +6,11 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings
 {
-    public class ConferenceForVhOfficerResponseMapper : IMapTo<ConferenceForVhOfficerResponse, ConferenceForAdminResponse>
+    public class ConferenceForVhOfficerResponseMapper : IMapTo<ConferenceForAdminResponse, ConferenceForVhOfficerResponse>
     {
-        private readonly IMapTo<List<ParticipantForUserResponse>, IEnumerable<ParticipantSummaryResponse>> _participantForUserResponseMapper;
+        private readonly IMapTo<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>> _participantForUserResponseMapper;
 
-        public ConferenceForVhOfficerResponseMapper(IMapTo<List<ParticipantForUserResponse>, IEnumerable<ParticipantSummaryResponse>> participantForUserResponseMapper)
+        public ConferenceForVhOfficerResponseMapper(IMapTo<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>> participantForUserResponseMapper)
         {
             _participantForUserResponseMapper = participantForUserResponseMapper;
         }

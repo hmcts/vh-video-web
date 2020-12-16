@@ -170,7 +170,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .AddTypedParameters<EventTypeReasonMapper>()
                 .AddTypedParameters<CallbackEventMapper>()
                 .AddTypedParameters<ParticipantForUserResponseMapper>()
-                .AddTypeAsImplementedInterfaces(eventHandlerFactory)
+                .AddObjectAsImplementedInterfaces(eventHandlerFactory)
                 .Build();
             var controller = _mocker.Create<ParticipantsController>(parameters);
             controller.ControllerContext = context;

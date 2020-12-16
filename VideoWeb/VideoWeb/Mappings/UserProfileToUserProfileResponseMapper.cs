@@ -5,7 +5,7 @@ using VideoWeb.Services.User;
 
 namespace VideoWeb.Mappings
 {
-    public class UserProfileToUserProfileResponseMapper : IMapTo<UserProfileResponse, UserProfile>
+    public class UserProfileToUserProfileResponseMapper : IMapTo<UserProfile, UserProfileResponse>
     {
         const string Vhofficer = "VhOfficer";
         const string Representative = "Representative";

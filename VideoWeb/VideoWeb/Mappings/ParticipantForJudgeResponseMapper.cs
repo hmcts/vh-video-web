@@ -5,7 +5,7 @@ using ParticipantForJudgeResponse = VideoWeb.Contract.Responses.ParticipantForJu
 
 namespace VideoWeb.Mappings
 {
-    public class ParticipantForJudgeResponseMapper : IMapTo<ParticipantForJudgeResponse, Participant>
+    public class ParticipantForJudgeResponseMapper : IMapTo<Participant, ParticipantForJudgeResponse>
     {
         public ParticipantForJudgeResponse Map(Participant participant)
         {

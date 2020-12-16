@@ -13,13 +13,14 @@ namespace VideoWeb.Controllers
     public class SelfTestController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
-        private readonly IMapTo<SelfTestPexipResponse, PexipConfigResponse> _selfTestPexipResponseMapper;
+        private readonly IMapperFactory _mapperFactory;
+
         public SelfTestController(
             IVideoApiClient videoApiClient,
-            IMapTo<SelfTestPexipResponse, PexipConfigResponse> selfTestPexipResponseMapper)
+            IMapperFactory mapperFactory)
         {
-            _videoApiClient = videoApiClient;   
-            _selfTestPexipResponseMapper = selfTestPexipResponseMapper;
+            _videoApiClient = videoApiClient;
+            _mapperFactory = mapperFactory;
         }
 
         /// <summary>
@@ -35,7 +36,8 @@ namespace VideoWeb.Controllers
             try
             {
                 var config = _videoApiClient.GetPexipServicesConfiguration();
-                var response = _selfTestPexipResponseMapper.Map(config);
+                var selfTestPexipResponseMapper = _mapperFactory.Get<PexipConfigResponse, SelfTestPexipResponse>();
+                var response = selfTestPexipResponseMapper.Map(config);
                 return Ok(response);
             }
             catch (VideoApiException e)

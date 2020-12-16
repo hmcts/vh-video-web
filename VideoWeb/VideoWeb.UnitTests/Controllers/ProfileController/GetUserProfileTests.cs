@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,29 +21,28 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
 {
     public class GetUserProfileTests
     {
-        private ProfilesController _controller;
-        private Mock<IUserApiClient> _userApiClientMock;
-        private Mock<ILogger<ProfilesController>> _mockLogger;
+        private AutoMock _mocker;
+        private ProfilesController _sut;
         private ClaimsPrincipal _claimsPrincipal;
 
         [SetUp]
         public void Setup()
+
         {
-            _userApiClientMock = new Mock<IUserApiClient>();
-            _mockLogger = new Mock<ILogger<ProfilesController>>();
+            _mocker = AutoMock.GetLoose();
             _claimsPrincipal = new ClaimsPrincipalBuilder()
                 .WithRole(AppRoles.JudgeRole)
                 .WithClaim(ClaimTypes.GivenName, "John")
                 .WithClaim(ClaimTypes.Surname, "Doe")
                 .WithClaim("name", "John D")
                 .Build();
-            _controller = SetupControllerWithClaims(_claimsPrincipal);
+            _sut = SetupControllerWithClaims(_claimsPrincipal);
         }
 
         [Test]
         public void Should_return_ok_code_when_user_profile_found()
         {
-            var result = _controller.GetUserProfile();
+            var result = _sut.GetUserProfile();
             var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
 
@@ -63,15 +63,15 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
                 .WithClaim(ClaimTypes.GivenName, "John")
                 .WithClaim(ClaimTypes.Surname, "Doe")
                 .Build();
-            _controller = SetupControllerWithClaims(claimsPrincipal);
+            _sut = SetupControllerWithClaims(claimsPrincipal);
             var apiException = new UserApiException<ProblemDetails>("Internal Server Error",
                 (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
-            _userApiClientMock
+            _mocker.Mock<IUserApiClient>()
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
-            var result = _controller.GetUserProfile();
+            var result = _sut.GetUserProfile();
             var typedResult = (ObjectResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.Unauthorized);
 
@@ -87,10 +87,10 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
                 }
             };
 
-            return new ProfilesController(_userApiClientMock.Object, _mockLogger.Object, new DictionaryUserCache(), new ClaimsPrincipalToUserProfileResponseMapper(), new UserProfileToUserProfileResponseMapper())
-            {
-                ControllerContext = context
-            };
+            var parameters = new ParameterBuilder(_mocker).AddObjectAsImplementedInterfaces(new DictionaryUserCache()).Build();
+            var controller = _mocker.Create<ProfilesController>(parameters);
+            controller.ControllerContext = context;
+            return controller;
         }
     }
 }

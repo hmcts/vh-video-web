@@ -5,7 +5,7 @@ using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceFo
 
 namespace VideoWeb.Mappings
 {
-    public class ConferenceForIndividualResponseMapper : IMapTo<ConferenceForIndividualResponse, Conference>
+    public class ConferenceForIndividualResponseMapper : IMapTo<Conference, ConferenceForIndividualResponse>
     {
         public ConferenceForIndividualResponse Map(Conference conference)
         {

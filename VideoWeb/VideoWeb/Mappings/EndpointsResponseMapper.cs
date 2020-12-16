@@ -5,7 +5,7 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings
 {
-    public class EndpointsResponseMapper : IMapTo<VideoEndpointResponse, EndpointResponse, int>
+    public class EndpointsResponseMapper : IMapTo<EndpointResponse, int, VideoEndpointResponse>
     {
         public VideoEndpointResponse Map(EndpointResponse endpoint, int index)
         {

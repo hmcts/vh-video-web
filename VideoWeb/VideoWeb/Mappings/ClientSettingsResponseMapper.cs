@@ -3,7 +3,7 @@ using VideoWeb.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
-    public class ClientSettingsResponseMapper : IMapTo<ClientSettingsResponse, AzureAdConfiguration, HearingServicesConfiguration>
+    public class ClientSettingsResponseMapper : IMapTo<AzureAdConfiguration, HearingServicesConfiguration, ClientSettingsResponse>
     {
         public ClientSettingsResponse Map(AzureAdConfiguration azureAdConfiguration, HearingServicesConfiguration servicesConfiguration)
         {

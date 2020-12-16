@@ -29,30 +29,18 @@ namespace VideoWeb.Controllers
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<ConferencesController> _logger;
         private readonly IConferenceCache _conferenceCache;
-        private readonly IMapTo<ConferenceForJudgeResponse, JudgeConference> _conferenceForJudgeResponseMapper;
-        private readonly IMapTo<ConferenceForIndividualResponse, IndividualConference> _conferenceForIndividualResponseMapper;
-        private readonly IMapTo<ConferenceForVhOfficerResponse, ConferenceForAdminResponse> _conferenceForVhOfficerResponseMapper;
-        private readonly IMapTo<ConferenceResponseVho, ConferenceDetailsResponse> _conferenceResponseVhoMapper;
-        private readonly IMapTo<ConferenceResponse, ConferenceDetailsResponse> _conferenceResponseMapper;
+        private readonly IMapperFactory _mapperFactory;
 
         public ConferencesController(
             IVideoApiClient videoApiClient,
             ILogger<ConferencesController> logger,
             IConferenceCache conferenceCache,
-            IMapTo<ConferenceForJudgeResponse, JudgeConference> conferenceForJudgeResponseMapper,
-            IMapTo<ConferenceForIndividualResponse, IndividualConference> conferenceForIndividualResponseMapper,
-            IMapTo<ConferenceForVhOfficerResponse, ConferenceForAdminResponse> conferenceForVhOfficerResponseMapper,
-            IMapTo<ConferenceResponseVho, ConferenceDetailsResponse> conferenceResponseVhoMapper,
-            IMapTo<ConferenceResponse, ConferenceDetailsResponse> conferenceResponseMapper)
+            IMapperFactory mapperFactory)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _conferenceCache = conferenceCache;
-            _conferenceForJudgeResponseMapper = conferenceForJudgeResponseMapper;
-            _conferenceForIndividualResponseMapper = conferenceForIndividualResponseMapper;
-            _conferenceForVhOfficerResponseMapper = conferenceForVhOfficerResponseMapper;
-            _conferenceResponseVhoMapper = conferenceResponseVhoMapper;
-            _conferenceResponseMapper = conferenceResponseMapper;
+            _mapperFactory = mapperFactory;
         }
 
         /// <summary>
@@ -69,10 +57,11 @@ namespace VideoWeb.Controllers
             _logger.LogDebug("GetConferencesForJudge");
             try
             {
+                var conferenceForJudgeResponseMapper = _mapperFactory.Get<JudgeConference, ConferenceForJudgeResponse>();
                 var username = User.Identity.Name;
                 var conferencesForJudge = await _videoApiClient.GetConferencesTodayForJudgeByUsernameAsync(username);
                 var response = conferencesForJudge
-                    .Select(_conferenceForJudgeResponseMapper.Map)
+                    .Select(conferenceForJudgeResponseMapper.Map)
                     .ToList();
                 return Ok(response);
             }
@@ -100,8 +89,9 @@ namespace VideoWeb.Controllers
                 var username = User.Identity.Name;
                 var conferencesForIndividual = await _videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username);
                 conferencesForIndividual = conferencesForIndividual.Where(c => ConferenceHelper.HasNotPassed(c.Status, c.Closed_date_time)).ToList();
+                var conferenceForIndividualResponseMapper = _mapperFactory.Get<IndividualConference, ConferenceForIndividualResponse>();
                 var response = conferencesForIndividual
-                    .Select(_conferenceForIndividualResponseMapper.Map)
+                    .Select(conferenceForIndividualResponseMapper.Map)
                     .ToList();
                 return Ok(response);
             }
@@ -128,10 +118,11 @@ namespace VideoWeb.Controllers
             try
             {
                 var conferences = await _videoApiClient.GetConferencesTodayForAdminAsync(query.UserNames);
+                var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, ConferenceForVhOfficerResponse>();
                 var responses = conferences
                     .Where(c => ConferenceHelper.HasNotPassed(c.Status, c.Closed_date_time))
                     .OrderBy(x => x.Closed_date_time)
-                    .Select(_conferenceForVhOfficerResponseMapper.Map)
+                    .Select(conferenceForVhOfficerResponseMapper.Map)
                     .ToList();
 
                 return Ok(responses);
@@ -201,7 +192,8 @@ namespace VideoWeb.Controllers
                 .Participants
                 .Where(x => displayRoles.Contains((Role) x.User_role)).ToList();
 
-            var response = _conferenceResponseVhoMapper.Map(conference);
+            var conferenceResponseVhoMapper = _mapperFactory.Get<ConferenceDetailsResponse, ConferenceResponseVho>();
+            var response = conferenceResponseVhoMapper.Map(conference);
 
             await _conferenceCache.AddConferenceAsync(conference);
 
@@ -262,7 +254,8 @@ namespace VideoWeb.Controllers
             conference.Participants = conference.Participants
                 .Where(x => displayRoles.Contains((Role)x.User_role)).ToList();
 
-            var response = _conferenceResponseMapper.Map(conference);
+            var conferenceResponseMapper = _mapperFactory.Get<ConferenceDetailsResponse, ConferenceResponse>();
+            var response = conferenceResponseMapper.Map(conference);
             await _conferenceCache.AddConferenceAsync(conference);
 
             return Ok(response);

@@ -4,23 +4,23 @@ using System.Diagnostics;
 
 namespace VideoWeb.Mappings.Decorators
 {
-    public class MapperLoggingDecorator<TOut, TIn> : IMapTo<TOut, TIn>
+    public class MapperLoggingDecorator<TIn1, TOut> : IMapTo<TIn1, TOut>
     {
-        private readonly IMapTo<TOut, TIn> _underlyingMapper;
+        private readonly IMapTo<TIn1, TOut> _underlyingMapper;
 
-        private readonly ILogger<IMapTo<TOut, TIn>> _logger;
+        private readonly ILogger<IMapTo<TIn1, TOut>> _logger;
 
-        public MapperLoggingDecorator(IMapTo<TOut, TIn> underlyingMapper, ILogger<IMapTo<TOut, TIn>> logger)
+        public MapperLoggingDecorator(IMapTo<TIn1, TOut> underlyingMapper, ILogger<IMapTo<TIn1, TOut>> logger)
         {
             _underlyingMapper = underlyingMapper;
             _logger = logger;
         }
 
-        public TOut Map(TIn input)
+        public TOut Map(TIn1 input)
         {
             using var _ = _logger.BeginScope(new Dictionary<string, object>
             { 
-                ["TIn"] = typeof(TIn).Name,
+                ["TIn1"] = typeof(TIn1).Name,
                 ["TOut"] = typeof(TOut).Name
             });
 
@@ -33,13 +33,13 @@ namespace VideoWeb.Mappings.Decorators
         }
     }
 
-    public class MapperLoggingDecorator<TOut, TIn1, TIn2> : IMapTo<TOut, TIn1, TIn2>
+    public class MapperLoggingDecorator<TIn1, TIn2, TOut> : IMapTo<TIn1, TIn2, TOut>
     {
-        private readonly IMapTo<TOut, TIn1, TIn2> _underlyingMapper;
+        private readonly IMapTo<TIn1, TIn2, TOut> _underlyingMapper;
 
-        private readonly ILogger<IMapTo<TOut, TIn1, TIn2>> _logger;
+        private readonly ILogger<IMapTo<TIn1, TIn2, TOut>> _logger;
 
-        public MapperLoggingDecorator(IMapTo<TOut, TIn1, TIn2> underlyingMapper, ILogger<IMapTo<TOut, TIn1, TIn2>> logger)
+        public MapperLoggingDecorator(IMapTo<TIn1, TIn2, TOut> underlyingMapper, ILogger<IMapTo<TIn1, TIn2, TOut>> logger)
         {
             _underlyingMapper = underlyingMapper;
             _logger = logger;
@@ -63,13 +63,13 @@ namespace VideoWeb.Mappings.Decorators
         }
     }
 
-    public class MapperLoggingDecorator<TOut, TIn1, TIn2, TIn3> : IMapTo<TOut, TIn1, TIn2, TIn3>
+    public class MapperLoggingDecorator<TIn1, TIn2, TIn3, TOut> : IMapTo<TIn1, TIn2, TIn3, TOut>
     {
-        private readonly IMapTo<TOut, TIn1, TIn2, TIn3> _underlyingMapper;
+        private readonly IMapTo<TIn1, TIn2, TIn3, TOut> _underlyingMapper;
 
-        private readonly ILogger<IMapTo<TOut, TIn1, TIn2, TIn3>> _logger;
+        private readonly ILogger<IMapTo<TIn1, TIn2, TIn3, TOut>> _logger;
 
-        public MapperLoggingDecorator(IMapTo<TOut, TIn1, TIn2, TIn3> underlyingMapper, ILogger<IMapTo<TOut, TIn1, TIn2, TIn3>> logger)
+        public MapperLoggingDecorator(IMapTo<TIn1, TIn2, TIn3, TOut> underlyingMapper, ILogger<IMapTo<TIn1, TIn2, TIn3, TOut>> logger)
         {
             _underlyingMapper = underlyingMapper;
             _logger = logger;
@@ -94,13 +94,13 @@ namespace VideoWeb.Mappings.Decorators
         }
     }
 
-    public class MapperLoggingDecorator<TOut, TIn1, TIn2, TIn3, TIn4> : IMapTo<TOut, TIn1, TIn2, TIn3, TIn4>
+    public class MapperLoggingDecorator<TIn1, TIn2, TIn3, TIn4, TOut> : IMapTo<TIn1, TIn2, TIn3, TIn4, TOut>
     {
-        private readonly IMapTo<TOut, TIn1, TIn2, TIn3, TIn4> _underlyingMapper;
+        private readonly IMapTo<TIn1, TIn2, TIn3, TIn4, TOut> _underlyingMapper;
 
-        private readonly ILogger<IMapTo<TOut, TIn1, TIn2, TIn3, TIn4>> _logger;
+        private readonly ILogger<IMapTo<TIn1, TIn2, TIn3, TIn4, TOut>> _logger;
 
-        public MapperLoggingDecorator(IMapTo<TOut, TIn1, TIn2, TIn3, TIn4> underlyingMapper, ILogger<IMapTo<TOut, TIn1, TIn2, TIn3, TIn4>> logger)
+        public MapperLoggingDecorator(IMapTo<TIn1, TIn2, TIn3, TIn4, TOut> underlyingMapper, ILogger<IMapTo<TIn1, TIn2, TIn3, TIn4, TOut>> logger)
         {
             _underlyingMapper = underlyingMapper;
             _logger = logger;
@@ -126,13 +126,13 @@ namespace VideoWeb.Mappings.Decorators
         }
     }
 
-    public class MapperLoggingDecorator<TOut, TIn1, TIn2, TIn3, TIn4, TIn5> : IMapTo<TOut, TIn1, TIn2, TIn3, TIn4, TIn5>
+    public class MapperLoggingDecorator<TIn1, TIn2, TIn3, TIn4, TIn5, TOut> : IMapTo<TIn1, TIn2, TIn3, TIn4, TIn5, TOut>
     {
-        private readonly IMapTo<TOut, TIn1, TIn2, TIn3, TIn4, TIn5> _underlyingMapper;
+        private readonly IMapTo<TIn1, TIn2, TIn3, TIn4, TIn5, TOut> _underlyingMapper;
 
-        private readonly ILogger<IMapTo<TOut, TIn1, TIn2, TIn3, TIn4, TIn5>> _logger;
+        private readonly ILogger<IMapTo<TIn1, TIn2, TIn3, TIn4, TIn5, TOut>> _logger;
 
-        public MapperLoggingDecorator(IMapTo<TOut, TIn1, TIn2, TIn3, TIn4, TIn5> underlyingMapper, ILogger<IMapTo<TOut, TIn1, TIn2, TIn3, TIn4, TIn5>> logger)
+        public MapperLoggingDecorator(IMapTo<TIn1, TIn2, TIn3, TIn4, TIn5, TOut> underlyingMapper, ILogger<IMapTo<TIn1, TIn2, TIn3, TIn4, TIn5, TOut>> logger)
         {
             _underlyingMapper = underlyingMapper;
             _logger = logger;

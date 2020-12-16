@@ -5,7 +5,7 @@ using VideoWeb.Services.User;
 
 namespace VideoWeb.Mappings
 {
-    public class CourtRoomsAccountResponseMapper : IMapTo<List<CourtRoomsAccountResponse>, IEnumerable<UserResponse>, IEnumerable<string>>
+    public class CourtRoomsAccountResponseMapper : IMapTo<IEnumerable<UserResponse>, IEnumerable<string>, List<CourtRoomsAccountResponse>>
     {
         public List<CourtRoomsAccountResponse> Map(IEnumerable<UserResponse> userResponses, IEnumerable<string> userNames)
         {

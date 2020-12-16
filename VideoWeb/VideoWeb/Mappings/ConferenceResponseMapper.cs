@@ -8,13 +8,13 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings
 {
-    public class ConferenceResponseMapper : IMapTo<ConferenceResponse, ConferenceDetailsResponse>
+    public class ConferenceResponseMapper : IMapTo<ConferenceDetailsResponse, ConferenceResponse>
     {
-        private readonly IMapTo<ParticipantResponse, ParticipantDetailsResponse> _participantResponseMapper;
+        private readonly IMapTo<ParticipantDetailsResponse, ParticipantResponse> _participantResponseMapper;
 
-        private readonly IMapTo<VideoEndpointResponse, EndpointResponse, int> _videoEndpointResponseMapper;
+        private readonly IMapTo<EndpointResponse, int, VideoEndpointResponse> _videoEndpointResponseMapper;
 
-        public ConferenceResponseMapper(IMapTo<ParticipantResponse, ParticipantDetailsResponse> participantResponseMapper, IMapTo<VideoEndpointResponse, EndpointResponse, int> videoEndpointResponseMapper)
+        public ConferenceResponseMapper(IMapTo<ParticipantDetailsResponse, ParticipantResponse> participantResponseMapper, IMapTo<EndpointResponse, int, VideoEndpointResponse> videoEndpointResponseMapper)
         {
             _participantResponseMapper = participantResponseMapper;
             _videoEndpointResponseMapper = videoEndpointResponseMapper;

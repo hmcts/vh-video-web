@@ -4,7 +4,7 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings.Requests
 {
-    public class PrivateAdminConsultationRequestMapper : IMapTo<AdminConsultationRequest, PrivateAdminConsultationRequest>
+    public class PrivateAdminConsultationRequestMapper : IMapTo<PrivateAdminConsultationRequest, AdminConsultationRequest>
     {
         public AdminConsultationRequest Map(PrivateAdminConsultationRequest request)
         {

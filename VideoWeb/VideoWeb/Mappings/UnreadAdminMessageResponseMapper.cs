@@ -7,7 +7,7 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings
 {
-    public class UnreadAdminMessageResponseMapper : IMapTo<UnreadAdminMessageResponse, Conference, IList<InstantMessageResponse>>
+    public class UnreadAdminMessageResponseMapper : IMapTo<Conference, IList<InstantMessageResponse>, UnreadAdminMessageResponse>
     {
         public UnreadAdminMessageResponse Map(Conference conference, IList<InstantMessageResponse> messageResponses)
         {

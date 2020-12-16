@@ -30,28 +30,20 @@ namespace VideoWeb.Controllers
         private readonly IEventHandlerFactory _eventHandlerFactory;
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<ParticipantsController> _logger;
-        private readonly IMapTo<IEnumerable<ParticipantContactDetailsResponseVho>, Conference, IEnumerable<JudgeInHearingResponse>> _participantContactDetailsResponseVhoMapper;
-        private readonly IMapTo<string, EventType> _eventTypeMapper;
-        private readonly IMapTo<CallbackEvent, ConferenceEventRequest, Conference> _callbackEventMapper;
-        private readonly IMapTo<List<ParticipantForUserResponse>, IEnumerable<ParticipantSummaryResponse>> _participantForUserResponsesMapper;
+        private readonly IMapperFactory _mapperFactory;
 
         public ParticipantsController(
             IVideoApiClient videoApiClient,
             IEventHandlerFactory eventHandlerFactory,
             IConferenceCache conferenceCache,
             ILogger<ParticipantsController> logger,
-            IMapTo<IEnumerable<ParticipantContactDetailsResponseVho>, Conference, IEnumerable<JudgeInHearingResponse>> participantContactDetailsResponseVhoMapper,
-            IMapTo<string, EventType> eventTypeMapper, IMapTo<CallbackEvent, ConferenceEventRequest, Conference> callbackEventMapper,
-            IMapTo<List<ParticipantForUserResponse>, IEnumerable<ParticipantSummaryResponse>> participantForUserResponsesMapper)
+            IMapperFactory mapperFactory)
         {
             _videoApiClient = videoApiClient;
             _eventHandlerFactory = eventHandlerFactory;
             _conferenceCache = conferenceCache;
             _logger = logger;
-            _participantContactDetailsResponseVhoMapper = participantContactDetailsResponseVhoMapper;
-            _eventTypeMapper = eventTypeMapper;
-            _callbackEventMapper = callbackEventMapper;
-            _participantForUserResponsesMapper = participantForUserResponsesMapper;
+            _mapperFactory = mapperFactory;
         }
 
         [HttpGet("{conferenceId}/participants/{participantId}/selftestresult")]
@@ -87,6 +79,7 @@ namespace VideoWeb.Controllers
             });
             var username = User.Identity.Name;
             var participantId = GetIdForParticipantByUsernameInConference(conference, username);
+            var eventTypeMapper = _mapperFactory.Get<EventType, string>();
             var conferenceEventRequest = new ConferenceEventRequest
             {
                 Conference_id = conferenceId.ToString(),
@@ -94,10 +87,11 @@ namespace VideoWeb.Controllers
                 Event_id = Guid.NewGuid().ToString(),
                 Event_type = updateParticipantStatusEventRequest.EventType,
                 Time_stamp_utc = DateTime.UtcNow,
-                Reason = _eventTypeMapper.Map(updateParticipantStatusEventRequest.EventType)
+                Reason = eventTypeMapper.Map(updateParticipantStatusEventRequest.EventType)
             };
 
-            var callbackEvent = _callbackEventMapper.Map(conferenceEventRequest, conference);
+            var callbackEventMapper = _mapperFactory.Get<ConferenceEventRequest, Conference, CallbackEvent>();
+            var callbackEvent = callbackEventMapper.Map(conferenceEventRequest, conference);
             var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
             try
             {
@@ -211,7 +205,8 @@ namespace VideoWeb.Controllers
                 _logger.LogTrace($"Retrieving booking participants for hearing ${conference.HearingId}");
                 var judgesInHearingsToday = await _videoApiClient.GetJudgesInHearingsTodayAsync();
 
-                var response = _participantContactDetailsResponseVhoMapper.Map(conference, judgesInHearingsToday);
+                var participantContactDetailsResponseVhoMapper = _mapperFactory.Get<Conference, IEnumerable<JudgeInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>();
+                var response = participantContactDetailsResponseVhoMapper.Map(conference, judgesInHearingsToday);
 
                 return Ok(response);
 
@@ -239,7 +234,8 @@ namespace VideoWeb.Controllers
             try
             {
                 var response = await _videoApiClient.GetParticipantsByConferenceIdAsync(conferenceId);
-                var participants = _participantForUserResponsesMapper.Map(response);
+                var participantForUserResponsesMapper = _mapperFactory.Get<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>>();
+                var participants = participantForUserResponsesMapper.Map(response);
                 return Ok(participants);
             }
             catch (VideoApiException e)

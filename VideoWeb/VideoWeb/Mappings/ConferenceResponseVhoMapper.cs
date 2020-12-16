@@ -8,11 +8,11 @@ using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.Mappings
 {
-    public class ConferenceResponseVhoMapper : IMapTo<ConferenceResponseVho, ConferenceDetailsResponse>
+    public class ConferenceResponseVhoMapper : IMapTo<ConferenceDetailsResponse, ConferenceResponseVho>
     {
-        private readonly IMapTo<ParticipantResponseVho, ParticipantDetailsResponse> _participantResponseVhoMapper;
+        private readonly IMapTo<ParticipantDetailsResponse, ParticipantResponseVho> _participantResponseVhoMapper;
 
-        public ConferenceResponseVhoMapper(IMapTo<ParticipantResponseVho, ParticipantDetailsResponse> participantResponseVhoMapper)
+        public ConferenceResponseVhoMapper(IMapTo<ParticipantDetailsResponse, ParticipantResponseVho> participantResponseVhoMapper)
         {
             _participantResponseVhoMapper = participantResponseVhoMapper;
         }

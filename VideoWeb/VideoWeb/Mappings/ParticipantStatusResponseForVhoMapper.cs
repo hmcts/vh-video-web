@@ -8,7 +8,7 @@ using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
 
 namespace VideoWeb.Mappings
 {
-    public class ParticipantStatusResponseForVhoMapper : IMapTo<IEnumerable<ParticipantContactDetailsResponseVho>, Conference, IEnumerable<JudgeInHearingResponse>>
+    public class ParticipantStatusResponseForVhoMapper : IMapTo<Conference, IEnumerable<JudgeInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>
     {
         public IEnumerable<ParticipantContactDetailsResponseVho> Map(
             Conference conference,

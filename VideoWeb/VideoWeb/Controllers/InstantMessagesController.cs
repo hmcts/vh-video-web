@@ -27,26 +27,20 @@ namespace VideoWeb.Controllers
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<InstantMessagesController> _logger;
         private readonly IMessageDecoder _messageDecoder;
-        private readonly IMapTo<UnreadInstantMessageConferenceCountResponse, Conference, IList<InstantMessageResponse>> _unreadInstantMessageConferenceCountResponseMapper;
-        private readonly IMapTo<UnreadAdminMessageResponse, Conference, IList<InstantMessageResponse>> _unreadAdminMessageResponseMapper;
-        private readonly IMapTo<ChatResponse, InstantMessageResponse, string, bool> _chatResponseMapper;
+        private readonly IMapperFactory _mapperFactory;
 
         public InstantMessagesController(
             IVideoApiClient videoApiClient,
             ILogger<InstantMessagesController> logger,
             IMessageDecoder messageDecoder,
             IConferenceCache conferenceCache,
-            IMapTo<UnreadInstantMessageConferenceCountResponse, Conference, IList<InstantMessageResponse>> unreadInstantMessageConferenceCountResponseMapper,
-            IMapTo<UnreadAdminMessageResponse, Conference, IList<InstantMessageResponse>> unreadAdminMessageResponseMapper,
-            IMapTo<ChatResponse, InstantMessageResponse, string, bool> chatResponseMapper)
+            IMapperFactory mapperFactory)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _messageDecoder = messageDecoder;
             _conferenceCache = conferenceCache;
-            _unreadInstantMessageConferenceCountResponseMapper = unreadInstantMessageConferenceCountResponseMapper;
-            _unreadAdminMessageResponseMapper = unreadAdminMessageResponseMapper;
-            _chatResponseMapper = chatResponseMapper;
+            _mapperFactory = mapperFactory;
         }
 
         /// <summary>
@@ -108,7 +102,8 @@ namespace VideoWeb.Controllers
                     () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
                 );
 
-                var response = _unreadInstantMessageConferenceCountResponseMapper.Map(conference, messages);
+                var unreadInstantMessageConferenceCountResponseMapper = _mapperFactory.Get<Conference, IList<InstantMessageResponse>, UnreadInstantMessageConferenceCountResponse>();
+                var response = unreadInstantMessageConferenceCountResponseMapper.Map(conference, messages);
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -145,7 +140,8 @@ namespace VideoWeb.Controllers
                     () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
                 );
 
-                var response = _unreadAdminMessageResponseMapper.Map(conference, messages);
+                var unreadAdminMessageResponseMapper = _mapperFactory.Get<Conference, IList<InstantMessageResponse>, UnreadAdminMessageResponse>();
+                var response = unreadAdminMessageResponseMapper.Map(conference, messages);
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -184,7 +180,9 @@ namespace VideoWeb.Controllers
                 {
                     fromDisplayName = await _messageDecoder.GetMessageOriginatorAsync(conference, message);
                 }
-                var mapped = _chatResponseMapper.Map(message, fromDisplayName, isUser);
+
+                var chatResponseMapper = _mapperFactory.Get<InstantMessageResponse, string, bool, ChatResponse>();
+                var mapped = chatResponseMapper.Map(message, fromDisplayName, isUser);
                 response.Add(mapped);
             }
 

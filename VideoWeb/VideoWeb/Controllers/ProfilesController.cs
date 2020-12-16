@@ -20,21 +20,18 @@ namespace VideoWeb.Controllers
         private readonly IUserApiClient _userApiClient;
         private readonly IUserCache _userCache;
         private readonly ILogger<ProfilesController> _logger;
-        private readonly IMapTo<UserProfileResponse, ClaimsPrincipal> _claimsPrincipalToUserProfileResponseMapper;
-        private readonly IMapTo<UserProfileResponse, UserProfile> _userProfileToUserProfileResponseMapper;
+        private readonly IMapperFactory _mapperFactory;
 
         public ProfilesController(
             IUserApiClient userApiClient,
             ILogger<ProfilesController> logger,
             IUserCache userCache,
-            IMapTo<UserProfileResponse, ClaimsPrincipal> claimsPrincipalToUserProfileResponseMapper,
-            IMapTo<UserProfileResponse, UserProfile> userProfileToUserProfileResponseMapper)
+            IMapperFactory mapperFactory)
         {
             _userApiClient = userApiClient;
             _logger = logger;
             _userCache = userCache;
-            _claimsPrincipalToUserProfileResponseMapper = claimsPrincipalToUserProfileResponseMapper;
-            _userProfileToUserProfileResponseMapper = userProfileToUserProfileResponseMapper;
+            _mapperFactory = mapperFactory;
         }
 
         /// <summary>
@@ -48,7 +45,8 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var response = _claimsPrincipalToUserProfileResponseMapper.Map(User);
+                var claimsPrincipalToUserProfileResponseMapper = _mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
+                var response = claimsPrincipalToUserProfileResponseMapper.Map(User);
                 return Ok(response);
             }
             catch (Exception e)
@@ -76,7 +74,8 @@ namespace VideoWeb.Controllers
                 (
                     usernameClean, key => _userApiClient.GetUserByAdUserNameAsync(usernameClean)
                 );
-                var response = _userProfileToUserProfileResponseMapper.Map(userProfile);
+                var userProfileToUserProfileResponseMapper = _mapperFactory.Get<UserProfile, UserProfileResponse>();
+                var response = userProfileToUserProfileResponseMapper.Map(userProfile);
                 return Ok(response);
             }
             catch (UserApiException e)

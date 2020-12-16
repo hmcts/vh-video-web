@@ -148,6 +148,8 @@ namespace VideoWeb.Extensions
 
         private static void RegisterMappers(IServiceCollection serviceCollection)
         {
+            serviceCollection.AddScoped<IMapperFactory, MapperFactory>();
+
             serviceCollection.Scan(scan => scan.FromAssembliesOf(typeof(IMapTo<,>))
                 .AddClasses(classes => classes.AssignableTo(typeof(IMapTo<,>))
                     .Where(_ => !_.IsGenericType))

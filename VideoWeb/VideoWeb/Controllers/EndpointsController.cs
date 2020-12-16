@@ -21,16 +21,16 @@ namespace VideoWeb.Controllers
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<EndpointsController> _logger;
-        private readonly IMapTo<VideoEndpointResponse, EndpointResponse, int> _videoEndpointResponseMapper;
+        private readonly IMapperFactory _mapperFactory;
 
         public EndpointsController(
             IVideoApiClient videoApiClient,
             ILogger<EndpointsController> logger,
-            IMapTo<VideoEndpointResponse, EndpointResponse, int> videoEndpointResponseMapper)
+            IMapperFactory mapperFactory)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
-            _videoEndpointResponseMapper = videoEndpointResponseMapper;
+            _mapperFactory = mapperFactory;
         }
 
         [HttpGet("{conferenceId}/participants")]
@@ -42,7 +42,8 @@ namespace VideoWeb.Controllers
             try
             {
                 var endpoints = await _videoApiClient.GetEndpointsForConferenceAsync(conferenceId);
-                var response = endpoints.Select(_videoEndpointResponseMapper.Map).ToList();
+                var videoEndpointResponseMapper = _mapperFactory.Get<EndpointResponse, int, VideoEndpointResponse>();
+                var response = endpoints.Select(videoEndpointResponseMapper.Map).ToList();
                 return Ok(response);
             }
             catch (VideoApiException e)

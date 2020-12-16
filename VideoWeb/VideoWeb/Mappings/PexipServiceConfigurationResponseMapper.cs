@@ -3,7 +3,7 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings
 {
-    public class PexipServiceConfigurationResponseMapper : IMapTo<SelfTestPexipResponse, PexipConfigResponse>
+    public class PexipServiceConfigurationResponseMapper : IMapTo<PexipConfigResponse, SelfTestPexipResponse>
     {
         public SelfTestPexipResponse Map(PexipConfigResponse pexipConfigResponse)
         {

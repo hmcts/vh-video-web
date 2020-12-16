@@ -26,17 +26,21 @@ namespace VideoWeb.Controllers
         private readonly IEventHandlerFactory _eventHandlerFactory;
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<VideoEventsController> _logger;
-        private readonly IMapTo<CallbackEvent, ConferenceEventRequest, Conference> _callbackEventMapper;
+        private readonly IMapperFactory _mapperFactory;
 
-        public VideoEventsController(IVideoApiClient videoApiClient,
-            IEventHandlerFactory eventHandlerFactory, IConferenceCache conferenceCache,
-            ILogger<VideoEventsController> logger, IMapTo<CallbackEvent, ConferenceEventRequest, Conference> callbackEventMapper)
+
+        public VideoEventsController(
+            IVideoApiClient videoApiClient,
+            IEventHandlerFactory eventHandlerFactory,
+            IConferenceCache conferenceCache,
+            ILogger<VideoEventsController> logger,
+            IMapperFactory mapperFactory)
         {
             _videoApiClient = videoApiClient;
             _eventHandlerFactory = eventHandlerFactory;
             _conferenceCache = conferenceCache;
             _logger = logger;
-            _callbackEventMapper = callbackEventMapper;
+            _mapperFactory = mapperFactory;
         }
 
         [HttpPost]
@@ -47,17 +51,15 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                _logger.LogTrace("Received callback from Kinly.");
-                _logger.LogTrace($"ConferenceId: {request.Conference_id}, EventType: {request.Event_type}, Participant ID : {request.Participant_id}");
-
                 var conferenceId = Guid.Parse(request.Conference_id);
                 var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
                 {
                     _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
                     return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
                 });
-                
-                var callbackEvent = _callbackEventMapper.Map(request, conference);
+
+                var callbackEventMapper = _mapperFactory.Get<ConferenceEventRequest, Conference, CallbackEvent>();
+                var callbackEvent = callbackEventMapper.Map(request, conference);
                 request.Event_type = Enum.Parse<VAEventType>(callbackEvent.EventType.ToString());
                 if (callbackEvent.EventType != EventType.VhoCall)
                 {

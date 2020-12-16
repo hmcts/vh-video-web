@@ -24,7 +24,7 @@ namespace VideoWeb.UnitTests.Builders
             return this;
         }
 
-        public ParameterBuilder AddTypeAsImplementedInterfaces<T>(T concrete)
+        public ParameterBuilder AddObjectAsImplementedInterfaces<T>(T concrete)
         {
             _parameters.AddRange(typeof(T).GetInterfaces().Select(i => new TypedParameter(i, concrete)));
             return this;

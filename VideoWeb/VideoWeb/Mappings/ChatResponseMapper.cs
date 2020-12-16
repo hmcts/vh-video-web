@@ -3,7 +3,7 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings
 {
-    public class ChatResponseMapper : IMapTo<ChatResponse, InstantMessageResponse, string, bool>
+    public class ChatResponseMapper : IMapTo<InstantMessageResponse, string, bool, ChatResponse>
     {
         public ChatResponse Map(InstantMessageResponse message, string fromDisplayName, bool isUser)
         {

@@ -7,11 +7,20 @@ using VideoWeb.Common.Configuration;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Mappings;
+using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
 {
     public class GetClientConfigurationSettingsTests
     {
+        private AutoMock _mocker;
+
+        [SetUp]
+        public void Setup()
+        {
+            _mocker = AutoMock.GetLoose();
+        }
+
         [Test]
         public void Should_return_response_with_settings()
         {
@@ -29,8 +38,8 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
                 VideoApiUrl = "https://vh-video-api/"
             };
 
-            var configSettingsController = new ConfigSettingsController(Options.Create(securitySettings),
-                Options.Create(servicesConfiguration), new ClientSettingsResponseMapper());
+            var parameters = new ParameterBuilder(_mocker).AddObjectAsImplementedInterfaces(Options.Create(securitySettings)).AddObjectAsImplementedInterfaces(Options.Create(servicesConfiguration)).Build();
+            var configSettingsController = _mocker.Create<ConfigSettingsController>(parameters);
 
             var actionResult = (OkObjectResult)configSettingsController.GetClientConfigurationSettings().Result;
             var clientSettings = (ClientSettingsResponse)actionResult.Value;

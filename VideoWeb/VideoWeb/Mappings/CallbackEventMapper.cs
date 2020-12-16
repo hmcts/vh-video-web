@@ -8,7 +8,7 @@ using RoomType = VideoWeb.Common.Models.RoomType;
 
 namespace VideoWeb.Mappings
 {
-    public class CallbackEventMapper : IMapTo<CallbackEvent, ConferenceEventRequest, Conference>
+    public class CallbackEventMapper : IMapTo<ConferenceEventRequest, Conference, CallbackEvent>
     {
         public CallbackEvent Map(ConferenceEventRequest request, Conference conference)
         {
