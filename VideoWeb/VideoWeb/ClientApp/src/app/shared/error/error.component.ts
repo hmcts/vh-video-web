@@ -116,12 +116,12 @@ export class ErrorComponent implements OnInit, OnDestroy {
     }
 
     reconnect(): void {
-        this.checkIntenetConnection();
         if (this.attemptingReconnect) {
             this.logger.debug(`${this.loggerPrefix} Reconnection already in progress`);
             return;
         }
         this.attemptingReconnect = true;
+        this.checkIntenetConnection();        
         if (this.hasInternetConnection) {
             const previousPage = this.pageTracker.getPreviousUrl();
             this.logger.debug(`${this.loggerPrefix} Internet connection detected. Navigating to previous page`, {
