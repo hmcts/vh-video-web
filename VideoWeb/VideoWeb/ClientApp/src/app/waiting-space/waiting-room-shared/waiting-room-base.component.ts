@@ -8,6 +8,7 @@ import {
     ConsultationAnswer,
     ParticipantResponse,
     ParticipantStatus,
+    Role,
     TokenResponse
 } from 'src/app/services/clients/api-client';
 import { DeviceTypeService } from 'src/app/services/device-type.service';

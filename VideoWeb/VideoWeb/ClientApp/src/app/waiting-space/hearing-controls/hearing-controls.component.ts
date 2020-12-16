@@ -24,6 +24,7 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
     eventhubSubscription$ = new Subscription();
 
     audioMuted: boolean;
+    videoMuted: boolean;
     handRaised: boolean;
     remoteMuted: boolean;
     selfViewOpen: boolean;
@@ -31,7 +32,8 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
 
     constructor(private videoCallService: VideoCallService, private eventService: EventsService, private logger: Logger) {
         this.handRaised = false;
-        this.audioMuted = false;
+        this.audioMuted = this.videoCallService.pexipAPI.call.mutedAudio;
+        this.videoMuted = this.videoCallService.pexipAPI.call.mutedVideo;
         this.remoteMuted = false;
         this.selfViewOpen = false;
         this.displayConfirmPopup = false;
@@ -82,6 +84,10 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         } else {
             return 'Raise my hand';
         }
+    }
+
+    get videoMutedText(): string {
+        return this.videoMuted ? 'Switch camera on' : 'Switch camera off';
     }
 
     setupVideoCallSubscribers() {
@@ -138,12 +144,22 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
 
     toggleMute() {
         this.logger.info(
-            `${this.loggerPrefix} Participant is attempting to toggle own mute status to ${!this.audioMuted}`,
+            `${this.loggerPrefix} Participant is attempting to toggle own audio mute status to ${!this.audioMuted}`,
             this.logPayload
         );
         const muteAudio = this.videoCallService.toggleMute(this.conferenceId, this.participant.id);
-        this.logger.info(`${this.loggerPrefix} Participant mute status updated to ${muteAudio}`, this.logPayload);
+        this.logger.info(`${this.loggerPrefix} Participant audio mute status updated to ${muteAudio}`, this.logPayload);
         this.audioMuted = muteAudio;
+    }
+
+    toggleVideoMute() {
+        this.logger.info(
+            `${this.loggerPrefix} Participant is attempting to toggle own video mute status to ${!this.videoMuted}`,
+            this.logPayload
+        );
+        const muteVideo = this.videoCallService.toggleVideo(this.conferenceId, this.participant.id);
+        this.logger.info(`${this.loggerPrefix} Participant video mute status updated to ${muteVideo}`, this.logPayload);
+        this.videoMuted = muteVideo;
     }
 
     toggleView(): boolean {
