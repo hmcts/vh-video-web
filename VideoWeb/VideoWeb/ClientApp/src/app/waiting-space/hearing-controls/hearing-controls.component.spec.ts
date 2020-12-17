@@ -73,6 +73,30 @@ describe('HearingControlsComponent', () => {
         expect(component.handToggleText).toBe('Raise my hand');
     });
 
+    it('should switch camera on if camera is off', () => {
+        videoCallService.toggleVideo.calls.reset();
+        videoCallService.toggleVideo.and.returnValue(false);
+        component.videoMuted = true;
+
+        component.toggleVideoMute();
+
+        expect(videoCallService.toggleVideo).toHaveBeenCalledTimes(1);
+        expect(component.videoMuted).toBeFalsy();
+        expect(component.videoMutedText).toBe('Switch camera off');
+    });
+
+    it('should switch camera off if camera is on', () => {
+        videoCallService.toggleVideo.calls.reset();
+        videoCallService.toggleVideo.and.returnValue(true);
+        component.videoMuted = false;
+
+        component.toggleVideoMute();
+
+        expect(videoCallService.toggleVideo).toHaveBeenCalledTimes(1);
+        expect(component.videoMuted).toBeTruthy();
+        expect(component.videoMutedText).toBe('Switch camera on');
+    });
+
     it('should show raised hand on hand lowered', () => {
         const pexipParticipant = testData.getExamplePexipParticipant(globalParticipant.tiled_display_name);
         pexipParticipant.buzz_time = 0;
@@ -305,5 +329,11 @@ describe('HearingControlsComponent', () => {
         hearingCountdownCompleteSubjectMock.next(gloalConference.id.toString());
 
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(1);
+    });
+
+    it('should emit when leave button has been clicked', () => {
+        spyOn(component.leaveConsulation, 'emit');
+        component.leavePrivateConsultation();
+        expect(component.leaveConsulation.emit).toHaveBeenCalled();
     });
 });
