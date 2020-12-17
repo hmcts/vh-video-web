@@ -43,6 +43,7 @@ describe('ErrorComponent', () => {
     let router: Router;
     let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
     let errorServiceSpy: jasmine.SpyObj<ErrorService>;
+    let adalServiceSpy: jasmine.SpyObj<AdalService>;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
 
     beforeEach(
@@ -52,6 +53,7 @@ describe('ErrorComponent', () => {
             pageTrackerSpy.getPreviousUrl.and.returnValue('testUrl-test-error1');
             errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['getErrorMessageFromStorage']);
 
+            adalServiceSpy = jasmine.createSpyObj<AdalService>('AdalService', ['userInfo']);
             profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getProfileByUsername']);
 
             TestBed.configureTestingModule({
@@ -67,6 +69,7 @@ describe('ErrorComponent', () => {
                     { provide: EventsService, useValue: eventsService },
                     { provide: Logger, useClass: MockLogger },
                     { provide: ErrorService, useValue: errorServiceSpy },
+                    { provide: AdalService, useValue: adalServiceSpy },
                     { provide: ProfileService, useValue: profileServiceSpy }
                 ]
             }).compileComponents();

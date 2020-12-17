@@ -6,6 +6,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { PageTrackerService } from 'src/app/services/page-tracker.service';
 import { ErrorService } from 'src/app/services/error.service';
+import { AdalService } from 'adal-angular4';
 
 @Component({
     selector: 'app-error',
@@ -33,7 +34,8 @@ export class ErrorComponent implements OnInit, OnDestroy {
         private eventsService: EventsService,
         private logger: Logger,
         private errorService: ErrorService,
-        protected profileService: ProfileService
+        protected profileService: ProfileService,
+        protected adalService: AdalService
     ) {
         this.checkIntenetConnection();
         this.browserRefresh = false;
@@ -42,7 +44,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
 
     private async checkIntenetConnection(): Promise<void> {
         try {
-            await this.profileService.getUserProfile();
+            await this.profileService.getProfileByUsername(this.adalService.userInfo.userName);
             this.isOnline = true;
         } catch (err) {
             this.isOnline = false;
