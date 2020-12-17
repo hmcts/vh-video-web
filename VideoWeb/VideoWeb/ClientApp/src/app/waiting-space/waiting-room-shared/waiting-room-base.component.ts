@@ -1,6 +1,7 @@
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
+import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
@@ -8,7 +9,6 @@ import {
     ConsultationAnswer,
     ParticipantResponse,
     ParticipantStatus,
-    Role,
     TokenResponse
 } from 'src/app/services/clients/api-client';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
@@ -16,19 +16,18 @@ import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
+import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
-import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models/video-call-models';
-import { VideoCallService } from '../services/video-call.service';
-import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
-import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
-import { UserMediaService } from 'src/app/services/user-media.service';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { HearingRole } from '../models/hearing-role-model';
+import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models/video-call-models';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
-import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
+import { VideoCallService } from '../services/video-call.service';
 
 declare var HeartbeatFactory: any;
 
