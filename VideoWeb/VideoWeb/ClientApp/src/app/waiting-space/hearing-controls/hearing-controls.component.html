@@ -12,14 +12,14 @@
         Your browser does not support Video
       </video>
     </div>
-    <div class="controls-container govuk-grid-column-one-third govuk-!-margin-top-9" [ngClass]="{ 'govuk-!-padding-left-0': isJudge }">
+    <div class="controls-container govuk-grid-column-one-third govuk-!-margin-top-9" [ngClass]="{ 'judge-controls-padding': isJudge }">
       <div class="icons-container">
         <img
           id="toggle-self-view-img"
           appTooltip
           [text]="selfViewOpen ? 'Hide my self-view' : 'Show my self-view'"
           [colour]="'grey'"
-          class="toggle-self-view-icon-btn control-icon"
+          class="icon-btn icon-btn--self-view"
           [src]="selfViewOpen ? '/assets/images/self-view-hide.png' : '/assets/images/self-view-show.png'"
           [alt]="selfViewOpen ? 'Hide self-view' : 'Show self-view'"
           (click)="toggleView()"
@@ -31,7 +31,7 @@
           appTooltip
           [text]="audioMuted ? 'Unmute microphone' : 'Mute microphone'"
           [colour]="'grey'"
-          class="toggle-audio-mute-icon-btn control-icon"
+          class="icon-btn icon-btn--audio-mute"
           [src]="audioMuted ? '/assets/images/mic_on.png' : '/assets/images/mic_off.png'"
           [alt]="audioMuted ? 'Unmute microphone' : 'Mute microphone'"
           (click)="toggleMute()"
@@ -43,7 +43,7 @@
           text="You have been been remote muted"
           [colour]="'grey'"
           id="toggle-audio-mute-locked-img"
-          class="toggle-audio-mute-icon-btn control-icon"
+          class="icon-btn icon-btn--audio-mute"
           src="/assets/images/mic_lock.png"
           alt="Remote muted"
         />
@@ -54,7 +54,7 @@
           appTooltip
           [text]="videoMuted ? 'Show camera' : 'Hide camera'"
           [colour]="'grey'"
-          class="toggle-video-mute-icon-btn control-icon"
+          class="icon-btn icon-btn--video-mute"
           [src]="videoMuted ? '/assets/images/cam-off.png' : '/assets/images/cam-on.png'"
           [alt]="videoMuted ? 'Show camera' : 'Hide camera'"
           (click)="toggleVideoMute()"
@@ -66,7 +66,7 @@
           appTooltip
           [text]="handRaised ? 'Lower hand' : 'Raise hand'"
           [colour]="'grey'"
-          class="toggle-hand-raised-icon-btn control-icon"
+          class="icon-btn icon-btn--raise-hand"
           [src]="handRaised ? '/assets/images/hand.png' : '/assets/images/no-hand.png'"
           [alt]="handRaised ? 'Lower hand' : 'Raise hand'"
           (click)="toggleHandRaised()"
@@ -78,7 +78,7 @@
           appTooltip
           text="Pause the hearing"
           [colour]="'grey'"
-          class="pause-hearing-icon-btn control-icon"
+          class="icon-btn icon-btn--pause-hearing"
           src="/assets/images/hearing_pause.png"
           alt="Pause the hearing"
           (click)="pause()"
@@ -90,7 +90,7 @@
           text="Close the hearing"
           [colour]="'grey'"
           id="end-hearing-img"
-          class="end-hearing-icon-btn control-icon"
+          class="icon-btn icon-btn--end-hearing"
           src="/assets/images/hearing_end.png"
           alt="Close the hearing"
           (click)="displayConfirmationDialog()"
@@ -102,7 +102,7 @@
           text="Leave"
           [colour]="'grey'"
           id="end-hearing-img"
-          class="end-hearing-icon-btn control-icon"
+          class="icon-btn icon-btn--leave-consultation"
           src="/assets/images/consultation_leave.png"
           alt="Leave the private consultation"
           (click)="leavePrivateConsultation()"

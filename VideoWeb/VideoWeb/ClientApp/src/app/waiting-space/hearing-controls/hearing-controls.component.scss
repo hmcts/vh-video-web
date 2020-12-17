@@ -20,6 +20,11 @@
   float: left;
 }
 
+.judge-controls-padding {
+  padding-left: 0px;
+  padding-right: 200px;
+}
+
 #outgoingFeedVideo {
   bottom: 5.5vh;
   width: 259px;
@@ -34,24 +39,6 @@
 
 .reduce-margin {
   margin-bottom: 2px;
-}
-
-#muteButton .govuk-button:focus {
-  background-color: govuk-colour('green');
-}
-
-#unmuteButton .govuk-button--warning:focus {
-  background-color: govuk-colour('red');
-}
-
-#toggleVideoButton .govuk-button:focus {
-  background-color: govuk-colour('green');
-  color: govuk-colour('white');
-}
-
-#toggleVideoButton .govuk-button--warning:focus {
-  background-color: govuk-colour('red');
-  color: govuk-colour('white');
 }
 
 .hand {
@@ -100,50 +87,47 @@
   margin: auto;
 }
 
-.toggle-self-view-icon-btn {
-  grid-column: 1;
+.icon-btn {
   grid-row: 1;
   opacity: 50%;
-}
-
-.toggle-self-view-icon-btn:hover {
-  opacity: 100%;
-}
-
-.toggle-audio-mute-icon-btn {
-  grid-column: 2;
-  grid-row: 1;
-  opacity: 50%;
-}
-
-.toggle-audio-mute-icon-btn:hover {
-  opacity: 100%;
-}
-
-.toggle-video-mute-icon-btn,
-.pause-hearing-icon-btn {
-  grid-column: 3;
-  grid-row: 1;
-  opacity: 50%;
-}
-
-.toggle-video-mute-icon-btn:hover,
-.pause-hearing-icon-btn:hover {
-  opacity: 100%;
-}
-
-.toggle-hand-raised-icon-btn,
-.end-hearing-icon-btn {
-  grid-column: 4;
-  grid-row: 1;
-  opacity: 50%;
-}
-
-.toggle-hand-raised-icon-btn:hover,
-.end-hearing-icon-btn:hover {
-  opacity: 100%;
-}
-
-.control-icon {
   height: 24px;
+
+  &--self-view {
+    @extend .icon-btn;
+    grid-column: 1;
+  }
+
+  &--audio-mute {
+    @extend .icon-btn;
+    grid-column: 2;
+  }
+
+  &--video-mute {
+    @extend .icon-btn;
+    grid-column: 3;
+  }
+
+  &--pause-hearing {
+    @extend .icon-btn;
+    grid-column: 3;
+  }
+
+  &--raise-hand {
+    @extend .icon-btn;
+    grid-column: 4;
+  }
+
+  &--end-hearing {
+    @extend .icon-btn;
+    grid-column: 4;
+  }
+
+  &--leave-consultation {
+    @extend .icon-btn;
+    grid-column: 4;
+  }
+}
+
+.icon-btn:hover {
+  opacity: 100%;
 }
