@@ -95,6 +95,18 @@
           alt="Close the hearing"
           (click)="displayConfirmationDialog()"
         />
+
+        <img
+          *ngIf="showConsultationControls"
+          appTooltip
+          text="Leave"
+          [colour]="'grey'"
+          id="end-hearing-img"
+          class="end-hearing-icon-btn control-icon"
+          src="/assets/images/consultation_leave.png"
+          alt="Leave the private consultation"
+          (click)="leavePrivateConsultation()"
+        />
       </div>
     </div>
     <div *ngIf="isSupportedBrowserForNetworkHealth" class="govuk-grid-column-one-third govuk-!-margin-top-9" id="hearing-monitor-div">

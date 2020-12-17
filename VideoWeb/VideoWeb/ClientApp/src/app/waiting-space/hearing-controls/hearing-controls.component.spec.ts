@@ -330,4 +330,10 @@ describe('HearingControlsComponent', () => {
 
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(1);
     });
+
+    it('should emit when leave button has been clicked', () => {
+        spyOn(component.leaveConsulation, 'emit');
+        component.leavePrivateConsultation();
+        expect(component.leaveConsulation.emit).toHaveBeenCalled();
+    });
 });

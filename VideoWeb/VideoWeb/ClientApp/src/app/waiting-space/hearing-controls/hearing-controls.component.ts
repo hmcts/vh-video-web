@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
@@ -19,6 +19,9 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
     @Input() outgoingStream: MediaStream | URL;
     @Input() conferenceId: string;
     @Input() isSupportedBrowserForNetworkHealth: boolean;
+    @Input() showConsultationControls: boolean;
+
+    @Output() leaveConsulation = new EventEmitter();
 
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
@@ -193,5 +196,10 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
 
     displayConfirmationDialog() {
         this.displayConfirmPopup = true;
+    }
+
+    leavePrivateConsultation() {
+        this.logger.debug(`${this.loggerPrefix} Leave private consultation clicked`, this.logPayload);
+        this.leaveConsulation.emit();
     }
 }
