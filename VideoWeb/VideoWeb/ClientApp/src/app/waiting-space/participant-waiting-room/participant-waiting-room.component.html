@@ -47,6 +47,8 @@
     [isPrivateConsultation]="isPrivateConsultation"
     [outgoingStream]="outgoingStream"
     [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
+    [showConsultationControls]="showConsultationControls"
+    (leaveConsulation)="onConsultationCancelled()"
   ></app-hearing-controls>
 </ng-container>
 
@@ -174,9 +176,6 @@
     </app-individual-participant-status-list>
   </div>
 </div>
-
-<app-individual-consultation-controls (cancelConsulation)="onConsultationCancelled()" *ngIf="showConsultationControls">
-</app-individual-consultation-controls>
 
 <app-participant-chat *ngIf="hearing && showExtraContent" [hearing]="hearing"></app-participant-chat>
 
