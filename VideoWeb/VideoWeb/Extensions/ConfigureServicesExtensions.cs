@@ -155,35 +155,35 @@ namespace VideoWeb.Extensions
                     .Where(_ => !_.IsGenericType))
                 .AsImplementedInterfaces()
                 .WithTransientLifetime());
-            serviceCollection.Decorate(typeof(IMapTo<,>), typeof(MapperLoggingDecorator<,>));
+            serviceCollection.TryDecorate(typeof(IMapTo<,>), typeof(MapperLoggingDecorator<,>));
 
             serviceCollection.Scan(scan => scan.FromAssembliesOf(typeof(IMapTo<,,>))
                 .AddClasses(classes => classes.AssignableTo(typeof(IMapTo<,,>))
                     .Where(_ => !_.IsGenericType))
                 .AsImplementedInterfaces()
                 .WithTransientLifetime());
-            serviceCollection.Decorate(typeof(IMapTo<,,>), typeof(MapperLoggingDecorator<,,>));
+            serviceCollection.TryDecorate(typeof(IMapTo<,,>), typeof(MapperLoggingDecorator<,,>));
 
             serviceCollection.Scan(scan => scan.FromAssembliesOf(typeof(IMapTo<,,,>))
                 .AddClasses(classes => classes.AssignableTo(typeof(IMapTo<,,,>))
                     .Where(_ => !_.IsGenericType))
                 .AsImplementedInterfaces()
                 .WithTransientLifetime());
-            serviceCollection.Decorate(typeof(IMapTo<,,,>), typeof(MapperLoggingDecorator<,,,>));
+            serviceCollection.TryDecorate(typeof(IMapTo<,,,>), typeof(MapperLoggingDecorator<,,,>));
 
             serviceCollection.Scan(scan => scan.FromAssembliesOf(typeof(IMapTo<,,,,>))
                 .AddClasses(classes => classes.AssignableTo(typeof(IMapTo<,,,,>))
                     .Where(_ => !_.IsGenericType))
                 .AsImplementedInterfaces()
                 .WithTransientLifetime());
-            serviceCollection.Decorate(typeof(IMapTo<,,,,>), typeof(MapperLoggingDecorator<,,,,>));
+            serviceCollection.TryDecorate(typeof(IMapTo<,,,,>), typeof(MapperLoggingDecorator<,,,,>));
 
             serviceCollection.Scan(scan => scan.FromAssembliesOf(typeof(IMapTo<,,,,,>))
                 .AddClasses(classes => classes.AssignableTo(typeof(IMapTo<,,,,,>))
                     .Where(_ => !_.IsGenericType))
                 .AsImplementedInterfaces()
                 .WithTransientLifetime());
-            serviceCollection.Decorate(typeof(IMapTo<,,,,,>), typeof(MapperLoggingDecorator<,,,,,>));
+            serviceCollection.TryDecorate(typeof(IMapTo<,,,,,>), typeof(MapperLoggingDecorator<,,,,,>));
         }
 
         /// <summary>
