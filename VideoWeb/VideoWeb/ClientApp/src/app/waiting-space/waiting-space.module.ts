@@ -10,7 +10,6 @@ import { ReceiveConsultationComponent } from './consultation-modals/receive-cons
 import { RejectedConsultationComponent } from './consultation-modals/rejected-consultation/rejected-consultation.component';
 import { VhoRaiseConsultationComponent } from './consultation-modals/vho-raise-consultation/vho-raise-consultation.component';
 import { HearingControlsComponent } from './hearing-controls/hearing-controls.component';
-import { IndividualConsultationControlsComponent } from './individual-consultation-controls/individual-consultation-controls.component';
 import { IndividualParticipantStatusListComponent } from './individual-participant-status-list/individual-participant-status-list.component';
 import { JudgeParticipantStatusListComponent } from './judge-participant-status-list/judge-participant-status-list.component';
 import { JudgeWaitingRoomComponent } from './judge-waiting-room/judge-waiting-room.component';
@@ -38,7 +37,6 @@ import { JohWaitingRoomComponent } from './joh-waiting-room/joh-waiting-room.com
         ParticipantWaitingRoomComponent,
         JudgeWaitingRoomComponent,
         AnalogueClockComponent,
-        IndividualConsultationControlsComponent,
         ParticipantChatComponent,
         AudioAlertComponent,
         NoConsultationRoomComponent,

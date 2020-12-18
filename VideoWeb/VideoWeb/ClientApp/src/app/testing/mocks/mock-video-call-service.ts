@@ -18,41 +18,49 @@ export const onErrorSubjectMock = new Subject<CallError>();
 export const onParticipantUpdatedMock = new Subject<ParticipantUpdated>();
 export const onConferenceUpdatedMock = new Subject<ConferenceUpdated>();
 export const onCallTransferredMock = new Subject<any>();
+export const pexipCallMock = jasmine.createSpyObj<PexRTCCall>('PexRTCCall', [], ['mutedAudio', 'mutedVideo']);
+export const pexipApiMock = jasmine.createSpyObj<PexipClient>('PexipClient', [], { call: pexipCallMock });
 
-videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', [
-    'setupClient',
-    'makeCall',
-    'disconnectFromCall',
-    'connect',
-    'onCallSetup',
-    'onCallConnected',
-    'onCallDisconnected',
-    'onConferenceUpdated',
-    'onParticipantUpdated',
-    'onError',
-    'onCallTransferred',
-    'updateCameraForCall',
-    'updateMicrophoneForCall',
-    'toggleMute',
-    'toggleVideo',
-    'muteParticipant',
-    'spotlightParticipant',
-    'muteAllParticipants',
-    'enableH264',
-    'raiseHand',
-    'lowerHand',
-    'startHearing',
-    'pauseHearing',
-    'endHearing',
-    'lowerAllHands',
-    'lowerHandById',
-    'updatePreferredLayout',
-    'getPreferredLayout',
-    'callParticipantIntoHearing',
-    'dismissParticipantFromHearing',
-    'retrieveVideoCallPreferences',
-    'updateVideoCallPreferences'
-]);
+videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
+    'VideoCallService',
+    [
+        'setupClient',
+        'makeCall',
+        'disconnectFromCall',
+        'connect',
+        'onCallSetup',
+        'onCallConnected',
+        'onCallDisconnected',
+        'onConferenceUpdated',
+        'onParticipantUpdated',
+        'onError',
+        'onCallTransferred',
+        'updateCameraForCall',
+        'updateMicrophoneForCall',
+        'toggleMute',
+        'toggleVideo',
+        'muteParticipant',
+        'spotlightParticipant',
+        'muteAllParticipants',
+        'enableH264',
+        'raiseHand',
+        'lowerHand',
+        'startHearing',
+        'pauseHearing',
+        'endHearing',
+        'lowerAllHands',
+        'lowerHandById',
+        'updatePreferredLayout',
+        'getPreferredLayout',
+        'callParticipantIntoHearing',
+        'dismissParticipantFromHearing',
+        'retrieveVideoCallPreferences',
+        'updateVideoCallPreferences'
+    ],
+    {
+        pexipAPI: pexipApiMock
+    }
+);
 
 videoCallServiceSpy.onCallSetup.and.returnValue(onSetupSubjectMock.asObservable());
 videoCallServiceSpy.onCallConnected.and.returnValue(onConnectedSubjectMock.asObservable());

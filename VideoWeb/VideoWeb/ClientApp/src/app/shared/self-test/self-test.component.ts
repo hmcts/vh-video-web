@@ -53,7 +53,7 @@ export class SelfTestComponent implements OnInit, OnDestroy {
     selfTestParticipantId: string;
     selfTestPexipNode: string;
 
-    private maxBandwidth = 768;
+    private maxBandwidth = 20000;
     subscription: Subscription = new Subscription();
     videoCallSubscription$ = new Subscription();
 

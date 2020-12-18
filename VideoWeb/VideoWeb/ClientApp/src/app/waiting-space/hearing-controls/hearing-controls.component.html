@@ -1,6 +1,6 @@
 <div class="govuk-grid-row">
   <div [ngClass]="isJudge && !isPrivateConsultation ? 'main-container-judge' : 'main-container'">
-    <div class="outgoing-video-container govuk-grid-column-full">
+    <div class="outgoing-video-container govuk-grid-column-one-third">
       <video
         [ngClass]="{ 'vh-fade-in': selfViewOpen, 'vh-fade-out': !selfViewOpen }"
         id="outgoingFeedVideo"
@@ -12,150 +12,105 @@
         Your browser does not support Video
       </video>
     </div>
-    <div class="controls-container govuk-grid-column-full govuk-!-padding-0">
-      <div
-        [ngClass]="{
-          'govuk-grid-column-one-half': !isJudge || isPrivateConsultation,
-          'govuk-grid-column-one-third': !isPrivateConsultation && isJudge
-        }"
-        id="outgoingFeedDiv"
-      >
-        <!-- Self-view button -->
-        <button
-          id="outgoingFeedButton"
-          type="button"
-          class="govuk-button govuk-button--secondary reduce-margin govuk-!-margin-right-4"
-          data-module="govuk-button"
+    <div class="controls-container govuk-grid-column-one-third govuk-!-margin-top-9" [ngClass]="{ 'judge-controls-padding': isJudge }">
+      <div class="icons-container">
+        <img
+          id="toggle-self-view-img"
+          appTooltip
+          [text]="selfViewOpen ? 'Hide my self-view' : 'Show my self-view'"
+          [colour]="'grey'"
+          class="icon-btn icon-btn--self-view"
+          [src]="selfViewOpen ? '/assets/images/self-view-hide.png' : '/assets/images/self-view-show.png'"
+          [alt]="selfViewOpen ? 'Hide self-view' : 'Show self-view'"
           (click)="toggleView()"
-        >
-          {{ selfViewOpen ? 'Close' : 'Open' }} self-view
-        </button>
+        />
 
-        <ng-container *ngIf="!remoteMuted || isJudge">
-          <span *ngIf="!audioMuted; else unmuteButton">
-            <button
-              id="muteButton"
-              class="govuk-button reduce-margin"
-              data-module="govuk-button"
-              type="button"
-              (click)="toggleMute()"
-              aria-label="Mute Microphone Button"
-            >
-              Mute
-              <span class="govuk-button__start-icon">
-                <img id="mute-microphone-img" class="microphoneIcon" src="/assets/images/mic_on.png" alt="Mute Microphone Image" />
-              </span>
-            </button>
-          </span>
-        </ng-container>
+        <img
+          *ngIf="!remoteMuted || isJudge"
+          id="toggle-audio-mute-img"
+          appTooltip
+          [text]="audioMuted ? 'Unmute microphone' : 'Mute microphone'"
+          [colour]="'grey'"
+          class="icon-btn icon-btn--audio-mute"
+          [src]="audioMuted ? '/assets/images/mic_on.png' : '/assets/images/mic_off.png'"
+          [alt]="audioMuted ? 'Unmute microphone' : 'Mute microphone'"
+          (click)="toggleMute()"
+        />
 
-        <ng-template #unmuteButton>
-          <span>
-            <button
-              id="unmuteButton"
-              class="govuk-button govuk-button--warning reduce-margin"
-              data-module="govuk-button"
-              type="button"
-              (click)="toggleMute()"
-              aria-label="Unmute Microphone Button"
-            >
-              Unmute
+        <img
+          *ngIf="remoteMuted && !isJudge"
+          appTooltip
+          text="You have been been remote muted"
+          [colour]="'grey'"
+          id="toggle-audio-mute-locked-img"
+          class="icon-btn icon-btn--audio-mute"
+          src="/assets/images/mic_lock.png"
+          alt="Remote muted"
+        />
 
-              <span class="govuk-button__start-icon microphoneIcon">
-                <img id="unmute-microphone-img" class="microphoneIcon" src="/assets/images/mic_off.png" alt="Unmute Microphone Image" />
-              </span>
-            </button>
-          </span>
-        </ng-template>
-        <!-- Remote muted -->
-        <span [ngClass]="{ 'remote-container': remoteMuted }">
-          <button
-            *ngIf="remoteMuted && !isJudge"
-            id="remote-muted-button"
-            data-module="govuk-button"
-            type="button"
-            class="govuk-button govuk-button--warning reduce-margin hand"
-            aria-label="Remote muted button"
-          >
-            The judge muted you
-            <span class="govuk-button__start-icon microphoneIcon">
-              <img id="unmute-microphone-img" class="microphoneIcon" src="/assets/images/mic_off.png" alt="Unmute Microphone Image" />
-            </span>
-          </button>
+        <img
+          *ngIf="!isJudge"
+          id="toggle-video-mute-img"
+          appTooltip
+          [text]="videoMuted ? 'Show camera' : 'Hide camera'"
+          [colour]="'grey'"
+          class="icon-btn icon-btn--video-mute"
+          [src]="videoMuted ? '/assets/images/cam-off.png' : '/assets/images/cam-on.png'"
+          [alt]="videoMuted ? 'Show camera' : 'Hide camera'"
+          (click)="toggleVideoMute()"
+        />
 
-          <!-- toggle hand raise/lower-->
-          <span *ngIf="!isPrivateConsultation && !isJudge">
-            <!--lowed hand-->
-            <button
-              *ngIf="!handRaised; else handup"
-              id="toggle-hand-button"
-              data-module="govuk-button"
-              type="button"
-              class="govuk-button reduce-margin hand"
-              aria-label="Hand lowered status"
-              (click)="toggleHandRaised()"
-            >
-              {{ handToggleText }}
-              <span class="govuk-button__start-icon">
-                <img id="toggle-hand-img" class="microphoneIcon" src="/assets/images/no-hand.png" alt="Raise" />
-              </span>
-            </button>
-            <!-- raised hand-->
-            <ng-template #handup>
-              <button
-                id="toggle-handup-button"
-                data-module="govuk-button"
-                type="button"
-                class="govuk-button govuk-button--warning reduce-margin hand"
-                aria-label="Hand raised status"
-                (click)="toggleHandRaised()"
-              >
-                {{ handToggleText }}
-                <span class="govuk-button__start-icon">
-                  <img id="toggle-hand-img" class="microphoneIcon" src="/assets/images/hand.png" alt="Raise" />
-                </span>
-              </button>
-            </ng-template>
-          </span>
-        </span>
+        <img
+          *ngIf="!isPrivateConsultation && !isJudge"
+          id="toggle-hand-raised-img"
+          appTooltip
+          [text]="handRaised ? 'Lower hand' : 'Raise hand'"
+          [colour]="'grey'"
+          class="icon-btn icon-btn--raise-hand"
+          [src]="handRaised ? '/assets/images/hand.png' : '/assets/images/no-hand.png'"
+          [alt]="handRaised ? 'Lower hand' : 'Raise hand'"
+          (click)="toggleHandRaised()"
+        />
+
+        <img
+          *ngIf="!isPrivateConsultation && isJudge"
+          id="pause-hearing-img"
+          appTooltip
+          text="Pause the hearing"
+          [colour]="'grey'"
+          class="icon-btn icon-btn--pause-hearing"
+          src="/assets/images/hearing_pause.png"
+          alt="Pause the hearing"
+          (click)="pause()"
+        />
+
+        <img
+          *ngIf="!isPrivateConsultation && isJudge"
+          appTooltip
+          text="Close the hearing"
+          [colour]="'grey'"
+          id="end-hearing-img"
+          class="icon-btn icon-btn--end-hearing"
+          src="/assets/images/hearing_end.png"
+          alt="Close the hearing"
+          (click)="displayConfirmationDialog()"
+        />
+
+        <img
+          *ngIf="showConsultationControls"
+          appTooltip
+          text="Leave"
+          [colour]="'grey'"
+          id="close-pc-btn"
+          class="icon-btn icon-btn--leave-consultation"
+          src="/assets/images/consultation_leave.png"
+          alt="Leave the private consultation"
+          (click)="leavePrivateConsultation()"
+        />
       </div>
-      <!-- Judge-only controls-->
-      <div *ngIf="!isPrivateConsultation && isJudge" id="judgeControlsDiv" class="govuk-grid-column-one-third">
-        <div class="judge-controls-container">
-          <button
-            id="pauseButton"
-            class="govuk-button reduce-margin button-spacing"
-            data-module="govuk-button"
-            type="button"
-            (click)="pause()"
-            aria-label="Pause Button"
-          >
-            Pause
-          </button>
-
-          <button
-            id="closeButton"
-            class="govuk-button reduce-margin button-spacing govuk-button--warning"
-            data-module="govuk-button"
-            type="button"
-            (click)="displayConfirmationDialog()"
-            aria-label="Close Button"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-
-      <div
-        *ngIf="isSupportedBrowserForNetworkHealth"
-        [ngClass]="{
-          'govuk-grid-column-one-half': !isJudge || isPrivateConsultation,
-          'govuk-grid-column-one-third': !isPrivateConsultation && isJudge
-        }"
-        id="hearing-monitor-div"
-      >
-        <app-waiting-room-monitor *ngIf="!isJudge" [participant]="participant"></app-waiting-room-monitor>
-      </div>
+    </div>
+    <div *ngIf="isSupportedBrowserForNetworkHealth" class="govuk-grid-column-one-third govuk-!-margin-top-9" id="hearing-monitor-div">
+      <app-waiting-room-monitor *ngIf="!isJudge" [participant]="participant"></app-waiting-room-monitor>
     </div>
   </div>
 </div>
