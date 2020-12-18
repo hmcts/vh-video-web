@@ -20,26 +20,6 @@
   </div>
 </div>
 
-<div *ngIf="isWitness && isTransferringIn">
-  <div class="video-background">
-    <div class="transferMessage">
-      <img
-        class="transferFeedImage"
-        id="transferFeedImage"
-        src="/assets/images/UkGovCrestWhite.png"
-        alt="Witness transferring warning image"
-      />
-      <h2 class="govuk-heading-m white govuk-!-margin-top-5">
-        Please get ready <br />
-        You'll &thinsp; join the hearing in a few seconds
-      </h2>
-      <video id="outgoingFeedVideoTransfer" [muted]="true" [srcObject]="outgoingStream" autoplay height="auto">
-        Your browser does not support Video
-      </video>
-    </div>
-  </div>
-</div>
-
 <ng-container *ngIf="connected && showVideo">
   <app-hearing-controls
     [conferenceId]="conference.id"
@@ -106,26 +86,16 @@
   <div class="govuk-grid-column-two-thirds" *ngIf="showExtraContent">
     <div *ngIf="currentTime" class="govuk-panel" [ngClass]="getCurrentTimeClass()">
       <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="getCurrentTimeClass()">
-        <div *ngIf="!isWitness && hearing.isOnTime()">
+        <div *ngIf="hearing.isOnTime() || hearing.isStarting() || hearing.isDelayed()">
           <h2 class="govuk-heading-m white">Please wait</h2>
           <p class="white">Your video hearing is scheduled to begin at {{ hearing.scheduledStartTime | date: 'HH:mm' }}</p>
         </div>
 
-        <div *ngIf="!isWitness && hearing.isStarting()">
-          <h2 class="govuk-heading-m white">Please stay near your screen</h2>
-          <p class="white">Make sure you're ready when the judge starts the hearing.</p>
-        </div>
-
-        <div *ngIf="!isWitness && hearing.isDelayed()">
-          <h2 class="govuk-heading-m">Your hearing is delayed</h2>
-          <p>We're sorry for the delay. Stay near your screen for further updates.</p>
-        </div>
-
-        <div *ngIf="!isWitness && hearing.isClosed()">
+        <div *ngIf="hearing.isClosed()">
           <h2 class="govuk-heading-m white">This hearing has finished. You may now sign out.</h2>
         </div>
 
-        <div *ngIf="!isWitness && hearing.isPaused()" class="hearing-title-mt--20">
+        <div *ngIf="hearing.isPaused()" class="hearing-title-mt--20">
           <p class="white">The judge will restart the hearing when they are ready. Please stay near your screen.</p>
         </div>
 
@@ -133,27 +103,11 @@
           <h2 class="govuk-heading-m">We're having technical issues</h2>
           <p>All participants are affected. Stay near your screen for further updates. There's no need to call us.</p>
         </div>
-
-        <div *ngIf="isWitness && hearing.isInSession()">
-          <h2 class="govuk-heading-m white">The hearing has started</h2>
-          <p class="white">
-            The judge will bring you into the hearing when they are ready for you. An alert will sound and you will join the hearing a few
-            seconds later.
-          </p>
-        </div>
-
-        <div *ngIf="isWitness && (hearing.isOnTime() || hearing.isStarting() || hearing.isDelayed())">
-          <h2 class="govuk-heading-m white">Please wait</h2>
-          <p class="white">
-            The judge will bring you into the hearing when they are ready for you. An alert will sound and you will join the hearing a few
-            seconds later.
-          </p>
-        </div>
       </div>
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
           <div class="govuk-panel__body govuk-!-margin-top-4">
-            <app-analogue-clock [hearing]="hearing" [isWitness]="isWitness"></app-analogue-clock>
+            <app-analogue-clock [hearing]="hearing" [isJudicialOfficeHolder]="true"></app-analogue-clock>
           </div>
         </div>
         <div class="govuk-grid-column-one-half">
@@ -172,8 +126,8 @@
   </div>
 
   <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': !showExtraContent }">
-    <app-individual-participant-status-list aria-label="list of participants in hearing" [conference]="hearing.getConference()">
-    </app-individual-participant-status-list>
+    <app-judge-participant-status-list aria-label="list of participants in hearing" [conference]="hearing.getConference()">
+    </app-judge-participant-status-list>
   </div>
 </div>
 

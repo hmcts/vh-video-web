@@ -54,33 +54,33 @@
 
   <div class="vh-line govuk-!-margin-bottom-3"></div>
 
-    <div *ngIf="wingers.length > 0">
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-full">
-            <h2 class="govuk-heading-s">Wingers ({{ wingers.length }})</h2>
+  <div *ngIf="wingers.length > 0">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h2 class="govuk-heading-s">Wingers ({{ wingers.length }})</h2>
+      </div>
+    </div>
+    <div class="vh-border">
+      <div *ngFor="let participant of wingers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
+        <div id="p-row-{{ participant.id }}-panel-member" class="govuk-grid-column-full govuk-!-margin-top-2">
+          <p id="p-{{ participant.id }}-name-panel-member" class="govuk-heading-s govuk-!-margin-bottom-3">
+            {{ participant.name }}
+          </p>
+
+          <div class="govuk-body-s govuk-!-margin-bottom-3">
+            <label
+              id="p-{{ participant.id }}-status-participant"
+              class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
+            >
+              {{ getParticipantStatus(participant) }}
+            </label>
           </div>
-        </div>
-        <div class="vh-border">
-          <div *ngFor="let participant of wingers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
-            <div id="p-row-{{ participant.id }}-panel-member" class="govuk-grid-column-full govuk-!-margin-top-2">
-              <p id="p-{{ participant.id }}-name-panel-member" class="govuk-heading-s govuk-!-margin-bottom-3">
-                {{ participant.name }}
-              </p>
-    
-              <div class="govuk-body-s govuk-!-margin-bottom-3" *ngIf="isUserJudge()">
-                <label
-                  id="p-{{ participant.id }}-status-participant"
-                  class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
-                >
-                  {{ getParticipantStatus(participant) }}
-                </label>
-              </div>
-    
-              <div class="vh-line" *ngIf="!lastItem"></div>
-            </div>
-          </div>
+
+          <div class="vh-line" *ngIf="!lastItem"></div>
         </div>
       </div>
+    </div>
+  </div>
 
   <div *ngIf="panelMembers.length > 0">
     <div class="govuk-grid-row">
@@ -95,7 +95,7 @@
             {{ participant.name }}
           </p>
 
-          <div class="govuk-body-s govuk-!-margin-bottom-3" *ngIf="isUserJudge()">
+          <div class="govuk-body-s govuk-!-margin-bottom-3">
             <label
               id="p-{{ participant.id }}-status-participant"
               class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
@@ -137,7 +137,7 @@
             </p>
           </div>
 
-          <div class="govuk-body-s govuk-!-margin-bottom-3" *ngIf="isUserJudge()">
+          <div class="govuk-body-s govuk-!-margin-bottom-3">
             <label
               id="p-{{ participant.id }}-status-participant"
               class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
@@ -178,7 +178,7 @@
             </p>
           </div>
 
-          <div class="govuk-body-s govuk-!-margin-bottom-3" *ngIf="isUserJudge()">
+          <div class="govuk-body-s govuk-!-margin-bottom-3">
             <label
               id="p-{{ participant.id }}-status-participant"
               class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
@@ -206,7 +206,7 @@
             {{ endpoint.display_name }}
           </p>
 
-          <div class="govuk-body-s govuk-!-margin-bottom-3" *ngIf="isUserJudge()">
+          <div class="govuk-body-s govuk-!-margin-bottom-3">
             <label
               id="p-{{ endpoint.id }}-status-endpoint"
               class="govuk-body-s label-status label-status--{{ getEndpointStatusCss(endpoint) }}"
@@ -235,7 +235,7 @@
             {{ participant.name }}
           </p>
 
-          <div class="govuk-body-s govuk-!-margin-bottom-3" *ngIf="isUserJudge()">
+          <div class="govuk-body-s govuk-!-margin-bottom-3">
             <label
               id="p-{{ participant.id }}-status-participant"
               class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"

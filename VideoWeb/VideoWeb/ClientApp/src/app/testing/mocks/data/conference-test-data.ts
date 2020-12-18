@@ -275,7 +275,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.NotSignedIn,
             display_name: 'Panel Mem Doe PM',
             username: 'panelmem.doe.PM@hearings.net',
-            role: Role.Individual,
+            role: Role.JudicialOfficeHolder,
             case_type_group: 'panelmember',
             hearing_role: 'Panel Member',
             tiled_display_name: 'T7;Panel Mem Doe PM;7777-7777-7777-7777'
@@ -286,7 +286,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.NotSignedIn,
             display_name: 'J Doe WINGER',
             username: 'jane.doe.winger@hearings.net',
-            role: Role.Individual,
+            role: Role.JudicialOfficeHolder,
             case_type_group: 'None',
             hearing_role: 'Winger'
         });
@@ -573,7 +573,7 @@ export class ConferenceTestData {
             id: 'e698a672-8925-46e6-907d-21f1bc3b8bbf',
             name: 'Panel Mem 1',
             status: ParticipantStatus.Available,
-            role: Role.Individual,
+            role: Role.JudicialOfficeHolder,
             hearing_role: 'Panel Member',
             display_name: 'Panel Mem 1',
             username: 'pm.1@hearings.net',
@@ -593,7 +593,7 @@ export class ConferenceTestData {
             id: 'c8c33015-d164-4a46-a5c9-6b58e892511b',
             name: 'Mr Chris Winger',
             status: ParticipantStatus.Available,
-            role: Role.Individual,
+            role: Role.JudicialOfficeHolder,
             case_type_group: 'None',
             display_name: 'Chris Winger',
             username: 'chris.winger@hearings.net',

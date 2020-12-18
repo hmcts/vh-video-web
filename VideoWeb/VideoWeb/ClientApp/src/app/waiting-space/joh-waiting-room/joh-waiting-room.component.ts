@@ -1,4 +1,5 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { HostListener } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
@@ -6,30 +7,30 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
+import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
+import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { DeviceTypeService } from '../../services/device-type.service';
-import { HeartbeatModelMapper } from '../../shared/mappers/heartbeat-model-mapper';
+import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
-import { UserMediaService } from 'src/app/services/user-media.service';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
-import { HearingRole } from '../models/hearing-role-model';
-import { NotificationSoundsService } from '../services/notification-sounds.service';
-import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 
 @Component({
-    selector: 'app-participant-waiting-room',
-    templateUrl: './participant-waiting-room.component.html',
-    styleUrls: ['./participant-waiting-room.component.scss', '../waiting-room-global-styles.scss']
+    selector: 'app-joh-waiting-room',
+    templateUrl: './joh-waiting-room.component.html',
+    styleUrls: ['../waiting-room-global-styles.scss']
 })
-export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
-    currentTime: Date;
-    hearingStartingAnnounced: boolean;
+export class JohWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
+    private readonly loggerPrefixJOH = '[JOH WR] -';
 
+    hearingStartingAnnounced: boolean;
     clockSubscription$: Subscription;
+    currentTime: Date;
 
     constructor(
         protected route: ActivatedRoute,
@@ -66,10 +67,10 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         );
     }
 
-    ngOnInit() {
-        this.audioOnly = this.videoCallService.retrieveVideoCallPreferences().audioOnly;
+    ngOnInit(): void {
+        this.audioOnly = false;
         this.errorCount = 0;
-        this.logger.debug('[Participant WR] - Loading participant waiting room');
+        this.logger.debug(`${this.loggerPrefixJOH} Loading JOH waiting room`);
         this.connected = false;
         this.notificationSoundsService.initHearingAlertSound();
         this.getConference().then(() => {
@@ -77,14 +78,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
             this.startEventHubSubscribers();
             this.getJwtokenAndConnectToPexip();
         });
-    }
-
-    @HostListener('window:beforeunload')
-    ngOnDestroy(): void {
-        this.logger.debug('[Participant WR] - Clearing intervals and subscriptions for participant waiting room', {
-            conference: this.conference?.id
-        });
-        this.executeWaitingRoomCleanup();
     }
 
     subscribeToClock(): void {
@@ -109,19 +102,13 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     }
 
     async announceHearingIsAboutToStart(): Promise<void> {
-        await this.notificationSoundsService.playHearingAlertSound();
         this.hearingStartingAnnounced = true;
+        await this.notificationSoundsService.playHearingAlertSound();
     }
 
     getConferenceStatusText(): string {
         if (this.hearing.getConference().status === ConferenceStatus.NotStarted) {
-            if (this.hearing.isStarting()) {
-                return 'is about to begin';
-            } else if (this.hearing.isDelayed()) {
-                return 'is delayed';
-            } else {
-                return '';
-            }
+            return '';
         } else if (this.hearing.isSuspended()) {
             return 'is suspended';
         } else if (this.hearing.isPaused()) {
@@ -133,27 +120,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     }
 
     getCurrentTimeClass() {
-        if (!this.isWitness && (this.hearing.isOnTime() || this.hearing.isPaused() || this.hearing.isClosed())) {
-            return 'hearing-on-time';
-        }
-        if (!this.isWitness && (this.hearing.isStarting() || this.hearing.isInSession())) {
-            return 'hearing-near-start';
-        }
-        if (!this.isWitness && this.hearing.isDelayed()) {
-            return 'hearing-delayed';
-        }
-        if (this.hearing.isSuspended()) {
-            return 'hearing-delayed';
-        }
-        if (this.isWitness && this.hearing.isInSession()) {
-            return 'hearing-near-start';
-        } else {
-            return 'hearing-on-time';
-        }
-    }
-
-    get isWitness(): boolean {
-        return this.participant?.hearing_role === HearingRole.WITNESS;
+        return 'hearing-on-time';
     }
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
@@ -161,10 +128,18 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         if (!this.validateIsForConference(message.conferenceId)) {
             return;
         }
-        if (message.status === ConferenceStatus.InSession && !this.isWitness) {
+        if (message.status === ConferenceStatus.InSession) {
             this.notificationSoundsService.playHearingAlertSound();
         } else {
             this.notificationSoundsService.stopHearingAlertSound();
         }
+    }
+
+    @HostListener('window:beforeunload')
+    ngOnDestroy(): void {
+        this.logger.debug(`${this.loggerPrefixJOH} Clearing intervals and subscriptions for JOH waiting room`, {
+            conference: this.conference?.id
+        });
+        this.executeWaitingRoomCleanup();
     }
 }

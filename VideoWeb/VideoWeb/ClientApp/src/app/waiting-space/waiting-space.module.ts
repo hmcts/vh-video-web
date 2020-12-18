@@ -10,7 +10,6 @@ import { ReceiveConsultationComponent } from './consultation-modals/receive-cons
 import { RejectedConsultationComponent } from './consultation-modals/rejected-consultation/rejected-consultation.component';
 import { VhoRaiseConsultationComponent } from './consultation-modals/vho-raise-consultation/vho-raise-consultation.component';
 import { HearingControlsComponent } from './hearing-controls/hearing-controls.component';
-import { IndividualConsultationControlsComponent } from './individual-consultation-controls/individual-consultation-controls.component';
 import { IndividualParticipantStatusListComponent } from './individual-participant-status-list/individual-participant-status-list.component';
 import { JudgeParticipantStatusListComponent } from './judge-participant-status-list/judge-participant-status-list.component';
 import { JudgeWaitingRoomComponent } from './judge-waiting-room/judge-waiting-room.component';
@@ -28,6 +27,7 @@ import { SelectHearingLayoutComponent } from './select-hearing-layout/select-hea
 import { ConfirmCloseHearingPopupComponent } from './confirmation/confirm-close-hearing-popup.component';
 import { HearingLayoutComponent } from './select-hearing-layout/hearing-layout.component';
 import { ConfirmStartHearingPopupComponent } from './confirmation/confirm-start-hearing-popup.component';
+import { JohWaitingRoomComponent } from './joh-waiting-room/joh-waiting-room.component';
 
 @NgModule({
     imports: [SharedModule, WaitingSpaceRoutingModule],
@@ -37,7 +37,6 @@ import { ConfirmStartHearingPopupComponent } from './confirmation/confirm-start-
         ParticipantWaitingRoomComponent,
         JudgeWaitingRoomComponent,
         AnalogueClockComponent,
-        IndividualConsultationControlsComponent,
         ParticipantChatComponent,
         AudioAlertComponent,
         NoConsultationRoomComponent,
@@ -56,7 +55,8 @@ import { ConfirmStartHearingPopupComponent } from './confirmation/confirm-start-
         ConfirmCloseHearingPopupComponent,
         ConfirmStartHearingPopupComponent,
         HearingLayoutComponent,
-        JudgeContextMenuComponent
+        JudgeContextMenuComponent,
+        JohWaitingRoomComponent
     ],
     providers: [VideoCallService, NotificationSoundsService]
 })

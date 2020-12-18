@@ -1,6 +1,7 @@
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
+import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
@@ -15,19 +16,18 @@ import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
+import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
-import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models/video-call-models';
-import { VideoCallService } from '../services/video-call.service';
-import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
-import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
-import { UserMediaService } from 'src/app/services/user-media.service';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { HearingRole } from '../models/hearing-role-model';
+import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models/video-call-models';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
-import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
+import { VideoCallService } from '../services/video-call.service';
 
 declare var HeartbeatFactory: any;
 
@@ -82,6 +82,7 @@ export abstract class WaitingRoomBaseComponent {
         this.showVideo = false;
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
+        this.errorCount = 0;
     }
 
     get conferenceId(): string {
@@ -318,9 +319,6 @@ export abstract class WaitingRoomBaseComponent {
             participant: this.participant.id
         };
         this.logger.debug(`${this.loggerPrefix} Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`, logPayload);
-        if (navigator.userAgent.toLowerCase().indexOf('firefox') !== -1) {
-            this.videoCallService.enableH264(false);
-        }
         this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth, this.audioOnly);
     }
 
@@ -575,7 +573,7 @@ export abstract class WaitingRoomBaseComponent {
         this.videoCallService.updateVideoCallPreferences(videoCallPrefs);
     }
 
-    async updatePexipAudioVideoSource() {
+    private async updatePexipAudioVideoSource() {
         const cam = await this.userMediaService.getPreferredCamera();
         if (cam) {
             this.videoCallService.updateCameraForCall(cam);
@@ -593,5 +591,16 @@ export abstract class WaitingRoomBaseComponent {
 
     get showExtraContent(): boolean {
         return !this.showVideo && !this.isTransferringIn;
+    }
+
+    executeWaitingRoomCleanup() {
+        this.logger.debug(`${this.loggerPrefix} - Clearing intervals and subscriptions for waiting room`, {
+            conference: this.conference?.id
+        });
+        clearTimeout(this.callbackTimeout);
+        this.stopHeartbeat();
+        this.disconnect();
+        this.eventHubSubscription$.unsubscribe();
+        this.videoCallSubscription$.unsubscribe();
     }
 }
