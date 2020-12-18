@@ -6,11 +6,11 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Mappings;
 using VideoWeb.Services.User;
@@ -42,7 +42,8 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
                 }
             };
 
-            var parameters = new ParameterBuilder(_mocker).AddObjectAsImplementedInterfaces(new DictionaryUserCache()).Build();
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<UserProfile, UserProfileResponse>()).Returns(_mocker.Create<UserProfileToUserProfileResponseMapper>());
+            var parameters = new ParameterBuilder(_mocker).AddObject(new DictionaryUserCache()).Build();
             _sut = _mocker.Create<ProfilesController>(parameters);
             _sut.ControllerContext = context;
         }

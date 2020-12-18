@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using Autofac.Extras.Moq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Helpers;
 using VideoWeb.Mappings;
@@ -32,12 +34,11 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
                 }
             };
 
-            var parameters = new ParameterBuilder(mocker)
-                .AddTypedParameters<UnreadInstantMessageConferenceCountResponseMapper>()
-                .AddTypedParameters<UnreadAdminMessageResponseMapper>()
-                .AddTypedParameters<ChatResponseMapper>()
-                .Build();
-            sut = mocker.Create<InstantMessagesController>(parameters);
+            mocker.Mock<IMapperFactory>().Setup(x => x.Get<Conference, IList<InstantMessageResponse>, UnreadInstantMessageConferenceCountResponse>()).Returns(mocker.Create<UnreadInstantMessageConferenceCountResponseMapper>());
+            mocker.Mock<IMapperFactory>().Setup(x => x.Get<Conference, IList<InstantMessageResponse>, UnreadAdminMessageResponse>()).Returns(mocker.Create<UnreadAdminMessageResponseMapper>());
+            mocker.Mock<IMapperFactory>().Setup(x => x.Get<InstantMessageResponse, string, bool, ChatResponse>()).Returns(mocker.Create<ChatResponseMapper>());
+
+            sut = mocker.Create<InstantMessagesController>();
             sut.ControllerContext = context;
 
             mocker.Mock<IMessageDecoder>().Setup(x =>

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
@@ -6,15 +7,16 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
+using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
-using VideoWeb.EventHub.Hub;
+using VideoWeb.Mappings;
+using VideoWeb.Mappings.Requests;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
@@ -41,6 +43,11 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                     User = claimsPrincipal
                 }
             };
+
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<PrivateConsultationRequest, ConsultationRequest>()).Returns(_mocker.Create<PrivateConsultationRequestMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Dictionary<string, string[]>, BadRequestModelResponse>()).Returns(_mocker.Create<BadRequestResponseMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<LeavePrivateConsultationRequest, LeaveConsultationRequest>()).Returns(_mocker.Create<LeavePrivateConsultationRequestMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<PrivateAdminConsultationRequest, AdminConsultationRequest>()).Returns(_mocker.Create<PrivateAdminConsultationRequestMapper>());
 
             _mocker.Mock<IConferenceCache>().Setup(cache =>
                     cache.GetOrAddConferenceAsync(_testConference.Id,

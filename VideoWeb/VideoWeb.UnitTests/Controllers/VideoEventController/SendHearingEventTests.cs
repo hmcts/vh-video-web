@@ -46,8 +46,8 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 }
             };
 
-            var parameters = new ParameterBuilder(_mocker).AddTypedParameters<CallbackEventMapper>().Build();
-            _sut = _mocker.Create<VideoEventsController>(parameters);
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceEventRequest, Conference, CallbackEvent>()).Returns(_mocker.Create<CallbackEventMapper>());
+            _sut = _mocker.Create<VideoEventsController>();
             _sut.ControllerContext = context;
 
             var conference = CreateValidConferenceResponse(null);

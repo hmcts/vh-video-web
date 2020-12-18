@@ -19,6 +19,7 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<AzureAdConfiguration, HearingServicesConfiguration, ClientSettingsResponse>()).Returns(_mocker.Create<ClientSettingsResponseMapper>());
         }
 
         [Test]
@@ -38,7 +39,7 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
                 VideoApiUrl = "https://vh-video-api/"
             };
 
-            var parameters = new ParameterBuilder(_mocker).AddObjectAsImplementedInterfaces(Options.Create(securitySettings)).AddObjectAsImplementedInterfaces(Options.Create(servicesConfiguration)).Build();
+            var parameters = new ParameterBuilder(_mocker).AddObject(Options.Create(securitySettings)).AddObject(Options.Create(servicesConfiguration)).Build();
             var configSettingsController = _mocker.Create<ConfigSettingsController>(parameters);
 
             var actionResult = (OkObjectResult)configSettingsController.GetClientConfigurationSettings().Result;

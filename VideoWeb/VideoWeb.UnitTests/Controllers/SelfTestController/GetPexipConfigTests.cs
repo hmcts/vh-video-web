@@ -3,9 +3,8 @@ using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Moq;
 using NUnit.Framework;
+using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
@@ -22,6 +21,7 @@ namespace VideoWeb.UnitTests.Controllers.SelfTestController
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<PexipConfigResponse, SelfTestPexipResponse>()).Returns(_mocker.Create<PexipServiceConfigurationResponseMapper>());
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
             {

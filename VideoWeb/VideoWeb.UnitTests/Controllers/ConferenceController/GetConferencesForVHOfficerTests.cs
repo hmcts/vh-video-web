@@ -152,12 +152,15 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .AddTypedParameters<ParticipantResponseForVhoMapper>()
                 .AddTypedParameters<ParticipantForUserResponseMapper>()
                 .AddTypedParameters<ConferenceForJudgeResponseMapper>()
-                .AddTypedParameters<ConferenceForIndividualResponseMapper>()
-                .AddTypedParameters<ConferenceForVhOfficerResponseMapper>()
-                .AddTypedParameters<ConferenceResponseVhoMapper>()
-                .AddTypedParameters<ConferenceResponseMapper>()
                 .Build();
-            var controller = _mocker.Create<ConferencesController>(parameters);
+
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoWeb.Services.Video.ConferenceForJudgeResponse, VideoWeb.Contract.Responses.ConferenceForJudgeResponse>()).Returns(_mocker.Create<ConferenceForJudgeResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoWeb.Services.Video.ConferenceForIndividualResponse, VideoWeb.Contract.Responses.ConferenceForIndividualResponse>()).Returns(_mocker.Create<ConferenceForIndividualResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceForAdminResponse, ConferenceForVhOfficerResponse>()).Returns(_mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponseVho>()).Returns(_mocker.Create<ConferenceResponseVhoMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));
+
+            var controller = _mocker.Create<ConferencesController>();
             controller.ControllerContext = context;
             return controller;
         }

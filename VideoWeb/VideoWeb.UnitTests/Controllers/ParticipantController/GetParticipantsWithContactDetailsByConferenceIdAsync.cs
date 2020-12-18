@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Autofac;
 using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
 using FluentAssertions;
@@ -17,6 +16,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
@@ -164,13 +164,14 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 }
             };
 
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Conference, IEnumerable<JudgeInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>()).Returns(_mocker.Create<ParticipantStatusResponseForVhoMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<EventType, string>()).Returns(_mocker.Create<EventTypeReasonMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceEventRequest, Conference, CallbackEvent>()).Returns(_mocker.Create<CallbackEventMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>>()).Returns(_mocker.Create<ParticipantForUserResponseMapper>());
+
             var eventHandlerFactory = new EventHandlerFactory(_eventComponentHelper.GetHandlers());
             var parameters = new ParameterBuilder(_mocker)
-                .AddTypedParameters<ParticipantStatusResponseForVhoMapper>()
-                .AddTypedParameters<EventTypeReasonMapper>()
-                .AddTypedParameters<CallbackEventMapper>()
-                .AddTypedParameters<ParticipantForUserResponseMapper>()
-                .AddObjectAsImplementedInterfaces(eventHandlerFactory)
+                .AddObject(eventHandlerFactory)
                 .Build();
             var controller = _mocker.Create<ParticipantsController>(parameters);
             controller.ControllerContext = context;

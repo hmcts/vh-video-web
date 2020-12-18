@@ -5,7 +5,6 @@ using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
@@ -27,7 +26,6 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
 
         [SetUp]
         public void Setup()
-
         {
             _mocker = AutoMock.GetLoose();
             _claimsPrincipal = new ClaimsPrincipalBuilder()
@@ -87,7 +85,9 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
                 }
             };
 
-            var parameters = new ParameterBuilder(_mocker).AddObjectAsImplementedInterfaces(new DictionaryUserCache()).Build();
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<UserProfile, UserProfileResponse>()).Returns(_mocker.Create<UserProfileToUserProfileResponseMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ClaimsPrincipal, UserProfileResponse>()).Returns(_mocker.Create<ClaimsPrincipalToUserProfileResponseMapper>());
+            var parameters = new ParameterBuilder(_mocker).AddObject(new DictionaryUserCache()).Build();
             var controller = _mocker.Create<ProfilesController>(parameters);
             controller.ControllerContext = context;
             return controller;

@@ -1,13 +1,9 @@
-using Autofac;
-using Autofac.Core;
 using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VideoWeb.Contract.Request;
@@ -28,8 +24,8 @@ namespace VideoWeb.UnitTests.Controllers
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            var parameters = new ParameterBuilder(_mocker).AddTypedParameters<CourtRoomsAccountResponseMapper>().Build();
-            _sut = _mocker.Create<UserDataController>(parameters);
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IEnumerable<UserResponse>, IEnumerable<string>, List<CourtRoomsAccountResponse>>()).Returns(_mocker.Create<CourtRoomsAccountResponseMapper>());
+            _sut = _mocker.Create<UserDataController>();
         }
 
         [Test]
