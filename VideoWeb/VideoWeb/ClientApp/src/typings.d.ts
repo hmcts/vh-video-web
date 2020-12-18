@@ -13,6 +13,7 @@ declare interface PexipClient {
     h264_enabled: boolean;
     mutedAudio: boolean;
     mutedVideo: boolean;
+    call_type: string;
     call_uuid: string;
     call_tag: string;
     call: PexRTCCall;
@@ -99,7 +100,7 @@ declare interface PexipConference {
 declare interface PexRTCCall {
     mutedAudio: boolean;
     mutedVideo: boolean;
-    call_type: string;
+    // call_type: string;
     localStream: MediaStream | URL;
     stream: MediaStream | URL;
     recv_audio: boolean;

@@ -19,6 +19,8 @@ export class VideoCallService {
     readonly VIDEO_CALL_PREFERENCE_KEY = 'vh.videocall.preferences';
     readonly PREFERRED_LAYOUT_KEY = 'vh.preferred.layout';
 
+    readonly callTypeAudioOnly = 'audioonly';
+
     private onSetupSubject = new Subject<CallSetup>();
     private onConnectedSubject = new Subject<ConnectedCall>();
     private onDisconnected = new Subject<DisconnectedCall>();
@@ -28,6 +30,9 @@ export class VideoCallService {
     private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
 
     pexipAPI: PexipClient;
+    get isAudioOnlyCall(): boolean {
+        return this.pexipAPI.call_type === this.callTypeAudioOnly;
+    }
 
     constructor(private logger: Logger, private userMediaService: UserMediaService, private apiClient: ApiClient) {
         this.preferredLayoutCache = new SessionStorage(this.PREFERRED_LAYOUT_KEY);
@@ -107,7 +112,7 @@ export class VideoCallService {
      */
     makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number, audioOnly: boolean = false) {
         this.initCallTag();
-        const callType = audioOnly ? 'audioonly' : null;
+        const callType = audioOnly ? this.callTypeAudioOnly : null;
         this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, callType);
     }
 
