@@ -39,10 +39,13 @@ namespace VideoWeb.Controllers
             {
                 var endpoints = await _videoApiClient.GetEndpointsForConferenceAsync(conferenceId);
                 var response = endpoints.Select(EndpointsResponseMapper.Map).ToList();
+
+                _logger.LogTrace($"Endpoints successfully fetched for ConferenceId: {conferenceId}");
                 return Ok(response);
             }
             catch (VideoApiException e)
             {
+                _logger.LogError(e, $"Endpoints could not be fetched for ConferenceId: {conferenceId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }

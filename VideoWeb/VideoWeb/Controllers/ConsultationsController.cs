@@ -85,6 +85,8 @@ namespace VideoWeb.Controllers
             {
                 var mappedRequest = PrivateConsultationRequestMapper.MapToApiConsultationRequest(request);
                 await _videoApiClient.HandleConsultationRequestAsync(mappedRequest);
+                
+                _logger.LogTrace($"Consultation request handled successfully for ConferenceId: {request.ConferenceId}");
                 return NoContent();
             }
             catch (VideoApiException e)
@@ -115,11 +117,12 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> LeavePrivateConsultationAsync(LeavePrivateConsultationRequest request)
         {
+            var participant = new Participant();
             try
             {
                 var conference = await GetConference(request.ConferenceId);
 
-                var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.ParticipantId);
+                participant = conference.Participants?.SingleOrDefault(x => x.Id == request.ParticipantId);
                 if (participant == null)
                 {
                     return NotFound();
@@ -127,10 +130,21 @@ namespace VideoWeb.Controllers
 
                 var mappedRequest = LeavePrivateConsultationRequestMapper.MapToLeaveConsultationRequest(request);
                 await _videoApiClient.LeavePrivateConsultationAsync(mappedRequest);
+
+                _logger.LogTrace($"Participant: {participant.Username} left the private consultation successfully");
                 return NoContent();
             }
             catch (VideoApiException e)
             {
+                if (participant != null)
+                {
+                    _logger.LogError(e, $"Participant: {participant.Username} was not able to leave the private consultation. " +
+                                        $"An error occured");
+                }
+                else
+                {
+                    _logger.LogError(e, $"Invalid participant");
+                }
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -155,9 +169,10 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> RespondToAdminConsultationRequestAsync(PrivateAdminConsultationRequest request)
         {
+            var conference = new Conference();
             try
             {
-                var conference = await GetConference(request.ConferenceId);
+                conference = await GetConference(request.ConferenceId);
                 var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.ParticipantId);
                 if (participant == null)
                 {
@@ -173,10 +188,12 @@ namespace VideoWeb.Controllers
                 await _hubContext.Clients.Group(participant.Username.ToLowerInvariant()).AdminConsultationMessage
                     (conference.Id, roomType, participant.Username.ToLowerInvariant(), answer);
 
+                _logger.LogTrace($"Admin consultation request successfully responded with HearingId: {conference.HearingId}");
                 return NoContent();
             }
             catch (VideoApiException e)
             {
+                _logger.LogError(e, $"Admin consultation request could not be responded to for HearingId: {conference.HearingId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -214,6 +231,9 @@ namespace VideoWeb.Controllers
                     Endpoint_id = endpoint.Id,
                     Defence_advocate_id = defenceAdvocate.Id
                 });
+
+                _logger.LogTrace($"Private consultation endpoint successfully started for " +
+                                 $"ConferenceId: {request.ConferenceId} and EndpointId: {request.EndpointId}");
             }
             catch (VideoApiException ex)
             {
@@ -246,6 +266,8 @@ namespace VideoWeb.Controllers
             await _hubContext.Clients.Group(requestedFor.Username.ToLowerInvariant())
                 .ConsultationMessage(conference.Id, requestedBy.Username, requestedFor.Username,
                     null);
+
+            _logger.LogTrace($"Consultation request notified for ConferenceId: {conference.Id}");
         }
 
         /// <summary>
@@ -258,9 +280,10 @@ namespace VideoWeb.Controllers
         private async Task NotifyConsultationResponseAsync(Conference conference, Participant requestedBy,
             Participant requestedFor, ConsultationAnswer answer)
         {
-            
             await _hubContext.Clients.Group(requestedBy.Username.ToLowerInvariant())
                 .ConsultationMessage(conference.Id, requestedBy.Username, requestedFor.Username, answer);
+            
+            _logger.LogTrace($"Consultation response notified for ConferenceId: {conference.Id}");
         }
 
         private async Task NotifyConsultationCancelledAsync(Conference conference, Participant requestedBy,
@@ -269,6 +292,8 @@ namespace VideoWeb.Controllers
             await _hubContext.Clients.Group(requestedFor.Username.ToLowerInvariant())
                 .ConsultationMessage(conference.Id, requestedBy.Username, requestedFor.Username,
                     ConsultationAnswer.Cancelled);
+            
+            _logger.LogTrace($"Consultation cancellation notified for ConferenceId: {conference.Id}");
         }
     }
 }

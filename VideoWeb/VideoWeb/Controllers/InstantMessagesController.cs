@@ -60,6 +60,8 @@ namespace VideoWeb.Controllers
 
                 var response = await MapMessages(messages, conferenceId);
                 response = response.OrderBy(r => r.Timestamp).ToList();
+
+                _logger.LogTrace($"Messages successfully retrieved for conference: {conferenceId}");
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -96,6 +98,8 @@ namespace VideoWeb.Controllers
                 );
 
                 var response = UnreadInstantMessageConferenceResponseMapper.MapToResponseModel(conference, messages);
+
+                _logger.LogTrace($"Messages successfully retrieved for conference: {conferenceId}");
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -133,6 +137,8 @@ namespace VideoWeb.Controllers
                 );
 
                 var response = UnreadAdminMessageResponseMapper.MapToResponseModel(conference, messages);
+                
+                _logger.LogTrace($"Messages successfully retrieved for conference: {conferenceId}");
                 return Ok(response);
             }
             catch (VideoApiException e)

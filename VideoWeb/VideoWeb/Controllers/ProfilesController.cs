@@ -67,11 +67,13 @@ namespace VideoWeb.Controllers
                     usernameClean, async key => await _userApiClient.GetUserByAdUserNameAsync(usernameClean)
                 );
                 var response = UserProfileResponseMapper.MapToResponseModel(userProfile);
+
+                _logger.LogTrace($"User successfully retrieved for username: {username}");
                 return Ok(response);
             }
             catch (UserApiException e)
             {
-                _logger.LogError(e, "Unable to get user profile");
+                _logger.LogError(e, $"Unable to get user profile for username: {username}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }

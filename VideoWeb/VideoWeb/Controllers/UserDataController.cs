@@ -41,6 +41,7 @@ namespace VideoWeb.Controllers
 
                 var accountList = CourtRoomsAccountResponseMapper.MapUserToCourtRoomsAccount(response, query.UserNames);
 
+                _logger.LogTrace($"Court room accounts retrieved successfully");
                 return Ok(accountList);
             }
             catch (UserApiException e)

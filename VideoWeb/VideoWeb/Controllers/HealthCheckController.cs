@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Helpers;
 using VideoWeb.Services.Bookings;
@@ -21,13 +22,15 @@ namespace VideoWeb.Controllers
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IUserApiClient _userApiClient;
+        private readonly ILogger<HealthCheckController> _logger;
         private readonly IBookingsApiClient _bookingsApiClient;
 
-        public HealthCheckController(IVideoApiClient videoApiClient, IUserApiClient userApiClient,
-            IBookingsApiClient bookingsApiClient)
+        public HealthCheckController(IVideoApiClient videoApiClient, IUserApiClient userApiClient, 
+            ILogger<HealthCheckController> logger, IBookingsApiClient bookingsApiClient)
         {
             _videoApiClient = videoApiClient;
             _userApiClient = userApiClient;
+            _logger = logger;
             _bookingsApiClient = bookingsApiClient;
         }
 
@@ -68,6 +71,7 @@ namespace VideoWeb.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Unable to retrieve case types");
                 if (!(ex is BookingsApiException))
                 {
                     response.BookingsApiHealth.Successful = false;
@@ -82,6 +86,7 @@ namespace VideoWeb.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Unable to retrieve expired open conferences");
                 response.VideoApiHealth = HandleVideoApiCallException(ex);
             }
             
@@ -90,7 +95,8 @@ namespace VideoWeb.Controllers
             {
                 return StatusCode((int) HttpStatusCode.InternalServerError, response);
             }
-
+           
+            _logger.LogTrace("Healthcheck successful.");
             return Ok(response);
         }
 

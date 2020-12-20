@@ -34,6 +34,8 @@ namespace VideoWeb.Controllers
             try
             {
                 var tasks = await _videoApiClient.GetTasksForConferenceAsync(conferenceId);
+
+                _logger.LogTrace($"Tasks for conference: {conferenceId} retrieved successfully");
                 return Ok(tasks);
             }
             catch (VideoApiException e)
@@ -64,6 +66,8 @@ namespace VideoWeb.Controllers
                     Updated_by = username
                 };
                 var updatedTask = await _videoApiClient.UpdateTaskStatusAsync(conferenceId, taskId, request);
+                
+                _logger.LogTrace($"Complete tasks {taskId} in conference: {conferenceId} retrieved successfully");
                 return Ok(updatedTask);
             }
             catch (VideoApiException e)

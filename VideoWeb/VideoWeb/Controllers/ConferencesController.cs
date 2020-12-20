@@ -54,6 +54,8 @@ namespace VideoWeb.Controllers
                 var response = conferencesForJudge
                     .Select(ConferenceForJudgeResponseMapper.MapConferenceSummaryToModel)
                     .ToList();
+
+                _logger.LogTrace($"Conferences for judge retrieved successfully");
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -82,6 +84,8 @@ namespace VideoWeb.Controllers
                 conferencesForIndividual = conferencesForIndividual.Where(c => ConferenceHelper.HasNotPassed(c.Status, c.Closed_date_time)).ToList();
                 var response = conferencesForIndividual
                     .Select(ConferenceForIndividualResponseMapper.MapConferenceSummaryToModel).ToList();
+                
+                _logger.LogTrace($"Conferences for individual retrieved successfully");
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -114,6 +118,7 @@ namespace VideoWeb.Controllers
                 var responses = conferences.Select(ConferenceForVhOfficerResponseMapper
                     .MapConferenceSummaryToResponseModel).ToList();
 
+                _logger.LogTrace($"Conferences for VhOfficer retrieved successfully");
                 return Ok(responses);
             }
             catch (VideoApiException e)
@@ -150,6 +155,7 @@ namespace VideoWeb.Controllers
             {
                 _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
                 conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+                _logger.LogTrace($"Conference details for conference: ${conferenceId} retrieved successfully");
             }
             catch (VideoApiException e)
             {
@@ -184,6 +190,7 @@ namespace VideoWeb.Controllers
             var response = ConferenceResponseVhoMapper.MapConferenceDetailsToResponseModel(conference);
 
             await _conferenceCache.AddConferenceAsync(conference);
+            _logger.LogTrace($"ConferenceId: {conference.Id} added to conference cache");
 
             return Ok(response);
         }
@@ -208,44 +215,50 @@ namespace VideoWeb.Controllers
                 return BadRequest(ModelState);
             }
 
-            var username = User.Identity.Name.ToLower().Trim();
-
-            ConferenceDetailsResponse conference;
-            try
+            if (User.Identity.Name != null)
             {
-                _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
-                conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+                var username = User.Identity.Name.ToLower().Trim();
+            
+                ConferenceDetailsResponse conference;
+                try
+                {
+                    _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
+                    conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+                }
+                catch (VideoApiException e)
+                {
+                    _logger.LogError(e, $"Unable to retrieve conference: ${conferenceId}");
+                    return StatusCode(e.StatusCode, e.Response);
+                }
+
+                var exceededTimeLimit = !ConferenceHelper.HasNotPassed(conference.Current_status, conference.Closed_date_time);
+                if (conference.Participants.All(x => x.Username.ToLower().Trim() != username) || exceededTimeLimit)
+                {
+                    _logger.LogInformation(
+                        $"Unauthorised to view conference details {conferenceId} because user is neither a VH " +
+                        "Officer nor a participant of the conference, or the conference has been closed for over 30 minutes");
+                    return Unauthorized();
+                }
+
+                // these are roles that are filtered against when lists participants on the UI
+                var displayRoles = new List<Role>
+                {
+                    Role.Judge,
+                    Role.Individual,
+                    Role.Representative,
+                    Role.JudicialOfficeHolder
+                };
+                conference.Participants = conference.Participants
+                    .Where(x => displayRoles.Contains((Role)x.User_role)).ToList();
+
+                var response = ConferenceResponseMapper.MapConferenceDetailsToResponseModel(conference);
+                await _conferenceCache.AddConferenceAsync(conference);
+
+                _logger.LogTrace($"ConferenceId: {conference.Id} added to conference cache");
+                return Ok(response);
             }
-            catch (VideoApiException e)
-            {
-                _logger.LogError(e, $"Unable to retrieve conference: ${conferenceId}");
-                return StatusCode(e.StatusCode, e.Response);
-            }
 
-            var exceededTimeLimit = !ConferenceHelper.HasNotPassed(conference.Current_status, conference.Closed_date_time);
-            if (conference.Participants.All(x => x.Username.ToLower().Trim() != username) || exceededTimeLimit)
-            {
-                _logger.LogInformation(
-                    $"Unauthorised to view conference details {conferenceId} because user is neither a VH " +
-                    "Officer nor a participant of the conference, or the conference has been closed for over 30 minutes");
-                return Unauthorized();
-            }
-
-            // these are roles that are filtered against when lists participants on the UI
-            var displayRoles = new List<Role>
-            {
-                Role.Judge,
-                Role.Individual,
-                Role.Representative,
-                Role.JudicialOfficeHolder
-            };
-            conference.Participants = conference.Participants
-                .Where(x => displayRoles.Contains((Role)x.User_role)).ToList();
-
-            var response = ConferenceResponseMapper.MapConferenceDetailsToResponseModel(conference);
-            await _conferenceCache.AddConferenceAsync(conference);
-
-            return Ok(response);
+            return BadRequest("No name provided for the current user");
         }
     }
 }

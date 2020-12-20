@@ -38,6 +38,8 @@ namespace VideoWeb.Controllers
             try
             {
                 var judges = await _videoApiClient.GetDistinctJudgeNamesAsync();
+
+                _logger.LogTrace($"Judge names retrieved successfully");
                 return Ok(judges);
             }
             catch (VideoApiException e)

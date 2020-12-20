@@ -36,10 +36,13 @@ namespace VideoWeb.Controllers
                 _logger.LogDebug("GetPexipNodeForIndependentSelfTest");
                 var config = _videoApiClient.GetPexipServicesConfiguration();
                 var response = PexipServiceConfigurationResponseMapper.MapConfigToResponseModel(config);
+                
+                _logger.LogTrace($"Pexip configuration retrieved successfully");
                 return Ok(response);
             }
             catch (VideoApiException e)
             {
+                _logger.LogError(e, $"Unable to get Pexip configuration");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
