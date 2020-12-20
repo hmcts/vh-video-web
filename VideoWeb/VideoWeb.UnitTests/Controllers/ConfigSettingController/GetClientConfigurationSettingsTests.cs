@@ -1,6 +1,8 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Contract.Responses;
@@ -10,6 +12,14 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
 {
     public class GetClientConfigurationSettingsTests
     {
+        private Mock<ILogger<ConfigSettingsController>> _logger;
+
+        [SetUp]
+        public void Setup()
+        {
+            _logger = new Mock<ILogger<ConfigSettingsController>>();
+        }
+        
         [Test]
         public void Should_return_response_with_settings()
         {
@@ -26,9 +36,9 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
             {
                 VideoApiUrl = "https://vh-video-api/"
             };
-
+            
             var configSettingsController = new ConfigSettingsController(Options.Create(securitySettings),
-                Options.Create(servicesConfiguration));
+                 _logger.Object,Options.Create(servicesConfiguration));
 
             var actionResult = (OkObjectResult)configSettingsController.GetClientConfigurationSettings().Result;
             var clientSettings = (ClientSettingsResponse)actionResult.Value;
