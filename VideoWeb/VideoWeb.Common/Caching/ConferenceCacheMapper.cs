@@ -28,6 +28,7 @@ namespace VideoWeb.Common.Caching
                         participant.Current_status.ToString()),
                     Username = participant.Username,
                     CaseTypeGroup = participant.Case_type_group,
+                    Representee = participant.Representee
                 })
                 .ToList();
 

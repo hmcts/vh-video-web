@@ -25,4 +25,14 @@ describe('ParticipantContactDetails', () => {
         expect(participant.judge_in_another_hearing).toBe(p.judgeInAnotherHearing);
         expect(p.isJudge).toBe(false);
     });
+    it('should return true if case role is none', () => {
+        const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
+            'C7163972-A362-4167-8D33-77A64674B31C',
+            'MyVenue'
+        );
+        const participant = participants[0];
+        participant.case_type_group = 'None';
+        const p = new ParticipantContactDetails(participant);
+        expect(p.showCaseRole).toBe(false);
+    });
 });

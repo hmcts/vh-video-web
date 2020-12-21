@@ -41,7 +41,8 @@ namespace VideoWeb.Mappings
                         ContactEmail = x.ContactEmail,
                         ContactTelephone = x.ContactTelephone,
                         HearingVenueName = hearingVenueName,
-                        JudgeInAnotherHearing = judgeInHearing.Any()
+                        JudgeInAnotherHearing = judgeInHearing.Any(),
+                        Representee = x.Representee
                     };
                 });
             return pats.ToList();

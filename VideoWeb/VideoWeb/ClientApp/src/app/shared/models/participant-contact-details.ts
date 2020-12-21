@@ -1,4 +1,5 @@
 import { ParticipantStatus, Role, ParticipantContactDetailsResponseVho } from 'src/app/services/clients/api-client';
+import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 
 export class ParticipantContactDetails {
     private participant: ParticipantContactDetailsResponseVho;
@@ -65,7 +66,9 @@ export class ParticipantContactDetails {
     }
 
     get hearingRole(): string {
-        return this.participant.hearing_role;
+        return this.participant.representee
+            ? `${this.participant.hearing_role} for ${this.participant.representee}`
+            : `${this.participant.hearing_role}`;
     }
 
     get isJudge(): boolean {
@@ -86,5 +89,14 @@ export class ParticipantContactDetails {
 
     set judgeInAnotherHearing(value: boolean) {
         this.isJudgeInAnotherHearing = value;
+    }
+
+    get showCaseRole(): boolean {
+        return this.participant.case_type_group.toLowerCase() === CaseTypeGroup.NONE.toLowerCase() ||
+            this.participant.case_type_group.toLowerCase() === CaseTypeGroup.OBSERVER.toLowerCase() ||
+            this.participant.case_type_group.toLowerCase() === CaseTypeGroup.PANEL_MEMBER.toLowerCase() ||
+            this.participant.case_type_group.toLowerCase() === CaseTypeGroup.JUDGE.toLowerCase()
+            ? false
+            : true;
     }
 }
