@@ -3,11 +3,11 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
@@ -23,42 +23,36 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 {
     public class CallVideoEndpointTests
     {
-        private ConsultationsController _controller;
-        private Mock<IVideoApiClient> _videoApiClientMock;
-        private Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> _eventHubContextMock;
-        private Mock<IConferenceCache> _conferenceCacheMock;
+        private AutoMock _mocker;
+        private ConsultationsController _sut;
         private Conference _testConference;
-        private Mock<IEventHubClient> _eventHubClientMock;
-        private Mock<ILogger<ConsultationsController>> _loggerMock;
 
         [SetUp]
         public void Setup()
         {
-            _videoApiClientMock = new Mock<IVideoApiClient>();
+            _mocker = AutoMock.GetLoose();
            
-            _eventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>();
-            _conferenceCacheMock = new Mock<IConferenceCache>();
-            _eventHubClientMock = new Mock<IEventHubClient>();
-            _loggerMock = new Mock<ILogger<ConsultationsController>>();
 
             _testConference = ConsultationHelper.BuildConferenceForTest();
 
+            var eventHubContextMock = _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>();
+            var eventHubClientMock = _mocker.Mock<IEventHubClient>();
             foreach (var participant in _testConference.Participants)
             {
-                _eventHubContextMock.Setup(x => x.Clients.Group(participant.Username.ToLowerInvariant()))
-                    .Returns(_eventHubClientMock.Object);
+                eventHubContextMock.Setup(x => x.Clients.Group(participant.Username.ToLowerInvariant()))
+                    .Returns(eventHubClientMock.Object);
             }
 
-            _eventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
-                .Returns(_eventHubClientMock.Object);
+            eventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
+                .Returns(eventHubClientMock.Object);
 
-            _conferenceCacheMock.Setup(cache =>
+            _mocker.Mock<IConferenceCache>().Setup(cache =>
                     cache.GetOrAddConferenceAsync(_testConference.Id,
                         It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(_testConference);
 
-            _controller = SetupControllerWithClaims(null);
+            _sut = SetupControllerWithClaims(null);
         }
 
         [Test]
@@ -66,7 +60,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         {
             var cp = new ClaimsPrincipalBuilder().WithRole(AppRoles.RepresentativeRole)
                 .WithUsername("nf@test.com").Build();
-            _controller = SetupControllerWithClaims(cp);
+            _sut = SetupControllerWithClaims(cp);
             
             var request = new PrivateVideoEndpointConsultationRequest
             {
@@ -74,7 +68,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 EndpointId = _testConference.Endpoints.First(x => !string.IsNullOrWhiteSpace(x.DefenceAdvocateUsername))
                     .Id
             };
-            var result = await _controller.CallVideoEndpointAsync(request);
+            var result = await _sut.CallVideoEndpointAsync(request);
             var actionResult = result.As<NotFoundObjectResult>();
             actionResult.Should().NotBeNull();
         }
@@ -87,10 +81,9 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 ConferenceId = _testConference.Id,
                 EndpointId = Guid.NewGuid()
             };
-            var result = await _controller.CallVideoEndpointAsync(request);
+            var result = await _sut.CallVideoEndpointAsync(request);
             var actionResult = result.As<NotFoundObjectResult>();
-            actionResult.Should().NotBeNull();
-            
+            actionResult.Should().NotBeNull();            
         }
         
         [Test]
@@ -102,7 +95,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 EndpointId = _testConference.Endpoints.First(x => !string.IsNullOrWhiteSpace(x.DefenceAdvocateUsername))
                     .Id
             };
-            var result = await _controller.CallVideoEndpointAsync(request);
+            var result = await _sut.CallVideoEndpointAsync(request);
             var actionResult = result.As<AcceptedResult>();
             actionResult.Should().NotBeNull();
         }
@@ -120,11 +113,11 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                     .Id
             };
 
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.StartPrivateConsultationWithEndpointAsync(It.IsAny<EndpointConsultationRequest>()))
                 .ThrowsAsync(apiException);
             
-            var result = await _controller.CallVideoEndpointAsync(request);
+            var result = await _sut.CallVideoEndpointAsync(request);
             var actionResult = result.As<ObjectResult>();
             actionResult.Should().NotBeNull();
             actionResult.StatusCode.Should().Be((int) HttpStatusCode.Unauthorized);
@@ -142,11 +135,9 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 }
             };
 
-            return new ConsultationsController(_videoApiClientMock.Object, _eventHubContextMock.Object,
-                _conferenceCacheMock.Object, _loggerMock.Object)
-            {
-                ControllerContext = context
-            };
+            var controller = _mocker.Create<ConsultationsController>();
+            controller.ControllerContext = context;
+            return controller;
         }
     }
 }

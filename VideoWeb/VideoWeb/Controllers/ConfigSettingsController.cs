@@ -16,12 +16,15 @@ namespace VideoWeb.Controllers
     {
         private readonly AzureAdConfiguration _azureAdConfiguration;
         private readonly HearingServicesConfiguration _servicesConfiguration;
+        private readonly IMapperFactory _mapperFactory;
 
         public ConfigSettingsController(IOptions<AzureAdConfiguration> azureAdConfiguration,
-            IOptions<HearingServicesConfiguration> servicesConfiguration)
+            IOptions<HearingServicesConfiguration> servicesConfiguration,
+            IMapperFactory mapperFactory)
         {
             _azureAdConfiguration = azureAdConfiguration.Value;
             _servicesConfiguration = servicesConfiguration.Value;
+            _mapperFactory = mapperFactory;
         }
 
         /// <summary>
@@ -34,10 +37,8 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "GetClientConfigurationSettings")]
         public ActionResult<ClientSettingsResponse> GetClientConfigurationSettings()
         {
-            var response =
-                ClientSettingsResponseMapper.MapAppConfigurationToResponseModel(_azureAdConfiguration,
-                    _servicesConfiguration);
-
+            var clientSettingsResponseMapper = _mapperFactory.Get<AzureAdConfiguration, HearingServicesConfiguration, ClientSettingsResponse>();
+            var response = clientSettingsResponseMapper.Map(_azureAdConfiguration, _servicesConfiguration);
             return Ok(response);
         }
     }

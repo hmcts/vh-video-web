@@ -14,7 +14,6 @@ using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.Mappings;
-using VideoWeb.Mappings.Requests;
 using VideoWeb.Services.Video;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
@@ -31,15 +30,20 @@ namespace VideoWeb.Controllers
         private readonly IHubContext<EventHub.Hub.EventHub, IEventHubClient> _hubContext;
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<ConsultationsController> _logger;
+        private readonly IMapperFactory _mapperFactory;
 
-        public ConsultationsController(IVideoApiClient videoApiClient, 
+        public ConsultationsController(
+            IVideoApiClient videoApiClient,
             IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext,
-            IConferenceCache conferenceCache, ILogger<ConsultationsController> logger)
+            IConferenceCache conferenceCache,
+            ILogger<ConsultationsController> logger,
+            IMapperFactory mapperFactory)
         {
             _videoApiClient = videoApiClient;
             _hubContext = hubContext;
             _conferenceCache = conferenceCache;
             _logger = logger;
+            _mapperFactory = mapperFactory;
         }
 
         /// <summary>
@@ -83,7 +87,8 @@ namespace VideoWeb.Controllers
 
             try
             {
-                var mappedRequest = PrivateConsultationRequestMapper.MapToApiConsultationRequest(request);
+                var consultationRequestMapper = _mapperFactory.Get<PrivateConsultationRequest, ConsultationRequest>();
+                var mappedRequest = consultationRequestMapper.Map(request);
                 await _videoApiClient.HandleConsultationRequestAsync(mappedRequest);
                 return NoContent();
             }
@@ -92,9 +97,9 @@ namespace VideoWeb.Controllers
                 object value;
                 if (e is VideoApiException<ProblemDetails>)
                 {
-                    var errors =
-                        Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string[]>>(e.Response);
-                    value = BadRequestResponseMapper.MapToResponse(errors);
+                    var errors = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string[]>>(e.Response);
+                    var badRequestModelResponseMapper = _mapperFactory.Get<Dictionary<string, string[]>, BadRequestModelResponse>();
+                    value = badRequestModelResponseMapper.Map(errors);
                     await NotifyParticipantsConsultationRoomOccupied(request.ConferenceId, requestedBy.Username,
                         requestedFor.Username);
                 }
@@ -125,7 +130,8 @@ namespace VideoWeb.Controllers
                     return NotFound();
                 }
 
-                var mappedRequest = LeavePrivateConsultationRequestMapper.MapToLeaveConsultationRequest(request);
+                var leaveConsultationRequestMapper = _mapperFactory.Get<LeavePrivateConsultationRequest, LeaveConsultationRequest>();
+                var mappedRequest = leaveConsultationRequestMapper.Map(request);
                 await _videoApiClient.LeavePrivateConsultationAsync(mappedRequest);
                 return NoContent();
             }
@@ -164,7 +170,8 @@ namespace VideoWeb.Controllers
                     return NotFound();
                 }
 
-                var mappedRequest = PrivateAdminConsultationRequestMapper.MapToAdminConsultationRequest(request);
+                var adminConsultationRequestMapper = _mapperFactory.Get<PrivateAdminConsultationRequest, AdminConsultationRequest>();
+                var mappedRequest = adminConsultationRequestMapper.Map(request);
                 await _videoApiClient.RespondToAdminConsultationRequestAsync(mappedRequest);
                 if (request.Answer != ConsultationAnswer.Accepted) return NoContent();
                 var roomType = Enum.Parse<RoomType>(request.ConsultationRoom.ToString());

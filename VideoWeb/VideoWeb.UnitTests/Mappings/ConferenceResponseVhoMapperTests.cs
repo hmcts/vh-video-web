@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
@@ -16,6 +17,19 @@ namespace VideoWeb.UnitTests.Mappings
 {
    public class ConferenceResponseVhoMapperTests
     {
+        private ConferenceResponseVhoMapper _sut;
+        private AutoMock _mocker;
+
+        [SetUp]
+        public void Setup()
+        {
+            _mocker = AutoMock.GetLoose();
+            var parameters = new ParameterBuilder(_mocker)
+                .AddTypedParameters<ParticipantResponseForVhoMapper>()
+                .Build();
+            _sut = _mocker.Create<ConferenceResponseVhoMapper>(parameters);
+        }
+
         [Test]
         public void Should_map_all_properties()
         {
@@ -46,7 +60,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Meeting_room = meetingRoom)
                 .Build();
 
-            var response = ConferenceResponseVhoMapper.MapConferenceDetailsToResponseModel(conference);
+            var response = _sut.Map(conference);
 
             response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.Case_name);
@@ -106,7 +120,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Meeting_room = meetingRoom)
                 .Build();
 
-            var response = ConferenceResponseVhoMapper.MapConferenceDetailsToResponseModel(conference);
+            var response = _sut.Map(conference);
 
             response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.Case_name);
@@ -134,7 +148,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Meeting_room = meetingRoom)
                 .Build();
 
-            var response = ConferenceResponseVhoMapper.MapConferenceDetailsToResponseModel(conference);
+            var response = _sut.Map(conference);
 
             response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.Case_name);
@@ -176,7 +190,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Meeting_room = meetingRoom)
                 .Build();
 
-            var response = ConferenceResponseVhoMapper.MapConferenceDetailsToResponseModel(conference);
+            var response = _sut.Map(conference);
 
             response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.Case_name);

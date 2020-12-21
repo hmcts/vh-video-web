@@ -10,7 +10,7 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class ParticipantForUserResponseMapperTests
+    public class ParticipantForUserResponseMapperTests : BaseMockerSutTestSetup<ParticipantForUserResponseMapper>
     {
         [Test]
         public void Should_map_all_participants()
@@ -45,7 +45,7 @@ namespace VideoWeb.UnitTests.Mappings
                     .With(x => x.Id = Guid.NewGuid()).Build()
             };
 
-            var response = ParticipantForUserResponseMapper.MapParticipants(participants);
+            var response = _sut.Map(participants);
 
             for (var index = 0; index < participants.Count; index++)
             {

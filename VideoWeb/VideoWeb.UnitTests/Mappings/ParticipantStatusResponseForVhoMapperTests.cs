@@ -11,7 +11,7 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class ParticipantStatusResponseForVhoMapperTests
+    public class ParticipantStatusResponseForVhoMapperTests : BaseMockerSutTestSetup<ParticipantStatusResponseForVhoMapper>
     {
 
         [Test]
@@ -35,8 +35,7 @@ namespace VideoWeb.UnitTests.Mappings
                     {Id = judge3DifferentHearing.Id, Username = judge3.Username, Status = ParticipantState.InHearing}
             };
 
-            var results = ParticipantStatusResponseForVhoMapper
-                .MapParticipantsTo(conference, judgesInHearings).ToList();
+            var results = _sut.Map(conference, judgesInHearings).ToList();
 
             AssertResponseItem(results.ElementAt(0), conference.Participants[0], conferenceId, false);
             AssertResponseItem(results.ElementAt(1), conference.Participants[1], conferenceId, false);
@@ -63,8 +62,7 @@ namespace VideoWeb.UnitTests.Mappings
                 new JudgeInHearingResponse{ Id = judge3DifferentHearing.Id, Username = judge3.Username, Status = ParticipantState.InHearing }
             };
 
-            var results = ParticipantStatusResponseForVhoMapper
-                .MapParticipantsTo(conference, judgesInHearings).ToList();
+            var results = _sut.Map(conference, judgesInHearings).ToList();
 
             AssertResponseItem(results.ElementAt(0), conference.Participants[0], conferenceId, false);
         }

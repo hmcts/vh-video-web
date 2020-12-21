@@ -7,7 +7,7 @@ using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoWeb.Mappings;
+using VideoWeb.Helpers;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 using UserRole = VideoWeb.Services.Video.UserRole;

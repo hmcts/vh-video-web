@@ -41,7 +41,6 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> StartOrResumeVideoHearingAsync(Guid conferenceId, StartHearingRequest request)
         {
-            _logger.LogDebug("StartOrResumeVideoHearing");
             var validatedRequest = await ValidateUserIsJudgeAndInConference(conferenceId);
             if (validatedRequest != null)
             {
@@ -71,7 +70,6 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> PauseVideoHearingAsync(Guid conferenceId)
         {
-            _logger.LogDebug("PauseVideoHearing");
             var validatedRequest = await ValidateUserIsJudgeAndInConference(conferenceId);
             if (validatedRequest != null)
             {
@@ -101,7 +99,6 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> EndVideoHearingAsync(Guid conferenceId)
         {
-            _logger.LogDebug("EndVideoHearing");
             var validatedRequest = await ValidateUserIsJudgeAndInConference(conferenceId);
             if (validatedRequest != null)
             {
@@ -132,7 +129,6 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> CallWitnessAsync(Guid conferenceId, Guid participantId)
         {
-            _logger.LogDebug("CallWitness");
             var validatedRequest = await ValidateWitnessInConference(conferenceId, participantId);
             if (validatedRequest != null)
             {
@@ -169,7 +165,6 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
         public async Task<IActionResult> DismissWitnessAsync(Guid conferenceId, Guid participantId)
         {
-            _logger.LogDebug("DismissWitness");
             var validatedRequest = await ValidateWitnessInConference(conferenceId, participantId);
             if (validatedRequest != null)
             {
@@ -215,7 +210,11 @@ namespace VideoWeb.Controllers
 
         private async Task<IActionResult> ValidateUserIsJudgeAndInConference(Guid conferenceId)
         {
-            if (await IsConferenceJudge(conferenceId)) return null;
+            if (await IsConferenceJudge(conferenceId))
+            {
+                return null;
+            }
+
             _logger.LogWarning("Only judges may control hearings");
             return Unauthorized("User must be a Judge");
         }
@@ -225,7 +224,11 @@ namespace VideoWeb.Controllers
             var judgeValidation = await ValidateUserIsJudgeAndInConference(conferenceId);
             if (judgeValidation != null) return judgeValidation;
 
-            if (await IsParticipantAWitness(conferenceId, participantId)) return null;
+            if (await IsParticipantAWitness(conferenceId, participantId))
+            { 
+                return null;
+            }
+
             _logger.LogWarning("Participant {Participant} is not a witness in {Conference}", participantId,
                 conferenceId);
             return Unauthorized("Participant is not a witness");
