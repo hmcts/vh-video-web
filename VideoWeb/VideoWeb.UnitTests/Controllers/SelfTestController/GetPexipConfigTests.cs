@@ -1,10 +1,11 @@
-﻿using System.Net;
+using System.Net;
+using Autofac.Extras.Moq;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Moq;
 using NUnit.Framework;
+using VideoWeb.Contract.Responses;
+using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
@@ -13,15 +14,14 @@ namespace VideoWeb.UnitTests.Controllers.SelfTestController
 {
     public class GetPexipConfigTests
     {
-        private VideoWeb.Controllers.SelfTestController _controller;
-        private Mock<IVideoApiClient> _videoApiClientMock;
-        private Mock<ILogger<VideoWeb.Controllers.SelfTestController>> _mockLogger;
+        private AutoMock _mocker;
+        private VideoWeb.Controllers.SelfTestController _sut;
 
         [SetUp]
         public void Setup()
         {
-            _videoApiClientMock = new Mock<IVideoApiClient>();
-            _mockLogger = new Mock<ILogger<VideoWeb.Controllers.SelfTestController>>();
+            _mocker = AutoMock.GetLoose();
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<PexipConfigResponse, SelfTestPexipResponse>()).Returns(_mocker.Create<PexipServiceConfigurationResponseMapper>());
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
             {
@@ -30,16 +30,14 @@ namespace VideoWeb.UnitTests.Controllers.SelfTestController
                     User = claimsPrincipal
                 }
             };
-            _controller = new VideoWeb.Controllers.SelfTestController(_videoApiClientMock.Object, _mockLogger.Object)
-            {
-                ControllerContext = context
-            };
+            _sut = _mocker.Create<VideoWeb.Controllers.SelfTestController>();
+            _sut.ControllerContext = context;
         }
 
         [Test]
         public void Should_return_ok_with_pexipnode()
         {
-            var result = _controller.GetPexipConfig();
+            var result = _sut.GetPexipConfig();
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
         }
@@ -49,11 +47,11 @@ namespace VideoWeb.UnitTests.Controllers.SelfTestController
         {
             var apiException = new VideoApiException<ProblemDetails>("User not found", (int)HttpStatusCode.NotFound,
                 "Config Not Found", null, default, null);
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetPexipServicesConfiguration())
                 .Throws(apiException);
 
-            var result = _controller.GetPexipConfig();
+            var result = _sut.GetPexipConfig();
             var typedResult = (ObjectResult)result.Result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
         }

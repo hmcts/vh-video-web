@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
+using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
@@ -18,17 +19,15 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
 {
     public class GetVideoEndpointsForConferenceTests
     {
+        private AutoMock _mocker;
         private EndpointsController _controller;
-        private Mock<IVideoApiClient> _videoApiClientMock;
-        private Mock<ILogger<EndpointsController>> _loggerMock;
         
         [SetUp]
         public void Setup()
         {
-            _videoApiClientMock = new Mock<IVideoApiClient>();
-            _loggerMock = new Mock<ILogger<EndpointsController>>();
-            
-            _controller = new EndpointsController(_videoApiClientMock.Object, _loggerMock.Object);
+            _mocker = AutoMock.GetLoose();
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<EndpointResponse, int, VideoEndpointResponse>()).Returns(_mocker.Create<EndpointsResponseMapper>());
+            _controller = _mocker.Create<EndpointsController>();
         }
         
         [Test]
@@ -38,7 +37,7 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
             var response = Builder<EndpointResponse>.CreateListOfSize(4).All().With(x => x.Id = Guid.NewGuid()).Build()
                 .ToList();
 
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetEndpointsForConferenceAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(response);
 
@@ -57,7 +56,7 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
             var apiException = new VideoApiException<ProblemDetails>("Not Found", (int)HttpStatusCode.NotFound,
                 "Please provide a valid conference Id", null, default, null);
 
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetEndpointsForConferenceAsync(It.IsAny<Guid>()))
                 .Throws(apiException);
 

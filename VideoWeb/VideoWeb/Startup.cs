@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Logging;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Extensions;
+using VideoWeb.Middleware;
 
 namespace VideoWeb
 {
@@ -32,6 +33,7 @@ namespace VideoWeb
             services.AddCustomTypes();
 
             services.RegisterAuthSchemes(Configuration);
+            services.AddMvc(opt => opt.Filters.Add(typeof(LoggingMiddleware))).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0).AddFluentValidation();
             services.AddApplicationInsightsTelemetry(Configuration["ApplicationInsights:InstrumentationKey"]);
             // In production, the Angular files will be served from this directory

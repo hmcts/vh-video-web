@@ -7,7 +7,7 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class ChatResponseMapperTests
+    public class ChatResponseMapperTests : BaseMockerSutTestSetup<ChatResponseMapper>
     {
         [Test]
         public void Should_map_all_properties()
@@ -24,7 +24,7 @@ namespace VideoWeb.UnitTests.Mappings
                 Time_stamp = DateTime.Now.AsUtc()
             };
 
-            var response = ChatResponseMapper.MapToResponseModel(message, fromDisplayName, true);
+            var response = _sut.Map(message, fromDisplayName, true);
 
             response.From.Should().Be(senderUsername);
             response.FromDisplayName.Should().Be(fromDisplayName);

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
@@ -11,6 +12,17 @@ namespace VideoWeb.UnitTests.Mappings
 {
     public class ConferenceForVhOfficerResponseMapperTests
     {
+        private ConferenceForVhOfficerResponseMapper _sut;
+        private AutoMock _mocker;
+
+        [SetUp]
+        public void Setup()
+        {
+            _mocker = AutoMock.GetLoose();
+            var parameters = new ParameterBuilder(_mocker).AddTypedParameters<ParticipantForUserResponseMapper>().Build();
+            _sut = _mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters);
+        }
+
         [Test]
         public void Should_map_all_properties()
         {
@@ -31,8 +43,7 @@ namespace VideoWeb.UnitTests.Mappings
 
             conference.Participants = participants;
 
-            var response =
-                ConferenceForVhOfficerResponseMapper.MapConferenceSummaryToResponseModel(conference);
+            var response = _sut.Map(conference);
 
             response.Id.Should().Be(conference.Id);
             response.CaseName.Should().Be(conference.Case_name);

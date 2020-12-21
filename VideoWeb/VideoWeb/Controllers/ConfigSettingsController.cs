@@ -19,13 +19,16 @@ namespace VideoWeb.Controllers
         private readonly AzureAdConfiguration _azureAdConfiguration;
         private readonly HearingServicesConfiguration _servicesConfiguration;
         private readonly ILogger<ConfigSettingsController> _logger;
+        private readonly IMapperFactory _mapperFactory;
 
-        public ConfigSettingsController(IOptions<AzureAdConfiguration> azureAdConfiguration, ILogger<ConfigSettingsController> logger,
-            IOptions<HearingServicesConfiguration> servicesConfiguration)
+        public ConfigSettingsController(IOptions<AzureAdConfiguration> azureAdConfiguration,
+            IOptions<HearingServicesConfiguration> servicesConfiguration, ILogger<ConfigSettingsController> logger,
+            IMapperFactory mapperFactory)
         {
             _azureAdConfiguration = azureAdConfiguration.Value;
-            _logger = logger;
             _servicesConfiguration = servicesConfiguration.Value;
+            _logger = logger;
+            _mapperFactory = mapperFactory;
         }
 
         /// <summary>
@@ -35,23 +38,22 @@ namespace VideoWeb.Controllers
         [HttpGet]
         [AllowAnonymous]
         [ProducesResponseType(typeof(ClientSettingsResponse), (int) HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ClientSettingsResponse), (int) HttpStatusCode.BadRequest)]
         [SwaggerOperation(OperationId = "GetClientConfigurationSettings")]
         public ActionResult<ClientSettingsResponse> GetClientConfigurationSettings()
         {
             var response = new ClientSettingsResponse();
             try
             {
-                response =
-                    ClientSettingsResponseMapper.MapAppConfigurationToResponseModel(_azureAdConfiguration,
-                        _servicesConfiguration);
-
+                var clientSettingsResponseMapper = _mapperFactory.Get<AzureAdConfiguration, HearingServicesConfiguration, ClientSettingsResponse>();
+                response = clientSettingsResponseMapper.Map(_azureAdConfiguration, _servicesConfiguration);
+                
                 _logger.LogTrace($"Client configuration settings successfully retrieved for ClientId: {response.ClientId}");
                 return Ok(response);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, $"Unable to get client configuration settings for ClientId: {response.ClientId}");
+                _logger.LogError(e.Message, $"Unable to retrieve client configuration settings for ClientId: {response.ClientId}");
                 return BadRequest(e.Message);
             }
         }

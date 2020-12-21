@@ -21,24 +21,29 @@ namespace VideoWeb.Controllers
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<EndpointsController> _logger;
+        private readonly IMapperFactory _mapperFactory;
 
-        public EndpointsController(IVideoApiClient videoApiClient, ILogger<EndpointsController> logger)
+        public EndpointsController(
+            IVideoApiClient videoApiClient,
+            ILogger<EndpointsController> logger,
+            IMapperFactory mapperFactory)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
+            _mapperFactory = mapperFactory;
         }
-        
+
         [HttpGet("{conferenceId}/participants")]
         [SwaggerOperation(OperationId = "GetVideoEndpointsForConference")]
         [ProducesResponseType(typeof(List<VideoEndpointResponse>), (int)HttpStatusCode.OK)]
         [Authorize(AppRoles.JudgeRole)]
         public async Task<IActionResult> GetVideoEndpointsForConferenceAsync(Guid conferenceId)
         {
-            _logger.LogDebug("GetVideoEndpointsForConference");
             try
             {
                 var endpoints = await _videoApiClient.GetEndpointsForConferenceAsync(conferenceId);
-                var response = endpoints.Select(EndpointsResponseMapper.Map).ToList();
+                var videoEndpointResponseMapper = _mapperFactory.Get<EndpointResponse, int, VideoEndpointResponse>();
+                var response = endpoints.Select(videoEndpointResponseMapper.Map).ToList();
 
                 _logger.LogTrace($"Endpoints successfully fetched for ConferenceId: {conferenceId}");
                 return Ok(response);
