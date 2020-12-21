@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using VideoWeb.Mappings;
 using VideoWeb.Mappings.Decorators;
 
@@ -34,6 +36,12 @@ namespace VideoWeb.UnitTests.Mappings
             // Assert
             result.Should().Be(output);
             _mocker.Mock<IMapTo<int, string>>().Verify(x => x.Map(input1), Times.Once);
+            _mocker.Mock<ILogger<IMapTo<int, string>>>().Verify(x => x.BeginScope(It.Is<Dictionary<string, object>>(d =>
+                new[]
+                {
+                    "TIn1",
+                    "TOut"
+                }.All(keys => d.ContainsKey(keys)))), Times.Once);
             _mocker.Mock<ILogger<IMapTo<int, string>>>().Verify(x => x.Log(LogLevel.Debug, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()), Times.Exactly(2));
         }
 
@@ -53,6 +61,13 @@ namespace VideoWeb.UnitTests.Mappings
             // Assert
             result.Should().Be(output);
             _mocker.Mock<IMapTo<int, double, string>>().Verify(x => x.Map(input1, input2), Times.Once);
+            _mocker.Mock<ILogger<IMapTo<int, double, string>>>().Verify(x => x.BeginScope(It.Is<Dictionary<string, object>>(d =>
+                new[]
+                {
+                    "TIn1",
+                    "TIn2",
+                    "TOut"
+                }.All(keys => d.ContainsKey(keys)))), Times.Once);
             _mocker.Mock<ILogger<IMapTo<int, double, string>>>().Verify(x => x.Log(LogLevel.Debug, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()), Times.Exactly(2));
         }
 
@@ -73,6 +88,14 @@ namespace VideoWeb.UnitTests.Mappings
             // Assert
             result.Should().Be(output);
             _mocker.Mock<IMapTo<int, double, float, string>>().Verify(x => x.Map(input1, input2, input3), Times.Once);
+            _mocker.Mock<ILogger<IMapTo<int, double, float, string>>>().Verify(x => x.BeginScope(It.Is<Dictionary<string, object>>(d =>
+               new[]
+               {
+                    "TIn1",
+                    "TIn2",
+                    "TIn3",
+                    "TOut"
+               }.All(keys => d.ContainsKey(keys)))), Times.Once);
             _mocker.Mock<ILogger<IMapTo<int, double, float, string>>>().Verify(x => x.Log(LogLevel.Debug, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()), Times.Exactly(2));
         }
 
@@ -94,6 +117,15 @@ namespace VideoWeb.UnitTests.Mappings
             // Assert
             result.Should().Be(output);
             _mocker.Mock<IMapTo<int, double, float, decimal, string>>().Verify(x => x.Map(input1, input2, input3, input4), Times.Once);
+            _mocker.Mock<ILogger<IMapTo<int, double, float, decimal, string>>>().Verify(x => x.BeginScope(It.Is<Dictionary<string, object>>(d =>
+               new[]
+               {
+                    "TIn1",
+                    "TIn2",
+                    "TIn3",
+                    "TIn4",
+                    "TOut"
+               }.All(keys => d.ContainsKey(keys)))), Times.Once);
             _mocker.Mock<ILogger<IMapTo<int, double, float, decimal, string>>>().Verify(x => x.Log(LogLevel.Debug, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()), Times.Exactly(2));
         }
 
@@ -116,6 +148,16 @@ namespace VideoWeb.UnitTests.Mappings
             // Assert
             result.Should().Be(output);
             _mocker.Mock<IMapTo<int, double, float, decimal, long, string>>().Verify(x => x.Map(input1, input2, input3, input4, input5), Times.Once);
+            _mocker.Mock<ILogger<IMapTo<int, double, float, decimal, long, string>>>().Verify(x => x.BeginScope(It.Is<Dictionary<string, object>>(d =>
+               new[]
+               {
+                    "TIn1",
+                    "TIn2",
+                    "TIn3",
+                    "TIn4",
+                    "TIn5",
+                    "TOut"
+               }.All(keys => d.ContainsKey(keys)))), Times.Once);
             _mocker.Mock<ILogger<IMapTo<int, double, float, decimal, long, string>>>().Verify(x => x.Log(LogLevel.Debug, It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()), Times.Exactly(2));
         }
     }
