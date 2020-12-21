@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Extensions;
@@ -17,11 +18,13 @@ namespace VideoWeb.Controllers
     public class MediaEventController: Controller
     {
         private readonly IVideoApiClient _videoApiClient;
+        private readonly ILogger _logger;
         private readonly IConferenceCache _conferenceCache;
 
-        public MediaEventController(IVideoApiClient videoApiClient, IConferenceCache conferenceCache)
+        public MediaEventController(IVideoApiClient videoApiClient, ILogger logger, IConferenceCache conferenceCache)
         {
             _videoApiClient = videoApiClient;
+            _logger = logger;
             _conferenceCache = conferenceCache;
         }
 
@@ -49,6 +52,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
+                _logger.LogError(e, $"Unable to add media event for conference: {conferenceId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -79,6 +83,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
+                _logger.LogError(e, $"Unable to add self-test failure event for conference: {conferenceId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
