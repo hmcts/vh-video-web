@@ -55,9 +55,6 @@ namespace VideoWeb.Controllers
             try
             {
                 var score = await _videoApiClient.GetTestCallResultForParticipantAsync(conferenceId, participantId);
-
-                _logger.LogTrace($"Test call result fetched successfully for " +
-                                 $"conference: {conferenceId} for participant: {participantId}");
                 return Ok(score);
             }
             catch (VideoApiException e)
@@ -76,12 +73,8 @@ namespace VideoWeb.Controllers
         public async Task<IActionResult> UpdateParticipantStatusAsync(Guid conferenceId,
             UpdateParticipantStatusEventRequest updateParticipantStatusEventRequest)
         {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
-            {
-                _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
-
-                return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-            });
+            var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, 
+                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
             
             var username = User.Identity.Name;
             var participantId = GetIdForParticipantByUsernameInConference(conference, username);
@@ -139,7 +132,6 @@ namespace VideoWeb.Controllers
             {
                 var score = await _videoApiClient.GetIndependentTestCallResultAsync(participantId);
                 
-                _logger.LogTrace($"Independent test call results fetched successfully for participant: {participantId}");
                 return Ok(score);
             }
             catch (VideoApiException e)
@@ -158,9 +150,6 @@ namespace VideoWeb.Controllers
             try
             {
                 var response = await _videoApiClient.GetHeartbeatDataForParticipantAsync(conferenceId, participantId);
-                
-                _logger.LogTrace($"Heartbeat data fetched successfully " +
-                                 $"for participant: {participantId} in conference: {conferenceId}");
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -179,8 +168,6 @@ namespace VideoWeb.Controllers
             try
             {
                await  _videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, participantRequest);
-               _logger.LogTrace($"Participant details updated successfully " +
-                                $"for participant: {participantId} in conference: {conferenceId}");
             }
             catch (VideoApiException ex)
             {
@@ -214,12 +201,8 @@ namespace VideoWeb.Controllers
             }
             try
             {
-                var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
-                {
-                    _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
-
-                    return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-                });
+                var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, 
+                    () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
 
                 _logger.LogTrace($"Retrieving booking participants for hearing ${conference.HearingId}");
                 var judgesInHearingsToday = await _videoApiClient.GetJudgesInHearingsTodayAsync();
@@ -255,8 +238,6 @@ namespace VideoWeb.Controllers
                 var response = await _videoApiClient.GetParticipantsByConferenceIdAsync(conferenceId);
                 var participantForUserResponsesMapper = _mapperFactory.Get<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>>();
                 var participants = participantForUserResponsesMapper.Map(response);
-                
-                _logger.LogTrace($"Participants for conference: {conferenceId} successfully retrieved");
                 return Ok(participants);
             }
             catch (VideoApiException e)

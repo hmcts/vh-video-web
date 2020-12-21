@@ -45,7 +45,6 @@ namespace VideoWeb.Controllers
                 var videoEndpointResponseMapper = _mapperFactory.Get<EndpointResponse, int, VideoEndpointResponse>();
                 var response = endpoints.Select(videoEndpointResponseMapper.Map).ToList();
 
-                _logger.LogTrace($"Endpoints successfully fetched for ConferenceId: {conferenceId}");
                 return Ok(response);
             }
             catch (VideoApiException e)

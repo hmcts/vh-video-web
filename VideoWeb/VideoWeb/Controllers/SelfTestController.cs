@@ -40,7 +40,6 @@ namespace VideoWeb.Controllers
                 var selfTestPexipResponseMapper = _mapperFactory.Get<PexipConfigResponse, SelfTestPexipResponse>();
                 var response = selfTestPexipResponseMapper.Map(config);
                 
-                _logger.LogTrace($"Pexip configuration retrieved successfully");
                 return Ok(response);
             }
             catch (VideoApiException e)

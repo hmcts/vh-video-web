@@ -91,7 +91,6 @@ namespace VideoWeb.Controllers
                 var mappedRequest = consultationRequestMapper.Map(request);
                 await _videoApiClient.HandleConsultationRequestAsync(mappedRequest);
                 
-                _logger.LogTrace($"Consultation request handled successfully for ConferenceId: {request.ConferenceId}");
                 return NoContent();
             }
             catch (VideoApiException e)
@@ -137,7 +136,6 @@ namespace VideoWeb.Controllers
                 var mappedRequest = leaveConsultationRequestMapper.Map(request);
                 await _videoApiClient.LeavePrivateConsultationAsync(mappedRequest);
 
-                _logger.LogTrace($"Participant: {participant.Username} left the private consultation successfully");
                 return NoContent();
             }
             catch (VideoApiException e)
@@ -195,7 +193,6 @@ namespace VideoWeb.Controllers
                 await _hubContext.Clients.Group(participant.Username.ToLowerInvariant()).AdminConsultationMessage
                     (conference.Id, roomType, participant.Username.ToLowerInvariant(), answer);
 
-                _logger.LogTrace($"Admin consultation request successfully responded with HearingId: {conference.HearingId}");
                 return NoContent();
             }
             catch (VideoApiException e)
@@ -239,8 +236,6 @@ namespace VideoWeb.Controllers
                     Defence_advocate_id = defenceAdvocate.Id
                 });
 
-                _logger.LogTrace($"Private consultation endpoint successfully started for " +
-                                 $"ConferenceId: {request.ConferenceId} and EndpointId: {request.EndpointId}");
             }
             catch (VideoApiException ex)
             {
@@ -253,12 +248,8 @@ namespace VideoWeb.Controllers
 
         private async Task<Conference> GetConference(Guid conferenceId)
         {
-            return await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
-            {
-                _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
-                
-                return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-            });
+            return await _conferenceCache.GetOrAddConferenceAsync(conferenceId, 
+                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
         }
 
         /// <summary>
@@ -274,7 +265,6 @@ namespace VideoWeb.Controllers
                 .ConsultationMessage(conference.Id, requestedBy.Username, requestedFor.Username,
                     null);
 
-            _logger.LogTrace($"Consultation request notified for ConferenceId: {conference.Id}");
         }
 
         /// <summary>
@@ -290,7 +280,6 @@ namespace VideoWeb.Controllers
             await _hubContext.Clients.Group(requestedBy.Username.ToLowerInvariant())
                 .ConsultationMessage(conference.Id, requestedBy.Username, requestedFor.Username, answer);
             
-            _logger.LogTrace($"Consultation response notified for ConferenceId: {conference.Id}");
         }
 
         private async Task NotifyConsultationCancelledAsync(Conference conference, Participant requestedBy,
@@ -300,7 +289,6 @@ namespace VideoWeb.Controllers
                 .ConsultationMessage(conference.Id, requestedBy.Username, requestedFor.Username,
                     ConsultationAnswer.Cancelled);
             
-            _logger.LogTrace($"Consultation cancellation notified for ConferenceId: {conference.Id}");
         }
     }
 }

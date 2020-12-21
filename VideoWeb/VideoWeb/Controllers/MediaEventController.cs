@@ -48,7 +48,6 @@ namespace VideoWeb.Controllers
                     Reason = "media permission denied"
                 });
 
-                _logger.LogTrace($"Media event successfully added to conference: {conferenceId}");
                 return NoContent();
             }
             catch (VideoApiException e)
@@ -80,7 +79,6 @@ namespace VideoWeb.Controllers
                 };
                 await _videoApiClient.RaiseVideoEventAsync(eventRequest);
 
-                _logger.LogTrace($"Self-test failure event successfully added to conference: {conferenceId}");
                 return NoContent();
             }
             catch (VideoApiException e)

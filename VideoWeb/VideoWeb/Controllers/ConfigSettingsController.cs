@@ -47,8 +47,6 @@ namespace VideoWeb.Controllers
             {
                 var clientSettingsResponseMapper = _mapperFactory.Get<AzureAdConfiguration, HearingServicesConfiguration, ClientSettingsResponse>();
                 response = clientSettingsResponseMapper.Map(_azureAdConfiguration, _servicesConfiguration);
-                
-                _logger.LogTrace($"Client configuration settings successfully retrieved for ClientId: {response.ClientId}");
                 return Ok(response);
             }
             catch (Exception e)

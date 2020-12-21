@@ -77,7 +77,6 @@ namespace VideoWeb.Controllers
                 var userProfileToUserProfileResponseMapper = _mapperFactory.Get<UserProfile, UserProfileResponse>();
                 var response = userProfileToUserProfileResponseMapper.Map(userProfile);
                 
-                _logger.LogTrace($"User successfully retrieved for username: {username}");
                 return Ok(response);
             }
             catch (UserApiException e)

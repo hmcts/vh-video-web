@@ -159,7 +159,6 @@ namespace VideoWeb.Controllers
             ConferenceDetailsResponse conference;
             try
             {
-                _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
                 conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
             }
             catch (VideoApiException e)
@@ -225,7 +224,6 @@ namespace VideoWeb.Controllers
             ConferenceDetailsResponse conference;
             try
             {
-                _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
                 conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
             }
             catch (VideoApiException e)
