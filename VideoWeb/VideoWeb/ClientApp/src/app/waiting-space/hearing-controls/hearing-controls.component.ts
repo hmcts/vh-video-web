@@ -35,8 +35,6 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
 
     constructor(private videoCallService: VideoCallService, private eventService: EventsService, private logger: Logger) {
         this.handRaised = false;
-        this.audioMuted = this.videoCallService.pexipAPI.call.mutedAudio;
-        this.videoMuted = this.videoCallService.pexipAPI.call.mutedVideo;
         this.remoteMuted = false;
         this.selfViewOpen = false;
         this.displayConfirmPopup = false;
@@ -51,6 +49,8 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.audioMuted = this.videoCallService.pexipAPI.call.mutedAudio;
+        this.videoMuted = this.videoCallService.pexipAPI.call.mutedVideo || this.videoCallService.isAudioOnlyCall;
         this.logger.info(`${this.loggerPrefix} initialising hearing controls`, this.logPayload);
         this.setupVideoCallSubscribers();
         this.setupEventhubSubscribers();
