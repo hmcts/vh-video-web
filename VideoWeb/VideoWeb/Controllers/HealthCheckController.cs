@@ -97,7 +97,6 @@ namespace VideoWeb.Controllers
                 return StatusCode((int) HttpStatusCode.InternalServerError, response);
             }
            
-            _logger.LogTrace("Healthcheck successful.");
             return Ok(response);
         }
 
