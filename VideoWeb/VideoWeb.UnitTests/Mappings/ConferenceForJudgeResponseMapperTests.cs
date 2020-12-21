@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
@@ -10,11 +11,15 @@ using Participant = VideoWeb.Services.Video.ParticipantForJudgeResponse;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class ConferenceForJudgeResponseMapperTests : BaseMockerSutTestSetup<ConferenceForJudgeResponseMapper>
+    public class ConferenceForJudgeResponseMapperTests
     {
+        protected AutoMock _mocker;
+        protected ConferenceForJudgeResponseMapper _sut;
+
         [SetUp]
         public void Setup()
         {
+            _mocker = AutoMock.GetLoose();
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, VideoWeb.Contract.Responses.ParticipantForJudgeResponse>()).Returns(_mocker.Create<ParticipantForJudgeResponseMapper>());
             _sut = _mocker.Create<ConferenceForJudgeResponseMapper>();
         }

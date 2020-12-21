@@ -105,7 +105,7 @@ namespace VideoWeb.UnitTests.Mappings
             var input2 = 1.1d;
             var input3 = 1.2f;
             var input4 = 1.3m;
-            var input5 = 2l;
+            var input5 = 2L;
             var output = "5.6";
             _mocker.Mock<IMapTo<int, double, float, decimal, long, string>>().Setup(x => x.Map(input1, input2, input3, input4, input5)).Returns(output);
             var sut = _mocker.Create<MapperLoggingDecorator<int, double, float, decimal, long, string>>();
