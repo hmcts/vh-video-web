@@ -1,6 +1,5 @@
-﻿using System.Net;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
@@ -14,11 +13,14 @@ namespace VideoWeb.Controllers
     public class SelfTestController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
-        private readonly ILogger<SelfTestController> _logger;
-        public SelfTestController(IVideoApiClient videoApiClient, ILogger<SelfTestController> logger)
+        private readonly IMapperFactory _mapperFactory;
+
+        public SelfTestController(
+            IVideoApiClient videoApiClient,
+            IMapperFactory mapperFactory)
         {
             _videoApiClient = videoApiClient;
-            _logger = logger;
+            _mapperFactory = mapperFactory;
         }
 
         /// <summary>
@@ -33,9 +35,9 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                _logger.LogDebug("GetPexipNodeForIndependentSelfTest");
                 var config = _videoApiClient.GetPexipServicesConfiguration();
-                var response = PexipServiceConfigurationResponseMapper.MapConfigToResponseModel(config);
+                var selfTestPexipResponseMapper = _mapperFactory.Get<PexipConfigResponse, SelfTestPexipResponse>();
+                var response = selfTestPexipResponseMapper.Map(config);
                 return Ok(response);
             }
             catch (VideoApiException e)

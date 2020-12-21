@@ -1,14 +1,21 @@
 using System;
+using System.Collections.Generic;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings
 {
-    public static class ConferenceForVhOfficerResponseMapper
+    public class ConferenceForVhOfficerResponseMapper : IMapTo<ConferenceForAdminResponse, ConferenceForVhOfficerResponse>
     {
-        public static ConferenceForVhOfficerResponse MapConferenceSummaryToResponseModel(
-            ConferenceForAdminResponse conference)
+        private readonly IMapTo<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>> _participantForUserResponseMapper;
+
+        public ConferenceForVhOfficerResponseMapper(IMapTo<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>> participantForUserResponseMapper)
+        {
+            _participantForUserResponseMapper = participantForUserResponseMapper;
+        }
+
+        public ConferenceForVhOfficerResponse Map(ConferenceForAdminResponse conference)
         {
             var response = new ConferenceForVhOfficerResponse
             {
@@ -20,7 +27,7 @@ namespace VideoWeb.Mappings
                 ScheduledDuration = conference.Scheduled_duration,
                 Status = Enum.Parse<ConferenceStatus>(conference.Status.ToString()),
                 HearingVenueName = conference.Hearing_venue_name,
-                Participants = ParticipantForUserResponseMapper.MapParticipants(conference.Participants),
+                Participants = _participantForUserResponseMapper.Map(conference.Participants),
                 StartedDateTime = conference.Started_date_time,
                 ClosedDateTime = conference.Closed_date_time,
                 TelephoneConferenceId = conference.Telephone_conference_id,

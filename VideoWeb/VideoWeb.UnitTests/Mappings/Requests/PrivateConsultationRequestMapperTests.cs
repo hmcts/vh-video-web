@@ -8,7 +8,7 @@ using VideoWeb.Mappings.Requests;
 
 namespace VideoWeb.UnitTests.Mappings.Requests
 {
-    public class PrivateConsultationRequestMapperTests
+    public class PrivateConsultationRequestMapperTests : BaseMockerSutTestSetup<PrivateConsultationRequestMapper>
     {
         [TestCase(null, null)]
         [TestCase(ConsultationAnswer.Accepted, Services.Video.ConsultationAnswer.Accepted)]
@@ -24,7 +24,7 @@ namespace VideoWeb.UnitTests.Mappings.Requests
                 .With(x => x.Answer = answer)
                 .Build();
 
-            var result = PrivateConsultationRequestMapper.MapToApiConsultationRequest(request);
+            var result = _sut.Map(request);
 
             result.Answer.Should().Be(expectedAnswer);
             result.Conference_id.Should().Be(request.ConferenceId);

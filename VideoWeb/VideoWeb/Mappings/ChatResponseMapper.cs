@@ -3,9 +3,9 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings
 {
-    public static class ChatResponseMapper
+    public class ChatResponseMapper : IMapTo<InstantMessageResponse, string, bool, ChatResponse>
     {
-        public static ChatResponse MapToResponseModel(InstantMessageResponse message, string fromDisplayName, bool isUser)
+        public ChatResponse Map(InstantMessageResponse message, string fromDisplayName, bool isUser)
         {
             var response = new ChatResponse
             {

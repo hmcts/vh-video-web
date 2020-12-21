@@ -11,6 +11,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Helpers;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 
@@ -26,14 +27,20 @@ namespace VideoWeb.Controllers
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<InstantMessagesController> _logger;
         private readonly IMessageDecoder _messageDecoder;
+        private readonly IMapperFactory _mapperFactory;
 
-        public InstantMessagesController(IVideoApiClient videoApiClient, ILogger<InstantMessagesController> logger,
-            IMessageDecoder messageDecoder, IConferenceCache conferenceCache)
+        public InstantMessagesController(
+            IVideoApiClient videoApiClient,
+            ILogger<InstantMessagesController> logger,
+            IMessageDecoder messageDecoder,
+            IConferenceCache conferenceCache,
+            IMapperFactory mapperFactory)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _messageDecoder = messageDecoder;
             _conferenceCache = conferenceCache;
+            _mapperFactory = mapperFactory;
         }
 
         /// <summary>
@@ -95,7 +102,8 @@ namespace VideoWeb.Controllers
                     () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
                 );
 
-                var response = UnreadInstantMessageConferenceResponseMapper.MapToResponseModel(conference, messages);
+                var unreadInstantMessageConferenceCountResponseMapper = _mapperFactory.Get<Conference, IList<InstantMessageResponse>, UnreadInstantMessageConferenceCountResponse>();
+                var response = unreadInstantMessageConferenceCountResponseMapper.Map(conference, messages);
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -132,7 +140,8 @@ namespace VideoWeb.Controllers
                     () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
                 );
 
-                var response = UnreadAdminMessageResponseMapper.MapToResponseModel(conference, messages);
+                var unreadAdminMessageResponseMapper = _mapperFactory.Get<Conference, IList<InstantMessageResponse>, UnreadAdminMessageResponse>();
+                var response = unreadAdminMessageResponseMapper.Map(conference, messages);
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -171,7 +180,9 @@ namespace VideoWeb.Controllers
                 {
                     fromDisplayName = await _messageDecoder.GetMessageOriginatorAsync(conference, message);
                 }
-                var mapped = ChatResponseMapper.MapToResponseModel(message, fromDisplayName, isUser);
+
+                var chatResponseMapper = _mapperFactory.Get<InstantMessageResponse, string, bool, ChatResponse>();
+                var mapped = chatResponseMapper.Map(message, fromDisplayName, isUser);
                 response.Add(mapped);
             }
 

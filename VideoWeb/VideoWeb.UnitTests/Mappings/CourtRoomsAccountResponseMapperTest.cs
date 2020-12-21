@@ -6,14 +6,14 @@ using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class CourtRoomsAccountResponseMapperTest
+    public class CourtRoomsAccountResponseMapperTest : BaseMockerSutTestSetup<CourtRoomsAccountResponseMapper>
     {
         [Test]
         public void Should_map_user_response_to_court_rooms_account()
         {
             var accounts = UserResponseBuilder.BuildData();
             var userNames = new List<string> { "Manual01", "Manual03" };
-            var result = CourtRoomsAccountResponseMapper.MapUserToCourtRoomsAccount(accounts, userNames);
+            var result = _sut.Map(accounts, userNames);
 
             result.Should().NotBeNull();
             result.Count.Should().Be(2);

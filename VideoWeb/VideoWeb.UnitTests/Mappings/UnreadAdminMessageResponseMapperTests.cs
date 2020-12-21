@@ -11,7 +11,7 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class UnreadAdminMessageResponseMapperTests
+    public class UnreadAdminMessageResponseMapperTests : BaseMockerSutTestSetup<UnreadAdminMessageResponseMapper>
     {
         [Test]
         public void Should_map_and_count_number_of_messages_since_vho_message()
@@ -47,8 +47,7 @@ namespace VideoWeb.UnitTests.Mappings
                     {From = judge.Username, Message_text = "judge - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-7)},
             };
 
-            var response =
-                UnreadAdminMessageResponseMapper.MapToResponseModel(conference, messages);
+            var response = _sut.Map(conference, messages);
 
             response.NumberOfUnreadMessages.Should().Be(2);
         }
@@ -81,8 +80,7 @@ namespace VideoWeb.UnitTests.Mappings
                     {From = judge.Username, Message_text = "judge - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-7)},
             };
 
-            var response =
-                UnreadAdminMessageResponseMapper.MapToResponseModel(conference, messages);
+            var response = _sut.Map(conference, messages);
 
             response.NumberOfUnreadMessages.Should().Be(messages.Count);
         }
@@ -101,10 +99,8 @@ namespace VideoWeb.UnitTests.Mappings
 
             var messages = new List<InstantMessageResponse>();
 
-            var response1 =
-                UnreadAdminMessageResponseMapper.MapToResponseModel(conference, messages);
-            var response2 =
-                UnreadAdminMessageResponseMapper.MapToResponseModel(conference, null);
+            var response1 = _sut.Map(conference, messages);
+            var response2 = _sut.Map(conference, null);
 
             response1.NumberOfUnreadMessages.Should().Be(0);
             response2.NumberOfUnreadMessages.Should().Be(0);

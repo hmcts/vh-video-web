@@ -10,7 +10,7 @@ using ApiConsultationRequestAnswer =  VideoWeb.Services.Video.ConsultationAnswer
 
 namespace VideoWeb.UnitTests.Mappings.Requests
 {
-    public class PrivateAdminConsultationRequestMapperTests
+    public class PrivateAdminConsultationRequestMapperTests : BaseMockerSutTestSetup<PrivateAdminConsultationRequestMapper>
     {
         [TestCase(ConsultationAnswer.Accepted, ApiConsultationRequestAnswer.Accepted)]
         [TestCase(ConsultationAnswer.Cancelled, ApiConsultationRequestAnswer.Cancelled)]
@@ -25,7 +25,7 @@ namespace VideoWeb.UnitTests.Mappings.Requests
                 .With(x => x.Answer = answer)
                 .Build();
             
-            var result = PrivateAdminConsultationRequestMapper.MapToAdminConsultationRequest(request);
+            var result = _sut.Map(request);
 
             result.Conference_id.Should().Be(request.ConferenceId);
             result.Participant_id.Should().Be(request.ParticipantId);

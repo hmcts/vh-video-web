@@ -7,9 +7,9 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings
 {
-    public static class UnreadAdminMessageResponseMapper
+    public class UnreadAdminMessageResponseMapper : IMapTo<Conference, IList<InstantMessageResponse>, UnreadAdminMessageResponse>
     {
-        public static UnreadAdminMessageResponse MapToResponseModel(Conference conference, IList<InstantMessageResponse> messageResponses)
+        public UnreadAdminMessageResponse Map(Conference conference, IList<InstantMessageResponse> messageResponses)
         {
             var response = new UnreadAdminMessageResponse
             {
@@ -19,7 +19,7 @@ namespace VideoWeb.Mappings
             return response;
         }
 
-        private static int MapMessages(Conference conference, IList<InstantMessageResponse> messageResponses)
+        private int MapMessages(Conference conference, IList<InstantMessageResponse> messageResponses)
         {
             if (messageResponses == null || !messageResponses.Any())
             {
@@ -31,7 +31,7 @@ namespace VideoWeb.Mappings
             return vhoMessage == null ? messageResponses.Count() : messageResponses.IndexOf(vhoMessage);
         }
 
-        private static bool IsNonParticipantMessage(Conference conference, InstantMessageResponse message)
+        private bool IsNonParticipantMessage(Conference conference, InstantMessageResponse message)
         {
             return !conference.Participants.Any(p => p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase));
         }
