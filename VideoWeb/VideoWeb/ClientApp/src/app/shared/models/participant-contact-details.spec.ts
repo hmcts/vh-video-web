@@ -24,6 +24,6 @@ describe('ParticipantContactDetails', () => {
         expect(participant.ref_id).toBe(p.refId);
         expect(participant.judge_in_another_hearing).toBe(p.judgeInAnotherHearing);
         expect(p.isJudge).toBe(false);
-        expect(p.nameWithCaseType).toBe(p.name + ' (' + p.caseGroup + ')');
+        expect(p.nameWithCaseRole).toBe(p.name + ' (' + p.caseGroup + ')');
     });
 });
