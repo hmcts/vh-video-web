@@ -32,7 +32,7 @@ describe('ParticipantContactDetails', () => {
             'MyVenue'
         );
         const participant = participants[0];
-        participant.case_type_group = 'None'
+        participant.case_type_group = 'None';
         const p = new ParticipantContactDetails(participant);        
         expect(p.showCaseRole).toBe(false);
     });
