@@ -16,7 +16,6 @@ namespace VideoWeb.Common.Helpers
             var result = new Dictionary<string, object>();
             if (debth > 3)
             {
-                // Protection from recusrive properties
                 return result;
             }
 
@@ -40,7 +39,7 @@ namespace VideoWeb.Common.Helpers
                 }
                 else if (property.PropertyType != typeof(string) && property.PropertyType.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
                 {
-                    // Could handle IEnmerables here
+                    result.Add(GetPath(path, property.Name), $"IEnumerable: {property.PropertyType.Name}");
                 }
                 else
                 {
