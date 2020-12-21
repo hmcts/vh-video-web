@@ -46,7 +46,6 @@ namespace VideoWeb.Controllers
                 var courtRoomsAccountResponsesMapper = _mapperFactory.Get<IEnumerable<UserResponse>, IEnumerable<string>, List<CourtRoomsAccountResponse>>();
                 var accountList = courtRoomsAccountResponsesMapper.Map(response, query.UserNames);
 
-                _logger.LogTrace($"Court room accounts retrieved successfully");
                 return Ok(accountList);
             }
             catch (UserApiException e)

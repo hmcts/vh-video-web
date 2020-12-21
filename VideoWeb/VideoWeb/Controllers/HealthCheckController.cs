@@ -57,7 +57,7 @@ namespace VideoWeb.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unable to retrieve judgesß");
+                _logger.LogError(ex, "Unable to retrieve judges");
                 if (!(ex is UserApiException))
                 {
                     response.UserApiHealth.Successful = false;
