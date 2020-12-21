@@ -35,6 +35,7 @@ namespace VideoWeb.UnitTests.Mappings
             resultParticipant.LastName.Should().Be(participant.Last_name);
             resultParticipant.ContactEmail.Should().Be(participant.Contact_email);
             resultParticipant.ContactTelephone.Should().Be(participant.Contact_telephone);
+            resultParticipant.Representee.Should().Be(participant.Representee);
 
             var judge = response.Participants.First(x => x.HearingRole == "Judge");
             judge.IsJudge().Should().BeTrue();
