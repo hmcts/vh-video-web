@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using VideoWeb.Common.Models;
 
 namespace VideoWeb.Contract.Responses
@@ -84,5 +84,10 @@ namespace VideoWeb.Contract.Responses
         /// The Judge is In Another Hearing
         /// </summary>
         public bool JudgeInAnotherHearing { get; set; }
+
+        /// <summary>
+        /// The participant represented by the representative
+        /// </summary>
+        public string Representee { get; set; }
     }
 }
