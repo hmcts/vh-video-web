@@ -10,7 +10,7 @@
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
-    <ProjectGuid>4146DC41-60D5-464F-B140-B627E99079A3</ProjectGuid>
+    <ProjectGuid>{E901FAB5-4429-4A0B-BEF0-058610D0EDB6}</ProjectGuid>
   </PropertyGroup>
 
   <ItemGroup>

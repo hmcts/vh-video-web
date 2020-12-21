@@ -8,7 +8,7 @@
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
-    <ProjectGuid>C788CD56-0521-49EC-88BD-504CC44D9195</ProjectGuid>
+    <ProjectGuid>{0D96D662-B3D8-48FE-A57F-674CA986A733}</ProjectGuid>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <ProjectGuid>177BB618-D66D-4B12-B9CA-ACEA150A5505</ProjectGuid>
+    <ProjectGuid>{8DB35AEF-80FC-4A54-B253-D5A2236A0AF6}</ProjectGuid>
     <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
   </PropertyGroup>
 
