@@ -30,9 +30,8 @@ namespace VideoWeb.Controllers
         public async Task<IActionResult> GetAudioStreamInfoAsync(Guid hearingId)
         {
             try
-            {
-              var response = await _videoApiClient.GetAudioStreamInfoAsync(hearingId);
-
+            { 
+                var response = await _videoApiClient.GetAudioStreamInfoAsync(hearingId);
                 return Ok(response.Is_recording);
             }
             catch (VideoApiException e)
@@ -51,7 +50,6 @@ namespace VideoWeb.Controllers
             try
             {
                 await _videoApiClient.DeleteAudioApplicationAsync(hearingId);
-
                 return Ok();
             }
             catch (VideoApiException e)

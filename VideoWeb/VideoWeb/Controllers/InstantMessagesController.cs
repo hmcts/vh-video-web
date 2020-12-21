@@ -67,6 +67,7 @@ namespace VideoWeb.Controllers
 
                 var response = await MapMessages(messages, conferenceId);
                 response = response.OrderBy(r => r.Timestamp).ToList();
+                
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -104,6 +105,7 @@ namespace VideoWeb.Controllers
 
                 var unreadInstantMessageConferenceCountResponseMapper = _mapperFactory.Get<Conference, IList<InstantMessageResponse>, UnreadInstantMessageConferenceCountResponse>();
                 var response = unreadInstantMessageConferenceCountResponseMapper.Map(conference, messages);
+               
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -142,6 +144,7 @@ namespace VideoWeb.Controllers
 
                 var unreadAdminMessageResponseMapper = _mapperFactory.Get<Conference, IList<InstantMessageResponse>, UnreadAdminMessageResponse>();
                 var response = unreadAdminMessageResponseMapper.Map(conference, messages);
+                
                 return Ok(response);
             }
             catch (VideoApiException e)

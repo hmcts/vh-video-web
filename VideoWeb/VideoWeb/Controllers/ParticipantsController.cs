@@ -59,6 +59,8 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
+                _logger.LogError(e, $"Unable to get test call result for " +
+                                    $"participant: {participantId} in conference: {conferenceId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -71,12 +73,9 @@ namespace VideoWeb.Controllers
         public async Task<IActionResult> UpdateParticipantStatusAsync(Guid conferenceId,
             UpdateParticipantStatusEventRequest updateParticipantStatusEventRequest)
         {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
-            {
-                _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
-
-                return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-            });
+            var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, 
+                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
+            
             var username = User.Identity.Name;
             var participantId = GetIdForParticipantByUsernameInConference(conference, username);
             var eventTypeMapper = _mapperFactory.Get<EventType, string>();
@@ -97,9 +96,10 @@ namespace VideoWeb.Controllers
             {
                 await handler.HandleAsync(callbackEvent);
             }
-            catch (ConferenceNotFoundException)
+            catch (ConferenceNotFoundException e)
             {
-                return BadRequest();
+                _logger.LogError(e, $"Unable to retrieve conference details");
+                return BadRequest(e);
             }
 
             try
@@ -110,6 +110,8 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
+                _logger.LogError(e, $"Unable to update participant status for " +
+                                    $"participant: {participantId} in conference: {conferenceId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -129,10 +131,12 @@ namespace VideoWeb.Controllers
             try
             {
                 var score = await _videoApiClient.GetIndependentTestCallResultAsync(participantId);
+                
                 return Ok(score);
             }
             catch (VideoApiException e)
             {
+                _logger.LogError(e, $"Unable to get independent test call result for participant: {participantId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -146,11 +150,11 @@ namespace VideoWeb.Controllers
             try
             {
                 var response = await _videoApiClient.GetHeartbeatDataForParticipantAsync(conferenceId, participantId);
-
                 return Ok(response);
             }
             catch (VideoApiException e)
             {
+                _logger.LogError(e, $"Unable to get heartbeat data for participant: {participantId} in conference: {conferenceId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -167,6 +171,8 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException ex)
             {
+                _logger.LogError(ex, $"Unable to update participant details " +
+                                     $"for participant: {participantId} in conference: {conferenceId}");
                 return StatusCode(ex.StatusCode, ex.Response);
             }
 
@@ -195,12 +201,8 @@ namespace VideoWeb.Controllers
             }
             try
             {
-                var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
-                {
-                    _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
-
-                    return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-                });
+                var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, 
+                    () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
 
                 _logger.LogTrace($"Retrieving booking participants for hearing ${conference.HearingId}");
                 var judgesInHearingsToday = await _videoApiClient.GetJudgesInHearingsTodayAsync();
@@ -240,6 +242,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
+                _logger.LogError(e, $"Unable to retrieve participants for conference: {conferenceId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }

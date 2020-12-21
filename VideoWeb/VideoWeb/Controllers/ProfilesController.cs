@@ -76,11 +76,12 @@ namespace VideoWeb.Controllers
                 );
                 var userProfileToUserProfileResponseMapper = _mapperFactory.Get<UserProfile, UserProfileResponse>();
                 var response = userProfileToUserProfileResponseMapper.Map(userProfile);
+                
                 return Ok(response);
             }
             catch (UserApiException e)
             {
-                _logger.LogError(e, "Unable to get user profile");
+                _logger.LogError(e, $"Unable to get user profile for username: {username}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
