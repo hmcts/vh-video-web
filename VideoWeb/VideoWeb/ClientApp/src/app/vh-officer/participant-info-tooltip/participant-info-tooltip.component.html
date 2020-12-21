@@ -1,6 +1,6 @@
 <div class="govuk-grid-row">
   <div id="tooltip-name-case-group-{{ participant.id }}" class="govuk-grid-column-full">
-    <p class="govuk-!-margin-bottom-1">{{ participant.name }} ({{ participant.caseGroup }})</p>
+    <p class="govuk-!-margin-bottom-1">{{ participant.nameWithCaseType }}</p>
   </div>
   <div class="govuk-grid-column-full" *ngIf="participant.isJudge">
     <p class="govuk-!-margin-bottom-1">{{ participant.hearingVenueName }}</p>

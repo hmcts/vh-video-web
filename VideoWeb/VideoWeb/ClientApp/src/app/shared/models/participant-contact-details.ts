@@ -87,4 +87,9 @@ export class ParticipantContactDetails {
     set judgeInAnotherHearing(value: boolean) {
         this.isJudgeInAnotherHearing = value;
     }
+
+    get nameWithCaseType(): string {
+        const caseRole = this.participant.case_type_group.toLowerCase() === 'none' ? '' : ' (' + this.participant.case_type_group + ')';
+        return this.participant.name + caseRole;
+    }
 }
