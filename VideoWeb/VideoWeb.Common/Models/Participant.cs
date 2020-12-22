@@ -17,6 +17,7 @@ namespace VideoWeb.Common.Models
         public string DisplayName { get; set; }
         public string CaseTypeGroup { get; set; }
         public Guid RefId { get; set; }
+        public string Representee { get; set; }
 
         public bool IsJudge()
         {

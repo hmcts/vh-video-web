@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
@@ -21,6 +22,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
         private VideoWeb.Controllers.MediaEventController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
         private Mock<IConferenceCache> _conferenceCacheMock;
+        private Mock<ILogger<VideoWeb.Controllers.MediaEventController>> _logger;
         private Conference _testConference;
         private Participant _testParticipant;
         
@@ -29,6 +31,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
         {
             _conferenceCacheMock = new Mock<IConferenceCache>();
             _videoApiClientMock = new Mock<IVideoApiClient>();
+            _logger = new Mock<ILogger<VideoWeb.Controllers.MediaEventController>>();
             
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             
@@ -50,7 +53,7 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
             };
 
             _controller =
-                new VideoWeb.Controllers.MediaEventController(_videoApiClientMock.Object, _conferenceCacheMock.Object)
+                new VideoWeb.Controllers.MediaEventController(_videoApiClientMock.Object, _logger.Object, _conferenceCacheMock.Object)
                 {
                     ControllerContext = context
                 };

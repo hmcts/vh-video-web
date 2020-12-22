@@ -6,7 +6,7 @@ using VideoWeb.Mappings;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class ClientSettingsResponseMapperTests
+    public class ClientSettingsResponseMapperTests : BaseMockerSutTestSetup<ClientSettingsResponseMapper>
     {
         [Test]
         public void Should_map_all_properties()
@@ -17,7 +17,7 @@ namespace VideoWeb.UnitTests.Mappings
             
             var servicesConfiguration = Builder<HearingServicesConfiguration>.CreateNew().Build();
 
-            var response = ClientSettingsResponseMapper.MapAppConfigurationToResponseModel(azureAdConfiguration, servicesConfiguration);
+            var response = _sut.Map(azureAdConfiguration, servicesConfiguration);
 
             response.TenantId.Should().Be(azureAdConfiguration.TenantId);
             response.ClientId.Should().Be(azureAdConfiguration.ClientId);

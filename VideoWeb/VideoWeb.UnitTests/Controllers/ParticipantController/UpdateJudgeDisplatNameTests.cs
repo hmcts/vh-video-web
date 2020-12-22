@@ -6,8 +6,6 @@ using NUnit.Framework;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
@@ -16,33 +14,28 @@ using VideoWeb.UnitTests.Builders;
 using EventHubEventType = VideoWeb.EventHub.Enums.EventType;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 using UpdateParticipantRequest = VideoWeb.Services.Video.UpdateParticipantRequest;
+using Autofac.Extras.Moq;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {
     public class UpdateJudgeDisplatNameTests
     {
-        private ParticipantsController _controller;
-        private Mock<IVideoApiClient> _videoApiClientMock;
-        private Mock<IEventHandlerFactory> _eventHandlerFactoryMock;
-        private Mock<IEventHandler> _eventHandlerMock;
-        private readonly EventComponentHelper _eventComponentHelper = new EventComponentHelper();
+        private AutoMock _mocker;
+        private ParticipantsController _sut;
         private Conference _testConference;
-        private Mock<IConferenceCache> _conferenceCacheMock;
-        private Mock<ILogger<ParticipantsController>> _mockLogger;
 
         [SetUp]
         public void Setup()
         {
-            _conferenceCacheMock = new Mock<IConferenceCache>();
-            _videoApiClientMock = new Mock<IVideoApiClient>();
-            _eventHandlerFactoryMock = new Mock<IEventHandlerFactory>();
-            _eventHandlerMock = new Mock<IEventHandler>();
-            _mockLogger = new Mock<ILogger<ParticipantsController>>();
+            _mocker = AutoMock.GetLoose();
 
-            _eventHandlerFactoryMock.Setup(x => x.Get(It.IsAny<EventHubEventType>())).Returns(_eventHandlerMock.Object);
+            var eventHandlerMock = _mocker.Mock<IEventHandler>();
+            _mocker.Mock<IEventHandlerFactory>().Setup(x => x.Get(It.IsAny<EventHubEventType>())).Returns(eventHandlerMock.Object);
 
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
-            _testConference = _eventComponentHelper.BuildConferenceForTest();
+
+            var eventComponentHelper = new EventComponentHelper();
+            _testConference = eventComponentHelper.BuildConferenceForTest();
             _testConference.Participants[0].Username = ClaimsPrincipalBuilder.Username;
 
             var context = new ControllerContext
@@ -53,11 +46,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 }
             };
 
-            _controller = new ParticipantsController(_videoApiClientMock.Object, _eventHandlerFactoryMock.Object, 
-                _conferenceCacheMock.Object, _mockLogger.Object)
-            {
-                ControllerContext = context
-            };
+            _sut = _mocker.Create<ParticipantsController>();
+            _sut.ControllerContext = context;
         }
 
         [Test]
@@ -72,11 +62,11 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 Display_name ="Sir Steve",
                 Representee=""
             };
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.UpdateParticipantDetailsAsync(It.IsAny<Guid>(),It.IsAny<Guid>(), request ))
                 .Returns(Task.FromResult(default(object)));
 
-            var result = await _controller.UpdateParticipantDisplayNameAsync(conferenceId, participantId, request);
+            var result = await _sut.UpdateParticipantDisplayNameAsync(conferenceId, participantId, request);
             var typedResult = (NoContentResult)result;
             typedResult.Should().NotBeNull();
         }
@@ -94,11 +84,11 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             };
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id and participant Id", null, default, null);
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.UpdateParticipantDetailsAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), request))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.UpdateParticipantDisplayNameAsync(conferenceId, Guid.NewGuid(), request);
+            var result = await _sut.UpdateParticipantDisplayNameAsync(conferenceId, Guid.NewGuid(), request);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }

@@ -3,13 +3,12 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Services.Video;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
-using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
 
 namespace VideoWeb.Mappings
 {
-    public static class ParticipantResponseForVhoMapper
+    public class ParticipantResponseForVhoMapper : IMapTo<ParticipantDetailsResponse, ParticipantResponseVho>
     {
-        public static ParticipantResponseVho MapParticipantToResponseModel(ParticipantDetailsResponse participant)
+        public ParticipantResponseVho Map(ParticipantDetailsResponse participant)
         {
             var status = Enum.Parse<ParticipantStatus>(participant.Current_status.ToString());
             var role = Enum.Parse<Role>(participant.User_role.ToString());

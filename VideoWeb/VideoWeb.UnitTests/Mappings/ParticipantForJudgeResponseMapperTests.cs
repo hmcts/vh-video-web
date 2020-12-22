@@ -6,14 +6,14 @@ using Participant = VideoWeb.Services.Video.ParticipantForJudgeResponse;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class ParticipantForJudgeResponseMapperTests
+    public class ParticipantForJudgeResponseMapperTests : BaseMockerSutTestSetup<ParticipantForJudgeResponseMapper>
     {
         [Test]
         public void Should_map_all_participants()
         {
             var participant = Builder<Participant>.CreateNew().Build();
 
-            var response = ParticipantForJudgeResponseMapper.MapParticipantSummaryToModel(participant);
+            var response = _sut.Map(participant);
 
             response.DisplayName.Should().BeEquivalentTo(participant.Display_name);
             response.Role.Should().BeEquivalentTo(participant.Role);

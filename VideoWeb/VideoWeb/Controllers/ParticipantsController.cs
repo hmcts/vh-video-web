@@ -13,6 +13,7 @@ using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
@@ -29,14 +30,20 @@ namespace VideoWeb.Controllers
         private readonly IEventHandlerFactory _eventHandlerFactory;
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<ParticipantsController> _logger;
+        private readonly IMapperFactory _mapperFactory;
 
-        public ParticipantsController(IVideoApiClient videoApiClient, IEventHandlerFactory eventHandlerFactory,
-            IConferenceCache conferenceCache, ILogger<ParticipantsController> logger)
+        public ParticipantsController(
+            IVideoApiClient videoApiClient,
+            IEventHandlerFactory eventHandlerFactory,
+            IConferenceCache conferenceCache,
+            ILogger<ParticipantsController> logger,
+            IMapperFactory mapperFactory)
         {
             _videoApiClient = videoApiClient;
             _eventHandlerFactory = eventHandlerFactory;
             _conferenceCache = conferenceCache;
             _logger = logger;
+            _mapperFactory = mapperFactory;
         }
 
         [HttpGet("{conferenceId}/participants/{participantId}/selftestresult")]
@@ -52,6 +59,8 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
+                _logger.LogError(e, $"Unable to get test call result for " +
+                                    $"participant: {participantId} in conference: {conferenceId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -64,14 +73,12 @@ namespace VideoWeb.Controllers
         public async Task<IActionResult> UpdateParticipantStatusAsync(Guid conferenceId,
             UpdateParticipantStatusEventRequest updateParticipantStatusEventRequest)
         {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
-            {
-                _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
-
-                return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-            });
+            var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, 
+                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
+            
             var username = User.Identity.Name;
             var participantId = GetIdForParticipantByUsernameInConference(conference, username);
+            var eventTypeMapper = _mapperFactory.Get<EventType, string>();
             var conferenceEventRequest = new ConferenceEventRequest
             {
                 Conference_id = conferenceId.ToString(),
@@ -79,19 +86,20 @@ namespace VideoWeb.Controllers
                 Event_id = Guid.NewGuid().ToString(),
                 Event_type = updateParticipantStatusEventRequest.EventType,
                 Time_stamp_utc = DateTime.UtcNow,
-                Reason = EventTypeReasonMapper.Map(updateParticipantStatusEventRequest.EventType)
+                Reason = eventTypeMapper.Map(updateParticipantStatusEventRequest.EventType)
             };
 
-            var callbackEvent =
-                CallbackEventMapper.MapConferenceEventToCallbackEventModel(conferenceEventRequest, conference);
+            var callbackEventMapper = _mapperFactory.Get<ConferenceEventRequest, Conference, CallbackEvent>();
+            var callbackEvent = callbackEventMapper.Map(conferenceEventRequest, conference);
             var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
             try
             {
                 await handler.HandleAsync(callbackEvent);
             }
-            catch (ConferenceNotFoundException)
+            catch (ConferenceNotFoundException e)
             {
-                return BadRequest();
+                _logger.LogError(e, $"Unable to retrieve conference details");
+                return BadRequest(e);
             }
 
             try
@@ -102,6 +110,8 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
+                _logger.LogError(e, $"Unable to update participant status for " +
+                                    $"participant: {participantId} in conference: {conferenceId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -121,10 +131,12 @@ namespace VideoWeb.Controllers
             try
             {
                 var score = await _videoApiClient.GetIndependentTestCallResultAsync(participantId);
+                
                 return Ok(score);
             }
             catch (VideoApiException e)
             {
+                _logger.LogError(e, $"Unable to get independent test call result for participant: {participantId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -138,11 +150,11 @@ namespace VideoWeb.Controllers
             try
             {
                 var response = await _videoApiClient.GetHeartbeatDataForParticipantAsync(conferenceId, participantId);
-
                 return Ok(response);
             }
             catch (VideoApiException e)
             {
+                _logger.LogError(e, $"Unable to get heartbeat data for participant: {participantId} in conference: {conferenceId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -159,6 +171,8 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException ex)
             {
+                _logger.LogError(ex, $"Unable to update participant details " +
+                                     $"for participant: {participantId} in conference: {conferenceId}");
                 return StatusCode(ex.StatusCode, ex.Response);
             }
 
@@ -178,8 +192,6 @@ namespace VideoWeb.Controllers
         [Authorize(AppRoles.VhOfficerRole)]
         public async Task<IActionResult> GetParticipantsWithContactDetailsByConferenceIdAsync(Guid conferenceId)
         {
-            _logger.LogDebug("GetParticipantsWithContactDetailsByConferenceId");
-
             if (conferenceId == Guid.Empty)
             {
                 _logger.LogWarning("Unable to get conference when id is not provided");
@@ -189,17 +201,14 @@ namespace VideoWeb.Controllers
             }
             try
             {
-                var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
-                {
-                    _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
-
-                    return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-                });
+                var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, 
+                    () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
 
                 _logger.LogTrace($"Retrieving booking participants for hearing ${conference.HearingId}");
                 var judgesInHearingsToday = await _videoApiClient.GetJudgesInHearingsTodayAsync();
 
-                var response = ParticipantStatusResponseForVhoMapper.MapParticipantsTo(conference, judgesInHearingsToday);
+                var participantContactDetailsResponseVhoMapper = _mapperFactory.Get<Conference, IEnumerable<JudgeInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>();
+                var response = participantContactDetailsResponseVhoMapper.Map(conference, judgesInHearingsToday);
 
                 return Ok(response);
 
@@ -227,11 +236,13 @@ namespace VideoWeb.Controllers
             try
             {
                 var response = await _videoApiClient.GetParticipantsByConferenceIdAsync(conferenceId);
-                var participants = ParticipantForUserResponseMapper.MapParticipants(response);
+                var participantForUserResponsesMapper = _mapperFactory.Get<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>>();
+                var participants = participantForUserResponsesMapper.Map(response);
                 return Ok(participants);
             }
             catch (VideoApiException e)
             {
+                _logger.LogError(e, $"Unable to retrieve participants for conference: {conferenceId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }

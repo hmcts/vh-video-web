@@ -6,7 +6,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 
-namespace VideoWeb.Mappings
+namespace VideoWeb.Helpers
 {
     public interface IMessageDecoder
     {
@@ -19,6 +19,7 @@ namespace VideoWeb.Mappings
         /// <param name="message">Message to decode</param>
         /// <returns>name to display</returns>
         Task<string> GetMessageOriginatorAsync(Conference conference, InstantMessageResponse message);
+
         bool IsMessageFromUser(InstantMessageResponse message, string loggedInUsername);
     }
 

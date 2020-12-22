@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Helpers;
 using VideoWeb.Services.Video;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
@@ -22,10 +23,10 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             var conferenceId = Guid.NewGuid();
             var participantUsername = "individual user";
             var messages = Builder<InstantMessageResponse>.CreateListOfSize(5).Build().ToList();
-            VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername))
+            mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername))
                 .ReturnsAsync(messages);
 
-            var result = await Controller.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername);
+            var result = await sut.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername);
             var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
             var responseModel = typedResult.Value as List<ChatResponse>;
@@ -40,10 +41,10 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             var conferenceId = Guid.NewGuid();
             var participantUsername = "individual user";
             var messages = new List<InstantMessageResponse>();
-            VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername))
+            mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername))
                 .ReturnsAsync(messages);
 
-            var result = await Controller.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername);
+            var result = await sut.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername);
             var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
             var responseModel = typedResult.Value as List<ChatResponse>;
@@ -61,16 +62,16 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
                 .With(x => x.From = loggedInUser).TheNext(3)
                 .With(x => x.From = otherUsername)
                 .Build().ToList();
-            VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, loggedInUser))
+            mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, loggedInUser))
                 .ReturnsAsync(messages);
 
-            var result = await Controller.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, loggedInUser);
+            var result = await sut.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, loggedInUser);
 
-            MessageDecoder.Verify(x => x.IsMessageFromUser(
+            mocker.Mock<IMessageDecoder>().Verify(x => x.IsMessageFromUser(
                     It.Is<InstantMessageResponse>(m => m.From == loggedInUser), loggedInUser),
                 Times.Exactly(2));
 
-            MessageDecoder.Verify(x => x.IsMessageFromUser(
+            mocker.Mock<IMessageDecoder>().Verify(x => x.IsMessageFromUser(
                     It.Is<InstantMessageResponse>(m => m.From == otherUsername), loggedInUser),
                 Times.Exactly(3));
 
@@ -88,10 +89,10 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
                 (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
-            VideoApiClientMock.Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername))
+            mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername))
                 .ThrowsAsync(apiException);
 
-            var result = await Controller.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername);
+            var result = await sut.GetConferenceInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername);
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
         }

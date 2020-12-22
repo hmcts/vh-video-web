@@ -4,11 +4,11 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
@@ -16,6 +16,8 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
+using VideoWeb.EventHub.Models;
+using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.User.ProblemDetails;
@@ -24,20 +26,16 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {
     public class GetParticipantsWithContactDetailsByConferenceIdAsyncTests
     {
+        private AutoMock _mocker;
         private EventComponentHelper _eventComponentHelper;
-        private Mock<IVideoApiClient> _videoApiClientMock;
-        private Mock<ILogger<ParticipantsController>> _mockLogger;
-        private Mock<IConferenceCache> _mockConferenceCache;
         private List<Participant> _participants;
-        private ParticipantsController _controller;
+        private ParticipantsController _sut;
 
         [SetUp]
         public void Setup()
         {
+            _mocker = AutoMock.GetLoose();
             _eventComponentHelper = new EventComponentHelper();
-            _videoApiClientMock = new Mock<IVideoApiClient>();
-            _mockLogger = new Mock<ILogger<ParticipantsController>>(MockBehavior.Loose);
-            _mockConferenceCache = new Mock<IConferenceCache>();
 
             var judge = CreateParticipant("Judge", "Judge");
             var individual = CreateParticipant("Individual", "Claimant");
@@ -48,7 +46,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             };
 
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.VhOfficerRole).Build();
-            _controller = SetupControllerWithClaims(claimsPrincipal);
+            _sut = SetupControllerWithClaims(claimsPrincipal);
         }
         
         [Test]
@@ -65,14 +63,14 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 new JudgeInHearingResponse{ Id = judge3DifferentHearing.Id, Username = _participants[2].Username, Status = ParticipantState.InHearing }
             };
 
-            _mockConferenceCache.Setup(x => x.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
-            _videoApiClientMock
+            _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetJudgesInHearingsTodayAsync())
                 .ReturnsAsync(judgesInHearings);
 
-            var result = await _controller.GetParticipantsWithContactDetailsByConferenceIdAsync(conference.Id);
+            var result = await _sut.GetParticipantsWithContactDetailsByConferenceIdAsync(conference.Id);
             var typedResult = result as OkObjectResult;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().NotBeNull();
@@ -89,7 +87,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         [Test]
         public async Task Should_return_bad_request_when_conferenceId_empty()
         {
-            var result = await _controller.GetParticipantsWithContactDetailsByConferenceIdAsync(Guid.Empty);
+            var result = await _sut.GetParticipantsWithContactDetailsByConferenceIdAsync(Guid.Empty);
             
             var typedResult = (BadRequestObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
@@ -102,11 +100,11 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id and participant Id", null, default, null);
-            _mockConferenceCache.Setup(x => x.GetOrAddConferenceAsync(conferenceId, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+            _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(conferenceId, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ThrowsAsync(apiException);
         
-            var result = await _controller.GetParticipantsWithContactDetailsByConferenceIdAsync(conferenceId);
+            var result = await _sut.GetParticipantsWithContactDetailsByConferenceIdAsync(conferenceId);
             var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
@@ -130,6 +128,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             response.ContactTelephone.Should().Be(participant.ContactTelephone);
             response.HearingVenueName.Should().Be("MyVenue");
             response.JudgeInAnotherHearing.Should().Be(isInAnotherHearing);
+            response.Representee.Should().Be(participant.Representee);
         }
         
         private static Participant CreateParticipant(string username, string caseTypeGroup)
@@ -166,12 +165,18 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 }
             };
 
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Conference, IEnumerable<JudgeInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>()).Returns(_mocker.Create<ParticipantStatusResponseForVhoMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<EventType, string>()).Returns(_mocker.Create<EventTypeReasonMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceEventRequest, Conference, CallbackEvent>()).Returns(_mocker.Create<CallbackEventMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>>()).Returns(_mocker.Create<ParticipantForUserResponseMapper>());
+
             var eventHandlerFactory = new EventHandlerFactory(_eventComponentHelper.GetHandlers());
-            return new ParticipantsController(_videoApiClientMock.Object, eventHandlerFactory, _mockConferenceCache.Object, 
-                _mockLogger.Object)
-            {
-                ControllerContext = context
-            };
+            var parameters = new ParameterBuilder(_mocker)
+                .AddObject(eventHandlerFactory)
+                .Build();
+            var controller = _mocker.Create<ParticipantsController>(parameters);
+            controller.ControllerContext = context;
+            return controller;
         }
     }
 }

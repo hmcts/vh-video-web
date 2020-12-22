@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Controllers;
@@ -22,6 +23,7 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
         private Mock<IVideoApiClient> _videoApiClientMock;
         private Mock<IUserApiClient> _userApiClientMock;
         private Mock<IBookingsApiClient> _bookingsApiClientMock;
+        private Mock<ILogger<HealthCheckController>> _logger;
 
         [SetUp]
         public void Setup()
@@ -29,8 +31,9 @@ namespace VideoWeb.UnitTests.Controllers.HealthController
             _videoApiClientMock = new Mock<IVideoApiClient>();
             _userApiClientMock = new Mock<IUserApiClient>();
             _bookingsApiClientMock = new Mock<IBookingsApiClient>();
+            _logger = new Mock<ILogger<HealthCheckController>>();
 
-            _controller = new HealthCheckController(_videoApiClientMock.Object, _userApiClientMock.Object,
+            _controller = new HealthCheckController(_videoApiClientMock.Object, _userApiClientMock.Object, _logger.Object,
                 _bookingsApiClientMock.Object);
 
             var judges = Builder<UserResponse>.CreateListOfSize(3).Build().ToList();

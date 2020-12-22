@@ -2,10 +2,9 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings
 {
-    public static class EventTypeReasonMapper
+    public class EventTypeReasonMapper : IMapTo<EventType, string>
     { 
-
-        public static string Map(EventType eventType)
+        public string Map(EventType eventType)
         {
             var reason = eventType switch
             {

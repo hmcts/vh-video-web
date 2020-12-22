@@ -5,13 +5,12 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Services.Video;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
-using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
 
 namespace VideoWeb.Mappings
 {
-    public static class ParticipantStatusResponseForVhoMapper
+    public class ParticipantStatusResponseForVhoMapper : IMapTo<Conference, IEnumerable<JudgeInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>
     {
-        public static IEnumerable<ParticipantContactDetailsResponseVho> MapParticipantsTo(
+        public IEnumerable<ParticipantContactDetailsResponseVho> Map(
             Conference conference,
             IEnumerable<JudgeInHearingResponse> judgesInHearings)
         {
@@ -42,7 +41,8 @@ namespace VideoWeb.Mappings
                         ContactEmail = x.ContactEmail,
                         ContactTelephone = x.ContactTelephone,
                         HearingVenueName = hearingVenueName,
-                        JudgeInAnotherHearing = judgeInHearing.Any()
+                        JudgeInAnotherHearing = judgeInHearing.Any(),
+                        Representee = x.Representee
                     };
                 });
             return pats.ToList();
