@@ -7,10 +7,10 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings
 {
-    public static class UnreadInstantMessageConferenceResponseMapper
+    public class UnreadInstantMessageConferenceCountResponseMapper : IMapTo<Conference, IList<InstantMessageResponse>, UnreadInstantMessageConferenceCountResponse>
     {
-        public static UnreadInstantMessageConferenceCountResponse MapToResponseModel(Conference conference,
-            IList<InstantMessageResponse> messageResponses)
+
+        public UnreadInstantMessageConferenceCountResponse Map(Conference conference, IList<InstantMessageResponse> messageResponses)
         {
             var response = new UnreadInstantMessageConferenceCountResponse
             {
@@ -19,7 +19,7 @@ namespace VideoWeb.Mappings
             return response;
         }
 
-        private static List<UnreadAdminMessageResponse> MapMessages(Conference conference, IList<InstantMessageResponse> messageResponses)
+        private List<UnreadAdminMessageResponse> MapMessages(Conference conference, IList<InstantMessageResponse> messageResponses)
         {
             var unreadMessagesPerParticipant = new List<UnreadAdminMessageResponse>();
             foreach (var participant in conference.Participants)
@@ -38,7 +38,8 @@ namespace VideoWeb.Mappings
             }
             return unreadMessagesPerParticipant;
         }
-        private static bool IsNonParticipantMessage(Conference conference, InstantMessageResponse message)
+
+        private bool IsNonParticipantMessage(Conference conference, InstantMessageResponse message)
         {
             return !conference.Participants.Any(p => p.Username.Equals(message.From, StringComparison.InvariantCultureIgnoreCase));
         }

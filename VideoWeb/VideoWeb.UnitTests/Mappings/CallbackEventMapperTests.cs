@@ -1,4 +1,4 @@
-﻿
+
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
@@ -11,7 +11,7 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class CallbackEventMapperTests
+    public class CallbackEventMapperTests : BaseMockerSutTestSetup<CallbackEventMapper>
     {
         [Test]
         public void Should_map_conference_event_to_callback_event()
@@ -41,8 +41,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Event_type = EventType.Joined)
                 .Build();
 
-            var result =
-                CallbackEventMapper.MapConferenceEventToCallbackEventModel(conferenceEventRequest, testConference);
+            var result = _sut.Map(conferenceEventRequest, testConference);
             result.Should().NotBeNull();
             result.TransferFrom.Should().Be(conferenceEventRequest.Transfer_from);
             result.TransferTo.Should().Be(conferenceEventRequest.Transfer_to);
@@ -60,7 +59,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .Build();
 
             var result =
-                CallbackEventMapper.MapConferenceEventToCallbackEventModel(conferenceEventRequest, testConference);
+                _sut.Map(conferenceEventRequest, testConference);
             result.Should().NotBeNull();
             result.EventType.Should().Be(EventType.EndpointJoined);
         }
@@ -76,8 +75,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Event_type = EventType.Disconnected)
                 .Build();
 
-            var result =
-                CallbackEventMapper.MapConferenceEventToCallbackEventModel(conferenceEventRequest, testConference);
+            var result = _sut.Map(conferenceEventRequest, testConference);
             result.Should().NotBeNull();
             result.EventType.Should().Be(EventType.EndpointDisconnected);
         }
@@ -93,8 +91,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Event_type = EventType.Transfer)
                 .Build();
 
-            var result =
-                CallbackEventMapper.MapConferenceEventToCallbackEventModel(conferenceEventRequest, testConference);
+            var result = _sut.Map(conferenceEventRequest, testConference);
             result.Should().NotBeNull();
             result.EventType.Should().Be(EventType.EndpointTransfer);
         }

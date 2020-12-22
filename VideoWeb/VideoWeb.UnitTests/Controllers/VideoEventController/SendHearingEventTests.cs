@@ -15,6 +15,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
+using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using Endpoint = VideoWeb.Common.Models.Endpoint;
@@ -45,6 +46,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 }
             };
 
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceEventRequest, Conference, CallbackEvent>()).Returns(_mocker.Create<CallbackEventMapper>());
             _sut = _mocker.Create<VideoEventsController>();
             _sut.ControllerContext = context;
 

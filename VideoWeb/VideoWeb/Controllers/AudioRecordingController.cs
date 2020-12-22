@@ -29,12 +29,9 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAudioStreamInfoAsync(Guid hearingId)
         {
-            _logger.LogDebug("GetAudioStreamInfo");
-
             try
-            {
-              var response = await _videoApiClient.GetAudioStreamInfoAsync(hearingId);
-
+            { 
+                var response = await _videoApiClient.GetAudioStreamInfoAsync(hearingId);
                 return Ok(response.Is_recording);
             }
             catch (VideoApiException e)
@@ -50,12 +47,9 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> StopAudioRecordingAsync(Guid hearingId)
         {
-            _logger.LogDebug("StopAudioRecording");
-
             try
             {
                 await _videoApiClient.DeleteAudioApplicationAsync(hearingId);
-
                 return Ok();
             }
             catch (VideoApiException e)
