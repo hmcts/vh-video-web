@@ -1,15 +1,20 @@
 <div class="govuk-grid-row">
   <div id="tooltip-name-case-group-{{ participant.id }}" class="govuk-grid-column-full">
-    <p class="govuk-!-margin-bottom-1">{{ participant.name }} ({{ participant.caseGroup }})</p>
+    <p class="govuk-!-margin-bottom-1">{{ participant.name }}</p>
   </div>
   <div class="govuk-grid-column-full" *ngIf="participant.isJudge">
     <p class="govuk-!-margin-bottom-1">{{ participant.hearingVenueName }}</p>
   </div>
   <div class="govuk-grid-column-full">
-    <p *ngIf="participant.caseGroup !== 'None'" id="tooltip-hearing-role-{{ participant.id }}" class="govuk-!-margin-bottom-1">
+    <p id="tooltip-hearing-role-{{ participant.id }}" class="govuk-!-margin-bottom-1">
       {{ participant.hearingRole }}
     </p>
   </div>
+  <div class="govuk-grid-column-full">
+    <p *ngIf="participant.showCaseRole" id="tooltip-case-role-{{ participant.id }}" class="govuk-!-margin-bottom-1">
+      {{ participant.caseGroup }}
+    </p>
+  </div>    
   <div class="govuk-grid-column-full">
     <a id="tooltip-email-{{ participant.id }}" class="govuk-body-s govuk-link vh-overflow" href="mailto:{{ participant.contactEmail }}">{{
       participant.contactEmail

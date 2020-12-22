@@ -86,6 +86,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.ContactTelephone.Should().Be(participant.ContactTelephone);
             response.HearingVenueName.Should().Be("MyVenue");
             response.JudgeInAnotherHearing.Should().Be(isInAnotherHearing);
+            response.Representee.Should().Be(participant.Representee);
         }
 
         private static Participant CreateParticipant(string username)
