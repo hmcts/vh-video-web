@@ -107,7 +107,10 @@ export class EventsService {
     }
 
     get isDisconnectedFromHub(): boolean {
-        return this.connection.state === signalR.HubConnectionState.Disconnected;
+        return (
+            this.connection.state === signalR.HubConnectionState.Disconnected ||
+            this.connection.state === signalR.HubConnectionState.Disconnecting
+        );
     }
 
     registerHandlers(): void {
