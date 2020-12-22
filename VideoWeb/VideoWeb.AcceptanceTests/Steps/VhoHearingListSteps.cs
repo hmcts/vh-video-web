@@ -78,7 +78,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private void TheToolTipDetailsAreDisplayed(ParticipantDetailsResponse participant, ParticipantResponse hearingParticipant)
         {
-            var participantEmailAndRole = $"{participant.Name} ({participant.Case_type_group})";
+            var participantEmailAndRole = $"{participant.Name}";
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.ParticipantContactName(participant.Id)).Text.Trim().Should().Be(participantEmailAndRole);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.ParticipantContactEmail(participant.Id)).Text.Trim().Should().Be(hearingParticipant.Contact_email);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.ParticipantContactPhone(participant.Id)).Text.Trim().Should().Be(hearingParticipant.Telephone_number);
