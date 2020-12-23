@@ -110,6 +110,11 @@ describe('EventsService', () => {
         expect(service.connection.stop).toHaveBeenCalledTimes(0);
     });
 
+    it('should not stop eventhub connection if eventhub already in the disconnecting state', () => {
+        spyOn(service.connection, 'stop');
+        spyOnProperty(service.connection, 'state').and.returnValue(signalR.HubConnectionState.Disconnecting);
+        expect(service.connection.stop).toHaveBeenCalledTimes(0);
+    });
     it('should send im to "SendMessage" method', async () => {
         const imTest = new InstantMessage({
             conferenceId: Guid.create().toString(),
