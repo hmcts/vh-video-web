@@ -89,7 +89,7 @@
 
 .icon-btn {
   grid-row: 1;
-  opacity: 50%;
+  opacity: 0.5;
   height: 24px;
 
   &--self-view {
@@ -129,5 +129,5 @@
 }
 
 .icon-btn:hover {
-  opacity: 100%;
+  opacity: 1;
 }
