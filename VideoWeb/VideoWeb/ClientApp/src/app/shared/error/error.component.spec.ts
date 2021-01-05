@@ -42,7 +42,7 @@ describe('ErrorComponent', () => {
     let router: Router;
     let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
     let errorServiceSpy: jasmine.SpyObj<ErrorService>;
-    let connectionStatusServiceSpy: jasmine.SpyObj<ConnectionStatusService>
+    let connectionStatusServiceSpy: jasmine.SpyObj<ConnectionStatusService>;
 
     beforeEach(
         waitForAsync(() => {
@@ -108,7 +108,7 @@ describe('ErrorComponent', () => {
     });
 
     it('should navigate to previous page on reconnect click and internet connection', () => {
-        pageTrackerSpy.getPreviousUrl.calls.reset();        
+        pageTrackerSpy.getPreviousUrl.calls.reset();
         connectionStatusServiceSpy.status = true;
         component.reconnect();
         expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalled();
@@ -163,7 +163,7 @@ describe('ErrorComponent Refresh', () => {
     let router: Router;
     let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
     let errorServiceSpy: jasmine.SpyObj<ErrorService>;
-    let connectionStatusServiceSpy: jasmine.SpyObj<ConnectionStatusService>
+    let connectionStatusServiceSpy: jasmine.SpyObj<ConnectionStatusService>;
 
     beforeEach(() => {
         eventsService = eventsServiceSpy;

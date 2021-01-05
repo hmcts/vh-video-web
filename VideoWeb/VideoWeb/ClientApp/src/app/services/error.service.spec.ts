@@ -91,8 +91,10 @@ describe('ErrorService', () => {
             const error = new CallError('Error connecting to conference');
             const conferenceId = Guid.create().toString();
             service.handlePexipError(error, conferenceId);
-            expect(service.goToServiceError).toHaveBeenCalledWith(`Sorry, there's a problem with the service`,
-            `Your hearing cannot take place as planned. Everyone attending is affected. The court or tribunal know something is wrong. You do not need to take any action. We’ll contact you with another date. You may now close this page.`);
+            expect(service.goToServiceError).toHaveBeenCalledWith(
+                `Sorry, there's a problem with the service`,
+                `Your hearing cannot take place as planned. Everyone attending is affected. The court or tribunal know something is wrong. You do not need to take any action. We’ll contact you with another date. You may now close this page.`
+            );
         }
     ));
 

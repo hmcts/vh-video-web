@@ -36,7 +36,7 @@ export class ConnectionStatusService {
     }
 
     private checkConnection() {
-        var xhr = new XMLHttpRequest();
+        const xhr = new XMLHttpRequest();
         xhr.open('HEAD', '/assets/images/favicons/favicon.ico?_=' + new Date().getTime());
         xhr.timeout = 5000;
         xhr.onload = () => {
@@ -56,7 +56,7 @@ export class ConnectionStatusService {
     }
 
     private handleResult(online: boolean) {
-        if (this.status == online) {
+        if (this.status === online) {
             return;
         }
 

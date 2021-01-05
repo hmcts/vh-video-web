@@ -18,7 +18,7 @@ export class ErrorService {
         this.connectionStatusService.onConnectionStatusChange().subscribe(online => {
             if (!online) {
                 return this.goToServiceError(
-                    "There's a problem with your connection",
+                    `There's a problem with your connection`,
                     'Please click "Reconnect" to return to the previous page. Call us if you keep seeing this message.'
                 );
             }
