@@ -104,5 +104,37 @@ namespace VideoWeb.UnitTests.Hub
             HubCallerContextMock.Setup(x => x.User).Returns(claims);
             HubCallerContextMock.Setup(x => x.UserIdentifier).Returns(claims.Identity.Name);
         }
+        
+        protected Conference CreateTestConference(string participantUsername)
+        {
+            var conferenceId = Guid.NewGuid();
+            var participants = Builder<Participant>.CreateListOfSize(3)
+                .All().With(x=> x.Id = Guid.NewGuid())
+                .TheFirst(1).With(x => x.Role = Role.Judge)
+                .TheNext(1).With(x => x.Role = Role.Individual).With(x => x.Username = participantUsername)
+                .Build().ToList();
+
+            return Builder<Conference>.CreateNew()
+                .With(x => x.Id = conferenceId)
+                .With(x => x.Participants = participants)
+                .Build();
+        }
+
+        protected void SetupEventHubClientsForAllParticipantsInConference(Conference conference, bool includeAdmin)
+        {
+            if (includeAdmin)
+            {
+                var mockAdminClient = new Mock<IEventHubClient>();
+                EventHubClientMock.Setup(x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
+                    .Returns(mockAdminClient.Object);
+            }
+
+            foreach (var conferenceParticipant in conference.Participants)
+            {
+                var mockClient = new Mock<IEventHubClient>();
+                EventHubClientMock.Setup(x => x.Group(conferenceParticipant.Username.ToLowerInvariant()))
+                    .Returns(mockClient.Object);
+            }
+        }
     }
 }
