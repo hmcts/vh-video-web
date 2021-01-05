@@ -114,12 +114,7 @@ export class ErrorService {
         if (isConnectionError) {
             this.goToServiceError(
                 `Sorry, there's a problem with the service`,
-                `Your hearing cannot take place as planned.
-                Everyone attending is affected. The court or tribunal know something is
-                wrong.
-                You do not need to take any action. We’ll contact you with another date.
-                You may now close this page.`,
-                false
+                `Your hearing cannot take place as planned. Everyone attending is affected. The court or tribunal know something is wrong. You do not need to take any action. We’ll contact you with another date. You may now close this page.`
             );
             return;
         }

@@ -91,7 +91,8 @@ describe('ErrorService', () => {
             const error = new CallError('Error connecting to conference');
             const conferenceId = Guid.create().toString();
             service.handlePexipError(error, conferenceId);
-            expect(service.goToServiceError).toHaveBeenCalledWith('Your connection was lost');
+            expect(service.goToServiceError).toHaveBeenCalledWith(`Sorry, there's a problem with the service`,
+            `Your hearing cannot take place as planned. Everyone attending is affected. The court or tribunal know something is wrong. You do not need to take any action. We’ll contact you with another date. You may now close this page.`);
         }
     ));
 
@@ -127,7 +128,6 @@ describe('ErrorService', () => {
         [ErrorService],
         (service: ErrorService) => {
             spyOn(service, 'goToServiceError');
-            spyOnProperty(service, 'hasInternetConnection').and.returnValue(true);
             const error = new CallError('This meeting has reached the maximum number of participants.');
             const conferenceId = Guid.create().toString();
             service.handlePexipError(error, conferenceId);
