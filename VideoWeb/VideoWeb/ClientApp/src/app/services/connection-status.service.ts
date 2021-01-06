@@ -32,7 +32,10 @@ export class ConnectionStatusService {
     }
 
     stopTimer() {
-        clearInterval(this.timer);
+        if (this.timer) {
+            clearInterval(this.timer);
+            this.timer = null;
+        }
     }
 
     private checkConnection() {
