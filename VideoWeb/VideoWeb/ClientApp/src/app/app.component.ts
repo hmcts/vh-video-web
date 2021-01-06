@@ -12,6 +12,7 @@ import { ErrorService } from './services/error.service';
 import { LocationService } from './services/location.service';
 import { PageTrackerService } from './services/page-tracker.service';
 import { EventsService } from './services/events.service';
+import { ConnectionStatusService } from './services/connection-status.service';
 import { pageUrls } from './shared/page-url.constants';
 
 @Component({
@@ -42,6 +43,7 @@ export class AppComponent implements OnInit, OnDestroy {
         private activatedRoute: ActivatedRoute,
         private locationService: LocationService,
         private eventsService: EventsService,
+        private connectionStatusService: ConnectionStatusService,
         pageTracker: PageTrackerService
     ) {
         this.loggedIn = false;
@@ -69,6 +71,7 @@ export class AppComponent implements OnInit, OnDestroy {
             this.setPageTitle();
             this.setupSubscribers();
             this.eventsService.start();
+            this.connectionStatusService.start();
         });
     }
 
