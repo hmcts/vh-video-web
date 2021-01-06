@@ -1,11 +1,11 @@
-﻿using VideoWeb.Contract.Responses;
+using VideoWeb.Contract.Responses;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings
 {
-    public static class PexipServiceConfigurationResponseMapper
+    public class PexipServiceConfigurationResponseMapper : IMapTo<PexipConfigResponse, SelfTestPexipResponse>
     {
-        public static SelfTestPexipResponse MapConfigToResponseModel(PexipConfigResponse pexipConfigResponse)
+        public SelfTestPexipResponse Map(PexipConfigResponse pexipConfigResponse)
         {
             return new SelfTestPexipResponse
             {

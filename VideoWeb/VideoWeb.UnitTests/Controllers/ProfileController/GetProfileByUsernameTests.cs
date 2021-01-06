@@ -1,16 +1,18 @@
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
+using VideoWeb.Mappings;
 using VideoWeb.Services.User;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.User.ProblemDetails;
@@ -19,15 +21,13 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
 {
     public class GetProfileByUsernameTests
     {
-        private ProfilesController _controller;
-        private Mock<IUserApiClient> _userApiClientMock;
-        private Mock<ILogger<ProfilesController>> _mockLogger;
+        private AutoMock _mocker;
+        private ProfilesController _sut;
 
         [SetUp]
         public void Setup()
         {
-            _userApiClientMock = new Mock<IUserApiClient>();
-            _mockLogger = new Mock<ILogger<ProfilesController>>();
+            _mocker = AutoMock.GetLoose();
             var claimsPrincipal = new ClaimsPrincipalBuilder()
                 .WithRole(AppRoles.JudgeRole)
                 .WithClaim(ClaimTypes.GivenName, "John")
@@ -42,11 +42,10 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
                 }
             };
 
-            _controller =
-                new ProfilesController(_userApiClientMock.Object, _mockLogger.Object, new DictionaryUserCache())
-                {
-                    ControllerContext = context
-                };
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<UserProfile, UserProfileResponse>()).Returns(_mocker.Create<UserProfileToUserProfileResponseMapper>());
+            var parameters = new ParameterBuilder(_mocker).AddObject(new DictionaryUserCache()).Build();
+            _sut = _mocker.Create<ProfilesController>(parameters);
+            _sut.ControllerContext = context;
         }
 
         [Test]
@@ -55,10 +54,10 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
             var username = "judge@hmcts.net";
             var profile = Builder<UserProfile>.CreateNew().With(x => x.User_role = "Judge")
                 .With(x => x.User_name = username).Build();
-            _userApiClientMock
+            _mocker.Mock<IUserApiClient>()
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(profile);
-            var result = await _controller.GetProfileByUsernameAsync(username);
+            var result = await _sut.GetProfileByUsernameAsync(username);
             var typedResult = (OkObjectResult) result;
             typedResult.Should().NotBeNull();
         }
@@ -69,11 +68,11 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
             var username = "judge@hmcts.net";
             var apiException = new UserApiException<ProblemDetails>("User not found", (int) HttpStatusCode.NotFound,
                 "User Not Found", null, default, null);
-            _userApiClientMock
+            _mocker.Mock<IUserApiClient>()
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetProfileByUsernameAsync(username);
+            var result = await _sut.GetProfileByUsernameAsync(username);
             var typedResult = (ObjectResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
         }
@@ -85,11 +84,11 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
             var apiException = new UserApiException<ProblemDetails>("Internal Server Error",
                 (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
-            _userApiClientMock
+            _mocker.Mock<IUserApiClient>()
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ThrowsAsync(apiException);
 
-            var result = await _controller.GetProfileByUsernameAsync(username);
+            var result = await _sut.GetProfileByUsernameAsync(username);
             var typedResult = (ObjectResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
         }

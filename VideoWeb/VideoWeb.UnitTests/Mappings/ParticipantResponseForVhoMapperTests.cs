@@ -9,7 +9,7 @@ using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class ParticipantResponseForVhoMapperTests
+    public class ParticipantResponseForVhoMapperTests : BaseMockerSutTestSetup<ParticipantResponseForVhoMapper>
     {
         [Test]
         public void Should_map_all_properties()
@@ -19,7 +19,7 @@ namespace VideoWeb.UnitTests.Mappings
             var participant = new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant")
                 .WithStatus(ParticipantState.Available).Build();
 
-            var response = ParticipantResponseForVhoMapper.MapParticipantToResponseModel(participant);
+            var response = _sut.Map(participant);
             response.Id.Should().Be(participant.Id);
             response.Name.Should().Be(participant.Name);
             response.Username.Should().Be(participant.Username);

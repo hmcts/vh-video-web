@@ -24,5 +24,47 @@ describe('ParticipantContactDetails', () => {
         expect(participant.ref_id).toBe(p.refId);
         expect(participant.judge_in_another_hearing).toBe(p.judgeInAnotherHearing);
         expect(p.isJudge).toBe(false);
+        expect(p.showCaseRole).toBe(true);
+    });
+    it('should map participant info based on hearing role', () => {
+        const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
+            'C7163972-A362-4167-8D33-77A64674B31C',
+            'MyVenue'
+        );
+        const participant = participants[0];
+        participant.representee = 'test user';
+        participant.hearing_role = 'App Representative';
+        const p = new ParticipantContactDetails(participant);
+        expect(p.hearingRole).toBe('App Representative for test user');
+    });
+    it('should return true if case role is none', () => {
+        const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
+            'C7163972-A362-4167-8D33-77A64674B31C',
+            'MyVenue'
+        );
+        const participant = participants[0];
+        participant.case_type_group = 'None';
+        const p = new ParticipantContactDetails(participant);
+        expect(p.showCaseRole).toBe(false);
+    });
+    it('should return true if case role is judge', () => {
+        const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
+            'C7163972-A362-4167-8D33-77A64674B31C',
+            'MyVenue'
+        );
+        const participant = participants[0];
+        participant.case_type_group = 'Judge';
+        const p = new ParticipantContactDetails(participant);
+        expect(p.showCaseRole).toBe(false);
+    });
+    it('should return true if case role is observer', () => {
+        const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
+            'C7163972-A362-4167-8D33-77A64674B31C',
+            'MyVenue'
+        );
+        const participant = participants[0];
+        participant.case_type_group = 'Observer';
+        const p = new ParticipantContactDetails(participant);
+        expect(p.showCaseRole).toBe(false);
     });
 });

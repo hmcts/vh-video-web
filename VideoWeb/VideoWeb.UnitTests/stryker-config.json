@@ -27,7 +27,8 @@
     "mutate": [
       "!Startup.cs",
       "!Program.cs",
-      "!ConfigureServicesExtensions.cs",
+      "!**/ConfigureServicesExtensions.cs",
+      "!**/ConfigureAuthSchemeExtensions.cs",
       "!Swagger/AuthResponsesOperationFilter.cs",
       "!Pages/Error.cshtml.cs",
       "!Extensions/ExceptionMiddleware.cs",

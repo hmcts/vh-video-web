@@ -10,7 +10,7 @@ using Conference = VideoWeb.Services.Video.ConferenceForIndividualResponse;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class ConferenceForIndividualResponseMapperTests
+    public class ConferenceForIndividualResponseMapperTests : BaseMockerSutTestSetup<ConferenceForIndividualResponseMapper>
     {
         [Test]
         public void Should_map_all_properties()
@@ -32,7 +32,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Id = Guid.NewGuid())
                 .Build();
 
-            var response = ConferenceForIndividualResponseMapper.MapConferenceSummaryToModel(conference);
+            var response = _sut.Map(conference);
 
             response.Id.Should().Be(conference.Id);
             response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);

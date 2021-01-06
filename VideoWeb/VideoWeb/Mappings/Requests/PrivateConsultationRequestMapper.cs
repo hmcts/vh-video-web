@@ -4,9 +4,9 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings.Requests
 {
-    public static class PrivateConsultationRequestMapper
+    public class PrivateConsultationRequestMapper : IMapTo<PrivateConsultationRequest, ConsultationRequest>
     {
-        public static ConsultationRequest MapToApiConsultationRequest(PrivateConsultationRequest request)
+        public ConsultationRequest Map(PrivateConsultationRequest request)
         {
             ConsultationAnswer? answer = null;
             if (request.Answer.HasValue)
