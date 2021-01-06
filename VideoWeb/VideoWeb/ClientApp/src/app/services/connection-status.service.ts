@@ -58,14 +58,14 @@ export class ConnectionStatusService {
         }
     }
 
-    private handleResult(online: boolean) {
-        if (this.status === online) {
+    private handleResult(isSuccessful: boolean) {
+        if (this.status === isSuccessful) {
             return;
         }
 
-        this.logger.info(`${this.loggerPrefix} ${online ? 'Online' : 'Offline'}`);
-        this.status = online;
-        this.connectionStatus.next(online);
+        this.logger.info(`${this.loggerPrefix} ${isSuccessful ? 'Online' : 'Offline'}`);
+        this.status = isSuccessful;
+        this.connectionStatus.next(isSuccessful);
     }
 
     onConnectionStatusChange(): Observable<boolean> {

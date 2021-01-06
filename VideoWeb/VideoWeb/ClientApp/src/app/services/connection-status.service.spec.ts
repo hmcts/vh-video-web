@@ -1,3 +1,4 @@
+import { fakeAsync, tick } from '@angular/core/testing';
 import { MockLogger } from '../testing/mocks/MockLogger';
 import { Logger } from './logging/logger-base';
 import { ConnectionStatusService } from '../services/connection-status.service';
@@ -11,11 +12,7 @@ describe('ConnectionStatusService', () => {
     });
 
     beforeEach(function () {
-        jasmine.clock().install();
-    });
-
-    afterEach(() => {
-        jasmine.clock().uninstall();
+        service.status = true;
     });
 
     it('should send request to check internet connection', () => {
@@ -31,27 +28,27 @@ describe('ConnectionStatusService', () => {
         expect(XMLHttpRequest.prototype.send).toHaveBeenCalled();
     });
 
-    it('should stop timer', () => {
+    it('should stop timer', fakeAsync(() => {
         // Arrange
         spyOn(XMLHttpRequest.prototype, 'open').and.callFake((method: string, url: string) => {});
         spyOn(XMLHttpRequest.prototype, 'send');
 
         // Act
         service.start();
-        jasmine.clock().tick(5001);
+        tick(5001);
         service.stopTimer();
-        jasmine.clock().tick(60000);
+        tick(60000);
 
         // Assert
         expect(XMLHttpRequest.prototype.open).toHaveBeenCalledTimes(2);
         expect(XMLHttpRequest.prototype.send).toHaveBeenCalledTimes(2);
-    });
+    }));
 
     it('should stop timer if not started', () => {
         expect(() => service.stopTimer()).not.toThrow();
     });
 
-    it('should setup interval and fire intial check and again every 5 seconds', () => {
+    it('should setup interval and fire intial check and again every 5 seconds', fakeAsync(() => {
         // Arrange
         spyOn(XMLHttpRequest.prototype, 'open').and.callFake((method: string, url: string) => {});
         spyOn(XMLHttpRequest.prototype, 'send');
@@ -59,7 +56,7 @@ describe('ConnectionStatusService', () => {
         service.start();
         for (let i = 1; i < 10; i++) {
             // Act
-            jasmine.clock().tick(5001);
+            tick(5001);
 
             // Assert
             expect(XMLHttpRequest.prototype.open).toHaveBeenCalledTimes(i + 1);
@@ -67,9 +64,9 @@ describe('ConnectionStatusService', () => {
         }
 
         service.stopTimer();
-    });
+    }));
 
-    it('should only setup 1 interval even if start called multiple times', () => {
+    it('should only setup 1 interval even if start called multiple times', fakeAsync(() => {
         // Arrange
         spyOn(XMLHttpRequest.prototype, 'open').and.callFake((method: string, url: string) => {});
         spyOn(XMLHttpRequest.prototype, 'send');
@@ -77,7 +74,7 @@ describe('ConnectionStatusService', () => {
         for (let i = 1; i < 10; i++) {
             // Act
             service.start();
-            jasmine.clock().tick(5001);
+            tick(5001);
 
             // Assert
             expect(XMLHttpRequest.prototype.open).toHaveBeenCalledTimes(i + 1);
@@ -85,5 +82,47 @@ describe('ConnectionStatusService', () => {
         }
 
         service.stopTimer();
+    }));
+
+    it('should publish when status changes', () => {
+        // Arrange
+        spyOn(XMLHttpRequest.prototype, 'open').and.callFake((method: string, url: string) => {});
+        spyOn(XMLHttpRequest.prototype, 'send').and.throwError('failed to send');
+        let publishedState = true;
+        let eventCount = 0;
+        service.onConnectionStatusChange().subscribe(online => {
+            publishedState = online;
+            eventCount++;
+        });
+
+        // Act
+        service.checkNow();
+
+        // Assert
+        expect(publishedState).toBe(false);
+        expect(eventCount).toBe(1);
+    });
+
+    it('should not publish if state hasnt changed', () => {
+        // Arrange
+        spyOn(XMLHttpRequest.prototype, 'open').and.callFake((method: string, url: string) => {});
+        spyOn(XMLHttpRequest.prototype, 'send').and.throwError('failed to send');
+        let publishedState = true;
+        let eventCount = 0;
+        service.onConnectionStatusChange().subscribe(online => {
+            publishedState = online;
+            eventCount++;
+        });
+
+        // Act
+        for (let i = 0; i < 10; i++) {
+            service.checkNow();
+        }
+
+        // Assert
+        expect(XMLHttpRequest.prototype.open).toHaveBeenCalledTimes(10);
+        expect(XMLHttpRequest.prototype.send).toHaveBeenCalledTimes(10);
+        expect(publishedState).toBe(false);
+        expect(eventCount).toBe(1);
     });
 });
