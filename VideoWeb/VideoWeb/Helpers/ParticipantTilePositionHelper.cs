@@ -71,7 +71,8 @@ namespace VideoWeb.Helpers
         private static List<ParticipantResponse> GetNotJudgeParticipant(IEnumerable<ParticipantResponse> participants)
         {
             return participants.Where(x =>
-                x.Role == Role.Individual || x.Role == Role.Representative).ToList();
+            x.Role == Role.Individual || x.Role == Role.Representative || x.Role == Role.JudicialOfficeHolder).ToList();
+
         }
     }
 }
