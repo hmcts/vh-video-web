@@ -7,7 +7,8 @@ import {
     endpointStatusSubjectMock,
     eventsServiceSpy,
     participantStatusSubjectMock,
-    hearingTransferSubjectMock
+    hearingTransferSubjectMock,
+    participantMediaStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import { videoCallServiceSpy, onConferenceUpdatedMock, onParticipantUpdatedMock } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
@@ -27,6 +28,7 @@ import {
 } from 'src/app/shared/models/participant-event';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { VideoCallTestData } from 'src/app/testing/mocks/data/video-call-test-data';
+import { ParticipantMediaStatus, ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status';
 
 describe('ParticipantsPanelComponent', () => {
     const conferenceId = '1111-1111-1111';
@@ -723,5 +725,28 @@ describe('ParticipantsPanelComponent', () => {
         // Assert
         expect(component.dismissWitnessFromHearing).toHaveBeenCalled();
         expect(component.dismissWitnessFromHearing).toHaveBeenCalledWith(model);
+    });
+
+    it('should process eventhub device status message for participant in hearing', () => {
+        component.setupEventhubSubscribers();
+        const mediaStatus = new ParticipantMediaStatus(true);
+        const pat = participants.filter(x => x.role === Role.Individual)[0];
+        const message = new ParticipantMediaStatusMessage(conferenceId, pat.id, mediaStatus);
+
+        participantMediaStatusSubjectMock.next(message);
+
+        const updatedPat = component.participants.find(x => x.id === message.participantId);
+        expect(updatedPat.isLocalAudioMuted).toBe(mediaStatus.is_local_muted);
+    });
+
+    it('should not process eventhub device status message for participant not in list', () => {
+        component.setupEventhubSubscribers();
+        const mediaStatus = new ParticipantMediaStatus(true);
+        const message = new ParticipantMediaStatusMessage(conferenceId, Guid.create().toString(), mediaStatus);
+
+        participantMediaStatusSubjectMock.next(message);
+
+        const updatedAudioCount = component.participants.filter(x => x.isLocalAudioMuted).length;
+        expect(updatedAudioCount).toBe(0);
     });
 });

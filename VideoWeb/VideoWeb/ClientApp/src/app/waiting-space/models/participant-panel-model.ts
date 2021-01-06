@@ -21,6 +21,7 @@ export abstract class PanelModel {
     public hearingRole: string;
     public representee: string;
     public transferringIn: boolean;
+    public isLocalAudioMuted: boolean;
 
     constructor(
         id: string,

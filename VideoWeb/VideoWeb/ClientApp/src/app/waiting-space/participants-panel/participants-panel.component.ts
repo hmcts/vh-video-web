@@ -20,6 +20,7 @@ import {
     DismissWitnessFromHearingEvent
 } from 'src/app/shared/models/participant-event';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
+import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status';
 
 @Component({
     selector: 'app-participants-panel',
@@ -146,6 +147,24 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
                 this.handleHearingTransferChange(message);
             })
         );
+
+        this.eventhubSubscription$.add(
+            this.eventService.getParticipantMediaStatusMessage().subscribe(async message => {
+                this.handleParticipantMediaStatusChange(message);
+            })
+        );
+    }
+    handleParticipantMediaStatusChange(message: ParticipantMediaStatusMessage) {
+        const participant = this.participants.find(x => x.id === message.participantId);
+        if (!participant) {
+            return;
+        }
+        this.logger.debug(`${this.loggerPrefix} Participant device status has been updated`, {
+            conference: this.conferenceId,
+            participant: participant.id,
+            mediaStatus: message.mediaStatus
+        });
+        participant.isLocalAudioMuted = message.mediaStatus.is_local_muted;
     }
 
     handleHearingTransferChange(message: HearingTransfer) {

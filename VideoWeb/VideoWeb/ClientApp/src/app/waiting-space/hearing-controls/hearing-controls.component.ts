@@ -4,6 +4,7 @@ import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/c
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 
@@ -145,7 +146,7 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         }
     }
 
-    toggleMute() {
+    async toggleMute() {
         this.logger.info(
             `${this.loggerPrefix} Participant is attempting to toggle own audio mute status to ${!this.audioMuted}`,
             this.logPayload
@@ -153,6 +154,7 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         const muteAudio = this.videoCallService.toggleMute(this.conferenceId, this.participant.id);
         this.logger.info(`${this.loggerPrefix} Participant audio mute status updated to ${muteAudio}`, this.logPayload);
         this.audioMuted = muteAudio;
+        await this.publishMediaDeviceStatus();
     }
 
     toggleVideoMute() {
@@ -163,6 +165,11 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         const muteVideo = this.videoCallService.toggleVideo(this.conferenceId, this.participant.id);
         this.logger.info(`${this.loggerPrefix} Participant video mute status updated to ${muteVideo}`, this.logPayload);
         this.videoMuted = muteVideo;
+    }
+
+    async publishMediaDeviceStatus() {
+        const mediaStatus = new ParticipantMediaStatus(this.audioMuted);
+        await this.eventService.sendMediaStatus(this.conferenceId, this.participant.id, mediaStatus);
     }
 
     toggleView(): boolean {
