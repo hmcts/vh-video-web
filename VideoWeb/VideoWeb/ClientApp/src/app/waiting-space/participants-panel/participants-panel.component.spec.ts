@@ -28,7 +28,8 @@ import {
 } from 'src/app/shared/models/participant-event';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { VideoCallTestData } from 'src/app/testing/mocks/data/video-call-test-data';
-import { ParticipantMediaStatus, ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status';
+import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
+import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 
 describe('ParticipantsPanelComponent', () => {
     const conferenceId = '1111-1111-1111';

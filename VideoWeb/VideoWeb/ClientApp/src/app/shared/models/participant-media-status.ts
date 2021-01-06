@@ -1,7 +1,4 @@
 export class ParticipantMediaStatus {
+    // tslint:disable-next-line: variable-name
     constructor(public is_local_muted: boolean) {}
-}
-
-export class ParticipantMediaStatusMessage {
-    constructor(public conferenceId: string, public participantId: string, public mediaStatus: ParticipantMediaStatus) {}
 }

@@ -8,7 +8,7 @@ import { HearingTransfer } from 'src/app/services/models/hearing-transfer';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ParticipantHeartbeat } from 'src/app/services/models/participant-heartbeat';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status';
+import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 
 export let eventsServiceSpy: jasmine.SpyObj<EventsService>;
 

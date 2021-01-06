@@ -20,7 +20,7 @@ import {
     DismissWitnessFromHearingEvent
 } from 'src/app/shared/models/participant-event';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
-import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status';
+import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 
 @Component({
     selector: 'app-participants-panel',
