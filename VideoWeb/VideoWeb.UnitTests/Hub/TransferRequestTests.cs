@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using FizzWare.NBuilder;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
@@ -17,7 +16,7 @@ namespace VideoWeb.UnitTests.Hub
         public async Task Should_Send_TransferRequest_To_VhoOfficers_Group_And_Judge()
         {
             var participantUsername = "individual@test.com";
-            var conference = InitConference(participantUsername);
+            var conference = CreateTestConference(participantUsername);
             var participant = conference.Participants.First(x => x.Username == participantUsername);
             var judge = conference.Participants.First(x => x.Role == Role.Judge);
             var judgeName = judge.Username;
@@ -73,7 +72,7 @@ namespace VideoWeb.UnitTests.Hub
         public async Task Should_Throw_ParticipantNotFoundException_With_Random_ParticipantId()
         {
             var participantUsername = "individual@test.com";
-            var conference = InitConference(participantUsername);
+            var conference = CreateTestConference(participantUsername);
             var judge = conference.Participants.First(x => x.Role == Role.Judge);
             var judgeName = judge.Username;
 
@@ -128,7 +127,7 @@ namespace VideoWeb.UnitTests.Hub
         public async Task Should_Throw_ParticipantNotFoundException_With_No_ParticipantId()
         {
             var participantUsername = "individual@test.com";
-            var conference = InitConference(participantUsername);
+            var conference = CreateTestConference(participantUsername);
             var judge = conference.Participants.First(x => x.Role == Role.Judge);
             var judgeName = judge.Username;
 
@@ -177,20 +176,6 @@ namespace VideoWeb.UnitTests.Hub
                 ),
                 Times.Never
             );
-        }
-        
-        private Conference InitConference(string participantUsername)
-        {
-            var conferenceId = Guid.NewGuid();
-            var participants = Builder<Participant>.CreateListOfSize(3)
-                .TheFirst(1).With(x => x.Role = Role.Judge)
-                .TheNext(1).With(x => x.Role = Role.Individual).With(x => x.Username = participantUsername)
-                .Build().ToList();
-
-            return Builder<Conference>.CreateNew()
-                .With(x => x.Id = conferenceId)
-                .With(x => x.Participants = participants)
-                .Build();
         }
     }
 }
