@@ -71,8 +71,8 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
             })
         );
         this.eventhubSubscription$.add(
-            this.eventService.getHearingCountdownCompleteMessage().subscribe(conferenceId => {
-                this.handleHearingCountdownComplete(conferenceId);
+            this.eventService.getHearingCountdownCompleteMessage().subscribe(async conferenceId => {
+                await this.handleHearingCountdownComplete(conferenceId);
             })
         );
     }
@@ -125,24 +125,25 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         }
     }
 
-    handleHearingCountdownComplete(conferenceId: string) {
+    async handleHearingCountdownComplete(conferenceId: string) {
         if (this.isJudge && conferenceId === this.conferenceId) {
-            this.resetMute();
+            await this.resetMute();
         }
 
         if (!this.isJudge && conferenceId === this.conferenceId && !this.audioMuted) {
             this.logger.info(`${this.loggerPrefix} Countdown complete, muting participant`, this.logPayload);
-            this.toggleMute();
+            await this.toggleMute();
         }
+        await this.publishMediaDeviceStatus();
     }
 
     /**
      *Unmutes participants
      **/
-    resetMute() {
+    async resetMute() {
         if (this.audioMuted) {
             this.logger.debug(`${this.loggerPrefix} Resetting participant mute status to muted`, this.logPayload);
-            this.toggleMute();
+            await this.toggleMute();
         }
     }
 

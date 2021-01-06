@@ -9,7 +9,7 @@ import { HearingRole } from './hearing-role-model';
 
 export abstract class PanelModel {
     public id: string;
-    public isMuted: boolean;
+    public isRemoteMuted: boolean;
     public isSpotlighted: boolean;
     public handRaised: boolean;
     public displayName: string;

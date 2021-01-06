@@ -35,7 +35,7 @@ export class ParticipantUpdated {
         );
     }
     private constructor(
-        isMuted: string,
+        isRemoteMuted: string,
         buzzTime: number,
         pexipName: string,
         uuid: string,
@@ -43,7 +43,7 @@ export class ParticipantUpdated {
         isAudioOnlyCall: string,
         isVideoCall: string
     ) {
-        this.isRemoteMuted = isMuted.toUpperCase() === 'YES';
+        this.isRemoteMuted = isRemoteMuted.toUpperCase() === 'YES';
         this.isSpotlighted = spotlightTime !== 0;
         this.handRaised = buzzTime !== 0;
         this.pexipDisplayName = pexipName;

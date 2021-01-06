@@ -21,16 +21,28 @@
               *ngIf="!isEndpoint(participant)"
               [participant]="mapParticipantToParticipantResponse(participant)"
             ></app-participant-alert>
-            <img
-              *ngIf="!participant.isJudge"
-              appTooltip
-              [text]="participant.isMuted ? 'Unmute' : 'Mute'"
-              [colour]="'grey'"
-              [src]="participant.isMuted ? '/assets/images/mute-mic-red.png' : '/assets/images/mic.png'"
-              class="panel-icon"
-              [alt]="participant.isMuted ? 'Microphone muted icon' : 'Microphone on icon'"
-              (click)="toggleMuteParticipant(participant); $event.stopPropagation()"
-            />
+            <ng-container *ngIf="!participant.isJudge">
+              <img
+                *ngIf="participant.isRemoteMuted"
+                appTooltip
+                [text]="participant.isRemoteMuted ? 'Unlock mute' : 'Mute participant'"
+                [colour]="'grey'"
+                [src]="participant.isRemoteMuted ? '/assets/images/mic_remote_mute.png' : '/assets/images/mic.png'"
+                class="panel-icon"
+                [alt]="participant.isRemoteMuted ? 'Microphone muted icon' : 'Microphone on icon'"
+                (click)="toggleMuteParticipant(participant); $event.stopPropagation()"
+              />
+              <img
+                *ngIf="!participant.isRemoteMuted"
+                appTooltip
+                [text]="participant.isLocalAudioMuted ? 'Participant muted' : 'Mute participant'"
+                [colour]="'grey'"
+                [src]="participant.isLocalAudioMuted ? '/assets/images/mute-mic-red.png' : '/assets/images/mic.png'"
+                class="panel-icon"
+                [alt]="participant.isLocalAudioMuted ? 'Participant microphone muted icon' : 'Participant microphone on icon'"
+                (click)="toggleMuteParticipant(participant); $event.stopPropagation()"
+              />
+            </ng-container>
           </div>
           <div class="pmute" *ngIf="participant.isWitness && !participant.isInHearing()">
             <img
