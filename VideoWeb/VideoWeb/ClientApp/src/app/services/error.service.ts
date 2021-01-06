@@ -6,14 +6,23 @@ import { CallError } from '../waiting-space/models/video-call-models';
 import { ApiException } from './clients/api-client';
 import { Logger } from './logging/logger-base';
 import { SessionStorage } from './session-storage';
+import { ConnectionStatusService } from './connection-status.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ErrorService {
-    constructor(private router: Router, private logger: Logger) {
+    constructor(private router: Router, private logger: Logger, private connectionStatusService: ConnectionStatusService) {
         this.errorMessage = new SessionStorage<ErrorMessage>(this.ERROR_MESSAGE_KEY);
         this.errorCameraMicMessage = new SessionStorage<string>(this.ERROR_CAMERA_MIC_MESSAGE_KEY);
+        this.connectionStatusService.onConnectionStatusChange().subscribe(online => {
+            if (!online) {
+                return this.goToServiceError(
+                    `There's a problem with your connection`,
+                    'Please click "Reconnect" to return to the previous page. Call us if you keep seeing this message.'
+                );
+            }
+        });
     }
     readonly ERROR_MESSAGE_KEY = 'vh.error.message';
     readonly ERROR_CAMERA_MIC_MESSAGE_KEY = 'vh.error.camera.mic.message';
@@ -37,15 +46,10 @@ export class ErrorService {
                 return this.goToNotFound();
             default:
                 return this.goToServiceError(
-                    // tslint:disable-next-line: quotemark
-                    this.hasInternetConnection ? 'An unexpected error occurred' : "There's a problem with your connection",
+                    'An unexpected error occurred',
                     'Please click "Reconnect" to return to the previous page. Call us if you keep seeing this message.'
                 );
         }
-    }
-
-    get hasInternetConnection(): boolean {
-        return window.navigator.onLine;
     }
 
     returnHomeIfUnauthorised(error: any): boolean {
@@ -72,6 +76,7 @@ export class ErrorService {
     }
 
     goToServiceError(title: string, body: string = null, showReconnect = true) {
+        this.connectionStatusService.checkNow();
         this.saveToSession(title, body, showReconnect);
         this.router.navigate([pageUrls.ServiceError]);
     }
@@ -107,8 +112,10 @@ export class ErrorService {
         ];
         const isConnectionError = connectionErrors.filter(x => error.reason.toLowerCase().includes(x.toLowerCase())).length > 0;
         if (isConnectionError) {
-            // tslint:disable-next-line: quotemark
-            this.goToServiceError(this.hasInternetConnection ? 'Your connection was lost' : "There's a problem with your connection");
+            this.goToServiceError(
+                `Sorry, there's a problem with the service`,
+                `Your hearing cannot take place as planned. Everyone attending is affected. The court or tribunal know something is wrong. You do not need to take any action. We’ll contact you with another date. You may now close this page.`
+            );
             return;
         }
         const mediaBlockingIssues = [
@@ -163,7 +170,7 @@ export class ErrorService {
         }
 
         return this.goToServiceError(
-            this.hasInternetConnection ? 'An unexpected error occurred' : 'Your connection was lost',
+            'An unexpected error occurred',
             'Please click "Reconnect" to return to the previous page. Call us if you keep seeing this message.'
         );
     }

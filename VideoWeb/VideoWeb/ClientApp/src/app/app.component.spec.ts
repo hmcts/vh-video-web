@@ -11,6 +11,7 @@ import { DeviceTypeService } from './services/device-type.service';
 import { ErrorService } from './services/error.service';
 import { LocationService } from './services/location.service';
 import { PageTrackerService } from './services/page-tracker.service';
+import { ConnectionStatusService } from './services/connection-status.service';
 import { pageUrls } from './shared/page-url.constants';
 import { MockAdalService } from './testing/mocks/MockAdalService';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
@@ -23,6 +24,7 @@ describe('AppComponent', () => {
     let routerSpy: jasmine.SpyObj<Router>;
     let errorServiceSpy: jasmine.SpyObj<ErrorService>;
     let titleServiceSpy: jasmine.SpyObj<Title>;
+    let connectionStatusServiceSpy: jasmine.SpyObj<ConnectionStatusService>;
     let pageTrackerServiceSpy: jasmine.SpyObj<PageTrackerService>;
     const mockAdalService = new MockAdalService();
     let adalService;
@@ -58,7 +60,7 @@ describe('AppComponent', () => {
         });
         errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError', 'goToUnauthorised']);
         titleServiceSpy = jasmine.createSpyObj<Title>('Title', ['getTitle', 'setTitle']);
-
+        connectionStatusServiceSpy = jasmine.createSpyObj('ConnectionStatusService', ['start']);
         pageTrackerServiceSpy = jasmine.createSpyObj('PageTrackerService', ['trackNavigation', 'trackPreviousPage']);
     });
 
@@ -74,6 +76,7 @@ describe('AppComponent', () => {
             activatedRoute,
             locationServiceSpy,
             eventsServiceSpy,
+            connectionStatusServiceSpy,
             pageTrackerServiceSpy
         );
 
@@ -91,6 +94,15 @@ describe('AppComponent', () => {
     afterEach(() => {
         mockAdalService.setAuthenticated(false);
     });
+
+    it('should start connection status service if authenticated oninit', fakeAsync(() => {
+        locationServiceSpy.getCurrentUrl.and.returnValue(pageUrls.AdminVenueList);
+        locationServiceSpy.getCurrentPathName.and.returnValue(`/${pageUrls.AdminVenueList}`);
+        mockAdalService.setAuthenticated(true);
+        component.ngOnInit();
+        flushMicrotasks();
+        expect(connectionStatusServiceSpy.start).toHaveBeenCalled();
+    }));
 
     it('should start event service if authenticated oninit', fakeAsync(() => {
         locationServiceSpy.getCurrentUrl.and.returnValue(pageUrls.AdminVenueList);

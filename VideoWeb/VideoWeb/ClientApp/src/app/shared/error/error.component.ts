@@ -5,6 +5,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { PageTrackerService } from 'src/app/services/page-tracker.service';
 import { ErrorService } from 'src/app/services/error.service';
+import { ConnectionStatusService } from 'src/app/services/connection-status.service';
 
 @Component({
     selector: 'app-error',
@@ -30,14 +31,15 @@ export class ErrorComponent implements OnInit, OnDestroy {
         private pageTracker: PageTrackerService,
         private eventsService: EventsService,
         private logger: Logger,
-        private errorService: ErrorService
+        private errorService: ErrorService,
+        private connectionStatusService: ConnectionStatusService
     ) {
         this.browserRefresh = false;
         this.checkForRefresh();
     }
 
     get hasInternetConnection(): boolean {
-        return window.navigator.onLine;
+        return this.connectionStatusService.status;
     }
 
     ngOnInit(): void {
