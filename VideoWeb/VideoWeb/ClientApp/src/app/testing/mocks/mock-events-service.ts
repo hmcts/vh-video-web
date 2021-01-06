@@ -45,7 +45,8 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'getHeartbeat',
         'getHearingTransfer',
         'sendTransferRequest',
-        'getParticipantMediaStatusMessage'
+        'getParticipantMediaStatusMessage',
+        'sendMediaStatus'
     ],
     {
         isConnectedToHub: isConnectedSpy
