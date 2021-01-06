@@ -109,7 +109,7 @@ namespace VideoWeb.UnitTests.Hub
         {
             var conferenceId = Guid.NewGuid();
             var participants = Builder<Participant>.CreateListOfSize(3)
-                .All().With(x=> x.Id = Guid.NewGuid())
+                .All().With(x=> x.Id = Guid.NewGuid()).With(x=>x.Username = Faker.Internet.Email())
                 .TheFirst(1).With(x => x.Role = Role.Judge)
                 .TheNext(1).With(x => x.Role = Role.Individual).With(x => x.Username = participantUsername)
                 .Build().ToList();

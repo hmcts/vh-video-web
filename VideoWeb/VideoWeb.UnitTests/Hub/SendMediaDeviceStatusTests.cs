@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Services.Video;
 
@@ -32,10 +33,12 @@ namespace VideoWeb.UnitTests.Hub
                 .ReturnsAsync(conference);
 
             await Hub.SendMediaDeviceStatus(conferenceId, participant.Id, deviceStatus);
-            EventHubClientMock.Verify(
-                x => x.Group(It.IsAny<string>())
-                    .ParticipantMediaStatusMessage(conferenceId, participant.Id, deviceStatus),
-                Times.Exactly(participantCount));
+            // EventHubClientMock.Verify(
+            //     x => x.Group(It.IsAny<string>())
+            //         .ParticipantMediaStatusMessage(conferenceId, participant.Id, deviceStatus),
+            //     Times.Exactly(participantCount));
+            
+            VerifyMessageCallCount(conference, participant.Id, deviceStatus, Times.Once());
         }
 
         [Test]
@@ -57,9 +60,22 @@ namespace VideoWeb.UnitTests.Hub
                 .ReturnsAsync(conference);
 
             await Hub.SendMediaDeviceStatus(conferenceId, participantId, deviceStatus);
+
+            VerifyMessageCallCount(conference, participantId, deviceStatus, Times.Never());
+        }
+
+        private void VerifyMessageCallCount(Conference conference, Guid participantId, ParticipantMediaStatus message,
+            Times times)
+        {
+            var judge = conference.Participants.Single(x => x.IsJudge());
             EventHubClientMock.Verify(
-                x => x.Group(It.IsAny<string>())
-                    .ParticipantMediaStatusMessage(conferenceId, participantId, deviceStatus), Times.Never);
+                x => x.Group(judge.Username.ToLowerInvariant())
+                    .ParticipantMediaStatusMessage(conference.Id, participantId, message), times);
+
+
+            EventHubClientMock.Verify(
+                x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName)
+                    .ParticipantMediaStatusMessage(conference.Id, participantId, message), times);
         }
     }
 }

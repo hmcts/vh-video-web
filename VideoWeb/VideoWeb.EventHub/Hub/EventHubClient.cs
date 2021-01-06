@@ -354,15 +354,14 @@ namespace VideoWeb.EventHub.Hub
 
                 await Clients.Group(VhOfficersGroupName)
                     .ParticipantMediaStatusMessage(conferenceId, participantId, mediaStatus);
+                var judge = conference.Participants.Single(x => x.IsJudge());
+                await Clients.Group(judge.Username.ToLowerInvariant())
+                    .ParticipantMediaStatusMessage(conferenceId, participantId, mediaStatus);
+                
                 _logger.LogTrace(
                     "Participant device status updated: Participant Id: {participant} | Conference Id: {conference}",
                     participantId, conferenceId);
-                
-                foreach (var pat in conference.Participants)
-                {
-                    await Clients.Group(participant.Username.ToLowerInvariant())
-                        .ParticipantMediaStatusMessage(conferenceId, participantId, mediaStatus);
-                }
+
             }
             catch (Exception ex)
             {
