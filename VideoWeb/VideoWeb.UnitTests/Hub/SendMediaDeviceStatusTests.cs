@@ -23,7 +23,6 @@ namespace VideoWeb.UnitTests.Hub
             {
                 IsLocalMuted = true
             };
-            var participantCount = conference.Participants.Count + 1; // include the VHO group
 
             SetupEventHubClientsForAllParticipantsInConference(conference, true);
 
@@ -33,10 +32,6 @@ namespace VideoWeb.UnitTests.Hub
                 .ReturnsAsync(conference);
 
             await Hub.SendMediaDeviceStatus(conferenceId, participant.Id, deviceStatus);
-            // EventHubClientMock.Verify(
-            //     x => x.Group(It.IsAny<string>())
-            //         .ParticipantMediaStatusMessage(conferenceId, participant.Id, deviceStatus),
-            //     Times.Exactly(participantCount));
             
             VerifyMessageCallCount(conference, participant.Id, deviceStatus, Times.Once());
         }
