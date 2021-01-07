@@ -126,17 +126,12 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
     }
 
     async handleHearingCountdownComplete(conferenceId: string) {
-        if (this.isJudge && conferenceId === this.conferenceId) {
-            await this.resetMute();
-        }
-        console.log(`is judge ${this.isJudge}`);
-        console.log(`is for conference ${conferenceId === this.conferenceId}`);
-        if (this.isJudge || conferenceId !== this.conferenceId) {
-            console.log('is judge or not for conference');
+        if (conferenceId !== this.conferenceId) {
             return;
         }
 
-        if (this.isJudge || conferenceId !== this.conferenceId) {
+        if (this.isJudge) {
+            await this.resetMute();
             return;
         }
 

@@ -737,7 +737,7 @@ describe('ParticipantsPanelComponent', () => {
         participantMediaStatusSubjectMock.next(message);
 
         const updatedPat = component.participants.find(x => x.id === message.participantId);
-        expect(updatedPat.isLocalAudioMuted).toBe(mediaStatus.is_local_muted);
+        expect(updatedPat.isLocalAudioMuted).toBe(mediaStatus.is_local_audio_muted);
     });
 
     it('should not process eventhub device status message for participant not in list', () => {
