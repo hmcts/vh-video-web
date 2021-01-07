@@ -65,6 +65,10 @@
   margin-bottom: 30px;
 }
 
+.avoid-clicks {
+  pointer-events: none;
+}
+
 .switch input {
   opacity: 0;
   width: 0;
@@ -79,8 +83,8 @@
   right: 0;
   bottom: 0;
   background-color: govuk-colour('mid-grey');
-  -webkit-transition: 0.2s;
-  transition: 0.4s;
+  -webkit-transition: 1s;
+  transition: 1s;
 }
 
 .slider:before {
@@ -91,8 +95,8 @@
   left: 3px;
   bottom: 3px;
   background-color: govuk-colour('white');
-  -webkit-transition: 0.2s;
-  transition: 0.2s;
+  -webkit-transition: 1s;
+  transition: 1s;
 }
 
 input:checked + .slider {
