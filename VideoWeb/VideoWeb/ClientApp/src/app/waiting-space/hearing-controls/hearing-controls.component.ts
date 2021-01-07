@@ -17,6 +17,7 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
     private readonly loggerPrefix = '[HearingControls] -';
     @Input() participant: ParticipantResponse;
     @Input() isPrivateConsultation: boolean;
+    @Input() audioOnly: boolean;
     @Input() outgoingStream: MediaStream | URL;
     @Input() conferenceId: string;
     @Input() isSupportedBrowserForNetworkHealth: boolean;

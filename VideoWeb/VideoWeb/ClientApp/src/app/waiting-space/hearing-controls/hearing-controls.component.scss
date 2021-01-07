@@ -77,16 +77,12 @@
 
 .icons-container {
   width: fit-content;
-  height: 35px;
   display: grid;
-  grid-template-columns: 60px 60px 60px 60px;
   grid-template-rows: auto;
-  grid-column-gap: 8px;
-  justify-content: center;
-  align-content: center;
+  grid-column-gap: 32px;
   background: rgba(0, 0, 0, 0.5);
   border-radius: 24px;
-  padding: 8px 0px 6px 32px;
+  padding: 12px 32px 12px 32px;
   float: none;
   margin: auto;
 }
@@ -95,41 +91,6 @@
   grid-row: 1;
   opacity: 0.5;
   height: 24px;
-
-  &--self-view {
-    @extend .icon-btn;
-    grid-column: 1;
-  }
-
-  &--audio-mute {
-    @extend .icon-btn;
-    grid-column: 2;
-  }
-
-  &--video-mute {
-    @extend .icon-btn;
-    grid-column: 3;
-  }
-
-  &--pause-hearing {
-    @extend .icon-btn;
-    grid-column: 3;
-  }
-
-  &--raise-hand {
-    @extend .icon-btn;
-    grid-column: 4;
-  }
-
-  &--end-hearing {
-    @extend .icon-btn;
-    grid-column: 4;
-  }
-
-  &--leave-consultation {
-    @extend .icon-btn;
-    grid-column: 4;
-  }
 }
 
 .icon-btn:hover {
