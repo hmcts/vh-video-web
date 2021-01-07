@@ -129,7 +129,14 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         if (this.isJudge && conferenceId === this.conferenceId) {
             await this.resetMute();
         }
+        console.log(`is judge ${this.isJudge}`);
+        console.log(`is for conference ${conferenceId === this.conferenceId}`);
+        if (this.isJudge || conferenceId !== this.conferenceId) {
+            console.log('is judge or not for conference');
+            return;
+        }
 
+<<<<<<< HEAD
         if (this.isJudge || conferenceId !== this.conferenceId) {
             return;
         }
@@ -138,6 +145,14 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
             this.logger.info(`${this.loggerPrefix} Countdown complete, publishing device status`, this.logPayload);
             await this.publishMediaDeviceStatus();
         } else {
+=======
+        if (this.audioMuted) {
+            console.log('audio already muted');
+            this.logger.info(`${this.loggerPrefix} Countdown complete, publishing device status`, this.logPayload);
+            await this.publishMediaDeviceStatus();
+        } else {
+            console.log('audio not muted. now muting');
+>>>>>>> 2660a6d468eb7c3d360c96c216788a879cf08dc9
             this.logger.info(`${this.loggerPrefix} Countdown complete, muting participant`, this.logPayload);
             await this.toggleMute();
         }
