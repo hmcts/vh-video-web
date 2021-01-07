@@ -4,6 +4,7 @@ import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/c
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { ParticipantUpdated } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 
@@ -70,8 +71,8 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
             })
         );
         this.eventhubSubscription$.add(
-            this.eventService.getHearingCountdownCompleteMessage().subscribe(conferenceId => {
-                this.handleHearingCountdownComplete(conferenceId);
+            this.eventService.getHearingCountdownCompleteMessage().subscribe(async conferenceId => {
+                await this.handleHearingCountdownComplete(conferenceId);
             })
         );
     }
@@ -124,28 +125,36 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         }
     }
 
-    handleHearingCountdownComplete(conferenceId: string) {
-        if (this.isJudge && conferenceId === this.conferenceId) {
-            this.resetMute();
+    async handleHearingCountdownComplete(conferenceId: string) {
+        if (conferenceId !== this.conferenceId) {
+            return;
         }
 
-        if (!this.isJudge && conferenceId === this.conferenceId && !this.audioMuted) {
+        if (this.isJudge) {
+            await this.resetMute();
+            return;
+        }
+
+        if (this.audioMuted) {
+            this.logger.info(`${this.loggerPrefix} Countdown complete, publishing device status`, this.logPayload);
+            await this.publishMediaDeviceStatus();
+        } else {
             this.logger.info(`${this.loggerPrefix} Countdown complete, muting participant`, this.logPayload);
-            this.toggleMute();
+            await this.toggleMute();
         }
     }
 
     /**
      *Unmutes participants
      **/
-    resetMute() {
+    async resetMute() {
         if (this.audioMuted) {
             this.logger.debug(`${this.loggerPrefix} Resetting participant mute status to muted`, this.logPayload);
-            this.toggleMute();
+            await this.toggleMute();
         }
     }
 
-    toggleMute() {
+    async toggleMute() {
         this.logger.info(
             `${this.loggerPrefix} Participant is attempting to toggle own audio mute status to ${!this.audioMuted}`,
             this.logPayload
@@ -153,6 +162,7 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         const muteAudio = this.videoCallService.toggleMute(this.conferenceId, this.participant.id);
         this.logger.info(`${this.loggerPrefix} Participant audio mute status updated to ${muteAudio}`, this.logPayload);
         this.audioMuted = muteAudio;
+        await this.publishMediaDeviceStatus();
     }
 
     toggleVideoMute() {
@@ -163,6 +173,11 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         const muteVideo = this.videoCallService.toggleVideo(this.conferenceId, this.participant.id);
         this.logger.info(`${this.loggerPrefix} Participant video mute status updated to ${muteVideo}`, this.logPayload);
         this.videoMuted = muteVideo;
+    }
+
+    async publishMediaDeviceStatus() {
+        const mediaStatus = new ParticipantMediaStatus(this.audioMuted);
+        await this.eventService.sendMediaStatus(this.conferenceId, this.participant.id, mediaStatus);
     }
 
     toggleView(): boolean {

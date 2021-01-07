@@ -20,6 +20,7 @@ import {
     DismissWitnessFromHearingEvent
 } from 'src/app/shared/models/participant-event';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
+import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 
 @Component({
     selector: 'app-participants-panel',
@@ -146,6 +147,24 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
                 this.handleHearingTransferChange(message);
             })
         );
+
+        this.eventhubSubscription$.add(
+            this.eventService.getParticipantMediaStatusMessage().subscribe(async message => {
+                this.handleParticipantMediaStatusChange(message);
+            })
+        );
+    }
+    handleParticipantMediaStatusChange(message: ParticipantMediaStatusMessage) {
+        const participant = this.participants.find(x => x.id === message.participantId);
+        if (!participant) {
+            return;
+        }
+        this.logger.debug(`${this.loggerPrefix} Participant device status has been updated`, {
+            conference: this.conferenceId,
+            participant: participant.id,
+            mediaStatus: message.mediaStatus
+        });
+        participant.isLocalAudioMuted = message.mediaStatus.is_local_audio_muted;
     }
 
     handleHearingTransferChange(message: HearingTransfer) {
@@ -175,14 +194,14 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
             return;
         }
         participant.pexipId = updatedParticipant.uuid;
-        participant.isMuted = updatedParticipant.isRemoteMuted;
+        participant.isRemoteMuted = updatedParticipant.isRemoteMuted;
         participant.handRaised = updatedParticipant.handRaised;
         participant.isSpotlighted = updatedParticipant.isSpotlighted;
         this.logger.debug(`${this.loggerPrefix} Participant has been updated in video call`, {
             conference: this.conferenceId,
             participant: participant.id,
             pexipParticipant: participant.pexipId,
-            isMuted: participant.isMuted,
+            isRemoteMuted: participant.isRemoteMuted,
             handRaised: participant.handRaised,
             isSpotlighted: participant.isSpotlighted
         });
@@ -266,17 +285,17 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
 
     toggleMuteParticipant(participant: PanelModel) {
         const hearingParticipants = this.participants.filter(x => x.isInHearing());
-        const mutedParticipants = hearingParticipants.filter(x => x.isMuted);
+        const mutedParticipants = hearingParticipants.filter(x => x.isRemoteMuted);
         const p = this.participants.find(x => x.id === participant.id);
 
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to toggle mute for participant`, {
             conference: this.conferenceId,
             participant: p.id,
             pexipParticipant: p.pexipId,
-            current: p.isMuted,
-            new: !p.isMuted
+            current: p.isRemoteMuted,
+            new: !p.isRemoteMuted
         });
-        this.videoCallService.muteParticipant(p.pexipId, !p.isMuted, this.conferenceId, p.id);
+        this.videoCallService.muteParticipant(p.pexipId, !p.isRemoteMuted, this.conferenceId, p.id);
 
         // check if last person to be unmuted manually
         if (mutedParticipants.length === 1 && this.isMuteAll) {
@@ -287,7 +306,7 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         }
 
         // mute conference if last person manually muted
-        if (mutedParticipants.length === hearingParticipants.length - 1 && !p.isMuted) {
+        if (mutedParticipants.length === hearingParticipants.length - 1 && !p.isRemoteMuted) {
             this.logger.debug(`${this.loggerPrefix} Judge has manually muted the last unmuted participant. Muting conference`, {
                 conference: this.conferenceId
             });
