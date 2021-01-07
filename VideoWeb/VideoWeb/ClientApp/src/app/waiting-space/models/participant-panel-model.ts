@@ -22,6 +22,7 @@ export abstract class PanelModel {
     public representee: string;
     public transferringIn: boolean;
     public isLocalAudioMuted: boolean;
+    public isLocalVideoMuted: boolean;
 
     constructor(
         id: string,

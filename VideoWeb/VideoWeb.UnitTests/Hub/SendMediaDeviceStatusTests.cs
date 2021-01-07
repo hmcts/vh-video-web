@@ -21,7 +21,8 @@ namespace VideoWeb.UnitTests.Hub
             var participant = conference.Participants.First(x => x.Username == participantUsername);
             var deviceStatus = new ParticipantMediaStatus
             {
-                IsLocalMuted = true
+                IsLocalAudioMuted = true,
+                IsLocalVideoMuted = false
             };
 
             SetupEventHubClientsForAllParticipantsInConference(conference, true);
@@ -46,7 +47,8 @@ namespace VideoWeb.UnitTests.Hub
             var participantId = Guid.NewGuid();
             var deviceStatus = new ParticipantMediaStatus
             {
-                IsLocalMuted = true
+                IsLocalAudioMuted = false,
+                IsLocalVideoMuted = true
             };
             
             ConferenceCacheMock.Setup(cache =>
@@ -65,7 +67,10 @@ namespace VideoWeb.UnitTests.Hub
             var judge = conference.Participants.Single(x => x.IsJudge());
             EventHubClientMock.Verify(
                 x => x.Group(judge.Username.ToLowerInvariant())
-                    .ParticipantMediaStatusMessage(conference.Id, participantId, message), times);
+                    .ParticipantMediaStatusMessage(conference.Id, participantId,
+                        It.Is<ParticipantMediaStatus>(s =>
+                            s.IsLocalAudioMuted == message.IsLocalAudioMuted &&
+                            s.IsLocalVideoMuted == message.IsLocalVideoMuted)), times);
 
 
             EventHubClientMock.Verify(

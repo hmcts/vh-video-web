@@ -166,7 +166,7 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         await this.publishMediaDeviceStatus();
     }
 
-    toggleVideoMute() {
+    async toggleVideoMute() {
         this.logger.info(
             `${this.loggerPrefix} Participant is attempting to toggle own video mute status to ${!this.videoMuted}`,
             this.logPayload
@@ -174,10 +174,11 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         const muteVideo = this.videoCallService.toggleVideo(this.conferenceId, this.participant.id);
         this.logger.info(`${this.loggerPrefix} Participant video mute status updated to ${muteVideo}`, this.logPayload);
         this.videoMuted = muteVideo;
+        await this.publishMediaDeviceStatus();
     }
 
     async publishMediaDeviceStatus() {
-        const mediaStatus = new ParticipantMediaStatus(this.audioMuted);
+        const mediaStatus = new ParticipantMediaStatus(this.audioMuted, this.videoMuted);
         await this.eventService.sendMediaStatus(this.conferenceId, this.participant.id, mediaStatus);
     }
 

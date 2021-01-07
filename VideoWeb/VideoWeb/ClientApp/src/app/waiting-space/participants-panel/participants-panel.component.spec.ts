@@ -730,7 +730,7 @@ describe('ParticipantsPanelComponent', () => {
 
     it('should process eventhub device status message for participant in hearing', () => {
         component.setupEventhubSubscribers();
-        const mediaStatus = new ParticipantMediaStatus(true);
+        const mediaStatus = new ParticipantMediaStatus(true, false);
         const pat = participants.filter(x => x.role === Role.Individual)[0];
         const message = new ParticipantMediaStatusMessage(conferenceId, pat.id, mediaStatus);
 
@@ -738,16 +738,19 @@ describe('ParticipantsPanelComponent', () => {
 
         const updatedPat = component.participants.find(x => x.id === message.participantId);
         expect(updatedPat.isLocalAudioMuted).toBe(mediaStatus.is_local_audio_muted);
+        expect(updatedPat.isLocalVideoMuted).toBe(mediaStatus.is_local_video_muted);
     });
 
     it('should not process eventhub device status message for participant not in list', () => {
         component.setupEventhubSubscribers();
-        const mediaStatus = new ParticipantMediaStatus(true);
+        const mediaStatus = new ParticipantMediaStatus(true, true);
         const message = new ParticipantMediaStatusMessage(conferenceId, Guid.create().toString(), mediaStatus);
 
         participantMediaStatusSubjectMock.next(message);
 
         const updatedAudioCount = component.participants.filter(x => x.isLocalAudioMuted).length;
+        const updatedVideoCount = component.participants.filter(x => x.isLocalVideoMuted).length;
         expect(updatedAudioCount).toBe(0);
+        expect(updatedVideoCount).toBe(0);
     });
 });
