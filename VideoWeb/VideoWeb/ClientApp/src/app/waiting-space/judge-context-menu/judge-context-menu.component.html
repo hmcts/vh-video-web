@@ -1,13 +1,13 @@
-<img src="assets/images/elipses.png" class="panel-icon" (click)="toggleDropdown();" alt="Context menu icon">
+<img src="assets/images/elipses.png" class="panel-icon" (click)="toggleDropdown()" alt="Context menu icon" />
 <div [hidden]="!isDroppedDown" class="dropdown-content">
   <p class="govuk-body-s dropdown-header">
     <strong>{{ participant.displayName }}</strong>
     <span [innerHTML]="getAdditionalText()"></span>
   </p>
-  <hr>
-  <a *ngIf="participant.isInHearing()" (click)="toggleMuteParticipant()">{{participant.isMuted ? 'Unmute':'Mute'}}</a>
-  <a *ngIf="participant.isWitness && !participant.isInHearing()" (click)="callWitnessIntoHearing()">{{'Call witness'}}</a>
-  <a *ngIf="participant.isWitness && participant.isInHearing()" (click)="dismissWitnessFromHearing()">{{'Dismiss witness'}}</a>
+  <hr />
+  <a *ngIf="participant.isInHearing()" (click)="toggleMuteParticipant()">{{ participant.isRemoteMuted ? 'Unmute' : 'Mute' }}</a>
+  <a *ngIf="participant.isWitness && !participant.isInHearing()" (click)="callWitnessIntoHearing()">{{ 'Call witness' }}</a>
+  <a *ngIf="participant.isWitness && participant.isInHearing()" (click)="dismissWitnessFromHearing()">{{ 'Dismiss witness' }}</a>
   <a *ngIf="!participant.isJudge && participant.handRaised && participant.isInHearing()" (click)="lowerParticipantHand()">Lower hand</a>
-  <a *ngIf="participant.isInHearing()" (click)="toggleSpotlightParticipant()">{{participant.isSpotlighted ? 'Unpin':'Pin'}}</a>
+  <a *ngIf="participant.isInHearing()" (click)="toggleSpotlightParticipant()">{{ participant.isSpotlighted ? 'Unpin' : 'Pin' }}</a>
 </div>

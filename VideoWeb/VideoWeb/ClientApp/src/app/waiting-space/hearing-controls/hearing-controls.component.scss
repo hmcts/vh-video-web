@@ -10,6 +10,10 @@
   width: 100vw;
 }
 
+.controls-container {
+  margin-top: 10vh !important;
+}
+
 .main-container-judge {
   @include all-main-container;
   left: 19%;
