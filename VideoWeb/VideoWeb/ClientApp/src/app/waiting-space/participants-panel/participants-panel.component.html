@@ -74,7 +74,7 @@
           <div class="pCrest" *ngIf="isEndpoint(participant)">
             <img src="/assets/images/jvs.png" class="panel-icon panel-icon-crest" alt="JVS endpoint icon" />
           </div>
-          <div class="pPin" *ngIf="isParticipantInHearing(participant)">
+          <div class="pPin" *ngIf="isParticipantInHearing(participant) && !participant.isLocalVideoMuted">
             <img
               appTooltip
               [text]="
@@ -87,6 +87,16 @@
               class="panel-icon"
               [alt]="participant.isSpotlighted ? 'Spotlight enabled icon' : 'Spotlight disabled icon'"
               (click)="toggleSpotlightParticipant(participant); $event.stopPropagation()"
+            />
+          </div>
+          <div class="pPin" *ngIf="isParticipantInHearing(participant) && participant.isLocalVideoMuted">
+            <img
+              appTooltip
+              [text]="'Camera off'"
+              [colour]="'red'"
+              src="/assets/images/participant_video_muted.png"
+              class="panel-icon"
+              alt="Participant camera off icon"
             />
           </div>
           <app-judge-context-menu
