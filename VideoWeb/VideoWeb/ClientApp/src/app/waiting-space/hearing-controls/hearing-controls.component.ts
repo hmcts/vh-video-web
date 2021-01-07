@@ -129,12 +129,22 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         if (this.isJudge && conferenceId === this.conferenceId) {
             await this.resetMute();
         }
+        console.log(`is judge ${this.isJudge}`);
+        console.log(`is for conference ${conferenceId === this.conferenceId}`);
+        if (this.isJudge || conferenceId !== this.conferenceId) {
+            console.log('is judge or not for conference');
+            return;
+        }
 
-        if (!this.isJudge && conferenceId === this.conferenceId && !this.audioMuted) {
+        if (this.audioMuted) {
+            console.log('audio already muted');
+            this.logger.info(`${this.loggerPrefix} Countdown complete, publishing device status`, this.logPayload);
+            await this.publishMediaDeviceStatus();
+        } else {
+            console.log('audio not muted. now muting');
             this.logger.info(`${this.loggerPrefix} Countdown complete, muting participant`, this.logPayload);
             await this.toggleMute();
         }
-        await this.publishMediaDeviceStatus();
     }
 
     /**

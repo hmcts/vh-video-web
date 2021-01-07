@@ -331,6 +331,18 @@ describe('HearingControlsComponent', () => {
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(1);
     });
 
+    it('should publish media device status for non-judge participants who are already muted after countdown is complete', () => {
+        component.participant = gloalConference.participants.find(x => x.role === Role.Individual);
+        component.audioMuted = true;
+        videoCallService.toggleMute.calls.reset();
+        eventsService.sendMediaStatus.calls.reset();
+
+        hearingCountdownCompleteSubjectMock.next(gloalConference.id.toString());
+
+        expect(videoCallService.toggleMute).toHaveBeenCalledTimes(0);
+        expect(eventsService.sendMediaStatus).toHaveBeenCalledTimes(1);
+    });
+
     it('should emit when leave button has been clicked', () => {
         spyOn(component.leaveConsulation, 'emit');
         component.leavePrivateConsultation();
