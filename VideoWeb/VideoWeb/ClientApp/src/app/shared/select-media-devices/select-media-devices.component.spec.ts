@@ -160,4 +160,16 @@ describe('SelectMediaDevicesComponent', () => {
         expect(component.acceptMediaDeviceChange.emit).toHaveBeenCalled();
         expect(spy.calls.mostRecent().args[0].audioOnly).toBe(true);
     });
+
+    it('should set block click to true when transition starts', () => {
+        component.blockClicks = false;
+        component.transitionstart();
+        expect(component.blockClicks).toBeTruthy();
+    });
+
+    it('should set block click to false when transition ends', () => {
+        component.blockClicks = true;
+        component.transitionEnd();
+        expect(component.blockClicks).toBeFalsy();
+    });
 });
