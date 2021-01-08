@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -31,30 +32,32 @@ namespace VideoWeb.EventHub.Handlers
 
         private static ParticipantState DeriveParticipantStatusForTransferEvent(CallbackEvent callbackEvent)
         {
-            if (callbackEvent.TransferFrom == RoomType.WaitingRoom &&
-                (callbackEvent.TransferTo == RoomType.ConsultationRoom1 ||
-                 callbackEvent.TransferTo == RoomType.ConsultationRoom2))
+            var transferTo = Enum.Parse<RoomType>(callbackEvent.TransferTo);
+            var transferFrom = Enum.Parse<RoomType>(callbackEvent.TransferFrom);
+
+            if (transferFrom == RoomType.WaitingRoom &&
+                (transferTo == RoomType.ConsultationRoom1 ||
+                 transferTo == RoomType.ConsultationRoom2))
                 return ParticipantState.InConsultation;
 
-            if ((callbackEvent.TransferFrom == RoomType.ConsultationRoom1 ||
-                 callbackEvent.TransferFrom == RoomType.ConsultationRoom2) &&
-                callbackEvent.TransferTo == RoomType.WaitingRoom)
+            if ((transferFrom == RoomType.ConsultationRoom1 ||
+                 transferFrom == RoomType.ConsultationRoom2) &&
+                transferTo == RoomType.WaitingRoom)
                 return ParticipantState.Available;
 
-            if ((callbackEvent.TransferFrom == RoomType.ConsultationRoom1 ||
-                 callbackEvent.TransferFrom == RoomType.ConsultationRoom2) &&
-                callbackEvent.TransferTo == RoomType.HearingRoom)
+            if ((transferFrom == RoomType.ConsultationRoom1 ||
+                 transferFrom == RoomType.ConsultationRoom2) &&
+                transferTo == RoomType.HearingRoom)
                 return ParticipantState.InHearing;
 
-            switch (callbackEvent.TransferFrom)
+            switch (transferFrom)
             {
-                case RoomType.WaitingRoom when callbackEvent.TransferTo == RoomType.HearingRoom:
+                case RoomType.WaitingRoom when transferTo == RoomType.HearingRoom:
                     return ParticipantState.InHearing;
-                case RoomType.HearingRoom when callbackEvent.TransferTo == RoomType.WaitingRoom:
+                case RoomType.HearingRoom when transferTo == RoomType.WaitingRoom:
                     return ParticipantState.Available;
                 default:
-                    throw new RoomTransferException(callbackEvent.TransferFrom.GetValueOrDefault(),
-                        callbackEvent.TransferTo.GetValueOrDefault());
+                    throw new RoomTransferException(transferFrom, transferTo);
             }
         }
     }

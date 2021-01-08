@@ -39,8 +39,8 @@ namespace VideoWeb.UnitTests.EventHandlers
                 EventId = Guid.NewGuid().ToString(),
                 ConferenceId = conference.Id,
                 ParticipantId = participantForEvent.Id,
-                TransferFrom = from,
-                TransferTo = to,
+                TransferFrom = from.ToString(),
+                TransferTo = to.ToString(),
                 TimeStampUtc = DateTime.UtcNow
             };
             await _eventHandler.HandleAsync(callbackEvent);
@@ -66,8 +66,8 @@ namespace VideoWeb.UnitTests.EventHandlers
                 EventId = Guid.NewGuid().ToString(),
                 ConferenceId = conference.Id,
                 ParticipantId = participantForEvent.Id,
-                TransferFrom = RoomType.WaitingRoom,
-                TransferTo = RoomType.WaitingRoom,
+                TransferFrom = RoomType.WaitingRoom.ToString(),
+                TransferTo = RoomType.WaitingRoom.ToString(),
                 TimeStampUtc = DateTime.UtcNow
             };
 
