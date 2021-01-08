@@ -43,8 +43,8 @@ namespace VideoWeb.UnitTests.Mappings
 
             var result = _sut.Map(conferenceEventRequest, testConference);
             result.Should().NotBeNull();
-            result.TransferFrom.Should().Be(conferenceEventRequest.Transfer_from);
-            result.TransferTo.Should().Be(conferenceEventRequest.Transfer_to);
+            result.TransferFrom.Should().Be(conferenceEventRequest.Transfer_from.ToString());
+            result.TransferTo.Should().Be(conferenceEventRequest.Transfer_to.ToString());
         }
 
         [Test]

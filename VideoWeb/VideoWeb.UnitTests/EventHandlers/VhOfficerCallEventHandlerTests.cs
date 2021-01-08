@@ -34,7 +34,7 @@ namespace VideoWeb.UnitTests.EventHandlers
                 EventId = Guid.NewGuid().ToString(),
                 ConferenceId = conference.Id,
                 ParticipantId = participantForEvent.Id,
-                TransferTo = transferTo,
+                TransferTo = transferTo?.ToString(),
                 TimeStampUtc = DateTime.UtcNow
             };
 
@@ -60,7 +60,7 @@ namespace VideoWeb.UnitTests.EventHandlers
                 EventId = Guid.NewGuid().ToString(),
                 ConferenceId = conference.Id,
                 ParticipantId = participantForEvent.Id,
-                TransferTo = transferTo,
+                TransferTo = transferTo.ToString(),
                 TimeStampUtc = DateTime.UtcNow
             };
 
