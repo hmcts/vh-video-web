@@ -2,9 +2,11 @@ import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { AdalService } from 'adal-angular4';
 import { Observable, Subject } from 'rxjs';
-import { Heartbeat } from '../shared/models/heartbeat';
-import { ConfigService } from './api/config.service';
 import { ErrorService } from 'src/app/services/error.service';
+import { Heartbeat } from '../shared/models/heartbeat';
+import { ParticipantMediaStatus } from '../shared/models/participant-media-status';
+import { ParticipantMediaStatusMessage } from '../shared/models/participant-media-status-message';
+import { ConfigService } from './api/config.service';
 import { ConferenceStatus, ConsultationAnswer, EndpointStatus, ParticipantStatus, RoomType } from './clients/api-client';
 import { Logger } from './logging/logger-base';
 import { AdminConsultationMessage } from './models/admin-consultation-message';
@@ -12,11 +14,11 @@ import { ConferenceMessageAnswered } from './models/conference-message-answered'
 import { ConferenceStatusMessage } from './models/conference-status-message';
 import { ConsultationMessage } from './models/consultation-message';
 import { EndpointStatusMessage } from './models/EndpointStatusMessage';
+import { HearingTransfer, TransferDirection } from './models/hearing-transfer';
 import { HelpMessage } from './models/help-message';
 import { InstantMessage } from './models/instant-message';
 import { HeartbeatHealth, ParticipantHeartbeat } from './models/participant-heartbeat';
 import { ParticipantStatusMessage } from './models/participant-status-message';
-import { HearingTransfer, TransferDirection } from './models/hearing-transfer';
 
 @Injectable({
     providedIn: 'root'
@@ -39,6 +41,7 @@ export class EventsService {
     private eventHubDisconnectSubject = new Subject<number>();
     private eventHubReconnectSubject = new Subject();
     private hearingTransferSubject = new Subject<HearingTransfer>();
+    private participantMediaStatusSubject = new Subject<ParticipantMediaStatusMessage>();
 
     reconnectionAttempt: number;
     reconnectionPromise: Promise<any>;
@@ -187,6 +190,15 @@ export class EventsService {
         });
 
         this.connection.on(
+            'ParticipantMediaStatusMessage',
+            (conferenceId: string, participantId: string, mediaStatus: ParticipantMediaStatus) => {
+                const payload = new ParticipantMediaStatusMessage(conferenceId, participantId, mediaStatus);
+                this.logger.debug('[EventsService] - Participant Media Status change received: ', payload);
+                this.participantMediaStatusSubject.next(payload);
+            }
+        );
+
+        this.connection.on(
             'ReceiveHeartbeat',
             (
                 conferenceId: string,
@@ -296,6 +308,10 @@ export class EventsService {
         return this.hearingTransferSubject.asObservable();
     }
 
+    getParticipantMediaStatusMessage(): Observable<ParticipantMediaStatusMessage> {
+        return this.participantMediaStatusSubject.asObservable();
+    }
+
     async sendMessage(instantMessage: InstantMessage) {
         try {
             await this.connection.send(
@@ -319,5 +335,14 @@ export class EventsService {
     async sendTransferRequest(conferenceId: string, participantId: string, transferDirection: TransferDirection) {
         await this.connection.send('sendTransferRequest', conferenceId, participantId, transferDirection);
         this.logger.debug('[EventsService] - Sent transfer request to EventHub', transferDirection);
+    }
+
+    async sendMediaStatus(conferenceId: string, participantId: string, mediaStatus: ParticipantMediaStatus) {
+        await this.connection.send('SendMediaDeviceStatus', conferenceId, participantId, mediaStatus);
+        this.logger.debug('[EventsService] - Sent device media status to EventHub', {
+            conference: conferenceId,
+            participant: participantId,
+            mediaStatus: mediaStatus
+        });
     }
 }

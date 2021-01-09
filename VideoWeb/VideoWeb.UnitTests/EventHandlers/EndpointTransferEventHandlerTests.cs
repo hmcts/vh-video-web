@@ -39,8 +39,8 @@ namespace VideoWeb.UnitTests.EventHandlers
                 EventType = EventType.EndpointTransfer,
                 EventId = Guid.NewGuid().ToString(),
                 ParticipantId = participantForEvent.Id,
-                TransferFrom = from,
-                TransferTo = to,
+                TransferFrom = from.ToString(),
+                TransferTo = to.ToString(),
                 ConferenceId = conference.Id,
                 Reason = "JVC Connection",
                 TimeStampUtc = DateTime.UtcNow
@@ -71,8 +71,8 @@ namespace VideoWeb.UnitTests.EventHandlers
                 TimeStampUtc = DateTime.UtcNow
             };
 
-            Assert.ThrowsAsync<RoomTransferException>(() => _eventHandler.HandleAsync(callbackEvent)).Message.Should()
-                .StartWith("Unable to process TransferEvent from").And.EndWith("to a status");
+            Assert.ThrowsAsync<ArgumentException>(() => _eventHandler.HandleAsync(callbackEvent)).Message.Should()
+                .Be("No consultation room provided");
             // Verify messages sent to event hub clients
             EventHubClientMock.Verify(x => x.EndpointStatusMessage(participantForEvent.Id, conference.Id, It.IsAny<EndpointState>()),
                 Times.Never);

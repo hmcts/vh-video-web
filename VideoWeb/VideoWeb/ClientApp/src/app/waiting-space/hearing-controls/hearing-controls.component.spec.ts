@@ -73,24 +73,26 @@ describe('HearingControlsComponent', () => {
         expect(component.handToggleText).toBe('Raise my hand');
     });
 
-    it('should switch camera on if camera is off', () => {
+    it('should switch camera on if camera is off', async () => {
         videoCallService.toggleVideo.calls.reset();
         videoCallService.toggleVideo.and.returnValue(false);
         component.videoMuted = true;
+        eventsService.sendMediaStatus.calls.reset();
 
-        component.toggleVideoMute();
+        await component.toggleVideoMute();
 
         expect(videoCallService.toggleVideo).toHaveBeenCalledTimes(1);
         expect(component.videoMuted).toBeFalsy();
         expect(component.videoMutedText).toBe('Switch camera off');
+        expect(eventsService.sendMediaStatus).toHaveBeenCalledTimes(1);
     });
 
-    it('should switch camera off if camera is on', () => {
+    it('should switch camera off if camera is on', async () => {
         videoCallService.toggleVideo.calls.reset();
         videoCallService.toggleVideo.and.returnValue(true);
         component.videoMuted = false;
 
-        component.toggleVideoMute();
+        await component.toggleVideoMute();
 
         expect(videoCallService.toggleVideo).toHaveBeenCalledTimes(1);
         expect(component.videoMuted).toBeTruthy();
@@ -204,35 +206,35 @@ describe('HearingControlsComponent', () => {
         expect(component.resetMute).toHaveBeenCalledTimes(0);
     });
 
-    it('should show self view on-click when currently hidden', () => {
+    it('should show self view on-click when currently hidden', async () => {
         component.selfViewOpen = false;
-        component.toggleView();
+        await component.toggleView();
         expect(component.selfViewOpen).toBeTruthy();
     });
 
-    it('should hide self view on-click when currently visible', () => {
+    it('should hide self view on-click when currently visible', async () => {
         component.selfViewOpen = true;
-        component.toggleView();
+        await component.toggleView();
         expect(component.selfViewOpen).toBeFalsy();
     });
 
-    it('should mute the participant when user opts to mute the call', () => {
+    it('should mute the participant when user opts to mute the call', async () => {
         videoCallService.toggleMute.and.returnValue(true);
-        component.toggleMute();
+        await component.toggleMute();
         expect(component.audioMuted).toBeTruthy();
     });
 
-    it('should unmute the participant when user opts to turn off mute option', () => {
+    it('should unmute the participant when user opts to turn off mute option', async () => {
         videoCallService.toggleMute.and.returnValue(false);
-        component.toggleMute();
+        await component.toggleMute();
         expect(component.audioMuted).toBeFalsy();
     });
 
-    it('should unmute the participant already muted', () => {
+    it('should unmute the participant already muted', async () => {
         spyOn(component, 'toggleMute').and.callThrough();
         videoCallService.toggleMute.and.returnValue(false);
         component.audioMuted = true;
-        component.resetMute();
+        await component.resetMute();
         expect(videoCallService.toggleMute).toHaveBeenCalled();
         expect(component.toggleMute).toHaveBeenCalled();
         expect(component.audioMuted).toBeFalsy();
@@ -329,6 +331,18 @@ describe('HearingControlsComponent', () => {
         hearingCountdownCompleteSubjectMock.next(gloalConference.id.toString());
 
         expect(videoCallService.toggleMute).toHaveBeenCalledTimes(1);
+    });
+
+    it('should publish media device status for non-judge participants who are already muted after countdown is complete', () => {
+        component.participant = gloalConference.participants.find(x => x.role === Role.Individual);
+        component.audioMuted = true;
+        videoCallService.toggleMute.calls.reset();
+        eventsService.sendMediaStatus.calls.reset();
+
+        hearingCountdownCompleteSubjectMock.next(gloalConference.id.toString());
+
+        expect(videoCallService.toggleMute).toHaveBeenCalledTimes(0);
+        expect(eventsService.sendMediaStatus).toHaveBeenCalledTimes(1);
     });
 
     it('should emit when leave button has been clicked', () => {

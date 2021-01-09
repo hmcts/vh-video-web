@@ -2,6 +2,7 @@ namespace VideoWeb.EventHub.Models
 {
     public class ParticipantMediaStatus
     {
-        public bool IsLocalMuted { get; set; }
+        public bool IsLocalAudioMuted { get; set; }
+        public bool IsLocalVideoMuted { get; set; }
     }
 }

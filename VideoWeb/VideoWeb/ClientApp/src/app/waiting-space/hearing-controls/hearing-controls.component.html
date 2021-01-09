@@ -12,9 +12,10 @@
         Your browser does not support Video
       </video>
     </div>
-    <div class="controls-container govuk-grid-column-one-third govuk-!-margin-top-9" [ngClass]="{ 'judge-controls-padding': isJudge }">
+    <div class="controls-container govuk-grid-column-one-third" [ngClass]="{ 'judge-controls-padding': isJudge }">
       <div class="icons-container">
         <img
+          *ngIf="!audioOnly"
           id="toggle-self-view-img"
           appTooltip
           [text]="selfViewOpen ? 'Hide my self-view' : 'Show my self-view'"
@@ -49,7 +50,7 @@
         />
 
         <img
-          *ngIf="!isJudge"
+          *ngIf="!isJudge && !audioOnly"
           id="toggle-video-mute-img"
           appTooltip
           [text]="videoMuted ? 'Show camera' : 'Hide camera'"
