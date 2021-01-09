@@ -37,6 +37,7 @@ declare interface PexipClient {
     setBuzz();
     clearBuzz(uuid?: string);
     clearAllBuzz(): () => void;
+    getMediaStatistics() : any;
 }
 
 declare interface PexipParticipant {

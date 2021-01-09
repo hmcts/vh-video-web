@@ -337,5 +337,36 @@ namespace VideoWeb.EventHub.Hub
                 _logger.LogError(ex, "Error occured when transferring participant");
             }
         }
+
+        public async Task SendMediaDeviceStatus(Guid conferenceId, Guid participantId,
+            ParticipantMediaStatus mediaStatus)
+        {
+            try
+            {
+                var conference = await GetConference(conferenceId);
+
+                var participant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
+                if (participant == null)
+                {
+                    _logger.LogDebug("Participant {participant} does not exist in {conference}", participantId, conferenceId);
+                    throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
+                }
+
+                await Clients.Group(VhOfficersGroupName)
+                    .ParticipantMediaStatusMessage(conferenceId, participantId, mediaStatus);
+                var judge = conference.Participants.Single(x => x.IsJudge());
+                await Clients.Group(judge.Username.ToLowerInvariant())
+                    .ParticipantMediaStatusMessage(conferenceId, participantId, mediaStatus);
+                
+                _logger.LogTrace(
+                    "Participant device status updated: Participant Id: {participant} | Conference Id: {conference}",
+                    participantId, conferenceId);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occured when updating participant device status");
+            }
+        }
     }
 }

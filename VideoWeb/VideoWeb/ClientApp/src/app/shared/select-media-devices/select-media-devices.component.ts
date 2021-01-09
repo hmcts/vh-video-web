@@ -25,6 +25,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     preferredCameraStream: MediaStream;
     preferredMicrophoneStream: MediaStream;
     connectWithCameraOn: boolean;
+    blockClicks = false;
 
     selectedMediaDevicesForm: FormGroup;
     deviceIsChanged = false;
@@ -187,6 +188,14 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         if (this.preferredMicrophoneStream) {
             this.userMediaService.updatePreferredMicrophone(newMic);
         }
+    }
+
+    transitionstart() {
+        this.blockClicks = true;
+    }
+
+    transitionEnd() {
+        this.blockClicks = false;
     }
 
     ngOnDestroy() {

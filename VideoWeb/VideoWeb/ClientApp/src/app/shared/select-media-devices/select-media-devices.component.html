@@ -76,9 +76,9 @@
           </div>
 
           <label class="govuk-label camSwitchTitle"> Join with your camera on/off </label>
-          <label class="switch camSwitchToggle">
+          <label class="switch camSwitchToggle" [ngClass]="{ 'avoid-clicks': blockClicks }">
             <input type="checkbox" id="toggle" [checked]="connectWithCameraOn" (click)="toggleSwitch()" />
-            <span class="slider round">
+            <span class="slider round" (transitionstart)="transitionstart()" (transitionend)="transitionEnd()">
               <span class="govuk-heading-m" id="toggletextON" class="govuk-label govuk-!-font-weight-bold toggle-text">
                 {{ audioOnlyToggleText }}
               </span>

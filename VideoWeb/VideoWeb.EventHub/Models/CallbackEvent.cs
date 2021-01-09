@@ -13,9 +13,9 @@ namespace VideoWeb.EventHub.Models
         public Guid ConferenceId { get; set; }
         public Guid ParticipantId { get; set; }
 
-        [EnumDataType(typeof(RoomType))] public RoomType? TransferFrom { get; set; }
+        public string TransferFrom { get; set; }
 
-        [EnumDataType(typeof(RoomType))] public RoomType? TransferTo { get; set; }
+        public string TransferTo { get; set; }
 
         public string Reason { get; set; }
     }
