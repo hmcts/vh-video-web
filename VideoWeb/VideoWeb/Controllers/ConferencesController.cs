@@ -184,7 +184,8 @@ namespace VideoWeb.Controllers
                 Role.Judge,
                 Role.Individual,
                 Role.Representative,
-                Role.VideoHearingsOfficer
+                Role.VideoHearingsOfficer,
+                Role.JudicialOfficeHolder
             };
 
             conference.Participants = conference
