@@ -1,6 +1,4 @@
 using System;
-using System.ComponentModel.DataAnnotations;
-using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 
 namespace VideoWeb.EventHub.Models

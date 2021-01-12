@@ -52,6 +52,68 @@ namespace VideoWeb.UnitTests.EventHandlers
         }
 
         [Test]
+        public async Task should_send_participant_status_when_transferring_to_new_consultation_room()
+        {
+            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
+                VideoApiClientMock.Object);
+
+            var conference = TestConference;
+            var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
+            var participantCount = conference.Participants.Count + 1; // plus one for admin
+
+            var callbackEvent = new CallbackEvent
+            {
+                EventType = EventType.Transfer,
+                EventId = Guid.NewGuid().ToString(),
+                ConferenceId = conference.Id,
+                ParticipantId = participantForEvent.Id,
+                TransferFrom = RoomType.WaitingRoom.ToString(),
+                TransferTo = "JudgeConsultationRoom3",
+                TimeStampUtc = DateTime.UtcNow
+            };
+
+            var expectedStatus = ParticipantState.InConsultation;
+            
+            await _eventHandler.HandleAsync(callbackEvent);
+
+            // Verify messages sent to event hub clients
+            EventHubClientMock.Verify(
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
+                    expectedStatus), Times.Exactly(participantCount));
+        }
+        
+        [Test]
+        public async Task should_send_participant_status_when_transferring_from_new_consultation_room()
+        {
+            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
+                VideoApiClientMock.Object);
+
+            var conference = TestConference;
+            var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
+            var participantCount = conference.Participants.Count + 1; // plus one for admin
+
+            var callbackEvent = new CallbackEvent
+            {
+                EventType = EventType.Transfer,
+                EventId = Guid.NewGuid().ToString(),
+                ConferenceId = conference.Id,
+                ParticipantId = participantForEvent.Id,
+                TransferFrom = "JudgeConsultationRoom3",
+                TransferTo = RoomType.WaitingRoom.ToString(),
+                TimeStampUtc = DateTime.UtcNow
+            };
+
+            var expectedStatus = ParticipantState.Available;
+            
+            await _eventHandler.HandleAsync(callbackEvent);
+
+            // Verify messages sent to event hub clients
+            EventHubClientMock.Verify(
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
+                    expectedStatus), Times.Exactly(participantCount));
+        }
+        
+        [Test]
         public void Should_throw_exception_when_transfer_cannot_be_mapped_to_participant_status()
         {
             _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
