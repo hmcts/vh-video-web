@@ -1,20 +1,20 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoWeb.Contract.Enums;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.Mappings;
+using VideoWeb.Mappings.Requests;
 using VideoWeb.Services.Video;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
@@ -91,7 +91,7 @@ namespace VideoWeb.Controllers
                 var consultationRequestMapper = _mapperFactory.Get<PrivateConsultationRequest, ConsultationRequest>();
                 var mappedRequest = consultationRequestMapper.Map(request);
                 await _videoApiClient.HandleConsultationRequestAsync(mappedRequest);
-                
+
                 return NoContent();
             }
             catch (VideoApiException e)
@@ -160,13 +160,13 @@ namespace VideoWeb.Controllers
             await _hubContext.Clients.Group(requesterUsername.ToLowerInvariant()).ConsultationMessage(conferenceId,
                 requesterUsername.ToLowerInvariant(),
                 requesteeUsername.ToLowerInvariant(), ConsultationAnswer.NoRoomsAvailable);
-            
+
             await _hubContext.Clients.Group(requesteeUsername.ToLowerInvariant()).ConsultationMessage(conferenceId,
                 requesterUsername.ToLowerInvariant(),
                 requesteeUsername.ToLowerInvariant(), ConsultationAnswer.NoRoomsAvailable);
 
         }
-        
+
         [HttpPost("vhofficer/respond")]
         [SwaggerOperation(OperationId = "RespondToAdminConsultationRequest")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
@@ -221,13 +221,13 @@ namespace VideoWeb.Controllers
             {
                 return NotFound($"Defence advocate does not exist in conference {request.ConferenceId}");
             }
-            
+
             var endpoint = conference.Endpoints.SingleOrDefault(x => x.Id == request.EndpointId);
             if (endpoint == null)
             {
                 return NotFound($"No endpoint id {request.EndpointId} exists");
             }
-            
+
             try
             {
                 await _videoApiClient.StartPrivateConsultationWithEndpointAsync(new EndpointConsultationRequest
@@ -248,79 +248,64 @@ namespace VideoWeb.Controllers
         }
 
         [HttpPost("start")]
-        [SwaggerOperation(OperationId = "StartJudgeJOHConsultationRequest")]
-        [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> StartJudgeJOHConsultationRequest(JudgeJohStartConsultationRequest request)
+        [SwaggerOperation(OperationId = "StartConsultationAsync")]
+        [ProducesResponseType((int) HttpStatusCode.Accepted)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> StartConsultationAsync(StartPrivateConsultationRequest request)
         {
-            Conference conference;
-            try
-            {
-                conference = await GetConference(request.ConferenceId);
-            }
-            catch (VideoApiException e)
-            {
-                _logger.LogError(e, $"The conference with Id: {request.ConferenceId} is not found, ErrorCode: {e.StatusCode}");
-                return NotFound();
-            }
-
-            var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedBy);
-            if (requestedBy == null)
-            {
-                _logger.LogWarning($"The participant with Id: {request.RequestedBy} is not found");
-                return NotFound();
-            }
-
-           if(requestedBy.Role != Role.Judge && requestedBy.Role != Role.JudicialOfficeHolder)
-            {
-                _logger.LogWarning($"Invalid role {requestedBy.Role} to request consultation room of type {request.RoomType.ToString()}");
-                return BadRequest();
-            }
 
             try
             {
-                // TODO  await call api
+                var conference = await GetConference(request.ConferenceId);
+
+                var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedBy);
+                if (requestedBy == null)
+                {
+                    _logger.LogWarning($"The participant with Id: {request.RequestedBy} is not found");
+                    return NotFound();
+                }
+
+                var consultationRequestMapper = _mapperFactory.Get<StartPrivateConsultationRequest, StartConsultationRequest>();
+                var mappedRequest = consultationRequestMapper.Map(request);
+           //     await _videoApiClient.StartConsultationAsync(mappedRequest);
                 return Accepted();
 
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Start consultation error ConferenceId: {request.ConferenceId}, room type {request.RoomType.ToString()}, ErrorCode: {e.StatusCode}");
+                _logger.LogError(e, $"Start consultation error ConferenceId: {request.ConferenceId}, participantId: {request.RequestedBy}, ErrorCode: {e.StatusCode}");
                 return StatusCode(e.StatusCode);
             }
         }
 
         [HttpPost("end")]
-        [SwaggerOperation(OperationId = "EndJudgeJOHConsultationRequest")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> EndJudgeJOHConsultationRequest(JudgeJohEndConsultationRequest request)
+        [SwaggerOperation(OperationId = "LeaveConsultationAsync")]
+        [ProducesResponseType((int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> LeaveConsultationAsync(LeavePrivateConsultationRequest request)
         {
             try
             {
-               await GetConference(request.ConferenceId);
-            }
-            catch (VideoApiException e)
-            {
-                _logger.LogError(e, $"The conference with Id: {request.ConferenceId} is not found, ErrorCode: {e.StatusCode}");
-                return NotFound();
-            }
+                var conference = await GetConference(request.ConferenceId);
 
-            if(!User.IsInRole(Role.Judge.ToString()) && !User.IsInRole(Role.JudicialOfficeHolder.ToString())){
-                _logger.LogWarning($"Invalid role to request end consultation in the room of type {VirtualCourtRoomType.JudgeJOH.ToString()}");
-                return BadRequest();
-            }
-          
-            try
-            {
-                // TODO  var response = await call api
+                var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.ParticipantId);
+                if (participant == null)
+                {
+                    _logger.LogWarning($"The participant with Id: {request.ParticipantId} is not found");
+                    return NotFound();
+                }
+
+                var leaveConsultationRequestMapper = _mapperFactory.Get<LeavePrivateConsultationRequest, LeaveConsultationRequest>();
+                var mappedRequest = leaveConsultationRequestMapper.Map(request);
+           //     await _videoApiClient.LeaveConsultationAsync(mappedRequest);
+
                 return Ok();
             }
             catch (VideoApiException e)
             {
-               _logger.LogError(e, $"Start consultation error ConferenceId: {request.ConferenceId} and room type {VirtualCourtRoomType.JudgeJOH.ToString()}, ErrorCode: {e.StatusCode}");
+                _logger.LogError(e, $"End consultation error ConferenceId: {request.ConferenceId} and participant Id: {request.ParticipantId}, ErrorCode: {e.StatusCode}");
                 return StatusCode(e.StatusCode);
             }
         }
@@ -328,7 +313,7 @@ namespace VideoWeb.Controllers
 
         private async Task<Conference> GetConference(Guid conferenceId)
         {
-            return await _conferenceCache.GetOrAddConferenceAsync(conferenceId, 
+            return await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
         }
 
@@ -359,7 +344,7 @@ namespace VideoWeb.Controllers
         {
             await _hubContext.Clients.Group(requestedBy.Username.ToLowerInvariant())
                 .ConsultationMessage(conference.Id, requestedBy.Username, requestedFor.Username, answer);
-            
+
         }
 
         private async Task NotifyConsultationCancelledAsync(Conference conference, Participant requestedBy,
@@ -368,7 +353,7 @@ namespace VideoWeb.Controllers
             await _hubContext.Clients.Group(requestedFor.Username.ToLowerInvariant())
                 .ConsultationMessage(conference.Id, requestedBy.Username, requestedFor.Username,
                     ConsultationAnswer.Cancelled);
-            
+
         }
     }
 }

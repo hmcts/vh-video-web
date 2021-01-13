@@ -4,7 +4,7 @@ using VideoWeb.Contract.Enums;
 
 namespace VideoWeb.Contract.Request
 {
-    public class JudgeJohStartConsultationRequest
+    public class StartPrivateConsultationRequest
     {
         public Guid ConferenceId { get; set; }
         public Guid RequestedBy { get; set; }
