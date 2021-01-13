@@ -135,6 +135,13 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseComponent implements
         }
     }
 
+    joinConsultation() {
+        this.logger.info(`${this.loggerPrefixJOH} attempting to join a private consultation`, {
+            conference: this.conference?.id,
+            participant: this.participant.id
+        });
+    }
+
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
         this.logger.debug(`${this.loggerPrefixJOH} Clearing intervals and subscriptions for JOH waiting room`, {
