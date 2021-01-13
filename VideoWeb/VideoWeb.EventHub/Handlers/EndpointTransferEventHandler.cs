@@ -61,7 +61,7 @@ namespace VideoWeb.EventHub.Handlers
                 case VHRoom.HearingRoom when transferTo == VHRoom.WaitingRoom:
                     return EndpointState.Connected;
                 default:
-                    throw new RoomTransferException(transferFrom, transferTo);
+                    throw new RoomTransferException(callbackEvent.TransferFrom, callbackEvent.TransferTo);
             }
         }
     }

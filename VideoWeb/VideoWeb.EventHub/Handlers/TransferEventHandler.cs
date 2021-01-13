@@ -32,8 +32,13 @@ namespace VideoWeb.EventHub.Handlers
 
         private static ParticipantState DeriveParticipantStatusForTransferEvent(CallbackEvent callbackEvent)
         {
-            var transferTo = Enum.Parse<RoomType>(callbackEvent.TransferTo);
-            var transferFrom = Enum.Parse<RoomType>(callbackEvent.TransferFrom);
+            var isRoomToEnum = Enum.TryParse<RoomType>(callbackEvent.TransferTo, out var transferTo);
+            Enum.TryParse<RoomType>(callbackEvent.TransferFrom, out var transferFrom);
+
+            if (!isRoomToEnum && callbackEvent.TransferTo.ToLower().Contains("consultation"))
+            {
+                return ParticipantState.InConsultation;
+            }
 
             if (transferFrom == RoomType.WaitingRoom &&
                 (transferTo == RoomType.ConsultationRoom1 ||
@@ -41,7 +46,8 @@ namespace VideoWeb.EventHub.Handlers
                 return ParticipantState.InConsultation;
 
             if ((transferFrom == RoomType.ConsultationRoom1 ||
-                 transferFrom == RoomType.ConsultationRoom2) &&
+                 transferFrom == RoomType.ConsultationRoom2 ||
+                 callbackEvent.TransferFrom.ToLower().Contains("consultation")) &&
                 transferTo == RoomType.WaitingRoom)
                 return ParticipantState.Available;
 
@@ -57,7 +63,7 @@ namespace VideoWeb.EventHub.Handlers
                 case RoomType.HearingRoom when transferTo == RoomType.WaitingRoom:
                     return ParticipantState.Available;
                 default:
-                    throw new RoomTransferException(transferFrom, transferTo);
+                    throw new RoomTransferException(callbackEvent.TransferFrom, callbackEvent.TransferTo);
             }
         }
     }
