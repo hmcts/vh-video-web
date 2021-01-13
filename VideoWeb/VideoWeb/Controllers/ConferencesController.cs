@@ -250,6 +250,7 @@ namespace VideoWeb.Controllers
                 Role.Representative,
                 Role.JudicialOfficeHolder
             };
+
             conference.Participants = conference.Participants
                 .Where(x => displayRoles.Contains((Role)x.User_role)).ToList();
 
