@@ -248,7 +248,7 @@ namespace VideoWeb.Controllers
         }
 
         [HttpPost("start")]
-        [SwaggerOperation(OperationId = "StartConsultationAsync")]
+        [SwaggerOperation(OperationId = "StartOrJoinConsultation")]
         [ProducesResponseType((int) HttpStatusCode.Accepted)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
@@ -280,7 +280,7 @@ namespace VideoWeb.Controllers
         }
 
         [HttpPost("end")]
-        [SwaggerOperation(OperationId = "LeaveConsultationAsync")]
+        [SwaggerOperation(OperationId = "LeaveConsultation")]
         [ProducesResponseType((int) HttpStatusCode.OK)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]

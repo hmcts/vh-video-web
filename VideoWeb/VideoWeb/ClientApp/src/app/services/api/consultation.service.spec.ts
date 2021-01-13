@@ -11,7 +11,10 @@ import {
     PrivateAdminConsultationRequest,
     PrivateConsultationRequest,
     PrivateVideoEndpointConsultationRequest,
-    RoomType
+    Role,
+    RoomType,
+    StartPrivateConsultationRequest,
+    VirtualCourtRoomType
 } from '../clients/api-client';
 import { ModalService } from '../modal.service';
 import { ConsultationService } from './consultation.service';
@@ -30,7 +33,9 @@ describe('ConsultationService', () => {
             'handleConsultationRequest',
             'leavePrivateConsultation',
             'respondToAdminConsultationRequest',
-            'callVideoEndpoint'
+            'callVideoEndpoint',
+            'startOrJoinConsultation',
+            'leaveConsultation'
         ]);
 
         notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', [
@@ -45,6 +50,8 @@ describe('ConsultationService', () => {
         apiClient.leavePrivateConsultation.and.returnValue(of());
         apiClient.respondToAdminConsultationRequest.and.returnValue(of());
         apiClient.callVideoEndpoint.and.returnValue(of());
+        apiClient.startOrJoinConsultation.and.returnValue(of());
+        apiClient.leaveConsultation.and.returnValue(of());
 
         timeout = jasmine.createSpyObj<NodeJS.Timeout>('NodeJS.Timeout', ['ref', 'unref']);
         spyOn(global, 'setTimeout').and.returnValue(<any>timeout);
@@ -395,5 +402,45 @@ describe('ConsultationService', () => {
         await expectAsync(service.startPrivateConsulationWithEndpoint(conference, endpoint)).toBeRejectedWith(error);
 
         expect(modalService.open).toHaveBeenCalledWith(ConsultationService.ERROR_PC_MODAL);
+    });
+
+    it('should start or join a consultation as room type JOH', async () => {
+        const conference = new ConferenceTestData().getConferenceDetailFuture();
+        const participant = conference.participants.filter(x => x.role === Role.Judge)[0];
+
+        const request = new StartPrivateConsultationRequest({
+            conference_id: conference.id,
+            requested_by: participant.id,
+            room_type: VirtualCourtRoomType.JudgeJOH
+        });
+
+        await service.joinJudicialConsultationRoom(conference, participant);
+
+        expect(apiClient.startOrJoinConsultation).toHaveBeenCalledWith(request);
+    });
+
+    it('should display error modal when unable to start or join a judidical consultation', async () => {
+        const error = { error: 'test bad thing' };
+        const conference = new ConferenceTestData().getConferenceDetailFuture();
+        const participant = conference.participants.filter(x => x.role === Role.Judge)[0];
+        apiClient.startOrJoinConsultation.and.callFake(() => throwError(error));
+
+        await expectAsync(service.joinJudicialConsultationRoom(conference, participant)).toBeRejectedWith(error);
+
+        expect(modalService.open).toHaveBeenCalledWith(ConsultationService.ERROR_PC_MODAL);
+    });
+
+    it('should call api to leave juducial consultation', async () => {
+        const conference = new ConferenceTestData().getConferenceDetailFuture();
+        const participant = conference.participants.filter(x => x.role === Role.Judge)[0];
+
+        const request = new LeavePrivateConsultationRequest({
+            conference_id: conference.id,
+            participant_id: participant.id
+        });
+
+        await service.leaveJudicialConsultationRoom(conference, participant);
+
+        expect(apiClient.leaveConsultation).toHaveBeenCalledWith(request);
     });
 });
