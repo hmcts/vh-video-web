@@ -15,9 +15,6 @@ namespace VideoWeb.Mappings
             var eventType = Enum.Parse<EventType>(request.Event_type.ToString());
             var conferenceId = Guid.Parse(request.Conference_id);
             Guid.TryParse(request.Participant_id, out var participantId);
-
-            var transferFrom = MapRoom(request.Transfer_from.ToString());
-            var transferTo = MapRoom(request.Transfer_to.ToString());
             
             var callbackEvent = new CallbackEvent
             {
@@ -25,8 +22,8 @@ namespace VideoWeb.Mappings
                 EventType = eventType,
                 ConferenceId = conferenceId,
                 Reason = request.Reason,
-                TransferTo = transferTo,
-                TransferFrom = transferFrom,
+                TransferTo = request.Transfer_to,
+                TransferFrom = request.Transfer_from,
                 TimeStampUtc = request.Time_stamp_utc,
                 ParticipantId = participantId
             };
@@ -65,21 +62,6 @@ namespace VideoWeb.Mappings
         {
             return callbackEvent.EventType == EventType.Transfer &&
                    conference.Endpoints.Any(x => x.Id == callbackEvent.ParticipantId);
-        }
-
-        private RoomType? MapRoom(string room)
-        {
-            if (string.IsNullOrWhiteSpace(room))
-            {
-                return null;
-            }
-            
-            if (Enum.TryParse(room, out RoomType transferToCheck))
-            {
-                return transferToCheck;
-            }
-
-            return null;
         }
     }
 }

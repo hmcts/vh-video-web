@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -31,31 +32,36 @@ namespace VideoWeb.EventHub.Handlers
 
         private static EndpointState DeriveEndpointStatusForTransferEvent(CallbackEvent callbackEvent)
         {
-            var toConsultationRoom = callbackEvent.TransferTo == VHRoom.ConsultationRoom1 ||
-                                     callbackEvent.TransferTo == VHRoom.ConsultationRoom2;
+            if (string.IsNullOrWhiteSpace(callbackEvent.TransferTo))
+            {
+                throw new ArgumentException("No consultation room provided");   
+            }
+            var transferTo = Enum.Parse<VHRoom>(callbackEvent.TransferTo);
+            var transferFrom = Enum.Parse<VHRoom>(callbackEvent.TransferFrom);
+            var toConsultationRoom = transferTo == VHRoom.ConsultationRoom1 ||
+                                     transferTo == VHRoom.ConsultationRoom2;
 
-            if (callbackEvent.TransferFrom == VHRoom.WaitingRoom && toConsultationRoom)
+            if (transferFrom == VHRoom.WaitingRoom && toConsultationRoom)
                 return EndpointState.InConsultation;
 
-            var fromConsultationRoom = callbackEvent.TransferFrom == VHRoom.ConsultationRoom1 ||
-                                       callbackEvent.TransferFrom == VHRoom.ConsultationRoom2;
-            if (fromConsultationRoom && callbackEvent.TransferTo == VHRoom.WaitingRoom)
+            var fromConsultationRoom = transferFrom == VHRoom.ConsultationRoom1 ||
+                                       transferFrom == VHRoom.ConsultationRoom2;
+            if (fromConsultationRoom && transferTo == VHRoom.WaitingRoom)
                 return EndpointState.Connected;
 
-            if ((callbackEvent.TransferFrom == VHRoom.ConsultationRoom1 ||
-                 callbackEvent.TransferFrom == VHRoom.ConsultationRoom2) &&
-                callbackEvent.TransferTo == VHRoom.HearingRoom)
+            if ((transferFrom == VHRoom.ConsultationRoom1 ||
+                 transferFrom == VHRoom.ConsultationRoom2) &&
+                transferTo == VHRoom.HearingRoom)
                 return EndpointState.Connected;
 
-            switch (callbackEvent.TransferFrom)
+            switch (transferFrom)
             {
-                case VHRoom.WaitingRoom when callbackEvent.TransferTo == VHRoom.HearingRoom:
+                case VHRoom.WaitingRoom when transferTo == VHRoom.HearingRoom:
                     return EndpointState.Connected;
-                case VHRoom.HearingRoom when callbackEvent.TransferTo == VHRoom.WaitingRoom:
+                case VHRoom.HearingRoom when transferTo == VHRoom.WaitingRoom:
                     return EndpointState.Connected;
                 default:
-                    throw new RoomTransferException(callbackEvent.TransferFrom.GetValueOrDefault(),
-                        callbackEvent.TransferTo.GetValueOrDefault());
+                    throw new RoomTransferException(callbackEvent.TransferFrom, callbackEvent.TransferTo);
             }
         }
     }

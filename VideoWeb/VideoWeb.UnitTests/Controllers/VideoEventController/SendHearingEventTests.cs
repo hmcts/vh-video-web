@@ -77,6 +77,44 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         }
 
         [Test]
+        public async Task should_return_no_content_when_transfer_to_new_consultation_room()
+        {
+            // Arrange
+            var request = CreateRequest();
+            request.Event_type = EventType.Transfer;
+            request.Transfer_to = "JudgeConsultationRoom3";
+            request.Transfer_from = RoomType.WaitingRoom.ToString();
+
+            // Act
+            var result = await _sut.SendHearingEventAsync(request);
+
+            // Assert
+            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
+            result.Should().BeOfType<NoContentResult>();
+            var typedResult = (NoContentResult) result;
+            typedResult.Should().NotBeNull();
+        }
+        
+        [Test]
+        public async Task should_return_no_content_when_transfer_from_new_consultation_room()
+        {
+            // Arrange
+            var request = CreateRequest();
+            request.Event_type = EventType.Transfer;
+            request.Transfer_from = "JudgeConsultationRoom3";
+            request.Transfer_to = RoomType.WaitingRoom.ToString();
+
+            // Act
+            var result = await _sut.SendHearingEventAsync(request);
+
+            // Assert
+            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
+            result.Should().BeOfType<NoContentResult>();
+            var typedResult = (NoContentResult) result;
+            typedResult.Should().NotBeNull();
+        }
+
+        [Test]
         public async Task Should_return_no_content_phone_shouldnt_call_handler()
         {
             // Arrange
@@ -190,8 +228,8 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 .With(x => x.Conference_id = _testConference.Id.ToString())
                 .With(x => x.Participant_id = _testConference.Endpoints[0].Id.ToString())
                 .With(x => x.Event_type = incomingEventType)
-                .With(x => x.Transfer_to = RoomType.ConsultationRoom1)
-                .With(x => x.Transfer_from = RoomType.WaitingRoom)
+                .With(x => x.Transfer_to = RoomType.ConsultationRoom1.ToString())
+                .With(x => x.Transfer_from = RoomType.WaitingRoom.ToString())
                 .With(x => x.Phone = null)
                 .Build();
         }

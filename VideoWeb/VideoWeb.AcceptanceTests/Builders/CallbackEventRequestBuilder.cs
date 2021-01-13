@@ -14,27 +14,27 @@ namespace VideoWeb.AcceptanceTests.Builders
         {
             _request = Builder<CallbackEvent>.CreateNew()
                 .With(x => x.EventId = Guid.NewGuid().ToString())
-                .With(x => x.TransferFrom = RoomType.WaitingRoom)
-                .With(x => x.TransferTo = RoomType.WaitingRoom)
+                .With(x => x.TransferFrom = RoomType.WaitingRoom.ToString())
+                .With(x => x.TransferTo = RoomType.WaitingRoom.ToString())
                 .With(x => x.Reason = "Automated");
         }
 
         public CallbackEventRequestBuilder WithRoomType(RoomType roomType)
         {
-            _request.With(x => x.TransferFrom = roomType);
-            _request.With(x => x.TransferTo = roomType);
+            _request.With(x => x.TransferFrom = roomType.ToString());
+            _request.With(x => x.TransferTo = roomType.ToString());
             return this;
         }
 
         public CallbackEventRequestBuilder FromRoomType(RoomType? roomType)
         {
-            _request.With(x => x.TransferFrom = roomType);
+            _request.With(x => x.TransferFrom = roomType.ToString());
             return this;
         }
 
         public CallbackEventRequestBuilder ToRoomType(RoomType? roomType)
         {
-            _request.With(x => x.TransferTo = roomType);
+            _request.With(x => x.TransferTo = roomType.ToString());
             return this;
         }
 

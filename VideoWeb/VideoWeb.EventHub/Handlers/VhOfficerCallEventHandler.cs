@@ -32,13 +32,17 @@ namespace VideoWeb.EventHub.Handlers
 
         private RoomType ValidationConsultationRoom(CallbackEvent callbackEvent)
         {
-            if (!callbackEvent.TransferTo.HasValue || callbackEvent.TransferTo.Value != RoomType.ConsultationRoom1 
-                && callbackEvent.TransferTo.Value != RoomType.ConsultationRoom2) 
+            if (string.IsNullOrWhiteSpace(callbackEvent.TransferTo))
+            {
+                throw new ArgumentException("No consultation room provided");
+            }
+            var transferTo = Enum.Parse<RoomType>(callbackEvent.TransferTo);
+            if (transferTo != RoomType.ConsultationRoom1 && transferTo != RoomType.ConsultationRoom2) 
             {
                 throw new ArgumentException("No consultation room provided");
             }
 
-            return callbackEvent.TransferTo.Value;
+            return transferTo;
         }
     }
 }
