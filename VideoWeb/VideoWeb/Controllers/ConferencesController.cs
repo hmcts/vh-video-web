@@ -184,7 +184,8 @@ namespace VideoWeb.Controllers
                 Role.Judge,
                 Role.Individual,
                 Role.Representative,
-                Role.VideoHearingsOfficer
+                Role.VideoHearingsOfficer,
+                Role.JudicialOfficeHolder
             };
 
             conference.Participants = conference
@@ -249,6 +250,7 @@ namespace VideoWeb.Controllers
                 Role.Representative,
                 Role.JudicialOfficeHolder
             };
+
             conference.Participants = conference.Participants
                 .Where(x => displayRoles.Contains((Role)x.User_role)).ToList();
 
