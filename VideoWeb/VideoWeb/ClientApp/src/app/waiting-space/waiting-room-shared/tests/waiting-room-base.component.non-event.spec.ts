@@ -1,5 +1,5 @@
 import { Subscription } from 'rxjs';
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import {
     activatedRoute,
@@ -186,19 +186,11 @@ describe('WaitingRoomComponent message and clock', () => {
         });
     });
 
-    // it('should change device on select device', async () => {
-    //     component.audioOnly = false;
-    //     const device = new SelectedUserMediaDevice(
-    //         new UserMediaDevice('camera1', 'id3445', 'videoinput', '1'),
-    //         new UserMediaDevice('microphone', 'id123', 'audioinput', '1')
-    //     );
-    //     device.audioOnly = true;
+    it('should return the total number of judge and JOHs in consultation', () => {
+        component.conference.participants.forEach(x => (x.status = ParticipantStatus.InConsultation));
+        const expectecCount = component.conference.participants.filter(x => x.role === Role.JudicialOfficeHolder || x.role === Role.Judge)
+            .length;
 
-    //     await component.onMediaDeviceChangeAccepted(device);
-
-    //     expect(userMediaService.updatePreferredCamera).toHaveBeenCalled();
-    //     expect(userMediaService.updatePreferredMicrophone).toHaveBeenCalled();
-    //     expect(videoCallService.makeCall).toHaveBeenCalled();
-    //     expect(component.audioOnly).toBeTruthy();
-    // });
+        expect(component.numberOfJudgeOrJOHsInConsultation).toBe(expectecCount);
+    });
 });

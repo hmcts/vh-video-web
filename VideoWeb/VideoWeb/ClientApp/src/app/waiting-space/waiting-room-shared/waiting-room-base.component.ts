@@ -9,6 +9,7 @@ import {
     ConsultationAnswer,
     ParticipantResponse,
     ParticipantStatus,
+    Role,
     TokenResponse
 } from 'src/app/services/clients/api-client';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
@@ -90,6 +91,12 @@ export abstract class WaitingRoomBaseComponent {
             return this.conference.id;
         }
         return this.route.snapshot.paramMap.get('conferenceId');
+    }
+
+    get numberOfJudgeOrJOHsInConsultation(): number {
+        return this.conference.participants.filter(
+            x => (x.role === Role.Judge || x.role === Role.JudicialOfficeHolder) && x.status === ParticipantStatus.InConsultation
+        ).length;
     }
 
     getConference() {

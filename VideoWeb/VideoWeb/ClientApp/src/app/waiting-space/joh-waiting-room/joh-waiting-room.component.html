@@ -121,6 +121,22 @@
         </div>
       </div>
     </div>
+    <div>
+      <a
+        href="javascript:void(0)"
+        class="govuk-button govuk-button--bigblue"
+        role="button"
+        draggable="false"
+        id="joinPCButton"
+        data-module="govuk-button"
+        (click)="joinConsultation()"
+      >
+        Join a private consultation
+        <span *ngIf="numberOfJudgeOrJOHsInConsultation" id="numberOfJohsInConsultationBadge" class="badge">{{
+          numberOfJudgeOrJOHsInConsultation
+        }}</span>
+      </a>
+    </div>
     <div class="govuk-!-margin-top-9">
       <p class="govuk-body"><strong>Video hearings team: 0300 303 0655</strong></p>
     </div>
