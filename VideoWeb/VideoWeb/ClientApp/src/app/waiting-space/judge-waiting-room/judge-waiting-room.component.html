@@ -41,7 +41,7 @@
       [conferenceId]="conference.id"
       [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
       [showConsultationControls]="showConsultationControls"
-      (leaveConsulation)="onConsultationCancelled()"
+      (leaveConsulation)="leaveJudicialConsultation()"
     ></app-hearing-controls>
   </div>
 </div>
@@ -152,6 +152,20 @@
       >
         Resume video hearing
       </button>
+      <a
+        href="javascript:void(0)"
+        class="govuk-button govuk-button--bigblue govuk-!-margin-left-3"
+        role="button"
+        draggable="false"
+        id="joinPCButton"
+        data-module="govuk-button"
+        (click)="joinJudicialConsultation()"
+      >
+        Join a private consultation
+        <span *ngIf="numberOfJudgeOrJOHsInConsultation" id="numberOfJohsInConsultationBadge" class="badge">{{
+          numberOfJudgeOrJOHsInConsultation
+        }}</span>
+      </a>
     </div>
   </div>
 

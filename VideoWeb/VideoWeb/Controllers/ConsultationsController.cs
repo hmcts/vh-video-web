@@ -14,7 +14,6 @@ using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.Mappings;
-using VideoWeb.Mappings.Requests;
 using VideoWeb.Services.Video;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
@@ -55,7 +54,7 @@ namespace VideoWeb.Controllers
         [HttpPost]
         [SwaggerOperation(OperationId = "HandleConsultationRequest")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
-        [ProducesResponseType(typeof(BadRequestModelResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(BadRequestModelResponse), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> HandleConsultationRequestAsync(PrivateConsultationRequest request)
         {
             var conference = await GetConference(request.ConferenceId);
@@ -248,10 +247,10 @@ namespace VideoWeb.Controllers
         }
 
         [HttpPost("start")]
-        [SwaggerOperation(OperationId = "StartConsultationAsync")]
-        [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [SwaggerOperation(OperationId = "StartOrJoinConsultation")]
+        [ProducesResponseType((int) HttpStatusCode.Accepted)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> StartConsultationAsync(StartPrivateConsultationRequest request)
         {
             try
@@ -279,10 +278,10 @@ namespace VideoWeb.Controllers
         }
 
         [HttpPost("end")]
-        [SwaggerOperation(OperationId = "LeaveConsultationAsync")]
-        [ProducesResponseType((int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [SwaggerOperation(OperationId = "LeaveConsultation")]
+        [ProducesResponseType((int) HttpStatusCode.OK)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> LeaveConsultationAsync(LeavePrivateConsultationRequest request)
         {
             try

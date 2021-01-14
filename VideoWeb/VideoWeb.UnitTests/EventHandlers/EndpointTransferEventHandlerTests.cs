@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
 using EventType = VideoWeb.EventHub.Enums.EventType;

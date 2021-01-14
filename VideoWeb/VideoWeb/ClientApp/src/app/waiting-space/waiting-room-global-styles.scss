@@ -112,3 +112,28 @@
 .remote-container {
   margin-left: -1vw;
 }
+
+.govuk-button--bigblue {
+  background: govuk-colour('blue');
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.govuk-button--bigblue:hover {
+  background: govuk-colour('dark-blue');
+}
+
+.govuk-button--bigblue .badge {
+  font-family: 'GDS Transport', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 700;
+  font-size: 16px;
+  position: relative;
+  top: -2px;
+  right: -4px;
+  padding: 3px 10px;
+  border-radius: 50%;
+  background-color: #333;
+  color: white;
+}
