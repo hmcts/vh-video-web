@@ -67,7 +67,7 @@ namespace VideoWeb.UnitTests.Hub
             var judge = conference.Participants.Single(x => x.IsJudge());
             EventHubClientMock.Verify(
                 x => x.Group(judge.Username.ToLowerInvariant())
-                    .ParticipantMediaStatusMessage(conference.Id, participantId,
+                    .ParticipantMediaStatusMessage(participantId, conference.Id,
                         It.Is<ParticipantMediaStatus>(s =>
                             s.IsLocalAudioMuted == message.IsLocalAudioMuted &&
                             s.IsLocalVideoMuted == message.IsLocalVideoMuted)), times);
@@ -75,7 +75,7 @@ namespace VideoWeb.UnitTests.Hub
 
             EventHubClientMock.Verify(
                 x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName)
-                    .ParticipantMediaStatusMessage(conference.Id, participantId, message), times);
+                    .ParticipantMediaStatusMessage(participantId, conference.Id, message), times);
         }
     }
 }
