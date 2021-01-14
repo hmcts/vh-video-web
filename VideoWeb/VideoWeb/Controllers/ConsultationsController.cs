@@ -254,7 +254,6 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> StartConsultationAsync(StartPrivateConsultationRequest request)
         {
-
             try
             {
                 var conference = await GetConference(request.ConferenceId);
