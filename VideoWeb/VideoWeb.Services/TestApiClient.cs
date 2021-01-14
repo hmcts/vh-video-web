@@ -245,24 +245,24 @@ namespace VideoWeb.Services.TestApi
         /// <exception cref="TestApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.List<TaskResponse>> GetTasksByConferenceIdAsync(System.Guid conferenceId, System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Create video event</summary>
+        /// <summary>Create event</summary>
         /// <param name="body">Conference event request</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task CreateVideoEventAsync(ConferenceEventRequest body);
+        System.Threading.Tasks.Task CreateEventAsync(ConferenceEventRequest body);
     
-        /// <summary>Create video event</summary>
+        /// <summary>Create event</summary>
         /// <param name="body">Conference event request</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        void CreateVideoEvent(ConferenceEventRequest body);
+        void CreateEvent(ConferenceEventRequest body);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Create video event</summary>
+        /// <summary>Create event</summary>
         /// <param name="body">Conference event request</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task CreateVideoEventAsync(ConferenceEventRequest body, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task CreateEventAsync(ConferenceEventRequest body, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get the test call result for a participant</summary>
         /// <param name="conferenceId">Conference Id of the conference</param>
@@ -1841,30 +1841,30 @@ namespace VideoWeb.Services.TestApi
             }
         }
     
-        /// <summary>Create video event</summary>
+        /// <summary>Create event</summary>
         /// <param name="body">Conference event request</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task CreateVideoEventAsync(ConferenceEventRequest body)
+        public System.Threading.Tasks.Task CreateEventAsync(ConferenceEventRequest body)
         {
-            return CreateVideoEventAsync(body, System.Threading.CancellationToken.None);
+            return CreateEventAsync(body, System.Threading.CancellationToken.None);
         }
     
-        /// <summary>Create video event</summary>
+        /// <summary>Create event</summary>
         /// <param name="body">Conference event request</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public void CreateVideoEvent(ConferenceEventRequest body)
+        public void CreateEvent(ConferenceEventRequest body)
         {
-            System.Threading.Tasks.Task.Run(async () => await CreateVideoEventAsync(body, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+            System.Threading.Tasks.Task.Run(async () => await CreateEventAsync(body, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Create video event</summary>
+        /// <summary>Create event</summary>
         /// <param name="body">Conference event request</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task CreateVideoEventAsync(ConferenceEventRequest body, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task CreateEventAsync(ConferenceEventRequest body, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/events");

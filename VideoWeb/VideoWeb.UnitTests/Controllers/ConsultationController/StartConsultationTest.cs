@@ -12,6 +12,8 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
+using VideoWeb.Mappings;
+using VideoWeb.Mappings.Requests;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
@@ -40,6 +42,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 }
             };
 
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<StartPrivateConsultationRequest, StartConsultationRequest>()).Returns(_mocker.Create<StartPrivateConsultationRequestMapper>());
 
             _mocker.Mock<IConferenceCache>().Setup(cache =>
                     cache.GetOrAddConferenceAsync(_testConference.Id,
@@ -54,9 +57,9 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [Test]
         public async Task Should_return_participant_not_found_when_request_is_sent()
         {
-            //_mocker.Mock<IVideoApiClient>()
-            //    .Setup(x => x.StartConsultationRequestAsync(It.IsAny<StartConsultationRequest>()))
-            //    .Returns(Task.FromResult(default(object)));
+            _mocker.Mock<IVideoApiClient>()
+                .Setup(x => x.StartPrivateConsultationAsync(It.IsAny<StartConsultationRequest>()))
+                .Returns(Task.FromResult(default(object)));
 
             var conference = new Conference { Id = Guid.NewGuid() };
             _mocker.Mock<IConferenceCache>().Setup(cache =>
@@ -75,9 +78,9 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [Test]
         public async Task Should_return_accepted_when_request_is_sent()
         {
-            //_mocker.Mock<IVideoApiClient>()
-            //    .Setup(x => x.StartConsultationRequestAsync(It.IsAny<StartConsultationRequest>()))
-            //    .Returns(Task.FromResult(default(object)));
+            _mocker.Mock<IVideoApiClient>()
+                .Setup(x => x.StartPrivateConsultationAsync(It.IsAny<StartConsultationRequest>()))
+                .Returns(Task.FromResult(default(object)));
 
             var result =
                 await _controller.StartConsultationAsync(
@@ -91,14 +94,15 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         {
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
                 "{\"ConsultationRoom\":[\"No consultation room available\"]}", null, default, null);
-            //_mocker.Mock<IVideoApiClient>()
-            //    .Setup(x => x.StartConsultationRequestAsync(It.IsAny<StartConsultationRequest>()))
-            //    .ThrowsAsync(apiException);
+            _mocker.Mock<IVideoApiClient>()
+                .Setup(x => x.StartPrivateConsultationAsync(It.IsAny<StartConsultationRequest>()))
+                .ThrowsAsync(apiException);
 
             var result =
                 await _controller.StartConsultationAsync(
                     ConsultationHelper.GetStartConsultationRequest(_testConference));
-            var typedResult = (ObjectResult)result;
+
+            var typedResult = (StatusCodeResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
 
@@ -107,15 +111,16 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         {
             var apiException = new VideoApiException("Internal Server Error",
                 (int)HttpStatusCode.InternalServerError, "The server collapse due to unhandled error", default, null);
-            //_mocker.Mock<IVideoApiClient>()
-            //    .Setup(x => x.StartConsultationRequestAsync(It.IsAny<StartConsultationRequest>()))
-            //    .ThrowsAsync(apiException);
+
+            _mocker.Mock<IVideoApiClient>()
+                .Setup(x => x.StartPrivateConsultationAsync(It.IsAny<StartConsultationRequest>()))
+                .ThrowsAsync(apiException);
 
             var result =
                 await _controller.StartConsultationAsync(
                     ConsultationHelper.GetStartConsultationRequest(_testConference));
-            var typedResult = (ObjectResult)result;
-            typedResult.Should().NotBeNull();
+            var typedResult = (StatusCodeResult)result;
+            typedResult.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
         }
     }
 }
