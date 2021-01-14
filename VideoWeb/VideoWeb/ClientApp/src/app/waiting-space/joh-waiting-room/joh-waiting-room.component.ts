@@ -120,6 +120,9 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseComponent implements
     }
 
     getCurrentTimeClass() {
+        if (this.hearing.isSuspended()) {
+            return 'hearing-delayed';
+        }
         return 'hearing-on-time';
     }
 
