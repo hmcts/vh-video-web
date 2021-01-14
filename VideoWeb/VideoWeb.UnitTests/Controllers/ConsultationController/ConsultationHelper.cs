@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using FizzWare.NBuilder;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Enums;
 using VideoWeb.Contract.Request;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
@@ -65,6 +66,14 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Build();
         }
 
+        public static StartPrivateConsultationRequest GetStartConsultationRequest(Conference conference)
+        {
+            return Builder<StartPrivateConsultationRequest>.CreateNew()
+                .With(x => x.ConferenceId = conference.Id)
+                .With(x => x.RequestedBy = conference.Participants[1].Id)
+                .With(x => x.RoomType = VirtualCourtRoomType.JudgeJOH)
+                .Build();
+        }
 
     }
 }
