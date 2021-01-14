@@ -1,64 +1,22 @@
-<div
-  id="liveclock"
+<div id="liveclock"
   class="outer_face"
-  style="display: block; margin: auto"
-  [ngClass]="{
-    ontime:
-      (isWitness && hearing.isStarting()) ||
-      hearing.isOnTime() ||
-      hearing.isPaused() ||
-      hearing.isClosed() ||
-      (isWitness && hearing.isDelayed()) ||
-      isJudicialOfficeHolder,
-    isstarting: (!isWitness && !isJudicialOfficeHolder && hearing.isStarting()) || hearing.isInSession(),
-    delayed: (!isWitness && !isJudicialOfficeHolder && hearing.isDelayed()) || hearing.isSuspended()
-  }"
->
-  <div
-    class="marker oneseven"
-    [ngClass]="(!isWitness && !isJudicialOfficeHolder && hearing.isDelayed()) || hearing.isSuspended() ? 'black' : 'white'"
-  ></div>
-  <div
-    class="marker twoeight"
-    [ngClass]="(!isWitness && !isJudicialOfficeHolder && hearing.isDelayed()) || hearing.isSuspended() ? 'black' : 'white'"
-  ></div>
-  <div
-    class="marker fourten"
-    [ngClass]="(!isWitness && !isJudicialOfficeHolder && hearing.isDelayed()) || hearing.isSuspended() ? 'black' : 'white'"
-  ></div>
-  <div
-    class="marker fiveeleven"
-    [ngClass]="(!isWitness && !isJudicialOfficeHolder && hearing.isDelayed()) || hearing.isSuspended() ? 'black' : 'white'"
-  ></div>
+  [class.ontime]="isOnTime"
+  [class.isstarting]="isStarting"
+  [class.delayed]="isDelayed">
+  <div class="marker oneseven"></div>
+  <div class="marker twoeight"></div>
+  <div class="marker fourten"></div>
+  <div class="marker fiveeleven"></div>
 
-  <div
-    class="inner_face"
-    [ngClass]="{
-      'ontime white':
-        (isWitness && hearing.isStarting()) ||
-        hearing.isOnTime() ||
-        hearing.isPaused() ||
-        hearing.isClosed() ||
-        (isWitness && hearing.isDelayed()) ||
-        isJudicialOfficeHolder,
-      'isstarting isStartingWhite': (!isWitness && !isJudicialOfficeHolder && hearing.isStarting()) || hearing.isInSession(),
-      'delayed black': (!isWitness && !isJudicialOfficeHolder && hearing.isDelayed()) || hearing.isSuspended()
-    }"
-  >
-    <div
-      id="hour-hand"
-      class="hand hour"
-      [ngClass]="(!isWitness && !isJudicialOfficeHolder && hearing.isDelayed()) || hearing.isSuspended() ? 'black' : 'white'"
-    ></div>
-    <div
-      id="minute-hand"
-      class="hand minute"
-      [ngClass]="(!isWitness && !isJudicialOfficeHolder && hearing.isDelayed()) || hearing.isSuspended() ? 'black' : 'white'"
-    ></div>
-    <div
-      id="second-hand"
-      class="hand second"
-      [ngClass]="(!isWitness && !isJudicialOfficeHolder && hearing.isDelayed()) || hearing.isSuspended() ? 'black' : 'white'"
-    ></div>
+  <div class="inner_face"
+    [class.ontime]="isOnTime"
+    [class.isstarting]="isStarting"
+    [class.delayed]="isDelayed">
+    <div #hourHand
+      class="hand hour"></div>
+    <div #minuteHand
+      class="hand minute"></div>
+    <div #secondHand
+      class="hand second"></div>
   </div>
 </div>

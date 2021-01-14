@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { ClockService } from 'src/app/services/clock.service';
 import { Hearing } from '../../shared/models/hearing';
 
@@ -12,12 +12,13 @@ export class AnalogueClockComponent implements OnInit {
     @Input() isWitness: boolean;
     @Input() isJudicialOfficeHolder = false;
 
-    currentTime: Date;
-    hourHand: HTMLElement;
-    minuteHand: HTMLElement;
-    secondHand: HTMLElement;
+    @ViewChild('hourHand') hourHand: ElementRef;
+    @ViewChild('minuteHand') minuteHand: ElementRef;
+    @ViewChild('secondHand') secondHand: ElementRef;
 
-    constructor(private clockService: ClockService) {}
+    currentTime: Date;
+
+    constructor(private clockService: ClockService) { }
 
     ngOnInit() {
         this.setCurrentTime();
@@ -28,6 +29,11 @@ export class AnalogueClockComponent implements OnInit {
         });
     }
 
+    ngAfterViewInit() {
+        console.log('Values on ngAfterViewInit():');
+        console.log("title:", this.hourHand.nativeElement);
+    }
+
     updateclock() {
         if (!this.hearing) {
             return;
@@ -35,21 +41,45 @@ export class AnalogueClockComponent implements OnInit {
         this.updateClockUI(this.currentTime);
     }
 
-    private setCurrentTime(): void {
-        // initialise ui
-        this.hourHand = document.getElementById('hour-hand');
-        this.minuteHand = document.getElementById('minute-hand');
-        this.secondHand = document.getElementById('second-hand');
+    get isOnTime() {
+        return (
+            (this.isWitness && this.hearing.isStarting())
+            || this.hearing.isOnTime()
+            || this.hearing.isPaused()
+            || this.hearing.isClosed()
+            || (this.isWitness && this.hearing.isDelayed())
+            || this.isJudicialOfficeHolder
+            && !this.hearing.isSuspended
+        )
+    }
 
+    get isDelayed() {
+        return (
+            (!this.isWitness && !this.isJudicialOfficeHolder && this.hearing.isDelayed())
+            || this.hearing.isSuspended()
+        )
+    }
+
+    get isStarting() {
+        return (
+            (!this.isWitness && !this.isJudicialOfficeHolder && this.hearing.isStarting())
+            || this.hearing.isInSession()
+        );
+    }
+
+    private setCurrentTime(): void {
         const timeNow = new Date();
         this.updateClockUI(timeNow);
     }
+
     private updateClockUI(newTime: Date): void {
-        const hourAsDegree = ((newTime.getHours() + newTime.getHours() / 60) / 12) * 360;
-        const minuteAsDegree = (newTime.getMinutes() / 60) * 360;
-        const secondAsDegree = (newTime.getSeconds() / 60) * 360;
-        this.hourHand.style.transform = `rotate(${hourAsDegree}deg)`;
-        this.minuteHand.style.transform = `rotate(${minuteAsDegree}deg)`;
-        this.secondHand.style.transform = `rotate(${secondAsDegree}deg)`;
+        if (this.hourHand && this.minuteHand && this.secondHand) {
+            const hourAsDegree = ((newTime.getHours() + newTime.getHours() / 60) / 12) * 360;
+            const minuteAsDegree = (newTime.getMinutes() / 60) * 360;
+            const secondAsDegree = (newTime.getSeconds() / 60) * 360;
+            this.hourHand.nativeElement.style.transform = `rotate(${hourAsDegree}deg)`;
+            this.minuteHand.nativeElement.style.transform = `rotate(${minuteAsDegree}deg)`;
+            this.secondHand.nativeElement.style.transform = `rotate(${secondAsDegree}deg)`;
+        }
     }
 }
