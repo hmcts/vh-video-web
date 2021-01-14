@@ -14,7 +14,6 @@ using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.Mappings;
-using VideoWeb.Mappings.Requests;
 using VideoWeb.Services.Video;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
@@ -254,7 +253,6 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> StartConsultationAsync(StartPrivateConsultationRequest request)
         {
-
             try
             {
                 var conference = await GetConference(request.ConferenceId);
@@ -268,7 +266,7 @@ namespace VideoWeb.Controllers
 
                 var consultationRequestMapper = _mapperFactory.Get<StartPrivateConsultationRequest, StartConsultationRequest>();
                 var mappedRequest = consultationRequestMapper.Map(request);
-           //     await _videoApiClient.StartConsultationAsync(mappedRequest);
+                await _videoApiClient.StartPrivateConsultationAsync(mappedRequest);
                 return Accepted();
 
             }
@@ -299,7 +297,7 @@ namespace VideoWeb.Controllers
 
                 var leaveConsultationRequestMapper = _mapperFactory.Get<LeavePrivateConsultationRequest, LeaveConsultationRequest>();
                 var mappedRequest = leaveConsultationRequestMapper.Map(request);
-           //     await _videoApiClient.LeaveConsultationAsync(mappedRequest);
+                await _videoApiClient.LeaveConsultationAsync(mappedRequest);
 
                 return Ok();
             }

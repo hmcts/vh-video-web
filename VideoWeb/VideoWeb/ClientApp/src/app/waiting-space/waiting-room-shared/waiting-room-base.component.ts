@@ -496,6 +496,22 @@ export abstract class WaitingRoomBaseComponent {
         }
     }
 
+    async joinJudicialConsultation() {
+        this.logger.info(`${this.loggerPrefix} attempting to join a private judicial consultation`, {
+            conference: this.conference?.id,
+            participant: this.participant.id
+        });
+        await this.consultationService.joinJudicialConsultationRoom(this.conference, this.participant);
+    }
+
+    async leaveJudicialConsultation() {
+        this.logger.info(`${this.loggerPrefix} attempting to leave a private judicial consultation`, {
+            conference: this.conference?.id,
+            participant: this.participant.id
+        });
+        await this.consultationService.leaveJudicialConsultationRoom(this.conference, this.participant);
+    }
+
     updateShowVideo(): void {
         const logPaylod = {
             conference: this.conferenceId,

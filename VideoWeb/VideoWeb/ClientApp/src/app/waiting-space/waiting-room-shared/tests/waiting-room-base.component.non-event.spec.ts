@@ -193,4 +193,14 @@ describe('WaitingRoomComponent message and clock', () => {
 
         expect(component.numberOfJudgeOrJOHsInConsultation).toBe(expectecCount);
     });
+
+    it('should request to join judicial consultation room', async () => {
+        await component.joinJudicialConsultation();
+        expect(consultationService.joinJudicialConsultationRoom).toHaveBeenCalledWith(component.conference, component.participant);
+    });
+
+    it('should request to leave judicial consultation room', async () => {
+        await component.leaveJudicialConsultation();
+        expect(consultationService.leaveJudicialConsultationRoom).toHaveBeenCalledWith(component.conference, component.participant);
+    });
 });

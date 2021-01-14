@@ -29,7 +29,7 @@
     [outgoingStream]="outgoingStream"
     [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
     [showConsultationControls]="showConsultationControls"
-    (leaveConsulation)="leaveConsultation()"
+    (leaveConsulation)="leaveJudicialConsultation()"
   ></app-hearing-controls>
 </ng-container>
 
@@ -129,7 +129,7 @@
         draggable="false"
         id="joinPCButton"
         data-module="govuk-button"
-        (click)="joinConsultation()"
+        (click)="joinJudicialConsultation()"
       >
         Join a private consultation
         <span *ngIf="numberOfJudgeOrJOHsInConsultation" id="numberOfJohsInConsultationBadge" class="badge">{{

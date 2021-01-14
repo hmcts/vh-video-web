@@ -141,14 +141,4 @@ describe('JohWaitingRoomComponent', () => {
     it('should return "hearing-on-time" class despite whatever status', () => {
         expect(component.getCurrentTimeClass()).toBe('hearing-on-time');
     });
-
-    it('should request to join judicial consultation room', async () => {
-        await component.joinConsultation();
-        expect(consultationService.joinJudicialConsultationRoom).toHaveBeenCalledWith(component.conference, component.participant);
-    });
-
-    it('should request to leave judicial consultation room', async () => {
-        await component.leaveConsultation();
-        expect(consultationService.leaveJudicialConsultationRoom).toHaveBeenCalledWith(component.conference, component.participant);
-    });
 });
