@@ -245,24 +245,24 @@ namespace VideoWeb.Services.TestApi
         /// <exception cref="TestApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task<System.Collections.Generic.List<TaskResponse>> GetTasksByConferenceIdAsync(System.Guid conferenceId, System.Threading.CancellationToken cancellationToken);
     
-        /// <summary>Create video event</summary>
+        /// <summary>Create event</summary>
         /// <param name="body">Conference event request</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task CreateVideoEventAsync(ConferenceEventRequest body);
+        System.Threading.Tasks.Task CreateEventAsync(ConferenceEventRequest body);
     
-        /// <summary>Create video event</summary>
+        /// <summary>Create event</summary>
         /// <param name="body">Conference event request</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        void CreateVideoEvent(ConferenceEventRequest body);
+        void CreateEvent(ConferenceEventRequest body);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Create video event</summary>
+        /// <summary>Create event</summary>
         /// <param name="body">Conference event request</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task CreateVideoEventAsync(ConferenceEventRequest body, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task CreateEventAsync(ConferenceEventRequest body, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get the test call result for a participant</summary>
         /// <param name="conferenceId">Conference Id of the conference</param>
@@ -1841,30 +1841,30 @@ namespace VideoWeb.Services.TestApi
             }
         }
     
-        /// <summary>Create video event</summary>
+        /// <summary>Create event</summary>
         /// <param name="body">Conference event request</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task CreateVideoEventAsync(ConferenceEventRequest body)
+        public System.Threading.Tasks.Task CreateEventAsync(ConferenceEventRequest body)
         {
-            return CreateVideoEventAsync(body, System.Threading.CancellationToken.None);
+            return CreateEventAsync(body, System.Threading.CancellationToken.None);
         }
     
-        /// <summary>Create video event</summary>
+        /// <summary>Create event</summary>
         /// <param name="body">Conference event request</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public void CreateVideoEvent(ConferenceEventRequest body)
+        public void CreateEvent(ConferenceEventRequest body)
         {
-            System.Threading.Tasks.Task.Run(async () => await CreateVideoEventAsync(body, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+            System.Threading.Tasks.Task.Run(async () => await CreateEventAsync(body, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <summary>Create video event</summary>
+        /// <summary>Create event</summary>
         /// <param name="body">Conference event request</param>
         /// <returns>Success</returns>
         /// <exception cref="TestApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task CreateVideoEventAsync(ConferenceEventRequest body, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task CreateEventAsync(ConferenceEventRequest body, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/events");
@@ -4724,26 +4724,6 @@ namespace VideoWeb.Services.TestApi
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
-    public enum RoomType
-    {
-        [System.Runtime.Serialization.EnumMember(Value = @"WaitingRoom")]
-        WaitingRoom = 0,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"HearingRoom")]
-        HearingRoom = 1,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"ConsultationRoom1")]
-        ConsultationRoom1 = 2,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"ConsultationRoom2")]
-        ConsultationRoom2 = 3,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"AdminRoom")]
-        AdminRoom = 4,
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
     public partial class ConferenceEventRequest 
     {
         [Newtonsoft.Json.JsonProperty("event_id", Required = Newtonsoft.Json.Required.AllowNull)]
@@ -4762,13 +4742,11 @@ namespace VideoWeb.Services.TestApi
         [Newtonsoft.Json.JsonProperty("participant_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Participant_id { get; set; }
     
-        [Newtonsoft.Json.JsonProperty("transfer_from", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public RoomType Transfer_from { get; set; }
+        [Newtonsoft.Json.JsonProperty("transfer_from", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Transfer_from { get; set; }
     
-        [Newtonsoft.Json.JsonProperty("transfer_to", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public RoomType Transfer_to { get; set; }
+        [Newtonsoft.Json.JsonProperty("transfer_to", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Transfer_to { get; set; }
     
         [Newtonsoft.Json.JsonProperty("reason", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Reason { get; set; }
@@ -5171,6 +5149,10 @@ namespace VideoWeb.Services.TestApi
         /// <summary>Case Type</summary>
         [Newtonsoft.Json.JsonProperty("case_type", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Case_type { get; set; }
+    
+        /// <summary>An optional parameter to add some text before the case name to help identify a case</summary>
+        [Newtonsoft.Json.JsonProperty("custom_case_name_prefix", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Custom_case_name_prefix { get; set; }
     
         /// <summary>Endpoints</summary>
         [Newtonsoft.Json.JsonProperty("endpoints", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]

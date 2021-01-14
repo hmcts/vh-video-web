@@ -55,7 +55,7 @@ namespace VideoWeb.Controllers
         [HttpPost]
         [SwaggerOperation(OperationId = "HandleConsultationRequest")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
-        [ProducesResponseType(typeof(BadRequestModelResponse), (int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(BadRequestModelResponse), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> HandleConsultationRequestAsync(PrivateConsultationRequest request)
         {
             var conference = await GetConference(request.ConferenceId);
@@ -249,9 +249,9 @@ namespace VideoWeb.Controllers
 
         [HttpPost("start")]
         [SwaggerOperation(OperationId = "StartConsultationAsync")]
-        [ProducesResponseType((int) HttpStatusCode.Accepted)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> StartConsultationAsync(StartPrivateConsultationRequest request)
         {
 
@@ -268,7 +268,7 @@ namespace VideoWeb.Controllers
 
                 var consultationRequestMapper = _mapperFactory.Get<StartPrivateConsultationRequest, StartConsultationRequest>();
                 var mappedRequest = consultationRequestMapper.Map(request);
-           //     await _videoApiClient.StartConsultationAsync(mappedRequest);
+                await _videoApiClient.StartPrivateConsultationAsync(mappedRequest);
                 return Accepted();
 
             }
@@ -281,9 +281,9 @@ namespace VideoWeb.Controllers
 
         [HttpPost("end")]
         [SwaggerOperation(OperationId = "LeaveConsultationAsync")]
-        [ProducesResponseType((int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> LeaveConsultationAsync(LeavePrivateConsultationRequest request)
         {
             try
@@ -299,7 +299,7 @@ namespace VideoWeb.Controllers
 
                 var leaveConsultationRequestMapper = _mapperFactory.Get<LeavePrivateConsultationRequest, LeaveConsultationRequest>();
                 var mappedRequest = leaveConsultationRequestMapper.Map(request);
-           //     await _videoApiClient.LeaveConsultationAsync(mappedRequest);
+                await _videoApiClient.LeaveConsultationAsync(mappedRequest);
 
                 return Ok();
             }
