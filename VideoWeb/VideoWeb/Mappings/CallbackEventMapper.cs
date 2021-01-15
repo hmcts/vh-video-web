@@ -22,8 +22,8 @@ namespace VideoWeb.Mappings
                 EventType = eventType,
                 ConferenceId = conferenceId,
                 Reason = request.Reason,
-                TransferTo = request.Transfer_to.ToString(),
-                TransferFrom = request.Transfer_from.ToString(),
+                TransferTo = request.Transfer_to,
+                TransferFrom = request.Transfer_from,
                 TimeStampUtc = request.Time_stamp_utc,
                 ParticipantId = participantId
             };

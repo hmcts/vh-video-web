@@ -29,6 +29,10 @@ export const participantsWitness = conferenceTestData.getListOfParticipantsWitne
 participantsWitness.forEach(x => {
     globalConference.participants.push(x);
 });
+export const participantsPanelMemebers = conferenceTestData.getListOfParticipantsWingers();
+participantsPanelMemebers.forEach(x => {
+    globalConference.participants.push(x);
+});
 export const globalParticipant = globalConference.participants.filter(x => x.role === Role.Individual)[0];
 export const globalWitness = globalConference.participants.filter(x => x.hearing_role === HearingRole.WITNESS)[0];
 export const globalEndpoint = globalConference.endpoints[0];

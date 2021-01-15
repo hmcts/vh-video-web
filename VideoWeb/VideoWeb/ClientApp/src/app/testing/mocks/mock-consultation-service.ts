@@ -14,7 +14,9 @@ export function consultationServiceSpyFactory(): jasmine.SpyObj<ConsultationServ
         'respondToAdminConsultationRequest',
         'clearModals',
         'startPrivateConsulationWithEndpoint',
-        'cancelTimedOutIncomingRequest'
+        'cancelTimedOutIncomingRequest',
+        'joinJudicialConsultationRoom',
+        'leaveJudicialConsultationRoom'
     ]);
 
     consultationServiceMock.raiseConsultationRequest.and.returnValue(Promise.resolve());
@@ -22,6 +24,8 @@ export function consultationServiceSpyFactory(): jasmine.SpyObj<ConsultationServ
     consultationServiceMock.leaveConsultation.and.returnValue(Promise.resolve());
     consultationServiceMock.respondToAdminConsultationRequest.and.returnValue(Promise.resolve());
     consultationServiceMock.startPrivateConsulationWithEndpoint.and.returnValue(Promise.resolve());
+    consultationServiceMock.joinJudicialConsultationRoom.and.returnValue(Promise.resolve());
+    consultationServiceMock.leaveJudicialConsultationRoom.and.returnValue(Promise.resolve());
 
     return consultationServiceMock;
 }

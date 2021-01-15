@@ -81,7 +81,8 @@ namespace VideoWeb.EventHub.Hub
             }
             else
             {
-                _logger.LogWarning(exception, $"There was an error when disconnecting from chat hub server-side: {userName}");
+                _logger.LogWarning(exception,
+                    $"There was an error when disconnecting from chat hub server-side: {userName}");
             }
 
             var isAdmin = IsSenderAdmin();
@@ -107,7 +108,8 @@ namespace VideoWeb.EventHub.Hub
         {
             if (!isAdmin) return;
             var conferences = await GetConferencesForAdmin();
-            var tasks = conferences.Select(c => Groups.RemoveFromGroupAsync(Context.ConnectionId, c.Id.ToString())).ToArray();
+            var tasks = conferences.Select(c => Groups.RemoveFromGroupAsync(Context.ConnectionId, c.Id.ToString()))
+                .ToArray();
 
             await Task.WhenAll(tasks);
         }
@@ -142,11 +144,14 @@ namespace VideoWeb.EventHub.Hub
             var participantUsername = isSenderAdmin ? to : from;
             var isAllowed =
                 await IsAllowedToSendMessageAsync(conferenceId, isSenderAdmin, isRecipientAdmin, participantUsername);
-            if (!isAllowed) { return; }
+            if (!isAllowed)
+            {
+                return;
+            }
 
             var dto = new SendMessageDto
             {
-                Conference = new Conference { Id = conferenceId },
+                Conference = new Conference {Id = conferenceId},
                 From = from,
                 To = to,
                 Message = message,
@@ -182,6 +187,7 @@ namespace VideoWeb.EventHub.Hub
             {
                 return true;
             }
+
             var user = await _userProfileService.GetUserAsync(recipientUsername);
             return user != null && user.User_role.Equals("VHOfficer", StringComparison.InvariantCultureIgnoreCase);
         }
@@ -240,6 +246,7 @@ namespace VideoWeb.EventHub.Hub
             {
                 return false;
             }
+
             // participant check first belongs to conference
             try
             {
@@ -259,6 +266,7 @@ namespace VideoWeb.EventHub.Hub
                 _logger.LogError(ex, "Error occured when validating send message");
                 return false;
             }
+
             _logger.LogDebug($"Participant {username} exists in conversation");
             return true;
         }
@@ -300,8 +308,10 @@ namespace VideoWeb.EventHub.Hub
                         heartbeat.OperatingSystem, heartbeat.OperatingSystemVersion
                     );
                 }
+
                 var addHeartbeatRequest = _heartbeatRequestMapper.MapToRequest(heartbeat);
-                await _videoApiClient.SaveHeartbeatDataForParticipantAsync(conferenceId, participantId, addHeartbeatRequest);
+                await _videoApiClient.SaveHeartbeatDataForParticipantAsync(conferenceId, participantId,
+                    addHeartbeatRequest);
             }
             catch (Exception ex)
             {
@@ -309,7 +319,8 @@ namespace VideoWeb.EventHub.Hub
             }
         }
 
-        public async Task SendTransferRequest(Guid conferenceId, Guid participantId, TransferDirection transferDirection) 
+        public async Task SendTransferRequest(Guid conferenceId, Guid participantId,
+            TransferDirection transferDirection)
         {
             try
             {
@@ -318,18 +329,21 @@ namespace VideoWeb.EventHub.Hub
                 var transferringParticipant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
                 if (transferringParticipant == null)
                 {
-                    _logger.LogDebug("Participant {participant} does not exist in {conference}", participantId, conferenceId);
+                    _logger.LogDebug("Participant {participant} does not exist in {conference}", participantId,
+                        conferenceId);
                     throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
                 }
-                
-                await Clients.Group(VhOfficersGroupName).HearingTransfer(conferenceId, participantId, transferDirection);
+
+                await Clients.Group(VhOfficersGroupName)
+                    .HearingTransfer(conferenceId, participantId, transferDirection);
                 _logger.LogTrace(
                     "Participant Transfer: Participant Id: {participant} | Conference Id: {conference} | Direction: {direction}",
                     participantId, conferenceId, transferDirection);
-                
+
                 foreach (var participant in conference.Participants)
                 {
-                    await Clients.Group(participant.Username.ToLowerInvariant()).HearingTransfer(conferenceId, participantId, transferDirection);
+                    await Clients.Group(participant.Username.ToLowerInvariant())
+                        .HearingTransfer(conferenceId, participantId, transferDirection);
                 }
             }
             catch (Exception ex)
@@ -348,16 +362,17 @@ namespace VideoWeb.EventHub.Hub
                 var participant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
                 if (participant == null)
                 {
-                    _logger.LogDebug("Participant {participant} does not exist in {conference}", participantId, conferenceId);
+                    _logger.LogDebug("Participant {participant} does not exist in {conference}", participantId,
+                        conferenceId);
                     throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
                 }
 
                 await Clients.Group(VhOfficersGroupName)
-                    .ParticipantMediaStatusMessage(conferenceId, participantId, mediaStatus);
+                    .ParticipantMediaStatusMessage(participantId, conferenceId, mediaStatus);
                 var judge = conference.Participants.Single(x => x.IsJudge());
                 await Clients.Group(judge.Username.ToLowerInvariant())
-                    .ParticipantMediaStatusMessage(conferenceId, participantId, mediaStatus);
-                
+                    .ParticipantMediaStatusMessage(participantId, conferenceId, mediaStatus);
+
                 _logger.LogTrace(
                     "Participant device status updated: Participant Id: {participant} | Conference Id: {conference}",
                     participantId, conferenceId);
