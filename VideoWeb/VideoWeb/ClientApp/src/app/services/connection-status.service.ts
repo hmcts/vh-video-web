@@ -13,8 +13,6 @@ export class ConnectionStatusService {
     status = true;
 
     constructor(private logger: Logger) {
-        window.addEventListener('online', this.checkConnection);
-        window.addEventListener('offline', this.checkConnection);
     }
 
     start() {
@@ -45,12 +43,13 @@ export class ConnectionStatusService {
         xhr.onload = () => {
             this.handleResult(true);
         };
-        xhr.onerror = e => {
+        xhr.onerror = () => {
             this.handleResult(false);
         };
         xhr.ontimeout = () => {
             this.handleResult(false);
-        };
+        };      
+
         try {
             xhr.send();
         } catch (_error) {

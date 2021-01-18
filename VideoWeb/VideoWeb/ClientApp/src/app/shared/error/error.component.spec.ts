@@ -133,19 +133,13 @@ describe('ErrorComponent', () => {
         expect(component.hasInternetConnection).toBeFalsy();
     });
 
-    it('should go back on timeout complete and no connection error', () => {
-        spyOn(component, 'reconnect');
-        component.connectionError = false;
-        component.executeGoBackTimeout();
-        expect(component.reconnect).toHaveBeenCalledTimes(1);
-    });
-
     it('should not go back if already reconnecting in progress', () => {
         component.attemptingReconnect = true;
         pageTrackerSpy.getPreviousUrl.calls.reset();
         component.reconnect();
         expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalledTimes(0);
     });
+    
     it('should show error message for firewall issue if session storage returns a value', () => {
         errorServiceSpy.getErrorMessageFromStorage.and.returnValue(new ErrorMessage('FirewallProblem', null, true));
 
