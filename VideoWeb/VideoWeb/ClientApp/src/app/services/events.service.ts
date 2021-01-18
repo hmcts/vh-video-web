@@ -69,7 +69,11 @@ export class EventsService {
             return this.reconnectionPromise;
         }
 
-        if (!this.isConnectedToHub && this.adalService.userInfo.authenticated && this.connection.state !== signalR.HubConnectionState.Disconnecting) {
+        if (
+            !this.isConnectedToHub &&
+            this.adalService.userInfo.authenticated &&
+            this.connection.state !== signalR.HubConnectionState.Disconnecting
+        ) {
             this.reconnectionAttempt++;
             return this.connection
                 .start()
