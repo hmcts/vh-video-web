@@ -21,7 +21,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By ClosedTitle = CommonLocators.ElementContainingText("Your video hearing is closed");
         public static By Frame = By.XPath("//app-participant-waiting-room");
         public static By IncomingPrivateConsultationFeed = By.Id("incomingFeedPrivate");
-        public static By SelfViewButton = By.Id("outgoingFeedButton");
+        public static By SelfViewButton = By.Id("toggle-self-view-img");
         public static By SelfViewVideo = By.Id("outgoingFeedVideo");
     }
 }

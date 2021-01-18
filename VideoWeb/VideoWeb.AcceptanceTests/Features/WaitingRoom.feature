@@ -11,7 +11,7 @@ Scenario: Participant waiting room
 	And a phone number for help is provided
 	And the users status has updated to Available
 	And the participant can see information about their case
-	And the participant can see a list of other participants and their representatives
+	And the Participant can see a list of participants and their representatives
 	And the user can see a black box and an about to begin message
 
 @VIH-4610 @Smoketest @Smoketest-Extended
@@ -55,7 +55,7 @@ Scenario: Observer and Panel Member visible on Judge Waiting Room
 Scenario: Observer and Panel Member visible on Participant Waiting Room
   Given I have a hearing with an Observer and Panel Member
   And the Participant user has progressed to the Waiting Room page for the existing hearing
-  Then the participant can see a list of other participants and their representatives
+  Then the Participant can see a list of participants and their representatives
 
 @VIH-6131 @Smoketest-Extended
 Scenario: Observer Waiting Room
@@ -65,7 +65,7 @@ Scenario: Observer Waiting Room
 	And a phone number for help is provided
 	And the users status has updated to Available
 	And the participant can see information about their case
-	And the participant can see a list of other participants and their representatives
+	And the Participant can see a list of participants and their representatives
 	And the user can see a black box and an about to begin message
 
 @VIH-6131 @Smoketest-Extended
@@ -76,8 +76,8 @@ Scenario: Panel Member Waiting Room
 	And a phone number for help is provided
 	And the users status has updated to Available
 	And the participant can see information about their case
-	And the participant can see a list of other participants and their representatives
-	And the user can see a black box and an about to begin message
+	And the Panel Member can see a list of participants and their representatives
+	And the user can see a blue box and a scheduled message
 
 @VIH-6420 @Smoketest-Extended
 Scenario: Winger Waiting Room
@@ -87,5 +87,5 @@ Scenario: Winger Waiting Room
 	And a phone number for help is provided
 	And the users status has updated to Available
 	And the participant can see information about their case
-	And the participant can see a list of other participants and their representatives
-	And the user can see a black box and an about to begin message
+	And the Winger can see a list of participants and their representatives
+	And the user can see a blue box and a scheduled message
