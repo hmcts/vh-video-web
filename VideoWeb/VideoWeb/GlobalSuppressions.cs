@@ -6,3 +6,4 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Critical Code Smell", "S927:parameter names should match base declaration and other partial definitions", Justification = "Name provides additional context. The generic interfaces calls `input`changing would hurt the readability of the mapper.", Scope = "namespaceanddescendants", Target = "VideoWeb.Mappings")]
+[assembly: SuppressMessage("Warning Code Smell", "S1481:Remove the unused local variable", Justification = "Name provides additional context. The generic interfaces calls `input`changing would hurt the readability of the mapper.", Scope = "namespaceanddescendants", Target = "VideoWeb.Mappings.Decorators")]

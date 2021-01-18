@@ -9,6 +9,7 @@ import {
     ConsultationAnswer,
     ParticipantResponse,
     ParticipantStatus,
+    Role,
     TokenResponse
 } from 'src/app/services/clients/api-client';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
@@ -90,6 +91,12 @@ export abstract class WaitingRoomBaseComponent {
             return this.conference.id;
         }
         return this.route.snapshot.paramMap.get('conferenceId');
+    }
+
+    get numberOfJudgeOrJOHsInConsultation(): number {
+        return this.conference.participants.filter(
+            x => (x.role === Role.Judge || x.role === Role.JudicialOfficeHolder) && x.status === ParticipantStatus.InConsultation
+        ).length;
     }
 
     getConference() {
@@ -487,6 +494,22 @@ export abstract class WaitingRoomBaseComponent {
         } catch (error) {
             this.logger.error(`${this.loggerPrefix} Failed to leave private consultation`, error, logPayload);
         }
+    }
+
+    async joinJudicialConsultation() {
+        this.logger.info(`${this.loggerPrefix} attempting to join a private judicial consultation`, {
+            conference: this.conference?.id,
+            participant: this.participant.id
+        });
+        await this.consultationService.joinJudicialConsultationRoom(this.conference, this.participant);
+    }
+
+    async leaveJudicialConsultation() {
+        this.logger.info(`${this.loggerPrefix} attempting to leave a private judicial consultation`, {
+            conference: this.conference?.id,
+            participant: this.participant.id
+        });
+        await this.consultationService.leaveJudicialConsultationRoom(this.conference, this.participant);
     }
 
     updateShowVideo(): void {

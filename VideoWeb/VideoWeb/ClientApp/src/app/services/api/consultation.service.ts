@@ -12,7 +12,9 @@ import {
     PrivateConsultationRequest,
     PrivateVideoEndpointConsultationRequest,
     RoomType,
-    VideoEndpointResponse
+    StartPrivateConsultationRequest,
+    VideoEndpointResponse,
+    VirtualCourtRoomType
 } from '../clients/api-client';
 import { Logger } from '../logging/logger-base';
 import { ModalService } from '../modal.service';
@@ -263,6 +265,42 @@ export class ConsultationService {
         this.logger.debug('[ConsultationService] - Displaying incoming admin consultation request modal.');
         this.displayModal(ConsultationService.VHO_REQUEST_PC_MODAL);
         await this.startIncomingCallRingingTimeout();
+    }
+
+    async joinJudicialConsultationRoom(conference: ConferenceResponse, participant: ParticipantResponse): Promise<void> {
+        this.logger.info(`[ConsultationService] - Attempting to join a private judicial consultation`, {
+            conference: conference.id,
+            participant: participant.id
+        });
+        try {
+            await this.apiClient
+                .startOrJoinConsultation(
+                    new StartPrivateConsultationRequest({
+                        conference_id: conference.id,
+                        requested_by: participant.id,
+                        room_type: VirtualCourtRoomType.JudgeJOH
+                    })
+                )
+                .toPromise();
+        } catch (error) {
+            this.displayConsultationErrorModal();
+            throw error;
+        }
+    }
+
+    async leaveJudicialConsultationRoom(conference: ConferenceResponse, participant: ParticipantResponse): Promise<void> {
+        this.logger.info(`[ConsultationService] - Attempting to leave a private judicial consultation`, {
+            conference: conference.id,
+            participant: participant.id
+        });
+        await this.apiClient
+            .leaveConsultation(
+                new LeavePrivateConsultationRequest({
+                    conference_id: conference.id,
+                    participant_id: participant.id
+                })
+            )
+            .toPromise();
     }
 
     displayNoConsultationRoomAvailableModal() {

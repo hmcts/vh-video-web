@@ -191,7 +191,7 @@ export class EventsService {
 
         this.connection.on(
             'ParticipantMediaStatusMessage',
-            (conferenceId: string, participantId: string, mediaStatus: ParticipantMediaStatus) => {
+            (participantId: string, conferenceId: string, mediaStatus: ParticipantMediaStatus) => {
                 const payload = new ParticipantMediaStatusMessage(conferenceId, participantId, mediaStatus);
                 this.logger.debug('[EventsService] - Participant Media Status change received: ', payload);
                 this.participantMediaStatusSubject.next(payload);
