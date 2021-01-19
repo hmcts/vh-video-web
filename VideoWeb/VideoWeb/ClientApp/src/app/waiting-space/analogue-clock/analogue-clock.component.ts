@@ -29,11 +29,6 @@ export class AnalogueClockComponent implements OnInit {
         });
     }
 
-    ngAfterViewInit() {
-        console.log('Values on ngAfterViewInit():');
-        console.log("title:", this.hourHand.nativeElement);
-    }
-
     updateclock() {
         if (!this.hearing) {
             return;
