@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -18,10 +18,10 @@ namespace VideoWeb.Controllers
     public class MediaEventController: Controller
     {
         private readonly IVideoApiClient _videoApiClient;
-        private readonly ILogger _logger;
+        private readonly ILogger<MediaEventController> _logger;
         private readonly IConferenceCache _conferenceCache;
 
-        public MediaEventController(IVideoApiClient videoApiClient, ILogger logger, IConferenceCache conferenceCache)
+        public MediaEventController(IVideoApiClient videoApiClient, ILogger<MediaEventController> logger, IConferenceCache conferenceCache)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
