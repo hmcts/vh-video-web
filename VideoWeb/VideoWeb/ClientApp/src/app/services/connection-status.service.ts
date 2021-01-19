@@ -37,23 +37,24 @@ export class ConnectionStatusService {
     }
 
     private checkConnection() {
+        var self = this;
         const xhr = new XMLHttpRequest();
         xhr.open('HEAD', '/assets/images/favicons/favicon.ico?_=' + new Date().getTime());
         xhr.timeout = 5000;
         xhr.onload = () => {
-            this.handleResult(true);
+            self.handleResult(true);
         };
         xhr.onerror = () => {
-            this.handleResult(false);
+            self.handleResult(false);
         };
         xhr.ontimeout = () => {
-            this.handleResult(false);
+            self.handleResult(false);
         };      
 
         try {
             xhr.send();
         } catch (_error) {
-            this.handleResult(false);
+            self.handleResult(false);
         }
     }
 
