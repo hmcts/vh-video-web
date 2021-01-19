@@ -146,7 +146,7 @@ describe('JohWaitingRoomComponent', () => {
         { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Closed, expected: 'hearing-on-time' }
     ];
 
-    timeClassTestCases.forEach(test=> {
+    timeClassTestCases.forEach(test => {
         it('should return "hearing-delayed" class if suspended and "hearing-on-time" class if not suspended', () => {
             component.hearing = new Hearing(test.conference);
             component.hearing.getConference().status = test.status;

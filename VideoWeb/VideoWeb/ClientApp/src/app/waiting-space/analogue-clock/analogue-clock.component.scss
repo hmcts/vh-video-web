@@ -25,14 +25,14 @@
   &.delayed {
     background: govuk-colour('yellow');
   }
-  
+
   &::after {
     -moz-transform: rotate(90deg);
     -ms-transform: rotate(90deg);
     -webkit-transform: rotate(90deg);
     transform: rotate(90deg);
   }
-  
+
   .marker {
     &.oneseven {
       -moz-transform: rotate(30deg);
@@ -40,21 +40,21 @@
       -webkit-transform: rotate(30deg);
       transform: rotate(30deg);
     }
-    
+
     &.twoeight {
       -moz-transform: rotate(60deg);
       -ms-transform: rotate(60deg);
       -webkit-transform: rotate(60deg);
       transform: rotate(60deg);
     }
-    
+
     &.fourten {
       -moz-transform: rotate(120deg);
       -ms-transform: rotate(120deg);
       -webkit-transform: rotate(120deg);
       transform: rotate(120deg);
     }
-    
+
     &.fiveeleven {
       -moz-transform: rotate(150deg);
       -ms-transform: rotate(150deg);
@@ -65,7 +65,7 @@
 
   &.ontime,
   &.isstarting {
-    &::before, 
+    &::before,
     &::after {
       /* time markers syle */
       content: '';
@@ -95,7 +95,7 @@
   }
 
   &.delayed {
-    &::before, 
+    &::before,
     &::after {
       content: '';
       position: absolute;
@@ -137,7 +137,7 @@
   top: 6%;
   /* set this value of 1/2 height value*/
 
-  &.ontime, 
+  &.ontime,
   &.isstarting {
     background: govuk-colour('black');
 
@@ -157,7 +157,7 @@
       position: absolute;
       top: 50%;
       left: 50%;
-    } 
+    }
 
     /* hands */
     .hand {
@@ -205,9 +205,9 @@
         /* set this value to 1/2 width */
         top: 0;
       }
-    } 
+    }
   }
-  
+
   &.ontime {
     background: govuk-colour('blue');
   }
@@ -232,7 +232,7 @@
       top: 50%;
       left: 50%;
     }
-  
+
     .hand {
       position: absolute;
       left: 50%;
@@ -246,7 +246,7 @@
       -webkit-transform-origin: bottom;
       transform-origin: bottom;
       z-index: -1;
-  
+
       &.hour {
         width: 4px;
         /* width of hour hand */
@@ -257,7 +257,7 @@
         margin-left: -2px;
         /* set this value to 1/2 width */
       }
-      
+
       &.minute {
         height: 45%;
         /* height of min hand */
@@ -268,7 +268,7 @@
         margin-left: -2.5px;
         /* set this value to 1/2 width */
       }
-      
+
       &.second {
         height: 50%;
         /* height of sec hand */

@@ -18,7 +18,7 @@ export class AnalogueClockComponent implements OnInit {
 
     currentTime: Date;
 
-    constructor(private clockService: ClockService) { }
+    constructor(private clockService: ClockService) {}
 
     ngOnInit() {
         this.setCurrentTime();
@@ -38,28 +38,21 @@ export class AnalogueClockComponent implements OnInit {
 
     get isOnTime() {
         return (
-            (this.isWitness && this.hearing.isStarting())
-            || this.hearing.isOnTime()
-            || this.hearing.isPaused()
-            || this.hearing.isClosed()
-            || (this.isWitness && this.hearing.isDelayed())
-            || this.isJudicialOfficeHolder
-            && !this.hearing.isSuspended
-        )
+            (this.isWitness && this.hearing.isStarting()) ||
+            this.hearing.isOnTime() ||
+            this.hearing.isPaused() ||
+            this.hearing.isClosed() ||
+            (this.isWitness && this.hearing.isDelayed()) ||
+            (this.isJudicialOfficeHolder && !this.hearing.isSuspended)
+        );
     }
 
     get isDelayed() {
-        return (
-            (!this.isWitness && !this.isJudicialOfficeHolder && this.hearing.isDelayed())
-            || this.hearing.isSuspended()
-        )
+        return (!this.isWitness && !this.isJudicialOfficeHolder && this.hearing.isDelayed()) || this.hearing.isSuspended();
     }
 
     get isStarting() {
-        return (
-            (!this.isWitness && !this.isJudicialOfficeHolder && this.hearing.isStarting())
-            || this.hearing.isInSession()
-        );
+        return (!this.isWitness && !this.isJudicialOfficeHolder && this.hearing.isStarting()) || this.hearing.isInSession();
     }
 
     private setCurrentTime(): void {
