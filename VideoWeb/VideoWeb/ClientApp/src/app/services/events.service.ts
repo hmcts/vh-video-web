@@ -65,6 +65,7 @@ export class EventsService {
     }
 
     start() {
+
         if (this.reconnectionPromise) {
             return this.reconnectionPromise;
         }
