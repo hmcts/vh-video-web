@@ -26,6 +26,13 @@ namespace VideoWeb.AcceptanceTests.Hooks
             _objectContainer = objectContainer;
         }
 
+        [BeforeTestRun(Order = (int)HooksSequence.CleanUpDriverInstances)]
+        [AfterTestRun(Order = (int)HooksSequence.CleanUpDriverInstances)]
+        public static void KillAnyLocalProcesses()
+        {
+            DriverManager.KillAnyLocalDriverProcesses();
+        }
+        
         [BeforeScenario(Order = (int)HooksSequence.InitialiseBrowserHooks)]
         public void InitialiseBrowserContainer()
         {
@@ -36,7 +43,6 @@ namespace VideoWeb.AcceptanceTests.Hooks
         [BeforeScenario(Order = (int) HooksSequence.ConfigureDriverHooks)]
         public void ConfigureDriver(TestContext context, ScenarioContext scenario)
         {
-            DriverManager.KillAnyLocalDriverProcesses();
             context.VideoWebConfig.TestConfig.TargetBrowser = DriverManager.GetTargetBrowser(NUnit.Framework.TestContext.Parameters["TargetBrowser"]);
             context.VideoWebConfig.TestConfig.TargetBrowserVersion = NUnit.Framework.TestContext.Parameters["TargetBrowserVersion"];
             context.VideoWebConfig.TestConfig.TargetDevice = DriverManager.GetTargetDevice(NUnit.Framework.TestContext.Parameters["TargetDevice"]);
@@ -96,7 +102,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 SignOut(context.CurrentUser);
         }
 
-        public bool SignOutLinkIsPresent(User user)
+        private bool SignOutLinkIsPresent(User user)
         {
             try
             {
@@ -118,7 +124,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             }
             catch
             {
-                NUnit.Framework.TestContext.WriteLine($"Attempted to sign out but link no longer visible");
+                NUnit.Framework.TestContext.WriteLine("Attempted to sign out but link no longer visible");
             }
         }
 
@@ -151,15 +157,11 @@ namespace VideoWeb.AcceptanceTests.Hooks
         [AfterScenario(Order = (int)HooksSequence.TearDownBrowserHooks)]
         public void TearDownBrowser()
         {
-            if (_browsers != null)
+            if (_browsers == null) return;
+            foreach (var browser in _browsers.Values)
             {
-                foreach (var browser in _browsers.Values)
-                {
-                    browser.BrowserTearDown();
-                }
+                browser.BrowserTearDown();
             }
-
-            DriverManager.KillAnyLocalDriverProcesses();
         }
     }
 }
