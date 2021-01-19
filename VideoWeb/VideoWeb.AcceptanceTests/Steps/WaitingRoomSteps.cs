@@ -7,6 +7,7 @@ using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.Test.Helpers;
 using FluentAssertions;
+using OpenQA.Selenium;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -103,8 +104,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.ContactVhTeam).Displayed.Should().BeTrue();
         }
 
-        [Then(@"the Judge can see a list of participants and their representatives")]
-        public void ThenTheJudgeCanSeeAListOfParticipantsAndTheirRepresentatives()
+        [Then(@"the (.*) can see a list of participants and their representatives")]
+        public void ThenTheUserCanSeeAListOfParticipantsAndTheirRepresentatives(string user)
         {
             var panelMembers = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("panelmember"));
             var individuals = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("individual"));
@@ -115,66 +116,61 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             foreach (var panelMember in panelMembers)
             {
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.PanelMemberName(panelMember.Id)).Text.Trim().Should().Be(panelMember.Name);
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetPanelMemberName(user, panelMember.Id)).Text.Trim().Should().Be(panelMember.Name);
             }
 
             foreach (var individual in individuals)
             {
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantName(individual.Id)).Text.Trim().Should().Be(individual.Name);
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantHearingRole(individual.Id)).Text.Trim().Should().Be(individual.Hearing_role);
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantCaseType(individual.Id)).Text.Trim().Should().Be(individual.Case_type_group);
-            }
-
-            foreach (var representative in representatives)
-            {
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantName(representative.Id)).Text.Trim().Should().Be(representative.Name);
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantCaseType(representative.Id)).Text.Trim().Should().Be(representative.Case_type_group);
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.RepresentativeRepresentee(representative.Id)).Text.Trim().Should().Be($"Representative for {representative.Representee}");
-            }
-
-            foreach (var observer in observers)
-            {
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ObserverName(observer.Id)).Text.Trim().Should().Be(observer.Name);
-            }
-        }
-
-        [Then(@"the participant can see a list of other participants and their representatives")]
-        public void ThenTheParticipantCanSeeAListOfParticipantsAndTheirRepresentatives()
-        {
-            var panelMembers = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("panelmember"));
-            var individuals = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("individual"));
-            var representatives = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("representative"));
-            var observers = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("observer"));
-
-            (panelMembers.Count + individuals.Count + representatives.Count + observers.Count).Should().BeGreaterThan(0);
-
-            foreach (var panelMember in panelMembers)
-            {
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantListPanel.PanelMemberName(panelMember.Id)).Text.Trim().Should().Be(panelMember.Name);
-            }
-
-            foreach (var individual in individuals)
-            {
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantListPanel.ParticipantName(individual.Id)).Text.Trim().Should().Be(individual.Name);
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantListPanel.ParticipantHearingRole(individual.Id)).Text.Trim().Should().Be(individual.Hearing_role);
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantName(user, individual.Id)).Text.Trim().Should().Be(individual.Name);
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantHearingRole(user, individual.Id)).Text.Trim().Should().Be(individual.Hearing_role);
                 if (!individual.Case_type_group.ToLower().Equals("none"))
                 {
-                    _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantListPanel.ParticipantCaseTypeGroup(individual.Id)).Text.Trim().Should().Be(individual.Case_type_group);
+                    _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantCaseType(user, individual.Id)).Text.Trim().Should().Be(individual.Case_type_group);
                 }
             }
 
             foreach (var representative in representatives)
             {
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantListPanel.ParticipantName(representative.Id)).Text.Trim().Should().Be(representative.Name);
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantName(user, representative.Id)).Text.Trim().Should().Be(representative.Name);
                 if (representative.Case_type_group.ToLower().Equals("none")) continue;
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantListPanel.ParticipantCaseTypeGroup(representative.Id)).Text.Trim().Should().Be(representative.Case_type_group);
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantListPanel.RepresentativeRepresentee(representative.Id)).Text.Trim().Should().Be($"Representative for {representative.Representee}");
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantCaseType(user, representative.Id)).Text.Trim().Should().Be(representative.Case_type_group);
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetRepresentativeRepresentee(user, representative.Id)).Text.Trim().Should().Be($"Representative for {representative.Representee}");
             }
 
             foreach (var observer in observers)
             {
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantListPanel.ObserverName(observer.Id)).Text.Trim().Should().Be(observer.Name);
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetObserverName(user, observer.Id)).Text.Trim().Should().Be(observer.Name);
             }
+        }
+
+        private By GetPanelMemberName(string user,Guid id)
+        {
+            return user == "Participant" ? ParticipantListPanel.PanelMemberName(id): JudgeParticipantPanel.PanelMemberName(id);           
+        }
+
+        private By GetParticipantName(string user, Guid id)
+        {
+            return user == "Participant" ? ParticipantListPanel.ParticipantName(id) : JudgeParticipantPanel.ParticipantName(id);
+        }
+
+        private By GetParticipantHearingRole(string user, Guid id)
+        {
+            return user == "Participant" ? ParticipantListPanel.ParticipantHearingRole(id) : JudgeParticipantPanel.ParticipantHearingRole(id);
+        }
+
+        private By GetParticipantCaseType(string user, Guid id)
+        {
+            return user == "Participant" ? ParticipantListPanel.ParticipantCaseTypeGroup(id) : JudgeParticipantPanel.ParticipantCaseType(id);
+        }
+
+        private By GetRepresentativeRepresentee(string user, Guid id)
+        {
+            return user == "Participant" ? ParticipantListPanel.RepresentativeRepresentee(id) : JudgeParticipantPanel.RepresentativeRepresentee(id);
+        }
+
+        private By GetObserverName(string user, Guid id)
+        {
+            return user == "Participant" ? ParticipantListPanel.ObserverName(id) : JudgeParticipantPanel.ObserverName(id);
         }
 
         [Then(@"the Judge can see other participants status")]
