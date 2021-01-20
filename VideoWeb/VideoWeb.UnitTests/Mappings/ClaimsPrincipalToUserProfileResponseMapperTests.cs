@@ -54,7 +54,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .WithRole("unknown").Build();
             Action action = () => _sut.Map(user);
 
-            action.Should().Throw<NotSupportedException>();
+            action.Should().Throw<NotSupportedException>().WithMessage("Role is not supported for this application"); ;
         }
     }
 }
