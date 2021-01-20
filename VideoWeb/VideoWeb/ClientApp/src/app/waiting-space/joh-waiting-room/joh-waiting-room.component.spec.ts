@@ -138,7 +138,19 @@ describe('JohWaitingRoomComponent', () => {
         });
     });
 
-    it('should return "hearing-on-time" class despite whatever status', () => {
-        expect(component.getCurrentTimeClass()).toBe('hearing-on-time');
+    const timeClassTestCases = [
+        { conference: conferenceTestData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: 'hearing-on-time' },
+        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.InSession, expected: 'hearing-on-time' },
+        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Paused, expected: 'hearing-on-time' },
+        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Suspended, expected: 'hearing-delayed' },
+        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Closed, expected: 'hearing-on-time' }
+    ];
+
+    timeClassTestCases.forEach(test => {
+        it('should return "hearing-delayed" class if suspended and "hearing-on-time" class if not suspended', () => {
+            component.hearing = new Hearing(test.conference);
+            component.hearing.getConference().status = test.status;
+            expect(component.getCurrentTimeClass()).toBe(test.expected);
+        });
     });
 });
