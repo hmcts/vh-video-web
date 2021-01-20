@@ -66,6 +66,7 @@ namespace VideoWeb.Controllers
             [FromBody] AddSelfTestFailureEventRequest addSelfTestFailureEventRequest)
         {
             var participantId = await GetIdForParticipantByUsernameInConference(conferenceId);
+
             try
             {
                 var eventRequest = new ConferenceEventRequest
