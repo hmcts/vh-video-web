@@ -13,7 +13,6 @@ import { ConnectionStatusService } from 'src/app/services/connection-status.serv
 })
 export class ErrorComponent implements OnInit, OnDestroy {
     private readonly loggerPrefix = '[ErrorPage] -';
-    returnTimeout: NodeJS.Timer;
     subscription = new Subscription();
 
     private browserRefresh: boolean;
@@ -96,6 +95,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
         } else {
             this.attemptingReconnect = false;
             this.logger.debug(`${this.loggerPrefix} No internet connection detected.`);
+            this.connectionStatusService.checkNow();
         }
     }
 }

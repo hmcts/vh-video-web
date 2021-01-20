@@ -13,6 +13,7 @@ import { ErrorMessage } from '../models/error-message';
 import { ErrorComponent } from './error.component';
 import { ErrorService } from 'src/app/services/error.service';
 import { ConnectionStatusService } from 'src/app/services/connection-status.service';
+import { connectionStatusServiceSpyFactory } from 'src/app/testing/mocks/mock-connection-status.service';
 
 class MockRouter {
     public ne = new NavigationEnd(0, '/testUrl-test-error1', null);
@@ -50,7 +51,7 @@ describe('ErrorComponent', () => {
             pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
             pageTrackerSpy.getPreviousUrl.and.returnValue('testUrl-test-error1');
             errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['getErrorMessageFromStorage']);
-            connectionStatusServiceSpy = jasmine.createSpyObj<ConnectionStatusService>('ConnectionStatusService', ['status']);
+            connectionStatusServiceSpy = connectionStatusServiceSpyFactory();
 
             TestBed.configureTestingModule({
                 declarations: [ErrorComponent, ContactUsFoldingComponent, Mock1Component, Mock2Component],
@@ -82,6 +83,10 @@ describe('ErrorComponent', () => {
         component.ngOnDestroy();
     });
 
+    function spyPropertyGetter(spyObj: jasmine.SpyObj<any>, propName: string) {
+        return Object.getOwnPropertyDescriptor(spyObj, propName).get as jasmine.Spy<jasmine.Func>;
+    }
+
     it('should show default error message if session storage is empty', () => {
         errorServiceSpy.getErrorMessageFromStorage.and.returnValue(null);
 
@@ -108,42 +113,63 @@ describe('ErrorComponent', () => {
     });
 
     it('should navigate to previous page on reconnect click and internet connection', () => {
+        // ARRANGE
         pageTrackerSpy.getPreviousUrl.calls.reset();
-        connectionStatusServiceSpy.status = true;
+        spyPropertyGetter(connectionStatusServiceSpy, 'status').and.returnValue(true);
+
+        // ACT
         component.reconnect();
+
+        // ASSERT
         expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalled();
     });
 
-    it('should navigate to previous page on reconnect click and no internet connection', () => {
-        component.returnTimeout = undefined;
+    it('should not navigate to previous page on reconnect click and no internet connection', () => {
+        // ARRANGE
         pageTrackerSpy.getPreviousUrl.calls.reset();
-        connectionStatusServiceSpy.status = false;
+        spyPropertyGetter(connectionStatusServiceSpy, 'status').and.returnValue(false);
+
+        // ACT
         component.reconnect();
-        expect(component.returnTimeout).toBeDefined();
+
+        // ASSERT
         expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalledTimes(0);
     });
 
     it('should return true when browser has an internet connection', () => {
-        connectionStatusServiceSpy.status = true;
+        // ARRANGE
+        spyPropertyGetter(connectionStatusServiceSpy, 'status').and.returnValue(true);
+
+        // ASSERT
         expect(component.hasInternetConnection).toBeTruthy();
     });
 
     it('should return false when browser does not have an internet connection', () => {
-        connectionStatusServiceSpy.status = false;
+        // ARRANGE
+        spyPropertyGetter(connectionStatusServiceSpy, 'status').and.returnValue(false);
+
+        // ASSERT
         expect(component.hasInternetConnection).toBeFalsy();
     });
 
     it('should not go back if already reconnecting in progress', () => {
+        // ARRANGE
         component.attemptingReconnect = true;
         pageTrackerSpy.getPreviousUrl.calls.reset();
         component.reconnect();
+
+        // ASSERT
         expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalledTimes(0);
     });
-    
+
     it('should show error message for firewall issue if session storage returns a value', () => {
+        // ARRANGE
         errorServiceSpy.getErrorMessageFromStorage.and.returnValue(new ErrorMessage('FirewallProblem', null, true));
 
+        // ACT
         component.ngOnInit();
+
+        // ASSERT
         expect(component.errorMessageTitle).toBe('FirewallProblem');
         expect(component.connectionError).toBeTruthy();
         expect(component.isExtensionOrFirewallIssue).toBeTruthy();
@@ -185,11 +211,14 @@ describe('ErrorComponent Refresh', () => {
     });
 
     it('should not navigate back on timer page refresh', fakeAsync(() => {
+        // ARRANGE
         spyOn(router, 'navigate');
         fixture.detectChanges();
         tick();
         fixture.detectChanges();
         component.connectionError = true;
+
+        // ASSERT
         expect(router.navigate).toHaveBeenCalledTimes(0);
     }));
 });

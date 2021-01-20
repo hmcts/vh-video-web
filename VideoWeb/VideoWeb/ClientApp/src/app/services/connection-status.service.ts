@@ -1,18 +1,28 @@
 import { Injectable } from '@angular/core';
 import { Logger } from './logging/logger-base';
-import { Observable, Subject } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ConnectionStatusService {
+    public readonly INTERVAL_IN_MS: number = 5000;
+    public readonly NUMBER_OF_GOOD_PINGS_REQUIRED: number = 2;
+
     private readonly loggerPrefix = '[ConnectionStatusService] -';
-    private readonly intervalMs = 5000;
+
     private connectionStatus = new Subject<boolean>();
     private timer: NodeJS.Timeout;
-    status = true;
+    private pings = new Array<boolean>(this.NUMBER_OF_GOOD_PINGS_REQUIRED);
 
-    constructor(private logger: Logger) {
+    constructor(private logger: Logger, private http: HttpClient) {
+        this.pings.every(x => (x = true));
+    }
+
+    get status() {
+        return this.pings.every(x => x === true);
     }
 
     start() {
@@ -21,7 +31,7 @@ export class ConnectionStatusService {
             return;
         }
 
-        this.timer = setInterval(() => this.checkConnection(), this.intervalMs);
+        this.timer = setInterval(() => this.checkConnection(), this.INTERVAL_IN_MS);
         this.checkConnection();
     }
 
@@ -37,35 +47,36 @@ export class ConnectionStatusService {
     }
 
     private checkConnection() {
-        var self = this;
-        const xhr = new XMLHttpRequest();
-        xhr.open('HEAD', '/assets/images/favicons/favicon.ico?_=' + new Date().getTime());
-        xhr.timeout = 5000;
-        xhr.onload = () => {
-            self.handleResult(true);
-        };
-        xhr.onerror = () => {
-            self.handleResult(false);
-        };
-        xhr.ontimeout = () => {
-            self.handleResult(false);
-        };      
-
-        try {
-            xhr.send();
-        } catch (_error) {
-            self.handleResult(false);
-        }
+        this.getFavicon().subscribe(result => {
+            this.handleConnectionResult(result);
+        });
     }
 
-    private handleResult(isSuccessful: boolean) {
-        if (this.status === isSuccessful) {
+    private getFavicon(): Observable<boolean> {
+        // NOTE: a status of "0" is received when app is offline
+        return this.http.head('/assets/images/favicons/favicon.ico?_=' + new Date().getTime(), { observe: 'response' }).pipe(
+            map(response => {
+                return response.status > 0;
+            }),
+            catchError((err: HttpErrorResponse) => {
+                return of(err.status !== 0);
+            })
+        );
+    }
+
+    private handleConnectionResult(connectionResult: boolean) {
+        this.logger.info(`${this.loggerPrefix} ${connectionResult ? 'Good ping received' : 'Bad ping received'}`);
+        if (this.status === connectionResult) {
             return;
         }
 
-        this.logger.info(`${this.loggerPrefix} ${isSuccessful ? 'Online' : 'Offline'}`);
-        this.status = isSuccessful;
-        this.connectionStatus.next(isSuccessful);
+        this.pings.shift();
+        this.pings.push(connectionResult);
+
+        if (this.status === connectionResult) {
+            this.logger.info(`${this.loggerPrefix} ${this.status ? 'Online' : 'Offline'}`);
+            this.connectionStatus.next(this.status);
+        }
     }
 
     onConnectionStatusChange(): Observable<boolean> {
