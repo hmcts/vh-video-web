@@ -43,7 +43,7 @@ export class AnalogueClockComponent implements OnInit {
             this.hearing.isPaused() ||
             this.hearing.isClosed() ||
             (this.isWitness && this.hearing.isDelayed()) ||
-            (this.isJudicialOfficeHolder && !this.hearing.isSuspended)
+            (this.isJudicialOfficeHolder && !this.hearing.isSuspended())
         );
     }
 
