@@ -100,5 +100,5 @@ describe('HomeComponent', () => {
         component.ngOnInit();
         flushMicrotasks();
         expect(component.navigateToHearingList).toHaveBeenCalledWith(profile);
-    }));    
+    }));
 });
