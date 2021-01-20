@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
 using VideoWeb.Services.Video;
@@ -30,7 +29,7 @@ namespace VideoWeb.Mappings
                 CaseType = conference.Case_type,
                 ScheduledDateTime = conference.Scheduled_date_time,
                 ScheduledDuration = conference.Scheduled_duration,
-                Status = GetStatus(conference.Current_status),
+                Status = ConferenceHelper.GetConferenceStatus(conference.Current_status),
                 Participants = MapParticipants(conference),
                 ClosedDateTime = conference.Closed_date_time,
                 HearingVenueName = conference.Hearing_venue_name,
@@ -50,16 +49,6 @@ namespace VideoWeb.Mappings
             }
 
             return response;
-        }
-
-        private ConferenceStatus GetStatus(ConferenceState state)
-        {
-            if (!Enum.TryParse(state.ToString(), true, out ConferenceStatus status))
-            {
-                status = ConferenceStatus.NotStarted;
-            }
-
-            return status;
         }
 
         private List<ParticipantResponse> MapParticipants(ConferenceDetailsResponse conference)
