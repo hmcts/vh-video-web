@@ -80,7 +80,7 @@ parameters:
       BrowserVersion:
       DeviceType: Tablet
       DeviceName:
-      TestCaseFilter: TestCategory=UnsupportedDeviceTablet
+      TestCaseFilter: TestCategory=Smoketest-Extended
     - OS: iOS
       Browser: Safari
       BrowserVersion:
