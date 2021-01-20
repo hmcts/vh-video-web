@@ -34,9 +34,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     conferenceRecordingInSessionForSeconds = 0;
     expanedPanel = true;
     displayConfirmStartHearingPopup: boolean;
-    
-    showChatPanel = false;
-    showParticipantPanel = true;
 
     constructor(
         protected route: ActivatedRoute,

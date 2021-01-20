@@ -1,0 +1,40 @@
+.right-align-text {
+  text-align: right;
+}
+
+.text-highlight-red {
+  color: govuk-colour('red');
+}
+
+.audio-icon {
+  height: 24px;
+  padding-top: 1px;
+}
+
+.vh-left {
+  margin-left: 1px;
+}
+
+#hearing-monitor-container {
+  margin-bottom: 25px;
+}
+
+.panel-wrap {
+  top: 0;
+  left: 0;
+  position: fixed;
+  vertical-align: top;
+  z-index: 999;
+  max-width: 20%;
+}
+
+.incomingFeed {
+  position: fixed;
+  top: 0;
+  left: 11%;
+  min-width: 94%;
+  min-height: 70vh;
+  max-width: 96%;
+  max-height: 85vh;
+  z-index: 100;
+}
