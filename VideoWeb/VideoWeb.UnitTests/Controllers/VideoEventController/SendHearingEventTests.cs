@@ -138,6 +138,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         {
             // Arrange
             var request = CreateEndpointRequest(incomingEventType);
+            var eventType = Enum.Parse<EventHub.Enums.EventType>(expectedEventType.ToString());
 
             // Act
             var result = await _sut.SendHearingEventAsync(request);
@@ -146,9 +147,31 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             result.Should().BeOfType<NoContentResult>();
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
-            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
+            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == eventType)), Times.Once);
             _mocker.Mock<IVideoApiClient>().Verify(x =>
                 x.RaiseVideoEventAsync(It.Is<ConferenceEventRequest>(r => r.Event_type == expectedEventType)));
+        }
+
+        [TestCase(EventType.Joined)]
+        [TestCase(EventType.Disconnected)]
+        [TestCase(EventType.Transfer)]
+        public async Task Should_return_no_content_with_no_matching_participant(EventType incomingEventType)
+        {
+            // Arrange
+            var request = CreateEndpointRequest(incomingEventType);
+            request.Participant_id = Guid.NewGuid().ToString();
+            var eventType = Enum.Parse<EventHub.Enums.EventType>(incomingEventType.ToString());
+
+            // Act
+            var result = await _sut.SendHearingEventAsync(request);
+
+            // Assert
+            result.Should().BeOfType<NoContentResult>();
+            var typedResult = (NoContentResult)result;
+            typedResult.Should().NotBeNull();
+            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == eventType)), Times.Once);
+            _mocker.Mock<IVideoApiClient>().Verify(x =>
+                x.RaiseVideoEventAsync(It.Is<ConferenceEventRequest>(r => r.Event_type == incomingEventType)));
         }
 
         [Test]
