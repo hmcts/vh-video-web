@@ -139,17 +139,10 @@ namespace VideoWeb.Controllers
                 return NoContent();
             }
             catch (VideoApiException e)
-            {
-                if (participant != null)
-                {
-                    _logger.LogError(e, $"Participant: {participant.Username} was not able to leave the private consultation. " +
+            {                  
+               _logger.LogError(e, $"Participant: {participant.Username} was not able to leave the private consultation. " +
                                         $"An error occured");
-                }
-                else
-                {
-                    _logger.LogError(e, $"Invalid participant");
-                }
-                return StatusCode(e.StatusCode, e.Response);
+               return StatusCode(e.StatusCode, e.Response);
             }
         }
 

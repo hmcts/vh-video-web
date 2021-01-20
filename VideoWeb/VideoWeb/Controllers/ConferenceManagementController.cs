@@ -254,7 +254,9 @@ namespace VideoWeb.Controllers
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
             );
 
-            return conference.Participants.Single(x => x.Id == participantId).IsWitness();
+            var witness = conference.Participants.SingleOrDefault(x => x.Id == participantId);
+            
+            return witness != null ? witness.IsWitness(): default;
         }
     }
 }

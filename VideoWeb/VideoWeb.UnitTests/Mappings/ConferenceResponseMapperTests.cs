@@ -80,7 +80,8 @@ namespace VideoWeb.UnitTests.Mappings
                 }
                 if (participantResponse.Role == Role.Judge)
                 {
-                    participantResponse.TiledDisplayName.StartsWith("T0").Should().BeTrue();
+                    var judge = participants.SingleOrDefault(p => p.User_role == UserRole.Judge);
+                    participantResponse.TiledDisplayName.Should().Be($"T{0};{judge.Display_name};{judge.Id}");
                 }
                 if (participantResponse.Role == Role.Individual)
                 {

@@ -2,7 +2,8 @@
   "stryker-config": {
     "reporters": [
       "Progress",
-      "ClearText"
+      "ClearText",
+      "Html"
     ],
     "log-level": "info",
     "timeout-ms": 10000,
@@ -31,9 +32,10 @@
       "!**/ConfigureAuthSchemeExtensions.cs",
       "!Swagger/AuthResponsesOperationFilter.cs",
       "!Pages/Error.cshtml.cs",
-      "!Extensions/ExceptionMiddleware.cs",
+      "!Middleware/*.cs",
       "!Extensions/EnumExtensions.cs",
       "!Helpers/ConferenceHelper.cs",
+      "!Mappings/MapperFactory.cs",
       "!**/AssemblyInfo.cs"
     ]
   }
