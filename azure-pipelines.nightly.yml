@@ -81,18 +81,6 @@ parameters:
       DeviceType: Tablet
       DeviceName:
       TestCaseFilter: TestCategory=Smoketest-Extended
-    - OS: iOS
-      Browser: Safari
-      BrowserVersion:
-      DeviceType: Mobile
-      DeviceName:
-      TestCaseFilter: TestCategory=UnsupportedDeviceMobile
-    - OS: Android
-      Browser: Chrome
-      BrowserVersion:
-      DeviceType: Mobile
-      DeviceName:
-      TestCaseFilter: TestCategory=UnsupportedDeviceMobile
 
 - name: prodEnvs
   displayName: Environments Using Prod Subscription

@@ -91,4 +91,14 @@ describe('HomeComponent', () => {
         flushMicrotasks();
         expect(component.navigateToHearingList).toHaveBeenCalledWith(profile);
     }));
+
+    it('should navigate to hearing list when device is a mobile', fakeAsync(() => {
+        const profile = new UserProfileResponse({ role: Role.Representative });
+        profileServiceSpy.getUserProfile.and.callFake(() => Promise.resolve(profile));
+        deviceTypeServiceSpy.isMobile.and.returnValue(true);
+        spyOn(component, 'navigateToHearingList');
+        component.ngOnInit();
+        flushMicrotasks();
+        expect(component.navigateToHearingList).toHaveBeenCalledWith(profile);
+    }));    
 });
