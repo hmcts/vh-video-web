@@ -108,7 +108,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         private void RegisterHearingServices(TestContext context)
         {
-            context.VideoWebConfig.VhServices = GetTargetEnvironment() == "" ? Options.Create(_configRoot.GetSection($"VhServices").Get<VideoWebVhServicesConfig>()).Value 
+            context.VideoWebConfig.VhServices = GetTargetEnvironment() == string.Empty ? Options.Create(_configRoot.GetSection($"VhServices").Get<VideoWebVhServicesConfig>()).Value 
                 : Options.Create(_configRoot.GetSection($"Testing.{GetTargetEnvironment()}.VhServices").Get<VideoWebVhServicesConfig>()).Value;
             ConfigurationManager.VerifyConfigValuesSet(context.VideoWebConfig.VhServices);
         }
