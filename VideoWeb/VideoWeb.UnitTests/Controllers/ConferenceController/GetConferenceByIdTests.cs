@@ -73,6 +73,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var result = await _controller.GetConferenceByIdAsync(conference.Id);
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
+
+            var judge = conference.Participants.SingleOrDefault(p => p.User_role == UserRole.Judge);
             _mocker.Mock<IConferenceCache>().Verify(x => x.AddConferenceAsync(new ConferenceDetailsResponse()), Times.Never);
             var response = (ConferenceResponse)typedResult.Value;
             response.CaseNumber.Should().Be(conference.Case_number);
@@ -80,6 +82,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             response.Participants.Any(x => x.Role == Role.Individual).Should().BeTrue();
             response.Participants.Any(x => x.Role == Role.Representative).Should().BeTrue();
             response.Participants.Any(x => x.Role == Role.Judge).Should().BeTrue();
+            response.Participants.SingleOrDefault(x => x.Role == Role.Judge).TiledDisplayName.Should().Be($"T{0};{judge.Display_name};{judge.Id}");
             response.Participants.Any(x => x.Role == Role.JudicialOfficeHolder).Should().BeTrue();
         }
 

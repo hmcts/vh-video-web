@@ -96,6 +96,16 @@ describe('EventsService', () => {
         service.start();
         expect(service.connection.start).toHaveBeenCalledTimes(1);
     });
+    it('should not start if in Disconnecting stat', () => {
+        const spy = spyOnProperty(service.connection, 'state').and.returnValue(signalR.HubConnectionState.Disconnecting);
+        spyOn(service.connection, 'start').and.callFake(() => {
+            spy.and.returnValue(signalR.HubConnectionState.Disconnecting);
+            return Promise.resolve();
+        });
+        service.start();
+        service.start();
+        expect(service.connection.start).toHaveBeenCalledTimes(0);
+    });
 
     it('should stop eventhub connection if connected to eventhub', () => {
         spyOn(service.connection, 'stop').and.callFake(() => Promise.resolve());

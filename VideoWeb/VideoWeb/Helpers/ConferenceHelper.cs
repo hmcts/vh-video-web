@@ -1,4 +1,5 @@
 using System;
+using VideoWeb.Common.Models;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Helpers
@@ -20,6 +21,16 @@ namespace VideoWeb.Helpers
             const int postClosedVisibilityTime = 30;
             var endTime = closedDateTime.Value.AddMinutes(postClosedVisibilityTime);
             return DateTime.UtcNow < endTime;
+        }
+
+        public static ConferenceStatus GetConferenceStatus(ConferenceState state)
+        {
+            if (!Enum.TryParse(state.ToString(), true, out ConferenceStatus status))
+            {
+                status = ConferenceStatus.NotStarted;
+            }
+
+            return status;
         }
     }
 }
