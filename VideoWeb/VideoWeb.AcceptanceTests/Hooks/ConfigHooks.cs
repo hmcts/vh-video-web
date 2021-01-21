@@ -23,7 +23,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         public ConfigHooks(TestContext context)
         {
-            _configRoot = ConfigurationManager.BuildConfig("CA353381-2F0D-47D7-A97B-79A30AFF8B86", GetTargetEnvironment(), RunOnSauceLabsFromLocal());
+            _configRoot = ConfigurationManager.BuildConfig("CA353381-2F0D-47D7-A97B-79A30AFF8B86", RunOnSauceLabsFromLocal());
             context.VideoWebConfig = new VideoWebConfig();
             context.Tokens = new VideoWebTokens();
         }
@@ -108,7 +108,8 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         private void RegisterHearingServices(TestContext context)
         {
-            context.VideoWebConfig.VhServices = Options.Create(_configRoot.GetSection("VhServices").Get<VideoWebVhServicesConfig>()).Value;
+            context.VideoWebConfig.VhServices = GetTargetEnvironment() == "" ? Options.Create(_configRoot.GetSection($"VhServices").Get<VideoWebVhServicesConfig>()).Value 
+                : Options.Create(_configRoot.GetSection($"Testing.{GetTargetEnvironment()}.VhServices").Get<VideoWebVhServicesConfig>()).Value;
             ConfigurationManager.VerifyConfigValuesSet(context.VideoWebConfig.VhServices);
         }
 

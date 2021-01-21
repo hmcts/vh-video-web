@@ -335,6 +335,9 @@ TESTS.xml
 # Local environment settings files
 /VideoWeb/VideoWeb.AcceptanceTests/Configuration/Environments/
 
+# Test Run Setting
+/VideoWeb/VideoWeb.AcceptanceTests/parameters.runsettings
+
 # Config for NuGet
 nuget.config
 
