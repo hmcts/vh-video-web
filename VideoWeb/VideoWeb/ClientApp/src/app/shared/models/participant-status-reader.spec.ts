@@ -20,7 +20,7 @@ describe('ParticipantStatusReader', () => {
     const testCasesForgetStatusAsTextForJudge = [
         { status: ParticipantStatus.None, expected: 'Unavailable' },
         { status: ParticipantStatus.NotSignedIn, expected: 'Unavailable' },
-        { status: ParticipantStatus.InConsultation, expected: 'Unavailable' },
+        { status: ParticipantStatus.InConsultation, expected: 'In consultation' },
         { status: ParticipantStatus.InHearing, expected: 'In hearing' },
         { status: ParticipantStatus.Available, expected: 'Available' }
     ];
