@@ -28,9 +28,9 @@ namespace VideoWeb.AcceptanceTests.Hooks
             context.Tokens = new VideoWebTokens();
         }
 
-        private static string GetTargetEnvironment()
+        private static string GetTargetTestEnvironment()
         {
-            return NUnit.Framework.TestContext.Parameters["TargetEnvironment"] ?? "";
+            return NUnit.Framework.TestContext.Parameters["TargetTestEnvironment"] ?? "";
         }
 
         private static bool RunOnSauceLabsFromLocal()
@@ -108,23 +108,9 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         private void RegisterHearingServices(TestContext context)
         {
-            if (_configRoot.GetSection($"VhServices").Get<VideoWebVhServicesConfig>().VideoWebUrl.ToLower()
-                .Contains(GetTargetEnvironment().ToLower()) || GetTargetEnvironment() == string.Empty)
-            {
-                context.VideoWebConfig.VhServices = Options.Create(_configRoot.GetSection("VhServices").Get<VideoWebVhServicesConfig>()).Value;
-            }
-            else
-            {
-                context.VideoWebConfig.VhServices = Options.Create(_configRoot.GetSection($"Testing.{GetTargetEnvironment()}.VhServices").Get<VideoWebVhServicesConfig>()).Value;
-            }
-            try
-            { 
-                ConfigurationManager.VerifyConfigValuesSet(context.VideoWebConfig.VhServices);
-            }
-            catch (NullReferenceException)
-            {
-                throw new Exception($"Environment information not found: {GetTargetEnvironment()}");
-            }
+            context.VideoWebConfig.VhServices = GetTargetTestEnvironment() == string.Empty ? Options.Create(_configRoot.GetSection("VhServices").Get<VideoWebVhServicesConfig>()).Value
+                : Options.Create(_configRoot.GetSection($"Testing.{GetTargetTestEnvironment()}.VhServices").Get<VideoWebVhServicesConfig>()).Value;
+            ConfigurationManager.VerifyConfigValuesSet(context.VideoWebConfig.VhServices);
         }
 
         private void RegisterWowzaSettings(TestContext context)
