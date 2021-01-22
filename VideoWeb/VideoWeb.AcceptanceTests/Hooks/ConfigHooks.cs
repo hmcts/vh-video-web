@@ -23,14 +23,14 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         public ConfigHooks(TestContext context)
         {
-            _configRoot = ConfigurationManager.BuildConfig("CA353381-2F0D-47D7-A97B-79A30AFF8B86", GetTargetEnvironment(), RunOnSauceLabsFromLocal());
+            _configRoot = ConfigurationManager.BuildConfig("CA353381-2F0D-47D7-A97B-79A30AFF8B86", RunOnSauceLabsFromLocal());
             context.VideoWebConfig = new VideoWebConfig();
             context.Tokens = new VideoWebTokens();
         }
 
-        private static string GetTargetEnvironment()
+        private static string GetTargetTestEnvironment()
         {
-            return NUnit.Framework.TestContext.Parameters["TargetEnvironment"] ?? "";
+            return NUnit.Framework.TestContext.Parameters["TargetTestEnvironment"] ?? "";
         }
 
         private static bool RunOnSauceLabsFromLocal()
@@ -108,7 +108,8 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         private void RegisterHearingServices(TestContext context)
         {
-            context.VideoWebConfig.VhServices = Options.Create(_configRoot.GetSection("VhServices").Get<VideoWebVhServicesConfig>()).Value;
+            context.VideoWebConfig.VhServices = GetTargetTestEnvironment() == string.Empty ? Options.Create(_configRoot.GetSection("VhServices").Get<VideoWebVhServicesConfig>()).Value
+                : Options.Create(_configRoot.GetSection($"Testing.{GetTargetTestEnvironment()}.VhServices").Get<VideoWebVhServicesConfig>()).Value;
             ConfigurationManager.VerifyConfigValuesSet(context.VideoWebConfig.VhServices);
         }
 
