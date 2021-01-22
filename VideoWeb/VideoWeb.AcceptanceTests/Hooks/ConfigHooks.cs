@@ -30,7 +30,6 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         private static string GetTargetEnvironment()
         {
-            
             return NUnit.Framework.TestContext.Parameters["TargetEnvironment"] ?? "";
         }
 
@@ -118,7 +117,14 @@ namespace VideoWeb.AcceptanceTests.Hooks
             {
                 context.VideoWebConfig.VhServices = Options.Create(_configRoot.GetSection($"Testing.{GetTargetEnvironment()}.VhServices").Get<VideoWebVhServicesConfig>()).Value;
             }
-            ConfigurationManager.VerifyConfigValuesSet(context.VideoWebConfig.VhServices);
+            try
+            { 
+                ConfigurationManager.VerifyConfigValuesSet(context.VideoWebConfig.VhServices);
+            }
+            catch (NullReferenceException)
+            {
+                throw new Exception($"Environment information not found: {GetTargetEnvironment()}");
+            }
         }
 
         private void RegisterWowzaSettings(TestContext context)
