@@ -30,6 +30,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         private static string GetTargetEnvironment()
         {
+            
             return NUnit.Framework.TestContext.Parameters["TargetEnvironment"] ?? "";
         }
 
@@ -108,7 +109,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         private void RegisterHearingServices(TestContext context)
         {
-            if (_configRoot.GetSection($"VhServices").Get<VideoWebVhServicesConfig>().VideoWebUrl
+            if (_configRoot.GetSection($"VhServices").Get<VideoWebVhServicesConfig>().VideoWebUrl.ToLower()
                 .Contains(GetTargetEnvironment().ToLower()) || GetTargetEnvironment() == string.Empty)
             {
                 context.VideoWebConfig.VhServices = Options.Create(_configRoot.GetSection("VhServices").Get<VideoWebVhServicesConfig>()).Value;
