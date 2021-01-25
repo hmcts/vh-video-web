@@ -4,6 +4,8 @@ using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using VideoWeb.Common.Models;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Controllers
@@ -27,6 +29,7 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "GetAudioStreamInfo")]
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Authorize(AppRoles.JudgeRole)]
         public async Task<IActionResult> GetAudioStreamInfoAsync(Guid hearingId)
         {
             try
@@ -45,6 +48,7 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "StopAudioRecording")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Authorize(AppRoles.VhOfficerRole)]
         public async Task<ActionResult> StopAudioRecordingAsync(Guid hearingId)
         {
             try

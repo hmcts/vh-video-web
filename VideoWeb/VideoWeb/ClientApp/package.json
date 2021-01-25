@@ -36,7 +36,7 @@
     "@hmcts/frontend": "^0.0.41-alpha",
     "@microsoft/applicationinsights-web": "^2.5.10",
     "@microsoft/signalr": "^3.1.10",
-    "@ng-select/ng-select": "^5.0.11",
+    "@ng-select/ng-select": "^5.0.13",
     "adal-angular4": "^3.0.16",
     "aspnet-prerendering": "^3.0.1",
     "chart.js": "^2.9.4",
