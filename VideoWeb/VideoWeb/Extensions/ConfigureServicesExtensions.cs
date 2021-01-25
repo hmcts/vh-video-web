@@ -82,6 +82,8 @@ namespace VideoWeb.Extensions
 
         public static IServiceCollection AddCustomTypes(this IServiceCollection services)
         {
+            services.AddControllers().AddControllersAsServices();
+
             services.AddMemoryCache();
 
             services.AddSingleton<ITelemetryInitializer, RequestTelemetry>();
