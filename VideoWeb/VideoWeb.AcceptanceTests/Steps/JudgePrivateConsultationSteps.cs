@@ -91,13 +91,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"(?:he|she|they) (?:mute|mutes|unmute) their microphone")]
         public void WhenTheyToggleTheMuteIcon()
         {
-            _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.ToggleMuteIcon);
+            _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.ToggleMute);
         }
 
         [When(@"(?:he|she|they) (?:hide|hides|show) their self view")]
         public void WhenTheyToggleTheSelfViewIcon()
         {
-            _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.ToggleSelfViewIcon);
+            _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.ToggleSelfView);
         }
         
         [Then(@"(?:he|she|they) will be transferred to the private consultation room")]
@@ -117,15 +117,15 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"their microphone will be muted")]
         public void ThenTheirMicrophoneWillBeMuted()
         {
-            _browsers[_c.CurrentUser].Driver.FindElement(JudgeWaitingRoomPage.ToggleMuteIcon).GetAttribute("src")
-                .Should().EndWith("/assets/images/mic_off.png");
+            _browsers[_c.CurrentUser].Driver.FindElement(JudgeWaitingRoomPage.ToggleMute).GetAttribute("src")
+                .Should().EndWith(JudgeWaitingRoomPage.ToggleMuteMicOff);
         }
 
         [Then(@"their microphone will not be muted")]
         public void ThenTheirMicrophoneWillNotBeMuted()
         {
-            _browsers[_c.CurrentUser].Driver.FindElement(JudgeWaitingRoomPage.ToggleMuteIcon).GetAttribute("src")
-                .Should().EndWith("/assets/images/mic_on.png");
+            _browsers[_c.CurrentUser].Driver.FindElement(JudgeWaitingRoomPage.ToggleMute).GetAttribute("src")
+                .Should().EndWith(JudgeWaitingRoomPage.ToggleMuteMicOn);
         }
 
         [Then(@"(?:he|she|they) can unmute their microphone")]
@@ -146,8 +146,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheirSelfViewWillBeHidden()
         {
             _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(JudgeWaitingRoomPage.SelfViewVideo);
-            _browsers[_c.CurrentUser].Driver.FindElement(JudgeWaitingRoomPage.ToggleSelfViewIcon).GetAttribute("src")
-                .Should().EndWith("/assets/images/self-view-show.png");
+            _browsers[_c.CurrentUser].Driver.FindElement(JudgeWaitingRoomPage.ToggleSelfView).GetAttribute("src")
+                .Should().EndWith(JudgeWaitingRoomPage.ToggleSelfViewShow);
             _browsers[_c.CurrentUser].IsDisplayed(JudgeWaitingRoomPage.SelfViewVideo).Should().BeFalse();
         }
 
@@ -155,8 +155,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheirSelfViewWillBeShown()
         {
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.SelfViewVideo);
-            _browsers[_c.CurrentUser].Driver.FindElement(JudgeWaitingRoomPage.ToggleSelfViewIcon).GetAttribute("src")
-                .Should().EndWith("/assets/images/self-view-hide.png");
+            _browsers[_c.CurrentUser].Driver.FindElement(JudgeWaitingRoomPage.ToggleSelfView).GetAttribute("src")
+                .Should().EndWith(JudgeWaitingRoomPage.ToggleSelfViewHide);
             _browsers[_c.CurrentUser].IsDisplayed(JudgeWaitingRoomPage.SelfViewVideo).Should().BeTrue();
         }
 
@@ -165,8 +165,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             WhenTheyToggleTheSelfViewIcon();
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.SelfViewVideo);
-            _browsers[_c.CurrentUser].Driver.FindElement(JudgeWaitingRoomPage.ToggleSelfViewIcon).GetAttribute("src")
-                .Should().EndWith("/assets/images/self-view-hide.png");
+            _browsers[_c.CurrentUser].Driver.FindElement(JudgeWaitingRoomPage.ToggleSelfView).GetAttribute("src")
+                .Should().EndWith(JudgeWaitingRoomPage.ToggleSelfViewHide);
             _browsers[_c.CurrentUser].IsDisplayed(JudgeWaitingRoomPage.SelfViewVideo).Should().BeTrue();
         }
 
@@ -175,8 +175,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             WhenTheyToggleTheSelfViewIcon();
             _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(JudgeWaitingRoomPage.SelfViewVideo);
-            _browsers[_c.CurrentUser].Driver.FindElement(JudgeWaitingRoomPage.ToggleSelfViewIcon).GetAttribute("src")
-                .Should().EndWith("/assets/images/self-view-show.png");
+            _browsers[_c.CurrentUser].Driver.FindElement(JudgeWaitingRoomPage.ToggleSelfView).GetAttribute("src")
+                .Should().EndWith(JudgeWaitingRoomPage.ToggleSelfViewShow);
             _browsers[_c.CurrentUser].IsDisplayed(JudgeWaitingRoomPage.SelfViewVideo).Should().BeFalse();
         }
 

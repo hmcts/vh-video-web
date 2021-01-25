@@ -21,8 +21,12 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly By EnterPrivateConsultationButton = By.Id("joinPCButton");
         public static readonly By IncomingFeed = By.CssSelector("video[id^='incomingFeed']");
         public static readonly By ClosePrivateConsultationIcon = By.Id("close-pc-btn");
-        public static readonly By ToggleMuteIcon = By.Id("toggle-audio-mute-img");
-        public static readonly By ToggleSelfViewIcon = By.Id("toggle-self-view-img");
+        public static readonly By ToggleMute = By.Id("toggle-audio-mute-img");
+        public const string ToggleMuteMicOn = "/assets/images/mic_on.png";
+        public const string ToggleMuteMicOff = "/assets/images/mic_off.png";
+        public static readonly By ToggleSelfView = By.Id("toggle-self-view-img");
+        public const string ToggleSelfViewHide = "/assets/images/self-view-hide.png";
+        public const string ToggleSelfViewShow = "/assets/images/self-view-show.png";
         public static readonly By SelfViewVideo = By.Id("outgoingFeedVideo");
         
     }
