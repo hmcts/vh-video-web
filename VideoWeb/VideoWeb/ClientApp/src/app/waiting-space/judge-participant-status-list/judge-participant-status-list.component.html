@@ -50,6 +50,17 @@
         </div>
       </div>
     </div>
+
+    <div *ngIf="!isUserJudge()" class="govuk-grid-column-full govuk-!-margin-top-3">
+      <div class="govuk-body-s govuk-!-margin-bottom-3">
+        <label
+          id="p-{{ judge.id }}-status-participant"
+          class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(judge) }}"
+        >
+          {{ getParticipantStatus(judge) }}
+        </label>
+      </div>
+    </div>
   </div>
 
   <div class="vh-line govuk-!-margin-bottom-3"></div>
