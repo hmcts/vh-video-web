@@ -24,8 +24,9 @@ export class ParticipantStatusReader {
         switch (status) {
             case ParticipantStatus.None:
             case ParticipantStatus.NotSignedIn:
-            case ParticipantStatus.InConsultation:
                 return this.unavailableText;
+            case ParticipantStatus.InConsultation:
+                return 'In consultation';
             case ParticipantStatus.InHearing:
                 return 'In hearing';
 
