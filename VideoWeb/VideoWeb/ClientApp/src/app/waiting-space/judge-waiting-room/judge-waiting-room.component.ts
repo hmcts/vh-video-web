@@ -4,7 +4,7 @@ import { AdalService } from 'adal-angular4';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceStatus } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -247,6 +247,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
 
     isIMEnabled(): boolean {
         if (!this.hearing) {
+            return false;
+        }
+        if (this.participant.status === ParticipantStatus.InConsultation) {
             return false;
         }
         if (this.deviceTypeService.isIpad()) {
