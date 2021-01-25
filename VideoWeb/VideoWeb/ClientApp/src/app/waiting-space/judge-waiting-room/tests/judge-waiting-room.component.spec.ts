@@ -1,6 +1,12 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
-import { ConferenceResponse, ConferenceStatus, HearingLayout, ParticipantResponse } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    ConferenceStatus,
+    HearingLayout,
+    ParticipantResponse,
+    ParticipantStatus
+} from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SelectedUserMediaDevice } from '../../../shared/models/selected-user-media-device';
@@ -342,6 +348,11 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
     it('should not enable IM when hearing has not been initalised', () => {
         component.hearing = null;
+        expect(component.isIMEnabled()).toBeFalsy();
+    });
+
+    it('should not enable IM when participant is in a consultation', () => {
+        component.participant.status = ParticipantStatus.InConsultation;
         expect(component.isIMEnabled()).toBeFalsy();
     });
 
