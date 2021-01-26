@@ -127,7 +127,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Then(@"the VHO can see that (.*) is in the Waiting Room")]
-        public void ThenTheVHOCanSeeThatAllTheParticipantsAreInTheWaitingRoom(string text)
+        public void ThenTheVhoCanSeeThatAllTheParticipantsAreInTheWaitingRoom(string text)
         {
             SwitchToTheVhoIframe();
 
@@ -140,7 +140,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Then(@"the VHO can see that the Judge and (.*) participants are in the Hearing Room")]
-        public void ThenTheVHOCanSeeThatAllTheJudgeAndParticipantsAreInTheHearingRoom(string text)
+        public void ThenTheVhoCanSeeThatAllTheJudgeAndParticipantsAreInTheHearingRoom(string text)
         {
             SwitchToTheVhoIframe();
 
@@ -155,6 +155,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             SwitchToDefaultContent();
         }
 
+        [Then(@"the Judge can close the hearing")]
+        public void ThenTheJudgeCanCloseTheHearing()
+        {
+            _browserSteps.GivenInTheUsersBrowser($"{UserType.Judge}");
+            WhenTheJudgeClosesTheHearing();
+        }
+        
         public void ProgressToNextPage()
         {
             WhenTheJudgeClosesTheHearing();
