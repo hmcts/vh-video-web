@@ -279,7 +279,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantStatus(user.Id));
                 _browsers[_c.CurrentUser].ScrollTo(JudgeParticipantPanel.ParticipantStatus(user.Id));
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantStatus(user.Id)).Text.ToUpper().Trim()
-                    .Should().Be("CONNECTED");
+                    .Should().BeOneOf("CONNECTED", "IN CONSULTATION");
             }
         }
 
