@@ -1,6 +1,14 @@
 import { Subscription } from 'rxjs';
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    ConferenceStatus,
+    CurrentUserOrParticipantResponse,
+    ParticipantResponse,
+    ParticipantStatus,
+    Role
+} from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { resolve } from 'url';
 import {
     activatedRoute,
     adalService,
@@ -65,6 +73,13 @@ describe('WaitingRoomComponent message and clock', () => {
         component.connected = false;
 
         videoWebService.getConferenceById.and.resolveTo(globalConference);
+        videoWebService.getCurrentParticipant.and.resolveTo(
+            new CurrentUserOrParticipantResponse({
+                participant_id: globalParticipant.id,
+                display_name: globalParticipant.display_name,
+                role: globalParticipant.role
+            })
+        );
         await component.getConference();
         expect(component.loadingData).toBeFalsy();
         expect(component.hearing).toBeDefined();

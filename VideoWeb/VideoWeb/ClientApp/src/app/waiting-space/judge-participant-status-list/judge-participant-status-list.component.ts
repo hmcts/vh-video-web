@@ -29,6 +29,7 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     observers: ParticipantResponse[];
     panelMembers: ParticipantResponse[];
     wingers: ParticipantResponse[];
+    isUserJudge: boolean;
 
     constructor(
         protected adalService: AdalService,
@@ -40,9 +41,9 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         super(adalService, consultationService, eventService, videoWebService, logger);
     }
 
-    ngOnInit() {
+    async ngOnInit() {
         this.consultationService.resetWaitingForResponse();
-        this.initParticipants();
+        await this.initParticipants();
         this.setupSubscribers();
     }
 
@@ -50,9 +51,11 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         this.executeTeardown();
     }
 
-    initParticipants() {
+    async initParticipants() {
         super.initParticipants();
         this.filterRepresentatives();
+        await this.setCurrentParticipant();
+        this.isUserJudge = this.loggedInUser.role === Role.Judge;
     }
 
     setupSubscribers(): void {
@@ -93,12 +96,10 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         return this.camelToSnake(endpoint.status.toString());
     }
 
-    isUserJudge(): boolean {
-        const participant = this.conference.participants.find(
-            x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase()
-        );
-        return participant.role === Role.Judge;
-    }
+    //async isUserJudge(): Promise<any> {
+    //    await this.setCurrentParticipant();
+    //    return this.loggedInUser.role === Role.Judge;
+    //}
 
     private filterRepresentatives(): void {
         this.representativeParticipants = this.conference.participants.filter(

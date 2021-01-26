@@ -1,6 +1,12 @@
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { ConferenceResponse, EndpointStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    CurrentUserOrParticipantResponse,
+    EndpointStatus,
+    ParticipantStatus,
+    Role
+} from 'src/app/services/clients/api-client';
 import { individualTestProfile, judgeTestProfile } from 'src/app/testing/data/test-profiles';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
@@ -30,8 +36,21 @@ describe('JudgeParticipantStatusListComponent', () => {
         adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
             userInfo: userInfo
         });
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails', 'getObfuscatedName']);
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
+            'updateParticipantDetails',
+            'getObfuscatedName',
+            'getCurrentParticipant'
+        ]);
         videoWebService.getObfuscatedName.and.returnValue('test username');
+        videoWebService.getCurrentParticipant.and.returnValue(
+            Promise.resolve(
+                new CurrentUserOrParticipantResponse({
+                    participant_id: '1111-1111',
+                    display_name: 'Some name',
+                    role: Role.Individual
+                })
+            )
+        );
     });
 
     beforeEach(() => {
@@ -42,6 +61,11 @@ describe('JudgeParticipantStatusListComponent', () => {
         participantWinger.forEach(x => conference.participants.push(x));
         component = new JudgeParticipantStatusListComponent(adalService, consultationService, eventsService, logger, videoWebService);
         component.conference = conference;
+        component.loggedInUser = new CurrentUserOrParticipantResponse({
+            participant_id: conference.participants[2].id,
+            display_name: 'Some Name',
+            role: Role.Judge
+        });
         component.ngOnInit();
     });
 
@@ -179,16 +203,20 @@ describe('JudgeParticipantStatusListComponent', () => {
     });
 
     it('should return true when user is judge', () => {
-        adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
-            userInfo: <adal.User>{ userName: judgeProfile.username, authenticated: true }
+        component.loggedInUser = new CurrentUserOrParticipantResponse({
+            participant_id: conference.participants[2].id,
+            display_name: 'Judge Name',
+            role: Role.Judge
         });
         expect(component.isUserJudge()).toBeTruthy();
     });
 
     it('should return false when user is not judge', () => {
-        jasmine.getEnv().allowRespy(true);
-        userInfo = <adal.User>{ userName: individualProfile.username, authenticated: true };
-        spyOnProperty(adalService, 'userInfo').and.returnValue(userInfo);
+        component.loggedInUser = new CurrentUserOrParticipantResponse({
+            participant_id: conference.participants[0].id,
+            display_name: 'Some Name',
+            role: Role.Individual
+        });
         expect(component.isUserJudge()).toBeFalsy();
     });
 

@@ -12,6 +12,7 @@ using VideoWeb.EventHub.Hub;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
+using VideoWeb.Common.Caching;
 
 namespace VideoWeb.UnitTests.Hub
 {
@@ -36,6 +37,8 @@ namespace VideoWeb.UnitTests.Hub
             {JudgeGroupChannel, IndividualGroupChannel, RepresentativeGroupChannel};
 
         private Conference Conference { get; set; }
+
+        private Mock<IConferenceCache> ConferenceCache { get; set; }
 
         [Test]
         public async Task
@@ -126,16 +129,17 @@ namespace VideoWeb.UnitTests.Hub
             var claims = new ClaimsPrincipalBuilder().WithUsername(AdminUsername).WithRole(AppRoles.VhOfficerRole)
                 .Build();
             UpdateUserIdentity(claims);
+           
 
             var fromUsername = AdminUsername;
-            var toUsername = JudgeUsername;
+            var toUsername = Conference.Participants.First(x => x.Role == Role.Judge).Id;
             const string message = "test message";
             var messageUuid = Guid.NewGuid();
 
-            await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid);
+            await Hub.SendMessage(Conference.Id, message, toUsername.ToString(), messageUuid);
 
-            AssertMessageSentToHubAndApi(fromUsername, toUsername, message, messageUuid, JudgeGroupChannel);
-            AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id, toUsername), Times.Once);
+            AssertMessageSentToHubAndApi(fromUsername, toUsername.ToString(), message, messageUuid, JudgeGroupChannel);
+            AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id, JudgeUsername), Times.Once);
         }
 
         [Test]
@@ -279,6 +283,7 @@ namespace VideoWeb.UnitTests.Hub
             IndividualGroupChannel = new Mock<IEventHubClient>();
             RepresentativeGroupChannel = new Mock<IEventHubClient>();
             AdminGroupChannel = new Mock<IEventHubClient>();
+            ConferenceCache = new Mock<IConferenceCache>();
 
             UserProfileServiceMock.Setup(x => x.GetUserAsync(JudgeUsername)).ReturnsAsync(JudgeUserProfile);
             UserProfileServiceMock.Setup(x => x.GetUserAsync(IndividualUsername)).ReturnsAsync(IndividualUserProfile);
@@ -298,6 +303,11 @@ namespace VideoWeb.UnitTests.Hub
                 .Returns(IndividualGroupChannel.Object);
             EventHubClientMock.Setup(x => x.Group(representative.Username.ToLowerInvariant()))
                 .Returns(RepresentativeGroupChannel.Object);
+
+            ConferenceCache
+           .Setup(x => x.GetOrAddConferenceAsync(Conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+           .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+           .ReturnsAsync(Conference);
         }
 
         private Conference InitConference()

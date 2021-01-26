@@ -3,7 +3,7 @@ import { AdalService } from 'adal-angular4';
 import { of } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { Role, TokenResponse } from 'src/app/services/clients/api-client';
+import { CurrentUserOrParticipantResponse, Role, TokenResponse } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
@@ -61,13 +61,18 @@ export const jwToken = new TokenResponse({
 });
 
 export function initAllWRDependencies() {
-    videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'getObfuscatedName', 'getJwToken']);
+    videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
+        'getConferenceById',
+        'getObfuscatedName',
+        'getJwToken',
+        'getCurrentParticipant'
+    ]);
     videoWebService.getConferenceById.and.resolveTo(globalConference);
     videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
     videoWebService.getJwToken.and.resolveTo(jwToken);
-
+    videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(new CurrentUserOrParticipantResponse({})));
     adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
-        userInfo: <adal.User>{ userName: globalParticipant.username, authenticated: true }
+        userInfo: <adal.User>{ userName: 'chris.green@hearings.net', authenticated: true }
     });
     errorService = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError', 'handleApiError', 'handlePexipError']);
 

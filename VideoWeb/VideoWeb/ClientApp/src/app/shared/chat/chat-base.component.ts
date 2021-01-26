@@ -3,12 +3,14 @@ import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { UserProfileResponse } from 'src/app/services/clients/api-client';
+import { CurrentUserOrParticipantResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ImHelper } from '../im-helper';
+import { SessionStorage } from 'src/app/services/session-storage';
+import { ParticipantStorageKeys } from '../../vh-officer/services/models/session-keys';
 
 export abstract class ChatBaseComponent {
     protected hearing: Hearing;
@@ -16,6 +18,9 @@ export abstract class ChatBaseComponent {
     pendingMessages: Map<string, InstantMessage[]> = new Map<string, InstantMessage[]>();
     loggedInUserProfile: UserProfileResponse;
     disableScrollDown = false;
+    loggedInUser: CurrentUserOrParticipantResponse;
+    private readonly loggedInUserStorage: SessionStorage<CurrentUserOrParticipantResponse>;
+    emptyGuid = '00000000-0000-0000-0000-000000000000';
 
     DEFAULT_ADMIN_USERNAME = 'Admin';
     protected constructor(
@@ -25,11 +30,14 @@ export abstract class ChatBaseComponent {
         protected logger: Logger,
         protected adalService: AdalService,
         protected imHelper: ImHelper
-    ) {}
+    ) {
+        this.loggedInUserStorage = new SessionStorage<CurrentUserOrParticipantResponse>(ParticipantStorageKeys.LOGGED_IN_USER);
+    }
 
     abstract content: ElementRef<HTMLElement>;
     abstract sendMessage(messageBody: string): void;
     abstract get participantUsername(): string;
+    abstract get participantId(): string;
 
     get pendingMessagesForConversation(): InstantMessage[] {
         if (this.pendingMessages.has(this.participantUsername)) {
@@ -40,12 +48,14 @@ export abstract class ChatBaseComponent {
     }
 
     async setupChatSubscription(): Promise<Subscription> {
-        if (!this.loggedInUserProfile) {
-            this.loggedInUserProfile = await this.profileService.getUserProfile();
-        }
+        //if (!this.loggedInUserProfile) {
+        //    this.loggedInUserProfile = await this.profileService.getUserProfile();
+        //}
+
         this.logger.debug('[ChatHub] Subscribing to chat messages');
         const sub = this.eventService.getChatMessage().subscribe({
             next: async message => {
+                await this.setLoggedParticipant();
                 await this.handleIncomingMessage(message);
             }
         });
@@ -57,7 +67,7 @@ export abstract class ChatBaseComponent {
             return;
         }
         const from = message.from.toUpperCase();
-        const username = this.adalService.userInfo.userName.toUpperCase();
+        const username = this.loggedInUser.participant_id ?? this.adalService.userInfo.userName.toUpperCase();
         if (from === username) {
             message.from_display_name = 'You';
             message.is_user = true;
@@ -67,6 +77,14 @@ export abstract class ChatBaseComponent {
         }
         this.removeMessageFromPending(message);
         this.messages.push(message);
+    }
+
+    async setLoggedParticipant() {
+        this.loggedInUser = this.loggedInUserStorage.get();
+        if (!this.loggedInUser) {
+            this.loggedInUser = await this.videoWebService.getCurrentParticipant(this.hearing.id);
+            this.logger.debug(`[ChatHub]  logged user : ${this.loggedInUser}`);
+        }
     }
 
     addMessageToPending(message: InstantMessage) {
@@ -97,8 +115,8 @@ export abstract class ChatBaseComponent {
             this.logger.debug(`[ChatHub] message already been processed ${JSON.stringify(logInfo)}`);
             return false;
         }
-
-        return this.imHelper.isImForUser(message, this.participantUsername, this.loggedInUserProfile);
+        return this.imHelper.isImForUser(message, this.loggedInUser.participant_id && this.loggedInUser.participant_id !== this.emptyGuid
+            ? this.loggedInUser.participant_id : this.loggedInUser.admin_username, this.loggedInUser);
     }
 
     async verifySender(message: InstantMessage): Promise<InstantMessage> {
@@ -109,12 +127,13 @@ export abstract class ChatBaseComponent {
         return message;
     }
 
-    async getDisplayNameForSender(username: string): Promise<string> {
-        const participant = this.hearing.getParticipantByUsername(username);
+    async getDisplayNameForSender(participantId: string): Promise<string> {
+        const participant = this.hearing.getParticipantById(participantId);
         if (participant) {
             return participant.displayName;
         } else {
-            const profile = await this.getProfileForUser(username);
+            // if it's not a participant then we have username of vho
+            const profile = await this.getProfileForUser(participantId);
             return profile.first_name;
         }
     }
@@ -129,8 +148,8 @@ export abstract class ChatBaseComponent {
 
     abstract handleIncomingOtherMessage(messsage: InstantMessage);
 
-    async retrieveChatForConference(participantUsername: string): Promise<InstantMessage[]> {
-        this.messages = (await this.videoWebService.getConferenceChatHistory(this.hearing.id, participantUsername)).map(m => {
+    async retrieveChatForConference(participantId: string): Promise<InstantMessage[]> {
+        this.messages = (await this.videoWebService.getConferenceChatHistory(this.hearing.id, participantId)).map(m => {
             const im = new InstantMessage(m);
             im.conferenceId = this.hearing.id;
             return im;

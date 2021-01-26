@@ -3,7 +3,7 @@ import { AdalService } from 'adal-angular4';
 import { Guid } from 'guid-typescript';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, CurrentUserOrParticipantResponse } from 'src/app/services/clients/api-client';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
@@ -31,7 +31,7 @@ describe('ParticipantChatComponent', () => {
     beforeAll(() => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
         hearing = new Hearing(conference);
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceChatHistory']);
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceChatHistory', 'getCurrentParticipant']);
         profileService = jasmine.createSpyObj<ProfileService>('ProfileService', [
             'checkCacheForProfileByUsername',
             'getProfileByUsername',
@@ -52,6 +52,13 @@ describe('ParticipantChatComponent', () => {
         profileService.getProfileByUsername.and.resolveTo(adminProfile);
         profileService.getUserProfile.and.resolveTo(judgeProfile);
         videoWebService.getConferenceChatHistory.and.resolveTo(chatHistory);
+        videoWebService.getCurrentParticipant.and.resolveTo(
+            new CurrentUserOrParticipantResponse({
+                participant_id: hearing.participants[2].id,
+                display_name: hearing.participants[2].displayName,
+                role: hearing.participants[2].role
+            })
+        );
 
         component = new ParticipantChatComponent(
             videoWebService,
@@ -78,7 +85,7 @@ describe('ParticipantChatComponent', () => {
         expect(component.messages.length).toBeGreaterThan(0);
     }));
 
-    it('should return adal username as participant username', () => {
+    it('should return logged participant Id username as participant username', () => {
         expect(component.participantUsername).toEqual(judgeUsername.toLowerCase());
     });
 
@@ -112,7 +119,7 @@ describe('ParticipantChatComponent', () => {
             conferenceId: conference.id,
             from: adminUsername,
             from_display_name: 'Admin Test',
-            to: conference.participants[1].username,
+            to: conference.participants[1].id,
             id: Guid.create().toString(),
             is_user: false,
             message: 'test auto',
@@ -130,7 +137,7 @@ describe('ParticipantChatComponent', () => {
             conferenceId: conference.id,
             from: adminUsername,
             from_display_name: 'Admin Test',
-            to: conference.participants[1].username,
+            to: conference.participants[1].id,
             id: Guid.create().toString(),
             is_user: false,
             message: 'test auto',
@@ -190,6 +197,11 @@ describe('ParticipantChatComponent', () => {
 
     it('should send message to hub', async () => {
         const message = 'test';
+        component.loggedInUser = new CurrentUserOrParticipantResponse({
+            participant_id: hearing.participants[2].id,
+            display_name: hearing.participants[2].displayName,
+            role: hearing.participants[2].role
+        });
         await component.sendMessage(message);
         expect(eventsService.sendMessage.calls.mostRecent().args[0]).toBeInstanceOf(InstantMessage);
         const lastArg = <InstantMessage>eventsService.sendMessage.calls.mostRecent().args[0];
@@ -207,7 +219,7 @@ describe('ParticipantChatComponent', () => {
             conferenceId: conference.id,
             from: adminUsername,
             from_display_name: 'Admin Test',
-            to: conference.participants[1].username,
+            to: conference.participants[1].id,
             id: Guid.create().toString(),
             is_user: false,
             message: 'test auto',

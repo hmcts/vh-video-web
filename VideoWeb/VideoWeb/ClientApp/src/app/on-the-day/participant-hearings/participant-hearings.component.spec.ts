@@ -7,40 +7,31 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { ProfileService } from '../../services/api/profile.service';
-import { Role, UserProfileResponse } from '../../services/clients/api-client';
+import { CurrentUserOrParticipantResponse, Role } from '../../services/clients/api-client';
 import { ParticipantHearingsComponent } from './participant-hearings.component';
 
 describe('ParticipantHearingList', () => {
     let component: ParticipantHearingsComponent;
 
-    const mockProfile: UserProfileResponse = new UserProfileResponse({
+    const mockCurrentUser: CurrentUserOrParticipantResponse = new CurrentUserOrParticipantResponse({
+        participant_id: '1111-1111-1111-1111',
         display_name: 'John Doe',
-        first_name: 'John',
-        last_name: 'Doe',
-        role: Role.Individual,
-        username: 'john.doe@hearings.net'
+        role: Role.Individual
     });
-    const mockPanelMemberProfile: UserProfileResponse = new UserProfileResponse({
-        display_name: 'J Doe PM',
-        first_name: 'Jane',
-        last_name: 'Doe PM',
-        role: Role.Individual,
-        username: 'panelmem.doe.PM@hearings.net'
+    const mockPanelMemberUser: CurrentUserOrParticipantResponse = new CurrentUserOrParticipantResponse({
+        participant_id: '7777-7777-7777-7777',
+        display_name: 'John Doe',
+        role: Role.JudicialOfficeHolder
     });
-    const mockObserverProfile: UserProfileResponse = new UserProfileResponse({
-        display_name: 'J Doe PM',
-        first_name: 'Jane',
-        last_name: 'Doe O',
-        role: Role.Individual,
-        username: 'observer.doe.O@hearings.net'
+    const mockObserverUser: CurrentUserOrParticipantResponse = new CurrentUserOrParticipantResponse({
+        participant_id: '6666-6666-6666-6666',
+        display_name: 'John Doe',
+        role: Role.Individual
     });
-    const mockWingerProfile: UserProfileResponse = new UserProfileResponse({
-        display_name: 'J Doe Winger',
-        first_name: 'Jane',
-        last_name: 'Doe Winger',
-        role: Role.JudicialOfficeHolder,
-        username: 'jane.doe.Winger@hearings.net'
+    const mockWingerUser: CurrentUserOrParticipantResponse = new CurrentUserOrParticipantResponse({
+        participant_id: '4545-4545-4545-4545',
+        display_name: 'John Doe',
+        role: Role.JudicialOfficeHolder
     });
 
     const conferences = new ConferenceTestData().getTestData();
@@ -48,14 +39,14 @@ describe('ParticipantHearingList', () => {
     let videoWebService: jasmine.SpyObj<VideoWebService>;
     let errorService: jasmine.SpyObj<ErrorService>;
     let router: jasmine.SpyObj<Router>;
-    let profileService: jasmine.SpyObj<ProfileService>;
     const logger: Logger = new MockLogger();
 
     beforeAll(() => {
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getConferencesForIndividual',
             'setActiveIndividualConference',
-            'getConferenceById'
+            'getConferenceById',
+            'getCurrentParticipant'
         ]);
 
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
@@ -64,15 +55,12 @@ describe('ParticipantHearingList', () => {
             'returnHomeIfUnauthorised'
         ]);
 
-        profileService = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
-
-        profileService.getUserProfile.and.returnValue(Promise.resolve(mockProfile));
-
+        videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(mockCurrentUser));
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
     });
 
     beforeEach(() => {
-        component = new ParticipantHearingsComponent(videoWebService, errorService, router, profileService, logger);
+        component = new ParticipantHearingsComponent(videoWebService, errorService, router, logger);
         component.conferences = conferences;
         videoWebService.getConferencesForIndividual.and.returnValue(of(conferences));
     });
@@ -108,7 +96,6 @@ describe('ParticipantHearingList', () => {
         component.ngOnInit();
         flushMicrotasks();
 
-        expect(component.profile).toBe(mockProfile);
         expect(component.conferences).toBe(conferences);
         expect(setInterval).toHaveBeenCalled();
         expect(component.interval).toBe(interval);
@@ -122,7 +109,7 @@ describe('ParticipantHearingList', () => {
     it('should navigate to introduction page when conference is selected', fakeAsync(() => {
         const conference = conferences[0];
         videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
-        component.profile = mockProfile;
+
         component.onConferenceSelected(conference);
         tick(100);
         expect(videoWebService.setActiveIndividualConference).toHaveBeenCalledWith(conference);
@@ -133,7 +120,8 @@ describe('ParticipantHearingList', () => {
     it('should navigate to Waiting room page when conference is selected for panel member', fakeAsync(() => {
         const conference = conferences[0];
         videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
-        component.profile = mockPanelMemberProfile;
+        videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(mockPanelMemberUser));
+
         component.onConferenceSelected(conference);
         tick(100);
         expect(videoWebService.setActiveIndividualConference).toHaveBeenCalledWith(conference);
@@ -144,7 +132,8 @@ describe('ParticipantHearingList', () => {
     it('should navigate to Waiting room page when conference is selected for observer', fakeAsync(() => {
         const conference = conferences[0];
         videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
-        component.profile = mockObserverProfile;
+        videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(mockObserverUser));
+
         component.onConferenceSelected(conference);
         tick(100);
         expect(videoWebService.setActiveIndividualConference).toHaveBeenCalledWith(conference);
@@ -169,7 +158,8 @@ describe('ParticipantHearingList', () => {
     it('should navigate to Waiting room page when conference is selected for winger', fakeAsync(() => {
         const conference = conferences[0];
         videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
-        component.profile = mockWingerProfile;
+        videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(mockWingerUser));
+
         component.onConferenceSelected(conference);
         tick(100);
         expect(videoWebService.setActiveIndividualConference).toHaveBeenCalledWith(conference);

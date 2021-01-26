@@ -22,10 +22,6 @@ export class ParticipantSummary {
         return this.participant.id;
     }
 
-    get username() {
-        return this.participant.username;
-    }
-
     get firstName(): string {
         return this.participant.first_name;
     }

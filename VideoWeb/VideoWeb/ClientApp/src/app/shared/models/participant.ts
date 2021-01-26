@@ -29,10 +29,6 @@ export class Participant {
         return this.participant.case_type_group;
     }
 
-    get username() {
-        return this.participant.username;
-    }
-
     get status(): ParticipantStatus {
         return this.participant.status;
     }

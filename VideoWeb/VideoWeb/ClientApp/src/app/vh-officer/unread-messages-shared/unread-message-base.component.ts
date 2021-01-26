@@ -12,8 +12,8 @@ export abstract class UnreadMessagesComponentBase {
 
     abstract get unreadCount(): number;
     abstract getHearing(): Hearing;
-    abstract resetUnreadCounter(conferenceId: string, participantUsername: string): void;
-    abstract incrementUnreadCounter(conferenceId: string, participantUsername: string): void;
+    abstract resetUnreadCounter(conferenceId: string, participantId: string): void;
+    abstract incrementUnreadCounter(conferenceId: string, participantId: string): void;
     abstract openImChat();
 
     getIMStatus(): string {
@@ -37,7 +37,7 @@ export abstract class UnreadMessagesComponentBase {
     }
 
     handleAdminAnsweredChat(message: ConferenceMessageAnswered) {
-        this.resetUnreadCounter(message.conferenceId, message.particpantUsername);
+        this.resetUnreadCounter(message.conferenceId, message.participantId);
     }
 
     handleImReceived(message: InstantMessage) {
@@ -48,7 +48,7 @@ export abstract class UnreadMessagesComponentBase {
 
     protected messageFromParticipant(message: InstantMessage): boolean {
         return this.getHearing()
-            .participants.map(p => p.username.toUpperCase())
+            .participants.map(p => p.id.toUpperCase())
             .includes(message.from.toUpperCase());
     }
 

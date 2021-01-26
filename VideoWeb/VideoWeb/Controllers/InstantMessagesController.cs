@@ -1,13 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 using Castle.Core.Internal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
@@ -47,27 +47,34 @@ namespace VideoWeb.Controllers
         /// Get all the instant messages for a conference for a participant
         /// </summary>
         /// <param name="conferenceId">Id of the conference</param>
-        /// <param name="participantUsername">the participant in the conference</param>
+        /// <param name="participantId">the participant in the conference</param>
         /// <returns>List of instant messages involving participant in a conference</returns>
-        [HttpGet("{conferenceId}/instantmessages/participant/{participantUsername}")]
+        [HttpGet("{conferenceId}/instantmessages/participant/{participantId}")]
         [SwaggerOperation(OperationId = "GetConferenceInstantMessageHistoryForParticipant")]
         [ProducesResponseType(typeof(List<ChatResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetConferenceInstantMessageHistoryForParticipantAsync(Guid conferenceId, string participantUsername)
+        public async Task<IActionResult> GetConferenceInstantMessageHistoryForParticipantAsync(Guid conferenceId, Guid participantId)
         {
             _logger.LogDebug($"GetMessages for {conferenceId}");
             try
             {
+                var conference = await _conferenceCache.GetOrAddConferenceAsync
+               (
+                   conferenceId,
+                   () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
+               );
+                var participant = conference.Participants.First(x => x.Id == participantId);
+
                 var messages =
-                    await _videoApiClient.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername);
-                if (!messages.Any())
+                    await _videoApiClient.GetInstantMessageHistoryForParticipantAsync(conferenceId, participant.Username);
+                if (messages== null || !messages.Any())
                 {
                     return Ok(new List<ChatResponse>());
                 }
 
                 var response = await MapMessages(messages, conferenceId);
                 response = response.OrderBy(r => r.Timestamp).ToList();
-                
+
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -105,7 +112,7 @@ namespace VideoWeb.Controllers
 
                 var unreadInstantMessageConferenceCountResponseMapper = _mapperFactory.Get<Conference, IList<InstantMessageResponse>, UnreadInstantMessageConferenceCountResponse>();
                 var response = unreadInstantMessageConferenceCountResponseMapper.Map(conference, messages);
-               
+
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -119,32 +126,34 @@ namespace VideoWeb.Controllers
         /// Get number of unread messages for a participant
         /// </summary>
         /// <param name="conferenceId">Id of the conference</param>
-        /// <param name="participantUsername">the participant in the conference</param>
+        /// <param name="participantId">the participant in the conference</param>
         /// <returns>Number of unread message</returns>
-        [HttpGet("{conferenceId}/instantmessages/unread/participant/{participantUsername}")]
+        [HttpGet("{conferenceId}/instantmessages/unread/participant/{participantId}")]
         [SwaggerOperation(OperationId = "GetNumberOfUnreadAdminMessagesForConferenceByParticipant")]
         [ProducesResponseType(typeof(UnreadAdminMessageResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> GetUnreadMessagesForParticipantAsync(Guid conferenceId, string participantUsername)
+        public async Task<IActionResult> GetUnreadMessagesForParticipantAsync(Guid conferenceId, Guid participantId)
         {
             _logger.LogDebug($"GetMessages for {conferenceId}");
             try
             {
+                var conference = await _conferenceCache.GetOrAddConferenceAsync
+              (
+                  conferenceId,
+                  () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
+              );
+                var participant = conference.Participants.First(x => x.Id == participantId);
+
                 var messages =
-                    await _videoApiClient.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername);
+                    await _videoApiClient.GetInstantMessageHistoryForParticipantAsync(conferenceId, participant.Username);
                 if (messages.IsNullOrEmpty())
                 {
                     return Ok(new UnreadAdminMessageResponse());
                 }
 
-                var conference = await _conferenceCache.GetOrAddConferenceAsync
-                (
-                    conferenceId,
-                    () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
-                );
 
                 var unreadAdminMessageResponseMapper = _mapperFactory.Get<Conference, IList<InstantMessageResponse>, UnreadAdminMessageResponse>();
                 var response = unreadAdminMessageResponseMapper.Map(conference, messages);
-                
+
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -184,8 +193,8 @@ namespace VideoWeb.Controllers
                     fromDisplayName = await _messageDecoder.GetMessageOriginatorAsync(conference, message);
                 }
 
-                var chatResponseMapper = _mapperFactory.Get<InstantMessageResponse, string, bool, ChatResponse>();
-                var mapped = chatResponseMapper.Map(message, fromDisplayName, isUser);
+                var chatResponseMapper = _mapperFactory.Get<InstantMessageResponse, string, bool, Conference, ChatResponse>();
+                var mapped = chatResponseMapper.Map(message, fromDisplayName, isUser, conference);
                 response.Add(mapped);
             }
 

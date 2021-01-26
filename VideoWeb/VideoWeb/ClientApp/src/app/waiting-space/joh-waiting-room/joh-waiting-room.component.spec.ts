@@ -1,6 +1,11 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { Subscription } from 'rxjs';
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    ConferenceStatus,
+    CurrentUserOrParticipantResponse,
+    ParticipantResponse
+} from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -66,6 +71,13 @@ describe('JohWaitingRoomComponent', () => {
     });
 
     it('should init hearing alert and subscribers', fakeAsync(() => {
+        videoWebService.getCurrentParticipant.and.resolveTo(
+            new CurrentUserOrParticipantResponse({
+                participant_id: globalParticipant.id,
+                display_name: globalParticipant.display_name,
+                role: globalParticipant.role
+            })
+        );
         component.ngOnInit();
         flushMicrotasks();
         tick(100);

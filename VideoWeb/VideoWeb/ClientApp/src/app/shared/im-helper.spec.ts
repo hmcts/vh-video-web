@@ -1,5 +1,5 @@
 import { Guid } from 'guid-typescript';
-import { ConferenceResponse, Role, UserProfileResponse } from '../services/clients/api-client';
+import { ConferenceResponse, CurrentUserOrParticipantResponse, Role } from '../services/clients/api-client';
 import { InstantMessage } from '../services/models/instant-message';
 import { ConferenceTestData } from '../testing/mocks/data/conference-test-data';
 import { ImHelper } from './im-helper';
@@ -10,27 +10,25 @@ describe('ImHelper', () => {
     const conference: ConferenceResponse = new ConferenceTestData().getConferenceDetailFuture();
     const hearing = new Hearing(conference);
     const adminUsername = 'admin@user.com';
-    const judgeUsername = hearing.judge.username;
+    const judgeUsername = hearing.judge.id;
 
-    let adminProfile: UserProfileResponse;
-    let judgeProfile: UserProfileResponse;
+    let adminProfile: CurrentUserOrParticipantResponse;
+    let judgeProfile: CurrentUserOrParticipantResponse;
 
     let message: InstantMessage;
 
     beforeEach(() => {
-        adminProfile = new UserProfileResponse({
+        adminProfile = new CurrentUserOrParticipantResponse({
             display_name: 'Test Admin',
-            first_name: 'Test',
-            last_name: 'Admin',
-            role: Role.VideoHearingsOfficer,
-            username: adminUsername
+            participant_id: '',
+            admin_username: adminUsername,
+            role: Role.VideoHearingsOfficer
         });
-        judgeProfile = new UserProfileResponse({
+        judgeProfile = new CurrentUserOrParticipantResponse({
             display_name: 'Judge Fudge',
-            first_name: 'Judge',
-            last_name: 'Fudge',
-            role: Role.Judge,
-            username: judgeUsername
+            participant_id: conference.participants[2].id,
+            admin_username: '',
+            role: Role.Judge
         });
         message = new InstantMessage({
             conferenceId: conference.id,
@@ -47,7 +45,7 @@ describe('ImHelper', () => {
     it('should return true when message is sent from participant A to admin and admin has participant A chat open', () => {
         message = new InstantMessage({
             conferenceId: conference.id,
-            from: judgeUsername,
+            from: conference.participants[2].id,
             from_display_name: judgeProfile.display_name,
             to: adminUsername,
             id: Guid.create().toString(),
@@ -55,14 +53,13 @@ describe('ImHelper', () => {
             message: 'test auto',
             timestamp: new Date()
         });
-
-        expect(imHelper.isImForUser(message, judgeUsername, adminProfile)).toBeTruthy();
+        expect(imHelper.isImForUser(message, conference.participants[2].id, adminProfile)).toBeTruthy();
     });
 
     it('should return false when message is sent from participant A to admin and admin has participant B chat open', () => {
         const imOther = new InstantMessage({
             conferenceId: conference.id,
-            from: 'notjudge@test.com',
+            from: conference.participants[0].id,
             from_display_name: 'Test Other',
             to: adminUsername,
             id: Guid.create().toString(),
@@ -71,7 +68,7 @@ describe('ImHelper', () => {
             timestamp: new Date()
         });
 
-        expect(imHelper.isImForUser(imOther, judgeProfile.username, adminProfile)).toBeFalsy();
+        expect(imHelper.isImForUser(imOther, conference.participants[2].id, adminProfile)).toBeFalsy();
     });
 
     it('should return true when message is sent from admin to participant A logged in as participant A', () => {
@@ -79,7 +76,7 @@ describe('ImHelper', () => {
             conferenceId: conference.id,
             from: adminUsername,
             from_display_name: adminProfile.display_name,
-            to: judgeUsername,
+            to: conference.participants[2].id,
             id: Guid.create().toString(),
             is_user: false,
             message: 'test auto',
@@ -90,18 +87,16 @@ describe('ImHelper', () => {
     });
 
     it('should return false when message is sent from admin to participant B but logged in as Participant A', () => {
-        const nonChatUser = new UserProfileResponse({
+        const nonChatUser = new CurrentUserOrParticipantResponse({
             display_name: 'Test Rep',
-            first_name: 'Test',
-            last_name: 'Rep',
-            role: Role.Representative,
-            username: 'rep@test.com'
+            participant_id: '1111-2222',
+            role: Role.Representative
         });
         message = new InstantMessage({
             conferenceId: conference.id,
             from: adminUsername,
             from_display_name: adminProfile.display_name,
-            to: judgeUsername,
+            to: conference.participants[2].id,
             id: Guid.create().toString(),
             is_user: false,
             message: 'test auto',

@@ -1,6 +1,12 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
-import { ConferenceResponse, ConferenceStatus, HearingLayout, ParticipantResponse } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    ConferenceStatus,
+    CurrentUserOrParticipantResponse,
+    HearingLayout,
+    ParticipantResponse
+} from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SelectedUserMediaDevice } from '../../../shared/models/selected-user-media-device';
@@ -78,6 +84,14 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
     it('should init hearing alert and setup Client', fakeAsync(() => {
         videoWebService.getJwToken.calls.reset();
+        videoWebService.getCurrentParticipant.and.resolveTo(
+            new CurrentUserOrParticipantResponse({
+                participant_id: globalParticipant.id,
+                display_name: globalParticipant.display_name,
+                role: globalParticipant.role
+            })
+        );
+
         component.ngOnInit();
         flushMicrotasks();
         tick(100);

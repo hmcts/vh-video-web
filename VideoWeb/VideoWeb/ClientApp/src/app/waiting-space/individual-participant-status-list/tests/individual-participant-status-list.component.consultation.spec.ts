@@ -4,6 +4,7 @@ import {
     ConferenceResponse,
     ConferenceStatus,
     ConsultationAnswer,
+    CurrentUserOrParticipantResponse,
     EndpointStatus,
     ParticipantResponse,
     ParticipantResponseVho,
@@ -52,9 +53,17 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
         consultationService = consultationServiceSpyFactory();
 
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName']);
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName', 'getCurrentParticipant']);
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
-
+        videoWebService.getCurrentParticipant.and.returnValue(
+            Promise.resolve(
+                new CurrentUserOrParticipantResponse({
+                    participant_id: '1111-1111',
+                    display_name: 'Jonh Doe',
+                    role: Role.Judge
+                })
+            )
+        );
         logger = jasmine.createSpyObj<Logger>('Logger', ['debug', 'info', 'warn', 'event', 'error']);
         participantsObserverPanelMember = testdata.getListOfParticipantsObserverAndPanelMembers();
         participantsWinger = testdata.getListOfParticipantsWingers();
@@ -75,6 +84,13 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         component.consultationRequester = consultationRequester;
         component.consultationRequestee = consultationRequestee;
         component.conference = conference;
+        const judge = component.conference.participants.find(x => x.role === Role.Judge);
+
+        component.loggedInUser = new CurrentUserOrParticipantResponse({
+            participant_id: judge.id,
+            display_name: judge.display_name,
+            role: Role.Judge
+        });
         component.setupSubscribers();
     });
 
@@ -82,7 +98,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         component.ngOnDestroy();
     });
 
-    it('should init properties and setup ringtone on init', () => {
+    it('should init properties and setup ringtone on init', async () => {
         component.ngOnInit();
         expect(component).toBeTruthy();
         expect(component.judge).toBeDefined();
@@ -91,55 +107,67 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     });
 
     it('should not be able to call participant is user is judge', () => {
-        const judge = component.conference.participants.find(x => x.role === Role.Judge);
-        adalService.userInfo.userName = judge.username;
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
+        const participant = new ParticipantResponse({
+            status: ParticipantStatus.InConsultation,
+            id: component.loggedInUser.participant_id
+        });
         expect(component.canCallParticipant(participant)).toBeFalsy();
     });
 
     it('should not be able to call an unavailable participant', () => {
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
+        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, id: conference.participants[0].id });
         expect(component.canCallParticipant(participant)).toBeFalsy();
     });
 
     it('should not be able to call self', () => {
         component.conference = new ConferenceTestData().getConferenceDetailFuture();
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: adalService.userInfo.userName });
+        const participant = new ParticipantResponse({
+            status: ParticipantStatus.InConsultation,
+            id: component.loggedInUser.participant_id
+        });
         expect(component.canCallParticipant(participant)).toBeFalsy();
     });
 
     it('should not be able to call when hearing is about to start', () => {
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: adalService.userInfo.userName });
+        const participant = new ParticipantResponse({
+            status: ParticipantStatus.InConsultation,
+            id: component.loggedInUser.participant_id
+        });
         expect(component.canCallParticipant(participant)).toBeFalsy();
     });
 
     it('should not be able to call when hearing is delayed', () => {
         component.conference = new ConferenceTestData().getConferenceDetailPast();
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: adalService.userInfo.userName });
+        const participant = new ParticipantResponse({
+            status: ParticipantStatus.InConsultation,
+            id: component.loggedInUser.participant_id
+        });
         expect(component.canCallParticipant(participant)).toBeFalsy();
     });
 
     it('should not be able to call when hearing is suspended', () => {
         component.conference.status = ConferenceStatus.Suspended;
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: adalService.userInfo.userName });
+        const participant = new ParticipantResponse({
+            status: ParticipantStatus.InConsultation,
+            id: component.loggedInUser.participant_id
+        });
         expect(component.canCallParticipant(participant)).toBeFalsy();
     });
 
     it('should be able to call an available participant', () => {
-        const participant = new ParticipantResponse({ status: ParticipantStatus.Available, username: 'test@dot.com' });
+        const participant = new ParticipantResponse({ status: ParticipantStatus.Available, id: conference.participants[0].id });
         expect(component.canCallParticipant(participant)).toBeTruthy();
     });
 
     it('should not be able to begin call with self', async () => {
         consultationService.raiseConsultationRequest.and.callFake(() => Promise.resolve());
-        adalService.userInfo.userName = 'chris.green@hearings.net';
-        const participant = conference.participants.find(x => x.username === adalService.userInfo.userName);
+        const participant = conference.participants.find(x => x.id === component.loggedInUser.participant_id);
         await component.beginCallWith(participant);
         expect(consultationService.raiseConsultationRequest).toHaveBeenCalledTimes(0);
     });
 
     it('should be able to begin call with another participant', async () => {
-        const participant = conference.participants.find(x => x.username === 'james.green@hearings.net');
+        const participant = conference.participants.find(x => x.role === Role.Individual);
         participant.status = ParticipantStatus.Available;
         await component.beginCallWith(participant);
         expect(consultationService.raiseConsultationRequest).toHaveBeenCalled();
@@ -148,7 +176,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     it('should log error when raising consultation request to API fails', async () => {
         const error = { error: 'failed to raise test PC' };
         consultationService.raiseConsultationRequest.and.rejectWith(error);
-        const participant = conference.participants.find(x => x.username === 'james.green@hearings.net');
+        const participant = conference.participants.find(x => x.role === Role.Individual);
         participant.status = ParticipantStatus.Available;
         await component.beginCallWith(participant);
         expect(logger.error.calls.mostRecent().args[0]).toContain('Failed to raise consultation request');
@@ -191,8 +219,8 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         it(`should call consultation service when consultation has been "${test.consulatationAnswer}"`, () => {
             const payload = new ConsultationMessage(
                 conference.id,
-                component.consultationRequester.username,
-                component.consultationRequestee.username,
+                component.consultationRequester.id,
+                component.consultationRequestee.id,
                 test.consulatationAnswer
             );
             consultationMessageSubjectMock.next(payload);
@@ -203,8 +231,8 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     it('should display no consultation room available modal when no room message is received', () => {
         const payload = new ConsultationMessage(
             conference.id,
-            consultationRequester.username,
-            consultationRequestee.username,
+            consultationRequester.id,
+            consultationRequestee.id,
             ConsultationAnswer.NoRoomsAvailable
         );
         consultationSubject.next(payload);
@@ -217,7 +245,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         component.consultationRequester = undefined;
 
         // this is an incoming consultation request
-        const payload = new ConsultationMessage(conference.id, consultationRequester.username, consultationRequestee.username, null);
+        const payload = new ConsultationMessage(conference.id, consultationRequester.id, consultationRequestee.id, null);
         consultationSubject.next(payload);
 
         expect(component.consultationRequestee.id).toEqual(consultationRequestee.id);
@@ -265,9 +293,8 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
             component.conference.participants.push(x);
         });
         const observer = component.conference.participants.find(x => x.hearing_role === HearingRole.OBSERVER);
-        adalService.userInfo.userName = observer.username;
-
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
+        component.loggedInUser.participant_id = observer.id;
+        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, id: '12345' });
         expect(component.canCallParticipant(participant)).toBeFalsy();
     });
     it('should not be able to call participant if user is panel member', () => {
@@ -277,11 +304,10 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
             component.conference.participants.push(x);
         });
         const panelMember = component.conference.participants.find(x => x.hearing_role === HearingRole.PANEL_MEMBER);
-        adalService.userInfo.userName = panelMember.username;
+        component.loggedInUser.participant_id = panelMember.id;
+        expect(component.getConsultationRequester().id).toBe(panelMember.id);
 
-        expect(component.getConsultationRequester().username).toBe(panelMember.username);
-
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
+        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, id: '12345' });
         expect(component.canCallParticipant(participant)).toBeFalsy();
     });
     it('should not be able to call participant if user is winger', () => {
@@ -291,11 +317,10 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
             component.conference.participants.push(x);
         });
         const wingerMember = component.conference.participants.find(x => x.hearing_role === HearingRole.WINGER);
-        adalService.userInfo.userName = wingerMember.username;
+        component.loggedInUser.participant_id = wingerMember.id;
+        expect(component.getConsultationRequester().id).toBe(wingerMember.id);
 
-        expect(component.getConsultationRequester().username).toBe(wingerMember.username);
-
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
+        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, id: '12345' });
         expect(component.canCallParticipant(participant)).toBeFalsy();
     });
 
@@ -306,11 +331,10 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
             component.conference.participants.push(x);
         });
         const witnessMember = component.conference.participants.find(x => x.hearing_role === HearingRole.WITNESS);
-        adalService.userInfo.userName = witnessMember.username;
+        component.loggedInUser.participant_id = witnessMember.id;
+        expect(component.getConsultationRequester().id).toBe(witnessMember.id);
 
-        expect(component.getConsultationRequester().username).toBe(witnessMember.username);
-
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
+        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, id: '1234' });
         expect(component.canCallParticipant(participant)).toBeFalsy();
     });
 });
