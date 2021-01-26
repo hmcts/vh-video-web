@@ -12,3 +12,10 @@
   height: 123.5px;
   width: 150px;
 }
+
+.govuk-button-blue {
+    background: govuk-colour('blue');
+}
+.govuk-button-blue:hover {
+  background: govuk-colour('dark-blue');
+}

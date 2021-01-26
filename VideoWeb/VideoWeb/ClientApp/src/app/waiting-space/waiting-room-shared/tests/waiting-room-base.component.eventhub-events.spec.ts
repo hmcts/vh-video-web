@@ -6,19 +6,17 @@ import {
     ConsultationAnswer,
     EndpointStatus,
     ParticipantResponse,
-    ParticipantStatus,
-    RoomType
+    ParticipantStatus
 } from 'src/app/services/clients/api-client';
-import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
+import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
-import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import {
-    adminConsultationMessageSubjectMock,
-    consultationMessageSubjectMock,
+    consultationRequestResponseMessageSubjectMock,
+    requestedConsultationMessageSubjectMock,
     endpointStatusSubjectMock,
     eventHubDisconnectSubjectMock,
     eventHubReconnectSubjectMock,
@@ -55,12 +53,11 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
     const participantStatusSubject = participantStatusSubjectMock;
     const hearingStatusSubject = hearingStatusSubjectMock;
-    const adminConsultationMessageSubject = adminConsultationMessageSubjectMock;
+    const consultationRequestResponseMessageSubject = consultationRequestResponseMessageSubjectMock;
     const eventHubDisconnectSubject = eventHubDisconnectSubjectMock;
     const eventHubReconnectSubject = eventHubReconnectSubjectMock;
     const hearingTransferSubject = hearingTransferSubjectMock;
     const endpointStatusSubject = endpointStatusSubjectMock;
-    const consultationMessageSubject = consultationMessageSubjectMock;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -221,24 +218,24 @@ describe('WaitingRoomComponent EventHub Call', () => {
     });
 
     it('should not set isAdminConsultation to true when participant has rejected admin consultation', () => {
-        const message = new AdminConsultationMessage(
+        const message = new ConsultationRequestResponseMessage(
             globalConference.id,
-            RoomType.ConsultationRoom1,
+            "ConsultationRoom",
             globalParticipant.username,
             ConsultationAnswer.Rejected
         );
-        adminConsultationMessageSubject.next(message);
+        consultationRequestResponseMessageSubject.next(message);
         expect(component.isAdminConsultation).toBeFalsy();
     });
 
     it('should set isAdminConsultation to true when participant accepts admin consultation', () => {
-        const message = new AdminConsultationMessage(
+        const message = new ConsultationRequestResponseMessage(
             globalConference.id,
-            RoomType.ConsultationRoom1,
+            "ConsultationRoom",
             globalParticipant.username,
             ConsultationAnswer.Accepted
         );
-        adminConsultationMessageSubject.next(message);
+        consultationRequestResponseMessageSubject.next(message);
         expect(component.isAdminConsultation).toBeTruthy();
     });
 
@@ -322,63 +319,5 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
         const endpoint = component.hearing.getEndpoints().find(x => x.id === message.endpointId);
         expect(endpoint.status === message.status).toBeTruthy();
-    }));
-
-    it('should close device selection modal and stop streams when consultation has been accepted', fakeAsync(() => {
-        userMediaStreamService.getStreamForMic.calls.reset();
-        userMediaStreamService.getStreamForCam.calls.reset();
-        userMediaStreamService.stopStream.calls.reset();
-        component.displayDeviceChangeModal = true;
-
-        const requestedBy = globalConference.participants.filter(x => x.id !== component.participant.id)[0];
-        const message = new ConsultationMessage(
-            globalConference.id,
-            requestedBy.username,
-            component.participant.username,
-            ConsultationAnswer.Accepted
-        );
-        consultationMessageSubject.next(message);
-        flushMicrotasks();
-
-        expect(component.displayDeviceChangeModal).toBe(false);
-        expect(userMediaStreamService.getStreamForMic).toHaveBeenCalled();
-        expect(userMediaStreamService.getStreamForCam).toHaveBeenCalled();
-        expect(userMediaStreamService.stopStream).toHaveBeenCalledTimes(2);
-    }));
-
-    it('should not close device selection streams when device modal is not open when consultation has been accepted', fakeAsync(() => {
-        userMediaStreamService.getStreamForMic.calls.reset();
-        userMediaStreamService.getStreamForCam.calls.reset();
-        userMediaStreamService.stopStream.calls.reset();
-        component.displayDeviceChangeModal = false;
-
-        const requestedBy = globalConference.participants.filter(x => x.id !== component.participant.id)[0];
-        const message = new ConsultationMessage(
-            globalConference.id,
-            requestedBy.username,
-            component.participant.username,
-            ConsultationAnswer.Accepted
-        );
-        consultationMessageSubject.next(message);
-
-        expect(component.displayDeviceChangeModal).toBe(false);
-        expect(userMediaStreamService.getStreamForMic).toHaveBeenCalledTimes(0);
-        expect(userMediaStreamService.getStreamForCam).toHaveBeenCalledTimes(0);
-        expect(userMediaStreamService.stopStream).toHaveBeenCalledTimes(0);
-    }));
-
-    it('should ignore non accepted consultation messages', fakeAsync(() => {
-        spyOn(component, 'onConsultationAccepted');
-
-        const requestedBy = globalConference.participants.filter(x => x.id !== component.participant.id)[0];
-        const message = new ConsultationMessage(
-            globalConference.id,
-            requestedBy.username,
-            component.participant.username,
-            ConsultationAnswer.Rejected
-        );
-        consultationMessageSubject.next(message);
-
-        expect(component.onConsultationAccepted).toHaveBeenCalledTimes(0);
     }));
 });

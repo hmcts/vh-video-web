@@ -83,6 +83,22 @@ namespace VideoWeb.EventHub.Handlers.Core
                 $"Role: { SourceParticipant.Role } | Participant State: { participantState } | Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
         }
 
+        protected async Task PublishParticipantRoomMessage(string room)
+        {
+            foreach (var participant in SourceConference.Participants)
+            {
+                await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
+                    .ParticipantRoomMessage(SourceParticipant.Id, SourceParticipant.Username, SourceConference.Id, room);
+                Logger.LogTrace($"Participant Room: Participant Id: { participant.Id } | " +
+                    $"Role: { participant.Role } | Participant Room: { room } | Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
+            }
+
+            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
+                .ParticipantRoomMessage(SourceParticipant.Id, SourceParticipant.Username, SourceConference.Id, room);
+            Logger.LogTrace($"Participant Room: Participant Id: { SourceParticipant.Id } | " +
+                $"Role: { SourceParticipant.Role } | Participant Room: { room } | Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
+        }
+
         /// <summary>
         ///     Publish a hearing event to all participants in conference to those connected to the HubContext
         /// </summary>

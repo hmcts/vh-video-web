@@ -34,7 +34,6 @@ export class UserMediaStreamService {
             return true;
         } catch (exception) {
             this.logger.error(`${this.loggerPrefix} Could not get cam and mic access`, exception);
-
             return false;
         }
     }

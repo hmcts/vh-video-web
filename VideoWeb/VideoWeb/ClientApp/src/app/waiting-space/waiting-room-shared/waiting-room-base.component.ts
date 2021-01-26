@@ -170,7 +170,7 @@ export abstract class WaitingRoomBaseComponent {
 
         this.logger.debug(`${this.loggerPrefix} Subscribing to admin consultation messages...`);
         this.eventHubSubscription$.add(
-            this.eventService.getAdminConsultationMessage().subscribe(message => {
+            this.eventService.getConsultationRequestResponseMessage().subscribe(message => {
                 if (message.answer && message.answer === ConsultationAnswer.Accepted) {
                     this.isAdminConsultation = true;
                 }
@@ -192,15 +192,6 @@ export abstract class WaitingRoomBaseComponent {
                     participant: this.participant.id
                 });
                 this.getConference().then(() => this.updateShowVideo());
-            })
-        );
-
-        this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub consultation message`);
-        this.eventHubSubscription$.add(
-            this.eventService.getConsultationMessage().subscribe(message => {
-                if (message.result === ConsultationAnswer.Accepted) {
-                    this.onConsultationAccepted();
-                }
             })
         );
 
@@ -439,6 +430,7 @@ export abstract class WaitingRoomBaseComponent {
             participant: participant.id,
             status: participant.status
         });
+        console.log(participant);
         if (message.status !== ParticipantStatus.InConsultation && isMe) {
             this.isAdminConsultation = false;
         }
@@ -509,7 +501,15 @@ export abstract class WaitingRoomBaseComponent {
             conference: this.conference?.id,
             participant: this.participant.id
         });
-        await this.consultationService.leaveJudicialConsultationRoom(this.conference, this.participant);
+        await this.consultationService.leaveConsultation(this.conference, this.participant);
+    }
+
+    async createParticipantConsultation() {
+        this.logger.info(`${this.loggerPrefix} attempting to start a private participant consultation`, {
+            conference: this.conference?.id,
+            participant: this.participant.id
+        });
+        await this.consultationService.createParticipantConsultationRoom(this.conference, this.participant, []);
     }
 
     updateShowVideo(): void {

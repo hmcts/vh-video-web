@@ -44,6 +44,7 @@ namespace VideoWeb.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [SwaggerOperation(OperationId = "SendEvent")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]

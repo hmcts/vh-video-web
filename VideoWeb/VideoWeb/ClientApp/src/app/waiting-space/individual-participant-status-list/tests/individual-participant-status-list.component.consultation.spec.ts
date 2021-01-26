@@ -11,13 +11,12 @@ import {
     Role
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ConsultationMessage } from 'src/app/services/models/consultation-message';
+import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
 import { Participant } from 'src/app/shared/models/participant';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
 import {
-    adminConsultationMessageSubjectMock,
-    consultationMessageSubjectMock,
+    requestedConsultationMessageSubjectMock,
     eventsServiceSpy
 } from 'src/app/testing/mocks/mock-events-service';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
@@ -38,8 +37,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     let adalService;
     let consultationService: jasmine.SpyObj<ConsultationService>;
     const eventsService = eventsServiceSpy;
-    const consultationSubject = consultationMessageSubjectMock;
-    const adminConsultationSubject = adminConsultationMessageSubjectMock;
+    const requestedConsultationSubject = requestedConsultationMessageSubjectMock;
 
     let logger: jasmine.SpyObj<Logger>;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
@@ -129,135 +127,12 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         const participant = new ParticipantResponse({ status: ParticipantStatus.Available, username: 'test@dot.com' });
         expect(component.canCallParticipant(participant)).toBeTruthy();
     });
-
-    it('should not be able to begin call with self', async () => {
-        consultationService.raiseConsultationRequest.and.callFake(() => Promise.resolve());
-        adalService.userInfo.userName = 'chris.green@hearings.net';
-        const participant = conference.participants.find(x => x.username === adalService.userInfo.userName);
-        await component.beginCallWith(participant);
-        expect(consultationService.raiseConsultationRequest).toHaveBeenCalledTimes(0);
-    });
-
-    it('should be able to begin call with another participant', async () => {
-        const participant = conference.participants.find(x => x.username === 'james.green@hearings.net');
-        participant.status = ParticipantStatus.Available;
-        await component.beginCallWith(participant);
-        expect(consultationService.raiseConsultationRequest).toHaveBeenCalled();
-    });
-
-    it('should log error when raising consultation request to API fails', async () => {
-        const error = { error: 'failed to raise test PC' };
-        consultationService.raiseConsultationRequest.and.rejectWith(error);
-        const participant = conference.participants.find(x => x.username === 'james.green@hearings.net');
-        participant.status = ParticipantStatus.Available;
-        await component.beginCallWith(participant);
-        expect(logger.error.calls.mostRecent().args[0]).toContain('Failed to raise consultation request');
-    });
-
-    it('should not be able to begin endpoint call', async () => {
-        component.conference = new ConferenceTestData().getConferenceDetailNow();
-        const endpoint = conference.endpoints[0];
-        endpoint.defence_advocate_username = adalService.userInfo.userName;
-        endpoint.status = EndpointStatus.Connected;
-        await component.beginEndpointCallWith(endpoint);
-        expect(consultationService.startPrivateConsulationWithEndpoint).toHaveBeenCalledTimes(0);
-    });
-
-    it('should be able to begin endpoint call', async () => {
-        const endpoint = conference.endpoints[0];
-        endpoint.defence_advocate_username = adalService.userInfo.userName;
-        endpoint.status = EndpointStatus.Connected;
-        await component.beginEndpointCallWith(endpoint);
-        expect(consultationService.startPrivateConsulationWithEndpoint).toHaveBeenCalled();
-    });
-
-    it('should log error when endpoint call request to API fails', async () => {
-        const error = { error: 'failed to raise test PC' };
-        consultationService.startPrivateConsulationWithEndpoint.and.rejectWith(error);
-        const endpoint = conference.endpoints[0];
-        endpoint.defence_advocate_username = adalService.userInfo.userName;
-        endpoint.status = EndpointStatus.Connected;
-        await component.beginEndpointCallWith(endpoint);
-        expect(logger.error.calls.mostRecent().args[0]).toContain('Failed to raise private consultation with endpoint');
-    });
-
-    const getConsultationMessageTestCases = [
-        { consulatationAnswer: ConsultationAnswer.Accepted },
-        { consulatationAnswer: ConsultationAnswer.Rejected },
-        { consulatationAnswer: ConsultationAnswer.Cancelled }
-    ];
-
-    getConsultationMessageTestCases.forEach(test => {
-        it(`should call consultation service when consultation has been "${test.consulatationAnswer}"`, () => {
-            const payload = new ConsultationMessage(
-                conference.id,
-                component.consultationRequester.username,
-                component.consultationRequestee.username,
-                test.consulatationAnswer
-            );
-            consultationMessageSubjectMock.next(payload);
-            expect(consultationService.handleConsultationResponse).toHaveBeenCalledWith(payload.result);
-        });
-    });
-
-    it('should display no consultation room available modal when no room message is received', () => {
-        const payload = new ConsultationMessage(
-            conference.id,
-            consultationRequester.username,
-            consultationRequestee.username,
-            ConsultationAnswer.NoRoomsAvailable
-        );
-        consultationSubject.next(payload);
-
-        expect(consultationService.displayNoConsultationRoomAvailableModal).toHaveBeenCalledTimes(1);
-    });
-
-    it('should display consultation request', () => {
-        component.consultationRequestee = undefined;
-        component.consultationRequester = undefined;
-
-        // this is an incoming consultation request
-        const payload = new ConsultationMessage(conference.id, consultationRequester.username, consultationRequestee.username, null);
-        consultationSubject.next(payload);
-
-        expect(component.consultationRequestee.id).toEqual(consultationRequestee.id);
-        expect(component.consultationRequester.id).toEqual(consultationRequester.id);
-        expect(consultationService.displayIncomingPrivateConsultation).toHaveBeenCalledTimes(1);
-    });
-
-    it('should answer consultation request', async () => {
-        await component.answerConsultationRequest(ConsultationAnswer.Accepted);
-
-        expect(consultationService.respondToConsultationRequest).toHaveBeenCalledWith(
-            conference,
-            component.consultationRequester.base,
-            component.consultationRequestee.base,
-            ConsultationAnswer.Accepted
-        );
-    });
-
-    it('should cancel consultation when requester cancels call', async () => {
-        await component.cancelConsultationRequest();
-
-        expect(consultationService.respondToConsultationRequest).toHaveBeenCalledWith(
-            component.conference,
-            component.consultationRequester.base,
-            component.consultationRequestee.base,
-            ConsultationAnswer.Cancelled
-        );
-    });
-
-    it('should log error when answering consultation request fails', async () => {
-        logger.error.calls.reset();
-        const error = { error: 'test error' };
-        consultationService.respondToConsultationRequest.and.rejectWith(error);
-        await component.answerConsultationRequest(ConsultationAnswer.Accepted);
-        expect(logger.error).toHaveBeenCalled();
-    });
+    
     it('should close all modals when user clicks close on modal', () => {
         component.closeAllPCModals();
         expect(consultationService.clearModals).toHaveBeenCalledTimes(1);
     });
+
     it('should not be able to call participant if user is observer', () => {
         component.conference.scheduled_date_time = new Date(new Date(Date.now()).getTime() + 31 * 60000);
 
@@ -270,6 +145,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
         expect(component.canCallParticipant(participant)).toBeFalsy();
     });
+
     it('should not be able to call participant if user is panel member', () => {
         component.conference.scheduled_date_time = new Date(new Date(Date.now()).getTime() + 31 * 60000);
 
@@ -284,6 +160,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
         expect(component.canCallParticipant(participant)).toBeFalsy();
     });
+    
     it('should not be able to call participant if user is winger', () => {
         component.conference.scheduled_date_time = new Date(new Date(Date.now()).getTime() + 31 * 60000);
 

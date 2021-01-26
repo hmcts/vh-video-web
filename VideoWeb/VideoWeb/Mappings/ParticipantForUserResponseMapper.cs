@@ -10,6 +10,13 @@ namespace VideoWeb.Mappings
 {
     public class ParticipantForUserResponseMapper : IMapTo<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>>
     {
+        private readonly IMapTo<RoomResponse, RoomSummaryResponse> _roomResponseMapper;
+
+        public ParticipantForUserResponseMapper(IMapTo<RoomResponse, RoomSummaryResponse> roomResponseMapper)
+        {
+            _roomResponseMapper = roomResponseMapper;
+        }
+
         public List<ParticipantForUserResponse> Map(IEnumerable<ParticipantSummaryResponse> participants)
         {
             var mappedParticipants = participants.Select(participant => new ParticipantForUserResponse
@@ -23,8 +30,9 @@ namespace VideoWeb.Mappings
                     CaseTypeGroup = participant.Case_group,
                     FirstName = participant.First_name,
                     LastName = participant.Last_name,
-                    HearingRole = participant.Hearing_role
-                })
+                    HearingRole = participant.Hearing_role,
+                    CurrentRoom = _roomResponseMapper.Map(participant.Current_room)
+            })
                 .ToList();
 
             ParticipantTilePositionHelper.AssignTilePositions(mappedParticipants);

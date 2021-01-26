@@ -14,14 +14,14 @@ import {
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
+import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { Participant } from 'src/app/shared/models/participant';
 import { individualTestProfile, judgeTestProfile } from 'src/app/testing/data/test-profiles';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
 import {
-    adminConsultationMessageSubjectMock,
+    consultationRequestResponseMessageSubjectMock,
     eventsServiceSpy,
     participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
@@ -70,7 +70,7 @@ describe('WaitingRoom ParticipantList Base', () => {
     const indProfile = individualTestProfile;
     const logger: Logger = new MockLogger();
     let conference: ConferenceResponse;
-    const adminConsultationMessageSubject = adminConsultationMessageSubjectMock;
+    const consultationRequestResponseMessageSubject = consultationRequestResponseMessageSubjectMock;
     const participantStatusSubject = participantStatusSubjectMock;
 
     beforeAll(() => {
@@ -194,8 +194,8 @@ describe('WaitingRoom ParticipantList Base', () => {
         consultationService.displayAdminConsultationRequest.calls.reset();
         const index = component.conference.participants.findIndex(x => x.username === judgeProfile.username);
         component.conference.participants[index].status = ParticipantStatus.InHearing;
-        const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, null);
-        adminConsultationMessageSubject.next(payload);
+        const payload = new ConsultationRequestResponseMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, null);
+        consultationRequestResponseMessageSubject.next(payload);
         flushMicrotasks();
 
         expect(consultationService.displayAdminConsultationRequest).toHaveBeenCalledTimes(0);
@@ -203,9 +203,9 @@ describe('WaitingRoom ParticipantList Base', () => {
 
     it('should not display vho consultation request when participant not found', fakeAsync(() => {
         consultationService.displayAdminConsultationRequest.calls.reset();
-        const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, 'doesnotexist@test.com', null);
+        const payload = new ConsultationRequestResponseMessage(conference.id, RoomType.AdminRoom, 'doesnotexist@test.com', null);
 
-        adminConsultationMessageSubject.next(payload);
+        consultationRequestResponseMessageSubject.next(payload);
         flushMicrotasks();
 
         expect(consultationService.displayAdminConsultationRequest).toHaveBeenCalledTimes(0);
@@ -213,9 +213,9 @@ describe('WaitingRoom ParticipantList Base', () => {
 
     it('should display vho consultation request', fakeAsync(() => {
         consultationService.displayAdminConsultationRequest.calls.reset();
-        const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, null);
+        const payload = new ConsultationRequestResponseMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, null);
 
-        adminConsultationMessageSubject.next(payload);
+        consultationRequestResponseMessageSubject.next(payload);
         flushMicrotasks();
 
         expect(consultationService.displayAdminConsultationRequest).toHaveBeenCalled();
@@ -224,8 +224,8 @@ describe('WaitingRoom ParticipantList Base', () => {
     it('should cancel incoming timeout request when admin call is rejected', fakeAsync(() => {
         consultationService.cancelTimedOutIncomingRequest.calls.reset();
 
-        const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, ConsultationAnswer.Rejected);
-        adminConsultationMessageSubject.next(payload);
+        const payload = new ConsultationRequestResponseMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, ConsultationAnswer.Rejected);
+        consultationRequestResponseMessageSubject.next(payload);
         flushMicrotasks();
 
         expect(consultationService.cancelTimedOutIncomingRequest).toHaveBeenCalled();
@@ -234,8 +234,8 @@ describe('WaitingRoom ParticipantList Base', () => {
     it('should do nothing when admin call is anything other than rejected', fakeAsync(() => {
         consultationService.cancelTimedOutIncomingRequest.calls.reset();
 
-        const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, ConsultationAnswer.Accepted);
-        adminConsultationMessageSubject.next(payload);
+        const payload = new ConsultationRequestResponseMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, ConsultationAnswer.Accepted);
+        consultationRequestResponseMessageSubject.next(payload);
         flushMicrotasks();
 
         expect(consultationService.cancelTimedOutIncomingRequest).toHaveBeenCalledTimes(0);
@@ -274,7 +274,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         const judge = component.conference.participants.find(x => x.username === judgeProfile.username);
         const answer = ConsultationAnswer.Rejected;
         component.consultationRequestee = new Participant(judge);
-        component.adminConsultationMessage = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judge.username);
+        component.consultationRequestResponseMessage = new ConsultationRequestResponseMessage(conference.id, RoomType.AdminRoom, judge.username);
         await component.respondToVhoConsultationRequest(answer);
 
         expect(consultationService.respondToAdminConsultationRequest).toHaveBeenCalledWith(
@@ -292,7 +292,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         const judge = component.conference.participants.find(x => x.username === judgeProfile.username);
         const answer = ConsultationAnswer.Rejected;
         component.consultationRequestee = new Participant(judge);
-        component.adminConsultationMessage = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judge.username);
+        component.consultationRequestResponseMessage = new ConsultationRequestResponseMessage(conference.id, RoomType.AdminRoom, judge.username);
         spyOn(logger, 'error');
         await component.respondToVhoConsultationRequest(answer);
         expect(logger.error).toHaveBeenCalled();

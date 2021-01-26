@@ -167,4 +167,12 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
             this.notificationSoundsService.stopHearingAlertSound();
         }
     }
+
+    openStartConsultationModal() {
+        this.createParticipantConsultation();
+    }
+
+    openJoinConsultationModal() {
+        
+    }
 }

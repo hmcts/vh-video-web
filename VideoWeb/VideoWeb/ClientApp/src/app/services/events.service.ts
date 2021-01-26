@@ -6,13 +6,15 @@ import { ErrorService } from 'src/app/services/error.service';
 import { Heartbeat } from '../shared/models/heartbeat';
 import { ParticipantMediaStatus } from '../shared/models/participant-media-status';
 import { ParticipantMediaStatusMessage } from '../shared/models/participant-media-status-message';
-import { ConfigService } from './api/config.service';
-import { ConferenceStatus, ConsultationAnswer, EndpointStatus, ParticipantStatus, RoomType } from './clients/api-client';
-import { Logger } from './logging/logger-base';
-import { AdminConsultationMessage } from './models/admin-consultation-message';
+import { ConfigService } from './api/config.service'; 
 import { ConferenceMessageAnswered } from './models/conference-message-answered';
+import { ConferenceStatus, ConsultationAnswer, EndpointStatus, ParticipantStatus } from './clients/api-client';
+import { Logger } from './logging/logger-base';
+
+import { ConsultationRequestResponseMessage } from './models/consultation-request-response-message';
+import { RequestedConsultationMessage } from './models/requested-consultation-message';
+
 import { ConferenceStatusMessage } from './models/conference-status-message';
-import { ConsultationMessage } from './models/consultation-message';
 import { EndpointStatusMessage } from './models/EndpointStatusMessage';
 import { HearingTransfer, TransferDirection } from './models/hearing-transfer';
 import { HelpMessage } from './models/help-message';
@@ -33,11 +35,13 @@ export class EventsService {
     private hearingStatusSubject = new Subject<ConferenceStatusMessage>();
     private hearingCountdownCompleteSubject = new Subject<string>();
     private helpMessageSubject = new Subject<HelpMessage>();
-    private consultationMessageSubject = new Subject<ConsultationMessage>();
-    private adminConsultationMessageSubject = new Subject<AdminConsultationMessage>();
-    private messageSubject = new Subject<InstantMessage>();
-    private participantHeartbeat = new Subject<ParticipantHeartbeat>();
+
+    private requestedConsultationMessageSubject = new Subject<RequestedConsultationMessage>();
+    private consultationRequestResponseMessageSubject = new Subject<ConsultationRequestResponseMessage>();
+    
+    private messageSubject = new Subject<InstantMessage>(); 
     private adminAnsweredChatSubject = new Subject<ConferenceMessageAnswered>();
+    private participantHeartbeat = new Subject<ParticipantHeartbeat>();
     private eventHubDisconnectSubject = new Subject<number>();
     private eventHubReconnectSubject = new Subject();
     private hearingTransferSubject = new Subject<HearingTransfer>();
@@ -150,20 +154,20 @@ export class EventsService {
         });
 
         this.connection.on(
-            'ConsultationMessage',
-            (conferenceId: string, requestedBy: string, requestedFor: string, result?: ConsultationAnswer) => {
-                const message = new ConsultationMessage(conferenceId, requestedBy, requestedFor, result);
-                this.logger.debug('[EventsService] - ConsultationMessage received', message);
-                this.consultationMessageSubject.next(message);
+            'RequestConsultationMessage',
+            (conferenceId: string, requestedBy: string, requestedFor: string, roomLabel: string) => {
+                const message = new RequestedConsultationMessage(conferenceId, requestedBy, requestedFor, roomLabel);
+                this.logger.debug('[EventsService] - RequestConsultationMessage received', message);
+                this.requestedConsultationMessageSubject.next(message);
             }
         );
 
         this.connection.on(
-            'AdminConsultationMessage',
-            (conferenceId: string, roomType: RoomType, requestedFor: string, answer: ConsultationAnswer) => {
-                const message = new AdminConsultationMessage(conferenceId, roomType, requestedFor, answer);
-                this.logger.debug('[EventsService] - AdminConsultationMessage received', message);
-                this.adminConsultationMessageSubject.next(message);
+            'ConsultationRequestResponseMessage',
+            (conferenceId: string, roomType: string, requestedFor: string, answer: ConsultationAnswer) => {
+                const message = new ConsultationRequestResponseMessage(conferenceId, roomType, requestedFor, answer);
+                this.logger.debug('[EventsService] - ConsultationRequestResponseMessage received', message);
+                this.consultationRequestResponseMessageSubject.next(message);
             }
         );
 
@@ -284,12 +288,12 @@ export class EventsService {
         return this.hearingCountdownCompleteSubject.asObservable();
     }
 
-    getConsultationMessage(): Observable<ConsultationMessage> {
-        return this.consultationMessageSubject.asObservable();
+    getRequestedConsultationMessage(): Observable<RequestedConsultationMessage> {
+        return this.requestedConsultationMessageSubject.asObservable();
     }
 
-    getAdminConsultationMessage(): Observable<AdminConsultationMessage> {
-        return this.adminConsultationMessageSubject.asObservable();
+    getConsultationRequestResponseMessage(): Observable<ConsultationRequestResponseMessage> {
+        return this.consultationRequestResponseMessageSubject.asObservable();
     }
 
     getChatMessage(): Observable<InstantMessage> {

@@ -123,6 +123,16 @@
   background: govuk-colour('dark-blue');
 }
 
+.govuk-button--biggreen {
+  background: govuk-colour('green');
+  font-size: 24px;
+  font-weight: 700;
+}
+
+// .govuk-button--biggreen:hover {
+//   background: govuk-colour('dark-green');
+// }
+
 .govuk-button--bigblue .badge {
   font-family: 'GDS Transport', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;

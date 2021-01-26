@@ -28,7 +28,7 @@
                 "output": "assets/fonts/"
               }
             ],
-            "styles": ["src/styles.css", "src/styles.scss"],
+            "styles": ["src/styles.css", "src/styles.scss", "node_modules/ngx-toastr/toastr.css"],
             "scripts": [
               "src/scripts/pexrtc.js",
               "src/scripts/EdgePF.js",

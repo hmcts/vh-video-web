@@ -67,7 +67,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             await _eventHandler.HandleAsync(callbackEvent);
 
             EventHubClientMock.Verify(x =>
-                    x.AdminConsultationMessage(conference.Id, transferTo.Value,
+                    x.ConsultationRequestResponseMessage(conference.Id, transferTo.Value,
                         participantForEvent.Username.ToLowerInvariant(), null),
                 Times.Once);
         }

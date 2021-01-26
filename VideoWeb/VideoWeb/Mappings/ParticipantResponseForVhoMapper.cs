@@ -8,6 +8,13 @@ namespace VideoWeb.Mappings
 {
     public class ParticipantResponseForVhoMapper : IMapTo<ParticipantDetailsResponse, ParticipantResponseVho>
     {
+        private readonly IMapTo<RoomResponse, RoomSummaryResponse> _roomResponseMapper;
+
+        public ParticipantResponseForVhoMapper(IMapTo<RoomResponse, RoomSummaryResponse> roomResponseMapper)
+        {
+            _roomResponseMapper = roomResponseMapper;
+        }
+
         public ParticipantResponseVho Map(ParticipantDetailsResponse participant)
         {
             var status = Enum.Parse<ParticipantStatus>(participant.Current_status.ToString());
@@ -23,7 +30,8 @@ namespace VideoWeb.Mappings
                 DisplayName = participant.Display_name,
                 CaseTypeGroup = participant.Case_type_group,
                 Representee = participant.Representee,
-                HearingRole = participant.Hearing_role
+                HearingRole = participant.Hearing_role,
+                CurrentRoom = _roomResponseMapper.Map(participant.Current_room)
             };
 
             if (role == Role.Judge)

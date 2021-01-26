@@ -158,31 +158,6 @@ describe('ConsultationService', () => {
         expect(service.callRingingTimeout).toBeNull();
     });
 
-    it('should display accepted PC modal on "Accepted"', () => {
-        service.callRingingTimeout = timeout;
-        service.handleConsultationResponse(ConsultationAnswer.Accepted);
-
-        expect(service.callRingingTimeout).toBeNull();
-        expect(modalService.open).toHaveBeenCalledWith(ConsultationService.ACCEPTED_PC_MODAL);
-    });
-
-    it('should display accepted PC modal on "Rejected"', () => {
-        service.callRingingTimeout = timeout;
-        service.handleConsultationResponse(ConsultationAnswer.Rejected);
-
-        expect(service.callRingingTimeout).toBeNull();
-        expect(modalService.open).toHaveBeenCalledWith(ConsultationService.REJECTED_PC_MODAL);
-    });
-
-    it('should clear modals on screen on "Cancelled"', () => {
-        service.callRingingTimeout = timeout;
-        service.handleConsultationResponse(ConsultationAnswer.Cancelled);
-
-        expect(service.callRingingTimeout).toBeNull();
-        expect(modalService.closeAll).toHaveBeenCalledTimes(1);
-        expect(modalService.open).toHaveBeenCalledTimes(0);
-    });
-
     it('should leave a consultation', async () => {
         const conference = new ConferenceTestData().getConferenceDetailFuture();
         const participant = conference.participants[0];

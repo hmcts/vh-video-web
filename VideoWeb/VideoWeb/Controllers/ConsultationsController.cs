@@ -4,20 +4,16 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
-using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
-using RoomType = VideoWeb.Common.Models.RoomType;
 
 namespace VideoWeb.Controllers
 {
@@ -46,86 +42,17 @@ namespace VideoWeb.Controllers
             _mapperFactory = mapperFactory;
         }
 
-        /// <summary>
-        /// Raise or answer to a private consultation request with another participant
-        /// </summary>
-        /// <param name="request">Private consultation request with or without an answer</param>
-        /// <returns></returns>
-        [HttpPost]
-        [SwaggerOperation(OperationId = "HandleConsultationRequest")]
-        [ProducesResponseType((int) HttpStatusCode.NoContent)]
-        [ProducesResponseType(typeof(BadRequestModelResponse), (int) HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> HandleConsultationRequestAsync(PrivateConsultationRequest request)
-        {
-            var conference = await GetConference(request.ConferenceId);
-
-            var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedById);
-            if (requestedBy == null)
-            {
-                return NotFound();
-            }
-
-            var requestedFor = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedForId);
-            if (requestedFor == null)
-            {
-                return NotFound();
-            }
-
-            var requestRaised = !request.Answer.HasValue;
-            if (requestRaised)
-            {
-                await NotifyConsultationRequestAsync(conference, requestedBy, requestedFor);
-            }
-            else if (request.Answer == ConsultationAnswer.Cancelled)
-            {
-                await NotifyConsultationCancelledAsync(conference, requestedBy, requestedFor);
-            }
-            else
-            {
-                await NotifyConsultationResponseAsync(conference, requestedBy, requestedFor, request.Answer.Value);
-            }
-
-            try
-            {
-                var consultationRequestMapper = _mapperFactory.Get<PrivateConsultationRequest, ConsultationRequest>();
-                var mappedRequest = consultationRequestMapper.Map(request);
-                await _videoApiClient.HandleConsultationRequestAsync(mappedRequest);
-
-                return NoContent();
-            }
-            catch (VideoApiException e)
-            {
-                object value;
-                if (e is VideoApiException<ProblemDetails>)
-                {
-                    var errors = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string[]>>(e.Response);
-                    var badRequestModelResponseMapper = _mapperFactory.Get<Dictionary<string, string[]>, BadRequestModelResponse>();
-                    value = badRequestModelResponseMapper.Map(errors);
-                    await NotifyParticipantsConsultationRoomOccupied(request.ConferenceId, requestedBy.Username,
-                        requestedFor.Username);
-                }
-                else
-                {
-                    value = e.Response;
-                }
-
-                _logger.LogError(e, $"Consultation error ConferenceId: {request.ConferenceId} and answer {request.Answer}, ErrorCode: {e.StatusCode}");
-                return StatusCode(400, value);
-            }
-        }
-
         [HttpPost("leave")]
-        [SwaggerOperation(OperationId = "LeavePrivateConsultation")]
+        [SwaggerOperation(OperationId = "LeaveConsultation")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> LeavePrivateConsultationAsync(LeavePrivateConsultationRequest request)
+        public async Task<IActionResult> LeaveConsultationAsync(LeavePrivateConsultationRequest request)
         {
             var participant = new Participant();
             try
             {
                 var conference = await GetConference(request.ConferenceId);
-
                 participant = conference.Participants?.SingleOrDefault(x => x.Id == request.ParticipantId);
                 if (participant == null)
                 {
@@ -149,55 +76,37 @@ namespace VideoWeb.Controllers
                 {
                     _logger.LogError(e, $"Invalid participant");
                 }
+
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
 
-        private async Task NotifyParticipantsConsultationRoomOccupied(Guid conferenceId,
-            string requesterUsername, string requesteeUsername)
-        {
-            await _hubContext.Clients.Group(requesterUsername.ToLowerInvariant()).ConsultationMessage(conferenceId,
-                requesterUsername.ToLowerInvariant(),
-                requesteeUsername.ToLowerInvariant(), ConsultationAnswer.NoRoomsAvailable);
-
-            await _hubContext.Clients.Group(requesteeUsername.ToLowerInvariant()).ConsultationMessage(conferenceId,
-                requesterUsername.ToLowerInvariant(),
-                requesteeUsername.ToLowerInvariant(), ConsultationAnswer.NoRoomsAvailable);
-
-        }
-
-        [HttpPost("vhofficer/respond")]
-        [SwaggerOperation(OperationId = "RespondToAdminConsultationRequest")]
+        [HttpPost("respond")]
+        [SwaggerOperation(OperationId = "RespondToConsultationRequest")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> RespondToAdminConsultationRequestAsync(PrivateAdminConsultationRequest request)
+        public async Task<IActionResult> RespondToConsultationRequestAsync(PrivateConsultationRequest request)
         {
-            var conference = new Conference();
             try
             {
-                conference = await GetConference(request.ConferenceId);
-                var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.ParticipantId);
+                var conference = await GetConference(request.ConferenceId);
+                var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedById);
                 if (participant == null)
                 {
                     return NotFound();
                 }
 
-                var adminConsultationRequestMapper = _mapperFactory.Get<PrivateAdminConsultationRequest, AdminConsultationRequest>();
+                var adminConsultationRequestMapper = _mapperFactory.Get<PrivateConsultationRequest, ConsultationRequestResponse>();
                 var mappedRequest = adminConsultationRequestMapper.Map(request);
-                await _videoApiClient.RespondToAdminConsultationRequestAsync(mappedRequest);
-                if (request.Answer != ConsultationAnswer.Accepted) return NoContent();
-                var roomType = Enum.Parse<RoomType>(request.ConsultationRoom.ToString());
-                var answer = Enum.Parse<ConsultationAnswer>(request.Answer.ToString());
+                await _videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
 
-                await _hubContext.Clients.Group(participant.Username.ToLowerInvariant()).AdminConsultationMessage
-                    (conference.Id, roomType, participant.Username.ToLowerInvariant(), answer);
-
+                await NotifyConsultationResponseAsync(request.ConferenceId, request.RoomLabel, request.RequestedById, request.RequestedForId, request.Answer);
                 return NoContent();
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Admin consultation request could not be responded to for HearingId: {conference.HearingId}");
+                _logger.LogError(e, $"Consultation request could not be responded to");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -266,7 +175,19 @@ namespace VideoWeb.Controllers
 
                 var consultationRequestMapper = _mapperFactory.Get<StartPrivateConsultationRequest, StartConsultationRequest>();
                 var mappedRequest = consultationRequestMapper.Map(request);
-                await _videoApiClient.StartPrivateConsultationAsync(mappedRequest);
+
+                if (request.RoomType == Contract.Enums.VirtualCourtRoomType.Participant)
+                {
+                    var room = await _videoApiClient.CreatePrivateConsultationAsync(mappedRequest);
+                    foreach (var participant in request.InviteParticipants)
+                    {
+                        await NotifyConsultationRequestAsync(request.ConferenceId, room.Label, request.RequestedBy, participant);
+                    }
+                }
+                else
+                {
+                    await _videoApiClient.StartPrivateConsultationAsync(mappedRequest);
+                }
                 return Accepted();
 
             }
@@ -277,38 +198,6 @@ namespace VideoWeb.Controllers
             }
         }
 
-        [HttpPost("end")]
-        [SwaggerOperation(OperationId = "LeaveConsultation")]
-        [ProducesResponseType((int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> LeaveConsultationAsync(LeavePrivateConsultationRequest request)
-        {
-            try
-            {
-                var conference = await GetConference(request.ConferenceId);
-
-                var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.ParticipantId);
-                if (participant == null)
-                {
-                    _logger.LogWarning($"The participant with Id: {request.ParticipantId} is not found");
-                    return NotFound();
-                }
-
-                var leaveConsultationRequestMapper = _mapperFactory.Get<LeavePrivateConsultationRequest, LeaveConsultationRequest>();
-                var mappedRequest = leaveConsultationRequestMapper.Map(request);
-                await _videoApiClient.LeaveConsultationAsync(mappedRequest);
-
-                return Ok();
-            }
-            catch (VideoApiException e)
-            {
-                _logger.LogError(e, $"End consultation error ConferenceId: {request.ConferenceId} and participant Id: {request.ParticipantId}, ErrorCode: {e.StatusCode}");
-                return StatusCode(e.StatusCode);
-            }
-        }
-
-
         private async Task<Conference> GetConference(Guid conferenceId)
         {
             return await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
@@ -318,39 +207,31 @@ namespace VideoWeb.Controllers
         /// <summary>
         /// This method raises a notification to the requestee informing them of an incoming consultation request
         /// </summary>
-        /// <param name="conference">The conference Id</param>
-        /// <param name="requestedBy">The participant raising the consultation request</param>
-        /// <param name="requestedFor">The participant with whom the consultation is being requested with</param>
-        private async Task NotifyConsultationRequestAsync(Conference conference, Participant requestedBy,
-            Participant requestedFor)
+        /// <param name="conferenceId">The conference Id</param>
+        /// <param name="requestedById">The participant raising the consultation request</param>
+        /// <param name="requestedForId">The participant with whom the consultation is being requested with</param>
+        /// <param name="roomLabel">The room you're requesting the participant joins</param>
+        private async Task NotifyConsultationRequestAsync(Guid conferenceId, string roomLabel, Guid requestedById,
+            Guid requestedForId)
         {
-            await _hubContext.Clients.Group(requestedFor.Username.ToLowerInvariant())
-                .ConsultationMessage(conference.Id, requestedBy.Username, requestedFor.Username,
-                    null);
+            await _hubContext.Clients.Group(requestedForId.ToString())
+                .RequestedConsultationMessage(conferenceId, roomLabel, requestedById, requestedForId);
 
         }
 
         /// <summary>
         /// This method raises a notification to the requester informing them the response to their consultation request.
         /// </summary>
-        /// <param name="conference">The conference Id</param>
-        /// <param name="requestedBy">The participant raising the consultation request</param>
-        /// <param name="requestedFor">The participant with whom the consultation is being requested with</param>
+        /// <param name="conferenceId">The conference Id</param>
+        /// <param name="roomLabel">The room the participant is responding to</param>
+        /// <param name="requestedById">The participant raising the consultation request</param>
+        /// <param name="requestedForId">The participant with whom the consultation is being requested with</param>
         /// /// <param name="answer">The answer to the request (i.e. Accepted or Rejected)</param>
-        private async Task NotifyConsultationResponseAsync(Conference conference, Participant requestedBy,
-            Participant requestedFor, ConsultationAnswer answer)
+        private async Task NotifyConsultationResponseAsync(Guid conferenceId, string roomLabel, Guid requestedById,
+            Guid requestedForId, ConsultationAnswer answer)
         {
-            await _hubContext.Clients.Group(requestedBy.Username.ToLowerInvariant())
-                .ConsultationMessage(conference.Id, requestedBy.Username, requestedFor.Username, answer);
-
-        }
-
-        private async Task NotifyConsultationCancelledAsync(Conference conference, Participant requestedBy,
-            Participant requestedFor)
-        {
-            await _hubContext.Clients.Group(requestedFor.Username.ToLowerInvariant())
-                .ConsultationMessage(conference.Id, requestedBy.Username, requestedFor.Username,
-                    ConsultationAnswer.Cancelled);
+            await _hubContext.Clients.Group(requestedById.ToString())
+                .ConsultationRequestResponseMessage(conferenceId, roomLabel, requestedForId, answer);
 
         }
     }
