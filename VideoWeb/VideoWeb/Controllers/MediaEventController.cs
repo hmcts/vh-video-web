@@ -15,13 +15,16 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("conferences")]
-    public class MediaEventController: Controller
+    public class MediaEventController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<MediaEventController> _logger;
         private readonly IConferenceCache _conferenceCache;
 
-        public MediaEventController(IVideoApiClient videoApiClient, ILogger<MediaEventController> logger, IConferenceCache conferenceCache)
+        public MediaEventController(
+            IVideoApiClient videoApiClient,
+            ILogger<MediaEventController> logger,
+            IConferenceCache conferenceCache)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
@@ -62,7 +65,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> AddSelfTestFailureEventToConferenceAsync(Guid conferenceId, 
+        public async Task<IActionResult> AddSelfTestFailureEventToConferenceAsync(Guid conferenceId,
             [FromBody] AddSelfTestFailureEventRequest addSelfTestFailureEventRequest)
         {
             var participantId = await GetIdForParticipantByUsernameInConference(conferenceId);
@@ -88,17 +91,17 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
-        
+
         private async Task<Guid> GetIdForParticipantByUsernameInConference(Guid conferenceId)
         {
             var conference = await _conferenceCache.GetOrAddConferenceAsync
             (
-                conferenceId, 
+                conferenceId,
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
             );
 
             var username = User.Identity.Name;
-            
+
             return conference.Participants
                 .Single(x => x.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase)).Id;
         }
