@@ -10,6 +10,7 @@ import {
     ParticipantResponse,
     ParticipantStatus,
     Role,
+    RoomSummaryResponse,
     TokenResponse
 } from 'src/app/services/clients/api-client';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
@@ -24,6 +25,7 @@ import { UserMediaStreamService } from 'src/app/services/user-media-stream.servi
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { Room } from 'src/app/shared/models/room';
 import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
 import { HearingRole } from '../models/hearing-role-model';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models/video-call-models';
@@ -41,6 +43,7 @@ export abstract class WaitingRoomBaseComponent {
     hearing: Hearing;
     participant: ParticipantResponse;
     conference: ConferenceResponse;
+    conferenceRooms: Room[] = [];
     token: TokenResponse;
 
     eventHubSubscription$ = new Subscription();
@@ -183,6 +186,32 @@ export abstract class WaitingRoomBaseComponent {
         this.eventHubSubscription$.add(
             this.eventService.getServiceDisconnected().subscribe(async attemptNumber => {
                 await this.handleEventHubDisconnection(attemptNumber);
+            })
+        );
+        
+        this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub room updates`);
+        this.eventHubSubscription$.add(
+            this.eventService.getRoomUpdate().subscribe(async room => {
+                var existingRoom = this.conferenceRooms.find(r => r.label == room.label);
+                if (existingRoom) {
+                    existingRoom.locked = room.locked;
+                    this.conference.participants.filter(p => p.current_room?.label == existingRoom.label).forEach(p => p.current_room.locked = existingRoom.locked);
+                } else {
+                    this.conferenceRooms.push(room);
+                }
+            })
+        );
+        
+        this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub room transfer`);
+        this.eventHubSubscription$.add(
+            this.eventService.getRoomTransfer().subscribe(async roomTransfer => {
+                var participant = this.conference.participants.find(p => p.id == roomTransfer.participantId);
+                if (!participant) {
+                    return;
+                }
+
+                var room = this.conferenceRooms.find(r => r.label == roomTransfer.toRoom);
+                participant.current_room = room ? new RoomSummaryResponse(room) : new RoomSummaryResponse({ label: roomTransfer.toRoom });
             })
         );
 

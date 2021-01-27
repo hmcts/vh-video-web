@@ -65,7 +65,6 @@ export abstract class WRParticipantStatusListDirective {
 
     executeTeardown(): void {
         this.eventHubSubscriptions$.unsubscribe();
-        this.consultationService.clearOutgoingCallTimeout();
     }
 
     getConsultationRequester(): ParticipantResponse {

@@ -43,7 +43,6 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     }
 
     ngOnInit() {
-        this.consultationService.resetWaitingForResponse();
         this.initParticipants();
         this.setupSubscribers();
     }

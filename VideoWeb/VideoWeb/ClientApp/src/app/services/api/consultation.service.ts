@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Participant } from 'src/app/shared/models/participant';
 import { NotificationSoundsService } from 'src/app/waiting-space/services/notification-sounds.service';
 import {
     ApiClient,
@@ -22,25 +21,13 @@ import { ModalService } from '../modal.service';
 export class ConsultationService { 
     static ERROR_PC_MODAL = 'pc-error-modal';
 
-    callRingingTimeout: NodeJS.Timer;
-    waitingForConsultationResponse: boolean;
-    readonly CALL_TIMEOUT = 120000;
-
-    consultationRequestee: Participant;
-    consultationRequester: Participant;
-
     constructor(
         private apiClient: ApiClient,
         private modalService: ModalService,
         private notificationSoundService: NotificationSoundsService,
         private logger: Logger
     ) {
-        this.resetWaitingForResponse();
         this.initCallRingingSound();
-    }
-
-    resetWaitingForResponse() {
-        this.waitingForConsultationResponse = false;
     }
 
     /**
@@ -57,7 +44,6 @@ export class ConsultationService {
         answer: ConsultationAnswer,
         roomLabel: string
     ): Promise<void> {
-        this.waitingForConsultationResponse = false;
         this.logger.info(`[ConsultationService] - Responding to consultation request`, {
             conference: conferenceId,
             requester: requesterId,
@@ -173,33 +159,9 @@ export class ConsultationService {
         this.notificationSoundService.initConsultationRequestRingtone();
     }
 
-    /**
-     * Begin a timer which starting the call ringing but automatically cancels after a period of no response
-     */
-    async startIncomingCallRingingTimeout() {
-        this.logger.debug('[ConsultationService] - Start incoming ringing sound.');
-        this.callRingingTimeout = setTimeout(() => {
-            this.cancelTimedOutIncomingRequest();
-        }, this.CALL_TIMEOUT);
-        await this.notificationSoundService.playConsultationRequestRingtone();
-    }
-
-    cancelTimedOutIncomingRequest() {
-        this.stopCallRinging();
-        // TODO: Respond with timeout - "None"
-    }
-
     stopCallRinging() {
         this.logger.debug('[ConsultationService] - Start ringing sound.');
-        this.clearOutgoingCallTimeout();
         this.notificationSoundService.stopConsultationRequestRingtone();
-    }
-
-    clearOutgoingCallTimeout() {
-        if (this.callRingingTimeout) {
-            clearTimeout(this.callRingingTimeout);
-            this.callRingingTimeout = null;
-        }
     }
 
     displayConsultationErrorModal() {

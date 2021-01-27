@@ -26,5 +26,4 @@
     <ProjectReference Include="..\VideoWeb.Common\VideoWeb.Common.csproj" />
     <ProjectReference Include="..\VideoWeb\VideoWeb.csproj" />
   </ItemGroup>
-
 </Project>

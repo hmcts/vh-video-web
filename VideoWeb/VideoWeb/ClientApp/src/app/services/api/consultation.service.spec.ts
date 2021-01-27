@@ -279,7 +279,6 @@ describe('ConsultationService', () => {
 
     it('should set waitingForConsultationResponse to false when reset', () => {
         service.waitingForConsultationResponse = true;
-        service.resetWaitingForResponse();
         expect(service.waitingForConsultationResponse).toBeFalsy();
     });
 

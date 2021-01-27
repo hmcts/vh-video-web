@@ -29,7 +29,6 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
     }
 
     ngOnInit() {
-        this.consultationService.resetWaitingForResponse();
         this.initParticipants();
         this.setupSubscribers();
     }
@@ -104,9 +103,10 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
             return 'Unavailable';
         }
 
-        if (participant.status === ParticipantStatus.InConsultation) {            
+        if (participant.status === ParticipantStatus.InConsultation && participant.current_room != null) {            
             return "In " + this.camelToSpaced(participant.current_room.label.replace('ParticipantConsultationRoom', 'MeetingRoom')).toLowerCase() + (participant.current_room.locked ? ' LockedIcon' : '');
         }
+
         return;
     }
 }

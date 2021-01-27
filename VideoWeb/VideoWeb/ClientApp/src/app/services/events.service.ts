@@ -4,6 +4,7 @@ import { AdalService } from 'adal-angular4';
 import { Observable, Subject } from 'rxjs';
 import { ErrorService } from 'src/app/services/error.service';
 import { Heartbeat } from '../shared/models/heartbeat';
+import { Room } from '../shared/models/room';
 import { ParticipantMediaStatus } from '../shared/models/participant-media-status';
 import { ParticipantMediaStatusMessage } from '../shared/models/participant-media-status-message';
 import { ConfigService } from './api/config.service'; 
@@ -21,6 +22,7 @@ import { HelpMessage } from './models/help-message';
 import { InstantMessage } from './models/instant-message';
 import { HeartbeatHealth, ParticipantHeartbeat } from './models/participant-heartbeat';
 import { ParticipantStatusMessage } from './models/participant-status-message';
+import { RoomTransfer } from '../shared/models/room-transfer';
 
 @Injectable({
     providedIn: 'root'
@@ -46,6 +48,8 @@ export class EventsService {
     private eventHubReconnectSubject = new Subject();
     private hearingTransferSubject = new Subject<HearingTransfer>();
     private participantMediaStatusSubject = new Subject<ParticipantMediaStatusMessage>();
+    private roomUpdateSubject = new Subject<Room>();
+    private roomTransferSubject = new Subject<RoomTransfer>();    
 
     reconnectionAttempt: number;
     reconnectionPromise: Promise<any>;
@@ -203,6 +207,22 @@ export class EventsService {
         );
 
         this.connection.on(
+            'RoomUpdate',
+            (payload: Room) => {
+                this.logger.debug('[EventsService] - Room Update received: ', payload);
+                this.roomUpdateSubject.next(payload);
+            }
+        );
+
+        this.connection.on(
+            'RoomTransfer',
+            (payload: RoomTransfer) => {
+                this.logger.debug('[EventsService] - Room Transfer received: ', payload);
+                this.roomTransferSubject.next(payload);
+            }
+        );
+
+        this.connection.on(
             'ReceiveHeartbeat',
             (
                 conferenceId: string,
@@ -314,6 +334,13 @@ export class EventsService {
 
     getParticipantMediaStatusMessage(): Observable<ParticipantMediaStatusMessage> {
         return this.participantMediaStatusSubject.asObservable();
+    }
+    
+    getRoomUpdate(): Observable<Room> {
+        return this.roomUpdateSubject.asObservable();
+    }
+    getRoomTransfer(): Observable<RoomTransfer> {
+        return this.roomTransferSubject.asObservable();
     }
 
     async sendMessage(instantMessage: InstantMessage) {

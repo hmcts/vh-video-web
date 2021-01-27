@@ -9,7 +9,7 @@ import { Participant } from 'src/app/shared/models/participant';
     styleUrls: ['./start-private-consultation.component.scss']
 })
 export class StartPrivateConsultationComponent {
-    private selectedParticipants = Array<string>();
+    selectedParticipants = Array<string>();
     @Input() participants: Participant[];    
     @Output() continue = new EventEmitter<string[]>();
     @Output() cancel = new EventEmitter();
@@ -60,7 +60,7 @@ export class StartPrivateConsultationComponent {
             return 'Unavailable';
         }
 
-        if (participant.status === ParticipantStatus.InConsultation) {            
+        if (participant.status === ParticipantStatus.InConsultation && participant.base.current_room != null) {
             return "In " + this.camelToSpaced(participant.base.current_room.label.replace('ParticipantConsultationRoom', 'MeetingRoom')).toLowerCase() + (participant.base.current_room.locked ? ' LockedIcon' : '');
         }
         return;
@@ -75,5 +75,4 @@ export class StartPrivateConsultationComponent {
         const lowcaseWord = splitWord.toLowerCase();
         return lowcaseWord.charAt(0).toUpperCase() + lowcaseWord.slice(1);
     }
-
 }
