@@ -33,6 +33,7 @@ describe('HearingControlsComponent', () => {
         component = new HearingControlsComponent(videoCallService, eventsService, logger);
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
+        component.isPrivateConsultation = false;
         component.setupEventhubSubscribers();
         component.setupVideoCallSubscribers();
     });
@@ -50,6 +51,15 @@ describe('HearingControlsComponent', () => {
     it('should mute non-judge by default', () => {
         component.participant = gloalConference.participants.find(x => x.role === Role.Individual);
         component.ngOnInit();
+        expect(videoCallService.toggleMute).toHaveBeenCalled();
+    });
+
+    it('should ensure participant is unmuted when in a private consultation', () => {
+        videoCallService.toggleMute.calls.reset();
+        component.participant = gloalConference.participants.find(x => x.role === Role.Individual);
+        component.isPrivateConsultation = true;
+        component.audioMuted = true;
+        component.initialiseMuteStatus();
         expect(videoCallService.toggleMute).toHaveBeenCalled();
     });
 
