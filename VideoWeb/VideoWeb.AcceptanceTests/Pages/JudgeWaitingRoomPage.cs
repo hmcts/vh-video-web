@@ -19,6 +19,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly By ConfirmStartHearingButton = By.Id("btnConfirmStart");
         public static readonly By CancelStartHearingButton = By.Id("btnCancelStart");
         public static readonly By EnterPrivateConsultationButton = By.Id("joinPCButton");
+        public static readonly By NumberOfJohsInConsultaionRoom = By.Id("numberOfJohsInConsultationBadge");
         public static readonly By IncomingFeed = By.CssSelector("video[id^='incomingFeed']");
         public static readonly By ClosePrivateConsultationIcon = By.Id("close-pc-btn");
         public static readonly By ToggleMute = By.Id("toggle-audio-mute-img");

@@ -37,6 +37,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Given(@"the (.*) user has entered the private consultation room")]
+        [When(@"the (.*) user has entered the private consultation room")]
         public void GivenTheUserHasEnteredThePrivateConsultationRoom(string user)
         {
             _progressionSteps.GivenIAmOnThePage(user, "Waiting Room");
@@ -50,19 +51,31 @@ namespace VideoWeb.AcceptanceTests.Steps
             WhenTheyEnterPrivateConsultationRoom();
         }
 
-        [Given(@"a Panel Member has entered the private consultation room")]
-        public void GivenAPanelMemberStartedAPrivateConsultationRoom()
+        [Given(@"a Panel Member is in the waiting room")]
+        public void GivenAPanelMemberIsInTheWaitingRoom()
         {
             _dataSetupSteps.GivenIHaveAHearingWithAPanelMember();
             _progressionSteps.GivenHearingExistsAndIAmOnThePage("panel member", "Waiting Room");
+        }
+
+        [Given(@"a Panel Member has entered the private consultation room")]
+        public void GivenAPanelMemberStartedAPrivateConsultationRoom()
+        {
+            GivenAPanelMemberIsInTheWaitingRoom();
             WhenTheyEnterPrivateConsultationRoom();
         }
 
-        [Given(@"a Winger has entered the private consultation room")]
-        public void GivenAWingerEnteredThePrivateConsultationRoom()
+        [Given(@"a Winger is in the waiting room")]
+        public void GivenAWingerIsInTheWaitingRoom()
         {
             _dataSetupSteps.GivenIHaveAHearingWithAWinger();
             _progressionSteps.GivenHearingExistsAndIAmOnThePage("winger", "Waiting Room");
+        }
+        
+        [Given(@"a Winger has entered the private consultation room")]
+        public void GivenAWingerEnteredThePrivateConsultationRoom()
+        {
+            GivenAWingerIsInTheWaitingRoom();
             WhenTheyEnterPrivateConsultationRoom();
         }
 
@@ -70,14 +83,10 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenTheyEnterPrivateConsultationRoom()
         {
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.HearingTitle).Displayed.Should().BeTrue();
-            new PollForParticipantStatus(_c.Apis.TestApi)
-                .WithConferenceId(_c.Test.NewConferenceId)
-                .WithParticipant(_c.CurrentUser.Username)
-                .WithExpectedState(ParticipantState.Available)
-                .Retries(MaxRetries)
-                .Poll();
+            WaitForUserStatusToBe(ParticipantState.Available);
             _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.EnterPrivateConsultationButton);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.ClosePrivateConsultationIcon).Displayed.Should().BeTrue();
+            WaitForUserStatusToBe(ParticipantState.InConsultation);
         }
 
         [When(@"the (.*) user leaves the private consultation")]
@@ -114,6 +123,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.HearingTitle).Displayed.Should().BeTrue();
         }
 
+        [Then(@"the (.*) can leave the private consultation room")]
+        public void ThenTheUserCanLeaveThePrivateConsultation(string user)
+        {
+            _browserSteps.GivenInTheUsersBrowser(user);
+            ThenTheyCanLeaveThePrivateConsultation();
+        }
+        
         [Then(@"their microphone will be muted")]
         public void ThenTheirMicrophoneWillBeMuted()
         {
@@ -195,6 +211,15 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Driver.WaitUntilElementClickable(HearingRoomPage.ToggleAudioMuteLocked);
             _hearingRoomSteps.ThenParticipantsCanSeeTheOtherParticipants(user);
         }
-        
+
+        private void WaitForUserStatusToBe(ParticipantState participantState)
+        {
+            new PollForParticipantStatus(_c.Apis.TestApi)
+                .WithConferenceId(_c.Test.NewConferenceId)
+                .WithParticipant(_c.CurrentUser.Username)
+                .WithExpectedState(participantState)
+                .Retries(MaxRetries)
+                .Poll();
+        }
     }
 }
