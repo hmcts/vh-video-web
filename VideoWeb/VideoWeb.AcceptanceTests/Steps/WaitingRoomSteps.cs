@@ -184,6 +184,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Then(@"the Judge can see other participants status")]
+        [Then(@"(?:he|she|they) can see other participants status")]
         public void ThenTheUserCanSeeOtherParticipantsStatus()
         {
             var participants = _c.Test.ConferenceParticipants.Where(participant =>
