@@ -55,7 +55,7 @@
     "snyk": "^1.437.3",
     "webrtc-adapter": "^7.7.0",
     "zone.js": "~0.11.3",
-    "tslib": "^2.0.3"
+    "tslib": "^2.1.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1100.5",
