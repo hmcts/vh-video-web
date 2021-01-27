@@ -96,11 +96,6 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         return this.camelToSnake(endpoint.status.toString());
     }
 
-    //async isUserJudge(): Promise<any> {
-    //    await this.setCurrentParticipant();
-    //    return this.loggedInUser.role === Role.Judge;
-    //}
-
     private filterRepresentatives(): void {
         this.representativeParticipants = this.conference.participants.filter(
             x => x.role === Role.Representative && x.hearing_role !== HearingRole.OBSERVER
