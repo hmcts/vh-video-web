@@ -48,10 +48,6 @@ export abstract class ChatBaseComponent {
     }
 
     async setupChatSubscription(): Promise<Subscription> {
-        //if (!this.loggedInUserProfile) {
-        //    this.loggedInUserProfile = await this.profileService.getUserProfile();
-        //}
-
         this.logger.debug('[ChatHub] Subscribing to chat messages');
         const sub = this.eventService.getChatMessage().subscribe({
             next: async message => {
@@ -67,7 +63,10 @@ export abstract class ChatBaseComponent {
             return;
         }
         const from = message.from.toUpperCase();
-        const username = this.loggedInUser.participant_id ?? this.adalService.userInfo.userName.toUpperCase();
+        const username =
+            this.loggedInUser && this.loggedInUser.participant_id && this.loggedInUser.participant_id !== this.emptyGuid
+                ? this.loggedInUser.participant_id
+                : this.adalService.userInfo.userName.toUpperCase();
         if (from === username) {
             message.from_display_name = 'You';
             message.is_user = true;
@@ -115,8 +114,8 @@ export abstract class ChatBaseComponent {
             this.logger.debug(`[ChatHub] message already been processed ${JSON.stringify(logInfo)}`);
             return false;
         }
-        return this.imHelper.isImForUser(message, this.loggedInUser.participant_id && this.loggedInUser.participant_id !== this.emptyGuid
-            ? this.loggedInUser.participant_id : this.loggedInUser.admin_username, this.loggedInUser);
+
+        return this.imHelper.isImForUser(message, this.participantId, this.loggedInUser);
     }
 
     async verifySender(message: InstantMessage): Promise<InstantMessage> {

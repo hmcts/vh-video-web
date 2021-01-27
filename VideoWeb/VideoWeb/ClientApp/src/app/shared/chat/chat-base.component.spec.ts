@@ -84,7 +84,7 @@ describe('ChatBaseComponent', () => {
             participant_id: '1111-1111',
             display_name: 'somename',
             role: Role.Judge,
-            admin_username:'admin@test.com'
+            admin_username: 'admin@test.com'
         });
     });
 
@@ -97,10 +97,13 @@ describe('ChatBaseComponent', () => {
             message: 'test message',
             timestamp: new Date()
         });
-       
+
         component.addMessageToPending(instantMessage);
-        expect(component.pendingMessagesForConversation.length).toBe(1);
+        expect(component.pendingMessages.size).toBe(1);
+
         component.removeMessageFromPending(instantMessage);
+        expect(component.pendingMessages.size).toBe(1);
+        expect(component.pendingMessages.get(instantMessage.to).length).toBe(0);
         expect(component.pendingMessagesForConversation.length).toBe(0);
     });
 

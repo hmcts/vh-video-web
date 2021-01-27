@@ -117,18 +117,20 @@ describe('UnreadMessagesComponent', () => {
         expect(component.getIMStatus()).toBe('IM-empty.png');
     });
 
-    it('should increase unread count when non-admin sends a message', () => {
+    it('should increase unread count when non-admin sends a message', async () => {
+        component.hearing = new Hearing(conference);
         const conferenceId = conference.id;
         const participantId = conference.participants[0].id;
-        const expectedCount = component.unreadCount + 1;
+        const expectedCount = component.unreadCount;
         component.setupSubscribers();
         mockEventService.messageSubject.next(
             new InstantMessage({
                 conferenceId: conferenceId,
-                from: participantId
+                from: participantId,
+                to: 'Admin'
             })
         );
-        expect(component.unreadCount).toBe(expectedCount);
+        expect(component.unreadCount).toBe(expectedCount + 1);
     });
 
     it('should not increase unread count when admin sends a message', () => {

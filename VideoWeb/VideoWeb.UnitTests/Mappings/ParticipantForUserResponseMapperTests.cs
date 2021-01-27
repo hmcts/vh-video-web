@@ -51,7 +51,6 @@ namespace VideoWeb.UnitTests.Mappings
             {
                 var participant = participants[index];
                 response[index].Id.Should().Be(participant.Id);
-               // response[index].Username.Should().BeEquivalentTo(participant.Username);
                 response[index].DisplayName.Should().BeEquivalentTo(participant.Display_name);
                 response[index].Role.Should().BeEquivalentTo(participant.User_role);
                 response[index].Status.ToString().Should().BeEquivalentTo(participant.Status.ToString());

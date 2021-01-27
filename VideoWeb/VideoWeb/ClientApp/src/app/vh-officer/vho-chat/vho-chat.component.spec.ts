@@ -1,4 +1,4 @@
-import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { AdalService } from 'adal-angular4';
 import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
@@ -91,9 +91,9 @@ describe('VhoChatComponent', () => {
         }
     });
 
-    it('should get chat history and subscribe', fakeAsync(() => {
+    it('should get chat history and subscribe', fakeAsync(async () => {
         component.loggedInUserProfile = undefined;
-        component.ngOnInit();
+        await component.ngOnInit();
         flushMicrotasks();
         expect(component.newMessageBody).toBeDefined();
         expect(component.loggedInUser).toBeDefined();
@@ -107,6 +107,7 @@ describe('VhoChatComponent', () => {
         spyOn(component, 'handleIncomingMessage');
         const judgeId = hearing.judge.id;
         const adminUsername = 'admin@test.com';
+
         const instantMessageTest = new InstantMessage({
             conferenceId: conference.id,
             id: Guid.create().toString(),
@@ -118,6 +119,8 @@ describe('VhoChatComponent', () => {
         component.pendingMessages.set(instantMessageTest.to, []);
         component.addMessageToPending(instantMessageTest);
         messageSubjectMock.next(instantMessageTest);
+        expect(videoWebServiceSpy.getCurrentParticipant).toHaveBeenCalled();
+        tick();
         expect(component.handleIncomingMessage).toHaveBeenCalledWith(instantMessageTest);
     }));
 
@@ -133,12 +136,14 @@ describe('VhoChatComponent', () => {
             message: 'test message',
             timestamp: new Date()
         });
-        component.loggedInUser = new CurrentUserOrParticipantResponse({
+        const loggedInUser = new CurrentUserOrParticipantResponse({
             participant_id: null,
             display_name: 'somename',
             role: Role.VideoHearingsOfficer,
             admin_username: 'admin@test.com'
         });
+        videoWebServiceSpy.getCurrentParticipant.and.returnValue(Promise.resolve(loggedInUser));
+
         const messageCount = component.messages.length;
         messageSubjectMock.next(instantMessage);
         flushMicrotasks();
@@ -150,8 +155,9 @@ describe('VhoChatComponent', () => {
 
     it('should not add message participant B send message to admin when chat for participant A is open', fakeAsync(async () => {
         chatSub$ = await component.setupChatSubscription();
-        const otherUsername = 'not@chatwindow.com';
+        const otherUsername = '12345-1234';
         const adminUsername = 'admin@test.com';
+
         const im = new InstantMessage({
             conferenceId: conference.id,
             id: Guid.create().toString(),
@@ -160,10 +166,19 @@ describe('VhoChatComponent', () => {
             message: 'test message',
             timestamp: new Date()
         });
+        const loggedInUser = new CurrentUserOrParticipantResponse({
+            participant_id: null,
+            display_name: 'somename',
+            role: Role.VideoHearingsOfficer,
+            admin_username: 'admin@test.com'
+        });
+        videoWebServiceSpy.getCurrentParticipant.and.returnValue(Promise.resolve(loggedInUser));
 
+        flushMicrotasks();
         const messageCount = component.messages.length;
 
         messageSubjectMock.next(im);
+
         flushMicrotasks();
         expect(component.messages.length).toBe(messageCount);
     }));

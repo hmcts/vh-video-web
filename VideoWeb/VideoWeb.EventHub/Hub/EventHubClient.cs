@@ -186,7 +186,7 @@ namespace VideoWeb.EventHub.Hub
             await _videoApiClient.AddInstantMessageToConferenceAsync(conferenceId, new AddInstantMessageRequest
             {
                 From = from,
-                To = participantUsername,
+                To = participantTo,
                 Message_text = message
             });
 

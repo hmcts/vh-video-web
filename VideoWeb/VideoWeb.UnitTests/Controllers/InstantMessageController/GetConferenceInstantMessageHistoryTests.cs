@@ -1,4 +1,3 @@
-using Faker;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;

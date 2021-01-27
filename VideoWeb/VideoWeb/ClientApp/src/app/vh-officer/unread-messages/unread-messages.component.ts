@@ -58,8 +58,10 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
 
     incrementUnreadCounter(conferenceId: string, participantId: string): void {
         if (this.hearing.id === conferenceId) {
-            const messageCount = this.unreadMessages.find(x => x.participant_id.toLowerCase() === participantId);
-            messageCount.number_of_unread_messages++;
+            const messageCount = this.unreadMessages.find(x => x.participant_id === participantId);
+            if (messageCount) {
+                messageCount.number_of_unread_messages++;
+            }
         }
     }
 

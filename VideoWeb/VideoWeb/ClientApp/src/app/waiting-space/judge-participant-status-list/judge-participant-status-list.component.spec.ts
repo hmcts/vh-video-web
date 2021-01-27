@@ -1,3 +1,4 @@
+import { fakeAsync, tick } from '@angular/core/testing';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import {
@@ -202,14 +203,17 @@ describe('JudgeParticipantStatusListComponent', () => {
         });
     });
 
-    it('should return true when user is judge', () => {
-        component.loggedInUser = new CurrentUserOrParticipantResponse({
-            participant_id: conference.participants[2].id,
+    it('should return true when user is judge', fakeAsync(async () => {
+        const loggedInUser = new CurrentUserOrParticipantResponse({
+            participant_id: conference.participants.find(x => x.role === Role.Judge).id,
             display_name: 'Judge Name',
             role: Role.Judge
         });
-        expect(component.isUserJudge()).toBeTruthy();
-    });
+        videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(loggedInUser));
+        await component.ngOnInit();
+        tick();
+        expect(component.isUserJudge).toBeTruthy();
+    }));
 
     it('should return false when user is not judge', () => {
         component.loggedInUser = new CurrentUserOrParticipantResponse({
@@ -217,7 +221,7 @@ describe('JudgeParticipantStatusListComponent', () => {
             display_name: 'Some Name',
             role: Role.Individual
         });
-        expect(component.isUserJudge()).toBeFalsy();
+        expect(component.isUserJudge).toBeFalsy();
     });
 
     it('should not be able to call participants', () => {
