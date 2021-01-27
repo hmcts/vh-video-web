@@ -216,3 +216,14 @@
   (acceptMediaDeviceChange)="onMediaDeviceChangeAccepted($event)"
   #selectMediaDevices
 ></app-select-media-devices>
+
+<app-start-private-consultation
+  *ngIf="displayStartPrivateConsultationModal"
+  [participants]="getPrivateConsultationParticipants()"
+  (cancel)="closeStartPrivateConsultationModal()"
+  (continue)="startPrivateConsultation($event)"
+></app-start-private-consultation>
+
+<!-- <app-join-private-consultation
+  *ngIf="displayJoinPrivateConsultationModal"
+></app-join-private-consultation> -->

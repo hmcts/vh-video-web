@@ -12,6 +12,9 @@
 
 <div class="actions">
     <div class="action" *ngFor="let btn of vhToastOptions.buttons">
-        <button class="govuk-button govuk-button--secondary" (click)="btn.action()">{{btn.label}}</button>
+        <button
+        class="govuk-button govuk-button--secondary"
+        data-module="govuk-button"
+        (click)="btn.action()">{{btn.label}}</button>
     </div>
 </div>

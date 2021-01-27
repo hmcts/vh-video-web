@@ -28,6 +28,7 @@ import { TooltipDirective } from './directives/tooltip.directive';
 import { ErrorCameraMicrophoneComponent } from './error-camera-microphone/error-camera-microphone.component';
 import { ToastrModule } from 'ngx-toastr';
 import { VhToastComponent } from './toast/vh-toast.component';
+import { StartPrivateConsultationComponent } from '../waiting-space/participant-waiting-room/start-private-consultation/start-private-consultation.component';
 
 @NgModule({
     imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, SharedRoutingModule,
@@ -42,6 +43,7 @@ import { VhToastComponent } from './toast/vh-toast.component';
         ErrorComponent,
         NotFoundComponent,
         SelectMediaDevicesComponent,
+        StartPrivateConsultationComponent,
         MicVisualiserComponent,
         EquipmentProblemComponent,
         SelfTestComponent,
@@ -65,6 +67,7 @@ import { VhToastComponent } from './toast/vh-toast.component';
         ContactUsComponent,
         ContactUsFoldingComponent,
         SelectMediaDevicesComponent,
+        StartPrivateConsultationComponent,
         MicVisualiserComponent,
         SelfTestComponent,
         ModalComponent,

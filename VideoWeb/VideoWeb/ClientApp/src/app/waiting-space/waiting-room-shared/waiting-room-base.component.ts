@@ -57,6 +57,8 @@ export abstract class WaitingRoomBaseComponent {
     isAdminConsultation: boolean;
     showConsultationControls: boolean;
     displayDeviceChangeModal: boolean;
+    displayStartPrivateConsultationModal: boolean;
+    displayJoinPrivateConsultationModal: boolean;
 
     CALL_TIMEOUT = 31000; // 31 seconds
     callbackTimeout: NodeJS.Timer;
@@ -205,6 +207,9 @@ export abstract class WaitingRoomBaseComponent {
     }
 
     async onConsultationAccepted() {
+        this.displayStartPrivateConsultationModal = false;
+        this.displayJoinPrivateConsultationModal = false;
+
         if (this.displayDeviceChangeModal) {
             this.logger.debug(`${this.loggerPrefix} Participant accepted a consultation. Closing change device modal.`);
             const preferredCamera = await this.userMediaService.getPreferredCamera();
@@ -502,14 +507,6 @@ export abstract class WaitingRoomBaseComponent {
             participant: this.participant.id
         });
         await this.consultationService.leaveConsultation(this.conference, this.participant);
-    }
-
-    async createParticipantConsultation() {
-        this.logger.info(`${this.loggerPrefix} attempting to start a private participant consultation`, {
-            conference: this.conference?.id,
-            participant: this.participant.id
-        });
-        await this.consultationService.createParticipantConsultationRoom(this.conference, this.participant, ['36a800cd-1f28-4907-97e3-e7b27b3d6a7f']);
     }
 
     updateShowVideo(): void {

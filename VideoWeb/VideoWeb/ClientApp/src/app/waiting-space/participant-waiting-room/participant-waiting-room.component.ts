@@ -19,6 +19,7 @@ import { UserMediaStreamService } from 'src/app/services/user-media-stream.servi
 import { HearingRole } from '../models/hearing-role-model';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { Participant } from 'src/app/shared/models/participant';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -169,10 +170,27 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     }
 
     openStartConsultationModal() {
-        this.createParticipantConsultation();
+        this.displayStartPrivateConsultationModal = true;
     }
 
     openJoinConsultationModal() {
-        
+        this.displayJoinPrivateConsultationModal = true;
+    }
+
+    getPrivateConsultationParticipants() : Participant[] {
+        return this.conference.participants.map(p => new Participant(p)).filter(p => !p.isJudge && p.id != this.participant.id)
+    }
+
+    async startPrivateConsultation(participants: string[]) {
+        this.logger.info(`[ParticipantWaitingRoomComponent] - attempting to start a private participant consultation`, {
+            conference: this.conference?.id,
+            participant: this.participant.id
+        });
+        await this.consultationService.createParticipantConsultationRoom(this.conference, this.participant, participants);
+        this.closeStartPrivateConsultationModal();
+    }
+
+    closeStartPrivateConsultationModal() {
+        this.displayStartPrivateConsultationModal = false;
     }
 }
