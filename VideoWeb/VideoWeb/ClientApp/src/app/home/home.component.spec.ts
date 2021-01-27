@@ -82,9 +82,23 @@ describe('HomeComponent', () => {
         expect(errorServiceSpy.handleApiError).toHaveBeenCalledWith(error);
     }));
 
-    it('should redirect to unsupported device screen if on tablet and not an iPad', () => {
-        deviceTypeServiceSpy.isIpad.and.returnValue(false);
+    it('should navigate to hearing list when device is a tablet', fakeAsync(() => {
+        const profile = new UserProfileResponse({ role: Role.Representative });
+        profileServiceSpy.getUserProfile.and.callFake(() => Promise.resolve(profile));
+        deviceTypeServiceSpy.isTablet.and.returnValue(true);
+        spyOn(component, 'navigateToHearingList');
         component.ngOnInit();
-        expect(router.navigate).toHaveBeenCalledWith([pageUrls.UnsupportedDevice]);
-    });
+        flushMicrotasks();
+        expect(component.navigateToHearingList).toHaveBeenCalledWith(profile);
+    }));
+
+    it('should navigate to hearing list when device is a mobile', fakeAsync(() => {
+        const profile = new UserProfileResponse({ role: Role.Representative });
+        profileServiceSpy.getUserProfile.and.callFake(() => Promise.resolve(profile));
+        deviceTypeServiceSpy.isMobile.and.returnValue(true);
+        spyOn(component, 'navigateToHearingList');
+        component.ngOnInit();
+        flushMicrotasks();
+        expect(component.navigateToHearingList).toHaveBeenCalledWith(profile);
+    }));
 });

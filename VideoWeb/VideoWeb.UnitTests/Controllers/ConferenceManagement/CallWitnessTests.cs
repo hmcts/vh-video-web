@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -24,6 +25,50 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         [Test]
         public async Task should_return_unauthorised_if_participant_is_not_a_witness()
         {
+            var judge = TestConference.GetJudge();
+            var participant = TestConference.Participants.First(x => x.Role == Role.Individual);
+            var user = new ClaimsPrincipalBuilder()
+                .WithUsername(judge.Username)
+                .WithRole(AppRoles.JudgeRole).Build();
+
+            Controller = SetupControllerWithClaims(user);
+
+            var result = await Controller.CallWitnessAsync(TestConference.Id, participant.Id);
+            result.Should().BeOfType<UnauthorizedObjectResult>();
+            var typedResult = (UnauthorizedObjectResult) result;
+            typedResult.Should().NotBeNull();
+            typedResult.Value.Should().Be("Participant is not a witness");
+
+            VideoApiClientMock.Verify(
+                x => x.TransferParticipantAsync(TestConference.Id,
+                    It.Is<TransferParticipantRequest>(r => r.Participant_id == participant.Id)), Times.Never);
+        }
+
+        [Test]
+        public async Task should_return_unauthorised_if_participant_does_not_exists()
+        {
+            var judge = TestConference.GetJudge();
+            var participant = TestConference.Participants.First(x => x.Role == Role.Individual);
+            var user = new ClaimsPrincipalBuilder()
+                .WithUsername(judge.Username)
+                .WithRole(AppRoles.JudgeRole).Build();
+
+            Controller = SetupControllerWithClaims(user);
+
+            var result = await Controller.CallWitnessAsync(TestConference.Id, Guid.NewGuid());
+            result.Should().BeOfType<UnauthorizedObjectResult>();
+            var typedResult = (UnauthorizedObjectResult)result;
+            typedResult.Should().NotBeNull();
+            typedResult.Value.Should().Be("Participant is not a witness");
+
+            VideoApiClientMock.Verify(
+                x => x.TransferParticipantAsync(TestConference.Id,
+                    It.Is<TransferParticipantRequest>(r => r.Participant_id == participant.Id)), Times.Never);
+        }
+
+        [Test]
+        public async Task should_return_unauthorised_if_not_judge_conference()
+        {
             var participant = TestConference.Participants.First(x => x.Role == Role.Individual);
             var user = new ClaimsPrincipalBuilder()
                 .WithUsername(participant.Username)
@@ -33,14 +78,15 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             var result = await Controller.CallWitnessAsync(TestConference.Id, participant.Id);
             result.Should().BeOfType<UnauthorizedObjectResult>();
-            var typedResult = (UnauthorizedObjectResult) result;
+            var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
+            typedResult.Value.Should().Be("User must be a Judge");
 
             VideoApiClientMock.Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.Is<TransferParticipantRequest>(r => r.Participant_id == participant.Id)), Times.Never);
         }
-        
+
         [Test]
         public async Task should_return_video_api_error()
         {

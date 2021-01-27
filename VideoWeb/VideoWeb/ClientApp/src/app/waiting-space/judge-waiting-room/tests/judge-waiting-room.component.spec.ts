@@ -5,7 +5,8 @@ import {
     ConferenceStatus,
     CurrentUserOrParticipantResponse,
     HearingLayout,
-    ParticipantResponse
+    ParticipantResponse,
+    ParticipantStatus
 } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -356,6 +357,11 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
     it('should not enable IM when hearing has not been initalised', () => {
         component.hearing = null;
+        expect(component.isIMEnabled()).toBeFalsy();
+    });
+
+    it('should not enable IM when participant is in a consultation', () => {
+        component.participant.status = ParticipantStatus.InConsultation;
         expect(component.isIMEnabled()).toBeFalsy();
     });
 

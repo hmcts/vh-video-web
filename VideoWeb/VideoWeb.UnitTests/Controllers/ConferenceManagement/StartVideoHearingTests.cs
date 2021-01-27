@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -35,6 +36,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 new StartHearingRequest {Layout = HearingLayout.Dynamic});
             var typedResult = (UnauthorizedObjectResult) result;
             typedResult.Should().NotBeNull();
+            typedResult.Value.Should().Be("User must be a Judge");
 
             VideoApiClientMock.Verify(
                 x => x.StartOrResumeVideoHearingAsync(TestConference.Id,
@@ -54,6 +56,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 new StartHearingRequest {Layout = HearingLayout.Dynamic});
             var typedResult = (UnauthorizedObjectResult) result;
             typedResult.Should().NotBeNull();
+            typedResult.Value.Should().Be("User must be a Judge");
 
             VideoApiClientMock.Verify(
                 x => x.StartOrResumeVideoHearingAsync(TestConference.Id, It.IsAny<StartHearingRequest>()), Times.Never);
