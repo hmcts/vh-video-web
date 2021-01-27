@@ -23,11 +23,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         private const int ExtraTimeInWaitingRoomAfterThePause = 10;
         private readonly Dictionary<User, UserBrowser> _browsers;
         private readonly TestContext _c;
+        private readonly BrowserSteps _browserSteps;
 
-        public WaitingRoomSteps(Dictionary<User, UserBrowser> browsers, TestContext testContext)
+        public WaitingRoomSteps(Dictionary<User, UserBrowser> browsers, TestContext testContext,
+            BrowserSteps browserSteps)
         {
             _browsers = browsers;
             _c = testContext;
+            _browserSteps = browserSteps;
         }
 
         [When(@"the user navigates back to the hearing list")]
@@ -63,11 +66,18 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Then(@"the participant status for (.*) is displayed as (.*)")]
-        public void ThenTheFirstParticipantStatusIsDisplayedAsNotSignedIn(string name, string status)
+        public void ThenTheParticipantStatusOfUserIsDisplayed(string name, string status)
         {
             var user = Users.GetUserFromText(name, _c.Test.Users);
             var participant = _c.Test.ConferenceParticipants.First(x => x.Username.ToLower().Equals(user.Username.ToLower()));
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantStatus(participant.Id)).Text.ToUpper().Trim().Should().Be(status.ToUpper());
+        }
+
+        [Then(@"the (.*) will see the status for (.*) is displayed as (.*)")]
+        public void ThenTheUserWillSeeOtherParticipantsStatus(string user, string name, string status)
+        {
+            _browserSteps.GivenInTheUsersBrowser(user);
+            ThenTheParticipantStatusOfUserIsDisplayed(name, status);
         }
 
         [Then(@"the Judge can see information about their case")]
@@ -268,6 +278,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.StartVideoHearingButton);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.ConfirmStartHearingButton).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.ConfirmStartHearingButton);
+        }
+
+        [Then(@"the number of people in the consultation room is (.*)")]
+        public void TheNumberOfPeopleInTheConsultationRoom(int numberOfPeople)
+        {
+            int.Parse(_browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.NumberOfJohsInConsultaionRoom).Text).Should().Be(numberOfPeople);
         }
 
         private void CheckParticipantsAreStillConnected()
