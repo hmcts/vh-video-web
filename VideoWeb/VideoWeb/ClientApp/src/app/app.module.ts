@@ -2,6 +2,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule, Title } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { AdalGuard, AdalInterceptor, AdalService } from 'adal-angular4';
 import { AppRoutingModule } from './app-routing.module';
@@ -37,7 +38,8 @@ export function getSettings(configService: ConfigService) {
         SecurityModule,
         WaitingSpaceModule,
         OnTheDayModule,
-        AppRoutingModule
+        AppRoutingModule,
+        BrowserAnimationsModule
     ],
     providers: [
         { provide: APP_INITIALIZER, useFactory: getSettings, deps: [ConfigService], multi: true },

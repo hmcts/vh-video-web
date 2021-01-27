@@ -32,6 +32,7 @@ export abstract class WRParticipantStatusListDirective {
 
     consultationRequestResponseMessage: ConsultationRequestResponseMessage;
     eventHubSubscriptions$ = new Subscription();
+    private readonly loggerPrefix = '[WRParticipantStatusListDirective] -';
 
     protected constructor(
         protected adalService: AdalService,
@@ -75,17 +76,21 @@ export abstract class WRParticipantStatusListDirective {
         this.eventHubSubscriptions$.add(
             this.eventService.getConsultationRequestResponseMessage().subscribe(async message => {
                 // There has been a response to the consultation request sent
+                this.logger.debug(`${this.loggerPrefix} Recieved ConsultationRequestResponseMessage`)
                 
             })
         );
         
         this.eventHubSubscriptions$.add(
             this.eventService.getRequestedConsultationMessage().subscribe(message => {
-                // A request for you to join a consultation room
                 var requestedFor = new Participant(this.findParticipant(message.requestedFor));
-                var requestedBy = new Participant(this.findParticipant(message.requestedBy));
-                var roomParticipants = this.findParticipantsInRoom(message.roomLabel).map(x => new Participant(x));
-                this.notificationToastrService.ShowConsultationInvite(message.roomLabel, message.conferenceId, requestedBy, requestedFor, roomParticipants)
+                if (requestedFor.username == this.adalService.userInfo.userName.toLowerCase()) {
+                    // A request for you to join a consultation room
+                    this.logger.debug(`${this.loggerPrefix} Recieved RequestedConsultationMessage`)
+                    var requestedBy = new Participant(this.findParticipant(message.requestedBy));
+                    var roomParticipants = this.findParticipantsInRoom(message.roomLabel).map(x => new Participant(x));
+                    this.notificationToastrService.ShowConsultationInvite(message.roomLabel, message.conferenceId, requestedBy, requestedFor, roomParticipants);
+                }
             })
         );
 

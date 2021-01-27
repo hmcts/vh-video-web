@@ -168,11 +168,11 @@ export abstract class WaitingRoomBaseComponent {
             })
         );
 
-        this.logger.debug(`${this.loggerPrefix} Subscribing to admin consultation messages...`);
+        this.logger.debug(`${this.loggerPrefix} Subscribing to consultation response messages...`);
         this.eventHubSubscription$.add(
             this.eventService.getConsultationRequestResponseMessage().subscribe(message => {
-                if (message.answer && message.answer === ConsultationAnswer.Accepted) {
-                    this.isAdminConsultation = true;
+                if (message.answer && message.answer === ConsultationAnswer.Accepted && message.requestedFor == this.participant.id) {
+                    this.onConsultationAccepted();
                 }
             })
         );
@@ -509,7 +509,7 @@ export abstract class WaitingRoomBaseComponent {
             conference: this.conference?.id,
             participant: this.participant.id
         });
-        await this.consultationService.createParticipantConsultationRoom(this.conference, this.participant, []);
+        await this.consultationService.createParticipantConsultationRoom(this.conference, this.participant, ['36a800cd-1f28-4907-97e3-e7b27b3d6a7f']);
     }
 
     updateShowVideo(): void {

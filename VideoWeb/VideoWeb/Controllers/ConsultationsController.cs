@@ -101,7 +101,7 @@ namespace VideoWeb.Controllers
                 var mappedRequest = adminConsultationRequestMapper.Map(request);
                 await _videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
 
-                await NotifyConsultationResponseAsync(request.ConferenceId, request.RoomLabel, request.RequestedById, request.RequestedForId, request.Answer);
+                await NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedById, request.RequestedForId, request.Answer);
                 return NoContent();
             }
             catch (VideoApiException e)
@@ -181,7 +181,7 @@ namespace VideoWeb.Controllers
                     var room = await _videoApiClient.CreatePrivateConsultationAsync(mappedRequest);
                     foreach (var participant in request.InviteParticipants)
                     {
-                        await NotifyConsultationRequestAsync(request.ConferenceId, room.Label, request.RequestedBy, participant);
+                        await NotifyConsultationRequestAsync(conference, room.Label, request.RequestedBy, participant);
                     }
                 }
                 else
@@ -211,12 +211,13 @@ namespace VideoWeb.Controllers
         /// <param name="requestedById">The participant raising the consultation request</param>
         /// <param name="requestedForId">The participant with whom the consultation is being requested with</param>
         /// <param name="roomLabel">The room you're requesting the participant joins</param>
-        private async Task NotifyConsultationRequestAsync(Guid conferenceId, string roomLabel, Guid requestedById,
+        private async Task NotifyConsultationRequestAsync(Conference conference, string roomLabel, Guid requestedById,
             Guid requestedForId)
         {
-            await _hubContext.Clients.Group(requestedForId.ToString())
-                .RequestedConsultationMessage(conferenceId, roomLabel, requestedById, requestedForId);
-
+            var tasks = conference.Participants.Select(p =>
+                _hubContext.Clients.Group(p.Username.ToLowerInvariant())
+                .RequestedConsultationMessage(conference.Id, roomLabel, requestedById, requestedForId));
+            await Task.WhenAll(tasks);
         }
 
         /// <summary>
@@ -227,11 +228,13 @@ namespace VideoWeb.Controllers
         /// <param name="requestedById">The participant raising the consultation request</param>
         /// <param name="requestedForId">The participant with whom the consultation is being requested with</param>
         /// /// <param name="answer">The answer to the request (i.e. Accepted or Rejected)</param>
-        private async Task NotifyConsultationResponseAsync(Guid conferenceId, string roomLabel, Guid requestedById,
+        private async Task NotifyConsultationResponseAsync(Conference conference, string roomLabel, Guid requestedById,
             Guid requestedForId, ConsultationAnswer answer)
         {
-            await _hubContext.Clients.Group(requestedById.ToString())
-                .ConsultationRequestResponseMessage(conferenceId, roomLabel, requestedForId, answer);
+            var tasks = conference.Participants.Select(p => 
+                _hubContext.Clients.Group(p.Username.ToLowerInvariant())
+                    .ConsultationRequestResponseMessage(conference.Id, roomLabel, requestedForId, answer));
+            await Task.WhenAll(tasks);
 
         }
     }

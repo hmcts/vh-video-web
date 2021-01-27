@@ -26,9 +26,14 @@ import { SharedRoutingModule } from './shared-routing.module';
 import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-browser.component';
 import { TooltipDirective } from './directives/tooltip.directive';
 import { ErrorCameraMicrophoneComponent } from './error-camera-microphone/error-camera-microphone.component';
+import { ToastrModule } from 'ngx-toastr';
+import { VhToastComponent } from './toast/vh-toast.component';
 
 @NgModule({
-    imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, SharedRoutingModule],
+    imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, SharedRoutingModule,
+        ToastrModule.forRoot({
+            toastComponent: VhToastComponent,
+        })],
     declarations: [
         HeaderComponent,
         FooterComponent,
@@ -50,7 +55,8 @@ import { ErrorCameraMicrophoneComponent } from './error-camera-microphone/error-
         ChatInputBoxComponent,
         ChatBodyWindowComponent,
         TooltipDirective,
-        ErrorCameraMicrophoneComponent
+        ErrorCameraMicrophoneComponent,
+        VhToastComponent
     ],
     providers: [WindowScrolling, ScreenHelper],
     exports: [

@@ -3940,7 +3940,7 @@ namespace VideoWeb.Services.Video
                         ProcessResponse(client_, response_);
     
                         var status_ = ((int)response_.StatusCode).ToString();
-                        if (status_ == "201") 
+                        if (status_ == "200") 
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<RoomResponse>(response_, headers_).ConfigureAwait(false);
                             return objectResponse_.Object;

@@ -21,7 +21,6 @@ namespace VideoWeb.EventHub.Handlers.Core
         protected readonly IHubContext<Hub.EventHub, IEventHubClient> HubContext;
         protected readonly ILogger<EventHandlerBase> Logger;
         private readonly IConferenceCache _conferenceCache;
-        
         private readonly IVideoApiClient _videoApiClient;
 
         protected EventHandlerBase(IHubContext<Hub.EventHub, IEventHubClient> hubContext,

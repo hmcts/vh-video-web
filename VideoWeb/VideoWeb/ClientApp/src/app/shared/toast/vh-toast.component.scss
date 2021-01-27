@@ -1,0 +1,25 @@
+@import '~govuk-frontend/govuk/all';
+
+:host {
+    background-color: black;
+    position: relative;
+    overflow: hidden;
+    padding: 10px 10px 10px 10px;
+    width: 250px;
+    border-radius: 2px;
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .content {
+      margin-bottom: 5px;
+  }
+  .actions {
+    display: flex;
+
+    .action {
+        flex: 0 0 auto;
+        padding: 5px;
+    }
+  }

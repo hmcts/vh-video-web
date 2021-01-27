@@ -52,10 +52,8 @@ namespace VideoWeb.EventHub.Hub
 
         private async Task AddUserToConferenceGroups(bool isAdmin)
         {
-            if (!isAdmin) return;
-            var conferences = await GetConferencesForAdmin();
-            var tasks = conferences.Select(c => Groups.AddToGroupAsync(Context.ConnectionId, c.Id.ToString()))
-                .ToArray();
+            var conferenceIds = await GetConferenceIds(isAdmin, Context.User.Identity.Name);
+            var tasks = conferenceIds.Select(c => Groups.AddToGroupAsync(Context.ConnectionId, c.ToString())).ToArray();
 
             await Task.WhenAll(tasks);
         }
@@ -106,18 +104,23 @@ namespace VideoWeb.EventHub.Hub
 
         private async Task RemoveUserFromConferenceGroups(bool isAdmin)
         {
-            if (!isAdmin) return;
-            var conferences = await GetConferencesForAdmin();
-            var tasks = conferences.Select(c => Groups.RemoveFromGroupAsync(Context.ConnectionId, c.Id.ToString()))
-                .ToArray();
+            var conferenceIds = await GetConferenceIds(isAdmin, Context.User.Identity.Name);
+            var tasks = conferenceIds.Select(c => Groups.RemoveFromGroupAsync(Context.ConnectionId, c.ToString())).ToArray();
 
             await Task.WhenAll(tasks);
         }
 
-        private async Task<IEnumerable<ConferenceForAdminResponse>> GetConferencesForAdmin()
+        private async Task<IEnumerable<Guid>> GetConferenceIds(bool isAdmin, string username)
         {
-            var conferences = await _videoApiClient.GetConferencesTodayForAdminAsync(null);
-            return conferences;
+            if (isAdmin)
+            {
+                var conferences = await _videoApiClient.GetConferencesTodayForAdminAsync(null);
+                return conferences.Select(x => x.Id);
+            } else
+            {
+                var conferences = await _videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username);
+                return conferences.Select(x => x.Id);
+            }
         }
 
         private bool IsSenderAdmin()

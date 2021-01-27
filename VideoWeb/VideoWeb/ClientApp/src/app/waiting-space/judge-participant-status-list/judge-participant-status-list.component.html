@@ -251,14 +251,6 @@
   </div>
 </div>
 
-<app-modal id="vho-raise-pc-modal" class="modal clear consultation">
-  <app-vho-raise-consultation (answeredVhoCall)="respondToVhoConsultationRequest($event)"></app-vho-raise-consultation>
-</app-modal>
-
-<app-modal id="no-room-pc-modal" class="modal clear consultation">
-  <app-no-consultation-room (closedModal)="closeAllPCModals()"></app-no-consultation-room>
-</app-modal>
-
 <app-modal id="pc-error-modal" class="modal clear consultation">
   <app-consultation-error (closedModal)="closeAllPCModals()"></app-consultation-error>
 </app-modal>

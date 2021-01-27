@@ -33,38 +33,22 @@ namespace VideoWeb.EventHub.Handlers
         private static ParticipantState DeriveParticipantStatusForTransferEvent(CallbackEvent callbackEvent)
         {
             var isRoomToEnum = Enum.TryParse<RoomType>(callbackEvent.TransferTo, out var transferTo);
-            Enum.TryParse<RoomType>(callbackEvent.TransferFrom, out var transferFrom);
-
             if (!isRoomToEnum && callbackEvent.TransferTo.ToLower().Contains("consultation"))
             {
                 return ParticipantState.InConsultation;
             }
 
-            if (transferFrom == RoomType.WaitingRoom &&
-                (transferTo == RoomType.ConsultationRoom1 ||
-                 transferTo == RoomType.ConsultationRoom2))
-                return ParticipantState.InConsultation;
-
-            if ((transferFrom == RoomType.ConsultationRoom1 ||
-                 transferFrom == RoomType.ConsultationRoom2 ||
-                 callbackEvent.TransferFrom.ToLower().Contains("consultation")) &&
-                transferTo == RoomType.WaitingRoom)
-                return ParticipantState.Available;
-
-            if ((transferFrom == RoomType.ConsultationRoom1 ||
-                 transferFrom == RoomType.ConsultationRoom2) &&
-                transferTo == RoomType.HearingRoom)
-                return ParticipantState.InHearing;
-
-            switch (transferFrom)
+            if (transferTo == RoomType.WaitingRoom)
             {
-                case RoomType.WaitingRoom when transferTo == RoomType.HearingRoom:
-                    return ParticipantState.InHearing;
-                case RoomType.HearingRoom when transferTo == RoomType.WaitingRoom:
-                    return ParticipantState.Available;
-                default:
-                    throw new RoomTransferException(callbackEvent.TransferFrom, callbackEvent.TransferTo);
+                return ParticipantState.Available;
             }
+
+            if (transferTo == RoomType.HearingRoom)
+            {
+                return ParticipantState.InHearing;
+            }
+            
+            throw new RoomTransferException(callbackEvent.TransferFrom, callbackEvent.TransferTo);
         }
     }
 }

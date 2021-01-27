@@ -154,7 +154,7 @@ export class EventsService {
         });
 
         this.connection.on(
-            'RequestConsultationMessage',
+            'RequestedConsultationMessage',
             (conferenceId: string, requestedBy: string, requestedFor: string, roomLabel: string) => {
                 const message = new RequestedConsultationMessage(conferenceId, requestedBy, requestedFor, roomLabel);
                 this.logger.debug('[EventsService] - RequestConsultationMessage received', message);
