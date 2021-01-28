@@ -361,6 +361,11 @@ export class VideoCallService {
         this.videoCallPreferences.set(updatedPreferences);
     }
 
+    async selectScreen() {
+        const displayStream = await this.userMediaService.selectScreenToShare();
+        this.pexipAPI.user_presentation_stream = displayStream;
+    }
+
     startScreenShare() {
         this.pexipAPI.present('screen');
     }

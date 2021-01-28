@@ -14,6 +14,8 @@ declare interface PexipClient {
     mutedAudio: boolean;
     mutedVideo: boolean;
     is_screenshare: boolean;
+    user_media_stream: MediaStream;
+    user_presentation_stream: MediaStream;
     screenshare_fps: number;
     call_type: string;
     call_uuid: string;

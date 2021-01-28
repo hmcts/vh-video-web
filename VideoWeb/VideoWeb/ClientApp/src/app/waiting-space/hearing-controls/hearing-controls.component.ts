@@ -252,6 +252,7 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
     }
 
     startScreenShare() {
+        this.videoCallService.selectScreen();
         this.videoCallService.startScreenShare();
     }
 
