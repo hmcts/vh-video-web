@@ -12,11 +12,33 @@
 </div>
 
 <div *ngIf="showVideo && isPrivateConsultation" class="govuk-grid-row">
-  <div class="video-background"></div>
-  <div class="govuk-grid-column-one-half">
-    <video id="incomingFeedPrivate" autoplay [srcObject]="this.stream" height="auto" poster="/assets/images/empty_crest.jpg">
-      Your browser does not support Video
-    </video>
+  <div class="video-background">
+      <div class="govuk-grid-row">
+          <div class="govuk-grid-column-half" style='float: left'>
+              <p style='margin-left: 50px; color: white'>
+                  Private meeting room 1 <span style='background-color: white; color: black'>Unlocked</span> Other participants can enter the room
+              </p>
+          </div>
+          <div class="govuk-grid-column-half">
+              <ng-container *ngIf="connected && showVideo">
+                  <app-private-consultation-room-controls
+                      [conferenceId]="conference.id"
+                      [participant]="participant"
+                      [audioOnly]="audioOnly"
+                      [isPrivateConsultation]="isPrivateConsultation"
+                      [outgoingStream]="outgoingStream"
+                      [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
+                      [showConsultationControls]="showConsultationControls"
+                      (leaveConsulation)="onConsultationCancelled()"
+                  ></app-private-consultation-room-controls>
+              </ng-container>
+          </div>
+      </div>
+      <div class="govuk-grid-column-one-half">
+          <video id="incomingFeedPrivate" autoplay [srcObject]="this.stream"  poster="/assets/images/empty_crest.jpg">
+              Your browser does not support Video
+          </video>
+      </div>
   </div>
 </div>
 
@@ -40,18 +62,18 @@
   </div>
 </div>
 
-<ng-container *ngIf="connected && showVideo">
-  <app-hearing-controls
-    [conferenceId]="conference.id"
-    [participant]="participant"
-    [audioOnly]="audioOnly"
-    [isPrivateConsultation]="isPrivateConsultation"
-    [outgoingStream]="outgoingStream"
-    [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
-    [showConsultationControls]="showConsultationControls"
-    (leaveConsulation)="onConsultationCancelled()"
-  ></app-hearing-controls>
-</ng-container>
+<!--<ng-container >-->
+<!--  <app-hearing-controls-->
+<!--    [conferenceId]="conference.id"-->
+<!--    [participant]="participant"-->
+<!--    [audioOnly]="audioOnly"-->
+<!--    [isPrivateConsultation]="isPrivateConsultation"-->
+<!--    [outgoingStream]="outgoingStream"-->
+<!--    [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"-->
+<!--    [showConsultationControls]="showConsultationControls"-->
+<!--    (leaveConsulation)="onConsultationCancelled()"-->
+<!--  ></app-hearing-controls>-->
+<!--</ng-container>-->
 
 <div *ngIf="!loadingData && hearing && showExtraContent" class="govuk-grid-row">
   <div class="govuk-grid-column-full">
@@ -180,7 +202,7 @@
       >
         Start a private meeting
       </a>
-      
+
       <a
         href="javascript:void(0)"
         class="govuk-button govuk-button-blue govuk-!-margin-left-5"

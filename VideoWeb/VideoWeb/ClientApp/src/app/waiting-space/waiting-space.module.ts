@@ -23,6 +23,7 @@ import { ConfirmCloseHearingPopupComponent } from './confirmation/confirm-close-
 import { HearingLayoutComponent } from './select-hearing-layout/hearing-layout.component';
 import { ConfirmStartHearingPopupComponent } from './confirmation/confirm-start-hearing-popup.component';
 import { JohWaitingRoomComponent } from './joh-waiting-room/joh-waiting-room.component';
+import { PrivateConsultationRoomControlsComponent } from './private-consultation-room-controls/private-consultation-room-controls.component';
 
 @NgModule({
     imports: [SharedModule, WaitingSpaceRoutingModule],
@@ -38,6 +39,7 @@ import { JohWaitingRoomComponent } from './joh-waiting-room/joh-waiting-room.com
         ParticipantNetworkHealthComponent,
         WaitingRoomMonitorComponent,
         HearingControlsComponent,
+        PrivateConsultationRoomControlsComponent,
         ParticipantsPanelComponent,
         ParticipantAlertComponent,
         SelectHearingLayoutComponent,
