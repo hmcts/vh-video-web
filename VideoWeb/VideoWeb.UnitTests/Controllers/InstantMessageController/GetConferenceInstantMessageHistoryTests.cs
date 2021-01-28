@@ -69,7 +69,6 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
         public async Task Should_map_originators_when_message_is_not_from_user()
         {
             var conference = InitConference();
-
             var conferenceId = conference.Id;
             var messages = Builder<InstantMessageResponse>.CreateListOfSize(5)
                 .TheFirst(2)
@@ -98,7 +97,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             typedResult.Should().NotBeNull();
             var responseModel = typedResult.Value as List<ChatResponse>;
             responseModel?.Count(x => x.FromDisplayName == "You").Should().Be(2);
-          
+
         }
 
         [Test]
