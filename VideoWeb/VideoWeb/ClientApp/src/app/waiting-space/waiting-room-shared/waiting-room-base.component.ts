@@ -25,11 +25,13 @@ import { UserMediaStreamService } from 'src/app/services/user-media-stream.servi
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { Participant } from 'src/app/shared/models/participant';
 import { Room } from 'src/app/shared/models/room';
 import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
 import { HearingRole } from '../models/hearing-role-model';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models/video-call-models';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
+import { NotificationToastrService } from '../services/notification-toastr.service';
 import { VideoCallService } from '../services/video-call.service';
 
 declare var HeartbeatFactory: any;
@@ -81,7 +83,8 @@ export abstract class WaitingRoomBaseComponent {
         protected consultationService: ConsultationService,
         protected userMediaService: UserMediaService,
         protected userMediaStreamService: UserMediaStreamService,
-        protected notificationSoundsService: NotificationSoundsService
+        protected notificationSoundsService: NotificationSoundsService,
+        protected notificationToastrService: NotificationToastrService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -173,11 +176,25 @@ export abstract class WaitingRoomBaseComponent {
             })
         );
 
-        this.logger.debug(`${this.loggerPrefix} Subscribing to consultation response messages...`);
+        this.logger.debug(`${this.loggerPrefix} Subscribing to ConsultationRequestResponseMessage`);
         this.eventHubSubscription$.add(
             this.eventService.getConsultationRequestResponseMessage().subscribe(message => {
                 if (message.answer && message.answer === ConsultationAnswer.Accepted && message.requestedFor == this.participant.id) {
                     this.onConsultationAccepted();
+                }
+            })
+        );
+        
+        this.logger.debug(`${this.loggerPrefix} Subscribing to RequestedConsultationMessage`);
+        this.eventHubSubscription$.add(
+            this.eventService.getRequestedConsultationMessage().subscribe(message => {
+                var requestedFor = new Participant(this.findParticipant(message.requestedFor));
+                if (requestedFor.username == this.adalService.userInfo.userName.toLowerCase()) {
+                    // A request for you to join a consultation room
+                    this.logger.debug(`${this.loggerPrefix} Recieved RequestedConsultationMessage`)
+                    var requestedBy = new Participant(this.findParticipant(message.requestedBy));
+                    var roomParticipants = this.findParticipantsInRoom(message.roomLabel).map(x => new Participant(x));
+                    this.notificationToastrService.showConsultationInvite(message.roomLabel, message.conferenceId, requestedBy, requestedFor, roomParticipants, this.hearing.isInSession());
                 }
             })
         );
@@ -233,6 +250,14 @@ export abstract class WaitingRoomBaseComponent {
                 this.updateShowVideo();
             })
         );
+    }
+
+    protected findParticipant(participantId: string) : ParticipantResponse {
+        return this.conference.participants.find(x => x.id === participantId)
+    }
+
+    protected findParticipantsInRoom(roomLabel: string) : ParticipantResponse[] {
+        return this.conference.participants.filter(x => x.current_room?.label === roomLabel)
     }
 
     async onConsultationAccepted() {
@@ -464,7 +489,6 @@ export abstract class WaitingRoomBaseComponent {
             participant: participant.id,
             status: participant.status
         });
-        console.log(participant);
         if (message.status !== ParticipantStatus.InConsultation && isMe) {
             this.isAdminConsultation = false;
         }

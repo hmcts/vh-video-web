@@ -62,7 +62,7 @@ namespace VideoWeb.Controllers
 
                 var leaveConsultationRequestMapper = _mapperFactory.Get<LeavePrivateConsultationRequest, LeaveConsultationRequest>();
                 var mappedRequest = leaveConsultationRequestMapper.Map(request);
-                await _videoApiClient.LeavePrivateConsultationAsync(mappedRequest);
+                await _videoApiClient.LeaveConsultationAsync(mappedRequest);
 
                 return NoContent();
             }
@@ -139,7 +139,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                await _videoApiClient.StartPrivateConsultationWithEndpointAsync(new EndpointConsultationRequest
+                await _videoApiClient.StartConsultationWithEndpointAsync(new EndpointConsultationRequest
                 {
                     Conference_id = request.ConferenceId,
                     Endpoint_id = endpoint.Id,

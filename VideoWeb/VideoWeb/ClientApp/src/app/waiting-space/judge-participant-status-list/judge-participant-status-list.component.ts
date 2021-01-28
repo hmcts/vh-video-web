@@ -13,7 +13,6 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { HearingRole } from '../models/hearing-role-model';
 import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-participant-list-shared.component';
-import { NotificationToastrService } from '../services/notification-toastr.service';
 
 @Component({
     selector: 'app-judge-participant-status-list',
@@ -36,10 +35,9 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         protected consultationService: ConsultationService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected videoWebService: VideoWebService,
-        protected notificationToastrService: NotificationToastrService
+        protected videoWebService: VideoWebService
     ) {
-        super(adalService, consultationService, eventService, videoWebService, logger, notificationToastrService);
+        super(adalService, consultationService, eventService, videoWebService, logger);
     }
 
     ngOnInit() {

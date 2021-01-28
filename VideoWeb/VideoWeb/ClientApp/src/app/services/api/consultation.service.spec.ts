@@ -4,15 +4,11 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { NotificationSoundsService } from 'src/app/waiting-space/services/notification-sounds.service';
 import {
     ApiClient,
-    BadModel,
-    BadRequestModelResponse,
     ConsultationAnswer,
     LeavePrivateConsultationRequest,
-    PrivateAdminConsultationRequest,
     PrivateConsultationRequest,
     PrivateVideoEndpointConsultationRequest,
     Role,
-    RoomType,
     StartPrivateConsultationRequest,
     VirtualCourtRoomType
 } from '../clients/api-client';

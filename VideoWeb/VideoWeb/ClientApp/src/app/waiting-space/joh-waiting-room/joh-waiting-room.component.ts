@@ -17,6 +17,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
+import { NotificationToastrService } from '../services/notification-toastr.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
 
@@ -47,7 +48,8 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseComponent implements
         private clockService: ClockService,
         protected userMediaService: UserMediaService,
         protected userMediaStreamService: UserMediaStreamService,
-        protected notificationSoundsService: NotificationSoundsService
+        protected notificationSoundsService: NotificationSoundsService,
+        protected notificationToastrService: NotificationToastrService
     ) {
         super(
             route,
@@ -63,7 +65,8 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseComponent implements
             consultationService,
             userMediaService,
             userMediaStreamService,
-            notificationSoundsService
+            notificationSoundsService,
+            notificationToastrService
         );
     }
 
