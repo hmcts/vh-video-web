@@ -2,7 +2,7 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceForIndividualResponse, CurrentUserOrParticipantResponse, Role } from 'src/app/services/clients/api-client';
+import { ConferenceForIndividualResponse, LoggedParticipantResponse, Role } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from '../../shared/page-url.constants';
@@ -17,7 +17,7 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
     loadingData: boolean;
     interval: any;
     errorCount: number;
-    loggedInParticipant: CurrentUserOrParticipantResponse;
+    loggedInParticipant: LoggedParticipantResponse;
 
     constructor(
         private videoWebService: VideoWebService,

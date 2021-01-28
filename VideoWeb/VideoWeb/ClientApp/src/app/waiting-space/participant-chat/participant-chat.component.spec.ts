@@ -3,7 +3,7 @@ import { AdalService } from 'adal-angular4';
 import { Guid } from 'guid-typescript';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, CurrentUserOrParticipantResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, LoggedParticipantResponse } from 'src/app/services/clients/api-client';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
@@ -53,7 +53,7 @@ describe('ParticipantChatComponent', () => {
         profileService.getUserProfile.and.resolveTo(judgeProfile);
         videoWebService.getConferenceChatHistory.and.resolveTo(chatHistory);
         videoWebService.getCurrentParticipant.and.resolveTo(
-            new CurrentUserOrParticipantResponse({
+            new LoggedParticipantResponse({
                 participant_id: hearing.participants[2].id,
                 display_name: hearing.participants[2].displayName,
                 role: hearing.participants[2].role
@@ -197,7 +197,7 @@ describe('ParticipantChatComponent', () => {
 
     it('should send message to hub', async () => {
         const message = 'test';
-        component.loggedInUser = new CurrentUserOrParticipantResponse({
+        component.loggedInUser = new LoggedParticipantResponse({
             participant_id: hearing.participants[2].id,
             display_name: hearing.participants[2].displayName,
             role: hearing.participants[2].role

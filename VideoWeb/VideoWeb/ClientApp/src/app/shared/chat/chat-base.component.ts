@@ -3,7 +3,7 @@ import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { CurrentUserOrParticipantResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { LoggedParticipantResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { InstantMessage } from 'src/app/services/models/instant-message';
@@ -18,8 +18,8 @@ export abstract class ChatBaseComponent {
     pendingMessages: Map<string, InstantMessage[]> = new Map<string, InstantMessage[]>();
     loggedInUserProfile: UserProfileResponse;
     disableScrollDown = false;
-    loggedInUser: CurrentUserOrParticipantResponse;
-    private readonly loggedInUserStorage: SessionStorage<CurrentUserOrParticipantResponse>;
+    loggedInUser: LoggedParticipantResponse;
+    private readonly loggedInUserStorage: SessionStorage<LoggedParticipantResponse>;
     emptyGuid = '00000000-0000-0000-0000-000000000000';
 
     DEFAULT_ADMIN_USERNAME = 'Admin';
@@ -31,7 +31,7 @@ export abstract class ChatBaseComponent {
         protected adalService: AdalService,
         protected imHelper: ImHelper
     ) {
-        this.loggedInUserStorage = new SessionStorage<CurrentUserOrParticipantResponse>(ParticipantStorageKeys.LOGGED_IN_USER);
+        this.loggedInUserStorage = new SessionStorage<LoggedParticipantResponse>(ParticipantStorageKeys.LOGGED_IN_USER);
     }
 
     abstract content: ElementRef<HTMLElement>;
@@ -83,6 +83,7 @@ export abstract class ChatBaseComponent {
         if (!this.loggedInUser) {
             this.loggedInUser = await this.videoWebService.getCurrentParticipant(this.hearing.id);
             this.logger.debug(`[ChatHub]  logged user : ${this.loggedInUser}`);
+            this.loggedInUserStorage.set(this.loggedInUser);
         }
     }
 

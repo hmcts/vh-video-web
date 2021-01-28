@@ -76,10 +76,6 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
             return false;
         }
 
-        if (!this.loggedInUser) {
-            this.setCurrentParticipant();
-        }
-
         if (participant.id === this.loggedInUser.participant_id) {
             return false;
         }
@@ -94,9 +90,6 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         if (!endpoint.defence_advocate_username) {
             return false;
         }
-        // const requester = this.getConsultationRequester();
-        // if (requester.username.toLowerCase() !== endpoint.defence_advocate_username) {
-
         if (
             endpoint.defence_advocate_username.toLocaleLowerCase().trim() !== this.adalService.userInfo.userName.toLocaleLowerCase().trim()
         ) {

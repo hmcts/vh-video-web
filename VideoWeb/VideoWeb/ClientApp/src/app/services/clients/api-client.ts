@@ -2812,7 +2812,7 @@ export class ApiClient {
     /**
      * @return Success
      */
-    getCurrentParticipant(conferenceId: string): Observable<CurrentUserOrParticipantResponse> {
+    getCurrentParticipant(conferenceId: string): Observable<LoggedParticipantResponse> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/currentparticipant';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
@@ -2839,14 +2839,14 @@ export class ApiClient {
                         try {
                             return this.processGetCurrentParticipant(<any>response_);
                         } catch (e) {
-                            return <Observable<CurrentUserOrParticipantResponse>>(<any>_observableThrow(e));
+                            return <Observable<LoggedParticipantResponse>>(<any>_observableThrow(e));
                         }
-                    } else return <Observable<CurrentUserOrParticipantResponse>>(<any>_observableThrow(response_));
+                    } else return <Observable<LoggedParticipantResponse>>(<any>_observableThrow(response_));
                 })
             );
     }
 
-    protected processGetCurrentParticipant(response: HttpResponseBase): Observable<CurrentUserOrParticipantResponse> {
+    protected processGetCurrentParticipant(response: HttpResponseBase): Observable<LoggedParticipantResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
@@ -2862,7 +2862,7 @@ export class ApiClient {
                 _observableMergeMap(_responseText => {
                     let result200: any = null;
                     let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result200 = CurrentUserOrParticipantResponse.fromJS(resultData200);
+                    result200 = LoggedParticipantResponse.fromJS(resultData200);
                     return _observableOf(result200);
                 })
             );
@@ -2888,7 +2888,7 @@ export class ApiClient {
                 })
             );
         }
-        return _observableOf<CurrentUserOrParticipantResponse>(<any>null);
+        return _observableOf<LoggedParticipantResponse>(<any>null);
     }
 
     /**
@@ -3036,90 +3036,6 @@ export class ApiClient {
             );
         }
         return _observableOf<UserProfileResponse>(<any>null);
-    }
-
-    /**
-     * Get true if the username belong to current user
-     * @param username (optional)
-     * @return Success
-     */
-    getCurrentUserByUsername(username: string | undefined): Observable<boolean> {
-        let url_ = this.baseUrl + '/profile/currentuser?';
-        if (username === null) throw new Error("The parameter 'username' cannot be null.");
-        else if (username !== undefined) url_ += 'username=' + encodeURIComponent('' + username) + '&';
-        url_ = url_.replace(/[?&]$/, '');
-
-        let options_: any = {
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({
-                Accept: 'application/json'
-            })
-        };
-
-        return this.http
-            .request('get', url_, options_)
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processGetCurrentUserByUsername(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processGetCurrentUserByUsername(<any>response_);
-                        } catch (e) {
-                            return <Observable<boolean>>(<any>_observableThrow(e));
-                        }
-                    } else return <Observable<boolean>>(<any>_observableThrow(response_));
-                })
-            );
-    }
-
-    protected processGetCurrentUserByUsername(response: HttpResponseBase): Observable<boolean> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result200: any = null;
-                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result200 = resultData200 !== undefined ? resultData200 : <any>null;
-                    return _observableOf(result200);
-                })
-            );
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result400: any = null;
-                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = ProblemDetails.fromJS(resultData400);
-                    return throwException('Bad Request', status, _responseText, _headers, result400);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<boolean>(<any>null);
     }
 
     /**
@@ -5848,13 +5764,13 @@ export interface IParticipantContactDetailsResponseVho {
     representee?: string | undefined;
 }
 
-export class CurrentUserOrParticipantResponse implements ICurrentUserOrParticipantResponse {
+export class LoggedParticipantResponse implements ILoggedParticipantResponse {
     participant_id?: string;
     admin_username?: string | undefined;
     role?: Role;
     display_name?: string | undefined;
 
-    constructor(data?: ICurrentUserOrParticipantResponse) {
+    constructor(data?: ILoggedParticipantResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
@@ -5871,9 +5787,9 @@ export class CurrentUserOrParticipantResponse implements ICurrentUserOrParticipa
         }
     }
 
-    static fromJS(data: any): CurrentUserOrParticipantResponse {
+    static fromJS(data: any): LoggedParticipantResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new CurrentUserOrParticipantResponse();
+        let result = new LoggedParticipantResponse();
         result.init(data);
         return result;
     }
@@ -5888,7 +5804,7 @@ export class CurrentUserOrParticipantResponse implements ICurrentUserOrParticipa
     }
 }
 
-export interface ICurrentUserOrParticipantResponse {
+export interface ILoggedParticipantResponse {
     participant_id?: string;
     admin_username?: string | undefined;
     role?: Role;

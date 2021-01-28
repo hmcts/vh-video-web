@@ -3,7 +3,7 @@ import { AdalService } from 'adal-angular4';
 import { Guid } from 'guid-typescript';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, CurrentUserOrParticipantResponse, Role } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, LoggedParticipantResponse, Role } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { InstantMessage } from 'src/app/services/models/instant-message';
@@ -80,7 +80,7 @@ describe('ChatBaseComponent', () => {
         component = new ChatBaseTest(videoWebServiceSpy, profileServiceSpy, eventsService, new MockLogger(), adalService, new ImHelper());
         contentElement = document.createElement('div');
         component.content = new ElementRef(contentElement);
-        component.loggedInUser = new CurrentUserOrParticipantResponse({
+        component.loggedInUser = new LoggedParticipantResponse({
             participant_id: '1111-1111',
             display_name: 'somename',
             role: Role.Judge,

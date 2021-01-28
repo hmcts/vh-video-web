@@ -1,5 +1,5 @@
 import { Guid } from 'guid-typescript';
-import { ConferenceResponse, CurrentUserOrParticipantResponse, Role } from '../services/clients/api-client';
+import { ConferenceResponse, LoggedParticipantResponse, Role } from '../services/clients/api-client';
 import { InstantMessage } from '../services/models/instant-message';
 import { ConferenceTestData } from '../testing/mocks/data/conference-test-data';
 import { ImHelper } from './im-helper';
@@ -12,19 +12,19 @@ describe('ImHelper', () => {
     const adminUsername = 'admin@user.com';
     const judgeUsername = hearing.judge.id;
 
-    let adminProfile: CurrentUserOrParticipantResponse;
-    let judgeProfile: CurrentUserOrParticipantResponse;
+    let adminProfile: LoggedParticipantResponse;
+    let judgeProfile: LoggedParticipantResponse;
 
     let message: InstantMessage;
 
     beforeEach(() => {
-        adminProfile = new CurrentUserOrParticipantResponse({
+        adminProfile = new LoggedParticipantResponse({
             display_name: 'Test Admin',
             participant_id: '',
             admin_username: adminUsername,
             role: Role.VideoHearingsOfficer
         });
-        judgeProfile = new CurrentUserOrParticipantResponse({
+        judgeProfile = new LoggedParticipantResponse({
             display_name: 'Judge Fudge',
             participant_id: conference.participants[2].id,
             admin_username: '',
@@ -87,7 +87,7 @@ describe('ImHelper', () => {
     });
 
     it('should return false when message is sent from admin to participant B but logged in as Participant A', () => {
-        const nonChatUser = new CurrentUserOrParticipantResponse({
+        const nonChatUser = new LoggedParticipantResponse({
             display_name: 'Test Rep',
             participant_id: '1111-2222',
             role: Role.Representative

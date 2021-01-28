@@ -6,7 +6,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
     ConsultationAnswer,
-    CurrentUserOrParticipantResponse,
+    LoggedParticipantResponse,
     EndpointStatus,
     ParticipantResponse,
     ParticipantStatus,
@@ -36,7 +36,7 @@ export abstract class WRParticipantStatusListDirective {
 
     adminConsultationMessage: AdminConsultationMessage;
     eventHubSubscriptions$ = new Subscription();
-    loggedInUser: CurrentUserOrParticipantResponse;
+    loggedInUser: LoggedParticipantResponse;
 
     protected constructor(
         protected adalService: AdalService,

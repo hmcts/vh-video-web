@@ -63,7 +63,7 @@ namespace VideoWeb.Controllers
                    conferenceId,
                    () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
                );
-                var participant = conference.Participants.First(x => x.Id == participantId);
+                var participant = conference.Participants.Single(x => x.Id == participantId);
 
                 var messages =
                     await _videoApiClient.GetInstantMessageHistoryForParticipantAsync(conferenceId, participant.Username);
@@ -141,7 +141,7 @@ namespace VideoWeb.Controllers
                   conferenceId,
                   () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
               );
-                var participant = conference.Participants.First(x => x.Id == participantId);
+                var participant = conference.Participants.Single(x => x.Id == participantId);
 
                 var messages =
                     await _videoApiClient.GetInstantMessageHistoryForParticipantAsync(conferenceId, participant.Username);

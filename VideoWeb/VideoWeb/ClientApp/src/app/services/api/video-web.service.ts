@@ -20,7 +20,7 @@ import {
     JudgeNameListResponse,
     ParticipantForUserResponse,
     VideoEndpointResponse,
-    CurrentUserOrParticipantResponse
+    LoggedParticipantResponse
 } from '../clients/api-client';
 import { ConferenceLite } from '../models/conference-lite';
 import { SessionStorage } from '../session-storage';
@@ -149,7 +149,7 @@ export class VideoWebService implements IVideoWebApiService {
         return this.apiClient.getVideoEndpointsForConference(conferenceId).toPromise();
     }
 
-    getCurrentParticipant(conferenceId: string): Promise<CurrentUserOrParticipantResponse> {
+    getCurrentParticipant(conferenceId: string): Promise<LoggedParticipantResponse> {
         return this.apiClient.getCurrentParticipant(conferenceId).toPromise();
     }
 }

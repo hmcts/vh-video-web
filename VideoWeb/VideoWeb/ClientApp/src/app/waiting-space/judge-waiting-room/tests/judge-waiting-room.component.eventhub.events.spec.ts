@@ -4,7 +4,7 @@ import { AudioRecordingService } from 'src/app/services/api/audio-recording.serv
 import {
     ConferenceResponse,
     ConferenceStatus,
-    CurrentUserOrParticipantResponse,
+    LoggedParticipantResponse,
     ParticipantResponse
 } from 'src/app/services/clients/api-client';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
@@ -84,7 +84,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         confWithCloseTime.status = status;
         videoWebService.getConferenceById.and.resolveTo(confWithCloseTime);
         videoWebService.getCurrentParticipant.and.resolveTo(
-            new CurrentUserOrParticipantResponse({
+            new LoggedParticipantResponse({
                 participant_id: globalParticipant.id,
                 display_name: globalParticipant.display_name,
                 role: globalParticipant.role

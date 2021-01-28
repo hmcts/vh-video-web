@@ -4,7 +4,7 @@ import {
     ConferenceResponse,
     ConferenceStatus,
     ConsultationAnswer,
-    CurrentUserOrParticipantResponse,
+    LoggedParticipantResponse,
     EndpointStatus,
     ParticipantResponse,
     ParticipantResponseVho,
@@ -57,7 +57,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
         videoWebService.getCurrentParticipant.and.returnValue(
             Promise.resolve(
-                new CurrentUserOrParticipantResponse({
+                new LoggedParticipantResponse({
                     participant_id: '1111-1111',
                     display_name: 'Jonh Doe',
                     role: Role.Judge
@@ -86,7 +86,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         component.conference = conference;
         const judge = component.conference.participants.find(x => x.role === Role.Judge);
 
-        component.loggedInUser = new CurrentUserOrParticipantResponse({
+        component.loggedInUser = new LoggedParticipantResponse({
             participant_id: judge.id,
             display_name: judge.display_name,
             role: Role.Judge

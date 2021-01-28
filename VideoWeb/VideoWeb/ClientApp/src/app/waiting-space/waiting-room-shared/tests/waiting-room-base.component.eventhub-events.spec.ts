@@ -4,7 +4,7 @@ import {
     ConferenceResponse,
     ConferenceStatus,
     ConsultationAnswer,
-    CurrentUserOrParticipantResponse,
+    LoggedParticipantResponse,
     EndpointStatus,
     ParticipantResponse,
     ParticipantStatus,
@@ -162,7 +162,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         confWithCloseTime.status = status;
         videoWebService.getConferenceById.and.resolveTo(confWithCloseTime);
         videoWebService.getCurrentParticipant.and.resolveTo(
-            new CurrentUserOrParticipantResponse({
+            new LoggedParticipantResponse({
                 participant_id: globalParticipant.id,
                 display_name: globalParticipant.display_name,
                 role: globalParticipant.role
@@ -261,7 +261,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         newConference.participants.find(x => x.id === globalParticipant.id).status = newParticipantStatus;
 
         videoWebService.getCurrentParticipant.and.resolveTo(
-            new CurrentUserOrParticipantResponse({
+            new LoggedParticipantResponse({
                 participant_id: globalParticipant.id,
                 display_name: globalParticipant.display_name,
                 role: globalParticipant.role

@@ -24,7 +24,7 @@ namespace VideoWeb.Mappings
 
         private string GetParticipantId(Conference conference, string username)
         {
-            var participant = conference.Participants.FirstOrDefault(x => x.Username == username);
+            var participant = conference.Participants.SingleOrDefault(x => x.Username == username);
             return participant != null ? participant.Id.ToString() : username; 
         }
     }

@@ -6,7 +6,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
     ConsultationAnswer,
-    CurrentUserOrParticipantResponse,
+    LoggedParticipantResponse,
     EndpointStatus,
     ParticipantResponse,
     ParticipantStatus,
@@ -94,7 +94,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         const participantObserverPanelMember = new ConferenceTestData().getListOfParticipantsObserverAndPanelMembers();
         participantObserverPanelMember.forEach(x => conference.participants.push(x));
         const loggedUser = conference.participants.find(x => x.role === Role.Judge);
-        const userLogged = new CurrentUserOrParticipantResponse({
+        const userLogged = new LoggedParticipantResponse({
             participant_id: loggedUser.id,
             display_name: loggedUser.display_name,
             role: loggedUser.role

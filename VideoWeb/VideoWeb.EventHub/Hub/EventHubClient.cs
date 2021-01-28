@@ -130,10 +130,16 @@ namespace VideoWeb.EventHub.Hub
             return await _userProfileService.GetObfuscatedUsernameAsync(username);
         }
 
+        /// <summary>
+        /// Send message
+        /// </summary>
+        /// <param name="conferenceId">The conference Id</param>
+        /// <param name="message">The body message</param>
+        /// <param name="to">The participant Id or admin username</param>
+        /// <param name="messageUuid">The message Id</param>
+        /// <returns></returns>
         public async Task SendMessage(Guid conferenceId, string message, string to, Guid messageUuid)
         {
-            // if participant then 'to' is Id, if admin then 'to' is username
-
             var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name);
             _logger.LogTrace($"{userName} is attempting to SendMessages");
             // this determines if the message is from admin
@@ -141,7 +147,7 @@ namespace VideoWeb.EventHub.Hub
             _logger.LogDebug($"{userName} is sender admin: {isSenderAdmin}");
 
             var participantTo = to;
-            
+
             var fromId = string.Empty;
             if (isSenderAdmin)
             {
@@ -151,7 +157,7 @@ namespace VideoWeb.EventHub.Hub
             {
                 fromId = await GetParticipantIdByUsernameAsync(conferenceId, Context.User.Identity.Name);
             }
-          
+
 
             var isRecipientAdmin = await IsRecipientAdmin(participantTo);
             _logger.LogDebug($"{userName} is recipient admin: {isSenderAdmin}");
@@ -167,7 +173,7 @@ namespace VideoWeb.EventHub.Hub
 
             var dto = new SendMessageDto
             {
-                Conference = new Conference {Id = conferenceId},
+                Conference = new Conference { Id = conferenceId },
                 From = from,
                 To = to,
                 Message = message,
@@ -406,56 +412,38 @@ namespace VideoWeb.EventHub.Hub
 
         private async Task<string> GetParticipantUsernameByIdAsync(Guid conferenceId, string participantId)
         {
-          var username = string.Empty;
+            var username = string.Empty;
             try
             {
                 var participantGuidId = Guid.Parse(participantId);
                 var conference = await GetConference(conferenceId);
-                var participant = conference.Participants.SingleOrDefault(x =>
-                    x.Id == participantGuidId);
+                var participant = conference.Participants.Single(x => x.Id == participantGuidId);
 
-                if (participant == null)
-                {
-                    _logger.LogDebug($"Participant {participantId} does not exist in conversation");
-                    throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
-                }
-
-                username = participant.Username;
+                return participant.Username;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occured when validating send message");
+                _logger.LogError(ex, $"Error occured to find the participant in conference {conferenceId} by participant Id {participantId}");
                 return username;
             }
-
-            _logger.LogDebug($"Participant {participantId} exists in conversation");
-            return username;
         }
+
         private async Task<string> GetParticipantIdByUsernameAsync(Guid conferenceId, string participantUsername)
         {
             var particiantId = string.Empty;
             try
             {
                 var conference = await GetConference(conferenceId);
-                var participant = conference.Participants.SingleOrDefault(x =>
+                var participant = conference.Participants.Single(x =>
                    x.Username.Equals(participantUsername, StringComparison.InvariantCultureIgnoreCase));
 
-                if (participant == null)
-                {
-                    _logger.LogDebug($"Participant {participantUsername} does not exist in conversation");
-                    throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
-                }
-
-                particiantId = participant.Id.ToString();
+                return participant.Id.ToString();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occured when validating send message");
+                _logger.LogError(ex, $"Error occured to find the participant in conference {conferenceId} by username");
                 return particiantId;
             }
-
-            _logger.LogDebug($"Participant {participantUsername} exists in conversation");
-            return particiantId;
         }
     }
 }

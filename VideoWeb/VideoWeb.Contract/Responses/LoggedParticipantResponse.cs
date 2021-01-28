@@ -3,7 +3,7 @@ using VideoWeb.Common.Models;
 
 namespace VideoWeb.Contract.Responses
 {
-    public class CurrentUserOrParticipantResponse
+    public class LoggedParticipantResponse
     {
         public Guid ParticipantId { get; set; }
         public string AdminUsername { get; set; }

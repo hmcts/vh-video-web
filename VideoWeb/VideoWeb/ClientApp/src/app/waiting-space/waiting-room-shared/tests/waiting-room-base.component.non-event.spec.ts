@@ -2,7 +2,7 @@ import { Subscription } from 'rxjs';
 import {
     ConferenceResponse,
     ConferenceStatus,
-    CurrentUserOrParticipantResponse,
+    LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
     Role
@@ -74,7 +74,7 @@ describe('WaitingRoomComponent message and clock', () => {
 
         videoWebService.getConferenceById.and.resolveTo(globalConference);
         videoWebService.getCurrentParticipant.and.resolveTo(
-            new CurrentUserOrParticipantResponse({
+            new LoggedParticipantResponse({
                 participant_id: globalParticipant.id,
                 display_name: globalParticipant.display_name,
                 role: globalParticipant.role

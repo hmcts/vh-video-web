@@ -4,7 +4,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
     ConferenceStatus,
-    CurrentUserOrParticipantResponse,
+    LoggedParticipantResponse,
     EndpointStatus,
     ParticipantResponse,
     ParticipantResponseVho,
@@ -50,7 +50,7 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
         videoWebService.getCurrentParticipant.and.returnValue(
             Promise.resolve(
-                new CurrentUserOrParticipantResponse({
+                new LoggedParticipantResponse({
                     participant_id: conference.participants[2].id,
                     display_name: 'Jonh Doe',
                     role: Role.Judge
@@ -66,7 +66,7 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
         component.consultationRequester = new Participant(conference.participants[0]);
         component.consultationRequestee = new Participant(conference.participants[1]);
         component.conference = conference;
-        component.loggedInUser = new CurrentUserOrParticipantResponse({
+        component.loggedInUser = new LoggedParticipantResponse({
             participant_id: conference.participants[2].id,
             display_name: 'Jonh Doe',
             role: Role.Judge

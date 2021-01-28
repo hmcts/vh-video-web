@@ -4,7 +4,7 @@ import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, CurrentUserOrParticipantResponse, ParticipantResponse, Role } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, LoggedParticipantResponse, ParticipantResponse, Role } from 'src/app/services/clients/api-client';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
@@ -51,7 +51,7 @@ describe('VhoChatComponent', () => {
     beforeEach(() => {
         spyOn(global, 'setTimeout').and.returnValue(<any>timer);
         const chatHistory = new ConferenceTestData().getChatHistory(adminProfile.username, conference.id);
-        const loggedParticipant = new CurrentUserOrParticipantResponse({
+        const loggedParticipant = new LoggedParticipantResponse({
             participant_id: null,
             admin_username: 'admin@test.com',
             role: Role.VideoHearingsOfficer
@@ -78,7 +78,7 @@ describe('VhoChatComponent', () => {
         component.participant = hearing.judge;
         component.loggedInUserProfile = adminProfile;
         component.messages = new ConferenceTestData().getChatHistory(adminTestProfile.username, conference.id);
-        component.loggedInUser = new CurrentUserOrParticipantResponse({
+        component.loggedInUser = new LoggedParticipantResponse({
             display_name: 'somename',
             role: Role.VideoHearingsOfficer,
             admin_username: 'admin@test.com'
@@ -136,7 +136,7 @@ describe('VhoChatComponent', () => {
             message: 'test message',
             timestamp: new Date()
         });
-        const loggedInUser = new CurrentUserOrParticipantResponse({
+        const loggedInUser = new LoggedParticipantResponse({
             participant_id: null,
             display_name: 'somename',
             role: Role.VideoHearingsOfficer,
@@ -166,7 +166,7 @@ describe('VhoChatComponent', () => {
             message: 'test message',
             timestamp: new Date()
         });
-        const loggedInUser = new CurrentUserOrParticipantResponse({
+        const loggedInUser = new LoggedParticipantResponse({
             participant_id: null,
             display_name: 'somename',
             role: Role.VideoHearingsOfficer,
@@ -242,7 +242,7 @@ describe('VhoChatComponent', () => {
             message: 'test message',
             timestamp: new Date()
         });
-        component.loggedInUser = new CurrentUserOrParticipantResponse({
+        component.loggedInUser = new LoggedParticipantResponse({
             participant_id: null,
             display_name: 'somename',
             role: Role.VideoHearingsOfficer,
@@ -273,7 +273,7 @@ describe('VhoChatComponent', () => {
             message: 'test message',
             timestamp: new Date()
         });
-        component.loggedInUser = new CurrentUserOrParticipantResponse({
+        component.loggedInUser = new LoggedParticipantResponse({
             participant_id: null,
             display_name: 'somename',
             role: Role.VideoHearingsOfficer,

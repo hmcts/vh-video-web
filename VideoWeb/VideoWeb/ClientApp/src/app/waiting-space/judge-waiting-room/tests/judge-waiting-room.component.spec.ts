@@ -3,7 +3,7 @@ import { AudioRecordingService } from 'src/app/services/api/audio-recording.serv
 import {
     ConferenceResponse,
     ConferenceStatus,
-    CurrentUserOrParticipantResponse,
+    LoggedParticipantResponse,
     HearingLayout,
     ParticipantResponse,
     ParticipantStatus
@@ -86,7 +86,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     it('should init hearing alert and setup Client', fakeAsync(() => {
         videoWebService.getJwToken.calls.reset();
         videoWebService.getCurrentParticipant.and.resolveTo(
-            new CurrentUserOrParticipantResponse({
+            new LoggedParticipantResponse({
                 participant_id: globalParticipant.id,
                 display_name: globalParticipant.display_name,
                 role: globalParticipant.role

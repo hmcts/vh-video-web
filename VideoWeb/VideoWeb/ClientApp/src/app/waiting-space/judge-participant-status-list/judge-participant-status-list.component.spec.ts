@@ -3,7 +3,7 @@ import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import {
     ConferenceResponse,
-    CurrentUserOrParticipantResponse,
+    LoggedParticipantResponse,
     EndpointStatus,
     ParticipantStatus,
     Role
@@ -45,7 +45,7 @@ describe('JudgeParticipantStatusListComponent', () => {
         videoWebService.getObfuscatedName.and.returnValue('test username');
         videoWebService.getCurrentParticipant.and.returnValue(
             Promise.resolve(
-                new CurrentUserOrParticipantResponse({
+                new LoggedParticipantResponse({
                     participant_id: '1111-1111',
                     display_name: 'Some name',
                     role: Role.Individual
@@ -62,7 +62,7 @@ describe('JudgeParticipantStatusListComponent', () => {
         participantWinger.forEach(x => conference.participants.push(x));
         component = new JudgeParticipantStatusListComponent(adalService, consultationService, eventsService, logger, videoWebService);
         component.conference = conference;
-        component.loggedInUser = new CurrentUserOrParticipantResponse({
+        component.loggedInUser = new LoggedParticipantResponse({
             participant_id: conference.participants[2].id,
             display_name: 'Some Name',
             role: Role.Judge
@@ -204,7 +204,7 @@ describe('JudgeParticipantStatusListComponent', () => {
     });
 
     it('should return true when user is judge', fakeAsync(async () => {
-        const loggedInUser = new CurrentUserOrParticipantResponse({
+        const loggedInUser = new LoggedParticipantResponse({
             participant_id: conference.participants.find(x => x.role === Role.Judge).id,
             display_name: 'Judge Name',
             role: Role.Judge
@@ -216,7 +216,7 @@ describe('JudgeParticipantStatusListComponent', () => {
     }));
 
     it('should return false when user is not judge', () => {
-        component.loggedInUser = new CurrentUserOrParticipantResponse({
+        component.loggedInUser = new LoggedParticipantResponse({
             participant_id: conference.participants[0].id,
             display_name: 'Some Name',
             role: Role.Individual

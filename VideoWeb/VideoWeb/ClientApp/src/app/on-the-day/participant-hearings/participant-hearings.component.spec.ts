@@ -7,28 +7,28 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { CurrentUserOrParticipantResponse, Role } from '../../services/clients/api-client';
+import { LoggedParticipantResponse, Role } from '../../services/clients/api-client';
 import { ParticipantHearingsComponent } from './participant-hearings.component';
 
 describe('ParticipantHearingList', () => {
     let component: ParticipantHearingsComponent;
 
-    const mockCurrentUser: CurrentUserOrParticipantResponse = new CurrentUserOrParticipantResponse({
+    const mockCurrentUser: LoggedParticipantResponse = new LoggedParticipantResponse({
         participant_id: '1111-1111-1111-1111',
         display_name: 'John Doe',
         role: Role.Individual
     });
-    const mockPanelMemberUser: CurrentUserOrParticipantResponse = new CurrentUserOrParticipantResponse({
+    const mockPanelMemberUser: LoggedParticipantResponse = new LoggedParticipantResponse({
         participant_id: '7777-7777-7777-7777',
         display_name: 'John Doe',
         role: Role.JudicialOfficeHolder
     });
-    const mockObserverUser: CurrentUserOrParticipantResponse = new CurrentUserOrParticipantResponse({
+    const mockObserverUser: LoggedParticipantResponse = new LoggedParticipantResponse({
         participant_id: '6666-6666-6666-6666',
         display_name: 'John Doe',
         role: Role.Individual
     });
-    const mockWingerUser: CurrentUserOrParticipantResponse = new CurrentUserOrParticipantResponse({
+    const mockWingerUser: LoggedParticipantResponse = new LoggedParticipantResponse({
         participant_id: '4545-4545-4545-4545',
         display_name: 'John Doe',
         role: Role.JudicialOfficeHolder

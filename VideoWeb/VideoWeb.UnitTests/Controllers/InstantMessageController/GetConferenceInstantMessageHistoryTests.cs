@@ -128,9 +128,9 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             var participants = Builder<Participant>.CreateListOfSize(5)
                 .All()
                 .With(x => x.Id = Guid.NewGuid())
-                .TheFirst(2)
+                .TheFirst(1)
                 .With(x => x.Username = "john@doe.com")
-                .TheRest()
+                .TheLast(1)
                 .With(x => x.Username = "some@other.com")
                 .TheFirst(1).With(x => x.Role = Role.Judge)
                 .TheRest().With(x => x.Role = Role.Individual).Build().ToList();

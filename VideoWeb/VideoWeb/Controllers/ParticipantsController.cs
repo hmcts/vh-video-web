@@ -250,7 +250,7 @@ namespace VideoWeb.Controllers
 
         [HttpGet("{conferenceId}/currentparticipant")]
         [SwaggerOperation(OperationId = "GetCurrentParticipant")]
-        [ProducesResponseType(typeof(CurrentUserOrParticipantResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(LoggedParticipantResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetCurrentParticipantAsync(Guid conferenceId)
         {
@@ -267,7 +267,7 @@ namespace VideoWeb.Controllers
             {
                 var claimsPrincipalToUserProfileResponseMapper = _mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
                 var profile = claimsPrincipalToUserProfileResponseMapper.Map(User);
-                var response = new CurrentUserOrParticipantResponse
+                var response = new LoggedParticipantResponse
                 {
                     AdminUsername = User.Identity.Name,
                     DisplayName = "Admin",
@@ -283,7 +283,7 @@ namespace VideoWeb.Controllers
                         var participant = conference.Participants
                         .Single(x => x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
 
-                        response = new CurrentUserOrParticipantResponse
+                        response = new LoggedParticipantResponse
                         {
                             ParticipantId = participant.Id,
                             DisplayName = participant.DisplayName,
