@@ -16,6 +16,7 @@ using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
+using VideoWeb.Middleware;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
 using UpdateParticipantRequest = VideoWeb.Services.Video.UpdateParticipantRequest;
@@ -47,6 +48,7 @@ namespace VideoWeb.Controllers
             _mapperFactory = mapperFactory;
         }
 
+        [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
         [HttpGet("{conferenceId}/participants/{participantId}/selftestresult")]
         [SwaggerOperation(OperationId = "GetTestCallResult")]
         [ProducesResponseType(typeof(TestCallScoreResponse), (int)HttpStatusCode.OK)]
@@ -68,17 +70,16 @@ namespace VideoWeb.Controllers
 
         [HttpPost("{conferenceId}/participantstatus")]
         [SwaggerOperation(OperationId = "UpdateParticipantStatus")]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int) HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> UpdateParticipantStatusAsync(Guid conferenceId,
             UpdateParticipantStatusEventRequest updateParticipantStatusEventRequest)
         {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, 
+            var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
-            
-            var username = User.Identity.Name;
-            var participantId = GetIdForParticipantByUsernameInConference(conference, username);
+
+            var participantId = GetIdForParticipantByUsernameInConference(conference);
             var eventTypeMapper = _mapperFactory.Get<EventType, string>();
             var conferenceEventRequest = new ConferenceEventRequest
             {
@@ -117,8 +118,9 @@ namespace VideoWeb.Controllers
             }
         }
 
-        private Guid GetIdForParticipantByUsernameInConference(Conference conference, string username)
+        private Guid GetIdForParticipantByUsernameInConference(Conference conference)
         {
+            var username = User.Identity.Name;
             return conference.Participants
                 .Single(x => x.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase)).Id;
         }
@@ -132,7 +134,7 @@ namespace VideoWeb.Controllers
             try
             {
                 var score = await _videoApiClient.GetIndependentTestCallResultAsync(participantId);
-                
+
                 return Ok(score);
             }
             catch (VideoApiException e)
@@ -142,6 +144,7 @@ namespace VideoWeb.Controllers
             }
         }
 
+        [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
         [HttpGet("{conferenceId}/participant/{participantId}/heartbeatrecent")]
         [SwaggerOperation(OperationId = "GetHeartbeatDataForParticipant")]
         [ProducesResponseType(typeof(ParticipantHeartbeatResponse[]), (int)HttpStatusCode.OK)]
@@ -160,6 +163,7 @@ namespace VideoWeb.Controllers
             }
         }
 
+        [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
         [HttpPost("{conferenceId}/participants/{participantId}/participantDisplayName")]
         [SwaggerOperation(OperationId = "UpdateParticipantDisplayName")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -168,7 +172,7 @@ namespace VideoWeb.Controllers
         {
             try
             {
-               await  _videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, participantRequest);
+                await _videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, participantRequest);
             }
             catch (VideoApiException ex)
             {
@@ -186,9 +190,9 @@ namespace VideoWeb.Controllers
         /// <param name="conferenceId">The unique id of the conference</param>
         /// <returns>the participant details, if permitted</returns>
         [HttpGet("{conferenceId}/vhofficer/participants")]
-        [ProducesResponseType(typeof(IEnumerable<ParticipantContactDetailsResponseVho>), (int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(IEnumerable<ParticipantContactDetailsResponseVho>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [SwaggerOperation(OperationId = "GetParticipantsWithContactDetailsByConferenceId")]
         [Authorize(AppRoles.VhOfficerRole)]
         public async Task<IActionResult> GetParticipantsWithContactDetailsByConferenceIdAsync(Guid conferenceId)
@@ -202,7 +206,7 @@ namespace VideoWeb.Controllers
             }
             try
             {
-                var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, 
+                var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
                     () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
 
                 _logger.LogTrace($"Retrieving booking participants for hearing ${conference.HearingId}");
@@ -212,7 +216,6 @@ namespace VideoWeb.Controllers
                 var response = participantContactDetailsResponseVhoMapper.Map(conference, judgesInHearingsToday);
 
                 return Ok(response);
-
             }
             catch (VideoApiException ex)
             {
@@ -247,7 +250,6 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
-
         [HttpGet("{conferenceId}/currentparticipant")]
         [SwaggerOperation(OperationId = "GetCurrentParticipant")]
         [ProducesResponseType(typeof(LoggedParticipantResponse), (int)HttpStatusCode.OK)]
