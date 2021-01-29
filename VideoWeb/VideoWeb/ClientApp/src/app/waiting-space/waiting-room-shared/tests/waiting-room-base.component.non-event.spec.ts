@@ -1,3 +1,4 @@
+import { fakeAsync, tick } from '@angular/core/testing';
 import { Subscription } from 'rxjs';
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
@@ -15,6 +16,7 @@ import {
     initAllWRDependencies,
     logger,
     notificationSoundsService,
+    notificationToastrService,
     router,
     userMediaService,
     userMediaStreamService,
@@ -46,7 +48,8 @@ describe('WaitingRoomComponent message and clock', () => {
             clockService,
             userMediaService,
             userMediaStreamService,
-            notificationSoundsService
+            notificationSoundsService,
+            notificationToastrService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
@@ -200,7 +203,9 @@ describe('WaitingRoomComponent message and clock', () => {
     });
 
     it('should request to leave judicial consultation room', async () => {
+        consultationService.leaveConsultation.calls.reset();
+        consultationService.leaveConsultation.and.returnValue(Promise.resolve());
         await component.leaveJudicialConsultation();
-        expect(consultationService.leaveJudicialConsultationRoom).toHaveBeenCalledWith(component.conference, component.participant);
+        expect(consultationService.leaveConsultation).toHaveBeenCalled();
     });
 });

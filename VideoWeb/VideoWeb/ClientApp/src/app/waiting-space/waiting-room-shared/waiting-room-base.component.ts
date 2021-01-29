@@ -179,22 +179,29 @@ export abstract class WaitingRoomBaseComponent {
         this.logger.debug(`${this.loggerPrefix} Subscribing to ConsultationRequestResponseMessage`);
         this.eventHubSubscription$.add(
             this.eventService.getConsultationRequestResponseMessage().subscribe(message => {
-                if (message.answer && message.answer === ConsultationAnswer.Accepted && message.requestedFor == this.participant.id) {
+                if (message.answer && message.answer === ConsultationAnswer.Accepted && message.requestedFor === this.participant.id) {
                     this.onConsultationAccepted();
                 }
             })
         );
-        
+
         this.logger.debug(`${this.loggerPrefix} Subscribing to RequestedConsultationMessage`);
         this.eventHubSubscription$.add(
             this.eventService.getRequestedConsultationMessage().subscribe(message => {
-                var requestedFor = new Participant(this.findParticipant(message.requestedFor));
-                if (requestedFor.username == this.adalService.userInfo.userName.toLowerCase()) {
+                const requestedFor = new Participant(this.findParticipant(message.requestedFor));
+                if (requestedFor.username === this.adalService.userInfo.userName.toLowerCase()) {
                     // A request for you to join a consultation room
-                    this.logger.debug(`${this.loggerPrefix} Recieved RequestedConsultationMessage`)
-                    var requestedBy = new Participant(this.findParticipant(message.requestedBy));
-                    var roomParticipants = this.findParticipantsInRoom(message.roomLabel).map(x => new Participant(x));
-                    this.notificationToastrService.showConsultationInvite(message.roomLabel, message.conferenceId, requestedBy, requestedFor, roomParticipants, this.hearing.isInSession());
+                    this.logger.debug(`${this.loggerPrefix} Recieved RequestedConsultationMessage`);
+                    const requestedBy = new Participant(this.findParticipant(message.requestedBy));
+                    const roomParticipants = this.findParticipantsInRoom(message.roomLabel).map(x => new Participant(x));
+                    this.notificationToastrService.showConsultationInvite(
+                        message.roomLabel,
+                        message.conferenceId,
+                        requestedBy,
+                        requestedFor,
+                        roomParticipants,
+                        this.hearing.isInSession()
+                    );
                 }
             })
         );
@@ -205,29 +212,31 @@ export abstract class WaitingRoomBaseComponent {
                 await this.handleEventHubDisconnection(attemptNumber);
             })
         );
-        
+
         this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub room updates`);
         this.eventHubSubscription$.add(
             this.eventService.getRoomUpdate().subscribe(async room => {
-                var existingRoom = this.conferenceRooms.find(r => r.label == room.label);
+                const existingRoom = this.conferenceRooms.find(r => r.label === room.label);
                 if (existingRoom) {
                     existingRoom.locked = room.locked;
-                    this.conference.participants.filter(p => p.current_room?.label == existingRoom.label).forEach(p => p.current_room.locked = existingRoom.locked);
+                    this.conference.participants
+                        .filter(p => p.current_room?.label === existingRoom.label)
+                        .forEach(p => (p.current_room.locked = existingRoom.locked));
                 } else {
                     this.conferenceRooms.push(room);
                 }
             })
         );
-        
+
         this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub room transfer`);
         this.eventHubSubscription$.add(
             this.eventService.getRoomTransfer().subscribe(async roomTransfer => {
-                var participant = this.conference.participants.find(p => p.id == roomTransfer.participantId);
+                const participant = this.conference.participants.find(p => p.id === roomTransfer.participantId);
                 if (!participant) {
                     return;
                 }
 
-                var room = this.conferenceRooms.find(r => r.label == roomTransfer.toRoom);
+                const room = this.conferenceRooms.find(r => r.label === roomTransfer.toRoom);
                 participant.current_room = room ? new RoomSummaryResponse(room) : new RoomSummaryResponse({ label: roomTransfer.toRoom });
             })
         );
@@ -252,12 +261,12 @@ export abstract class WaitingRoomBaseComponent {
         );
     }
 
-    protected findParticipant(participantId: string) : ParticipantResponse {
-        return this.conference.participants.find(x => x.id === participantId)
+    protected findParticipant(participantId: string): ParticipantResponse {
+        return this.conference.participants.find(x => x.id === participantId);
     }
 
-    protected findParticipantsInRoom(roomLabel: string) : ParticipantResponse[] {
-        return this.conference.participants.filter(x => x.current_room?.label === roomLabel)
+    protected findParticipantsInRoom(roomLabel: string): ParticipantResponse[] {
+        return this.conference.participants.filter(x => x.current_room?.label === roomLabel);
     }
 
     async onConsultationAccepted() {

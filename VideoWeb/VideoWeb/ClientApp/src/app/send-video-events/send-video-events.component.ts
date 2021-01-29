@@ -98,8 +98,8 @@ export class SendVideoEventsComponent implements OnInit {
         const request = this.buildBasicEventRequest();
         request.participant_id = participant.id;
         request.event_type = EventType.Transfer;
-        request.transfer_from = "HearingRoom";
-        request.transfer_to = "WaitingRoom";
+        request.transfer_from = 'HearingRoom';
+        request.transfer_to = 'WaitingRoom';
         this.sendEvent(request);
     }
 
@@ -107,8 +107,8 @@ export class SendVideoEventsComponent implements OnInit {
         const request = this.buildBasicEventRequest();
         request.participant_id = participant.id;
         request.event_type = EventType.Transfer;
-        request.transfer_from = "WaitingRoom";
-        request.transfer_to = "HearingRoom";
+        request.transfer_from = 'WaitingRoom';
+        request.transfer_to = 'HearingRoom';
         this.sendEvent(request);
     }
 

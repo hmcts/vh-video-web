@@ -1,4 +1,4 @@
-import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import {
     ConferenceResponse,
@@ -40,6 +40,7 @@ import {
     initAllWRDependencies,
     logger,
     notificationSoundsService,
+    notificationToastrService,
     router,
     userMediaService,
     userMediaStreamService,
@@ -79,7 +80,8 @@ describe('WaitingRoomComponent EventHub Call', () => {
             clockService,
             userMediaService,
             userMediaStreamService,
-            notificationSoundsService
+            notificationSoundsService,
+            notificationToastrService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
@@ -217,27 +219,40 @@ describe('WaitingRoomComponent EventHub Call', () => {
         expect(component.showVideo).toBeFalsy();
     });
 
-    it('should not set isAdminConsultation to true when participant has rejected admin consultation', () => {
+    it('should not set preferred devices when participant has rejected consultation', fakeAsync(async () => {
         const message = new ConsultationRequestResponseMessage(
             globalConference.id,
-            "ConsultationRoom",
+            'ConsultationRoom',
             globalParticipant.username,
             ConsultationAnswer.Rejected
         );
         consultationRequestResponseMessageSubject.next(message);
         expect(component.isAdminConsultation).toBeFalsy();
-    });
+        expect(userMediaService.getPreferredCamera).toHaveBeenCalledTimes(0);
+        expect(userMediaService.getPreferredMicrophone).toHaveBeenCalledTimes(0);
+        expect(userMediaStreamService.getStreamForCam).toHaveBeenCalledTimes(0);
+        expect(userMediaStreamService.getStreamForMic).toHaveBeenCalledTimes(0);
+    }));
 
-    it('should set isAdminConsultation to true when participant accepts admin consultation', () => {
+    it('should close start and join modal set preferred devices when participant accepts consultation', fakeAsync(async () => {
+        component.displayDeviceChangeModal = true;
         const message = new ConsultationRequestResponseMessage(
             globalConference.id,
-            "ConsultationRoom",
-            globalParticipant.username,
+            'ConsultationRoom',
+            globalParticipant.id,
             ConsultationAnswer.Accepted
         );
+        component.participant = globalParticipant;
         consultationRequestResponseMessageSubject.next(message);
-        expect(component.isAdminConsultation).toBeTruthy();
-    });
+        tick();
+        expect(component.displayStartPrivateConsultationModal).toBeFalsy();
+        expect(component.displayJoinPrivateConsultationModal).toBeFalsy();
+        expect(userMediaService.getPreferredCamera).toHaveBeenCalled();
+        expect(userMediaService.getPreferredMicrophone).toHaveBeenCalled();
+        expect(userMediaStreamService.getStreamForCam).toHaveBeenCalled();
+        expect(userMediaStreamService.getStreamForMic).toHaveBeenCalled();
+        expect(component.displayDeviceChangeModal).toBeFalsy();
+    }));
 
     it('should get conference when disconnected from eventhub less than 7 times', fakeAsync(() => {
         component.participant.status = ParticipantStatus.InHearing;

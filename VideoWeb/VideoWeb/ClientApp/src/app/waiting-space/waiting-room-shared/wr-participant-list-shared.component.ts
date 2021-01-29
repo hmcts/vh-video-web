@@ -72,8 +72,7 @@ export abstract class WRParticipantStatusListDirective {
         this.eventHubSubscriptions$.add(
             this.eventService.getConsultationRequestResponseMessage().subscribe(async message => {
                 // There has been a response to the consultation request sent
-                this.logger.debug(`${this.loggerPrefix} Recieved ConsultationRequestResponseMessage`)
-                
+                this.logger.debug(`${this.loggerPrefix} Recieved ConsultationRequestResponseMessage`);
             })
         );
 
@@ -132,10 +131,10 @@ export abstract class WRParticipantStatusListDirective {
 
     protected camelToSpaced(word: string) {
         const splitWord = word
-        .match(/[a-z]+|[^a-z]+/gi)
-        .join(' ')
-        .split(/(?=[A-Z])/)
-        .join(' ');
+            .match(/[a-z]+|[^a-z]+/gi)
+            .join(' ')
+            .split(/(?=[A-Z])/)
+            .join(' ');
         const lowcaseWord = splitWord.toLowerCase();
         return lowcaseWord.charAt(0).toUpperCase() + lowcaseWord.slice(1);
     }

@@ -18,7 +18,7 @@ import { ModalService } from '../modal.service';
 @Injectable({
     providedIn: 'root'
 })
-export class ConsultationService { 
+export class ConsultationService {
     static ERROR_PC_MODAL = 'pc-error-modal';
 
     constructor(
@@ -48,21 +48,24 @@ export class ConsultationService {
             conference: conferenceId,
             requester: requesterId,
             requestee: requesteeId,
-            answer: answer,                
+            answer: answer,
             room_label: roomLabel
         });
 
         try {
             this.stopCallRinging();
             this.clearModals();
-            await this.apiClient.respondToConsultationRequest(
-                new PrivateConsultationRequest({
-                    conference_id: conferenceId,
-                    requested_by_id: requesterId,
-                    requested_for_id: requesteeId,
-                    answer: answer,                
-                    room_label: roomLabel
-                })).toPromise();
+            await this.apiClient
+                .respondToConsultationRequest(
+                    new PrivateConsultationRequest({
+                        conference_id: conferenceId,
+                        requested_by_id: requesterId,
+                        requested_for_id: requesteeId,
+                        answer: answer,
+                        room_label: roomLabel
+                    })
+                )
+                .toPromise();
         } catch (error) {
             this.displayConsultationErrorModal();
             this.logger.error(`Failed to response to consultation request`, error);
@@ -118,7 +121,11 @@ export class ConsultationService {
         }
     }
 
-    async createParticipantConsultationRoom(conference: ConferenceResponse, participant: ParticipantResponse, inviteParticipants: Array<string>): Promise<void> {
+    async createParticipantConsultationRoom(
+        conference: ConferenceResponse,
+        participant: ParticipantResponse,
+        inviteParticipants: Array<string>
+    ): Promise<void> {
         this.logger.info(`[ConsultationService] - Attempting to create a private consultation`, {
             conference: conference.id,
             participant: participant.id
@@ -139,7 +146,7 @@ export class ConsultationService {
             throw error;
         }
     }
-    
+
     async leaveConsultation(conference: ConferenceResponse, participant: ParticipantResponse): Promise<void> {
         this.logger.info(`[ConsultationService] - Leaving a consultation`, {
             conference: conference.id,
@@ -172,7 +179,7 @@ export class ConsultationService {
     displayModal(modalId: string) {
         this.clearModals();
         this.modalService.open(modalId);
-    } 
+    }
 
     clearModals() {
         this.logger.debug('[ConsultationService] - Closing all modals.');

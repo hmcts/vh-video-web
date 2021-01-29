@@ -180,8 +180,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         this.displayJoinPrivateConsultationModal = true;
     }
 
-    getPrivateConsultationParticipants() : Participant[] {
-        return this.conference.participants.map(p => new Participant(p)).filter(p => !p.isJudge && p.id != this.participant.id)
+    getPrivateConsultationParticipants(): Participant[] {
+        return this.conference.participants.map(p => new Participant(p)).filter(p => !p.isJudge && p.id !== this.participant.id);
     }
 
     async startPrivateConsultation(participants: string[]) {

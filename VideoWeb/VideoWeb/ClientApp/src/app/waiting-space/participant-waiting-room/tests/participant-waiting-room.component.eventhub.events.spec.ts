@@ -19,6 +19,7 @@ import {
     initAllWRDependencies,
     logger,
     notificationSoundsService,
+    notificationToastrService,
     router,
     userMediaService,
     userMediaStreamService,
@@ -51,7 +52,8 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
             clockService,
             userMediaService,
             userMediaStreamService,
-            notificationSoundsService
+            notificationSoundsService,
+            notificationToastrService
         );
         adalService.userInfo.userName = globalParticipant.username;
 

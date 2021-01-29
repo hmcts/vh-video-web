@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output  } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Participant } from 'src/app/shared/models/participant';
@@ -10,21 +10,19 @@ import { Participant } from 'src/app/shared/models/participant';
 })
 export class StartPrivateConsultationComponent {
     selectedParticipants = Array<string>();
-    @Input() participants: Participant[];    
+    @Input() participants: Participant[];
     @Output() continue = new EventEmitter<string[]>();
     @Output() cancel = new EventEmitter();
 
-    constructor(
-        protected logger: Logger
-    ) {}
+    constructor(protected logger: Logger) {}
 
     participantSelected(id: string): boolean {
-        let index = this.selectedParticipants.indexOf(id);
+        const index = this.selectedParticipants.indexOf(id);
         return index >= 0;
     }
 
     toggleParticipant(id: string) {
-        let index = this.selectedParticipants.indexOf(id);
+        const index = this.selectedParticipants.indexOf(id);
         if (index >= 0) {
             this.selectedParticipants.splice(index, 1);
         } else {
@@ -52,7 +50,7 @@ export class StartPrivateConsultationComponent {
     }
 
     getShouldDisplayLabel(participant: Participant): boolean {
-        return (this.getParticipantDisabled(participant) || participant.status === ParticipantStatus.InConsultation);
+        return this.getParticipantDisabled(participant) || participant.status === ParticipantStatus.InConsultation;
     }
 
     getParticipantStatus(participant: Participant): string {
@@ -61,17 +59,23 @@ export class StartPrivateConsultationComponent {
         }
 
         if (participant.status === ParticipantStatus.InConsultation && participant.base.current_room != null) {
-            return "In " + this.camelToSpaced(participant.base.current_room.label.replace('ParticipantConsultationRoom', 'MeetingRoom')).toLowerCase() + (participant.base.current_room.locked ? ' LockedIcon' : '');
+            return (
+                'In ' +
+                this.camelToSpaced(
+                    participant.base.current_room.label.replace('ParticipantConsultationRoom', 'MeetingRoom')
+                ).toLowerCase() +
+                (participant.base.current_room.locked ? ' LockedIcon' : '')
+            );
         }
         return;
     }
 
     protected camelToSpaced(word: string) {
         const splitWord = word
-        .match(/[a-z]+|[^a-z]+/gi)
-        .join(' ')
-        .split(/(?=[A-Z])/)
-        .join(' ');
+            .match(/[a-z]+|[^a-z]+/gi)
+            .join(' ')
+            .split(/(?=[A-Z])/)
+            .join(' ');
         const lowcaseWord = splitWord.toLowerCase();
         return lowcaseWord.charAt(0).toUpperCase() + lowcaseWord.slice(1);
     }

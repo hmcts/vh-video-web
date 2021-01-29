@@ -10,8 +10,8 @@ interface VhToastOptions {
 }
 
 interface VhToastButton {
-  label: string;
-  action: () => void;
+    label: string;
+    action: () => void;
 }
 
 @Component({
@@ -22,9 +22,7 @@ interface VhToastButton {
 export class VhToastComponent extends Toast {
     vhToastOptions: VhToastOptions;
 
-    constructor(
-        protected toastrService: ToastrService,
-        public toastPackage: ToastPackage) {
+    constructor(protected toastrService: ToastrService, public toastPackage: ToastPackage) {
         super(toastrService, toastPackage);
-      }
     }
+}

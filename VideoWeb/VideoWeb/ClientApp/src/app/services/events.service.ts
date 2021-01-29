@@ -7,7 +7,7 @@ import { Heartbeat } from '../shared/models/heartbeat';
 import { Room } from '../shared/models/room';
 import { ParticipantMediaStatus } from '../shared/models/participant-media-status';
 import { ParticipantMediaStatusMessage } from '../shared/models/participant-media-status-message';
-import { ConfigService } from './api/config.service'; 
+import { ConfigService } from './api/config.service';
 import { ConferenceMessageAnswered } from './models/conference-message-answered';
 import { ConferenceStatus, ConsultationAnswer, EndpointStatus, ParticipantStatus } from './clients/api-client';
 import { Logger } from './logging/logger-base';
@@ -40,8 +40,8 @@ export class EventsService {
 
     private requestedConsultationMessageSubject = new Subject<RequestedConsultationMessage>();
     private consultationRequestResponseMessageSubject = new Subject<ConsultationRequestResponseMessage>();
-    
-    private messageSubject = new Subject<InstantMessage>(); 
+
+    private messageSubject = new Subject<InstantMessage>();
     private adminAnsweredChatSubject = new Subject<ConferenceMessageAnswered>();
     private participantHeartbeat = new Subject<ParticipantHeartbeat>();
     private eventHubDisconnectSubject = new Subject<number>();
@@ -49,7 +49,7 @@ export class EventsService {
     private hearingTransferSubject = new Subject<HearingTransfer>();
     private participantMediaStatusSubject = new Subject<ParticipantMediaStatusMessage>();
     private roomUpdateSubject = new Subject<Room>();
-    private roomTransferSubject = new Subject<RoomTransfer>();    
+    private roomTransferSubject = new Subject<RoomTransfer>();
 
     reconnectionAttempt: number;
     reconnectionPromise: Promise<any>;
@@ -206,21 +206,15 @@ export class EventsService {
             }
         );
 
-        this.connection.on(
-            'RoomUpdate',
-            (payload: Room) => {
-                this.logger.debug('[EventsService] - Room Update received: ', payload);
-                this.roomUpdateSubject.next(payload);
-            }
-        );
+        this.connection.on('RoomUpdate', (payload: Room) => {
+            this.logger.debug('[EventsService] - Room Update received: ', payload);
+            this.roomUpdateSubject.next(payload);
+        });
 
-        this.connection.on(
-            'RoomTransfer',
-            (payload: RoomTransfer) => {
-                this.logger.debug('[EventsService] - Room Transfer received: ', payload);
-                this.roomTransferSubject.next(payload);
-            }
-        );
+        this.connection.on('RoomTransfer', (payload: RoomTransfer) => {
+            this.logger.debug('[EventsService] - Room Transfer received: ', payload);
+            this.roomTransferSubject.next(payload);
+        });
 
         this.connection.on(
             'ReceiveHeartbeat',
@@ -335,7 +329,7 @@ export class EventsService {
     getParticipantMediaStatusMessage(): Observable<ParticipantMediaStatusMessage> {
         return this.participantMediaStatusSubject.asObservable();
     }
-    
+
     getRoomUpdate(): Observable<Room> {
         return this.roomUpdateSubject.asObservable();
     }

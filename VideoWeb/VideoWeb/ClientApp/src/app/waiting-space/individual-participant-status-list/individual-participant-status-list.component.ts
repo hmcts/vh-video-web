@@ -41,7 +41,6 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         this.eventHubSubscriptions$.add(
             this.eventService.getRequestedConsultationMessage().subscribe(message => {
                 // A request for you to join a consultation room
-                
             })
         );
     }
@@ -101,8 +100,12 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
             return 'Unavailable';
         }
 
-        if (participant.status === ParticipantStatus.InConsultation && participant.current_room != null) {            
-            return "In " + this.camelToSpaced(participant.current_room.label.replace('ParticipantConsultationRoom', 'MeetingRoom')).toLowerCase() + (participant.current_room.locked ? ' LockedIcon' : '');
+        if (participant.status === ParticipantStatus.InConsultation && participant.current_room != null) {
+            return (
+                'In ' +
+                this.camelToSpaced(participant.current_room.label.replace('ParticipantConsultationRoom', 'MeetingRoom')).toLowerCase() +
+                (participant.current_room.locked ? ' LockedIcon' : '')
+            );
         }
 
         return;

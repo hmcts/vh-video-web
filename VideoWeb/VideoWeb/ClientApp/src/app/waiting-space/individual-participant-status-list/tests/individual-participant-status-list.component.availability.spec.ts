@@ -53,8 +53,6 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
         consultationService.clearModals.calls.reset();
         component = new IndividualParticipantStatusListComponent(adalService, consultationService, eventsService, logger, videoWebService);
         conference = new ConferenceTestData().getConferenceDetailFuture();
-        component.consultationRequester = new Participant(conference.participants[0]);
-        component.consultationRequestee = new Participant(conference.participants[1]);
         component.conference = conference;
         component.setupSubscribers();
     });

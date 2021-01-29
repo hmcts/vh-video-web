@@ -15,10 +15,7 @@ import { RequestedConsultationMessage } from 'src/app/services/models/requested-
 import { Participant } from 'src/app/shared/models/participant';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
-import {
-    requestedConsultationMessageSubjectMock,
-    eventsServiceSpy
-} from 'src/app/testing/mocks/mock-events-service';
+import { requestedConsultationMessageSubjectMock, eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { CaseTypeGroup } from '../../models/case-type-group';
 import { HearingRole } from '../../models/hearing-role-model';
@@ -70,8 +67,6 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
         component = new IndividualParticipantStatusListComponent(adalService, consultationService, eventsService, logger, videoWebService);
 
-        component.consultationRequester = consultationRequester;
-        component.consultationRequestee = consultationRequestee;
         component.conference = conference;
         component.setupSubscribers();
     });
@@ -85,7 +80,6 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         expect(component).toBeTruthy();
         expect(component.judge).toBeDefined();
         expect(component.nonJudgeParticipants).toBeDefined();
-        expect(consultationService.resetWaitingForResponse).toHaveBeenCalled();
     });
 
     it('should not be able to call participant is user is judge', () => {
@@ -127,7 +121,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         const participant = new ParticipantResponse({ status: ParticipantStatus.Available, username: 'test@dot.com' });
         expect(component.canCallParticipant(participant)).toBeTruthy();
     });
-    
+
     it('should close all modals when user clicks close on modal', () => {
         component.closeAllPCModals();
         expect(consultationService.clearModals).toHaveBeenCalledTimes(1);
@@ -160,7 +154,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, username: 'test@dot.com' });
         expect(component.canCallParticipant(participant)).toBeFalsy();
     });
-    
+
     it('should not be able to call participant if user is winger', () => {
         component.conference.scheduled_date_time = new Date(new Date(Date.now()).getTime() + 31 * 60000);
 
