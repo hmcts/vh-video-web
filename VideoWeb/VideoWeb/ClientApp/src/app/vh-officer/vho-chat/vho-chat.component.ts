@@ -77,10 +77,10 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         this.scrollToBottom();
     }
 
-    async ngOnInit() {
+    ngOnInit() {
         this.logger.debug(`[ChatHub VHO] starting chat for ${this.hearing.id}`);
         this.initForm();
-        this.chatHubSubscription = await this.setupChatSubscription();
+        this.setupChatSubscription().then(sub => (this.chatHubSubscription = sub));
         this.updateChatWindow();
     }
 

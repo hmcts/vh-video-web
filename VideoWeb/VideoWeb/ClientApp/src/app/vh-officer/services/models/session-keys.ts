@@ -4,6 +4,3 @@ export class VhoStorageKeys {
     public static COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY = 'vho.courtrooms.filter';
 }
 
-export class ParticipantStorageKeys {
-    public static LOGGED_IN_USER = 'participant.logged.user';
-}

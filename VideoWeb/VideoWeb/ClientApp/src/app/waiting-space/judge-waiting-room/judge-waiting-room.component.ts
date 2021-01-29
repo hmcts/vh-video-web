@@ -34,6 +34,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     conferenceRecordingInSessionForSeconds = 0;
     expanedPanel = true;
     displayConfirmStartHearingPopup: boolean;
+    isIMEnabled: boolean;
 
     constructor(
         protected route: ActivatedRoute,
@@ -81,10 +82,14 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
                 this.connected = false;
                 this.getConference().then(() => {
                     this.startEventHubSubscribers();
-                    this.getJwtokenAndConnectToPexip();
-                    if (this.conference.audio_recording_required) {
-                        this.initAudioRecordingInterval();
-                    }
+                    this.setLoggedParticipant().then(x => {
+                        this.participant = x;
+                        this.getJwtokenAndConnectToPexip();
+                        if (this.conference.audio_recording_required) {
+                            this.initAudioRecordingInterval();
+                        }
+                        this.isIMEnabled = this.defineIsIMEnabled();
+                    });
                 });
             })
             .catch((error: Error | MediaStreamError) => {
@@ -245,7 +250,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         this.continueWithNoRecording = true;
     }
 
-    isIMEnabled(): boolean {
+    defineIsIMEnabled(): boolean {
         if (!this.hearing) {
             return false;
         }

@@ -107,7 +107,7 @@ describe('VhoChatComponent', () => {
         spyOn(component, 'handleIncomingMessage');
         const judgeId = hearing.judge.id;
         const adminUsername = 'admin@test.com';
-
+        component.loggedInUser = null;
         const instantMessageTest = new InstantMessage({
             conferenceId: conference.id,
             id: Guid.create().toString(),

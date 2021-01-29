@@ -48,18 +48,18 @@ export class ParticipantChatComponent extends ChatBaseComponent implements OnIni
         return this.loggedInUser.participant_id;
     }
 
-    async ngOnInit() {
+    ngOnInit() {
         this.logger.debug(`[ChatHub Participant] starting chat for ${this.hearing.id}`);
         this.showChat = false;
         this.unreadMessageCount = 0;
         this.loading = true;
-        await this.setLoggedParticipant();
-        this.logger.debug(`[ChatHub Participant] get logged participant id: ${this.loggedInUser.participant_id}`);
-
-        this.chatHubSubscription = await this.setupChatSubscription();
-
-        const messages = await this.retrieveChatForConference(this.loggedInUser.participant_id);
-        this.handleChatHistoryResponse(messages);
+        this.setLoggedParticipant().then(() => {
+            this.logger.debug(`[ChatHub Participant] get logged participant id: ${this.loggedInUser.participant_id}`);
+            this.setupChatSubscription().then(sub => (this.chatHubSubscription = sub));
+            this.retrieveChatForConference(this.loggedInUser.participant_id).then(messages => {
+                this.handleChatHistoryResponse(messages);
+            });
+        });
     }
 
     ngAfterViewChecked(): void {
