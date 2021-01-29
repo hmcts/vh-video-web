@@ -2,8 +2,7 @@
   "stryker-config": {
     "reporters": [
       "Progress",
-      "ClearText",
-      "Html"
+      "ClearText"
     ],
     "log-level": "error",
     "timeout-ms": 10000,
