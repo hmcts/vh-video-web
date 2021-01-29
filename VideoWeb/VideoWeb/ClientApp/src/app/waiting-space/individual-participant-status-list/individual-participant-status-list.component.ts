@@ -28,11 +28,13 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         super(adalService, consultationService, eventService, videoWebService, logger);
     }
 
-    async ngOnInit() {
+    ngOnInit() {
         this.consultationService.resetWaitingForResponse();
         this.initParticipants();
         this.setupSubscribers();
-        await this.setCurrentParticipant();
+        this.videoWebService.getCurrentParticipant(this.conference.id).then(currentUser => {
+            this.loggedInUser = currentUser;
+        });
     }
 
     ngOnDestroy(): void {

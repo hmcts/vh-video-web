@@ -52,7 +52,9 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
     resetUnreadCounter(conferenceId: string, participantId: string): void {
         if (this.hearing.id === conferenceId) {
             const messageCount = this.unreadMessages.find(x => x.participant_id === participantId);
-            messageCount.number_of_unread_messages = 0;
+            if (messageCount) {
+                messageCount.number_of_unread_messages = 0;
+            }
         }
     }
 

@@ -105,28 +105,29 @@ export abstract class WaitingRoomBaseComponent {
         return this.conference.participants.find(x => x.id === loggedParticipant.participant_id);
     }
 
-    async getConference() {
-        try {
-            const data = await this.videoWebService.getConferenceById(this.conferenceId);
-
-            this.errorCount = 0;
-            this.loadingData = false;
-            this.hearing = new Hearing(data);
-            this.conference = this.hearing.getConference();
-
-            this.participant = await this.setLoggedParticipant();
-
-            this.logger.debug(`${this.loggerPrefix} Getting conference details`, {
-                conference: this.conferenceId,
-                participant: this.participant.id
+    getConference() {
+        return this.videoWebService
+            .getConferenceById(this.conferenceId)
+            .then((data: ConferenceResponse) => {
+                this.errorCount = 0;
+                this.loadingData = false;
+                this.hearing = new Hearing(data);
+                this.conference = this.hearing.getConference();
+                this.videoWebService.getCurrentParticipant(this.conference.id).then(currentUser => {
+                    this.participant = data.participants.find(x => x.id === currentUser.participant_id);
+                    this.logger.debug(`${this.loggerPrefix} Getting conference details`, {
+                        conference: this.conferenceId,
+                        participant: this.participant.id
+                    });
+                });
+            })
+            .catch(error => {
+                this.logger.error(`${this.loggerPrefix} There was an error getting a conference ${this.conferenceId}`, error, {
+                    conference: this.conferenceId
+                });
+                this.loadingData = false;
+                this.errorService.handleApiError(error);
             });
-        } catch (error) {
-            this.logger.error(`${this.loggerPrefix} There was an error getting a conference ${this.conferenceId}`, error, {
-                conference: this.conferenceId
-            });
-            this.loadingData = false;
-            this.errorService.handleApiError(error);
-        }
     }
 
     async getConferenceClosedTime(conferenceId: string): Promise<void> {

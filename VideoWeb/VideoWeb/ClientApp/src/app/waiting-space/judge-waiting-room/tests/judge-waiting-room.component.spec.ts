@@ -357,28 +357,28 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
     it('should not enable IM when hearing has not been initalised', () => {
         component.hearing = null;
-        expect(component.isIMEnabled()).toBeFalsy();
+        expect(component.defineIsIMEnabled()).toBeFalsy();
     });
 
     it('should not enable IM when participant is in a consultation', () => {
         component.participant.status = ParticipantStatus.InConsultation;
-        expect(component.isIMEnabled()).toBeFalsy();
+        expect(component.defineIsIMEnabled()).toBeFalsy();
     });
 
     it('should enable IM for non ipad devices', () => {
         deviceTypeService.isIpad.and.returnValue(false);
-        expect(component.isIMEnabled()).toBeTruthy();
+        expect(component.defineIsIMEnabled()).toBeTruthy();
     });
 
     it('should enable IM for ipad devices and video is not on screen', () => {
         deviceTypeService.isIpad.and.returnValue(true);
         component.showVideo = false;
-        expect(component.isIMEnabled()).toBeTruthy();
+        expect(component.defineIsIMEnabled()).toBeTruthy();
     });
 
     it('should not enable IM for ipad devices and video is on screen', () => {
         deviceTypeService.isIpad.and.returnValue(true);
         component.showVideo = true;
-        expect(component.isIMEnabled()).toBeFalsy();
+        expect(component.defineIsIMEnabled()).toBeFalsy();
     });
 });

@@ -66,8 +66,8 @@ export abstract class WRParticipantStatusListDirective {
         return participant.case_type_group === 'None';
     }
 
-    async setCurrentParticipant() {
-        this.loggedInUser = await this.videoWebService.getCurrentParticipant(this.conference.id);
+    setCurrentParticipant() {
+        this.videoWebService.getCurrentParticipant(this.conference.id).then(loggedUser => (this.loggedInUser = loggedUser));
     }
 
     executeTeardown(): void {

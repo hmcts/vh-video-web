@@ -41,9 +41,9 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         super(adalService, consultationService, eventService, videoWebService, logger);
     }
 
-    async ngOnInit() {
+    ngOnInit() {
         this.consultationService.resetWaitingForResponse();
-        await this.initParticipants();
+        this.initParticipants();
         this.setupSubscribers();
     }
 
@@ -51,11 +51,13 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         this.executeTeardown();
     }
 
-    async initParticipants() {
+    initParticipants() {
         super.initParticipants();
         this.filterRepresentatives();
-        await this.setCurrentParticipant();
-        this.isUserJudge = this.loggedInUser.role === Role.Judge;
+        this.videoWebService.getCurrentParticipant(this.conference.id).then(currentUser => {
+            this.loggedInUser = currentUser;
+            this.isUserJudge = this.loggedInUser.role === Role.Judge;
+        });
     }
 
     setupSubscribers(): void {

@@ -9,8 +9,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ImHelper } from '../im-helper';
-import { SessionStorage } from 'src/app/services/session-storage';
-import { ParticipantStorageKeys } from '../../vh-officer/services/models/session-keys';
 
 export abstract class ChatBaseComponent {
     protected hearing: Hearing;
@@ -19,7 +17,6 @@ export abstract class ChatBaseComponent {
     loggedInUserProfile: UserProfileResponse;
     disableScrollDown = false;
     loggedInUser: LoggedParticipantResponse;
-    private readonly loggedInUserStorage: SessionStorage<LoggedParticipantResponse>;
     emptyGuid = '00000000-0000-0000-0000-000000000000';
 
     DEFAULT_ADMIN_USERNAME = 'Admin';
@@ -31,7 +28,6 @@ export abstract class ChatBaseComponent {
         protected adalService: AdalService,
         protected imHelper: ImHelper
     ) {
-        this.loggedInUserStorage = new SessionStorage<LoggedParticipantResponse>(ParticipantStorageKeys.LOGGED_IN_USER);
     }
 
     abstract content: ElementRef<HTMLElement>;
@@ -79,11 +75,9 @@ export abstract class ChatBaseComponent {
     }
 
     async setLoggedParticipant() {
-        this.loggedInUser = this.loggedInUserStorage.get();
         if (!this.loggedInUser) {
             this.loggedInUser = await this.videoWebService.getCurrentParticipant(this.hearing.id);
             this.logger.debug(`[ChatHub]  logged user : ${this.loggedInUser}`);
-            this.loggedInUserStorage.set(this.loggedInUser);
         }
     }
 
