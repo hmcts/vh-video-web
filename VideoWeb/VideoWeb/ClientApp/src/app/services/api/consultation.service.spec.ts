@@ -112,6 +112,7 @@ describe('ConsultationService', () => {
         expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalled();
         expect(modalService.closeAll).toHaveBeenCalled();
         expect(apiClient.handleConsultationRequest).toHaveBeenCalledWith(request);
+
     });
 
     it('should stop ringing when responding to a request for consulation with "Accepted"', async () => {
