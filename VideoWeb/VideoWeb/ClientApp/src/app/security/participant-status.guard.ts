@@ -32,7 +32,7 @@ export class ParticipantStatusGuard implements CanActivate {
             if (
                 conferenceId &&
                 (!this.router.navigated || urlActive) &&
-                (profile.role === Role.Representative || profile.role === Role.Individual)
+                (profile.role === Role.Representative || profile.role === Role.Individual || profile.role === Role.JudicialOfficeHolder)
             ) {
                 this.logger.debug(`[ParticipantStatusGuard] Refresh detected. Resetting participant status to joining`);
                 this.participantStatusUpdateService.postParticipantStatus(EventType.ParticipantJoining, conferenceId).then(() => {});
