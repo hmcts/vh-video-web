@@ -140,7 +140,6 @@ describe('ConsultationService', () => {
         const conference = new ConferenceTestData().getConferenceDetailFuture();
         const requester = conference.participants[0];
         const requestee = conference.participants[1];
-
         const request = new PrivateConsultationRequest({
             conference_id: conference.id,
             requested_by_id: requester.id,
