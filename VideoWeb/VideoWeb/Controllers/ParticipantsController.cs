@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -247,5 +248,58 @@ namespace VideoWeb.Controllers
             }
         }
 
+        [HttpGet("{conferenceId}/currentparticipant")]
+        [SwaggerOperation(OperationId = "GetCurrentParticipant")]
+        [ProducesResponseType(typeof(LoggedParticipantResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetCurrentParticipantAsync(Guid conferenceId)
+        {
+
+            var participantsRoles = new List<Role>
+            {
+                Role.Judge,
+                Role.Individual,
+                Role.Representative,
+                Role.JudicialOfficeHolder
+            };
+
+            try
+            {
+                var claimsPrincipalToUserProfileResponseMapper = _mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
+                var profile = claimsPrincipalToUserProfileResponseMapper.Map(User);
+                var response = new LoggedParticipantResponse
+                {
+                    AdminUsername = User.Identity.Name,
+                    DisplayName = "Admin",
+                    Role = Role.VideoHearingsOfficer
+                };
+
+                if (participantsRoles.Any(roleParticipant => roleParticipant == profile.Role))
+                {
+                    var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
+                                   () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
+                    if (conference != null)
+                    {
+                        var participant = conference.Participants
+                        .Single(x => x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
+
+                        response = new LoggedParticipantResponse
+                        {
+                            ParticipantId = participant.Id,
+                            DisplayName = participant.DisplayName,
+                            Role = participant.Role
+                        };
+                    }
+                }
+
+                return Ok(response);
+            }
+            catch (VideoApiException e)
+            {
+                _logger.LogError(e, $"Unable to get current participant Id for " +
+                                    $"conference: {conferenceId}");
+                return StatusCode(e.StatusCode, e.Response);
+            }
+        }
     }
 }

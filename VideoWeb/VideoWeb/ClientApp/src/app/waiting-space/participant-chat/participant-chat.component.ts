@@ -44,15 +44,22 @@ export class ParticipantChatComponent extends ChatBaseComponent implements OnIni
         return this.adalService.userInfo.userName.toLowerCase();
     }
 
-    ngOnInit() {
-        this.logger.debug(`[ChatHub Judge] starting chat for ${this.hearing.id}`);
+    get participantId() {
+        return this.loggedInUser.participant_id;
+    }
+
+    async ngOnInit() {
+        this.logger.debug(`[ChatHub Participant] starting chat for ${this.hearing.id}`);
         this.showChat = false;
         this.unreadMessageCount = 0;
         this.loading = true;
-        this.setupChatSubscription().then(sub => (this.chatHubSubscription = sub));
-        this.retrieveChatForConference(this.adalService.userInfo.userName.toLowerCase()).then(messages => {
-            this.handleChatHistoryResponse(messages);
-        });
+        await this.setLoggedParticipant();
+        this.logger.debug(`[ChatHub Participant] get logged participant id: ${this.loggedInUser.participant_id}`);
+
+        this.chatHubSubscription = await this.setupChatSubscription();
+
+        const messages = await this.retrieveChatForConference(this.loggedInUser.participant_id);
+        this.handleChatHistoryResponse(messages);
     }
 
     ngAfterViewChecked(): void {
@@ -76,7 +83,7 @@ export class ParticipantChatComponent extends ChatBaseComponent implements OnIni
             conferenceId: this.hearing.id,
             id: Guid.create().toString(),
             to: this.DEFAULT_ADMIN_USERNAME,
-            from: this.adalService.userInfo.userName.toLowerCase(),
+            from: this.loggedInUser.participant_id,
             from_display_name: 'You',
             is_user: true,
             message: messageBody,

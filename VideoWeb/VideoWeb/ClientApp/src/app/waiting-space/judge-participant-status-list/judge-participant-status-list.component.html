@@ -14,7 +14,7 @@
       <div class="govuk-grid-column-two-thirds">
         <div class="govuk-heading-m govuk-!-margin-bottom-0">
           <span>Judge</span>
-          <span *ngIf="isUserJudge()"
+          <span *ngIf="isUserJudge"
             ><a href="javascript:void(0);" (click)="changeJudgeNameShow()" class="govuk-body govuk-link vh-ml10">Edit</a></span
           >
         </div>
@@ -51,7 +51,7 @@
       </div>
     </div>
 
-    <div *ngIf="!isUserJudge()" class="govuk-grid-column-full govuk-!-margin-top-3">
+    <div *ngIf="!isUserJudge" class="govuk-grid-column-full govuk-!-margin-top-3">
       <div class="govuk-body-s govuk-!-margin-bottom-3">
         <label
           id="p-{{ judge.id }}-status-participant"

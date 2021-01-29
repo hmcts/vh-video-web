@@ -1,7 +1,7 @@
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, LoggedParticipantResponse, ParticipantResponse } from 'src/app/services/clients/api-client';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -78,6 +78,13 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         confWithCloseTime.closed_date_time = new Date();
         confWithCloseTime.status = status;
         videoWebService.getConferenceById.and.resolveTo(confWithCloseTime);
+        videoWebService.getCurrentParticipant.and.resolveTo(
+            new LoggedParticipantResponse({
+                participant_id: globalParticipant.id,
+                display_name: globalParticipant.display_name,
+                role: globalParticipant.role
+            })
+        );
 
         const message = new ConferenceStatusMessage(globalConference.id, status);
 

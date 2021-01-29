@@ -17,7 +17,7 @@ describe('ParticipantSummary', () => {
     it('should map participant info', () => {
         const p = new ConferenceTestData().getConferenceFuture().participants[0];
         const participant = new ParticipantSummary(p);
-        expect(participant.username).toBe(p.username);
+        expect(participant.id).toBe(p.id);
         expect(participant.status).toBe(p.status);
         expect(participant.role).toBe(p.role);
         expect(participant.displayName).toBe(p.display_name);

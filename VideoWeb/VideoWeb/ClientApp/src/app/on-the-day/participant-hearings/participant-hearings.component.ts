@@ -2,10 +2,9 @@ import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceForIndividualResponse, Role, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { ConferenceForIndividualResponse, LoggedParticipantResponse, Role } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ProfileService } from '../../services/api/profile.service';
 import { pageUrls } from '../../shared/page-url.constants';
 
 @Component({
@@ -18,22 +17,18 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
     loadingData: boolean;
     interval: any;
     errorCount: number;
-    profile: UserProfileResponse;
+    loggedInParticipant: LoggedParticipantResponse;
 
     constructor(
         private videoWebService: VideoWebService,
         private errorService: ErrorService,
         private router: Router,
-        private profileService: ProfileService,
         private logger: Logger
     ) {
         this.loadingData = true;
     }
 
     ngOnInit() {
-        this.profileService.getUserProfile().then(profile => {
-            this.profile = profile;
-        });
         this.errorCount = 0;
         this.retrieveHearingsForUser();
         this.interval = setInterval(() => {
@@ -84,34 +79,32 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
         this.router.navigate([pageUrls.EquipmentCheck]);
     }
 
-    onConferenceSelected(conference: ConferenceForIndividualResponse) {
+    async onConferenceSelected(conference: ConferenceForIndividualResponse) {
         this.logger.debug('[ParticipantHearings] - Loading conference details', { conference: conference.id });
         this.videoWebService.setActiveIndividualConference(conference);
+        try {
+            if (!this.loggedInParticipant) {
+                this.loggedInParticipant = await this.videoWebService.getCurrentParticipant(conference.id);
+            }
+            const conferenceResponse = await this.videoWebService.getConferenceById(conference.id);
 
-        this.videoWebService
-            .getConferenceById(conference.id)
-            .then(data => {
-                const conferenceResponse = data;
-                const participant = conferenceResponse.participants.find(
-                    p => p.username.toLowerCase() === this.profile.username.toLowerCase()
-                );
-                if (participant.role === Role.JudicialOfficeHolder) {
-                    this.logger.debug('[ParticipantHearings] - User is a Judicial Office Holder. Skipping to waiting room', {
-                        conference: conference.id,
-                        participant: participant.id
-                    });
-                    this.router.navigate([pageUrls.JOHWaitingRoom, conference.id]);
-                } else {
-                    this.logger.debug('[ParticipantHearings] - Going to introduction page', {
-                        conference: conference.id,
-                        participant: participant.id
-                    });
-                    this.router.navigate([pageUrls.Introduction, conference.id]);
-                }
-            })
-            .catch(error => {
-                this.logger.warn('[ParticipantHearings] - Error retrieving conferences details', { conference: conference.id });
-                this.errorService.handleApiError(error);
-            });
+            const participant = conferenceResponse.participants.find(p => p.id === this.loggedInParticipant.participant_id);
+            if (participant.role === Role.JudicialOfficeHolder) {
+                this.logger.debug('[ParticipantHearings] - User is a Judicial Office Holder. Skipping to waiting room', {
+                    conference: conference.id,
+                    participant: participant.id
+                });
+                this.router.navigate([pageUrls.JOHWaitingRoom, conference.id]);
+            } else {
+                this.logger.debug('[ParticipantHearings] - Going to introduction page', {
+                    conference: conference.id,
+                    participant: participant.id
+                });
+                this.router.navigate([pageUrls.Introduction, conference.id]);
+            }
+        } catch (error) {
+            this.logger.warn('[ParticipantHearings] - Error retrieving conferences details', { conference: conference.id });
+            this.errorService.handleApiError(error);
+        }
     }
 }

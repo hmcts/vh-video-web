@@ -66,24 +66,28 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
     }
 
     get participantUsername() {
-        return this._participant.username.toLowerCase();
+        return this._participant.id;
+    }
+
+    get participantId() {
+        return this._participant.id;
     }
 
     ngAfterViewChecked(): void {
         this.scrollToBottom();
     }
 
-    ngOnInit() {
+    async ngOnInit() {
         this.logger.debug(`[ChatHub VHO] starting chat for ${this.hearing.id}`);
         this.initForm();
-        this.setupChatSubscription().then(sub => (this.chatHubSubscription = sub));
+        this.chatHubSubscription = await this.setupChatSubscription();
         this.updateChatWindow();
     }
 
     updateChatWindow() {
         this.loading = true;
         this.messages = [];
-        this.retrieveChatForConference(this.participant.username).then(messages => {
+        this.retrieveChatForConference(this.participant.id).then(messages => {
             this.messages = messages;
             this.loading = false;
         });
@@ -97,7 +101,7 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         const im = new InstantMessage({
             conferenceId: this.hearing.id,
             id: Guid.create().toString(),
-            to: this.participant.username,
+            to: this.participant.id,
             from: this.adalService.userInfo.userName,
             from_display_name: 'You',
             message: messageBody,

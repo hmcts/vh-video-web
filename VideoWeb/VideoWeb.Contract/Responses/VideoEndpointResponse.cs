@@ -29,5 +29,7 @@ namespace VideoWeb.Contract.Responses
         /// The display name when connected to the pexip node
         /// </summary>
         public string PexipDisplayName { get; set; }
+
+        public bool IsCurrentUser { get; set; }
     }
 }

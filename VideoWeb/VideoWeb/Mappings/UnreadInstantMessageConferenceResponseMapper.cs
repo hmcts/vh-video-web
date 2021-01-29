@@ -33,7 +33,7 @@ namespace VideoWeb.Mappings
                 unreadMessagesPerParticipant.Add(new UnreadAdminMessageResponse
                 {
                     NumberOfUnreadMessages = participantMessageCount,
-                    ParticipantUsername = participant.Username
+                    ParticipantId = participant.Id
                 });
             }
             return unreadMessagesPerParticipant;

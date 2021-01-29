@@ -19,7 +19,8 @@ import {
     UnreadInstantMessageConferenceCountResponse,
     JudgeNameListResponse,
     ParticipantForUserResponse,
-    VideoEndpointResponse
+    VideoEndpointResponse,
+    LoggedParticipantResponse
 } from '../clients/api-client';
 import { ConferenceLite } from '../models/conference-lite';
 import { SessionStorage } from '../session-storage';
@@ -95,10 +96,10 @@ export class VideoWebService implements IVideoWebApiService {
     /**
      * Get the chat history where sender/reciver is from/to given username in a conference
      * @param conferenceId conference Id
-     * @param participantUsername participant's username to filter chat history
+     * @param participantId participant's Id to filter chat history
      */
-    getConferenceChatHistory(conferenceId: string, participantUsername: string): Promise<ChatResponse[]> {
-        return this.apiClient.getConferenceInstantMessageHistoryForParticipant(conferenceId, participantUsername).toPromise();
+    getConferenceChatHistory(conferenceId: string, participantId: string): Promise<ChatResponse[]> {
+        return this.apiClient.getConferenceInstantMessageHistoryForParticipant(conferenceId, participantId).toPromise();
     }
 
     /**
@@ -112,10 +113,10 @@ export class VideoWebService implements IVideoWebApiService {
     /**
      * Get the total of unread message between an admin and given username
      * @param conferenceId conference id
-     * @param participantUsername participant's username to filter chat history
+     * @param participantId participant's Id to filter chat history
      */
-    getUnreadMessagesForParticipant(conferenceId: string, participantUsername: string): Promise<UnreadAdminMessageResponse> {
-        return this.apiClient.getNumberOfUnreadAdminMessagesForConferenceByParticipant(conferenceId, participantUsername).toPromise();
+    getUnreadMessagesForParticipant(conferenceId: string, participantId: string): Promise<UnreadAdminMessageResponse> {
+        return this.apiClient.getNumberOfUnreadAdminMessagesForConferenceByParticipant(conferenceId, participantId).toPromise();
     }
 
     setActiveIndividualConference(conference: ConferenceForIndividualResponse) {
@@ -146,5 +147,9 @@ export class VideoWebService implements IVideoWebApiService {
 
     getEndpointsForConference(conferenceId: string): Promise<VideoEndpointResponse[]> {
         return this.apiClient.getVideoEndpointsForConference(conferenceId).toPromise();
+    }
+
+    getCurrentParticipant(conferenceId: string): Promise<LoggedParticipantResponse> {
+        return this.apiClient.getCurrentParticipant(conferenceId).toPromise();
     }
 }
