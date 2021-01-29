@@ -41,29 +41,22 @@ export class NotificationToastrService {
             message += `\nwith\n${participantsList}`;
         }
 
+        let respondToConsultationRequest = async (answer: ConsultationAnswer) => {
+            this.logger.info(`${this.loggerPrefix} Responding to consultation request with ${answer}`);
+            await this.consultationService.respondToConsultationRequest(conferenceId, requestedBy.id, requestedFor.id, answer, roomLabel);
+        };
+
         const toast = this.toastr.show('', '', {
             timeOut: 1200000,
             tapToDismiss: false,
             toastComponent: VhToastComponent
         });
 
-        respondToConsultationRequest: async (answer: ConsultationAnswer) => {
-            this.logger.info(`${this.loggerPrefix} Responding to consultation request with ${answer}`);
-            await this.consultationService.respondToConsultationRequest(conferenceId, requestedBy.id, requestedFor.id, answer, roomLabel);
-        };
-
         (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
             color: inHearing ? 'white' : 'black',
             htmlBody: message,
-            timeout: async () => {
-                this.logger.info(`${this.loggerPrefix} Responding to consultation request with ${ConsultationAnswer.None}`);
-                await this.consultationService.respondToConsultationRequest(
-                    conferenceId,
-                    requestedBy.id,
-                    requestedFor.id,
-                    ConsultationAnswer.None,
-                    roomLabel
-                );
+            onNoAction: async () => {
+                respondToConsultationRequest(ConsultationAnswer.None);
                 if (this.toastr.toasts.length === 1) {
                     this.notificationSoundService.stopConsultationRequestRingtone();
                 }
@@ -72,28 +65,14 @@ export class NotificationToastrService {
                 {
                     label: 'Accept',
                     action: async () => {
-                        this.logger.info(`${this.loggerPrefix} Responding to consultation request with ${ConsultationAnswer.Accepted}`);
+                        respondToConsultationRequest(ConsultationAnswer.Accepted);
                         this.clearAllToastNotifications();
-                        await this.consultationService.respondToConsultationRequest(
-                            conferenceId,
-                            requestedBy.id,
-                            requestedFor.id,
-                            ConsultationAnswer.Accepted,
-                            roomLabel
-                        );
                     }
                 },
                 {
                     label: 'Decline',
                     action: async () => {
-                        this.logger.info(`${this.loggerPrefix} Responding to consultation request with ${ConsultationAnswer.Rejected}`);
-                        await this.consultationService.respondToConsultationRequest(
-                            conferenceId,
-                            requestedBy.id,
-                            requestedFor.id,
-                            ConsultationAnswer.Rejected,
-                            roomLabel
-                        );
+                        respondToConsultationRequest(ConsultationAnswer.Rejected);
                         if (this.toastr.toasts.length === 1) {
                             this.notificationSoundService.stopConsultationRequestRingtone();
                         }

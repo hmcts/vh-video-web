@@ -53,7 +53,6 @@ export class ConsultationService {
         });
 
         try {
-            this.stopCallRinging();
             this.clearModals();
             await this.apiClient
                 .respondToConsultationRequest(
@@ -84,7 +83,6 @@ export class ConsultationService {
             endpoint: endpoint.id
         });
         try {
-            this.stopCallRinging();
             this.clearModals();
             await this.apiClient
                 .callVideoEndpoint(
@@ -164,11 +162,6 @@ export class ConsultationService {
 
     initCallRingingSound(): void {
         this.notificationSoundService.initConsultationRequestRingtone();
-    }
-
-    stopCallRinging() {
-        this.logger.debug('[ConsultationService] - Start ringing sound.');
-        this.notificationSoundService.stopConsultationRequestRingtone();
     }
 
     displayConsultationErrorModal() {

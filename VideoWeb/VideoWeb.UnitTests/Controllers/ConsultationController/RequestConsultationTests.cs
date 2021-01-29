@@ -103,12 +103,12 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var result =
                 await _controller.RespondToConsultationRequestAsync(
                     ConsultationHelper.GetConsultationRequest(_testConference));
-            var typedResult = (NoContentResult) result;
-            typedResult.Should().NotBeNull();
+
+            result.Should().BeOfType<NoContentResult>();
             _mocker.Mock<IEventHubClient>().Verify(
                 x => x.ConsultationRequestResponseMessage
                     (It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<ConsultationAnswer>()),
-                Times.Never);
+                Times.Exactly(_testConference.Participants.Count + _testConference.Endpoints.Count));
         }
 
         [Test]
