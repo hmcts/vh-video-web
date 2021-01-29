@@ -6,9 +6,11 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
     ConsultationAnswer,
+    LoggedParticipantResponse,
     EndpointStatus,
     ParticipantResponse,
     ParticipantStatus,
+    Role,
     RoomType,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
@@ -79,7 +81,11 @@ describe('WaitingRoom ParticipantList Base', () => {
         adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
             userInfo: <adal.User>{ userName: judgeProfile.username, authenticated: true }
         });
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails', 'getObfuscatedName']);
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
+            'updateParticipantDetails',
+            'getObfuscatedName',
+            'getCurrentParticipant'
+        ]);
         videoWebService.getObfuscatedName.and.returnValue('test username');
     });
 
@@ -87,8 +93,17 @@ describe('WaitingRoom ParticipantList Base', () => {
         conference = new ConferenceTestData().getConferenceDetailNow();
         const participantObserverPanelMember = new ConferenceTestData().getListOfParticipantsObserverAndPanelMembers();
         participantObserverPanelMember.forEach(x => conference.participants.push(x));
+        const loggedUser = conference.participants.find(x => x.role === Role.Judge);
+        const userLogged = new LoggedParticipantResponse({
+            participant_id: loggedUser.id,
+            display_name: loggedUser.display_name,
+            role: loggedUser.role
+        });
+        videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(userLogged));
+
         component = new WrParticipantStatusListTest(adalService, consultationService, eventsService, logger, videoWebService);
         component.conference = conference;
+        component.loggedInUser = userLogged;
         component.ngOnInit();
     });
 
@@ -187,12 +202,12 @@ describe('WaitingRoom ParticipantList Base', () => {
 
     it('should logged in user as requester', () => {
         const result = component.getConsultationRequester();
-        expect(result.username).toBe(judgeProfile.username);
+        expect(result.id).toBe(component.loggedInUser.participant_id);
     });
 
     it('should not display vho consultation request when participant is unavailable', fakeAsync(() => {
         consultationService.displayAdminConsultationRequest.calls.reset();
-        const index = component.conference.participants.findIndex(x => x.username === judgeProfile.username);
+        const index = component.conference.participants.findIndex(x => x.id === component.loggedInUser.participant_id);
         component.conference.participants[index].status = ParticipantStatus.InHearing;
         const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, null);
         adminConsultationMessageSubject.next(payload);
@@ -213,7 +228,9 @@ describe('WaitingRoom ParticipantList Base', () => {
 
     it('should display vho consultation request', fakeAsync(() => {
         consultationService.displayAdminConsultationRequest.calls.reset();
-        const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, null);
+        const judgeUser = conference.participants.find(x => x.role === Role.Judge);
+
+        const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeUser.id, null);
 
         adminConsultationMessageSubject.next(payload);
         flushMicrotasks();
@@ -223,8 +240,9 @@ describe('WaitingRoom ParticipantList Base', () => {
 
     it('should cancel incoming timeout request when admin call is rejected', fakeAsync(() => {
         consultationService.cancelTimedOutIncomingRequest.calls.reset();
+        const judgeUser = conference.participants.find(x => x.role === Role.Judge);
 
-        const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, ConsultationAnswer.Rejected);
+        const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeUser.id, ConsultationAnswer.Rejected);
         adminConsultationMessageSubject.next(payload);
         flushMicrotasks();
 
@@ -243,13 +261,8 @@ describe('WaitingRoom ParticipantList Base', () => {
 
     it('should close all open modals when current user is transferred to a consultation room', fakeAsync(() => {
         consultationService.clearModals.calls.reset();
-        const loggedInUser = component.conference.participants.find(x => x.username === judgeProfile.username);
-        const payload = new ParticipantStatusMessage(
-            loggedInUser.id,
-            loggedInUser.username,
-            conference.id,
-            ParticipantStatus.InConsultation
-        );
+        const loggedInUser = component.conference.participants.find(x => x.id === component.loggedInUser.participant_id);
+        const payload = new ParticipantStatusMessage(loggedInUser.id, '', conference.id, ParticipantStatus.InConsultation);
         participantStatusSubject.next(payload);
         flushMicrotasks();
 
@@ -258,8 +271,9 @@ describe('WaitingRoom ParticipantList Base', () => {
 
     it('should reapply filters when another participant is transferred to a consultation room', () => {
         consultationService.clearModals.calls.reset();
-        const loggedInUser = component.conference.participants.find(x => x.username === judgeProfile.username);
-        const payload = new ParticipantStatusMessage(loggedInUser.id, indProfile.username, conference.id, ParticipantStatus.InConsultation);
+        const indivUser = conference.participants.find(x => x.role === Role.Individual);
+
+        const payload = new ParticipantStatusMessage(indivUser.id, '', conference.id, ParticipantStatus.InConsultation);
         participantStatusSubject.next(payload);
 
         expect(consultationService.clearModals).toHaveBeenCalledTimes(0);
@@ -271,10 +285,10 @@ describe('WaitingRoom ParticipantList Base', () => {
     });
 
     it('should send response to vho consultation request', async () => {
-        const judge = component.conference.participants.find(x => x.username === judgeProfile.username);
+        const judge = component.conference.participants.find(x => x.id === component.loggedInUser.participant_id);
         const answer = ConsultationAnswer.Rejected;
         component.consultationRequestee = new Participant(judge);
-        component.adminConsultationMessage = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judge.username);
+        component.adminConsultationMessage = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judge.id);
         await component.respondToVhoConsultationRequest(answer);
 
         expect(consultationService.respondToAdminConsultationRequest).toHaveBeenCalledWith(
@@ -289,10 +303,10 @@ describe('WaitingRoom ParticipantList Base', () => {
         const error = { error: 'unable to reach api' };
         consultationService.respondToAdminConsultationRequest.and.callFake(() => Promise.reject(error));
 
-        const judge = component.conference.participants.find(x => x.username === judgeProfile.username);
+        const judge = component.conference.participants.find(x => x.id === component.loggedInUser.participant_id);
         const answer = ConsultationAnswer.Rejected;
         component.consultationRequestee = new Participant(judge);
-        component.adminConsultationMessage = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judge.username);
+        component.adminConsultationMessage = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judge.id);
         spyOn(logger, 'error');
         await component.respondToVhoConsultationRequest(answer);
         expect(logger.error).toHaveBeenCalled();

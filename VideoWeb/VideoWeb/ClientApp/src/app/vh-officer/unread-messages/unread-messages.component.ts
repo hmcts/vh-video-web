@@ -49,17 +49,19 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
         return this.hearing;
     }
 
-    resetUnreadCounter(conferenceId: string, participantUsername: string): void {
+    resetUnreadCounter(conferenceId: string, participantId: string): void {
         if (this.hearing.id === conferenceId) {
-            const messageCount = this.unreadMessages.find(x => x.participant_username.toLowerCase() === participantUsername.toLowerCase());
+            const messageCount = this.unreadMessages.find(x => x.participant_id === participantId);
             messageCount.number_of_unread_messages = 0;
         }
     }
 
-    incrementUnreadCounter(conferenceId: string, participantUsername: string): void {
+    incrementUnreadCounter(conferenceId: string, participantId: string): void {
         if (this.hearing.id === conferenceId) {
-            const messageCount = this.unreadMessages.find(x => x.participant_username.toLowerCase() === participantUsername.toLowerCase());
-            messageCount.number_of_unread_messages++;
+            const messageCount = this.unreadMessages.find(x => x.participant_id === participantId);
+            if (messageCount) {
+                messageCount.number_of_unread_messages++;
+            }
         }
     }
 

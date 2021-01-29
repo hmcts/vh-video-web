@@ -96,7 +96,7 @@ describe('ParticipantsPanelComponent', () => {
         component.setupEventhubSubscribers();
         const status = ParticipantStatus.InConsultation;
         const pat = participants.filter(x => x.role === Role.Individual)[0];
-        const message = new ParticipantStatusMessage(pat.id, pat.username, conferenceId, status);
+        const message = new ParticipantStatusMessage(pat.id, '', conferenceId, status);
 
         participantStatusSubjectMock.next(message);
 
@@ -109,7 +109,7 @@ describe('ParticipantsPanelComponent', () => {
         component.setupEventhubSubscribers();
         const status = ParticipantStatus.InConsultation;
         const pat = participants.filter(x => x.role === Role.Individual)[0];
-        const message = new ParticipantStatusMessage(Guid.create().toString(), pat.username, conferenceId, status);
+        const message = new ParticipantStatusMessage(Guid.create().toString(), '', conferenceId, status);
 
         participantStatusSubjectMock.next(message);
 

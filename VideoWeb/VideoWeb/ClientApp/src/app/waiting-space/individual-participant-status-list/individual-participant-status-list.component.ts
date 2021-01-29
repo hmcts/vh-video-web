@@ -28,10 +28,11 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         super(adalService, consultationService, eventService, videoWebService, logger);
     }
 
-    ngOnInit() {
+    async ngOnInit() {
         this.consultationService.resetWaitingForResponse();
         this.initParticipants();
         this.setupSubscribers();
+        await this.setCurrentParticipant();
     }
 
     ngOnDestroy(): void {
@@ -75,7 +76,7 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
             return false;
         }
 
-        if (participant.username.toLocaleLowerCase().trim() === this.adalService.userInfo.userName.toLocaleLowerCase().trim()) {
+        if (participant.id === this.loggedInUser.participant_id) {
             return false;
         }
         return this.isParticipantAvailable(participant);
@@ -89,8 +90,9 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         if (!endpoint.defence_advocate_username) {
             return false;
         }
-        const requester = this.getConsultationRequester();
-        if (requester.username.toLowerCase() !== endpoint.defence_advocate_username) {
+        if (
+            endpoint.defence_advocate_username.toLocaleLowerCase().trim() !== this.adalService.userInfo.userName.toLocaleLowerCase().trim()
+        ) {
             return false;
         }
 
@@ -108,8 +110,8 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         this.consultationRequestee = new Participant(requestee);
         this.logger.info(
             `[IndividualParticipantStatusList] - ${this.videoWebService.getObfuscatedName(
-                requester.username
-            )} requesting private consultation with ${this.videoWebService.getObfuscatedName(requestee.username)}`,
+                requester.id
+            )} requesting private consultation with ${this.videoWebService.getObfuscatedName(requestee.id)}`,
             {
                 conference: this.conference.id,
                 requester: this.consultationRequester.id,
@@ -155,9 +157,7 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
 
     async answerConsultationRequest(consultationAnswer: ConsultationAnswer) {
         this.logger.info(
-            `[IndividualParticipantStatusList] - ${this.videoWebService.getObfuscatedName(
-                this.consultationRequestee.username
-            )} responded to consultation: ${consultationAnswer}`,
+            `[IndividualParticipantStatusList] - ${this.consultationRequestee.id} responded to consultation: ${consultationAnswer}`,
             {
                 conference: this.conference.id,
                 requester: this.consultationRequester.id,
@@ -181,8 +181,8 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
     }
 
     private initConsultationParticipants(message: ConsultationMessage): void {
-        const requester = this.conference.participants.find(x => x.username === message.requestedBy);
-        const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
+        const requester = this.conference.participants.find(x => x.id === message.requestedBy);
+        const requestee = this.conference.participants.find(x => x.id === message.requestedFor);
         this.consultationRequester = new Participant(requester);
         this.consultationRequestee = new Participant(requestee);
     }

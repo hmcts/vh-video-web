@@ -30,7 +30,7 @@ export interface IVideoWebApiService {
     raiseSelfTestFailureEvent(conferenceId: string, addSelfTestFailureEventRequest: AddSelfTestFailureEventRequest): Promise<void>;
     getPexipConfig(): Promise<SelfTestPexipResponse>;
     getObfuscatedName(displayName: string): string;
-    getConferenceChatHistory(conferenceId: string, participantUsername: string): Promise<ChatResponse[]>;
+    getConferenceChatHistory(conferenceId: string, participantId: string): Promise<ChatResponse[]>;
     updateParticipantDetails(conferenceId: string, participantId: string, updateParticipantRequest: UpdateParticipantRequest);
     getDistinctJudgeNames(): Promise<JudgeNameListResponse>;
     getParticipantsByConferenceId(conferenceId: string): Promise<ParticipantForUserResponse[]>;

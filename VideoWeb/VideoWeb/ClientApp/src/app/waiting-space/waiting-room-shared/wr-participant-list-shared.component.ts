@@ -6,6 +6,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
     ConsultationAnswer,
+    LoggedParticipantResponse,
     EndpointStatus,
     ParticipantResponse,
     ParticipantStatus,
@@ -35,6 +36,7 @@ export abstract class WRParticipantStatusListDirective {
 
     adminConsultationMessage: AdminConsultationMessage;
     eventHubSubscriptions$ = new Subscription();
+    loggedInUser: LoggedParticipantResponse;
 
     protected constructor(
         protected adalService: AdalService,
@@ -64,13 +66,17 @@ export abstract class WRParticipantStatusListDirective {
         return participant.case_type_group === 'None';
     }
 
+    async setCurrentParticipant() {
+        this.loggedInUser = await this.videoWebService.getCurrentParticipant(this.conference.id);
+    }
+
     executeTeardown(): void {
         this.eventHubSubscriptions$.unsubscribe();
         this.consultationService.clearOutgoingCallTimeout();
     }
 
     getConsultationRequester(): ParticipantResponse {
-        return this.conference.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
+        return this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
     }
 
     addSharedEventHubSubcribers() {
@@ -93,7 +99,8 @@ export abstract class WRParticipantStatusListDirective {
     }
 
     async displayAdminConsultationRequest(message: AdminConsultationMessage) {
-        const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
+        const requestee = this.conference.participants.find(x => x.id === message.requestedFor);
+
         if (!requestee) {
             this.logger.info(
                 `[WRParticipantStatusList] - Ignoring request for private consultation from Video Hearings Team since participant is not in hearing`
@@ -112,15 +119,19 @@ export abstract class WRParticipantStatusListDirective {
     }
 
     handleAdminConsultationResponse(message: AdminConsultationMessage) {
-        const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
+        const requestee = this.conference.participants.find(x => x.id === message.requestedFor);
         if (message.answer === ConsultationAnswer.Rejected) {
             this.logger.info(`[WRParticipantStatusList] - ${requestee.display_name} ******* rejected vho consultation`);
             this.consultationService.cancelTimedOutIncomingRequest();
         }
     }
 
-    handleParticipantStatusChange(message: ParticipantStatusMessage): void {
-        const isCurrentUser = this.adalService.userInfo.userName.toLocaleLowerCase() === message.username.toLowerCase();
+    async handleParticipantStatusChange(message: ParticipantStatusMessage): Promise<void> {
+        if (!this.loggedInUser) {
+            this.setCurrentParticipant();
+        }
+        const isCurrentUser = this.loggedInUser.participant_id === message.participantId;
+
         if (isCurrentUser && message.status === ParticipantStatus.InConsultation) {
             this.closeAllPCModals();
         }

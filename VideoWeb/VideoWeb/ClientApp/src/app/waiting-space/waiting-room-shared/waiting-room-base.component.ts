@@ -99,38 +99,45 @@ export abstract class WaitingRoomBaseComponent {
         ).length;
     }
 
-    getConference() {
-        return this.videoWebService
-            .getConferenceById(this.conferenceId)
-            .then((data: ConferenceResponse) => {
-                this.errorCount = 0;
-                this.loadingData = false;
-                this.hearing = new Hearing(data);
-                this.conference = this.hearing.getConference();
-                this.participant = data.participants.find(
-                    x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
-                );
-                this.logger.debug(`${this.loggerPrefix} Getting conference details`, {
-                    conference: this.conferenceId,
-                    participant: this.participant.id
-                });
-            })
-            .catch(error => {
-                this.logger.error(`${this.loggerPrefix} There was an error getting a conference ${this.conferenceId}`, error, {
-                    conference: this.conferenceId
-                });
-                this.loadingData = false;
-                this.errorService.handleApiError(error);
+    async setLoggedParticipant(): Promise<ParticipantResponse> {
+        const loggedParticipant = await this.videoWebService.getCurrentParticipant(this.conferenceId);
+
+        return this.conference.participants.find(x => x.id === loggedParticipant.participant_id);
+    }
+
+    async getConference() {
+        try {
+            const data = await this.videoWebService.getConferenceById(this.conferenceId);
+
+            this.errorCount = 0;
+            this.loadingData = false;
+            this.hearing = new Hearing(data);
+            this.conference = this.hearing.getConference();
+
+            this.participant = await this.setLoggedParticipant();
+
+            this.logger.debug(`${this.loggerPrefix} Getting conference details`, {
+                conference: this.conferenceId,
+                participant: this.participant.id
             });
+        } catch (error) {
+            this.logger.error(`${this.loggerPrefix} There was an error getting a conference ${this.conferenceId}`, error, {
+                conference: this.conferenceId
+            });
+            this.loadingData = false;
+            this.errorService.handleApiError(error);
+        }
     }
 
     async getConferenceClosedTime(conferenceId: string): Promise<void> {
         try {
             this.conference = await this.videoWebService.getConferenceById(conferenceId);
             this.hearing = new Hearing(this.conference);
-            this.participant = this.conference.participants.find(
-                x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
-            );
+
+            if (!this.participant) {
+                this.participant = await this.setLoggedParticipant();
+            }
+
             this.logger.info(`${this.loggerPrefix} Conference closed.`, {
                 conference: this.conferenceId,
                 participant: this.participant.id
@@ -428,7 +435,7 @@ export abstract class WaitingRoomBaseComponent {
             return;
         }
         const participant = this.hearing.getConference().participants.find(p => p.id === message.participantId);
-        const isMe = participant.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase();
+        const isMe = this.participant.id === participant.id;
         if (isMe) {
             this.participant.status = message.status;
             this.isTransferringIn = false;
@@ -461,7 +468,7 @@ export abstract class WaitingRoomBaseComponent {
             return;
         }
         const participant = this.hearing.getConference().participants.find(p => p.id === message.participantId);
-        const isMe = participant.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase();
+        const isMe = this.participant.id === participant.id;
         if (isMe) {
             this.isTransferringIn = false;
             this.isTransferringIn = message.transferDirection === TransferDirection.In;
