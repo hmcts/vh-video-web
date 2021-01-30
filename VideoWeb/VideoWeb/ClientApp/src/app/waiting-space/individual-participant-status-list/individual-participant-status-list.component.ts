@@ -37,7 +37,6 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         })();
     }
 
-  
     ngOnDestroy(): void {
         this.executeTeardown();
     }
