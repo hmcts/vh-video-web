@@ -72,7 +72,6 @@ export abstract class ChatBaseComponent {
 
         this.removeMessageFromPending(message);
         this.messages.push(message);
-
     }
 
     addMessageToPending(message: InstantMessage) {
@@ -165,7 +164,6 @@ export abstract class ChatBaseComponent {
     }
 
     async sendInstantMessage(instantMessage: InstantMessage) {
-
         this.addMessageToPending(instantMessage);
         await this.eventService.sendMessage(instantMessage);
         this.disableScrollDown = false;
