@@ -32,11 +32,12 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         this.consultationService.resetWaitingForResponse();
         this.initParticipants();
         this.setupSubscribers();
-        this.videoWebService.getCurrentParticipant(this.conference.id).then(currentUser => {
-            this.loggedInUser = currentUser;
-        });
+        (async () => {
+            this.loggedInUser = await this.videoWebService.getCurrentParticipant(this.conference.id);
+        })();
     }
 
+  
     ngOnDestroy(): void {
         this.executeTeardown();
     }

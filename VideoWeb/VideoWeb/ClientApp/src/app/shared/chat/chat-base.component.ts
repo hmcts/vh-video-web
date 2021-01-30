@@ -27,8 +27,7 @@ export abstract class ChatBaseComponent {
         protected logger: Logger,
         protected adalService: AdalService,
         protected imHelper: ImHelper
-    ) {
-    }
+    ) {}
 
     abstract content: ElementRef<HTMLElement>;
     abstract sendMessage(messageBody: string): void;
@@ -47,7 +46,6 @@ export abstract class ChatBaseComponent {
         this.logger.debug('[ChatHub] Subscribing to chat messages');
         const sub = this.eventService.getChatMessage().subscribe({
             next: async message => {
-                await this.setLoggedParticipant();
                 await this.handleIncomingMessage(message);
             }
         });
@@ -58,27 +56,23 @@ export abstract class ChatBaseComponent {
         if (!this.isMessageRecipientForUser(message)) {
             return;
         }
+
         const from = message.from.toUpperCase();
         const username =
             this.loggedInUser && this.loggedInUser.participant_id && this.loggedInUser.participant_id !== this.emptyGuid
                 ? this.loggedInUser.participant_id
                 : this.adalService.userInfo.userName.toUpperCase();
-        if (from === username) {
+        if (from === username.toUpperCase()) {
             message.from_display_name = 'You';
             message.is_user = true;
         } else {
             message = await this.verifySender(message);
             this.handleIncomingOtherMessage(message);
         }
+
         this.removeMessageFromPending(message);
         this.messages.push(message);
-    }
 
-    async setLoggedParticipant() {
-        if (!this.loggedInUser) {
-            this.loggedInUser = await this.videoWebService.getCurrentParticipant(this.hearing.id);
-            this.logger.debug(`[ChatHub]  logged user : ${this.loggedInUser}`);
-        }
     }
 
     addMessageToPending(message: InstantMessage) {
@@ -171,6 +165,7 @@ export abstract class ChatBaseComponent {
     }
 
     async sendInstantMessage(instantMessage: InstantMessage) {
+
         this.addMessageToPending(instantMessage);
         await this.eventService.sendMessage(instantMessage);
         this.disableScrollDown = false;

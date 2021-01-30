@@ -76,7 +76,12 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseComponent implements
         this.getConference().then(() => {
             this.subscribeToClock();
             this.startEventHubSubscribers();
-            this.getJwtokenAndConnectToPexip();
+            (async () => {
+                const loggedParticipant = await this.videoWebService.getCurrentParticipant(this.conferenceId);
+                this.participant = this.conference.participants.find(x => x.id === loggedParticipant.participant_id);
+
+                this.getJwtokenAndConnectToPexip();
+            })();
         });
     }
 
