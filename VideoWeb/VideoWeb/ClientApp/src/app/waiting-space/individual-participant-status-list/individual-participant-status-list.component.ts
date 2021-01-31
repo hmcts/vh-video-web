@@ -8,6 +8,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
+import { ParticipantResponseExtend } from '../../shared/models/participant-response-extend';
 import { HearingRole } from '../models/hearing-role-model';
 import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-participant-list-shared.component';
 
@@ -18,6 +19,7 @@ import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-part
 })
 export class IndividualParticipantStatusListComponent extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
     wingers: ParticipantResponse[];
+    nonJudgeParticipantsExtend: ParticipantResponseExtend[] = [];
     constructor(
         protected adalService: AdalService,
         protected consultationService: ConsultationService,
@@ -34,11 +36,21 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         this.setupSubscribers();
         (async () => {
             this.loggedInUser = await this.videoWebService.getCurrentParticipant(this.conference.id);
+            this.extendNonJudgeParticipants();
         })();
     }
 
     ngOnDestroy(): void {
         this.executeTeardown();
+    }
+
+    extendNonJudgeParticipants() {
+        this.nonJudgeParticipantsExtend = [];
+        this.nonJudgeParticipants.forEach(x => {
+            const extendParticipant = new ParticipantResponseExtend(x);
+            extendParticipant.canCallParticipant = this.canCallParticipant(x);
+            this.nonJudgeParticipantsExtend.push(extendParticipant);
+        });
     }
 
     setupSubscribers() {

@@ -55,15 +55,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName', 'getCurrentParticipant']);
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
-        videoWebService.getCurrentParticipant.and.returnValue(
-            Promise.resolve(
-                new LoggedParticipantResponse({
-                    participant_id: '1111-1111',
-                    display_name: 'Jonh Doe',
-                    role: Role.Judge
-                })
-            )
-        );
+
         logger = jasmine.createSpyObj<Logger>('Logger', ['debug', 'info', 'warn', 'event', 'error']);
         participantsObserverPanelMember = testdata.getListOfParticipantsObserverAndPanelMembers();
         participantsWinger = testdata.getListOfParticipantsWingers();
@@ -85,12 +77,14 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         component.consultationRequestee = consultationRequestee;
         component.conference = conference;
         const judge = component.conference.participants.find(x => x.role === Role.Judge);
-
-        component.loggedInUser = new LoggedParticipantResponse({
+        const logged = new LoggedParticipantResponse({
             participant_id: judge.id,
             display_name: judge.display_name,
             role: Role.Judge
         });
+        videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(logged));
+
+        component.loggedInUser = logged;
         component.setupSubscribers();
     });
 
@@ -103,9 +97,16 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         expect(component).toBeTruthy();
         expect(component.judge).toBeDefined();
         expect(component.nonJudgeParticipants).toBeDefined();
+        expect(component.nonJudgeParticipantsExtend).toBeDefined();
         expect(consultationService.resetWaitingForResponse).toHaveBeenCalled();
     });
-
+    it('should set can call flag for participants', () => {
+        component.nonJudgeParticipants = conference.participants.filter(
+            x => x.role !== Role.Judge && x.role !== Role.JudicialOfficeHolder && x.hearing_role !== HearingRole.OBSERVER
+        );
+        component.extendNonJudgeParticipants();
+        expect(component.nonJudgeParticipantsExtend.length).toBe(component.nonJudgeParticipants.length);
+    });
     it('should not be able to call participant is user is judge', () => {
         const participant = new ParticipantResponse({
             status: ParticipantStatus.InConsultation,

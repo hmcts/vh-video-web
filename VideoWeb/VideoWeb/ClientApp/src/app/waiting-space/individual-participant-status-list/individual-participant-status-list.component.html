@@ -57,7 +57,7 @@
       </div>
     </div>
     <div class="vh-border">
-      <div *ngFor="let participant of nonJudgeParticipants; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
+      <div *ngFor="let participant of nonJudgeParticipantsExtend; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
         <div id="p-row-{{ participant.id }}-participant" class="govuk-grid-column-full">
           <p id="p-{{ participant.id }}-name" class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
 
@@ -73,7 +73,7 @@
             {{ participant.case_type_group }}
           </p>
 
-          <div *ngIf="canCallParticipant(participant) && !isWitness(participant)">
+          <div *ngIf="participant.canCallParticipant && !isWitness(participant)">
             <img src="/assets/images/glyphicons-181-facetime-video.png" width="20" height="13" alt="video camera icon" />
             <a
               id="p-call-{{ participant.id }}-btn"
