@@ -1,4 +1,5 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import {
     ConferenceResponse,
@@ -14,7 +15,6 @@ import { SelectedUserMediaDevice } from '../../../shared/models/selected-user-me
 import { UserMediaDevice } from '../../../shared/models/user-media-device';
 import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
 import {
-    activatedRoute,
     adalService,
     consultationService,
     deviceTypeService,
@@ -37,7 +37,8 @@ import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
     let audioRecordingService: jasmine.SpyObj<AudioRecordingService>;
-
+    let activatedRoute: ActivatedRoute;
+    let logged: LoggedParticipantResponse;
     beforeAll(() => {
         initAllWRDependencies();
         audioRecordingService = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
@@ -45,6 +46,15 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     beforeEach(async () => {
+        logged = new LoggedParticipantResponse({
+            participant_id: globalParticipant.id,
+            display_name: globalParticipant.display_name,
+            role: globalParticipant.role
+        });
+        activatedRoute = <any>{
+            snapshot: { data: { loggedUser: logged }, paramMap: convertToParamMap({ conferenceId: globalConference.id }) }
+        };
+
         userMediaService.setDefaultDevicesInCache.and.returnValue(Promise.resolve());
         component = new JudgeWaitingRoomComponent(
             activatedRoute,
@@ -85,14 +95,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
     it('should init hearing alert and setup Client', fakeAsync(() => {
         videoWebService.getJwToken.calls.reset();
-        videoWebService.getCurrentParticipant.and.resolveTo(
-            new LoggedParticipantResponse({
-                participant_id: globalParticipant.id,
-                display_name: globalParticipant.display_name,
-                role: globalParticipant.role
-            })
-        );
-
         component.ngOnInit();
         flushMicrotasks();
         tick(100);

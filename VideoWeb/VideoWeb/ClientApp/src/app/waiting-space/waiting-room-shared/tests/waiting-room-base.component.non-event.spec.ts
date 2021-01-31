@@ -1,3 +1,4 @@
+import { fakeAsync, tick } from '@angular/core/testing';
 import { Subscription } from 'rxjs';
 import {
     ConferenceResponse,
@@ -66,25 +67,24 @@ describe('WaitingRoomComponent message and clock', () => {
         videoWebService.getConferenceById.calls.reset();
     });
 
-    it('should get conference', async () => {
+    it('should get conference', fakeAsync(async () => {
         component.hearing = undefined;
         component.conference = undefined;
         component.participant = undefined;
         component.connected = false;
 
         videoWebService.getConferenceById.and.resolveTo(globalConference);
-        videoWebService.getCurrentParticipant.and.resolveTo(
-            new LoggedParticipantResponse({
-                participant_id: globalParticipant.id,
-                display_name: globalParticipant.display_name,
-                role: globalParticipant.role
-            })
-        );
-        await component.getConference();
+        component.loggedInUser = new LoggedParticipantResponse({
+            participant_id: globalConference.participants[0].id,
+            display_name: globalConference.participants[0].display_name,
+            role: globalConference.participants[0].role
+        });
+        component.getConference();
+        tick();
         expect(component.loadingData).toBeFalsy();
         expect(component.hearing).toBeDefined();
         expect(component.participant).toBeDefined();
-    });
+    }));
 
     it('should handle api error with error service when get conference fails', async () => {
         component.hearing = undefined;

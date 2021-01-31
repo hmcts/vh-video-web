@@ -75,6 +75,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     ngOnInit() {
         this.errorCount = 0;
         this.logger.debug(`${this.loggerPrefixJudge} Loading judge waiting room`);
+        this.loggedInUser = this.route.snapshot.data['loggedUser'];
+
         this.userMediaService
             .setDefaultDevicesInCache()
             .then(() => {
@@ -82,16 +84,14 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
                 this.connected = false;
                 this.getConference().then(() => {
                     this.startEventHubSubscribers();
-                    (async () => {
-                        const loggedParticipant = await this.videoWebService.getCurrentParticipant(this.conferenceId);
-                        this.participant = this.conference.participants.find(x => x.id === loggedParticipant.participant_id);
 
-                        this.getJwtokenAndConnectToPexip();
-                        if (this.conference.audio_recording_required) {
-                            this.initAudioRecordingInterval();
-                        }
-                        this.isIMEnabled = this.defineIsIMEnabled();
-                    })();
+                    this.participant = this.setLoggedParticipant();
+
+                    this.getJwtokenAndConnectToPexip();
+                    if (this.conference.audio_recording_required) {
+                        this.initAudioRecordingInterval();
+                    }
+                    this.isIMEnabled = this.defineIsIMEnabled();
                 });
             })
             .catch((error: Error | MediaStreamError) => {

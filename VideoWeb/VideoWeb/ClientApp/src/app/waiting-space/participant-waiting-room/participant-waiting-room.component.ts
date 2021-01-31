@@ -72,15 +72,12 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         this.logger.debug('[Participant WR] - Loading participant waiting room');
         this.connected = false;
         this.notificationSoundsService.initHearingAlertSound();
+        this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.getConference().then(() => {
             this.subscribeToClock();
             this.startEventHubSubscribers();
-            (async () => {
-                const loggedParticipant = await this.videoWebService.getCurrentParticipant(this.conferenceId);
-                this.participant = this.conference.participants.find(x => x.id === loggedParticipant.participant_id);
-
-                this.getJwtokenAndConnectToPexip();
-            })();
+            this.participant = this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
+            this.getJwtokenAndConnectToPexip();
         });
     }
 

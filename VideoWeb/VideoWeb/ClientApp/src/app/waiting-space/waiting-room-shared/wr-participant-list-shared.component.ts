@@ -66,10 +66,6 @@ export abstract class WRParticipantStatusListDirective {
         return participant.case_type_group === 'None';
     }
 
-    setCurrentParticipant() {
-        this.videoWebService.getCurrentParticipant(this.conference.id).then(loggedUser => (this.loggedInUser = loggedUser));
-    }
-
     executeTeardown(): void {
         this.eventHubSubscriptions$.unsubscribe();
         this.consultationService.clearOutgoingCallTimeout();
@@ -127,9 +123,6 @@ export abstract class WRParticipantStatusListDirective {
     }
 
     async handleParticipantStatusChange(message: ParticipantStatusMessage): Promise<void> {
-        if (!this.loggedInUser) {
-            this.setCurrentParticipant();
-        }
         const isCurrentUser = this.loggedInUser.participant_id === message.participantId;
 
         if (isCurrentUser && message.status === ParticipantStatus.InConsultation) {

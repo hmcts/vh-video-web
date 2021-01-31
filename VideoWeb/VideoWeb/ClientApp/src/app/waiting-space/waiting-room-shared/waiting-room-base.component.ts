@@ -7,6 +7,7 @@ import {
     ConferenceResponse,
     ConferenceStatus,
     ConsultationAnswer,
+    LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
     Role,
@@ -61,6 +62,7 @@ export abstract class WaitingRoomBaseComponent {
     CALL_TIMEOUT = 31000; // 31 seconds
     callbackTimeout: NodeJS.Timer;
     private readonly loggerPrefix = '[WR] -';
+    loggedInUser: LoggedParticipantResponse;
 
     protected constructor(
         protected route: ActivatedRoute,
@@ -99,10 +101,8 @@ export abstract class WaitingRoomBaseComponent {
         ).length;
     }
 
-    async setLoggedParticipant(): Promise<ParticipantResponse> {
-        const loggedParticipant = await this.videoWebService.getCurrentParticipant(this.conferenceId);
-
-        return this.conference.participants.find(x => x.id === loggedParticipant.participant_id);
+    setLoggedParticipant(): ParticipantResponse {
+        return this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
     }
 
     getConference() {
@@ -113,12 +113,11 @@ export abstract class WaitingRoomBaseComponent {
                 this.loadingData = false;
                 this.hearing = new Hearing(data);
                 this.conference = this.hearing.getConference();
-                this.videoWebService.getCurrentParticipant(this.conference.id).then(currentUser => {
-                    this.participant = data.participants.find(x => x.id === currentUser.participant_id);
-                    this.logger.debug(`${this.loggerPrefix} Getting conference details`, {
-                        conference: this.conferenceId,
-                        participant: this.participant.id
-                    });
+
+                this.participant = this.setLoggedParticipant();
+                this.logger.debug(`${this.loggerPrefix} Getting conference details`, {
+                    conference: this.conferenceId,
+                    participant: this.participant.id
                 });
             })
             .catch(error => {
@@ -136,7 +135,7 @@ export abstract class WaitingRoomBaseComponent {
             this.hearing = new Hearing(this.conference);
 
             if (!this.participant) {
-                this.participant = await this.setLoggedParticipant();
+                this.participant = this.setLoggedParticipant();
             }
 
             this.logger.info(`${this.loggerPrefix} Conference closed.`, {

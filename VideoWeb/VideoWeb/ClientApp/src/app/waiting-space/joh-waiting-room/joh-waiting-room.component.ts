@@ -72,16 +72,13 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseComponent implements
         this.errorCount = 0;
         this.logger.debug(`${this.loggerPrefixJOH} Loading JOH waiting room`);
         this.connected = false;
+        this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.notificationSoundsService.initHearingAlertSound();
         this.getConference().then(() => {
             this.subscribeToClock();
             this.startEventHubSubscribers();
-            (async () => {
-                const loggedParticipant = await this.videoWebService.getCurrentParticipant(this.conferenceId);
-                this.participant = this.conference.participants.find(x => x.id === loggedParticipant.participant_id);
-
-                this.getJwtokenAndConnectToPexip();
-            })();
+            this.participant = this.setLoggedParticipant();
+            this.getJwtokenAndConnectToPexip();
         });
     }
 

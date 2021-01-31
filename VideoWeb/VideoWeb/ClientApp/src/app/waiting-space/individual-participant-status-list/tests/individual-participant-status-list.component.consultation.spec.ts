@@ -1,3 +1,4 @@
+import { ActivatedRoute } from '@angular/router';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -47,6 +48,8 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
     let timer: jasmine.SpyObj<NodeJS.Timeout>;
     const testdata = new ConferenceTestData();
+    let logged: LoggedParticipantResponse;
+    let activatedRoute: ActivatedRoute;
 
     beforeAll(() => {
         adalService = mockAdalService;
@@ -67,21 +70,33 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         conference.participants.forEach(p => {
             p.status = ParticipantStatus.Available;
         });
-        consultationRequester = new Participant(conference.participants[0]);
-        consultationRequestee = new Participant(conference.participants[1]);
+        const judge = conference.participants.find(x => x.role === Role.Judge);
 
-        timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
-        component = new IndividualParticipantStatusListComponent(adalService, consultationService, eventsService, logger, videoWebService);
-
-        component.consultationRequester = consultationRequester;
-        component.consultationRequestee = consultationRequestee;
-        component.conference = conference;
-        const judge = component.conference.participants.find(x => x.role === Role.Judge);
-        const logged = new LoggedParticipantResponse({
+        logged = new LoggedParticipantResponse({
             participant_id: judge.id,
             display_name: judge.display_name,
             role: Role.Judge
         });
+        consultationRequester = new Participant(conference.participants[0]);
+        consultationRequestee = new Participant(conference.participants[1]);
+        activatedRoute = <any>{
+            snapshot: { data: { loggedUser: logged } }
+        };
+
+        timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
+        component = new IndividualParticipantStatusListComponent(
+            adalService,
+            consultationService,
+            eventsService,
+            logger,
+            videoWebService,
+            activatedRoute
+        );
+
+        component.consultationRequester = consultationRequester;
+        component.consultationRequestee = consultationRequestee;
+        component.conference = conference;
+
         videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(logged));
 
         component.loggedInUser = logged;

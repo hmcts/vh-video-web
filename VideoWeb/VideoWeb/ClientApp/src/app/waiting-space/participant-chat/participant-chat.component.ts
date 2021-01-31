@@ -1,4 +1,5 @@
 import { AfterViewChecked, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
@@ -35,7 +36,8 @@ export class ParticipantChatComponent extends ChatBaseComponent implements OnIni
         protected eventService: EventsService,
         protected logger: Logger,
         protected adalService: AdalService,
-        protected imHelper: ImHelper
+        protected imHelper: ImHelper,
+        private route: ActivatedRoute
     ) {
         super(videoWebService, profileService, eventService, logger, adalService, imHelper);
     }
@@ -53,15 +55,12 @@ export class ParticipantChatComponent extends ChatBaseComponent implements OnIni
         this.showChat = false;
         this.unreadMessageCount = 0;
         this.loading = true;
-
-        (async () => {
-            this.loggedInUser = await this.videoWebService.getCurrentParticipant(this.hearing.id);
-            this.logger.debug(`[ChatHub Participant] get logged participant id: ${this.loggedInUser.participant_id}`);
-            this.setupChatSubscription().then(sub => (this.chatHubSubscription = sub));
-            this.retrieveChatForConference(this.loggedInUser.participant_id).then(messages => {
-                this.handleChatHistoryResponse(messages);
-            });
-        })();
+        this.loggedInUser = this.route.snapshot.data['loggedUser'];
+        this.logger.debug(`[ChatHub Participant] get logged participant id: ${this.loggedInUser.participant_id}`);
+        this.setupChatSubscription().then(sub => (this.chatHubSubscription = sub));
+        this.retrieveChatForConference(this.loggedInUser.participant_id).then(messages => {
+            this.handleChatHistoryResponse(messages);
+        });
     }
 
     ngAfterViewChecked(): void {

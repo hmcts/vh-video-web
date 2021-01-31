@@ -1,4 +1,5 @@
 import { fakeAsync, tick } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import {
@@ -30,7 +31,7 @@ describe('JudgeParticipantStatusListComponent', () => {
     const logger: Logger = new MockLogger();
     let conference: ConferenceResponse;
     let userInfo: adal.User;
-
+    let activatedRoute: ActivatedRoute;
     beforeAll(() => {
         consultationService = consultationServiceSpyFactory();
         userInfo = <adal.User>{ userName: judgeProfile.username, authenticated: true };
@@ -42,16 +43,15 @@ describe('JudgeParticipantStatusListComponent', () => {
             'getObfuscatedName',
             'getCurrentParticipant'
         ]);
+        const logged = new LoggedParticipantResponse({
+            participant_id: '1111-1111',
+            display_name: 'Some name',
+            role: Role.Individual
+        });
         videoWebService.getObfuscatedName.and.returnValue('test username');
-        videoWebService.getCurrentParticipant.and.returnValue(
-            Promise.resolve(
-                new LoggedParticipantResponse({
-                    participant_id: '1111-1111',
-                    display_name: 'Some name',
-                    role: Role.Individual
-                })
-            )
-        );
+        activatedRoute = <any>{
+            snapshot: { data: { loggedUser: logged } }
+        };
     });
 
     beforeEach(() => {
@@ -60,13 +60,15 @@ describe('JudgeParticipantStatusListComponent', () => {
         participantObserverPanelMember.forEach(x => conference.participants.push(x));
         const participantWinger = new ConferenceTestData().getListOfParticipantsWingers();
         participantWinger.forEach(x => conference.participants.push(x));
-        component = new JudgeParticipantStatusListComponent(adalService, consultationService, eventsService, logger, videoWebService);
+        component = new JudgeParticipantStatusListComponent(
+            adalService,
+            consultationService,
+            eventsService,
+            logger,
+            videoWebService,
+            activatedRoute
+        );
         component.conference = conference;
-        component.loggedInUser = new LoggedParticipantResponse({
-            participant_id: conference.participants[2].id,
-            display_name: 'Some Name',
-            role: Role.Judge
-        });
         component.ngOnInit();
     });
 
@@ -202,27 +204,30 @@ describe('JudgeParticipantStatusListComponent', () => {
             expect(component.getEndpointStatusCss(endpoint)).toBe(test.expected);
         });
     });
-
+    it('should return false when user is not judge', () => {
+        expect(component.isUserJudge).toBeFalsy();
+    });
     it('should return true when user is judge', fakeAsync(async () => {
-        const loggedInUser = new LoggedParticipantResponse({
+        const logged = new LoggedParticipantResponse({
             participant_id: conference.participants.find(x => x.role === Role.Judge).id,
             display_name: 'Judge Name',
             role: Role.Judge
         });
-        videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(loggedInUser));
-        await component.ngOnInit();
-        tick();
+        activatedRoute = activatedRoute = <any>{
+            snapshot: { data: { loggedUser: logged } }
+        };
+        component = new JudgeParticipantStatusListComponent(
+            adalService,
+            consultationService,
+            eventsService,
+            logger,
+            videoWebService,
+            activatedRoute
+        );
+        component.conference = conference;
+        component.ngOnInit();
         expect(component.isUserJudge).toBeTruthy();
     }));
-
-    it('should return false when user is not judge', () => {
-        component.loggedInUser = new LoggedParticipantResponse({
-            participant_id: conference.participants[0].id,
-            display_name: 'Some Name',
-            role: Role.Individual
-        });
-        expect(component.isUserJudge).toBeFalsy();
-    });
 
     it('should not be able to call participants', () => {
         expect(component.canCallParticipant(component.conference.participants[0])).toBeFalsy();
