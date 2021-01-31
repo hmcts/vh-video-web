@@ -4,17 +4,22 @@ import { Logger } from './logging/logger-base';
 import { ConnectionStatusService } from '../services/connection-status.service';
 import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { of } from 'rxjs';
+import { LocationService } from './location.service';
+import { pageUrls } from '../shared/page-url.constants';
 
 describe('ConnectionStatusService', () => {
     let service: ConnectionStatusService;
     let httpClientSpy: jasmine.SpyObj<HttpClient>;
+    let localtionServiceSpy: jasmine.SpyObj<LocationService>;
     const mockLoggerToConsole: Logger = new MockLoggerToConsole();
     let TIME_TO_WAIT: number;
 
     beforeEach(() => {
         httpClientSpy = jasmine.createSpyObj('HttpClient', ['head']);
-        service = new ConnectionStatusService(mockLoggerToConsole, httpClientSpy);
+        localtionServiceSpy = jasmine.createSpyObj('LocationService', ['getCurrentPathName']);
+        service = new ConnectionStatusService(mockLoggerToConsole, httpClientSpy, localtionServiceSpy);
         TIME_TO_WAIT = service.INTERVAL_IN_MS + 1;
+        localtionServiceSpy.getCurrentPathName.and.returnValue(`/${pageUrls.Declaration}`);
     });
 
     // ---------------------
@@ -157,6 +162,21 @@ describe('ConnectionStatusService', () => {
         }
 
         service.stopTimer();
+    }));
+
+    it('should not fire notification on waiting room for bad pings', fakeAsync(() => {
+        // Arrange
+        localtionServiceSpy.getCurrentPathName.and.returnValue(`/${pageUrls.ParticipantWaitingRoom}`);
+
+        const NUMBER_OF_BAD_PINGS = 1;
+        setupHttpCallsToReturn(false);
+        const notifications = setupListenToNotifications();
+
+        // Act
+        callService(NUMBER_OF_BAD_PINGS);
+
+        // Assert
+        expect(notifications.length).toBe(0, 'only one notification should have been fired');
     }));
 
     it('should publish OFFLINE status ONCE and remain OFFLINE when: (1) starting online and (2) given ONE bad ping', fakeAsync(() => {

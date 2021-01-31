@@ -3,6 +3,7 @@ import { Logger } from './logging/logger-base';
 import { Observable, of, Subject } from 'rxjs';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, map } from 'rxjs/operators';
+import { LocationService } from './location.service';
 
 @Injectable({
     providedIn: 'root'
@@ -17,7 +18,7 @@ export class ConnectionStatusService {
     private timer: NodeJS.Timeout;
     private pings = new Array<boolean>(this.NUMBER_OF_GOOD_PINGS_REQUIRED);
 
-    constructor(private logger: Logger, private http: HttpClient) {
+    constructor(private logger: Logger, private http: HttpClient, private locationService: LocationService) {
         this.pings.every(x => (x = true));
     }
 
@@ -75,7 +76,10 @@ export class ConnectionStatusService {
 
         if (this.status === connectionResult) {
             this.logger.info(`${this.loggerPrefix} ${this.status ? 'Online' : 'Offline'}`);
-            this.connectionStatus.next(this.status);
+            const currentPathName = this.locationService.getCurrentPathName();
+            if (currentPathName.indexOf('waiting-room') < 0) {
+                this.connectionStatus.next(this.status);
+            }
         }
     }
 
