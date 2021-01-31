@@ -8,9 +8,9 @@ import { LoggedParticipantResponse } from '../../services/clients/api-client';
 export class LoggedUserResolveService implements Resolve<LoggedParticipantResponse> {
     constructor(private videoWebService: VideoWebService) {}
 
-   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<LoggedParticipantResponse> {
+    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<LoggedParticipantResponse> {
         const conferenceId = route.params['conferenceId'];
-        return from( this.getData(conferenceId));
+        return from(this.getData(conferenceId));
     }
 
     async getData(conferenceId) {
