@@ -17,7 +17,7 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
     @Input() hearing: Hearing;
 
     messagesSubscription$: Subscription = new Subscription();
-    unreadMessages: UnreadAdminMessageResponse[];
+    unreadMessages: UnreadAdminMessageResponse[] = [];
 
     constructor(
         private videoWebService: VideoWebService,
