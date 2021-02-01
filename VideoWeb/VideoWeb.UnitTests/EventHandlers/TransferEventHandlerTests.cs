@@ -106,34 +106,5 @@ namespace VideoWeb.UnitTests.EventHandlers
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
                     expectedStatus), Times.Exactly(participantCount));
         }
-        
-        [Test]
-        public void Should_throw_exception_when_transfer_cannot_be_mapped_to_participant_status()
-        {
-            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
-                VideoApiClientMock.Object);
-
-            var conference = TestConference;
-            var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
-
-            var callbackEvent = new CallbackEvent
-            {
-                EventType = EventType.Transfer,
-                EventId = Guid.NewGuid().ToString(),
-                ConferenceId = conference.Id,
-                ParticipantId = participantForEvent.Id,
-                TransferFrom = RoomType.WaitingRoom.ToString(),
-                TransferTo = RoomType.WaitingRoom.ToString(),
-                TimeStampUtc = DateTime.UtcNow
-            };
-
-            Assert.ThrowsAsync<RoomTransferException>(() =>
-                _eventHandler.HandleAsync(callbackEvent));
-
-            // Verify messages sent to event hub clients
-            EventHubClientMock.Verify(
-                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
-                    It.IsAny<ParticipantState>()), Times.Never);
-        }
     }
 }

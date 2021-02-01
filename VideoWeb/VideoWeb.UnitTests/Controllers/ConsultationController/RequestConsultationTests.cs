@@ -108,7 +108,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _mocker.Mock<IEventHubClient>().Verify(
                 x => x.ConsultationRequestResponseMessage
                     (It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<ConsultationAnswer>()),
-                Times.Exactly(_testConference.Participants.Count + _testConference.Endpoints.Count));
+                Times.Exactly(_testConference.Participants.Count));
         }
 
         [Test]
@@ -193,23 +193,6 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public void Should_throw_InvalidOperationException_two_participants_with_the_same_requeste_for_found()
-        {
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.RespondToConsultationRequestAsync(It.IsAny<ConsultationRequestResponse>()))
-                .Returns(Task.FromResult(default(object)));
-
-            var consultationRequest = ConsultationHelper.GetConsultationRequest(_testConference);
-            var findId = consultationRequest.RequestedForId;
-            _testConference.Participants[0].Id = findId;
-            _testConference.Participants[1].Id = findId;
-            _testConference.Participants[2].Id = consultationRequest.RequestedById;
-
-            Assert.ThrowsAsync<InvalidOperationException>(() =>
-                _controller.RespondToConsultationRequestAsync(consultationRequest));
-        }
-
-        [Test]
         public async Task Should_throw_InvalidOperationException_no_participants_requested_by_found()
         {
             _mocker.Mock<IVideoApiClient>()
@@ -224,25 +207,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
 
             var result = await _controller.RespondToConsultationRequestAsync(consultationRequest);
-            var typedResult = (NotFoundResult) result;
-            typedResult.Should().NotBeNull();
+            result.Should().BeOfType<NotFoundResult>();
         }
 
-        [Test]
-        public async Task Should_throw_InvalidOperationException_no_participants_requested_for_found()
-        {
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.RespondToConsultationRequestAsync(It.IsAny<ConsultationRequestResponse>()))
-                .Returns(Task.FromResult(default(object)));
-
-            var consultationRequest = ConsultationHelper.GetConsultationRequest(_testConference);
-            _testConference.Participants[0].Id = Guid.NewGuid();
-            _testConference.Participants[1].Id = Guid.NewGuid();
-            _testConference.Participants[2].Id = consultationRequest.RequestedById;
-
-            var result = await _controller.RespondToConsultationRequestAsync(consultationRequest);
-            var typedResult = (NotFoundResult) result;
-            typedResult.Should().NotBeNull();
-        }
     }
 }

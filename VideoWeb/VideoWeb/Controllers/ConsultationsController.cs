@@ -209,7 +209,7 @@ namespace VideoWeb.Controllers
         /// <summary>
         /// This method raises a notification to the requestee informing them of an incoming consultation request
         /// </summary>
-        /// <param name="conferenceId">The conference Id</param>
+        /// <param name="conference">The conference</param>
         /// <param name="requestedById">The participant raising the consultation request</param>
         /// <param name="requestedForId">The participant with whom the consultation is being requested with</param>
         /// <param name="roomLabel">The room you're requesting the participant joins</param>
@@ -225,7 +225,7 @@ namespace VideoWeb.Controllers
         /// <summary>
         /// This method raises a notification to the requester informing them the response to their consultation request.
         /// </summary>
-        /// <param name="conferenceId">The conference Id</param>
+        /// <param name="conference">The conference</param>
         /// <param name="roomLabel">The room the participant is responding to</param>
         /// <param name="requestedById">The participant raising the consultation request</param>
         /// <param name="requestedForId">The participant with whom the consultation is being requested with</param>
