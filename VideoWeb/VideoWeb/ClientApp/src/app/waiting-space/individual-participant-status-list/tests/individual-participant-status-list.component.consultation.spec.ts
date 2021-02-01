@@ -112,16 +112,9 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         expect(component).toBeTruthy();
         expect(component.judge).toBeDefined();
         expect(component.nonJudgeParticipants).toBeDefined();
-        expect(component.nonJudgeParticipantsExtend).toBeDefined();
         expect(consultationService.resetWaitingForResponse).toHaveBeenCalled();
     });
-    it('should set can call flag for participants', () => {
-        component.nonJudgeParticipants = conference.participants.filter(
-            x => x.role !== Role.Judge && x.role !== Role.JudicialOfficeHolder && x.hearing_role !== HearingRole.OBSERVER
-        );
-        component.extendNonJudgeParticipants();
-        expect(component.nonJudgeParticipantsExtend.length).toBe(component.nonJudgeParticipants.length);
-    });
+
     it('should not be able to call participant is user is judge', () => {
         const participant = new ParticipantResponse({
             status: ParticipantStatus.InConsultation,
