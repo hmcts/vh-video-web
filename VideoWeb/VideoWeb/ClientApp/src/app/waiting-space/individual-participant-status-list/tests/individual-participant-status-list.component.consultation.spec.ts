@@ -97,8 +97,6 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         component.consultationRequestee = consultationRequestee;
         component.conference = conference;
 
-        videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(logged));
-
         component.loggedInUser = logged;
         component.setupSubscribers();
     });
@@ -116,6 +114,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     });
 
     it('should not be able to call participant is user is judge', () => {
+        component.loggedInUser = logged;
         const participant = new ParticipantResponse({
             status: ParticipantStatus.InConsultation,
             id: component.loggedInUser.participant_id
@@ -129,6 +128,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     });
 
     it('should not be able to call self', () => {
+        component.loggedInUser = logged;
         component.conference = new ConferenceTestData().getConferenceDetailFuture();
         const participant = new ParticipantResponse({
             status: ParticipantStatus.InConsultation,
@@ -138,6 +138,8 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     });
 
     it('should not be able to call when hearing is about to start', () => {
+        component.loggedInUser = logged;
+
         const participant = new ParticipantResponse({
             status: ParticipantStatus.InConsultation,
             id: component.loggedInUser.participant_id
@@ -146,6 +148,8 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     });
 
     it('should not be able to call when hearing is delayed', () => {
+        component.loggedInUser = logged;
+
         component.conference = new ConferenceTestData().getConferenceDetailPast();
         const participant = new ParticipantResponse({
             status: ParticipantStatus.InConsultation,
@@ -155,6 +159,8 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     });
 
     it('should not be able to call when hearing is suspended', () => {
+        component.loggedInUser = logged;
+
         component.conference.status = ConferenceStatus.Suspended;
         const participant = new ParticipantResponse({
             status: ParticipantStatus.InConsultation,
@@ -169,6 +175,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     });
 
     it('should not be able to begin call with self', async () => {
+        component.loggedInUser = logged;
         consultationService.raiseConsultationRequest.and.callFake(() => Promise.resolve());
         const participant = conference.participants.find(x => x.id === component.loggedInUser.participant_id);
         await component.beginCallWith(participant);
@@ -176,6 +183,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     });
 
     it('should be able to begin call with another participant', async () => {
+        component.loggedInUser = logged;
         const participant = conference.participants.find(x => x.role === Role.Individual);
         participant.status = ParticipantStatus.Available;
         await component.beginCallWith(participant);
@@ -226,6 +234,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
     getConsultationMessageTestCases.forEach(test => {
         it(`should call consultation service when consultation has been "${test.consulatationAnswer}"`, () => {
+            component.loggedInUser = logged;
             const payload = new ConsultationMessage(
                 conference.id,
                 component.consultationRequester.id,
