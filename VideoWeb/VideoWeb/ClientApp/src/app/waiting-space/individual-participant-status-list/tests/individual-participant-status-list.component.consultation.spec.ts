@@ -1,3 +1,4 @@
+import { ActivatedRoute } from '@angular/router';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -47,23 +48,17 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
     let timer: jasmine.SpyObj<NodeJS.Timeout>;
     const testdata = new ConferenceTestData();
+    let logged: LoggedParticipantResponse;
+    let activatedRoute: ActivatedRoute;
 
     beforeAll(() => {
         adalService = mockAdalService;
 
         consultationService = consultationServiceSpyFactory();
 
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName', 'getCurrentParticipant']);
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
-        videoWebService.getCurrentParticipant.and.returnValue(
-            Promise.resolve(
-                new LoggedParticipantResponse({
-                    participant_id: '1111-1111',
-                    display_name: 'Jonh Doe',
-                    role: Role.Judge
-                })
-            )
-        );
+
         logger = jasmine.createSpyObj<Logger>('Logger', ['debug', 'info', 'warn', 'event', 'error']);
         participantsObserverPanelMember = testdata.getListOfParticipantsObserverAndPanelMembers();
         participantsWinger = testdata.getListOfParticipantsWingers();
@@ -75,22 +70,34 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         conference.participants.forEach(p => {
             p.status = ParticipantStatus.Available;
         });
-        consultationRequester = new Participant(conference.participants[0]);
-        consultationRequestee = new Participant(conference.participants[1]);
+        const judge = conference.participants.find(x => x.role === Role.Judge);
 
-        timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
-        component = new IndividualParticipantStatusListComponent(adalService, consultationService, eventsService, logger, videoWebService);
-
-        component.consultationRequester = consultationRequester;
-        component.consultationRequestee = consultationRequestee;
-        component.conference = conference;
-        const judge = component.conference.participants.find(x => x.role === Role.Judge);
-
-        component.loggedInUser = new LoggedParticipantResponse({
+        logged = new LoggedParticipantResponse({
             participant_id: judge.id,
             display_name: judge.display_name,
             role: Role.Judge
         });
+        consultationRequester = new Participant(conference.participants[0]);
+        consultationRequestee = new Participant(conference.participants[1]);
+        activatedRoute = <any>{
+            snapshot: { data: { loggedUser: logged } }
+        };
+
+        timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
+        component = new IndividualParticipantStatusListComponent(
+            adalService,
+            consultationService,
+            eventsService,
+            logger,
+            videoWebService,
+            activatedRoute
+        );
+
+        component.consultationRequester = consultationRequester;
+        component.consultationRequestee = consultationRequestee;
+        component.conference = conference;
+
+        component.loggedInUser = logged;
         component.setupSubscribers();
     });
 
@@ -107,6 +114,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     });
 
     it('should not be able to call participant is user is judge', () => {
+        component.loggedInUser = logged;
         const participant = new ParticipantResponse({
             status: ParticipantStatus.InConsultation,
             id: component.loggedInUser.participant_id
@@ -120,6 +128,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     });
 
     it('should not be able to call self', () => {
+        component.loggedInUser = logged;
         component.conference = new ConferenceTestData().getConferenceDetailFuture();
         const participant = new ParticipantResponse({
             status: ParticipantStatus.InConsultation,
@@ -129,6 +138,8 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     });
 
     it('should not be able to call when hearing is about to start', () => {
+        component.loggedInUser = logged;
+
         const participant = new ParticipantResponse({
             status: ParticipantStatus.InConsultation,
             id: component.loggedInUser.participant_id
@@ -137,6 +148,8 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     });
 
     it('should not be able to call when hearing is delayed', () => {
+        component.loggedInUser = logged;
+
         component.conference = new ConferenceTestData().getConferenceDetailPast();
         const participant = new ParticipantResponse({
             status: ParticipantStatus.InConsultation,
@@ -146,6 +159,8 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     });
 
     it('should not be able to call when hearing is suspended', () => {
+        component.loggedInUser = logged;
+
         component.conference.status = ConferenceStatus.Suspended;
         const participant = new ParticipantResponse({
             status: ParticipantStatus.InConsultation,
@@ -160,6 +175,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     });
 
     it('should not be able to begin call with self', async () => {
+        component.loggedInUser = logged;
         consultationService.raiseConsultationRequest.and.callFake(() => Promise.resolve());
         const participant = conference.participants.find(x => x.id === component.loggedInUser.participant_id);
         await component.beginCallWith(participant);
@@ -167,6 +183,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     });
 
     it('should be able to begin call with another participant', async () => {
+        component.loggedInUser = logged;
         const participant = conference.participants.find(x => x.role === Role.Individual);
         participant.status = ParticipantStatus.Available;
         await component.beginCallWith(participant);
@@ -217,6 +234,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
     getConsultationMessageTestCases.forEach(test => {
         it(`should call consultation service when consultation has been "${test.consulatationAnswer}"`, () => {
+            component.loggedInUser = logged;
             const payload = new ConsultationMessage(
                 conference.id,
                 component.consultationRequester.id,

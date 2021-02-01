@@ -9,8 +9,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ImHelper } from '../im-helper';
-import { SessionStorage } from 'src/app/services/session-storage';
-import { ParticipantStorageKeys } from '../../vh-officer/services/models/session-keys';
 
 export abstract class ChatBaseComponent {
     protected hearing: Hearing;
@@ -19,7 +17,6 @@ export abstract class ChatBaseComponent {
     loggedInUserProfile: UserProfileResponse;
     disableScrollDown = false;
     loggedInUser: LoggedParticipantResponse;
-    private readonly loggedInUserStorage: SessionStorage<LoggedParticipantResponse>;
     emptyGuid = '00000000-0000-0000-0000-000000000000';
 
     DEFAULT_ADMIN_USERNAME = 'Admin';
@@ -30,9 +27,7 @@ export abstract class ChatBaseComponent {
         protected logger: Logger,
         protected adalService: AdalService,
         protected imHelper: ImHelper
-    ) {
-        this.loggedInUserStorage = new SessionStorage<LoggedParticipantResponse>(ParticipantStorageKeys.LOGGED_IN_USER);
-    }
+    ) {}
 
     abstract content: ElementRef<HTMLElement>;
     abstract sendMessage(messageBody: string): void;
@@ -51,7 +46,6 @@ export abstract class ChatBaseComponent {
         this.logger.debug('[ChatHub] Subscribing to chat messages');
         const sub = this.eventService.getChatMessage().subscribe({
             next: async message => {
-                await this.setLoggedParticipant();
                 await this.handleIncomingMessage(message);
             }
         });
@@ -62,29 +56,22 @@ export abstract class ChatBaseComponent {
         if (!this.isMessageRecipientForUser(message)) {
             return;
         }
+
         const from = message.from.toUpperCase();
         const username =
             this.loggedInUser && this.loggedInUser.participant_id && this.loggedInUser.participant_id !== this.emptyGuid
                 ? this.loggedInUser.participant_id
                 : this.adalService.userInfo.userName.toUpperCase();
-        if (from === username) {
+        if (from === username.toUpperCase()) {
             message.from_display_name = 'You';
             message.is_user = true;
         } else {
             message = await this.verifySender(message);
             this.handleIncomingOtherMessage(message);
         }
+
         this.removeMessageFromPending(message);
         this.messages.push(message);
-    }
-
-    async setLoggedParticipant() {
-        this.loggedInUser = this.loggedInUserStorage.get();
-        if (!this.loggedInUser) {
-            this.loggedInUser = await this.videoWebService.getCurrentParticipant(this.hearing.id);
-            this.logger.debug(`[ChatHub]  logged user : ${this.loggedInUser}`);
-            this.loggedInUserStorage.set(this.loggedInUser);
-        }
     }
 
     addMessageToPending(message: InstantMessage) {

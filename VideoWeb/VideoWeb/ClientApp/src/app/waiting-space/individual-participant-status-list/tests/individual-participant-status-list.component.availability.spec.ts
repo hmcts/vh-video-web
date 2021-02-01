@@ -1,3 +1,4 @@
+import { ActivatedRoute } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -33,7 +34,8 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
     let conference: ConferenceResponse;
     let participantsObserverPanelMember: ParticipantResponseVho[];
     let participantsWinger: ParticipantResponseVho[];
-
+    let activatedRoute: ActivatedRoute;
+    let logged: LoggedParticipantResponse;
     beforeAll(() => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
         const testParticipant = conference.participants.filter(x => x.role === Role.Individual)[0];
@@ -46,22 +48,29 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
 
         consultationService = consultationServiceSpyFactory();
 
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName', 'getCurrentParticipant']);
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
-        videoWebService.getCurrentParticipant.and.returnValue(
-            Promise.resolve(
-                new LoggedParticipantResponse({
-                    participant_id: conference.participants[2].id,
-                    display_name: 'Jonh Doe',
-                    role: Role.Judge
-                })
-            )
-        );
+        logged = new LoggedParticipantResponse({
+            participant_id: conference.participants[2].id,
+            display_name: 'Jonh Doe',
+            role: Role.Judge
+        });
     });
 
     beforeEach(() => {
+        activatedRoute = <any>{
+            snapshot: { data: { loggedUser: logged } }
+        };
+
         consultationService.clearModals.calls.reset();
-        component = new IndividualParticipantStatusListComponent(adalService, consultationService, eventsService, logger, videoWebService);
+        component = new IndividualParticipantStatusListComponent(
+            adalService,
+            consultationService,
+            eventsService,
+            logger,
+            videoWebService,
+            activatedRoute
+        );
         conference = new ConferenceTestData().getConferenceDetailFuture();
         component.consultationRequester = new Participant(conference.participants[0]);
         component.consultationRequestee = new Participant(conference.participants[1]);
