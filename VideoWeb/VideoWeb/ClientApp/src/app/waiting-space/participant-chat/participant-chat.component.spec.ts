@@ -12,6 +12,7 @@ import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { adminTestProfile, judgeTestProfile } from '../../testing/data/test-profiles';
 import { ParticipantChatComponent } from './participant-chat.component';
+import { ActivatedRoute } from '@angular/router';
 
 describe('ParticipantChatComponent', () => {
     let component: ParticipantChatComponent;
@@ -23,6 +24,7 @@ describe('ParticipantChatComponent', () => {
     const eventsService = eventsServiceSpy;
     let profileService: jasmine.SpyObj<ProfileService>;
     let adalService: jasmine.SpyObj<AdalService>;
+    let activatedRoute: ActivatedRoute;
 
     const judgeProfile = judgeTestProfile;
     const adminProfile = adminTestProfile;
@@ -47,18 +49,19 @@ describe('ParticipantChatComponent', () => {
         spyOn(global, 'setTimeout').and.returnValue(<any>timer);
         adalService.userInfo.userName = judgeUsername;
         const chatHistory = new ConferenceTestData().getChatHistory(judgeUsername, conference.id);
-
+        const logged = new LoggedParticipantResponse({
+            participant_id: hearing.participants[2].id,
+            display_name: hearing.participants[2].displayName,
+            role: hearing.participants[2].role
+        });
         profileService.checkCacheForProfileByUsername.and.returnValue(null);
         profileService.getProfileByUsername.and.resolveTo(adminProfile);
         profileService.getUserProfile.and.resolveTo(judgeProfile);
         videoWebService.getConferenceChatHistory.and.resolveTo(chatHistory);
-        videoWebService.getCurrentParticipant.and.resolveTo(
-            new LoggedParticipantResponse({
-                participant_id: hearing.participants[2].id,
-                display_name: hearing.participants[2].displayName,
-                role: hearing.participants[2].role
-            })
-        );
+        videoWebService.getCurrentParticipant.and.resolveTo(logged);
+        activatedRoute = <any>{
+            snapshot: { data: { loggedUser: logged } }
+        };
 
         component = new ParticipantChatComponent(
             videoWebService,
@@ -66,7 +69,8 @@ describe('ParticipantChatComponent', () => {
             eventsService,
             new MockLogger(),
             adalService,
-            new ImHelper()
+            new ImHelper(),
+            activatedRoute
         );
         component.loggedInUserProfile = judgeProfile;
         component.hearing = hearing;

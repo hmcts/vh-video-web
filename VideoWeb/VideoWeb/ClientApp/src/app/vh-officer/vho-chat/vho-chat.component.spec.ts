@@ -93,7 +93,7 @@ describe('VhoChatComponent', () => {
 
     it('should get chat history and subscribe', fakeAsync(async () => {
         component.loggedInUserProfile = undefined;
-        await component.ngOnInit();
+        component.ngOnInit();
         flushMicrotasks();
         expect(component.newMessageBody).toBeDefined();
         expect(component.loggedInUser).toBeDefined();
@@ -107,7 +107,8 @@ describe('VhoChatComponent', () => {
         spyOn(component, 'handleIncomingMessage');
         const judgeId = hearing.judge.id;
         const adminUsername = 'admin@test.com';
-
+        component.loggedInUser = null;
+        component.ngOnInit();
         const instantMessageTest = new InstantMessage({
             conferenceId: conference.id,
             id: Guid.create().toString(),
@@ -119,7 +120,9 @@ describe('VhoChatComponent', () => {
         component.pendingMessages.set(instantMessageTest.to, []);
         component.addMessageToPending(instantMessageTest);
         messageSubjectMock.next(instantMessageTest);
-        expect(videoWebServiceSpy.getCurrentParticipant).toHaveBeenCalled();
+        expect(component.loggedInUser).toBeDefined();
+        expect(component.loggedInUser.role).toBe(Role.VideoHearingsOfficer);
+
         tick();
         expect(component.handleIncomingMessage).toHaveBeenCalledWith(instantMessageTest);
     }));

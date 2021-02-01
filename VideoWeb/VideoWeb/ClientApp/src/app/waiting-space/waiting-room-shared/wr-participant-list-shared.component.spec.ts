@@ -81,11 +81,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
             userInfo: <adal.User>{ userName: judgeProfile.username, authenticated: true }
         });
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
-            'updateParticipantDetails',
-            'getObfuscatedName',
-            'getCurrentParticipant'
-        ]);
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails', 'getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('test username');
     });
 
@@ -99,7 +95,6 @@ describe('WaitingRoom ParticipantList Base', () => {
             display_name: loggedUser.display_name,
             role: loggedUser.role
         });
-        videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(userLogged));
 
         component = new WrParticipantStatusListTest(adalService, consultationService, eventsService, logger, videoWebService);
         component.conference = conference;

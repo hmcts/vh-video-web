@@ -23,6 +23,7 @@ import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
 import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
+import { LoggedParticipantResponse, Role } from '../../services/clients/api-client';
 import { ConferenceUnreadMessageCount } from './vho-conference-unread_message-count.model';
 
 @Component({
@@ -77,11 +78,12 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         this.scrollToBottom();
     }
 
-    async ngOnInit() {
+    ngOnInit() {
         this.logger.debug(`[ChatHub VHO] starting chat for ${this.hearing.id}`);
         this.initForm();
-        this.chatHubSubscription = await this.setupChatSubscription();
+        this.setupChatSubscription().then(sub => (this.chatHubSubscription = sub));
         this.updateChatWindow();
+        this.setLoggedAdminUser();
     }
 
     updateChatWindow() {
@@ -90,6 +92,14 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         this.retrieveChatForConference(this.participant.id).then(messages => {
             this.messages = messages;
             this.loading = false;
+        });
+    }
+
+    setLoggedAdminUser() {
+        this.loggedInUser = new LoggedParticipantResponse({
+            admin_username: this.adalService.userInfo.userName.toUpperCase(),
+            display_name: this.DEFAULT_ADMIN_USERNAME,
+            role: Role.VideoHearingsOfficer
         });
     }
 

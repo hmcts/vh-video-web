@@ -34,6 +34,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     conferenceRecordingInSessionForSeconds = 0;
     expanedPanel = true;
     displayConfirmStartHearingPopup: boolean;
+    isIMEnabled: boolean;
 
     constructor(
         protected route: ActivatedRoute,
@@ -74,6 +75,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     ngOnInit() {
         this.errorCount = 0;
         this.logger.debug(`${this.loggerPrefixJudge} Loading judge waiting room`);
+        this.loggedInUser = this.route.snapshot.data['loggedUser'];
+
         this.userMediaService
             .setDefaultDevicesInCache()
             .then(() => {
@@ -81,10 +84,14 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
                 this.connected = false;
                 this.getConference().then(() => {
                     this.startEventHubSubscribers();
+
+                    this.participant = this.setLoggedParticipant();
+
                     this.getJwtokenAndConnectToPexip();
                     if (this.conference.audio_recording_required) {
                         this.initAudioRecordingInterval();
                     }
+                    this.isIMEnabled = this.defineIsIMEnabled();
                 });
             })
             .catch((error: Error | MediaStreamError) => {
@@ -245,7 +252,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         this.continueWithNoRecording = true;
     }
 
-    isIMEnabled(): boolean {
+    defineIsIMEnabled(): boolean {
         if (!this.hearing) {
             return false;
         }

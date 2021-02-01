@@ -1,4 +1,5 @@
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import {
     ConferenceResponse,
@@ -28,7 +29,6 @@ import {
     participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import {
-    activatedRoute,
     adalService,
     clockService,
     consultationService,
@@ -62,12 +62,22 @@ describe('WaitingRoomComponent EventHub Call', () => {
     const hearingTransferSubject = hearingTransferSubjectMock;
     const endpointStatusSubject = endpointStatusSubjectMock;
     const consultationMessageSubject = consultationMessageSubjectMock;
+    let logged: LoggedParticipantResponse;
+    let activatedRoute: ActivatedRoute;
 
     beforeAll(() => {
         initAllWRDependencies();
     });
 
     beforeEach(async () => {
+        logged = new LoggedParticipantResponse({
+            participant_id: globalParticipant.id,
+            display_name: globalParticipant.display_name,
+            role: globalParticipant.role
+        });
+        activatedRoute = <any>{
+            snapshot: { data: { loggedUser: logged }, paramMap: convertToParamMap({ conferenceId: globalConference.id }) }
+        };
         component = new WRTestComponent(
             activatedRoute,
             videoWebService,
@@ -161,14 +171,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         confWithCloseTime.closed_date_time = new Date();
         confWithCloseTime.status = status;
         videoWebService.getConferenceById.and.resolveTo(confWithCloseTime);
-        videoWebService.getCurrentParticipant.and.resolveTo(
-            new LoggedParticipantResponse({
-                participant_id: globalParticipant.id,
-                display_name: globalParticipant.display_name,
-                role: globalParticipant.role
-            })
-        );
-
+        component.loggedInUser = logged;
         const message = new ConferenceStatusMessage(globalConference.id, status);
 
         hearingStatusSubject.next(message);
@@ -259,14 +262,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         const newConference = new ConferenceResponse(Object.assign({}, globalConference));
         newConference.status = newConferenceStatus;
         newConference.participants.find(x => x.id === globalParticipant.id).status = newParticipantStatus;
-
-        videoWebService.getCurrentParticipant.and.resolveTo(
-            new LoggedParticipantResponse({
-                participant_id: globalParticipant.id,
-                display_name: globalParticipant.display_name,
-                role: globalParticipant.role
-            })
-        );
+        component.loggedInUser = logged;
 
         videoWebService.getConferenceById.and.resolveTo(newConference);
         eventHubDisconnectSubject.next(1);

@@ -1,4 +1,5 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ConferenceResponse, ConferenceStatus, LoggedParticipantResponse, ParticipantResponse } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
@@ -7,7 +8,6 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { HearingRole } from '../../models/hearing-role-model';
 import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
 import {
-    activatedRoute,
     adalService,
     clockService,
     consultationService,
@@ -31,7 +31,8 @@ import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.com
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
     const conferenceTestData = new ConferenceTestData();
-
+    let logged: LoggedParticipantResponse;
+    let activatedRoute: ActivatedRoute;
     beforeAll(() => {
         initAllWRDependencies();
 
@@ -41,6 +42,15 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     });
 
     beforeEach(() => {
+        logged = new LoggedParticipantResponse({
+            participant_id: globalParticipant.id,
+            display_name: globalParticipant.display_name,
+            role: globalParticipant.role
+        });
+        activatedRoute = <any>{
+            snapshot: { data: { loggedUser: logged }, paramMap: convertToParamMap({ conferenceId: globalConference.id }) }
+        };
+
         component = new ParticipantWaitingRoomComponent(
             activatedRoute,
             videoWebService,
@@ -73,14 +83,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     });
 
     it('should init hearing alert and subscribers', fakeAsync(() => {
-        videoWebService.getCurrentParticipant.and.resolveTo(
-            new LoggedParticipantResponse({
-                participant_id: globalParticipant.id,
-                display_name: globalParticipant.display_name,
-                role: globalParticipant.role
-            })
-        );
-
         component.ngOnInit();
         flushMicrotasks();
         tick(100);
