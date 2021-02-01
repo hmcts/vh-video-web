@@ -38,11 +38,7 @@ describe('JudgeParticipantStatusListComponent', () => {
         adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
             userInfo: userInfo
         });
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
-            'updateParticipantDetails',
-            'getObfuscatedName',
-            'getCurrentParticipant'
-        ]);
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails', 'getObfuscatedName']);
         const logged = new LoggedParticipantResponse({
             participant_id: '1111-1111',
             display_name: 'Some name',

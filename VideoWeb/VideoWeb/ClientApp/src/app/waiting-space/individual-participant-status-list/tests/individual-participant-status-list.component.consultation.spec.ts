@@ -56,7 +56,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
         consultationService = consultationServiceSpyFactory();
 
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName', 'getCurrentParticipant']);
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
 
         logger = jasmine.createSpyObj<Logger>('Logger', ['debug', 'info', 'warn', 'event', 'error']);

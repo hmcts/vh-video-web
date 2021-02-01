@@ -48,14 +48,13 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
 
         consultationService = consultationServiceSpyFactory();
 
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName', 'getCurrentParticipant']);
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
         logged = new LoggedParticipantResponse({
             participant_id: conference.participants[2].id,
             display_name: 'Jonh Doe',
             role: Role.Judge
         });
-        videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(logged));
     });
 
     beforeEach(() => {
