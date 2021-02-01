@@ -33,9 +33,8 @@ namespace VideoWeb
             services.AddCustomTypes();
 
             services.RegisterAuthSchemes(Configuration);
-            var compatibilityVersion = CompatibilityVersion.Version_3_0;
-            services.AddMvc(opt => opt.Filters.Add(typeof(LoggingMiddleware))).SetCompatibilityVersion(compatibilityVersion);
-            services.AddMvc().SetCompatibilityVersion(compatibilityVersion).AddFluentValidation();
+            services.AddMvc(opt => opt.Filters.Add(typeof(LoggingMiddleware)));
+            services.AddMvc().AddFluentValidation();
             services.AddApplicationInsightsTelemetry(Configuration["ApplicationInsights:InstrumentationKey"]);
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
