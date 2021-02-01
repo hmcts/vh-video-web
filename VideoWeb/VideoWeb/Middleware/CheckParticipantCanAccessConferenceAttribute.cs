@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -36,35 +35,58 @@ namespace VideoWeb.Middleware
             }
 
             var conferenceId = GetActionArgument(context, "conferenceId");
-            var participantId = GetActionArgument(context, "participantId");
-
-            if (conferenceId == Guid.Empty || participantId == Guid.Empty)
+            if (conferenceId == Guid.Empty)
             {
                 await next();
                 return;
             }
 
-            var result = await IsParticipantAllowedToCallThisActionAsync(context, conferenceId, participantId);
-            switch (result)
+            var conference = await GetConference(conferenceId);
+            if (conference == null)
             {
-                case HttpStatusCode.NotFound:
-                    var message404 = $"Conference with id:'{conferenceId}' not found.";
-                    _logger.LogWarning($"{GetType().Name} - {message404}");
-                    context.ModelState.AddModelError("CheckParticipantCanAccessConference", message404);
-                    context.Result = new NotFoundObjectResult(context.ModelState);
-                    return;
-
-                case HttpStatusCode.Unauthorized:
-                    var message401 = $"Participant '{participantId}' is not allowed to call this action.";
-                    _logger.LogWarning($"{GetType().Name} - {message401}");
-                    context.ModelState.AddModelError("CheckParticipantCanAccessConference", message401);
-                    context.Result = new UnauthorizedObjectResult(context.ModelState);
-                    break;
-
-                default:
-                    await next();
-                    return;
+                var message404 = $"Conference with id:'{conferenceId}' not found.";
+                _logger.LogWarning($"{GetType().Name} - {message404}");
+                context.ModelState.AddModelError("CheckParticipantCanAccessConference", message404);
+                context.Result = new NotFoundObjectResult(context.ModelState);
+                return;
             }
+
+            var participantId = GetActionArgument(context, "participantId");
+            var loggedInParticipantId = GetLoggedInParticipantId(context, conference);
+
+            var isAllowed = IsUserAllowed(participantId, loggedInParticipantId);
+            if (!isAllowed)
+            {
+                var message401 = "User does not belong to this conference.";
+                _logger.LogWarning($"{GetType().Name} - {message401}");
+                context.ModelState.AddModelError("CheckParticipantCanAccessConference", message401);
+                context.Result = new UnauthorizedObjectResult(context.ModelState);
+                return;
+            }
+
+            await next();
+        }
+
+        private bool IsUserAllowed(Guid participantId, Guid loggedInParticipantId)
+        {
+            if (loggedInParticipantId == Guid.Empty)
+            {
+                return false;
+            }
+
+            if (participantId != Guid.Empty)
+            {
+                return participantId == loggedInParticipantId;
+            }
+
+            return true;
+        }
+
+        private async Task<Conference> GetConference(Guid conferenceId)
+        {
+            return await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
+                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
+            );
         }
 
         private Guid GetActionArgument(ActionExecutingContext context, string actionArgumentKey)
@@ -77,26 +99,7 @@ namespace VideoWeb.Middleware
             return Guid.Empty;
         }
 
-        private async Task<HttpStatusCode> IsParticipantAllowedToCallThisActionAsync(ActionExecutingContext context, Guid conferenceId, Guid participantId)
-        {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
-                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
-            );
-
-            if (conference == null)
-            {
-                return HttpStatusCode.NotFound;
-            }
-            var loggedInParticipantId = GetIdForParticipantByUsernameInConference(context, conference);
-            if (loggedInParticipantId == Guid.Empty)
-            {
-                return HttpStatusCode.Unauthorized;
-            }
-
-            return participantId == loggedInParticipantId ? HttpStatusCode.OK : HttpStatusCode.Unauthorized;
-        }
-
-        private Guid GetIdForParticipantByUsernameInConference(ActionExecutingContext context, Conference conference)
+        private Guid GetLoggedInParticipantId(ActionExecutingContext context, Conference conference)
         {
             var username = context.HttpContext.User.Identity.Name;
             var participant = conference.Participants
