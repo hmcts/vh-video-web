@@ -48,7 +48,6 @@ namespace VideoWeb.Controllers
             _mapperFactory = mapperFactory;
         }
 
-        [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
         [HttpGet("{conferenceId}/participants/{participantId}/selftestresult")]
         [SwaggerOperation(OperationId = "GetTestCallResult")]
         [ProducesResponseType(typeof(TestCallScoreResponse), (int)HttpStatusCode.OK)]
@@ -144,7 +143,6 @@ namespace VideoWeb.Controllers
             }
         }
 
-        [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
         [HttpGet("{conferenceId}/participant/{participantId}/heartbeatrecent")]
         [SwaggerOperation(OperationId = "GetHeartbeatDataForParticipant")]
         [ProducesResponseType(typeof(ParticipantHeartbeatResponse[]), (int)HttpStatusCode.OK)]
@@ -163,7 +161,6 @@ namespace VideoWeb.Controllers
             }
         }
 
-        [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
         [HttpPost("{conferenceId}/participants/{participantId}/participantDisplayName")]
         [SwaggerOperation(OperationId = "UpdateParticipantDisplayName")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -250,13 +247,13 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
+
         [HttpGet("{conferenceId}/currentparticipant")]
         [SwaggerOperation(OperationId = "GetCurrentParticipant")]
         [ProducesResponseType(typeof(LoggedParticipantResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetCurrentParticipantAsync(Guid conferenceId)
         {
-
             var participantsRoles = new List<Role>
             {
                 Role.Judge,
