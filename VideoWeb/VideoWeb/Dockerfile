@@ -13,12 +13,7 @@ RUN [[ ${skip_client_build} = true ]] && mkdir dist || npm run-script build-prod
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
-COPY ["VideoWeb/VideoWeb.csproj", "VideoWeb/"]
-COPY ["VideoWeb.Common/VideoWeb.Common.csproj", "VideoWeb.Common/"]
-COPY ["VideoWeb.Contract/VideoWeb.Contract.csproj", "VideoWeb.Contract/"]
-COPY ["VideoWeb.EventHub/VideoWeb.EventHub.csproj", "VideoWeb.EventHub/"]
-COPY ["VideoWeb.Services/VideoWeb.Services.csproj", "VideoWeb.Services/"]
-COPY ["nuget.config", "nuget.config"]
+COPY . .
 RUN dotnet restore --configfile nuget.config "VideoWeb/VideoWeb.csproj"
 COPY . .
 WORKDIR "/src/VideoWeb"
