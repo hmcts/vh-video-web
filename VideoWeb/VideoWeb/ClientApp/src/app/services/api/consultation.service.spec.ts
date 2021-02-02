@@ -92,7 +92,7 @@ describe('ConsultationService', () => {
         expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalled();
     });
 
-    it('shoul stop rining, clear modals and cancel request on cancellation', async () => {
+    it('shoul stop rining and clear modals and cancel request on cancellation', async () => {
         service.callRingingTimeout = timeout;
         service.waitingForConsultationResponse = true;
         const conference = new ConferenceTestData().getConferenceDetailFuture();
@@ -140,7 +140,6 @@ describe('ConsultationService', () => {
         const conference = new ConferenceTestData().getConferenceDetailFuture();
         const requester = conference.participants[0];
         const requestee = conference.participants[1];
-
         const request = new PrivateConsultationRequest({
             conference_id: conference.id,
             requested_by_id: requester.id,

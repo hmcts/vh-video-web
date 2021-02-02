@@ -135,7 +135,7 @@ describe('CommandCentreComponent - Events', () => {
         component.hearings[1].getParticipants()[1].base.id = participant.id;
 
         participant.status = ParticipantStatus.Joining;
-        const message = new ParticipantStatusMessage(participant.id, participant.username, conferenceId, ParticipantStatus.Available);
+        const message = new ParticipantStatusMessage(participant.id, '', conferenceId, ParticipantStatus.Available);
 
         mockEventService.participantStatusSubject.next(message);
 
@@ -146,7 +146,7 @@ describe('CommandCentreComponent - Events', () => {
     it('should gracefully handle participant updates', () => {
         const conferenceId = Guid.create().toString();
         const participantId = Guid.create().toString();
-        const message = new ParticipantStatusMessage(participantId, 'test@usr.co', conferenceId, ParticipantStatus.Available);
+        const message = new ParticipantStatusMessage(participantId, '', conferenceId, ParticipantStatus.Available);
 
         mockEventService.participantStatusSubject.next(message);
 

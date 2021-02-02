@@ -1,11 +1,11 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, LoggedParticipantResponse, ParticipantResponse } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import {
-    activatedRoute,
     adalService,
     clockService,
     consultationService,
@@ -29,10 +29,18 @@ import { JohWaitingRoomComponent } from './joh-waiting-room.component';
 describe('JohWaitingRoomComponent', () => {
     let component: JohWaitingRoomComponent;
     const conferenceTestData = new ConferenceTestData();
-
+    let activatedRoute: ActivatedRoute;
     beforeAll(() => {
         initAllWRDependencies();
     });
+    const logged = new LoggedParticipantResponse({
+        participant_id: globalParticipant.id,
+        display_name: globalParticipant.display_name,
+        role: globalParticipant.role
+    });
+    activatedRoute = <any>{
+        snapshot: { data: { loggedUser: logged } }
+    };
 
     beforeEach(async () => {
         component = new JohWaitingRoomComponent(

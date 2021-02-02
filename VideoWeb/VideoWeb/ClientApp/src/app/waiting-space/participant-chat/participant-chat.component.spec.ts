@@ -3,7 +3,7 @@ import { AdalService } from 'adal-angular4';
 import { Guid } from 'guid-typescript';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, LoggedParticipantResponse } from 'src/app/services/clients/api-client';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
@@ -12,6 +12,7 @@ import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { adminTestProfile, judgeTestProfile } from '../../testing/data/test-profiles';
 import { ParticipantChatComponent } from './participant-chat.component';
+import { ActivatedRoute } from '@angular/router';
 
 describe('ParticipantChatComponent', () => {
     let component: ParticipantChatComponent;
@@ -23,6 +24,7 @@ describe('ParticipantChatComponent', () => {
     const eventsService = eventsServiceSpy;
     let profileService: jasmine.SpyObj<ProfileService>;
     let adalService: jasmine.SpyObj<AdalService>;
+    let activatedRoute: ActivatedRoute;
 
     const judgeProfile = judgeTestProfile;
     const adminProfile = adminTestProfile;
@@ -31,7 +33,7 @@ describe('ParticipantChatComponent', () => {
     beforeAll(() => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
         hearing = new Hearing(conference);
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceChatHistory']);
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceChatHistory', 'getCurrentParticipant']);
         profileService = jasmine.createSpyObj<ProfileService>('ProfileService', [
             'checkCacheForProfileByUsername',
             'getProfileByUsername',
@@ -47,11 +49,19 @@ describe('ParticipantChatComponent', () => {
         spyOn(global, 'setTimeout').and.returnValue(<any>timer);
         adalService.userInfo.userName = judgeUsername;
         const chatHistory = new ConferenceTestData().getChatHistory(judgeUsername, conference.id);
-
+        const logged = new LoggedParticipantResponse({
+            participant_id: hearing.participants[2].id,
+            display_name: hearing.participants[2].displayName,
+            role: hearing.participants[2].role
+        });
         profileService.checkCacheForProfileByUsername.and.returnValue(null);
         profileService.getProfileByUsername.and.resolveTo(adminProfile);
         profileService.getUserProfile.and.resolveTo(judgeProfile);
         videoWebService.getConferenceChatHistory.and.resolveTo(chatHistory);
+        videoWebService.getCurrentParticipant.and.resolveTo(logged);
+        activatedRoute = <any>{
+            snapshot: { data: { loggedUser: logged } }
+        };
 
         component = new ParticipantChatComponent(
             videoWebService,
@@ -59,7 +69,8 @@ describe('ParticipantChatComponent', () => {
             eventsService,
             new MockLogger(),
             adalService,
-            new ImHelper()
+            new ImHelper(),
+            activatedRoute
         );
         component.loggedInUserProfile = judgeProfile;
         component.hearing = hearing;
@@ -78,7 +89,7 @@ describe('ParticipantChatComponent', () => {
         expect(component.messages.length).toBeGreaterThan(0);
     }));
 
-    it('should return adal username as participant username', () => {
+    it('should return logged participant Id username as participant username', () => {
         expect(component.participantUsername).toEqual(judgeUsername.toLowerCase());
     });
 
@@ -112,7 +123,7 @@ describe('ParticipantChatComponent', () => {
             conferenceId: conference.id,
             from: adminUsername,
             from_display_name: 'Admin Test',
-            to: conference.participants[1].username,
+            to: conference.participants[1].id,
             id: Guid.create().toString(),
             is_user: false,
             message: 'test auto',
@@ -130,7 +141,7 @@ describe('ParticipantChatComponent', () => {
             conferenceId: conference.id,
             from: adminUsername,
             from_display_name: 'Admin Test',
-            to: conference.participants[1].username,
+            to: conference.participants[1].id,
             id: Guid.create().toString(),
             is_user: false,
             message: 'test auto',
@@ -190,6 +201,11 @@ describe('ParticipantChatComponent', () => {
 
     it('should send message to hub', async () => {
         const message = 'test';
+        component.loggedInUser = new LoggedParticipantResponse({
+            participant_id: hearing.participants[2].id,
+            display_name: hearing.participants[2].displayName,
+            role: hearing.participants[2].role
+        });
         await component.sendMessage(message);
         expect(eventsService.sendMessage.calls.mostRecent().args[0]).toBeInstanceOf(InstantMessage);
         const lastArg = <InstantMessage>eventsService.sendMessage.calls.mostRecent().args[0];
@@ -207,7 +223,7 @@ describe('ParticipantChatComponent', () => {
             conferenceId: conference.id,
             from: adminUsername,
             from_display_name: 'Admin Test',
-            to: conference.participants[1].username,
+            to: conference.participants[1].id,
             id: Guid.create().toString(),
             is_user: false,
             message: 'test auto',

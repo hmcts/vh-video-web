@@ -7,6 +7,7 @@ import {
     ConferenceResponse,
     ConferenceStatus,
     ConsultationAnswer,
+    LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
     Role,
@@ -61,6 +62,7 @@ export abstract class WaitingRoomBaseComponent {
     CALL_TIMEOUT = 31000; // 31 seconds
     callbackTimeout: NodeJS.Timer;
     private readonly loggerPrefix = '[WR] -';
+    loggedInUser: LoggedParticipantResponse;
 
     protected constructor(
         protected route: ActivatedRoute,
@@ -99,6 +101,10 @@ export abstract class WaitingRoomBaseComponent {
         ).length;
     }
 
+    setLoggedParticipant(): ParticipantResponse {
+        return this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
+    }
+
     getConference() {
         return this.videoWebService
             .getConferenceById(this.conferenceId)
@@ -107,9 +113,8 @@ export abstract class WaitingRoomBaseComponent {
                 this.loadingData = false;
                 this.hearing = new Hearing(data);
                 this.conference = this.hearing.getConference();
-                this.participant = data.participants.find(
-                    x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
-                );
+
+                this.participant = this.setLoggedParticipant();
                 this.logger.debug(`${this.loggerPrefix} Getting conference details`, {
                     conference: this.conferenceId,
                     participant: this.participant.id
@@ -128,9 +133,11 @@ export abstract class WaitingRoomBaseComponent {
         try {
             this.conference = await this.videoWebService.getConferenceById(conferenceId);
             this.hearing = new Hearing(this.conference);
-            this.participant = this.conference.participants.find(
-                x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
-            );
+
+            if (!this.participant) {
+                this.participant = this.setLoggedParticipant();
+            }
+
             this.logger.info(`${this.loggerPrefix} Conference closed.`, {
                 conference: this.conferenceId,
                 participant: this.participant.id
@@ -428,7 +435,7 @@ export abstract class WaitingRoomBaseComponent {
             return;
         }
         const participant = this.hearing.getConference().participants.find(p => p.id === message.participantId);
-        const isMe = participant.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase();
+        const isMe = this.participant.id === participant.id;
         if (isMe) {
             this.participant.status = message.status;
             this.isTransferringIn = false;
@@ -461,7 +468,7 @@ export abstract class WaitingRoomBaseComponent {
             return;
         }
         const participant = this.hearing.getConference().participants.find(p => p.id === message.participantId);
-        const isMe = participant.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase();
+        const isMe = this.participant.id === participant.id;
         if (isMe) {
             this.isTransferringIn = false;
             this.isTransferringIn = message.transferDirection === TransferDirection.In;

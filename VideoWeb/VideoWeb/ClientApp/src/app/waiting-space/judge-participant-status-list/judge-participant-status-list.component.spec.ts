@@ -1,6 +1,14 @@
+import { fakeAsync, tick } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { ConferenceResponse, EndpointStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    LoggedParticipantResponse,
+    EndpointStatus,
+    ParticipantStatus,
+    Role
+} from 'src/app/services/clients/api-client';
 import { individualTestProfile, judgeTestProfile } from 'src/app/testing/data/test-profiles';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
@@ -23,7 +31,7 @@ describe('JudgeParticipantStatusListComponent', () => {
     const logger: Logger = new MockLogger();
     let conference: ConferenceResponse;
     let userInfo: adal.User;
-
+    let activatedRoute: ActivatedRoute;
     beforeAll(() => {
         consultationService = consultationServiceSpyFactory();
         userInfo = <adal.User>{ userName: judgeProfile.username, authenticated: true };
@@ -31,7 +39,15 @@ describe('JudgeParticipantStatusListComponent', () => {
             userInfo: userInfo
         });
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails', 'getObfuscatedName']);
+        const logged = new LoggedParticipantResponse({
+            participant_id: '1111-1111',
+            display_name: 'Some name',
+            role: Role.Individual
+        });
         videoWebService.getObfuscatedName.and.returnValue('test username');
+        activatedRoute = <any>{
+            snapshot: { data: { loggedUser: logged } }
+        };
     });
 
     beforeEach(() => {
@@ -40,7 +56,14 @@ describe('JudgeParticipantStatusListComponent', () => {
         participantObserverPanelMember.forEach(x => conference.participants.push(x));
         const participantWinger = new ConferenceTestData().getListOfParticipantsWingers();
         participantWinger.forEach(x => conference.participants.push(x));
-        component = new JudgeParticipantStatusListComponent(adalService, consultationService, eventsService, logger, videoWebService);
+        component = new JudgeParticipantStatusListComponent(
+            adalService,
+            consultationService,
+            eventsService,
+            logger,
+            videoWebService,
+            activatedRoute
+        );
         component.conference = conference;
         component.ngOnInit();
     });
@@ -177,20 +200,30 @@ describe('JudgeParticipantStatusListComponent', () => {
             expect(component.getEndpointStatusCss(endpoint)).toBe(test.expected);
         });
     });
-
-    it('should return true when user is judge', () => {
-        adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
-            userInfo: <adal.User>{ userName: judgeProfile.username, authenticated: true }
-        });
-        expect(component.isUserJudge()).toBeTruthy();
-    });
-
     it('should return false when user is not judge', () => {
-        jasmine.getEnv().allowRespy(true);
-        userInfo = <adal.User>{ userName: individualProfile.username, authenticated: true };
-        spyOnProperty(adalService, 'userInfo').and.returnValue(userInfo);
-        expect(component.isUserJudge()).toBeFalsy();
+        expect(component.isUserJudge).toBeFalsy();
     });
+    it('should return true when user is judge', fakeAsync(async () => {
+        const logged = new LoggedParticipantResponse({
+            participant_id: conference.participants.find(x => x.role === Role.Judge).id,
+            display_name: 'Judge Name',
+            role: Role.Judge
+        });
+        activatedRoute = activatedRoute = <any>{
+            snapshot: { data: { loggedUser: logged } }
+        };
+        component = new JudgeParticipantStatusListComponent(
+            adalService,
+            consultationService,
+            eventsService,
+            logger,
+            videoWebService,
+            activatedRoute
+        );
+        component.conference = conference;
+        component.ngOnInit();
+        expect(component.isUserJudge).toBeTruthy();
+    }));
 
     it('should not be able to call participants', () => {
         expect(component.canCallParticipant(component.conference.participants[0])).toBeFalsy();

@@ -1,4 +1,5 @@
 import { AfterViewChecked, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
@@ -35,7 +36,8 @@ export class ParticipantChatComponent extends ChatBaseComponent implements OnIni
         protected eventService: EventsService,
         protected logger: Logger,
         protected adalService: AdalService,
-        protected imHelper: ImHelper
+        protected imHelper: ImHelper,
+        private route: ActivatedRoute
     ) {
         super(videoWebService, profileService, eventService, logger, adalService, imHelper);
     }
@@ -44,13 +46,19 @@ export class ParticipantChatComponent extends ChatBaseComponent implements OnIni
         return this.adalService.userInfo.userName.toLowerCase();
     }
 
+    get participantId() {
+        return this.loggedInUser.participant_id;
+    }
+
     ngOnInit() {
-        this.logger.debug(`[ChatHub Judge] starting chat for ${this.hearing.id}`);
+        this.logger.debug(`[ChatHub Participant] starting chat for ${this.hearing.id}`);
         this.showChat = false;
         this.unreadMessageCount = 0;
         this.loading = true;
+        this.loggedInUser = this.route.snapshot.data['loggedUser'];
+        this.logger.debug(`[ChatHub Participant] get logged participant id: ${this.loggedInUser.participant_id}`);
         this.setupChatSubscription().then(sub => (this.chatHubSubscription = sub));
-        this.retrieveChatForConference(this.adalService.userInfo.userName.toLowerCase()).then(messages => {
+        this.retrieveChatForConference(this.loggedInUser.participant_id).then(messages => {
             this.handleChatHistoryResponse(messages);
         });
     }
@@ -76,7 +84,7 @@ export class ParticipantChatComponent extends ChatBaseComponent implements OnIni
             conferenceId: this.hearing.id,
             id: Guid.create().toString(),
             to: this.DEFAULT_ADMIN_USERNAME,
-            from: this.adalService.userInfo.userName.toLowerCase(),
+            from: this.loggedInUser.participant_id,
             from_display_name: 'You',
             is_user: true,
             message: messageBody,

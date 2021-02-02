@@ -204,7 +204,6 @@ export class ConferenceTestData {
             id: '1111-1111-1111-1111',
             status: ParticipantStatus.Available,
             display_name: 'C Green',
-            username: 'chris.green@hearings.net',
             role: Role.Representative,
             representee: 'James Green',
             case_type_group: 'applicant',
@@ -216,7 +215,6 @@ export class ConferenceTestData {
             id: '2222-2222-2222-2222',
             status: ParticipantStatus.NotSignedIn,
             display_name: 'J Green',
-            username: 'james.green@hearings.net',
             role: Role.Individual,
             case_type_group: 'applicant',
             tiled_display_name: 'T2;J Green;2222-2222-2222-2222',
@@ -227,7 +225,6 @@ export class ConferenceTestData {
             id: '3333-3333-3333-3333',
             status: ParticipantStatus.Available,
             display_name: 'Judge Fudge',
-            username: 'judge.fudge@hearings.net',
             role: Role.Judge,
             case_type_group: 'judge',
             first_name: 'judge',
@@ -240,7 +237,6 @@ export class ConferenceTestData {
             id: '4444-4444-4444-4444',
             status: ParticipantStatus.Available,
             display_name: 'J Doe',
-            username: 'john.doe@hearings.net',
             role: Role.Representative,
             representee: 'J Doe',
             case_type_group: 'respondent',
@@ -252,7 +248,6 @@ export class ConferenceTestData {
             id: '5555-5555-5555-5555',
             status: ParticipantStatus.NotSignedIn,
             display_name: 'J Doe',
-            username: 'jane.doe@hearings.net',
             role: Role.Individual,
             case_type_group: 'respondent',
             tiled_display_name: 'T5;Ms J Doe;5555-5555-5555-5555',
@@ -263,7 +258,6 @@ export class ConferenceTestData {
             id: '6666-6666-6666-6666',
             status: ParticipantStatus.NotSignedIn,
             display_name: 'Observer Doe O',
-            username: 'observer.doe.O@hearings.net',
             role: Role.Individual,
             case_type_group: 'observer',
             tiled_display_name: 'T6;Observer Doe O;6666-6666-6666-6666',
@@ -274,7 +268,6 @@ export class ConferenceTestData {
             id: '7777-7777-7777-7777',
             status: ParticipantStatus.NotSignedIn,
             display_name: 'Panel Mem Doe PM',
-            username: 'panelmem.doe.PM@hearings.net',
             role: Role.JudicialOfficeHolder,
             case_type_group: 'panelmember',
             hearing_role: 'Panel Member',
@@ -285,7 +278,6 @@ export class ConferenceTestData {
             id: '4545-4545-4545-4545',
             status: ParticipantStatus.NotSignedIn,
             display_name: 'J Doe WINGER',
-            username: 'jane.doe.winger@hearings.net',
             role: Role.JudicialOfficeHolder,
             case_type_group: 'None',
             hearing_role: 'Winger'
@@ -295,7 +287,6 @@ export class ConferenceTestData {
             id: '7878-7878-7878-7878',
             status: ParticipantStatus.NotSignedIn,
             display_name: 'J Doe WITNESS',
-            username: 'jane.doe.wtiness@hearings.net',
             role: Role.Individual,
             case_type_group: 'None',
             hearing_role: 'Witness'
@@ -322,7 +313,6 @@ export class ConferenceTestData {
             role: Role.Individual,
             case_type_group: 'Defendent',
             display_name: 'Greeno',
-            username: 'chris.green@hearings.net',
             tiled_display_name: 'T1;Greeno;9F681318-4955-49AF-A887-DED64554429D',
             hearing_role: HearingRole.LITIGANT_IN_PERSON
         });
@@ -335,7 +325,6 @@ export class ConferenceTestData {
             role: Role.Representative,
             display_name: 'James Green',
             case_type_group: 'Defendent',
-            username: 'james.green@hearings.net',
             tiled_display_name: 'T2;James Green;9F681318-4955-49AF-A887-DED64554429J',
             hearing_role: HearingRole.REPRESENTATIVE
         });
@@ -346,7 +335,6 @@ export class ConferenceTestData {
             status: ParticipantStatus.Available,
             role: Role.Judge,
             display_name: 'Judge Fudge',
-            username: 'judge.fudge@hearings.net',
             case_type_group: 'Judge',
             tiled_display_name: 'T0;Judge Fudge;9F681318-4955-49AF-A887-DED64554429T',
             hearing_role: HearingRole.JUDGE
@@ -552,7 +540,6 @@ export class ConferenceTestData {
             hearing_role: 'Observer',
             case_type_group: 'Observer',
             display_name: 'Greeno',
-            username: 'ob1@hearings.net',
             tiled_display_name: 'T100;Observer Test 1;abd18c35-884d-430e-9569-415cafe30afb'
         });
 
@@ -565,7 +552,6 @@ export class ConferenceTestData {
             hearing_role: 'Observer',
             display_name: 'James Green',
             case_type_group: 'Observer',
-            username: 'ob2@hearings.net',
             tiled_display_name: 'T101;Observer Test 2;2ccddb9f-887c-47f9-82b3-896eec0a2595'
         });
 
@@ -576,7 +562,6 @@ export class ConferenceTestData {
             role: Role.JudicialOfficeHolder,
             hearing_role: 'Panel Member',
             display_name: 'Panel Mem 1',
-            username: 'pm.1@hearings.net',
             case_type_group: 'PanelMember',
             tiled_display_name: 'T102;Panel Mem 1;e698a672-8925-46e6-907d-21f1bc3b8bbf'
         });
@@ -596,7 +581,6 @@ export class ConferenceTestData {
             role: Role.JudicialOfficeHolder,
             case_type_group: 'None',
             display_name: 'Chris Winger',
-            username: 'chris.winger@hearings.net',
             tiled_display_name: 'T200;Chris Winger;c8c33015-d164-4a46-a5c9-6b58e892511b',
             hearing_role: 'Winger'
         });
@@ -613,7 +597,6 @@ export class ConferenceTestData {
             role: Role.Individual,
             case_type_group: 'None',
             display_name: 'Chris Witness',
-            username: 'chris.witness@hearings.net',
             tiled_display_name: 'W201;Chris Witness;c8c33015-d164-4a46-a5c9-6b58e892511a',
             hearing_role: 'Witness'
         });
