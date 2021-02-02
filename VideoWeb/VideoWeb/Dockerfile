@@ -18,7 +18,8 @@ COPY ["VideoWeb.Common/VideoWeb.Common.csproj", "VideoWeb.Common/"]
 COPY ["VideoWeb.Contract/VideoWeb.Contract.csproj", "VideoWeb.Contract/"]
 COPY ["VideoWeb.EventHub/VideoWeb.EventHub.csproj", "VideoWeb.EventHub/"]
 COPY ["VideoWeb.Services/VideoWeb.Services.csproj", "VideoWeb.Services/"]
-RUN dotnet restore "VideoWeb/VideoWeb.csproj"
+COPY ["nuget.config", "nuget.config"]
+RUN dotnet restore --configfile nuget.config "VideoWeb/VideoWeb.csproj"
 COPY . .
 WORKDIR "/src/VideoWeb"
 RUN dotnet build "VideoWeb.csproj" -c Release -o /app/build
