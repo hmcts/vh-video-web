@@ -2,6 +2,7 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using VH.Core.Configuration;
 
 namespace VideoWeb
 {
@@ -15,6 +16,7 @@ namespace VideoWeb
         private static IHostBuilder CreateWebHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
+                .AddAksKeyVaultSecretProvider()
                 .ConfigureWebHostDefaults(webBuilder => {
                     webBuilder.UseContentRoot(Directory.GetCurrentDirectory());
                     webBuilder.UseIISIntegration();
