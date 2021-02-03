@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -11,8 +12,10 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 using VideoWeb.Middleware;
 using VideoWeb.Services.Video;
+using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttributeTests
 {
@@ -26,6 +29,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
         protected readonly Guid _conferenceId = Guid.NewGuid();
         protected ActionExecutingContext _actionExecutingContext;
         protected ActionExecutedContext _actionExecutedContext;
+        protected ClaimsPrincipalBuilder _userBuilder;
         protected const string USER_NAME = "some-user-name";
 
         [SetUp]
@@ -39,6 +43,8 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
                 _conferenceCache.Object,
                 _videoApiClient.Object
             );
+
+            _userBuilder = new ClaimsPrincipalBuilder();
         }
 
         protected void SetupActionExecutingContext(
@@ -48,10 +54,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
         {
             var httpContextMock = new DefaultHttpContext();
 
-            if (user != null)
-            {
-                httpContextMock.User = user;
-            }
+            if (user != null) httpContextMock.User = user;
 
             var modelState = new ModelStateDictionary();
             var actionContext = new ActionContext(
@@ -70,7 +73,25 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
                 Result = new OkResult()
             };
 
-            _actionExecutedContext = new ActionExecutedContext(actionContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
+            _actionExecutedContext =
+                new ActionExecutedContext(actionContext, new List<IFilterMetadata>(), Mock.Of<Controller>());
+        }
+
+        protected static IEnumerable<TestCaseData> AllNonVhoUsers()
+        {
+            var retList = new List<TestCaseData>
+            {
+                new TestCaseData(AppRoles.CaseAdminRole),
+                new TestCaseData(AppRoles.CitizenRole),
+                new TestCaseData(AppRoles.JudgeRole),
+                new TestCaseData(AppRoles.JudicialOfficeHolderRole),
+
+                new TestCaseData(AppRoles.RepresentativeRole)
+            };
+
+            retList.Count.Should().Be(5, "there is an AppRole missing from this test");
+
+            return retList;
         }
     }
 }

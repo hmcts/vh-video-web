@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -14,28 +13,25 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
 {
     public class when_action_has_participantId_and_conferenceId : CheckParticipantCanAccessConferenceAttributeTest
     {
-        [Test]
-        public async Task should_return_404_if_conference_does_not_exist()
+        [TestCaseSource(nameof(AllNonVhoUsers))]
+        public async Task should_return_404_if_conference_does_not_exist(string appRole)
         {
             // arrange
             var actionArguments = new Dictionary<string, object>
             {
-                { "participantId", _participantId },
-                { "conferenceId", _conferenceId }
+                {"participantId", _participantId},
+                {"conferenceId", _conferenceId}
             };
 
-            var user = new Mock<ClaimsPrincipal>();
-            var mockIdentity = new Mock<ClaimsIdentity>();
-            mockIdentity.Setup(x => x.Name).Returns(USER_NAME);
-            user.Setup(x => x.Identity).Returns(mockIdentity.Object);
+            var user = _userBuilder.WithUsername(USER_NAME).WithRole(appRole).Build();
 
             _conferenceCache.Setup(x => x.GetOrAddConferenceAsync(
                     It.IsAny<Guid>(),
                     It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-               // conference doesn't exist (null)
-               .ReturnsAsync((Conference)null);
+                // conference doesn't exist (null)
+                .ReturnsAsync((Conference)null);
 
-            SetupActionExecutingContext(actionArguments, user.Object);
+            SetupActionExecutingContext(actionArguments, user);
 
             // act
             await _sut.OnActionExecutionAsync(_actionExecutingContext, async () => _actionExecutedContext);
@@ -49,20 +45,18 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
                 .Should().Be(message404);
         }
 
-        [Test]
-        public async Task should_return_401_if_conference_exists_but_user_does_not_belong_to_it()
+
+        [TestCaseSource(nameof(AllNonVhoUsers))]
+        public async Task should_return_401_if_conference_exists_but_user_does_not_belong_to_it(string appRole)
         {
             // arrange
             var actionArguments = new Dictionary<string, object>
             {
-                { "participantId", _participantId },
-                { "conferenceId", _conferenceId }
+                {"participantId", _participantId},
+                {"conferenceId", _conferenceId}
             };
 
-            var user = new Mock<ClaimsPrincipal>();
-            var mockIdentity = new Mock<ClaimsIdentity>();
-            mockIdentity.Setup(x => x.Name).Returns(USER_NAME);
-            user.Setup(x => x.Identity).Returns(mockIdentity.Object);
+            var user = _userBuilder.WithUsername(USER_NAME).WithRole(appRole).Build();
 
             var conference = new Conference
             {
@@ -83,7 +77,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
                     It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .ReturnsAsync(conference);
 
-            SetupActionExecutingContext(actionArguments, user.Object);
+            SetupActionExecutingContext(actionArguments, user);
 
             // act
             await _sut.OnActionExecutionAsync(_actionExecutingContext, async () => _actionExecutedContext);
@@ -97,20 +91,19 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
                 .Should().Be(message401);
         }
 
-        [Test]
-        public async Task should_continue_with_other_middleware_if_conference_exists_and_conference_contains_participantId()
+        [TestCaseSource(nameof(AllNonVhoUsers))]
+        public async Task
+            should_continue_with_other_middleware_if_conference_exists_and_conference_contains_participantId(
+                string appRole)
         {
             // arrange
             var actionArguments = new Dictionary<string, object>
             {
-                { "participantId", _participantId },
-                { "conferenceId", _conferenceId }
+                {"participantId", _participantId},
+                {"conferenceId", _conferenceId}
             };
 
-            var user = new Mock<ClaimsPrincipal>();
-            var mockIdentity = new Mock<ClaimsIdentity>();
-            mockIdentity.Setup(x => x.Name).Returns(USER_NAME);
-            user.Setup(x => x.Identity).Returns(mockIdentity.Object);
+            var user = _userBuilder.WithUsername(USER_NAME).WithRole(appRole).Build();
 
             var conference = new Conference
             {
@@ -122,7 +115,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
                     {
                         // ...and user is a part of it
                         Username = USER_NAME,
-                        Id = _participantId,
+                        Id = _participantId
                     }
                 }
             };
@@ -132,7 +125,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
                     It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .ReturnsAsync(conference);
 
-            SetupActionExecutingContext(actionArguments, user.Object);
+            SetupActionExecutingContext(actionArguments, user);
 
             // act
             await _sut.OnActionExecutionAsync(_actionExecutingContext, async () => _actionExecutedContext);

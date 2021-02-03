@@ -8,15 +8,16 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
 {
     public class when_action_has_participantId : CheckParticipantCanAccessConferenceAttributeTest
     {
-        [Test]
-        public async Task should_continue_with_other_middleware()
+        [TestCaseSource(nameof(AllNonVhoUsers))]
+        public async Task should_continue_with_other_middleware(string appRole)
         {
             // arrange
             var actionArguments = new Dictionary<string, object>
             {
-                { "participantId", _participantId }
+                {"participantId", _participantId}
             };
-            SetupActionExecutingContext(actionArguments);
+            var user = _userBuilder.WithUsername(USER_NAME).WithRole(appRole).Build();
+            SetupActionExecutingContext(actionArguments, user);
 
             // act
             await _sut.OnActionExecutionAsync(_actionExecutingContext, async () => _actionExecutedContext);

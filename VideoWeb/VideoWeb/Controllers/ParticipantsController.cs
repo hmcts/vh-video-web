@@ -16,7 +16,6 @@ using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
-using VideoWeb.Middleware;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.Video;
 using UpdateParticipantRequest = VideoWeb.Services.Video.UpdateParticipantRequest;
@@ -143,6 +142,7 @@ namespace VideoWeb.Controllers
             }
         }
 
+        [Authorize(AppRoles.VhOfficerRole)]
         [HttpGet("{conferenceId}/participant/{participantId}/heartbeatrecent")]
         [SwaggerOperation(OperationId = "GetHeartbeatDataForParticipant")]
         [ProducesResponseType(typeof(ParticipantHeartbeatResponse[]), (int)HttpStatusCode.OK)]
@@ -156,7 +156,8 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to get heartbeat data for participant: {participantId} in conference: {conferenceId}");
+                _logger.LogError(e,
+                    $"Unable to get heartbeat data for participant: {participantId} in conference: {conferenceId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -165,7 +166,8 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "UpdateParticipantDisplayName")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> UpdateParticipantDisplayNameAsync(Guid conferenceId, Guid participantId, [FromBody] UpdateParticipantRequest participantRequest)
+        public async Task<IActionResult> UpdateParticipantDisplayNameAsync(Guid conferenceId, Guid participantId,
+            [FromBody] UpdateParticipantRequest participantRequest)
         {
             try
             {
@@ -201,6 +203,7 @@ namespace VideoWeb.Controllers
 
                 return BadRequest(ModelState);
             }
+
             try
             {
                 var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
@@ -209,7 +212,9 @@ namespace VideoWeb.Controllers
                 _logger.LogTrace($"Retrieving booking participants for hearing ${conference.HearingId}");
                 var judgesInHearingsToday = await _videoApiClient.GetJudgesInHearingsTodayAsync();
 
-                var participantContactDetailsResponseVhoMapper = _mapperFactory.Get<Conference, IEnumerable<JudgeInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>();
+                var participantContactDetailsResponseVhoMapper = _mapperFactory
+                    .Get<Conference, IEnumerable<JudgeInHearingResponse>,
+                        IEnumerable<ParticipantContactDetailsResponseVho>>();
                 var response = participantContactDetailsResponseVhoMapper.Map(conference, judgesInHearingsToday);
 
                 return Ok(response);
@@ -222,7 +227,8 @@ namespace VideoWeb.Controllers
             }
             catch (BookingsApiException ex)
             {
-                _logger.LogError(ex, $"Unable to retrieve booking participants from hearing with conferenceId: ${conferenceId}");
+                _logger.LogError(ex,
+                    $"Unable to retrieve booking participants from hearing with conferenceId: ${conferenceId}");
 
                 return StatusCode(ex.StatusCode, ex.Response);
             }
@@ -237,7 +243,8 @@ namespace VideoWeb.Controllers
             try
             {
                 var response = await _videoApiClient.GetParticipantsByConferenceIdAsync(conferenceId);
-                var participantForUserResponsesMapper = _mapperFactory.Get<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>>();
+                var participantForUserResponsesMapper = _mapperFactory
+                    .Get<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>>();
                 var participants = participantForUserResponsesMapper.Map(response);
                 return Ok(participants);
             }
@@ -264,7 +271,8 @@ namespace VideoWeb.Controllers
 
             try
             {
-                var claimsPrincipalToUserProfileResponseMapper = _mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
+                var claimsPrincipalToUserProfileResponseMapper =
+                    _mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
                 var profile = claimsPrincipalToUserProfileResponseMapper.Map(User);
                 var response = new LoggedParticipantResponse
                 {
@@ -276,11 +284,12 @@ namespace VideoWeb.Controllers
                 if (participantsRoles.Any(roleParticipant => roleParticipant == profile.Role))
                 {
                     var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
-                                   () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
+                        () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
                     if (conference != null)
                     {
                         var participant = conference.Participants
-                        .Single(x => x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
+                            .Single(x =>
+                                x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
 
                         response = new LoggedParticipantResponse
                         {

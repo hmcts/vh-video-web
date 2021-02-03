@@ -1,9 +1,7 @@
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
 
@@ -17,10 +15,12 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             // arrange
             var actionArguments = new Dictionary<string, object>();
 
-            var user = new Mock<ClaimsPrincipal>();
-            user.Setup(x => x.IsInRole(AppRoles.VhOfficerRole)).Returns(true);
+            var vhoUser = _userBuilder
+                .WithUsername(USER_NAME)
+                .WithRole(AppRoles.VhOfficerRole)
+                .Build();
 
-            SetupActionExecutingContext(actionArguments, user.Object);
+            SetupActionExecutingContext(actionArguments, vhoUser);
 
             // act
             await _sut.OnActionExecutionAsync(_actionExecutingContext, async () => _actionExecutedContext);
