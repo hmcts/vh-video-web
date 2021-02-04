@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
@@ -26,7 +26,7 @@ namespace VideoWeb.Mappings
                 return 0;
             }
 
-            messageResponses = messageResponses.OrderByDescending(x => x.Time_stamp).ToList();
+            messageResponses = messageResponses.OrderByDescending(x => x.TimeStamp).ToList();
             var vhoMessage = messageResponses.FirstOrDefault(m => IsNonParticipantMessage(conference, m));
             return vhoMessage == null ? messageResponses.Count() : messageResponses.IndexOf(vhoMessage);
         }

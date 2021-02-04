@@ -1,5 +1,5 @@
 using VideoWeb.Contract.Responses;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
@@ -9,7 +9,7 @@ namespace VideoWeb.Mappings
         {
             return new SelfTestPexipResponse
             {
-                PexipSelfTestNode = pexipConfigResponse?.Pexip_self_test_node
+                PexipSelfTestNode = pexipConfigResponse?.PexipSelfTestNode
             };
         }
     }

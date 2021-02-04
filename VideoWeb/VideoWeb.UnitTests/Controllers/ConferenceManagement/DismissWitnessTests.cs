@@ -8,9 +8,10 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
+using VideoApi.Contract.Requests;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 {
@@ -40,7 +41,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             VideoApiClientMock.Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
-                    It.Is<TransferParticipantRequest>(r => r.Participant_id == participant.Id)), Times.Never);
+                    It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id)), Times.Never);
         }
 
         [Test]
@@ -61,7 +62,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             VideoApiClientMock.Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
-                    It.Is<TransferParticipantRequest>(r => r.Participant_id == participant.Id)), Times.Never);
+                    It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id)), Times.Never);
         }
 
         [Test]
@@ -81,7 +82,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             VideoApiClientMock.Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
-                    It.Is<TransferParticipantRequest>(r => r.Participant_id == participant.Id)), Times.Never);
+                    It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id)), Times.Never);
         }
 
         [Test]
@@ -129,7 +130,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             VideoApiClientMock.Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.Is<TransferParticipantRequest>(r =>
-                        r.Participant_id == witness.Id && r.Transfer_type == TransferType.Dismiss)), Times.Once);
+                        r.ParticipantId == witness.Id && r.TransferType == TransferType.Dismiss)), Times.Once);
         }
 
         [Test]
@@ -148,7 +149,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             typedResult.Should().NotBeNull();
 
             VideoApiClientMock.Verify(x => x.AddTaskAsync(TestConference.Id, 
-                It.Is<AddTaskRequest>(r => r.Participant_id == witness.Id && r.Body == "Witness dismissed" && r.Task_type == TaskType.Participant)), 
+                It.Is<AddTaskRequest>(r => r.ParticipantId == witness.Id && r.Body == "Witness dismissed" && r.TaskType == TaskType.Participant)), 
                 Times.Once);
         }
 

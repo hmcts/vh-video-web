@@ -1,5 +1,3 @@
-using VideoWeb.Services.Video;
-
 namespace VideoWeb.Mappings
 {
     public class EventTypeReasonMapper : IMapTo<EventType, string>

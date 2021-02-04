@@ -14,10 +14,10 @@ using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 using RoomType = VideoWeb.Common.Models.RoomType;
+using VideoApi.Contract.Requests;
 
 namespace VideoWeb.Controllers
 {
@@ -224,9 +224,9 @@ namespace VideoWeb.Controllers
             {
                 await _videoApiClient.StartPrivateConsultationWithEndpointAsync(new EndpointConsultationRequest
                 {
-                    Conference_id = request.ConferenceId,
-                    Endpoint_id = endpoint.Id,
-                    Defence_advocate_id = defenceAdvocate.Id
+                    ConferenceId = request.ConferenceId,
+                    EndpointId = endpoint.Id,
+                    DefenceAdvocateId = defenceAdvocate.Id
                 });
 
             }

@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using VideoWeb.Services.Video;
+using System.ComponentModel;
 
 namespace VideoWeb.Contract.Request
 {

@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;

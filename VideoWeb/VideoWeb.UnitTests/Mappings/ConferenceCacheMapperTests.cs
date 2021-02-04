@@ -4,9 +4,8 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
-using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -19,7 +18,7 @@ namespace VideoWeb.UnitTests.Mappings
             var response = ConferenceCacheMapper.MapConferenceToCacheModel(conference);
             
             response.Id.Should().Be(conference.Id);
-            response.HearingId.Should().Be(conference.Hearing_id);
+            response.HearingId.Should().Be(conference.HearingId);
 
             response.Participants.Count.Should().Be(conference.Participants.Count);
 
@@ -28,13 +27,13 @@ namespace VideoWeb.UnitTests.Mappings
 
             resultParticipant.Id.Should().Be(participant.Id);
             resultParticipant.Username.Should().Be(participant.Username);
-            resultParticipant.Role.Should().Be(participant.User_role);
-            resultParticipant.HearingRole.Should().Be(participant.Hearing_role);
-            resultParticipant.DisplayName.Should().Be(participant.Display_name);
-            resultParticipant.FirstName.Should().Be(participant.First_name);
-            resultParticipant.LastName.Should().Be(participant.Last_name);
-            resultParticipant.ContactEmail.Should().Be(participant.Contact_email);
-            resultParticipant.ContactTelephone.Should().Be(participant.Contact_telephone);
+            resultParticipant.Role.Should().Be(participant.UserRole);
+            resultParticipant.HearingRole.Should().Be(participant.HearingRole);
+            resultParticipant.DisplayName.Should().Be(participant.DisplayName);
+            resultParticipant.FirstName.Should().Be(participant.FirstName);
+            resultParticipant.LastName.Should().Be(participant.LastName);
+            resultParticipant.ContactEmail.Should().Be(participant.ContactEmail);
+            resultParticipant.ContactTelephone.Should().Be(participant.ContactTelephone);
             resultParticipant.Representee.Should().Be(participant.Representee);
 
             var judge = response.Participants.First(x => x.HearingRole == "Judge");
@@ -66,9 +65,9 @@ namespace VideoWeb.UnitTests.Mappings
             var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
 
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-                .With(x => x.Current_status = ConferenceState.Suspended)
+                .With(x => x.CurrentStatus = ConferenceState.Suspended)
                 .With(x => x.Participants = participants)
-                .With(x => x.Meeting_room = meetingRoom)
+                .With(x => x.MeetingRoom = meetingRoom)
                 .With(x => x.Endpoints = endpoints)
                 .Build();
             return conference;

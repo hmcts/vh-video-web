@@ -4,7 +4,7 @@ using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
@@ -15,14 +15,14 @@ namespace VideoWeb.Mappings
             var mappedParticipants = participants.Select(participant => new ParticipantForUserResponse
                 {
                     Id = participant.Id,
-                    DisplayName = participant.Display_name,
+                    DisplayName = participant.DisplayName,
                     Status = Enum.Parse<ParticipantStatus>(participant.Status.ToString()),
-                    Role = Enum.Parse<Role>(participant.User_role.ToString()),
+                    Role = Enum.Parse<Role>(participant.UserRole.ToString()),
                     Representee = string.IsNullOrWhiteSpace(participant.Representee) ? null : participant.Representee,
-                    CaseTypeGroup = participant.Case_group,
-                    FirstName = participant.First_name,
-                    LastName = participant.Last_name,
-                    HearingRole = participant.Hearing_role
+                    CaseTypeGroup = participant.CaseGroup,
+                    FirstName = participant.FirstName,
+                    LastName = participant.LastName,
+                    HearingRole = participant.HearingRole
                 })
                 .ToList();
 

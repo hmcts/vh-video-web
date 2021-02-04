@@ -1,7 +1,7 @@
 using System;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
@@ -9,13 +9,13 @@ namespace VideoWeb.Mappings
     {
         public VideoEndpointResponse Map(EndpointResponse endpoint, int index)
         {
-            var pexipDisplayName = $"T{100 + index};{endpoint.Display_name};{endpoint.Id}";
+            var pexipDisplayName = $"T{100 + index};{endpoint.DisplayName};{endpoint.Id}";
             return new VideoEndpointResponse
             {
-                DisplayName = endpoint.Display_name,
+                DisplayName = endpoint.DisplayName,
                 Id = endpoint.Id,
                 Status = Enum.Parse<EndpointStatus>(endpoint.Status.ToString()),
-                DefenceAdvocateUsername = endpoint.Defence_advocate,
+                DefenceAdvocateUsername = endpoint.DefenceAdvocate,
                 PexipDisplayName = pexipDisplayName
             };
         }

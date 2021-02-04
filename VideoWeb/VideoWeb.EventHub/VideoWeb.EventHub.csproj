@@ -11,6 +11,7 @@
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.10" />
     <PackageReference Include="System.Text.Json" Version="4.7.1" />
+    <PackageReference Include="VideoApi.Client" Version="1.23.6" />
   </ItemGroup>
 
   <ItemGroup>

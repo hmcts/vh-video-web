@@ -1,7 +1,7 @@
 using System.Linq;
+using VideoApi.Contract.Requests;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Services.Video;
 
 namespace VideoWeb.EventHub.Mappers
 {
@@ -11,18 +11,18 @@ namespace VideoWeb.EventHub.Mappers
         {
             return new AddHeartbeatRequest
             {
-                Incoming_audio_percentage_lost = decimal.ToDouble(heartbeat.IncomingAudioPercentageLost),
-                Incoming_audio_percentage_lost_recent = decimal.ToDouble(heartbeat.IncomingAudioPercentageLostRecent),
-                Incoming_video_percentage_lost = decimal.ToDouble(heartbeat.IncomingVideoPercentageLost),
-                Incoming_video_percentage_lost_recent = decimal.ToDouble(heartbeat.IncomingVideoPercentageLostRecent),
-                Outgoing_audio_percentage_lost = decimal.ToDouble(heartbeat.OutgoingAudioPercentageLost),
-                Outgoing_audio_percentage_lost_recent = decimal.ToDouble(heartbeat.OutgoingAudioPercentageLostRecent),
-                Outgoing_video_percentage_lost = decimal.ToDouble(heartbeat.OutgoingVideoPercentageLost),
-                Outgoing_video_percentage_lost_recent = decimal.ToDouble(heartbeat.OutgoingVideoPercentageLostRecent),
-                Browser_name = heartbeat.BrowserName,
-                Browser_version = heartbeat.BrowserVersion,
-                Operating_system = heartbeat.OperatingSystem,
-                Operating_system_version = heartbeat.OperatingSystemVersion
+                IncomingAudioPercentageLost = heartbeat.IncomingAudioPercentageLost,
+                IncomingAudioPercentageLostRecent = heartbeat.IncomingAudioPercentageLostRecent,
+                IncomingVideoPercentageLost = heartbeat.IncomingVideoPercentageLost,
+                IncomingVideoPercentageLostRecent = heartbeat.IncomingVideoPercentageLostRecent,
+                OutgoingAudioPercentageLost = heartbeat.OutgoingAudioPercentageLost,
+                OutgoingAudioPercentageLostRecent = heartbeat.OutgoingAudioPercentageLostRecent,
+                OutgoingVideoPercentageLost = heartbeat.OutgoingVideoPercentageLost,
+                OutgoingVideoPercentageLostRecent = heartbeat.OutgoingVideoPercentageLostRecent,
+                BrowserName = heartbeat.BrowserName,
+                BrowserVersion = heartbeat.BrowserVersion,
+                OperatingSystem = heartbeat.OperatingSystem,
+                OperatingSystemVersion = heartbeat.OperatingSystemVersion
             };
         }
 

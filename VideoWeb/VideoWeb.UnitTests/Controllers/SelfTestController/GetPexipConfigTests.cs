@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
@@ -38,7 +39,7 @@ namespace VideoWeb.UnitTests.Controllers.SelfTestController
         public void Should_return_ok_with_pexipnode()
         {
             var result = _sut.GetPexipConfig();
-            var typedResult = (OkObjectResult)result.Result;
+            var typedResult = (OkObjectResult)result.Result.Result;
             typedResult.Should().NotBeNull();
         }
 
@@ -48,11 +49,11 @@ namespace VideoWeb.UnitTests.Controllers.SelfTestController
             var apiException = new VideoApiException<ProblemDetails>("User not found", (int)HttpStatusCode.NotFound,
                 "Config Not Found", null, default, null);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetPexipServicesConfiguration())
+                .Setup(x => x.GetPexipServicesConfigurationAsync())
                 .Throws(apiException);
 
             var result = _sut.GetPexipConfig();
-            var typedResult = (ObjectResult)result.Result;
+            var typedResult = (ObjectResult)result.Result.Result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.NotFound);
         }
     }

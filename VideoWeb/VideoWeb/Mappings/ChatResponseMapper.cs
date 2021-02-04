@@ -1,7 +1,7 @@
 using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
@@ -15,8 +15,8 @@ namespace VideoWeb.Mappings
                 From = GetParticipantId(conference, message.From),
                 FromDisplayName = fromDisplayName,
                 To = GetParticipantId(conference, message.To),
-                Message = message.Message_text,
-                Timestamp = message.Time_stamp,
+                Message = message.MessageText,
+                Timestamp = message.TimeStamp,
                 IsUser = isUser
             };
             return response;

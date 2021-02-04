@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using VideoWeb.Common.Models;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Common.Caching
 {
@@ -15,19 +15,19 @@ namespace VideoWeb.Common.Caching
                 .Select(participant => new Participant
                 {
                     Id = participant.Id,
-                    RefId = participant.Ref_id,
+                    RefId = participant.RefId,
                     Name = participant.Name,
-                    FirstName = participant.First_name,
-                    LastName = participant.Last_name,
-                    ContactEmail = participant.Contact_email,
-                    ContactTelephone = participant.Contact_telephone,
-                    DisplayName = participant.Display_name,
-                    Role = (Role) Enum.Parse(typeof(Role), participant.User_role.ToString()),
-                    HearingRole = participant.Hearing_role,
+                    FirstName = participant.FirstName,
+                    LastName = participant.LastName,
+                    ContactEmail = participant.ContactEmail,
+                    ContactTelephone = participant.ContactTelephone,
+                    DisplayName = participant.DisplayName,
+                    Role = (Role) Enum.Parse(typeof(Role), participant.UserRole.ToString()),
+                    HearingRole = participant.HearingRole,
                     ParticipantStatus = (ParticipantStatus) Enum.Parse(typeof(ParticipantStatus),
-                        participant.Current_status.ToString()),
+                        participant.CurrentStatus.ToString()),
                     Username = participant.Username,
-                    CaseTypeGroup = participant.Case_type_group,
+                    CaseTypeGroup = participant.CaseTypeGroup,
                     Representee = participant.Representee
                 })
                 .ToList();
@@ -36,9 +36,9 @@ namespace VideoWeb.Common.Caching
             var conference = new Conference
             {
                 Id = conferenceResponse.Id,
-                HearingId = conferenceResponse.Hearing_id,
+                HearingId = conferenceResponse.HearingId,
                 Participants = participants,
-                HearingVenueName = conferenceResponse.Hearing_venue_name,
+                HearingVenueName = conferenceResponse.HearingVenueName,
                 Endpoints = endpoints
             };
             return conference;

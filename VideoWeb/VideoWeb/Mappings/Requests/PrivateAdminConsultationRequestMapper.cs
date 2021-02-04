@@ -1,6 +1,6 @@
 using System;
+using VideoApi.Contract.Requests;
 using VideoWeb.Contract.Request;
-using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings.Requests
 {
@@ -12,9 +12,9 @@ namespace VideoWeb.Mappings.Requests
             RoomType room = Enum.Parse<RoomType>(request.ConsultationRoom.ToString());
             return new AdminConsultationRequest
             {
-                Conference_id = request.ConferenceId,
-                Participant_id = request.ParticipantId,
-                Consultation_room = room,
+                ConferenceId = request.ConferenceId,
+                ParticipantId = request.ParticipantId,
+                ConsultationRoom = room,
                 Answer = answer
             };
         }

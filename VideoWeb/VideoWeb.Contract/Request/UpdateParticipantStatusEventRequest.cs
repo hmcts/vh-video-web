@@ -1,6 +1,4 @@
-﻿using VideoWeb.Services.Video;
-
-namespace VideoWeb.Contract.Request
+﻿namespace VideoWeb.Contract.Request
 {
     public class UpdateParticipantStatusEventRequest
     {

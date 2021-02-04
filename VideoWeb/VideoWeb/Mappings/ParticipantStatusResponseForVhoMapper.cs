@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Services.Video;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {

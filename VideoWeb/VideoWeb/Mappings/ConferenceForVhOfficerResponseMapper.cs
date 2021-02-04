@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
@@ -20,18 +20,18 @@ namespace VideoWeb.Mappings
             var response = new ConferenceForVhOfficerResponse
             {
                 Id = conference.Id,
-                CaseName = conference.Case_name,
-                CaseNumber = conference.Case_number,
-                CaseType = conference.Case_type,
-                ScheduledDateTime = conference.Scheduled_date_time,
-                ScheduledDuration = conference.Scheduled_duration,
+                CaseName = conference.CaseName,
+                CaseNumber = conference.CaseNumber,
+                CaseType = conference.CaseType,
+                ScheduledDateTime = conference.ScheduledDateTime,
+                ScheduledDuration = conference.ScheduledDuration,
                 Status = Enum.Parse<ConferenceStatus>(conference.Status.ToString()),
-                HearingVenueName = conference.Hearing_venue_name,
+                HearingVenueName = conference.HearingVenueName,
                 Participants = _participantForUserResponseMapper.Map(conference.Participants),
-                StartedDateTime = conference.Started_date_time,
-                ClosedDateTime = conference.Closed_date_time,
-                TelephoneConferenceId = conference.Telephone_conference_id,
-                TelephoneConferenceNumber = conference.Telephone_conference_number
+                StartedDateTime = conference.StartedDateTime,
+                ClosedDateTime = conference.ClosedDateTime,
+                TelephoneConferenceId = conference.TelephoneConferenceId,
+                TelephoneConferenceNumber = conference.TelephoneConferenceNumber
             };
             return response;
         }

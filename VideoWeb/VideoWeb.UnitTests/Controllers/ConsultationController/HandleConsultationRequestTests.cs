@@ -18,11 +18,12 @@ using VideoWeb.Controllers;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.Mappings;
 using VideoWeb.Mappings.Requests;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 using RoomType = VideoWeb.Common.Models.RoomType;
+using VideoApi.Contract.Requests;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
 {

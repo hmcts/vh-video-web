@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
+using UserApi.Client;
+using UserApi.Contract.Responses;
 using VideoWeb.Common.Caching;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
-using VideoWeb.Services.User;
 
 namespace VideoWeb.Controllers
 {

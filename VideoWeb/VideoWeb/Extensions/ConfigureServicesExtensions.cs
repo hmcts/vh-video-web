@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using BookingsApi.Client;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,7 @@ using Newtonsoft.Json.Serialization;
 using Polly;
 using Polly.Extensions.Http;
 using Swashbuckle.AspNetCore.Swagger;
+using UserApi.Client;
 using VideoWeb.Common;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Configuration;
@@ -29,9 +31,7 @@ using VideoWeb.EventHub.Mappers;
 using VideoWeb.Helpers;
 using VideoWeb.Mappings;
 using VideoWeb.Mappings.Decorators;
-using VideoWeb.Services.Bookings;
-using VideoWeb.Services.User;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
 using VideoWeb.Swagger;
 
 namespace VideoWeb.Extensions

@@ -9,7 +9,7 @@ using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 
 
 namespace VideoWeb.UnitTests

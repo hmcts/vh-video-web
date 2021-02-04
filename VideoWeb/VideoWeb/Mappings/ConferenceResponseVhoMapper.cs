@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
-using VideoWeb.Services.Video;
-using UserRole = VideoWeb.Services.Video.UserRole;
+using UserRole = VideoApi.Contract.Responses.UserRole;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
@@ -23,29 +23,29 @@ namespace VideoWeb.Mappings
             conference.Participants ??= new List<ParticipantDetailsResponse>();
 
             var participants = conference.Participants
-                .OrderBy(x => x.Case_type_group)
+                .OrderBy(x => x.CaseTypeGroup)
                 .Select(_participantResponseVhoMapper.Map)
                 .ToList();
 
             var response = new ConferenceResponseVho
             {
                 Id = conference.Id,
-                CaseName = conference.Case_name,
-                CaseNumber = conference.Case_number,
-                CaseType = conference.Case_type,
-                ScheduledDateTime = conference.Scheduled_date_time,
-                ScheduledDuration = conference.Scheduled_duration,
-                Status = ConferenceHelper.GetConferenceStatus(conference.Current_status),
+                CaseName = conference.CaseName,
+                CaseNumber = conference.CaseNumber,
+                CaseType = conference.CaseType,
+                ScheduledDateTime = conference.ScheduledDateTime,
+                ScheduledDuration = conference.ScheduledDuration,
+                Status = ConferenceHelper.GetConferenceStatus(conference.CurrentStatus),
                 Participants = participants,
-                ClosedDateTime = conference.Closed_date_time,
-                HearingVenueName = conference.Hearing_venue_name
+                ClosedDateTime = conference.ClosedDateTime,
+                HearingVenueName = conference.HearingVenueName
             };
 
-            if (conference.Meeting_room == null) return response;
+            if (conference.MeetingRoom == null) return response;
 
-            response.AdminIFrameUri = conference.Meeting_room.Admin_uri;
-            response.ParticipantUri = conference.Meeting_room.Participant_uri;
-            response.PexipNodeUri = conference.Meeting_room.Pexip_node;
+            response.AdminIFrameUri = conference.MeetingRoom.AdminUri;
+            response.ParticipantUri = conference.MeetingRoom.ParticipantUri;
+            response.PexipNodeUri = conference.MeetingRoom.PexipNode;
 
             AssignTilePositions(conference, response);
 
@@ -55,9 +55,9 @@ namespace VideoWeb.Mappings
         private void AssignTilePositions(ConferenceDetailsResponse conference, ConferenceResponseVho response)
         {
             var tiledParticipants = conference.Participants.Where(x =>
-                x.User_role == UserRole.Individual || x.User_role == UserRole.Representative).ToList();
+                x.UserRole == UserRole.Individual || x.UserRole == UserRole.Representative).ToList();
 
-            var partyGroups = tiledParticipants.GroupBy(x => x.Case_type_group).ToList();
+            var partyGroups = tiledParticipants.GroupBy(x => x.CaseTypeGroup).ToList();
             foreach (var group in partyGroups)
             {
                 var pats = @group.ToList();

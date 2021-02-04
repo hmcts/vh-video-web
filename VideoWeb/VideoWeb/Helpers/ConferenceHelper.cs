@@ -1,6 +1,5 @@
 using System;
 using VideoWeb.Common.Models;
-using VideoWeb.Services.Video;
 
 namespace VideoWeb.Helpers
 {

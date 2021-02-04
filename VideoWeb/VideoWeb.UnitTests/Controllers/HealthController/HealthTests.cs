@@ -2,18 +2,19 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using BookingsApi.Client;
+using BookingsApi.Contract.Requests;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
+using UserApi.Client;
+using UserApi.Contract.Responses;
 using VideoWeb.Controllers;
-using VideoWeb.Services.Bookings;
-using VideoWeb.Services.User;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
 using HealthCheckResponse = VideoWeb.Contract.Responses.HealthCheckResponse;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.HealthController
 {

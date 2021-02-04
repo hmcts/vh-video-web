@@ -6,7 +6,7 @@ using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Mappings.Requests;
-using ApiConsultationRequestAnswer =  VideoWeb.Services.Video.ConsultationAnswer;
+using ApiConsultationRequestAnswer =  VideoApi.Contract.Requests.ConsultationAnswer;
 
 namespace VideoWeb.UnitTests.Mappings.Requests
 {
@@ -27,9 +27,9 @@ namespace VideoWeb.UnitTests.Mappings.Requests
             
             var result = _sut.Map(request);
 
-            result.Conference_id.Should().Be(request.ConferenceId);
-            result.Participant_id.Should().Be(request.ParticipantId);
-            result.Consultation_room.Should().Be(request.ConsultationRoom);
+            result.ConferenceId.Should().Be(request.ConferenceId);
+            result.ParticipantId.Should().Be(request.ParticipantId);
+            result.ConsultationRoom.Should().Be(request.ConsultationRoom);
             result.Answer.Should().Be(answer);
         }
     }

@@ -8,7 +8,8 @@ using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
+using VideoApi.Contract.Requests;
 
 namespace VideoWeb.UnitTests.Hub
 {
@@ -47,8 +48,9 @@ namespace VideoWeb.UnitTests.Hub
             HeartbeatMapper.Setup(x => x.MapToHealth(heartbeat)).Returns(HeartbeatHealth.Good);
             var addHeartbeatRequest = new AddHeartbeatRequest
             {
-                Browser_name = heartbeat.BrowserName, Browser_version = heartbeat.BrowserVersion,
-                Incoming_audio_percentage_lost_recent = 10.3
+                BrowserName = heartbeat.BrowserName,
+                BrowserVersion = heartbeat.BrowserVersion,
+                IncomingAudioPercentageLostRecent = 10.3m
             };
             HeartbeatMapper.Setup(x => x.MapToRequest(heartbeat)).Returns(addHeartbeatRequest);
             await Hub.SendHeartbeat(conferenceId, participantId, heartbeat);
@@ -121,8 +123,9 @@ namespace VideoWeb.UnitTests.Hub
             HeartbeatMapper.Setup(x => x.MapToHealth(heartbeat)).Returns(HeartbeatHealth.Good);
             var addHeartbeatRequest = new AddHeartbeatRequest
             {
-                Browser_name = heartbeat.BrowserName, Browser_version = heartbeat.BrowserVersion,
-                Incoming_audio_percentage_lost_recent = 10.3
+                BrowserName = heartbeat.BrowserName,
+                BrowserVersion = heartbeat.BrowserVersion,
+                IncomingAudioPercentageLostRecent = 10.3m
             };
             HeartbeatMapper.Setup(x => x.MapToRequest(heartbeat)).Returns(addHeartbeatRequest);
             await Hub.SendHeartbeat(conferenceId, judgeId, heartbeat);
@@ -179,8 +182,9 @@ namespace VideoWeb.UnitTests.Hub
             
             var addHeartbeatRequest = new AddHeartbeatRequest
             {
-                Browser_name = heartbeat.BrowserName, Browser_version = heartbeat.BrowserVersion,
-                Incoming_audio_percentage_lost_recent = 10.3
+                BrowserName = heartbeat.BrowserName,
+                BrowserVersion = heartbeat.BrowserVersion,
+                IncomingAudioPercentageLostRecent = 10.3m
             };
             HeartbeatMapper.Setup(x => x.MapToRequest(heartbeat)).Returns(addHeartbeatRequest);
             await Hub.SendHeartbeat(conferenceId, participantId, heartbeat);

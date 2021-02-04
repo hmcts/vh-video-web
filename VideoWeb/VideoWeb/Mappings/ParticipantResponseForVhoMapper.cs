@@ -1,7 +1,7 @@
 using System;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
 
 namespace VideoWeb.Mappings
@@ -10,8 +10,8 @@ namespace VideoWeb.Mappings
     {
         public ParticipantResponseVho Map(ParticipantDetailsResponse participant)
         {
-            var status = Enum.Parse<ParticipantStatus>(participant.Current_status.ToString());
-            var role = Enum.Parse<Role>(participant.User_role.ToString());
+            var status = Enum.Parse<ParticipantStatus>(participant.CurrentStatus.ToString());
+            var role = Enum.Parse<Role>(participant.UserRole.ToString());
 
             var response = new ParticipantResponseVho
             {
@@ -19,15 +19,15 @@ namespace VideoWeb.Mappings
                 Name = participant.Name,
                 Status = status,
                 Role = role,
-                DisplayName = participant.Display_name,
-                CaseTypeGroup = participant.Case_type_group,
+                DisplayName = participant.DisplayName,
+                CaseTypeGroup = participant.CaseTypeGroup,
                 Representee = participant.Representee,
-                HearingRole = participant.Hearing_role
+                HearingRole = participant.HearingRole
             };
 
             if (role == Role.Judge)
             {
-                response.TiledDisplayName = $"T{0};{participant.Display_name};{participant.Id}";
+                response.TiledDisplayName = $"T{0};{participant.DisplayName};{participant.Id}";
             }
 
             return response;

@@ -7,15 +7,15 @@ using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
-using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
-using UserRole = VideoWeb.Services.Video.UserRole;
+using BookingParticipant = BookingsApi.Contract.Responses.ParticipantResponse;
+using UserRole = VideoApi.Contract.Responses.UserRole;
 
 
 namespace VideoWeb.UnitTests.Mappings
 {
-   public class ConferenceResponseVhoMapperTests
+    public class ConferenceResponseVhoMapperTests
     {
         private ConferenceResponseVhoMapper _sut;
         private AutoMock _mocker;
@@ -44,30 +44,30 @@ namespace VideoWeb.UnitTests.Mappings
 
             var bookingParticipants = Builder<BookingParticipant>.CreateListOfSize(participants.Count)
                 .Build().ToList();
-            participants[0].Ref_id = bookingParticipants[0].Id;
-            participants[1].Ref_id = bookingParticipants[1].Id;
-            participants[2].Ref_id = bookingParticipants[2].Id;
-            participants[3].Ref_id = bookingParticipants[3].Id;
-            participants[4].Ref_id = bookingParticipants[4].Id;
+            participants[0].RefId = bookingParticipants[0].Id;
+            participants[1].RefId = bookingParticipants[1].Id;
+            participants[2].RefId = bookingParticipants[2].Id;
+            participants[3].RefId = bookingParticipants[3].Id;
+            participants[4].RefId = bookingParticipants[4].Id;
 
             var expectedConferenceStatus = ConferenceStatus.Suspended;
 
             var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
 
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-                .With(x => x.Current_status = ConferenceState.Suspended)
+                .With(x => x.CurrentStatus = ConferenceState.Suspended)
                 .With(x => x.Participants = participants)
-                .With(x => x.Meeting_room = meetingRoom)
+                .With(x => x.MeetingRoom = meetingRoom)
                 .Build();
 
             var response = _sut.Map(conference);
 
             response.Id.Should().Be(conference.Id);
-            response.CaseName.Should().Be(conference.Case_name);
-            response.CaseType.Should().Be(conference.Case_type);
-            response.CaseNumber.Should().Be(conference.Case_number);
-            response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);
-            response.ScheduledDuration.Should().Be(conference.Scheduled_duration);
+            response.CaseName.Should().Be(conference.CaseName);
+            response.CaseType.Should().Be(conference.CaseType);
+            response.CaseNumber.Should().Be(conference.CaseNumber);
+            response.ScheduledDateTime.Should().Be(conference.ScheduledDateTime);
+            response.ScheduledDuration.Should().Be(conference.ScheduledDuration);
             response.Status.Should().Be(expectedConferenceStatus);
 
             var participantsResponse = response.Participants;
@@ -100,9 +100,9 @@ namespace VideoWeb.UnitTests.Mappings
             caseTypeGroups[1].Should().Be("Defendant");
             caseTypeGroups[2].Should().Be("None");
 
-            response.AdminIFrameUri.Should().Be(meetingRoom.Admin_uri);
-            response.ParticipantUri.Should().Be(meetingRoom.Participant_uri);
-            response.PexipNodeUri.Should().Be(meetingRoom.Pexip_node);
+            response.AdminIFrameUri.Should().Be(meetingRoom.AdminUri);
+            response.ParticipantUri.Should().Be(meetingRoom.ParticipantUri);
+            response.PexipNodeUri.Should().Be(meetingRoom.PexipNode);
         }
 
         [Test]
@@ -115,24 +115,24 @@ namespace VideoWeb.UnitTests.Mappings
             var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
 
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-                .With(x => x.Current_status = ConferenceState.Suspended)
+                .With(x => x.CurrentStatus = ConferenceState.Suspended)
                 .With(x => x.Participants = participants)
-                .With(x => x.Meeting_room = meetingRoom)
+                .With(x => x.MeetingRoom = meetingRoom)
                 .Build();
 
             var response = _sut.Map(conference);
 
             response.Id.Should().Be(conference.Id);
-            response.CaseName.Should().Be(conference.Case_name);
-            response.CaseType.Should().Be(conference.Case_type);
-            response.CaseNumber.Should().Be(conference.Case_number);
-            response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);
-            response.ScheduledDuration.Should().Be(conference.Scheduled_duration);
+            response.CaseName.Should().Be(conference.CaseName);
+            response.CaseType.Should().Be(conference.CaseType);
+            response.CaseNumber.Should().Be(conference.CaseNumber);
+            response.ScheduledDateTime.Should().Be(conference.ScheduledDateTime);
+            response.ScheduledDuration.Should().Be(conference.ScheduledDuration);
             response.Status.Should().Be(expectedConferenceStatus);
 
-            response.AdminIFrameUri.Should().Be(meetingRoom.Admin_uri);
-            response.ParticipantUri.Should().Be(meetingRoom.Participant_uri);
-            response.PexipNodeUri.Should().Be(meetingRoom.Pexip_node);
+            response.AdminIFrameUri.Should().Be(meetingRoom.AdminUri);
+            response.ParticipantUri.Should().Be(meetingRoom.ParticipantUri);
+            response.PexipNodeUri.Should().Be(meetingRoom.PexipNode);
         }
 
         [Test]
@@ -143,24 +143,24 @@ namespace VideoWeb.UnitTests.Mappings
             var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
 
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-                .With(x => x.Current_status = ConferenceState.Suspended)
+                .With(x => x.CurrentStatus = ConferenceState.Suspended)
                 .With(x => x.Participants = null)
-                .With(x => x.Meeting_room = meetingRoom)
+                .With(x => x.MeetingRoom = meetingRoom)
                 .Build();
 
             var response = _sut.Map(conference);
 
             response.Id.Should().Be(conference.Id);
-            response.CaseName.Should().Be(conference.Case_name);
-            response.CaseType.Should().Be(conference.Case_type);
-            response.CaseNumber.Should().Be(conference.Case_number);
-            response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);
-            response.ScheduledDuration.Should().Be(conference.Scheduled_duration);
+            response.CaseName.Should().Be(conference.CaseName);
+            response.CaseType.Should().Be(conference.CaseType);
+            response.CaseNumber.Should().Be(conference.CaseNumber);
+            response.ScheduledDateTime.Should().Be(conference.ScheduledDateTime);
+            response.ScheduledDuration.Should().Be(conference.ScheduledDuration);
             response.Status.Should().Be(expectedConferenceStatus);
 
-            response.AdminIFrameUri.Should().Be(meetingRoom.Admin_uri);
-            response.ParticipantUri.Should().Be(meetingRoom.Participant_uri);
-            response.PexipNodeUri.Should().Be(meetingRoom.Pexip_node);
+            response.AdminIFrameUri.Should().Be(meetingRoom.AdminUri);
+            response.ParticipantUri.Should().Be(meetingRoom.ParticipantUri);
+            response.PexipNodeUri.Should().Be(meetingRoom.PexipNode);
         }
 
         [Test]
@@ -175,33 +175,33 @@ namespace VideoWeb.UnitTests.Mappings
                 new ParticipantDetailsResponseBuilder(UserRole.CaseAdmin, "None").Build()
             };
 
-            participants[0].Ref_id = Guid.NewGuid();
-            participants[1].Ref_id = Guid.NewGuid();
-            participants[2].Ref_id = Guid.NewGuid();
-            participants[3].Ref_id = Guid.NewGuid();
-            participants[4].Ref_id = Guid.NewGuid();
+            participants[0].RefId = Guid.NewGuid();
+            participants[1].RefId = Guid.NewGuid();
+            participants[2].RefId = Guid.NewGuid();
+            participants[3].RefId = Guid.NewGuid();
+            participants[4].RefId = Guid.NewGuid();
 
 
             var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
 
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-                .With(x => x.Current_status = ConferenceState.Suspended)
+                .With(x => x.CurrentStatus = ConferenceState.Suspended)
                 .With(x => x.Participants = participants)
-                .With(x => x.Meeting_room = meetingRoom)
+                .With(x => x.MeetingRoom = meetingRoom)
                 .Build();
 
             var response = _sut.Map(conference);
 
             response.Id.Should().Be(conference.Id);
-            response.CaseName.Should().Be(conference.Case_name);
-            response.CaseType.Should().Be(conference.Case_type);
-            response.CaseNumber.Should().Be(conference.Case_number);
-            response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);
-            response.ScheduledDuration.Should().Be(conference.Scheduled_duration);
+            response.CaseName.Should().Be(conference.CaseName);
+            response.CaseType.Should().Be(conference.CaseType);
+            response.CaseNumber.Should().Be(conference.CaseNumber);
+            response.ScheduledDateTime.Should().Be(conference.ScheduledDateTime);
+            response.ScheduledDuration.Should().Be(conference.ScheduledDuration);
 
-            response.AdminIFrameUri.Should().Be(meetingRoom.Admin_uri);
-            response.ParticipantUri.Should().Be(meetingRoom.Participant_uri);
-            response.PexipNodeUri.Should().Be(meetingRoom.Pexip_node);
+            response.AdminIFrameUri.Should().Be(meetingRoom.AdminUri);
+            response.ParticipantUri.Should().Be(meetingRoom.ParticipantUri);
+            response.PexipNodeUri.Should().Be(meetingRoom.PexipNode);
         }
     }
 }

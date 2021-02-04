@@ -2,6 +2,16 @@
   "version": 1,
   "dependencies": {
     ".NETCoreApp,Version=v3.1": {
+      "BookingsApi.Client": {
+        "type": "Direct",
+        "requested": "[1.21.25, )",
+        "resolved": "1.21.25",
+        "contentHash": "QFS4lmBqzGDJoa7kTdLsbGfEz7yd3m8Vj693DByEiCq2Jhsoc93ZkLERxxyiMch8SftuFI/5eQq115api0MAWQ==",
+        "dependencies": {
+          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
+          "Newtonsoft.Json": "12.0.3"
+        }
+      },
       "Castle.Core": {
         "type": "Direct",
         "requested": "[4.4.0, )",
@@ -240,6 +250,16 @@
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.NewtonsoftJson": "3.0.0",
           "Swashbuckle.AspNetCore.SwaggerGen": "5.0.0"
+        }
+      },
+      "UserApi.Client": {
+        "type": "Direct",
+        "requested": "[1.23.6, )",
+        "resolved": "1.23.6",
+        "contentHash": "k4yBnDBMeGLXz4m4qReH7gy4KOJ7Z+Ir9fKdQrrQkCSWzcGwD8m3Kn14hU/xGLV4RloHBtANCGSDLU9hZ3WpYg==",
+        "dependencies": {
+          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
+          "Newtonsoft.Json": "12.0.3"
         }
       },
       "VH.Core.Configuration": {
@@ -2537,6 +2557,15 @@
           "System.Xml.XmlDocument": "4.3.0"
         }
       },
+      "VideoApi.Client": {
+        "type": "Transitive",
+        "resolved": "1.23.6",
+        "contentHash": "7h2PeW8+K280AKih6jFNpLgEv3VBzghYq5hvEu9eNDvGVPppIYTARaU7ik3WdTROumEU/Ic6gllK6oGLGuwRUw==",
+        "dependencies": {
+          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
+          "Newtonsoft.Json": "12.0.3"
+        }
+      },
       "videoweb.common": {
         "type": "Project",
         "dependencies": {
@@ -2549,6 +2578,8 @@
           "SonarAnalyzer.CSharp": "8.2.0.14119",
           "StackExchange.Redis": "2.1.28",
           "System.IdentityModel.Tokens.Jwt": "5.6.0",
+          "UserApi.Client": "1.23.6",
+          "VideoApi.Client": "1.23.6",
           "VideoWeb.Services": "1.0.0"
         }
       },
@@ -2567,6 +2598,7 @@
           "Microsoft.AspNetCore.SignalR": "1.1.0",
           "Microsoft.Extensions.Caching.Abstractions": "3.1.10",
           "System.Text.Json": "4.7.1",
+          "VideoApi.Client": "1.23.6",
           "VideoWeb.Common": "1.0.0",
           "VideoWeb.Services": "1.0.0"
         }

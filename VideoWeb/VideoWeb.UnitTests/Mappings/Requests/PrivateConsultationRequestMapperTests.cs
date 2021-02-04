@@ -11,11 +11,11 @@ namespace VideoWeb.UnitTests.Mappings.Requests
     public class PrivateConsultationRequestMapperTests : BaseMockerSutTestSetup<PrivateConsultationRequestMapper>
     {
         [TestCase(null, null)]
-        [TestCase(ConsultationAnswer.Accepted, Services.Video.ConsultationAnswer.Accepted)]
-        [TestCase(ConsultationAnswer.Cancelled, Services.Video.ConsultationAnswer.Cancelled)]
-        [TestCase(ConsultationAnswer.Rejected, Services.Video.ConsultationAnswer.Rejected)]
-        [TestCase(ConsultationAnswer.None, Services.Video.ConsultationAnswer.None)]
-        public void should_map_to_private_consultation_request(ConsultationAnswer? answer, Services.Video.ConsultationAnswer? expectedAnswer)
+        [TestCase(ConsultationAnswer.Accepted, VideoApi.Contract.Requests.ConsultationAnswer.Accepted)]
+        [TestCase(ConsultationAnswer.Cancelled, VideoApi.Contract.Requests.ConsultationAnswer.Cancelled)]
+        [TestCase(ConsultationAnswer.Rejected, VideoApi.Contract.Requests.ConsultationAnswer.Rejected)]
+        [TestCase(ConsultationAnswer.None, VideoApi.Contract.Requests.ConsultationAnswer.None)]
+        public void should_map_to_private_consultation_request(ConsultationAnswer? answer, VideoApi.Contract.Requests.ConsultationAnswer? expectedAnswer)
         {
             var request = Builder<PrivateConsultationRequest>.CreateNew()
                 .With(x => x.ConferenceId = Guid.NewGuid())
@@ -27,9 +27,9 @@ namespace VideoWeb.UnitTests.Mappings.Requests
             var result = _sut.Map(request);
 
             result.Answer.Should().Be(expectedAnswer);
-            result.Conference_id.Should().Be(request.ConferenceId);
-            result.Requested_by.Should().Be(request.RequestedById);
-            result.Requested_for.Should().Be(request.RequestedForId);
+            result.ConferenceId.Should().Be(request.ConferenceId);
+            result.RequestedBy.Should().Be(request.RequestedById);
+            result.RequestedFor.Should().Be(request.RequestedForId);
         }
     }
 }

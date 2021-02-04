@@ -6,7 +6,7 @@ using VideoWeb.Common.Caching;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using RoomType = VideoWeb.Common.Models.RoomType;
 

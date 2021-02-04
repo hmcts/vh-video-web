@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Helpers;
-using VideoWeb.Services.Bookings;
-using VideoWeb.Services.User;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
 using HealthCheckResponse = VideoWeb.Contract.Responses.HealthCheckResponse;
 using HealthCheck = VideoWeb.Contract.Responses.HealthCheck;
+using BookingsApi.Client;
+using UserApi.Client;
 
 namespace VideoWeb.Controllers
 {

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
+using UserApi.Contract.Responses;
 using VideoWeb.Common.Caching;
-using VideoWeb.Services.User;
 
 namespace VideoWeb.Common.SignalR
 {

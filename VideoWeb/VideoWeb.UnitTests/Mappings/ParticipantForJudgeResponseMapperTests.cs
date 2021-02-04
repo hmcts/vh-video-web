@@ -2,7 +2,7 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Mappings;
-using Participant = VideoWeb.Services.Video.ParticipantForJudgeResponse;
+using Participant = VideoApi.Contract.Responses.ParticipantForJudgeResponse;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -15,11 +15,11 @@ namespace VideoWeb.UnitTests.Mappings
 
             var response = _sut.Map(participant);
 
-            response.DisplayName.Should().BeEquivalentTo(participant.Display_name);
+            response.DisplayName.Should().BeEquivalentTo(participant.DisplayName);
             response.Role.Should().BeEquivalentTo(participant.Role);
             response.Representee.Should().BeEquivalentTo(participant.Representee);
-            response.CaseTypeGroup.Should().BeEquivalentTo(participant.Case_type_group);
-            response.HearingRole.Should().BeEquivalentTo(participant.Hearing_role);
+            response.CaseTypeGroup.Should().BeEquivalentTo(participant.CaseTypeGroup);
+            response.HearingRole.Should().BeEquivalentTo(participant.HearingRole);
         }
     }
 }

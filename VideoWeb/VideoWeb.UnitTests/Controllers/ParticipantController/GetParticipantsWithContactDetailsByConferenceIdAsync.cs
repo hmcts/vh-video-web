@@ -18,9 +18,10 @@ using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
-using ProblemDetails = VideoWeb.Services.User.ProblemDetails;
+using VideoApi.Contract.Requests;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {
@@ -98,7 +99,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         {
             var conferenceId = Guid.NewGuid();
             
-            var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
+            var apiException = new VideoApiException<Microsoft.AspNetCore.Mvc.ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id and participant Id", null, default, null);
             _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(conferenceId, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())

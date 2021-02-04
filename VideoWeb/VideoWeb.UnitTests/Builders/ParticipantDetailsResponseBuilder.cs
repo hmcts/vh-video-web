@@ -1,6 +1,6 @@
 using System;
 using FizzWare.NBuilder;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Builders
 {
@@ -12,20 +12,20 @@ namespace VideoWeb.UnitTests.Builders
         {
             _participant = Builder<ParticipantDetailsResponse>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
-                .With(x => x.Current_status = ParticipantState.Available)
-                .With(x => x.Case_type_group = caseTypeGroup)
-                .With(x => x.User_role = role);
+                .With(x => x.CurrentStatus = ParticipantState.Available)
+                .With(x => x.CaseTypeGroup = caseTypeGroup)
+                .With(x => x.UserRole = role);
         }
 
         public ParticipantDetailsResponseBuilder WithStatus(ParticipantState state)
         {
-            _participant.With(x => x.Current_status = state);
+            _participant.With(x => x.CurrentStatus = state);
             return this;
         }
 
         public ParticipantDetailsResponseBuilder WithHearingRole(string hearingRole)
         {
-            _participant.With(x => x.Hearing_role = hearingRole);
+            _participant.With(x => x.HearingRole = hearingRole);
             return this;
         }
 

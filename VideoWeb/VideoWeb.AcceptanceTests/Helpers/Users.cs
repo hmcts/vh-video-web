@@ -18,7 +18,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             return users.First(x => x.User_type == UserType.Judge);
         }
 
-        public static User GetUserFromDisplayName(List<User> users, string displayName)
+        public static User GetUserFromDisplay_name(List<User> users, string displayName)
         {
             if (users.Any(x => x.Display_name.ToLower().Contains(displayName.ToLower().Replace(" ", ""))))
             {

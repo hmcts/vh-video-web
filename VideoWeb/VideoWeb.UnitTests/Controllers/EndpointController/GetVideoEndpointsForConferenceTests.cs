@@ -12,8 +12,8 @@ using NUnit.Framework;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Controllers.EndpointController
 {

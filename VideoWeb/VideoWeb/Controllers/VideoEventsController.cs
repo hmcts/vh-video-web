@@ -10,9 +10,10 @@ using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
 using EventType = VideoWeb.EventHub.Enums.EventType;
-using VAEventType = VideoWeb.Services.Video.EventType;
+using VAEventType = VideoApi.Contract.Responses.EventType;
+using VideoApi.Contract.Requests;
 
 namespace VideoWeb.Controllers
 {
@@ -51,7 +52,7 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var conferenceId = Guid.Parse(request.Conference_id);
+                var conferenceId = Guid.Parse(request.ConferenceId);
                 var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
                 {
                     _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
@@ -60,10 +61,10 @@ namespace VideoWeb.Controllers
 
                 var callbackEventMapper = _mapperFactory.Get<ConferenceEventRequest, Conference, CallbackEvent>();
                 var callbackEvent = callbackEventMapper.Map(request, conference);
-                request.Event_type = Enum.Parse<VAEventType>(callbackEvent.EventType.ToString());
+                request.EventType = Enum.Parse<VAEventType>(callbackEvent.EventType.ToString());
                 if (callbackEvent.EventType != EventType.VhoCall)
                 {
-                    _logger.LogTrace($"Raising video event: ConferenceId: {request.Conference_id}, EventType: {request.Event_type}");
+                    _logger.LogTrace($"Raising video event: ConferenceId: {request.ConferenceId}, EventType: {request.EventType}");
                     await _videoApiClient.RaiseVideoEventAsync(request);
                 }
 
@@ -78,7 +79,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"ConferenceId: {request.Conference_id}, ErrorCode: {e.StatusCode}");
+                _logger.LogError(e, $"ConferenceId: {request.ConferenceId}, ErrorCode: {e.StatusCode}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }

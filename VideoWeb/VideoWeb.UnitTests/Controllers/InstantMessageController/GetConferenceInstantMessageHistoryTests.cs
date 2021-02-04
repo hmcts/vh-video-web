@@ -12,8 +12,8 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
-using VideoWeb.Services.Video;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Controllers.InstantMessageController
 {

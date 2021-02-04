@@ -19,8 +19,8 @@ namespace VideoWeb.UnitTests.Mappings.Requests
             
             var result = _sut.Map(request);
 
-            result.Conference_id.Should().Be(request.ConferenceId);
-            result.Participant_id.Should().Be(request.ParticipantId);
+            result.ConferenceId.Should().Be(request.ConferenceId);
+            result.ParticipantId.Should().Be(request.ParticipantId);
         }
     }
 }
