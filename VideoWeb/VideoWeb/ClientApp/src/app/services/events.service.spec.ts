@@ -51,7 +51,6 @@ describe('EventsService', () => {
         subscription$.add(service.getServiceDisconnected().subscribe());
         subscription$.add(service.getParticipantStatusMessage().subscribe());
         subscription$.add(service.getHearingStatusMessage().subscribe());
-        subscription$.add(service.getConsultationMessage().subscribe());
         subscription$.add(service.getConsultationRequestResponseMessage().subscribe());
         subscription$.add(service.getChatMessage().subscribe());
         subscription$.add(service.getAdminAnsweredChat().subscribe());

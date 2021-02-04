@@ -52,7 +52,7 @@ namespace VideoWeb.EventHub.Hub
 
         private async Task AddUserToConferenceGroups(bool isAdmin)
         {
-            var conferenceIds = await GetConferenceIds(isAdmin, Context.User.Identity.Name);
+            var conferenceIds = await GetConferenceIds(isAdmin);
             var tasks = conferenceIds.Select(c => Groups.AddToGroupAsync(Context.ConnectionId, c.ToString())).ToArray();
 
             await Task.WhenAll(tasks);
@@ -64,10 +64,8 @@ namespace VideoWeb.EventHub.Hub
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, VhOfficersGroupName);
             }
-            else
-            {
-                await Groups.AddToGroupAsync(Context.ConnectionId, Context.User.Identity.Name.ToLowerInvariant());
-            }
+            
+            await Groups.AddToGroupAsync(Context.ConnectionId, Context.User.Identity.Name.ToLowerInvariant());
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
@@ -96,31 +94,27 @@ namespace VideoWeb.EventHub.Hub
             {
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, VhOfficersGroupName);
             }
-            else
-            {
-                await Groups.RemoveFromGroupAsync(Context.ConnectionId, Context.User.Identity.Name.ToLowerInvariant());
-            }
+
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, Context.User.Identity.Name.ToLowerInvariant());
         }
 
         private async Task RemoveUserFromConferenceGroups(bool isAdmin)
         {
-            var conferenceIds = await GetConferenceIds(isAdmin, Context.User.Identity.Name);
+            var conferenceIds = await GetConferenceIds(isAdmin);
             var tasks = conferenceIds.Select(c => Groups.RemoveFromGroupAsync(Context.ConnectionId, c.ToString())).ToArray();
 
             await Task.WhenAll(tasks);
         }
 
-        private async Task<IEnumerable<Guid>> GetConferenceIds(bool isAdmin, string username)
+        private async Task<IEnumerable<Guid>> GetConferenceIds(bool isAdmin)
         {
             if (isAdmin)
             {
                 var conferences = await _videoApiClient.GetConferencesTodayForAdminAsync(null);
                 return conferences.Select(x => x.Id);
-            } else
-            {
-                var conferences = await _videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username);
-                return conferences.Select(x => x.Id);
             }
+
+            return new Guid[0];
         }
 
         private bool IsSenderAdmin()

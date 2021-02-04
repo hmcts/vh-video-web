@@ -15,9 +15,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { Participant } from 'src/app/shared/models/participant';
 import { HearingRole } from '../models/hearing-role-model';
-import { NotificationToastrService } from '../services/notification-toastr.service';
 
 @Directive()
 export abstract class WRParticipantStatusListDirective {
@@ -39,8 +37,7 @@ export abstract class WRParticipantStatusListDirective {
         protected consultationService: ConsultationService,
         protected eventService: EventsService,
         protected videoWebService: VideoWebService,
-        protected logger: Logger,
-        protected notificationToastrService: NotificationToastrService
+        protected logger: Logger
     ) {}
 
     initParticipants() {
@@ -65,7 +62,6 @@ export abstract class WRParticipantStatusListDirective {
 
     executeTeardown(): void {
         this.eventHubSubscriptions$.unsubscribe();
-        this.consultationService.clearOutgoingCallTimeout();
     }
 
     getConsultationRequester(): ParticipantResponse {
@@ -76,21 +72,7 @@ export abstract class WRParticipantStatusListDirective {
         this.eventHubSubscriptions$.add(
             this.eventService.getConsultationRequestResponseMessage().subscribe(async message => {
                 // There has been a response to the consultation request sent
-                this.logger.debug(`${this.loggerPrefix} Recieved ConsultationRequestResponseMessage`)
-                
-            })
-        );
-        
-        this.eventHubSubscriptions$.add(
-            this.eventService.getRequestedConsultationMessage().subscribe(message => {
-                var requestedFor = new Participant(this.findParticipant(message.requestedFor));
-                if (requestedFor.username == this.adalService.userInfo.userName.toLowerCase()) {
-                    // A request for you to join a consultation room
-                    this.logger.debug(`${this.loggerPrefix} Recieved RequestedConsultationMessage`)
-                    var requestedBy = new Participant(this.findParticipant(message.requestedBy));
-                    var roomParticipants = this.findParticipantsInRoom(message.roomLabel).map(x => new Participant(x));
-                    this.notificationToastrService.ShowConsultationInvite(message.roomLabel, message.conferenceId, requestedBy, requestedFor, roomParticipants);
-                }
+                this.logger.debug(`${this.loggerPrefix} Recieved ConsultationRequestResponseMessage`);
             })
         );
 
@@ -147,20 +129,12 @@ export abstract class WRParticipantStatusListDirective {
         this.judge = this.conference.participants.find(x => x.role === Role.Judge);
     }
 
-    protected findParticipant(participantId: string) : ParticipantResponse {
-        return this.conference.participants.find(x => x.id === participantId)
-    }
-
-    protected findParticipantsInRoom(roomLabel: string) : ParticipantResponse[] {
-        return this.conference.participants.filter(x => x.current_room?.label === roomLabel)
-    }
-
     protected camelToSpaced(word: string) {
         const splitWord = word
-        .match(/[a-z]+|[^a-z]+/gi)
-        .join(' ')
-        .split(/(?=[A-Z])/)
-        .join(' ');
+            .match(/[a-z]+|[^a-z]+/gi)
+            .join(' ')
+            .split(/(?=[A-Z])/)
+            .join(' ');
         const lowcaseWord = splitWord.toLowerCase();
         return lowcaseWord.charAt(0).toUpperCase() + lowcaseWord.slice(1);
     }

@@ -32,7 +32,7 @@ namespace VideoWeb.EventHub.Handlers
 
         private string ValidationConsultationRoom(CallbackEvent callbackEvent)
         {
-            if (string.IsNullOrWhiteSpace(callbackEvent.TransferTo))
+            if (string.IsNullOrWhiteSpace(callbackEvent.TransferTo) || !callbackEvent.TransferTo.Contains("consultation"))
             {
                 throw new ArgumentException("No consultation room provided");
             }

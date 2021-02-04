@@ -11,6 +11,7 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.EventHub.Hub;
+using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;
@@ -61,7 +62,7 @@ namespace VideoWeb.Controllers
 
                 var leaveConsultationRequestMapper = _mapperFactory.Get<LeavePrivateConsultationRequest, LeaveConsultationRequest>();
                 var mappedRequest = leaveConsultationRequestMapper.Map(request);
-                await _videoApiClient.LeavePrivateConsultationAsync(mappedRequest);
+                await _videoApiClient.LeaveConsultationAsync(mappedRequest);
 
                 return NoContent();
             }
@@ -138,7 +139,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                await _videoApiClient.StartPrivateConsultationWithEndpointAsync(new EndpointConsultationRequest
+                await _videoApiClient.StartConsultationWithEndpointAsync(new EndpointConsultationRequest
                 {
                     Conference_id = request.ConferenceId,
                     Endpoint_id = endpoint.Id,
@@ -179,6 +180,7 @@ namespace VideoWeb.Controllers
                 if (request.RoomType == Contract.Enums.VirtualCourtRoomType.Participant)
                 {
                     var room = await _videoApiClient.CreatePrivateConsultationAsync(mappedRequest);
+                    await NotifyRoomCreatedAsync(conference, new Room { Label = room.Label, Locked = room.Locked, ConferenceId = conference.Id });
                     foreach (var participant in request.InviteParticipants)
                     {
                         await NotifyConsultationRequestAsync(conference, room.Label, request.RequestedBy, participant);
@@ -207,7 +209,7 @@ namespace VideoWeb.Controllers
         /// <summary>
         /// This method raises a notification to the requestee informing them of an incoming consultation request
         /// </summary>
-        /// <param name="conferenceId">The conference Id</param>
+        /// <param name="conference">The conference</param>
         /// <param name="requestedById">The participant raising the consultation request</param>
         /// <param name="requestedForId">The participant with whom the consultation is being requested with</param>
         /// <param name="roomLabel">The room you're requesting the participant joins</param>
@@ -223,7 +225,7 @@ namespace VideoWeb.Controllers
         /// <summary>
         /// This method raises a notification to the requester informing them the response to their consultation request.
         /// </summary>
-        /// <param name="conferenceId">The conference Id</param>
+        /// <param name="conference">The conference</param>
         /// <param name="roomLabel">The room the participant is responding to</param>
         /// <param name="requestedById">The participant raising the consultation request</param>
         /// <param name="requestedForId">The participant with whom the consultation is being requested with</param>
@@ -235,7 +237,14 @@ namespace VideoWeb.Controllers
                 _hubContext.Clients.Group(p.Username.ToLowerInvariant())
                     .ConsultationRequestResponseMessage(conference.Id, roomLabel, requestedForId, answer));
             await Task.WhenAll(tasks);
+        }
 
+        private async Task NotifyRoomCreatedAsync(Conference conference, Room room)
+        {
+            var tasks = conference.Participants.Select(p =>
+                _hubContext.Clients.Group(p.Username.ToLowerInvariant())
+                .RoomUpdate(room));
+            await Task.WhenAll(tasks);
         }
     }
 }

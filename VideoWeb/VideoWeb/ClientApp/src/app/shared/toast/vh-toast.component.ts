@@ -6,12 +6,12 @@ interface VhToastOptions {
     body?: string;
     htmlBody?: string;
     buttons: VhToastButton[];
-    timeout: () => void;
+    onNoAction: () => void;
 }
 
 interface VhToastButton {
-  label: string;
-  action: () => void;
+    label: string;
+    action: () => void;
 }
 
 @Component({
@@ -21,10 +21,22 @@ interface VhToastButton {
 })
 export class VhToastComponent extends Toast {
     vhToastOptions: VhToastOptions;
+    actioned = false;
 
-    constructor(
-        protected toastrService: ToastrService,
-        public toastPackage: ToastPackage) {
+    constructor(protected toastrService: ToastrService, public toastPackage: ToastPackage) {
         super(toastrService, toastPackage);
-      }
     }
+
+    remove() {
+      if (!this.actioned){
+        this.vhToastOptions.onNoAction();
+      }
+
+      super.remove();
+    }
+
+    handleAction(fn: () => void) {
+      this.actioned = true;
+      fn();
+    }
+}

@@ -8,7 +8,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingRole } from '../models/hearing-role-model';
 import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-participant-list-shared.component';
-import { NotificationToastrService } from '../services/notification-toastr.service';
 
 @Component({
     selector: 'app-individual-participant-status-list',
@@ -22,14 +21,12 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         protected consultationService: ConsultationService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected videoWebService: VideoWebService,
-        protected notificationToastrService: NotificationToastrService
+        protected videoWebService: VideoWebService
     ) {
-        super(adalService, consultationService, eventService, videoWebService, logger, notificationToastrService);
+        super(adalService, consultationService, eventService, videoWebService, logger);
     }
 
     ngOnInit() {
-        this.consultationService.resetWaitingForResponse();
         this.initParticipants();
         this.setupSubscribers();
     }
@@ -44,7 +41,6 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         this.eventHubSubscriptions$.add(
             this.eventService.getRequestedConsultationMessage().subscribe(message => {
                 // A request for you to join a consultation room
-                
             })
         );
     }
@@ -104,9 +100,14 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
             return 'Unavailable';
         }
 
-        if (participant.status === ParticipantStatus.InConsultation) {            
-            return "In " + this.camelToSpaced(participant.current_room.label.replace('ParticipantConsultationRoom', 'MeetingRoom')).toLowerCase() + (participant.current_room.locked ? ' LockedIcon' : '');
+        if (participant.status === ParticipantStatus.InConsultation && participant.current_room != null) {
+            return (
+                'In ' +
+                this.camelToSpaced(participant.current_room.label.replace('ParticipantConsultationRoom', 'MeetingRoom')).toLowerCase() +
+                (participant.current_room.locked ? ' LockedIcon' : '')
+            );
         }
+
         return;
     }
 }

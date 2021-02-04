@@ -20,6 +20,7 @@ import {
     initAllWRDependencies,
     logger,
     notificationSoundsService,
+    notificationToastrService,
     router,
     userMediaService,
     userMediaStreamService,
@@ -56,7 +57,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             clockService,
             userMediaService,
             userMediaStreamService,
-            notificationSoundsService
+            notificationSoundsService,
+            notificationToastrService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

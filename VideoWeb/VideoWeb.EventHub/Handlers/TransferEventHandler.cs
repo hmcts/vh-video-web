@@ -24,10 +24,11 @@ namespace VideoWeb.EventHub.Handlers
 
         public override EventType EventType => EventType.Transfer;
 
-        protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
+        protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             var participantStatus = DeriveParticipantStatusForTransferEvent(callbackEvent);
-            return PublishParticipantStatusMessage(participantStatus);
+            await PublishParticipantStatusMessage(participantStatus);
+            await PublishRoomTransferMessage(new RoomTransfer { ParticipantId = callbackEvent.ParticipantId, FromRoom = callbackEvent.TransferFrom, ToRoom = callbackEvent.TransferTo });
         }
 
         private static ParticipantState DeriveParticipantStatusForTransferEvent(CallbackEvent callbackEvent)

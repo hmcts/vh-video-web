@@ -10,6 +10,7 @@ import {
     ParticipantResponse,
     ParticipantStatus,
     Role,
+    RoomSummaryResponse,
     TokenResponse
 } from 'src/app/services/clients/api-client';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
@@ -24,10 +25,13 @@ import { UserMediaStreamService } from 'src/app/services/user-media-stream.servi
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { Participant } from 'src/app/shared/models/participant';
+import { Room } from 'src/app/shared/models/room';
 import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
 import { HearingRole } from '../models/hearing-role-model';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models/video-call-models';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
+import { NotificationToastrService } from '../services/notification-toastr.service';
 import { VideoCallService } from '../services/video-call.service';
 
 declare var HeartbeatFactory: any;
@@ -41,6 +45,7 @@ export abstract class WaitingRoomBaseComponent {
     hearing: Hearing;
     participant: ParticipantResponse;
     conference: ConferenceResponse;
+    conferenceRooms: Room[] = [];
     token: TokenResponse;
 
     eventHubSubscription$ = new Subscription();
@@ -78,7 +83,8 @@ export abstract class WaitingRoomBaseComponent {
         protected consultationService: ConsultationService,
         protected userMediaService: UserMediaService,
         protected userMediaStreamService: UserMediaStreamService,
-        protected notificationSoundsService: NotificationSoundsService
+        protected notificationSoundsService: NotificationSoundsService,
+        protected notificationToastrService: NotificationToastrService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -170,11 +176,32 @@ export abstract class WaitingRoomBaseComponent {
             })
         );
 
-        this.logger.debug(`${this.loggerPrefix} Subscribing to consultation response messages...`);
+        this.logger.debug(`${this.loggerPrefix} Subscribing to ConsultationRequestResponseMessage`);
         this.eventHubSubscription$.add(
             this.eventService.getConsultationRequestResponseMessage().subscribe(message => {
-                if (message.answer && message.answer === ConsultationAnswer.Accepted && message.requestedFor == this.participant.id) {
+                if (message.answer && message.answer === ConsultationAnswer.Accepted && message.requestedFor === this.participant.id) {
                     this.onConsultationAccepted();
+                }
+            })
+        );
+
+        this.logger.debug(`${this.loggerPrefix} Subscribing to RequestedConsultationMessage`);
+        this.eventHubSubscription$.add(
+            this.eventService.getRequestedConsultationMessage().subscribe(message => {
+                const requestedFor = new Participant(this.findParticipant(message.requestedFor));
+                if (requestedFor.username === this.adalService.userInfo.userName.toLowerCase()) {
+                    // A request for you to join a consultation room
+                    this.logger.debug(`${this.loggerPrefix} Recieved RequestedConsultationMessage`);
+                    const requestedBy = new Participant(this.findParticipant(message.requestedBy));
+                    const roomParticipants = this.findParticipantsInRoom(message.roomLabel).map(x => new Participant(x));
+                    this.notificationToastrService.showConsultationInvite(
+                        message.roomLabel,
+                        message.conferenceId,
+                        requestedBy,
+                        requestedFor,
+                        roomParticipants,
+                        this.hearing.isInSession()
+                    );
                 }
             })
         );
@@ -183,6 +210,34 @@ export abstract class WaitingRoomBaseComponent {
         this.eventHubSubscription$.add(
             this.eventService.getServiceDisconnected().subscribe(async attemptNumber => {
                 await this.handleEventHubDisconnection(attemptNumber);
+            })
+        );
+
+        this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub room updates`);
+        this.eventHubSubscription$.add(
+            this.eventService.getRoomUpdate().subscribe(async room => {
+                const existingRoom = this.conferenceRooms.find(r => r.label === room.label);
+                if (existingRoom) {
+                    existingRoom.locked = room.locked;
+                    this.conference.participants
+                        .filter(p => p.current_room?.label === existingRoom.label)
+                        .forEach(p => (p.current_room.locked = existingRoom.locked));
+                } else {
+                    this.conferenceRooms.push(room);
+                }
+            })
+        );
+
+        this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub room transfer`);
+        this.eventHubSubscription$.add(
+            this.eventService.getRoomTransfer().subscribe(async roomTransfer => {
+                const participant = this.conference.participants.find(p => p.id === roomTransfer.participantId);
+                if (!participant) {
+                    return;
+                }
+
+                const room = this.conferenceRooms.find(r => r.label === roomTransfer.toRoom);
+                participant.current_room = room ? new RoomSummaryResponse(room) : new RoomSummaryResponse({ label: roomTransfer.toRoom });
             })
         );
 
@@ -204,6 +259,14 @@ export abstract class WaitingRoomBaseComponent {
                 this.updateShowVideo();
             })
         );
+    }
+
+    protected findParticipant(participantId: string): ParticipantResponse {
+        return this.conference.participants.find(x => x.id === participantId);
+    }
+
+    protected findParticipantsInRoom(roomLabel: string): ParticipantResponse[] {
+        return this.conference.participants.filter(x => x.current_room?.label === roomLabel);
     }
 
     async onConsultationAccepted() {
@@ -435,7 +498,6 @@ export abstract class WaitingRoomBaseComponent {
             participant: participant.id,
             status: participant.status
         });
-        console.log(participant);
         if (message.status !== ParticipantStatus.InConsultation && isMe) {
             this.isAdminConsultation = false;
         }

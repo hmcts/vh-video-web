@@ -16,6 +16,7 @@ import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-map
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { CallError } from '../models/video-call-models';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
+import { NotificationToastrService } from '../services/notification-toastr.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
 
@@ -50,7 +51,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         private audioRecordingService: AudioRecordingService,
         protected userMediaService: UserMediaService,
         protected userMediaStreamService: UserMediaStreamService,
-        protected notificationSoundsService: NotificationSoundsService
+        protected notificationSoundsService: NotificationSoundsService,
+        protected notificationToastrService: NotificationToastrService
     ) {
         super(
             route,
@@ -66,7 +68,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
             consultationService,
             userMediaService,
             userMediaStreamService,
-            notificationSoundsService
+            notificationSoundsService,
+            notificationToastrService
         );
         this.displayConfirmStartHearingPopup = false;
     }

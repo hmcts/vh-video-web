@@ -20,6 +20,7 @@ import { HearingRole } from '../models/hearing-role-model';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { Participant } from 'src/app/shared/models/participant';
+import { NotificationToastrService } from '../services/notification-toastr.service';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -47,7 +48,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         private clockService: ClockService,
         protected userMediaService: UserMediaService,
         protected userMediaStreamService: UserMediaStreamService,
-        protected notificationSoundsService: NotificationSoundsService
+        protected notificationSoundsService: NotificationSoundsService,
+        protected notificationToastrService: NotificationToastrService
     ) {
         super(
             route,
@@ -63,7 +65,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
             consultationService,
             userMediaService,
             userMediaStreamService,
-            notificationSoundsService
+            notificationSoundsService,
+            notificationToastrService
         );
     }
 
@@ -177,8 +180,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         this.displayJoinPrivateConsultationModal = true;
     }
 
-    getPrivateConsultationParticipants() : Participant[] {
-        return this.conference.participants.map(p => new Participant(p)).filter(p => !p.isJudge && p.id != this.participant.id)
+    getPrivateConsultationParticipants(): Participant[] {
+        return this.conference.participants.map(p => new Participant(p)).filter(p => !p.isJudge && p.id !== this.participant.id);
     }
 
     async startPrivateConsultation(participants: string[]) {

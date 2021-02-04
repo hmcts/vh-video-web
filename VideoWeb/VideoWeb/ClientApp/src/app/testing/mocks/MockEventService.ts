@@ -50,7 +50,7 @@ export class MockEventsService {
         );
         this.nextConsultationRequestResponseMessage = new ConsultationRequestResponseMessage(
             '612AB52C-BDA5-4F4D-95B8-3F49065219A6',
-            "ConsultationRoom",
+            'ConsultationRoom',
             'james.green@hearings.net',
             ConsultationAnswer.None
         );

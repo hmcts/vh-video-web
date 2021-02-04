@@ -5,18 +5,15 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
-    ConsultationAnswer,
     EndpointStatus,
     ParticipantResponse,
     ParticipantStatus,
-    RoomType,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { Participant } from 'src/app/shared/models/participant';
 import { individualTestProfile, judgeTestProfile } from 'src/app/testing/data/test-profiles';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
@@ -40,7 +37,6 @@ class WrParticipantStatusListTest extends WRParticipantStatusListDirective imple
     }
 
     ngOnInit() {
-        this.consultationService.resetWaitingForResponse();
         this.initParticipants();
         this.setupSubscribers();
     }
@@ -180,9 +176,9 @@ describe('WaitingRoom ParticipantList Base', () => {
         });
     });
 
-    it('should clear timeouts and subsciptions on teardown', () => {
+    it('should clear subsciptions on teardown', () => {
         component.executeTeardown();
-        expect(consultationService.clearOutgoingCallTimeout).toHaveBeenCalled();
+        expect(component.eventHubSubscriptions$.closed).toBe(true);
     });
 
     it('should logged in user as requester', () => {
@@ -191,54 +187,15 @@ describe('WaitingRoom ParticipantList Base', () => {
     });
 
     it('should not display vho consultation request when participant is unavailable', fakeAsync(() => {
-        consultationService.displayAdminConsultationRequest.calls.reset();
         const index = component.conference.participants.findIndex(x => x.username === judgeProfile.username);
         component.conference.participants[index].status = ParticipantStatus.InHearing;
-        const payload = new ConsultationRequestResponseMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, null);
+        const payload = new ConsultationRequestResponseMessage(conference.id, 'AdminRoom', judgeProfile.username, null);
+
+        spyOn(logger, 'debug');
         consultationRequestResponseMessageSubject.next(payload);
         flushMicrotasks();
 
-        expect(consultationService.displayAdminConsultationRequest).toHaveBeenCalledTimes(0);
-    }));
-
-    it('should not display vho consultation request when participant not found', fakeAsync(() => {
-        consultationService.displayAdminConsultationRequest.calls.reset();
-        const payload = new ConsultationRequestResponseMessage(conference.id, RoomType.AdminRoom, 'doesnotexist@test.com', null);
-
-        consultationRequestResponseMessageSubject.next(payload);
-        flushMicrotasks();
-
-        expect(consultationService.displayAdminConsultationRequest).toHaveBeenCalledTimes(0);
-    }));
-
-    it('should display vho consultation request', fakeAsync(() => {
-        consultationService.displayAdminConsultationRequest.calls.reset();
-        const payload = new ConsultationRequestResponseMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, null);
-
-        consultationRequestResponseMessageSubject.next(payload);
-        flushMicrotasks();
-
-        expect(consultationService.displayAdminConsultationRequest).toHaveBeenCalled();
-    }));
-
-    it('should cancel incoming timeout request when admin call is rejected', fakeAsync(() => {
-        consultationService.cancelTimedOutIncomingRequest.calls.reset();
-
-        const payload = new ConsultationRequestResponseMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, ConsultationAnswer.Rejected);
-        consultationRequestResponseMessageSubject.next(payload);
-        flushMicrotasks();
-
-        expect(consultationService.cancelTimedOutIncomingRequest).toHaveBeenCalled();
-    }));
-
-    it('should do nothing when admin call is anything other than rejected', fakeAsync(() => {
-        consultationService.cancelTimedOutIncomingRequest.calls.reset();
-
-        const payload = new ConsultationRequestResponseMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, ConsultationAnswer.Accepted);
-        consultationRequestResponseMessageSubject.next(payload);
-        flushMicrotasks();
-
-        expect(consultationService.cancelTimedOutIncomingRequest).toHaveBeenCalledTimes(0);
+        expect(logger.debug).toHaveBeenCalled();
     }));
 
     it('should close all open modals when current user is transferred to a consultation room', fakeAsync(() => {
@@ -265,36 +222,4 @@ describe('WaitingRoom ParticipantList Base', () => {
         expect(consultationService.clearModals).toHaveBeenCalledTimes(0);
     });
 
-    it('should display no consultation room', () => {
-        component.handleNoConsulationRoom();
-        expect(consultationService.displayNoConsultationRoomAvailableModal).toHaveBeenCalledTimes(1);
-    });
-
-    it('should send response to vho consultation request', async () => {
-        const judge = component.conference.participants.find(x => x.username === judgeProfile.username);
-        const answer = ConsultationAnswer.Rejected;
-        component.consultationRequestee = new Participant(judge);
-        component.consultationRequestResponseMessage = new ConsultationRequestResponseMessage(conference.id, RoomType.AdminRoom, judge.username);
-        await component.respondToVhoConsultationRequest(answer);
-
-        expect(consultationService.respondToAdminConsultationRequest).toHaveBeenCalledWith(
-            component.conference,
-            judge,
-            answer,
-            RoomType.AdminRoom
-        );
-    });
-
-    it('should handle error when sending response to vho consultation request fails', async () => {
-        const error = { error: 'unable to reach api' };
-        consultationService.respondToAdminConsultationRequest.and.callFake(() => Promise.reject(error));
-
-        const judge = component.conference.participants.find(x => x.username === judgeProfile.username);
-        const answer = ConsultationAnswer.Rejected;
-        component.consultationRequestee = new Participant(judge);
-        component.consultationRequestResponseMessage = new ConsultationRequestResponseMessage(conference.id, RoomType.AdminRoom, judge.username);
-        spyOn(logger, 'error');
-        await component.respondToVhoConsultationRequest(answer);
-        expect(logger.error).toHaveBeenCalled();
-    });
 });

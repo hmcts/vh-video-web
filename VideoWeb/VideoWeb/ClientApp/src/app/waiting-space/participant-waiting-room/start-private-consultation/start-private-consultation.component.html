@@ -33,6 +33,7 @@
                 id="continue-btn"
                 class="govuk-button"
                 data-module="govuk-button"
+                [disabled]="selectedParticipants.length===0"
                 (click)="onContinue()"
                 alt="Continue"
                 >

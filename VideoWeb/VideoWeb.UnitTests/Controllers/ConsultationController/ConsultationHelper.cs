@@ -53,16 +53,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .With(x => x.ConferenceId = conference.Id)
                 .With(x => x.RequestedById = conference.Participants[1].Id)
                 .With(x => x.RequestedForId = conference.Participants[2].Id)
-                .With(x => x.Answer = null)
-                .Build();
-        }
-        public static PrivateAdminConsultationRequest GetAdminConsultationRequest(Conference conference, ConsultationAnswer answer)
-        {
-            return Builder<PrivateAdminConsultationRequest>.CreateNew()
-                .With(x => x.ConferenceId = conference.Id)
-                .With(x => x.ParticipantId = conference.Participants[1].Id)
-                .With(x => x.ConsultationRoom = RoomType.ConsultationRoom1)
-                .With(x => x.Answer = answer)
+                .With(x => x.RoomLabel = "RoomLabel")
+                .With(x => x.Answer = ConsultationAnswer.None)
                 .Build();
         }
 

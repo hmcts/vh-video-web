@@ -19,7 +19,7 @@ import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-servi
 import { HearingRole } from '../../models/hearing-role-model';
 import { NotificationSoundsService } from '../../services/notification-sounds.service';
 import { WRTestComponent } from './WRTestComponent';
-
+import { NotificationToastrService } from 'src/app/waiting-space/services/notification-toastr.service';
 const conferenceTestData = new ConferenceTestData();
 
 export let component: WRTestComponent;
@@ -48,6 +48,8 @@ export let deviceTypeService: jasmine.SpyObj<DeviceTypeService>;
 export const videoCallService = videoCallServiceSpy;
 export let consultationService: jasmine.SpyObj<ConsultationService>;
 export let notificationSoundsService: jasmine.SpyObj<NotificationSoundsService>;
+export let notificationToastrService: jasmine.SpyObj<NotificationToastrService>;
+
 export let logger: jasmine.SpyObj<Logger>;
 export let userMediaService: jasmine.SpyObj<UserMediaService>;
 export let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
@@ -106,5 +108,8 @@ export function initAllWRDependencies() {
         'playHearingAlertSound',
         'initHearingAlertSound',
         'stopHearingAlertSound'
+    ]);
+    notificationToastrService = jasmine.createSpyObj<NotificationToastrService>('NotificationToastrService', [
+        'showConsultationInvite'
     ]);
 }

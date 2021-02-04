@@ -73,29 +73,13 @@ namespace VideoWeb.EventHub.Handlers.Core
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
                     .ParticipantStatusMessage(SourceParticipant.Id, SourceParticipant.Username, SourceConference.Id, participantState);
                 Logger.LogTrace($"Participant Status: Participant Id: { participant.Id } | " +
-                    $"Role: { participant.Role } | Participant State: { participantState } | Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
+                    $"Role: { participant.Role } | Participant State: { participantState } | Timestamp: { DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
             }
             
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .ParticipantStatusMessage(SourceParticipant.Id, SourceParticipant.Username, SourceConference.Id, participantState);
             Logger.LogTrace($"Participant Status: Participant Id: { SourceParticipant.Id } | " +
-                $"Role: { SourceParticipant.Role } | Participant State: { participantState } | Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
-        }
-
-        protected async Task PublishParticipantRoomMessage(string room)
-        {
-            foreach (var participant in SourceConference.Participants)
-            {
-                await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
-                    .ParticipantRoomMessage(SourceParticipant.Id, SourceParticipant.Username, SourceConference.Id, room);
-                Logger.LogTrace($"Participant Room: Participant Id: { participant.Id } | " +
-                    $"Role: { participant.Role } | Participant Room: { room } | Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
-            }
-
-            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
-                .ParticipantRoomMessage(SourceParticipant.Id, SourceParticipant.Username, SourceConference.Id, room);
-            Logger.LogTrace($"Participant Room: Participant Id: { SourceParticipant.Id } | " +
-                $"Role: { SourceParticipant.Role } | Participant Room: { room } | Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
+                $"Role: { SourceParticipant.Role } | Participant State: { participantState } | Timestamp: { DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
         }
 
         /// <summary>
@@ -110,7 +94,7 @@ namespace VideoWeb.EventHub.Handlers.Core
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
                     .ConferenceStatusMessage(SourceConference.Id, hearingEventStatus);
                 Logger.LogTrace($"Conference Status: Conference Id: { SourceConference.Id } | Participant Id: { participant.Id } | " +
-                    $"Role: { participant.Role } | Participant State: { hearingEventStatus } | Timestamp: { (DateTime.Now).ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
+                    $"Role: { participant.Role } | Participant State: { hearingEventStatus } | Timestamp: { DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
             }
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .ConferenceStatusMessage(SourceConference.Id, hearingEventStatus);
@@ -128,6 +112,19 @@ namespace VideoWeb.EventHub.Handlers.Core
                 .EndpointStatusMessage(SourceEndpoint.Id,  SourceConference.Id, endpointState);
             Logger.LogTrace($"Endpoint Status: Endpoint Id: { SourceEndpoint.Id } | " +
                             $"Endpoint State: { endpointState } | Timestamp: { (DateTime.Now) :yyyy-MM-dd HH:mm:ss.fffffff} ");
+        }
+
+        protected async Task PublishRoomTransferMessage(RoomTransfer roomTransfer)
+        {
+            foreach (var participant in SourceConference.Participants)
+            {
+                await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
+                    .RoomTransfer(roomTransfer);
+                Logger.LogTrace($"Room Transfer: Conference Id: { SourceConference.Id } | Participant Id: { participant.Id } | " +
+                    $"Role: { participant.Role } | From Room: { roomTransfer.FromRoom } | To Room: { roomTransfer.ToRoom } | Participant Transferred: {roomTransfer.ParticipantId} | Timestamp: { DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
+            }
+            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
+                .RoomTransfer(roomTransfer);
         }
 
         protected abstract Task PublishStatusAsync(CallbackEvent callbackEvent);
