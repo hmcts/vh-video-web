@@ -157,8 +157,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             typedResult.Should().NotBeNull();
 
             _mocker.Mock<IEventHubClient>().Verify(x => x.ConsultationMessage(_testConference.Id,
-                _testConference.Participants[1].Username,
-                _testConference.Participants[2].Username, null));
+                _testConference.Participants[1].Id.ToString(),
+                _testConference.Participants[2].Id.ToString(), null));
         }
 
         [TestCase(ConsultationAnswer.Cancelled)]
