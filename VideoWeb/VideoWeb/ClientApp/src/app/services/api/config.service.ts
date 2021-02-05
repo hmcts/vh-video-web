@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { ClientSettingsResponse } from '../clients/api-client';
 import { HttpClient, HttpBackend } from '@angular/common/http';
 import { SessionStorage } from '../session-storage';
+import { from, Observable, of } from 'rxjs';
 
 @Injectable()
 export class ConfigService {
@@ -29,6 +30,15 @@ export class ConfigService {
 
     getClientSettings(): ClientSettingsResponse {
         return this.clientSettingCache.get();
+    }
+
+    getClientSettingsAs(): Observable<ClientSettingsResponse> {
+        const settings = this.getClientSettings()
+        if (!settings) {
+            return from(this.retrieveConfigFromApi());
+        } else {
+            return of(settings);
+        }
     }
 
     private retrieveConfigFromApi(): Promise<ClientSettingsResponse> {

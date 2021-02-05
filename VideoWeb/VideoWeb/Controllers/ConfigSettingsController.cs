@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Configuration;
+using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 
@@ -20,15 +21,16 @@ namespace VideoWeb.Controllers
         private readonly HearingServicesConfiguration _servicesConfiguration;
         private readonly ILogger<ConfigSettingsController> _logger;
         private readonly IMapperFactory _mapperFactory;
-
+        private readonly KinlyConfiguration _kinlyConfiguration;
         public ConfigSettingsController(IOptions<AzureAdConfiguration> azureAdConfiguration,
-            IOptions<HearingServicesConfiguration> servicesConfiguration, ILogger<ConfigSettingsController> logger,
+            IOptions<HearingServicesConfiguration> servicesConfiguration, KinlyConfiguration kinlyConfiguration, ILogger<ConfigSettingsController> logger,
             IMapperFactory mapperFactory)
         {
             _azureAdConfiguration = azureAdConfiguration.Value;
             _servicesConfiguration = servicesConfiguration.Value;
             _logger = logger;
             _mapperFactory = mapperFactory;
+            _kinlyConfiguration = kinlyConfiguration;
         }
 
         /// <summary>
@@ -45,8 +47,8 @@ namespace VideoWeb.Controllers
             var response = new ClientSettingsResponse();
             try
             {
-                var clientSettingsResponseMapper = _mapperFactory.Get<AzureAdConfiguration, HearingServicesConfiguration, ClientSettingsResponse>();
-                response = clientSettingsResponseMapper.Map(_azureAdConfiguration, _servicesConfiguration);
+                var clientSettingsResponseMapper = _mapperFactory.Get<AzureAdConfiguration, HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse>();
+                response = clientSettingsResponseMapper.Map(_azureAdConfiguration, _servicesConfiguration, _kinlyConfiguration);
                 return Ok(response);
             }
             catch (Exception e)

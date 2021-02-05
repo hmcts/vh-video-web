@@ -1,7 +1,7 @@
 import { discardPeriodicTasks, fakeAsync, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
-import { ConferenceResponse } from 'src/app/services/clients/api-client';
+import { ClientSettingsResponse, ConferenceResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -20,6 +20,7 @@ import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-
 import { CourtRoomsAccounts } from '../../services/models/court-rooms-accounts';
 import { SessionStorage } from '../../../services/session-storage';
 import { VhoStorageKeys } from '../../services/models/session-keys';
+import { ActivatedRoute } from '@angular/router';
 
 describe('CommandCentreComponent - Core', () => {
     let component: CommandCentreComponent;
@@ -36,6 +37,7 @@ describe('CommandCentreComponent - Core', () => {
     let eventBusServiceSpy: jasmine.SpyObj<EventBusService>;
 
     const conferenceDetail = new ConferenceTestData().getConferenceDetailFuture();
+    let activatedRoute: ActivatedRoute;
 
     beforeAll(() => {
         TestFixtureHelper.setupVenues();
@@ -71,6 +73,12 @@ describe('CommandCentreComponent - Core', () => {
         eventsService.getHeartbeat.and.returnValue(mockEventService.participantHeartbeat.asObservable());
 
         eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
+        const config = new ClientSettingsResponse({ join_by_phone_from_date: '' });
+        activatedRoute = <any>{
+            snapshot: {
+                data: { configSettings: config }
+            }
+        };
     });
 
     afterEach(() => {
@@ -92,7 +100,8 @@ describe('CommandCentreComponent - Core', () => {
             logger,
             router,
             screenHelper,
-            eventBusServiceSpy
+            eventBusServiceSpy,
+            activatedRoute
         );
         component.hearings = hearings;
         screenHelper.enableFullScreen.calls.reset();

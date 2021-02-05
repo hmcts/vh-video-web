@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ConferenceForVhOfficerResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -59,7 +59,8 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         private logger: Logger,
         private router: Router,
         private screenHelper: ScreenHelper,
-        private eventbus: EventBusService
+        private eventbus: EventBusService,
+        private route: ActivatedRoute
     ) {
         this.loadingData = false;
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
@@ -209,6 +210,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             async (data: ConferenceForVhOfficerResponse[]) => {
                 this.hearings = data.map(c => {
                     const h = new HearingSummary(c);
+                    h.isJoinByPhone = this.isJoinByPhone(h);
                     h.getParticipants().forEach(p => {
                         p.participantHertBeatHealth = this.participantsHeartBeat[p.id];
                     });
@@ -232,6 +234,20 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             }
         );
     }
+
+    isJoinByPhone(hearing:HearingSummary): boolean {
+        const config = this.route.snapshot.data['configSettings'];
+        const datePhone = config.join_by_phone_from_date;
+        if (!datePhone || datePhone.length === 0) {
+            return true;
+        }
+        if (hearing.createdDateTime) {
+            return Date.parse(hearing.createdDateTime.toString()) >= Date.parse(datePhone);
+        } else {
+            return false;
+        }
+    } 
+
 
     applyFilterInit() {
         this.originalHearings.length = 0;

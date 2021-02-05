@@ -131,4 +131,9 @@ export class HearingSummary extends HearingBase {
     get telephoneConferenceNumber(): string {
         return this.conference.telephone_conference_number;
     }
+    get createdDateTime(): Date {
+        return this.conference.created_date_time; 
+    }
+
+    isJoinByPhone: boolean 
 }

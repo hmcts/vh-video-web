@@ -1,7 +1,7 @@
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { of } from 'rxjs';
-import { ConferenceResponseVho, ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ClientSettingsResponse, ConferenceResponseVho, ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -18,10 +18,11 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { VhoQueryService } from '../../services/vho-query-service.service';
 import { CommandCentreComponent } from '../command-centre.component';
 import { EventBusService } from 'src/app/services/event-bus.service';
+import { activatedRoute } from '../../../waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 
 describe('CommandCentreComponent - Events', () => {
     let component: CommandCentreComponent;
-
+    let activatedRoute: ActivatedRoute
     let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
     let screenHelper: jasmine.SpyObj<ScreenHelper>;
     let errorService: jasmine.SpyObj<ErrorService>;
@@ -73,6 +74,13 @@ describe('CommandCentreComponent - Events', () => {
         eventsService.getHeartbeat.and.returnValue(mockEventService.participantHeartbeat.asObservable());
 
         eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
+        const config = new ClientSettingsResponse({ join_by_phone_from_date: '' });
+        activatedRoute = <any>{
+            snapshot: {
+                data: { configSettings: config }
+            }
+        };
+   
     });
 
     afterAll(() => {
@@ -91,7 +99,8 @@ describe('CommandCentreComponent - Events', () => {
             logger,
             router,
             screenHelper,
-            eventBusServiceSpy
+            eventBusServiceSpy,
+            activatedRoute
         );
         component.hearings = hearings;
         component.selectedHearing = hearing;
