@@ -29,6 +29,7 @@ import { ErrorCameraMicrophoneComponent } from './error-camera-microphone/error-
 import { ToastrModule } from 'ngx-toastr';
 import { VhToastComponent } from './toast/vh-toast.component';
 import { StartPrivateConsultationComponent } from '../waiting-space/participant-waiting-room/start-private-consultation/start-private-consultation.component';
+import { JoinPrivateConsultationComponent } from '../waiting-space/participant-waiting-room/join-private-consultation/join-private-consultation.component';
 
 @NgModule({
     imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, SharedRoutingModule,
@@ -44,6 +45,7 @@ import { StartPrivateConsultationComponent } from '../waiting-space/participant-
         NotFoundComponent,
         SelectMediaDevicesComponent,
         StartPrivateConsultationComponent,
+        JoinPrivateConsultationComponent,
         MicVisualiserComponent,
         EquipmentProblemComponent,
         SelfTestComponent,
@@ -68,6 +70,7 @@ import { StartPrivateConsultationComponent } from '../waiting-space/participant-
         ContactUsFoldingComponent,
         SelectMediaDevicesComponent,
         StartPrivateConsultationComponent,
+        JoinPrivateConsultationComponent,
         MicVisualiserComponent,
         SelfTestComponent,
         ModalComponent,

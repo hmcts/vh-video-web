@@ -3,37 +3,40 @@
     <!-- Modal content -->
     <div class="modal-content">
       <div class="govuk-width-container">
-          <h2 class="govuk-heading-l govuk-!-margin-top-6 govuk-!-margin-bottom-6">Invite others to a private meeting</h2>
+          <h2 class="govuk-heading-l govuk-!-margin-top-6 govuk-!-margin-bottom-6">Join a private meeting</h2>
           <div class="govuk-warning-text">
               <span aria-hidden="true" class="govuk-warning-text__icon">!</span>
               <span class="govuk-warning-text__text">
                 <span class="govuk-warning-text__assistive">Warning</span> All meetings outside the hearing are confidential and not recorded as part of court or tribunal proceedings
             </span>
         </div>
-          <div *ngFor="let participant of participants" class="govuk-checkboxes--small govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input"
-                id="{{participant.id}}"
-                name="{{participant.id}}"
-                type="checkbox"
-                [checked]="participantSelected(participant.id)"
-                [disabled]="getParticipantDisabled(participant)"
-                (change)="toggleParticipant(participant.id)" />
-            <label class="govuk-label govuk-checkboxes__label" for="{{participant.id}}">
-                <span class="govuk-!-font-weight-bold">{{participant.displayName}}</span> {{participant.hearingRoleText}}
-                <br/>
-                <label
-                    id="p-{{ participant.id }}-status-participant"
-                    class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}" >
-                    {{ getParticipantStatus(participant) }}
-                </label>
+        <ng-container *ngIf="!roomsAvailable()">
+          <p>There are no meetings to join</p>
+        </ng-container>
+          <div *ngFor="let roomDetails of getRoomDetails()" class="govuk-radios--small govuk-radios__item">
+            <input class="govuk-radios__input"
+                id="{{roomDetails.label}}"
+                name="{{roomDetails.label}}"
+                type="radio"
+                [checked]="selectedRoomLabel == roomDetails.label"
+                [disabled]="roomDetails.locked"
+                (change)="setSelectedRoom(roomDetails.label)" />
+            <label class="govuk-label govuk-radios__label" for="{{roomDetails.label}}">
+                <span class="govuk-!-font-weight-bold">{{roomDetails.displayName}}</span> <span *ngIf="roomDetails.locked">LockedIcon</span>
+                <ul>
+                  <li *ngFor="let participant of roomDetails.participants">
+                    <span class="govuk-!-font-weight-bold">{{participant.displayName}}</span> {{participant.hearingRoleText}}
+                  </li>
+                </ul>
             </label>
           </div>
           <div class="buttons">
             <button
+                *ngIf="roomsAvailable()"
                 id="continue-btn"
                 class="govuk-button govuk-!-margin-right-5"
                 data-module="govuk-button"
-                [disabled]="selectedParticipants.length===0"
+                [disabled]="!selectedRoomLabel"
                 (click)="onContinue()"
                 alt="Continue"
                 >

@@ -193,7 +193,21 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         this.closeStartPrivateConsultationModal();
     }
 
+    async joinPrivateConsultation(roomLabel: string) {
+        this.logger.info(`[ParticipantWaitingRoomComponent] - attempting to join a private participant consultation`, {
+            conference: this.conference?.id,
+            participant: this.participant.id,
+            roomLabel: roomLabel
+        });
+        await this.consultationService.joinPrivateConsultationRoom(this.conference.id, this.participant.id, roomLabel);
+        this.closeJoinPrivateConsultationModal();
+    }
+
     closeStartPrivateConsultationModal() {
         this.displayStartPrivateConsultationModal = false;
+    }
+    
+    closeJoinPrivateConsultationModal() {
+        this.displayJoinPrivateConsultationModal = false;
     }
 }

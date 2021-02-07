@@ -71,6 +71,30 @@ export class ConsultationService {
         }
     }
 
+    async joinPrivateConsultationRoom(
+        conferenceId: string,
+        participantId: string,
+        roomLabel: string
+    ) {
+        try {
+            this.clearModals();
+            await this.apiClient
+                .respondToConsultationRequest(
+                    new PrivateConsultationRequest({
+                        conference_id: conferenceId,
+                        requested_by_id: participantId,
+                        requested_for_id: participantId,
+                        answer: ConsultationAnswer.Accepted,
+                        room_label: roomLabel
+                    })
+                )
+                .toPromise();
+        } catch (error) {
+            this.displayConsultationErrorModal();
+            this.logger.error(`Failed to join to consultation`, error);
+        }
+    }
+
     /**
      * Start a private consultation with video endpoint. This will only be allowed for defence advocates linked to the
      * endpoint

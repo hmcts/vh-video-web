@@ -36,27 +36,14 @@
   max-width: 700px;
 }
 
-.label-status {
-  color: govuk-colour('white');
-  padding: 3px 5px 3px 5px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  letter-spacing: 1px;
-}
-
-.label-status--unavailable {
-  background-color: govuk-colour('dark-grey');
-}
-
-.label-status--in-consultation {
-  background-color: govuk-colour('white');
-  border: 2px solid govuk-colour('blue');
-  border-radius: 2px;
-  color: govuk-colour('blue');
-}
-
-.govuk-checkboxes--small {
+.govuk-radios--small {
   display: flex;
+}
+
+ul {
+  list-style-type: none;
+  padding-inline-start: 0px;
+  margin: 0;
 }
 
 .buttons {

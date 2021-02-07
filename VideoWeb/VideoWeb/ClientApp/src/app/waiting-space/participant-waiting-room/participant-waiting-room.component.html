@@ -224,6 +224,9 @@
   (continue)="startPrivateConsultation($event)"
 ></app-start-private-consultation>
 
-<!-- <app-join-private-consultation
+<app-join-private-consultation
   *ngIf="displayJoinPrivateConsultationModal"
-></app-join-private-consultation> -->
+  [participants]="getPrivateConsultationParticipants()"
+  (cancel)="closeJoinPrivateConsultationModal()"
+  (continue)="joinPrivateConsultation($event)"
+></app-join-private-consultation>
