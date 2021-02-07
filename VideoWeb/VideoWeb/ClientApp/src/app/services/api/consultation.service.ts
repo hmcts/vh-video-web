@@ -5,6 +5,7 @@ import {
     ConferenceResponse,
     ConsultationAnswer,
     LeavePrivateConsultationRequest,
+    LockConsultationRoomRequest,
     ParticipantResponse,
     PrivateConsultationRequest,
     PrivateVideoEndpointConsultationRequest,
@@ -179,6 +180,23 @@ export class ConsultationService {
                 new LeavePrivateConsultationRequest({
                     conference_id: conference.id,
                     participant_id: participant.id
+                })
+            )
+            .toPromise();
+    }
+    
+    async lockConsultation(conferenceId: string, roomLabel: string, lock: boolean): Promise<void> {
+        this.logger.info(`[ConsultationService] - Setting consultation room lock state`, {
+            conference: conferenceId,
+            roomLabel: roomLabel,
+            lock: lock
+        });
+        await this.apiClient
+            .lockConsultationRoomRequest(
+                new LockConsultationRoomRequest({
+                    conference_id: conferenceId,
+                    room_label: roomLabel,
+                    lock: lock
                 })
             )
             .toPromise();

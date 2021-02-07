@@ -203,6 +203,21 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         this.closeJoinPrivateConsultationModal();
     }
 
+    async setRoomLock(lock: boolean) {
+        let roomLabel = this.participant.current_room?.label;
+        if (!roomLabel) {
+            return;
+        }
+
+        this.logger.info(`[ParticipantWaitingRoomComponent] - attempting to set room lock state`, {
+            conference: this.conference?.id,
+            participant: this.participant.id,
+            roomLabel: roomLabel,
+            lock: lock
+        });
+        await this.consultationService.lockConsultation(this.conference.id, roomLabel, lock);
+    }
+
     closeStartPrivateConsultationModal() {
         this.displayStartPrivateConsultationModal = false;
     }

@@ -23,7 +23,8 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
     @Input() isSupportedBrowserForNetworkHealth: boolean;
     @Input() showConsultationControls: boolean;
 
-    @Output() leaveConsulation = new EventEmitter();
+    @Output() leaveConsultation = new EventEmitter();
+    @Output() lockConsultation = new EventEmitter<boolean>();
 
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
@@ -217,6 +218,6 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
 
     leavePrivateConsultation() {
         this.logger.debug(`${this.loggerPrefix} Leave private consultation clicked`, this.logPayload);
-        this.leaveConsulation.emit();
+        this.leaveConsultation.emit();
     }
 }

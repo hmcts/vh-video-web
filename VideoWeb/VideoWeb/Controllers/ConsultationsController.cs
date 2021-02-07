@@ -180,7 +180,7 @@ namespace VideoWeb.Controllers
                 if (request.RoomType == Contract.Enums.VirtualCourtRoomType.Participant)
                 {
                     var room = await _videoApiClient.CreatePrivateConsultationAsync(mappedRequest);
-                    await NotifyRoomCreatedAsync(conference, new Room { Label = room.Label, Locked = room.Locked, ConferenceId = conference.Id });
+                    await NotifyRoomUpdateAsync(conference, new Room { Label = room.Label, Locked = room.Locked, ConferenceId = conference.Id });
                     foreach (var participant in request.InviteParticipants)
                     {
                         await NotifyConsultationRequestAsync(conference, room.Label, request.RequestedBy, participant);
@@ -197,6 +197,32 @@ namespace VideoWeb.Controllers
             {
                 _logger.LogError(e, $"Start consultation error ConferenceId: {request.ConferenceId}, participantId: {request.RequestedBy}, ErrorCode: {e.StatusCode}");
                 return StatusCode(e.StatusCode);
+            }
+        }
+
+        [HttpPost("lock")]
+        [SwaggerOperation(OperationId = "LockConsultationRoomRequest")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> LockConsultationRoomRequestAsync(LockConsultationRoomRequest request)
+        {
+            try
+            {
+                var conference = await GetConference(request.ConferenceId);
+
+                var lockRequestMapper = _mapperFactory.Get<LockConsultationRoomRequest, LockRoomRequest>();
+                var mappedRequest = lockRequestMapper.Map(request);
+                await _videoApiClient.LockRoomAsync(mappedRequest);
+
+                await NotifyRoomUpdateAsync(conference, new Room { Label = request.RoomLabel, Locked = request.Lock, ConferenceId = conference.Id });
+
+                return NoContent();
+            }
+            catch (VideoApiException e)
+            {
+                _logger.LogError(e, $"Could not update the lock state of the consultation room");
+                return StatusCode(e.StatusCode, e.Response);
             }
         }
 
@@ -239,7 +265,7 @@ namespace VideoWeb.Controllers
             await Task.WhenAll(tasks);
         }
 
-        private async Task NotifyRoomCreatedAsync(Conference conference, Room room)
+        private async Task NotifyRoomUpdateAsync(Conference conference, Room room)
         {
             var tasks = conference.Participants.Select(p =>
                 _hubContext.Clients.Group(p.Username.ToLowerInvariant())
