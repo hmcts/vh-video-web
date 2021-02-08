@@ -97,6 +97,16 @@ describe('ErrorComponent', () => {
         expect(component.isExtensionOrFirewallIssue).toBeFalsy();
     });
 
+    it('should show default error message if internet connection is down', () => {
+        spyPropertyGetter(connectionStatusServiceSpy, 'status').and.returnValue(false);
+
+        component.ngOnInit();
+        expect(component.errorMessageTitle).toBe(`There's a problem with your connection`);
+        expect(component.errorMessageBody).toBe('Please reconnect. Call us if you keep seeing this message.');
+        expect(component.connectionError).toBeTruthy();
+        expect(component.isExtensionOrFirewallIssue).toBeFalsy();
+    });
+
     it('should show error message if session storage returns a value', () => {
         errorServiceSpy.getErrorMessageFromStorage.and.returnValue(new ErrorMessage('disconnected', 'test message'));
 
