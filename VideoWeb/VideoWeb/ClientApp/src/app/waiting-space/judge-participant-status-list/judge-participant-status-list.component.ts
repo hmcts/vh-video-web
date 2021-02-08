@@ -45,7 +45,6 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
 
     ngOnInit() {
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
-        this.consultationService.resetWaitingForResponse();
         this.initParticipants();
         this.setupSubscribers();
     }

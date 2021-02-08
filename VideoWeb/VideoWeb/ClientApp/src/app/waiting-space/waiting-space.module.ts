@@ -48,6 +48,6 @@ import { LoggedUserResolveService } from './services/logged-user-resolve.service
         JudgeContextMenuComponent,
         JohWaitingRoomComponent
     ],
-    providers: [VideoCallService, NotificationSoundsService, LoggedUserResolveService]
+    providers: [VideoCallService, NotificationSoundsService, NotificationToastrService, LoggedUserResolveService]
 })
 export class WaitingSpaceModule {}

@@ -5,7 +5,6 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
-    ConsultationAnswer,
     LoggedParticipantResponse,
     EndpointStatus,
     ParticipantResponse,

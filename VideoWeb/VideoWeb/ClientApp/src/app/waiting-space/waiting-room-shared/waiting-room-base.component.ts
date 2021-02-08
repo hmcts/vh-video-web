@@ -196,7 +196,7 @@ export abstract class WaitingRoomBaseComponent {
         this.eventHubSubscription$.add(
             this.eventService.getRequestedConsultationMessage().subscribe(message => {
                 const requestedFor = new Participant(this.findParticipant(message.requestedFor));
-                if (requestedFor.username === this.adalService.userInfo.userName.toLowerCase()) {
+                if (requestedFor.id === this.participant.id) {
                     // A request for you to join a consultation room
                     this.logger.debug(`${this.loggerPrefix} Recieved RequestedConsultationMessage`);
                     const requestedBy = new Participant(this.findParticipant(message.requestedBy));
