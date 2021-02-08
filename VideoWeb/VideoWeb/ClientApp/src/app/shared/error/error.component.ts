@@ -74,7 +74,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
         const defaultBodyMessage = 'Please reconnect. Call us if you keep seeing this message.';
         const dto = this.hasInternetConnection
             ? this.errorService.getErrorMessageFromStorage()
-            : new ErrorMessage("There's a problem with your connection", defaultBodyMessage, true);
+            : new ErrorMessage('There\'s a problem with your connection', defaultBodyMessage, true);
         this.errorMessageTitle = dto?.title;
         this.isExtensionOrFirewallIssue = this.errorMessageTitle === 'FirewallProblem';
         this.errorMessageBody = dto?.body ? dto.body : defaultBodyMessage;
