@@ -11,14 +11,14 @@ namespace VideoWeb.EventHub.Mappers
         {
             return new AddHeartbeatRequest
             {
-                Incoming_audio_percentage_lost = decimal.ToDouble(heartbeat.IncomingAudioPercentageLost),
-                Incoming_audio_percentage_lost_recent = decimal.ToDouble(heartbeat.IncomingAudioPercentageLostRecent),
-                Incoming_video_percentage_lost = decimal.ToDouble(heartbeat.IncomingVideoPercentageLost),
-                Incoming_video_percentage_lost_recent = decimal.ToDouble(heartbeat.IncomingVideoPercentageLostRecent),
-                Outgoing_audio_percentage_lost = decimal.ToDouble(heartbeat.OutgoingAudioPercentageLost),
-                Outgoing_audio_percentage_lost_recent = decimal.ToDouble(heartbeat.OutgoingAudioPercentageLostRecent),
-                Outgoing_video_percentage_lost = decimal.ToDouble(heartbeat.OutgoingVideoPercentageLost),
-                Outgoing_video_percentage_lost_recent = decimal.ToDouble(heartbeat.OutgoingVideoPercentageLostRecent),
+                Incoming_audio_percentage_lost = heartbeat.IncomingAudioPercentageLost,
+                Incoming_audio_percentage_lost_recent = heartbeat.IncomingAudioPercentageLostRecent,
+                Incoming_video_percentage_lost = heartbeat.IncomingVideoPercentageLost,
+                Incoming_video_percentage_lost_recent = heartbeat.IncomingVideoPercentageLostRecent,
+                Outgoing_audio_percentage_lost = heartbeat.OutgoingAudioPercentageLost,
+                Outgoing_audio_percentage_lost_recent = heartbeat.OutgoingAudioPercentageLostRecent,
+                Outgoing_video_percentage_lost = heartbeat.OutgoingVideoPercentageLost,
+                Outgoing_video_percentage_lost_recent = heartbeat.OutgoingVideoPercentageLostRecent,
                 Browser_name = heartbeat.BrowserName,
                 Browser_version = heartbeat.BrowserVersion,
                 Operating_system = heartbeat.OperatingSystem,

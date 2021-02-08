@@ -4,7 +4,7 @@ import { AdalService } from 'adal-angular4';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceStatus } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -35,6 +35,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     conferenceRecordingInSessionForSeconds = 0;
     expanedPanel = true;
     displayConfirmStartHearingPopup: boolean;
+    isIMEnabled: boolean;
 
     constructor(
         protected route: ActivatedRoute,
@@ -77,6 +78,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     ngOnInit() {
         this.errorCount = 0;
         this.logger.debug(`${this.loggerPrefixJudge} Loading judge waiting room`);
+        this.loggedInUser = this.route.snapshot.data['loggedUser'];
+
         this.userMediaService
             .setDefaultDevicesInCache()
             .then(() => {
@@ -84,10 +87,14 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
                 this.connected = false;
                 this.getConference().then(() => {
                     this.startEventHubSubscribers();
+
+                    this.participant = this.setLoggedParticipant();
+
                     this.getJwtokenAndConnectToPexip();
                     if (this.conference.audio_recording_required) {
                         this.initAudioRecordingInterval();
                     }
+                    this.isIMEnabled = this.defineIsIMEnabled();
                 });
             })
             .catch((error: Error | MediaStreamError) => {
@@ -248,8 +255,11 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         this.continueWithNoRecording = true;
     }
 
-    isIMEnabled(): boolean {
+    defineIsIMEnabled(): boolean {
         if (!this.hearing) {
+            return false;
+        }
+        if (this.participant.status === ParticipantStatus.InConsultation) {
             return false;
         }
         if (this.deviceTypeService.isIpad()) {

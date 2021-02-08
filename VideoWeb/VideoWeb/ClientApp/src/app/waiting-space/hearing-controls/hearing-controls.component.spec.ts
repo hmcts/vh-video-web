@@ -33,6 +33,7 @@ describe('HearingControlsComponent', () => {
         component = new HearingControlsComponent(videoCallService, eventsService, logger);
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
+        component.isPrivateConsultation = false;
         component.setupEventhubSubscribers();
         component.setupVideoCallSubscribers();
     });
@@ -50,6 +51,15 @@ describe('HearingControlsComponent', () => {
     it('should mute non-judge by default', () => {
         component.participant = gloalConference.participants.find(x => x.role === Role.Individual);
         component.ngOnInit();
+        expect(videoCallService.toggleMute).toHaveBeenCalled();
+    });
+
+    it('should ensure participant is unmuted when in a private consultation', () => {
+        videoCallService.toggleMute.calls.reset();
+        component.participant = gloalConference.participants.find(x => x.role === Role.Individual);
+        component.isPrivateConsultation = true;
+        component.audioMuted = true;
+        component.initialiseMuteStatus();
         expect(videoCallService.toggleMute).toHaveBeenCalled();
     });
 
@@ -177,7 +187,7 @@ describe('HearingControlsComponent', () => {
     it('should not reset mute when participant status to available', () => {
         spyOn(component, 'resetMute').and.callThrough();
         const status = ParticipantStatus.Available;
-        const message = new ParticipantStatusMessage(globalParticipant.id, globalParticipant.username, gloalConference.id, status);
+        const message = new ParticipantStatusMessage(globalParticipant.id, '', gloalConference.id, status);
 
         participantStatusSubject.next(message);
 
@@ -188,7 +198,7 @@ describe('HearingControlsComponent', () => {
         spyOn(component, 'resetMute').and.callThrough();
         const status = ParticipantStatus.InConsultation;
         const participant = globalParticipant;
-        const message = new ParticipantStatusMessage(participant.id, participant.username, gloalConference.id, status);
+        const message = new ParticipantStatusMessage(participant.id, '', gloalConference.id, status);
 
         participantStatusSubject.next(message);
 
@@ -199,7 +209,7 @@ describe('HearingControlsComponent', () => {
         spyOn(component, 'resetMute').and.callThrough();
         const status = ParticipantStatus.InConsultation;
         const participant = gloalConference.participants.filter(x => x.role === Role.Representative)[0];
-        const message = new ParticipantStatusMessage(participant.id, participant.username, gloalConference.id, status);
+        const message = new ParticipantStatusMessage(participant.id, '', gloalConference.id, status);
 
         participantStatusSubject.next(message);
 

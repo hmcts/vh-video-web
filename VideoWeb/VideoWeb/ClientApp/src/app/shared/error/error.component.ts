@@ -13,10 +13,8 @@ import { ConnectionStatusService } from 'src/app/services/connection-status.serv
 })
 export class ErrorComponent implements OnInit, OnDestroy {
     private readonly loggerPrefix = '[ErrorPage] -';
-    returnTimeout: NodeJS.Timer;
     subscription = new Subscription();
 
-    private readonly CALL_TIMEOUT = 30000;
     private browserRefresh: boolean;
 
     errorMessageTitle: string;
@@ -58,39 +56,15 @@ export class ErrorComponent implements OnInit, OnDestroy {
                         this.logger.debug(`${this.loggerPrefix} Page refresh detected. Navigating back.`);
                         this.reconnect();
                     } else {
-                        this.logger.debug(`${this.loggerPrefix} No Page refresh detected. Starting timer.`);
-                        this.startGoBackTimer();
+                        this.logger.debug(`${this.loggerPrefix} No Page refresh detected.`);
                     }
                 }
             })
         );
     }
 
-    private startGoBackTimer(): void {
-        this.logger.debug(`${this.loggerPrefix} Starting timer to automatically navigate to previous page`);
-        this.stopGoBacktimer();
-        this.returnTimeout = setTimeout(async () => {
-            this.executeGoBackTimeout();
-        }, this.CALL_TIMEOUT);
-    }
-
-    private stopGoBacktimer() {
-        if (this.returnTimeout) {
-            this.logger.debug(`${this.loggerPrefix} Stopping and clearing current return timeout`);
-            clearTimeout(this.returnTimeout);
-            this.returnTimeout = undefined;
-        }
-    }
-
-    executeGoBackTimeout() {
-        this.logger.debug(`${this.loggerPrefix} Attempting execute automatic go back`);
-        this.stopGoBacktimer();
-        this.reconnect();
-    }
-
     @HostListener('window:beforeunload')
     ngOnDestroy(): void {
-        this.stopGoBacktimer();
         this.subscription.unsubscribe();
         this.attemptingReconnect = false;
     }
@@ -120,8 +94,8 @@ export class ErrorComponent implements OnInit, OnDestroy {
             this.router.navigate([previousPage]);
         } else {
             this.attemptingReconnect = false;
-            this.logger.debug(`${this.loggerPrefix} No internet connection detected. Restarting timer`);
-            this.startGoBackTimer();
+            this.logger.debug(`${this.loggerPrefix} No internet connection detected.`);
+            this.connectionStatusService.checkNow();
         }
     }
 }

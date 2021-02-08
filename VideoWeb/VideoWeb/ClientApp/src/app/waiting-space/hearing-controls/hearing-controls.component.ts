@@ -60,8 +60,15 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         if (this.isJudge) {
             this.toggleView();
         }
+        this.initialiseMuteStatus();
+    }
 
-        if (!this.isJudge && !this.audioMuted) {
+    initialiseMuteStatus() {
+        if (this.isPrivateConsultation && this.audioMuted) {
+            this.resetMute();
+        }
+
+        if (!this.isJudge && !this.isPrivateConsultation && !this.audioMuted) {
             this.toggleMute();
         }
     }
@@ -151,7 +158,7 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
      **/
     async resetMute() {
         if (this.audioMuted) {
-            this.logger.debug(`${this.loggerPrefix} Resetting participant mute status to muted`, this.logPayload);
+            this.logger.debug(`${this.loggerPrefix} Resetting participant mute status`, this.logPayload);
             await this.toggleMute();
         }
     }

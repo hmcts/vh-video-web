@@ -1,6 +1,4 @@
-import { inject, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { Guid } from 'guid-typescript';
 import { pageUrls } from '../shared/page-url.constants';
 import { MockLogger } from '../testing/mocks/MockLogger';
@@ -9,178 +7,312 @@ import { ErrorService } from './error.service';
 import { Logger } from './logging/logger-base';
 import { SessionStorage } from './session-storage';
 import { ErrorMessage } from '../shared/models/error-message';
+import { ConnectionStatusService } from './connection-status.service';
+import { connectionStatusServiceSpyFactory } from '../testing/mocks/mock-connection-status.service';
+import { LocationService } from './location.service';
+import { of } from 'rxjs';
 
 describe('ErrorService', () => {
-    let router: Router;
+    const mockLogger: Logger = new MockLogger();
+    let routerSpy: jasmine.SpyObj<Router>;
+    let connectionStatusServiceSpy: jasmine.SpyObj<ConnectionStatusService>;
+    let localtionServiceSpy: jasmine.SpyObj<LocationService>;
+    let service: ErrorService;
 
     beforeEach(() => {
-        TestBed.configureTestingModule({
-            imports: [RouterTestingModule],
-            providers: [ErrorService, { provide: Logger, useClass: MockLogger }]
-        });
-
-        router = TestBed.inject(Router);
+        routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+        connectionStatusServiceSpy = connectionStatusServiceSpyFactory();
+        localtionServiceSpy = jasmine.createSpyObj('LocationService', ['getCurrentPathName']);
+        localtionServiceSpy.getCurrentPathName.and.returnValue(`/${pageUrls.Declaration}`);
     });
 
-    it('should do nothing if skip redirect is true', inject([ErrorService], (service: ErrorService) => {
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    // ---------------------
+    // --> private functions
+    // ---------------------
+
+    function setupRouterToReturn(navigationSucces: boolean) {
+        routerSpy.navigate.and.returnValue(Promise.resolve(navigationSucces));
+    }
+
+    function createService() {
+        service = new ErrorService(routerSpy, mockLogger, connectionStatusServiceSpy, localtionServiceSpy);
+    }
+
+    // ---------------------
+    // <-- private functions
+    // ---------------------
+
+    it('should create service without error', () => {
+        createService();
+        expect(service).toBeTruthy();
+    });
+
+    it('should do nothing if skip redirect is true', () => {
+        // arrange
+        createService();
+        setupRouterToReturn(true);
         const error = { status: 401, isApiException: true };
 
+        // act
         service.handleApiError(error, true);
 
-        expect(router.navigate).toHaveBeenCalledTimes(0);
-    }));
+        // assert
+        expect(routerSpy.navigate).toHaveBeenCalledTimes(0);
+    });
 
-    it('should do nothing if error is not an api exception', inject([ErrorService], (service: ErrorService) => {
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    it('should do nothing if error is not an api exception', () => {
+        // arrange
+        createService();
+        setupRouterToReturn(true);
         const error = { message: 'this is a standard error' };
 
+        // act
         service.handleApiError(error);
 
-        expect(router.navigate).toHaveBeenCalledTimes(0);
-    }));
+        // assert
+        expect(routerSpy.navigate).toHaveBeenCalledTimes(0);
+    });
 
-    it('should navigate to unauthorised', inject([ErrorService], (service: ErrorService) => {
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    it('should navigate to unauthorised', () => {
+        // arrange
+        createService();
+        setupRouterToReturn(true);
         const error = { status: 401, isApiException: true };
-        service.handleApiError(error);
-        expect(router.navigate).toHaveBeenCalledWith([pageUrls.Unauthorised]);
-    }));
 
-    it('should navigate to not found', inject([ErrorService], (service: ErrorService) => {
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+        // act
+        service.handleApiError(error);
+
+        // assert
+        expect(routerSpy.navigate).toHaveBeenCalledWith([pageUrls.Unauthorised]);
+    });
+
+    it('should navigate to not found', () => {
+        // arrange
+        createService();
+        setupRouterToReturn(true);
         const error = { status: 404, isApiException: true };
-        service.handleApiError(error);
-        expect(router.navigate).toHaveBeenCalledWith([pageUrls.NotFound]);
-    }));
 
-    it('should navigate to service error', inject([ErrorService], (service: ErrorService) => {
-        spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+        // act
+        service.handleApiError(error);
+
+        // arrange
+        expect(routerSpy.navigate).toHaveBeenCalledWith([pageUrls.NotFound]);
+    });
+
+    it('should navigate to service error', () => {
+        // arrange
+        createService();
+        setupRouterToReturn(true);
         const error = { status: 500, isApiException: true };
+
+        // act
         service.handleApiError(error);
-        expect(router.navigate).toHaveBeenCalledWith([pageUrls.ServiceError]);
-    }));
 
-    it('should return false when error not an ApiException during unauthorised check', inject([ErrorService], (service: ErrorService) => {
+        // arrange
+        expect(routerSpy.navigate).toHaveBeenCalledWith([pageUrls.ServiceError]);
+    });
+
+    it('should return false when error not an ApiException during unauthorised check', () => {
+        // arrange
+        createService();
         const error = { message: 'this is a standard error' };
-        expect(service.returnHomeIfUnauthorised(error)).toBeFalsy();
-    }));
 
-    it('should return false when error not a 401 ApiException during unauthorised check', inject(
-        [ErrorService],
-        (service: ErrorService) => {
-            const error = { status: 500, isApiException: true };
-            expect(service.returnHomeIfUnauthorised(error)).toBeFalsy();
-        }
-    ));
+        // act
+        const result = service.returnHomeIfUnauthorised(error);
 
-    it('should return true and navigate to home when error is a 401 ApiException during unauthorised check', inject(
-        [ErrorService],
-        (service: ErrorService) => {
-            spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-            const error = { status: 401, isApiException: true };
-            expect(service.returnHomeIfUnauthorised(error)).toBeTruthy();
-            expect(router.navigate).toHaveBeenCalledWith([pageUrls.Home]);
-        }
-    ));
+        // assert
+        expect(result).toBeFalsy();
+    });
 
-    it('should navigate to service error with connection lost message when pexip error message has connection related text', inject(
-        [ErrorService],
-        (service: ErrorService) => {
-            spyOn(service, 'goToServiceError');
-            const error = new CallError('Error connecting to conference');
-            const conferenceId = Guid.create().toString();
-            service.handlePexipError(error, conferenceId);
-            expect(service.goToServiceError).toHaveBeenCalledWith(
-                `Sorry, there's a problem with the service`,
-                `Your hearing cannot take place as planned. Everyone attending is affected. The court or tribunal know something is wrong. You do not need to take any action. We’ll contact you with another date. You may now close this page.`
-            );
-        }
-    ));
+    it('should return false when error not a 401 ApiException during unauthorised check', () => {
+        // arrange
+        createService();
+        const error = { status: 500, isApiException: true };
 
-    it('should navigate to service error with connection lost message when pexip error message has firewall or browser extensions issue', inject(
-        [ErrorService],
-        (service: ErrorService) => {
-            spyOn(service, 'goToServiceError');
-            const error = new CallError('Call failed: a firewall may be blocking access.');
-            const conferenceId = Guid.create().toString();
-            service.handlePexipError(error, conferenceId);
-            expect(service.goToServiceError).toHaveBeenCalledWith('FirewallProblem');
-        }
-    ));
+        // act
+        const result = service.returnHomeIfUnauthorised(error);
 
-    it('should navigate to service error with media blocked message when pexip return a media related', inject(
-        [ErrorService],
-        (service: ErrorService) => {
-            spyOn(service, 'goToServiceError');
-            const error = new CallError(
-                `Your camera and/or microphone are not available. Please make sure they are not being actively used by another app`
-            );
-            const conferenceId = Guid.create().toString();
-            service.handlePexipError(error, conferenceId);
-            expect(service.goToServiceError).toHaveBeenCalledWith(
-                'Your camera and microphone are blocked',
-                'Please unblock the camera and microphone or call us if there is a problem.',
-                false
-            );
-        }
-    ));
+        // assert
+        expect(result).toBeFalsy();
+    });
 
-    it('should navigate to service error with default message when pexip error message is generic', inject(
-        [ErrorService],
-        (service: ErrorService) => {
-            spyOn(service, 'goToServiceError');
-            const error = new CallError('This meeting has reached the maximum number of participants.');
-            const conferenceId = Guid.create().toString();
-            service.handlePexipError(error, conferenceId);
-            expect(service.goToServiceError).toHaveBeenCalledWith(
-                'An unexpected error occurred',
-                'Please click "Reconnect" to return to the previous page. Call us if you keep seeing this message.'
-            );
-        }
-    ));
-    it('should navigate to media device error with camera and microphone in use message when pexip return a media related error', inject(
-        [ErrorService],
-        (service: ErrorService) => {
-            spyOn(service, 'goToMediaDeviceError');
-            const error = new CallError(`NotReadableError`);
-            const conferenceId = Guid.create().toString();
-            service.handlePexipError(error, conferenceId);
-            expect(service.goToMediaDeviceError).toHaveBeenCalledWith('DevicesInUse');
-        }
-    ));
-    it('should navigate to media device error with camera and microphone not found message when pexip return a media related error', inject(
-        [ErrorService],
-        (service: ErrorService) => {
-            spyOn(service, 'goToMediaDeviceError');
-            const error = new CallError(`OverconstrainedError`);
-            const conferenceId = Guid.create().toString();
-            service.handlePexipError(error, conferenceId);
-            expect(service.goToMediaDeviceError).toHaveBeenCalledWith('DevicesNotFound');
-        }
-    ));
-    it('should get the error type message from storage for media devices', inject([ErrorService], (service: ErrorService) => {
+    it('should return true and navigate to home when error is a 401 ApiException during unauthorised check', () => {
+        // arrange
+        createService();
+        setupRouterToReturn(true);
+        const error = { status: 401, isApiException: true };
+
+        // act
+        const result = service.returnHomeIfUnauthorised(error);
+
+        // assert
+        expect(result).toBeTruthy();
+        expect(routerSpy.navigate).toHaveBeenCalledWith([pageUrls.Home]);
+    });
+
+    it('should navigate to service error with connection lost message when pexip error message has connection related text', () => {
+        // arrange
+        createService();
+        spyOn(service, 'goToServiceError');
+        const error = new CallError('Error connecting to conference');
+        const conferenceId = Guid.create().toString();
+
+        // act
+        service.handlePexipError(error, conferenceId);
+
+        // assert
+        expect(service.goToServiceError).toHaveBeenCalledWith(
+            `Sorry, there's a problem with the service`,
+            `Your hearing cannot take place as planned. Everyone attending is affected. The court or tribunal know something is wrong. You do not need to take any action. We’ll contact you with another date. You may now close this page.`
+        );
+    });
+
+    it('should navigate to service error with connection lost message when pexip error message has firewall or browser extensions issue', () => {
+        // arrange
+        createService();
+        spyOn(service, 'goToServiceError');
+        const error = new CallError('Call failed: a firewall may be blocking access.');
+        const conferenceId = Guid.create().toString();
+
+        // act
+        service.handlePexipError(error, conferenceId);
+
+        // assert
+        expect(service.goToServiceError).toHaveBeenCalledWith('FirewallProblem');
+    });
+
+    it('should navigate to service error with media blocked message when pexip return a media related', () => {
+        // arrange
+        createService();
+        spyOn(service, 'goToServiceError');
+        const error = new CallError(
+            `Your camera and/or microphone are not available. Please make sure they are not being actively used by another app`
+        );
+        const conferenceId = Guid.create().toString();
+
+        // act
+        service.handlePexipError(error, conferenceId);
+
+        // assert
+        expect(service.goToServiceError).toHaveBeenCalledWith(
+            'Your camera and microphone are blocked',
+            'Please unblock the camera and microphone or call us if there is a problem.',
+            false
+        );
+    });
+
+    it('should navigate to service error with default message when pexip error message is generic', () => {
+        // arrange
+        createService();
+        spyOn(service, 'goToServiceError');
+        const error = new CallError('This meeting has reached the maximum number of participants.');
+        const conferenceId = Guid.create().toString();
+
+        // act
+        service.handlePexipError(error, conferenceId);
+
+        // assert
+        expect(service.goToServiceError).toHaveBeenCalledWith(
+            'An unexpected error occurred',
+            'Please click "Reconnect" to return to the previous page. Call us if you keep seeing this message.'
+        );
+    });
+
+    it('should navigate to media device error with camera and microphone in use message when pexip return a media related error', () => {
+        // arrange
+        createService();
+        spyOn(service, 'goToMediaDeviceError');
+        const error = new CallError(`NotReadableError`);
+        const conferenceId = Guid.create().toString();
+
+        // act
+        service.handlePexipError(error, conferenceId);
+
+        // assert
+        expect(service.goToMediaDeviceError).toHaveBeenCalledWith('DevicesInUse');
+    });
+
+    it('should navigate to media device error with camera and microphone not found message when pexip return a media related error', () => {
+        // arrange
+        createService();
+        spyOn(service, 'goToMediaDeviceError');
+        const error = new CallError(`OverconstrainedError`);
+        const conferenceId = Guid.create().toString();
+
+        // act
+        service.handlePexipError(error, conferenceId);
+
+        // assert
+        expect(service.goToMediaDeviceError).toHaveBeenCalledWith('DevicesNotFound');
+    });
+
+    it('should get the error type message from storage for media devices', () => {
+        // arrange
+        createService();
         const store = new SessionStorage<string>(service.ERROR_CAMERA_MIC_MESSAGE_KEY);
         const expected = 'MessageType-1';
         store.set(expected);
+
+        // act
         const messageType = service.getMediaDeviceErrorMessageTypeFromStorage();
+
+        // assert
         expect(messageType).toBe(expected);
-    }));
-    it('should navigate to error with camera and microphone not found message when pexip return preferred device is not connected', inject(
-        [ErrorService],
-        (service: ErrorService) => {
-            spyOn(service, 'goToMediaDeviceError');
-            const error = new CallError(`Preferred device is no longer connected`);
-            const conferenceId = Guid.create().toString();
-            service.handlePexipError(error, conferenceId);
-            expect(service.goToMediaDeviceError).toHaveBeenCalledWith('DevicesNotFound');
-        }
-    ));
-    it('should get the error type message from storage for firewall issue', inject([ErrorService], (service: ErrorService) => {
+    });
+
+    it('should navigate to error with camera and microphone not found message when pexip return preferred device is not connected', () => {
+        // arrange
+        createService();
+        spyOn(service, 'goToMediaDeviceError');
+        const error = new CallError(`Preferred device is no longer connected`);
+        const conferenceId = Guid.create().toString();
+        // act
+        service.handlePexipError(error, conferenceId);
+
+        // assert
+        expect(service.goToMediaDeviceError).toHaveBeenCalledWith('DevicesNotFound');
+    });
+
+    it('should get the error type message from storage for firewall issue', () => {
+        // arrange
+        createService();
         const store = new SessionStorage<ErrorMessage>(service.ERROR_MESSAGE_KEY);
         const expected = new ErrorMessage('Firewall', null, true);
         store.set(expected);
+        // act
         const messageType = service.getErrorMessageFromStorage();
+
+        // assert
         expect(messageType.title).toEqual(expected.title);
-    }));
+    });
+
+    it('should navigate to service error on non-waiting room due to internet connection loss', () => {
+        // arrange
+        connectionStatusServiceSpy = jasmine.createSpyObj('ConnectionStatusService', ['onConnectionStatusChange', 'checkNow']);
+        connectionStatusServiceSpy.onConnectionStatusChange.and.returnValue(of(false));
+        localtionServiceSpy.getCurrentPathName.and.returnValue(`/${pageUrls.Declaration}`);
+
+        // act
+        createService();
+        setupRouterToReturn(true);
+
+        // assert
+        expect(routerSpy.navigate).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not navigate to service error on waiting room due to internet connection loss', () => {
+        // arrange
+        connectionStatusServiceSpy = jasmine.createSpyObj('ConnectionStatusService', ['onConnectionStatusChange']);
+        connectionStatusServiceSpy.onConnectionStatusChange.and.returnValue(of(false));
+        localtionServiceSpy.getCurrentPathName.and.returnValue(`/${pageUrls.ParticipantWaitingRoom}`);
+
+        // act
+        createService();
+        setupRouterToReturn(true);
+
+        spyOn(service, 'goToServiceError');
+
+        // assert
+        expect(routerSpy.navigate).toHaveBeenCalledTimes(0);
+    });
 });

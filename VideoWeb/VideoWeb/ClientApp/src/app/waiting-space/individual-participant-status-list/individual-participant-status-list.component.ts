@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -21,12 +22,15 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         protected consultationService: ConsultationService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected videoWebService: VideoWebService
+        protected videoWebService: VideoWebService,
+        protected route: ActivatedRoute
     ) {
         super(adalService, consultationService, eventService, videoWebService, logger);
     }
 
     ngOnInit() {
+        this.loggedInUser = this.route.snapshot.data['loggedUser'];
+        this.consultationService.resetWaitingForResponse();
         this.initParticipants();
         this.setupSubscribers();
     }
@@ -61,7 +65,7 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
             return false;
         }
 
-        if (participant.username.toLocaleLowerCase().trim() === this.adalService.userInfo.userName.toLocaleLowerCase().trim()) {
+        if (participant.id === this.loggedInUser.participant_id) {
             return false;
         }
         return this.isParticipantAvailable(participant);
@@ -75,8 +79,9 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         if (!endpoint.defence_advocate_username) {
             return false;
         }
-        const requester = this.getConsultationRequester();
-        if (requester.username.toLowerCase() !== endpoint.defence_advocate_username) {
+        if (
+            endpoint.defence_advocate_username.toLocaleLowerCase().trim() !== this.adalService.userInfo.userName.toLocaleLowerCase().trim()
+        ) {
             return false;
         }
 

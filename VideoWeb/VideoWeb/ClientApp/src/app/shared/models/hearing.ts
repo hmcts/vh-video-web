@@ -84,8 +84,8 @@ export class Hearing extends HearingBase {
         return this.timeReader.isPastClosedTime(this.conference.closed_date_time, this.conference.status);
     }
 
-    getParticipantByUsername(username: string) {
-        return this.participants.find(p => p.username.toLocaleLowerCase() === username.toLocaleLowerCase());
+    getParticipantById(participantId: string) {
+        return this.participants.find(p => p.id === participantId);
     }
 
     get hearingVenueName(): string {

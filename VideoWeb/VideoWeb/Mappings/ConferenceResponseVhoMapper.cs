@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Helpers;
 using VideoWeb.Services.Video;
 using UserRole = VideoWeb.Services.Video.UserRole;
 
@@ -19,10 +19,6 @@ namespace VideoWeb.Mappings
 
         public ConferenceResponseVho Map(ConferenceDetailsResponse conference)
         {
-            if (!Enum.TryParse(conference.Current_status.ToString(), true, out ConferenceStatus status))
-            {
-                status = ConferenceStatus.NotStarted;
-            }
 
             conference.Participants ??= new List<ParticipantDetailsResponse>();
 
@@ -39,7 +35,7 @@ namespace VideoWeb.Mappings
                 CaseType = conference.Case_type,
                 ScheduledDateTime = conference.Scheduled_date_time,
                 ScheduledDuration = conference.Scheduled_duration,
-                Status = status,
+                Status = ConferenceHelper.GetConferenceStatus(conference.Current_status),
                 Participants = participants,
                 ClosedDateTime = conference.Closed_date_time,
                 HearingVenueName = conference.Hearing_venue_name

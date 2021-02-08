@@ -20,11 +20,6 @@ namespace VideoWeb.Contract.Responses
         public string Name { get; set; }
 
         /// <summary>
-        /// The participant's username
-        /// </summary>
-        public string Username { get; set; }
-
-        /// <summary>
         /// The participant's role
         /// </summary>
         public Role Role { get; set; }

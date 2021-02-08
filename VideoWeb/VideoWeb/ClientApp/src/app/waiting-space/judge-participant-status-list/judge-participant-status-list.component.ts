@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -29,18 +30,22 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     observers: ParticipantResponse[];
     panelMembers: ParticipantResponse[];
     wingers: ParticipantResponse[];
+    isUserJudge: boolean;
 
     constructor(
         protected adalService: AdalService,
         protected consultationService: ConsultationService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected videoWebService: VideoWebService
+        protected videoWebService: VideoWebService,
+        protected route: ActivatedRoute
     ) {
         super(adalService, consultationService, eventService, videoWebService, logger);
     }
 
     ngOnInit() {
+        this.loggedInUser = this.route.snapshot.data['loggedUser'];
+        this.consultationService.resetWaitingForResponse();
         this.initParticipants();
         this.setupSubscribers();
     }
@@ -52,6 +57,7 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     initParticipants() {
         super.initParticipants();
         this.filterRepresentatives();
+        this.isUserJudge = this.loggedInUser.role === Role.Judge;
     }
 
     setupSubscribers(): void {
@@ -90,13 +96,6 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
 
     getEndpointStatusCss(endpoint: VideoEndpointResponse): string {
         return this.camelToSnake(endpoint.status.toString());
-    }
-
-    isUserJudge(): boolean {
-        const participant = this.conference.participants.find(
-            x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase()
-        );
-        return participant.role === Role.Judge;
     }
 
     private filterRepresentatives(): void {

@@ -78,6 +78,7 @@ Scenario: Panel Member Waiting Room
 	And the participant can see information about their case
 	And the Panel Member can see a list of participants and their representatives
 	And the user can see a blue box and a scheduled message
+  And they can see other participants status
 
 @VIH-6420 @Smoketest-Extended
 Scenario: Winger Waiting Room
@@ -89,3 +90,4 @@ Scenario: Winger Waiting Room
 	And the participant can see information about their case
 	And the Winger can see a list of participants and their representatives
 	And the user can see a blue box and a scheduled message
+  And they can see other participants status

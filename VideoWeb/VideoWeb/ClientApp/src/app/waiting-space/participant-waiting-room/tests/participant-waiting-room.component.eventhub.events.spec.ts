@@ -55,7 +55,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
             notificationSoundsService,
             notificationToastrService
         );
-        adalService.userInfo.userName = globalParticipant.username;
+        adalService.userInfo.userName = 'chris.green@hearings.net';
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
@@ -100,7 +100,7 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
     }));
 
     it('should not play hearing starting sound when "in session" message received and participant is a witness', fakeAsync(() => {
-        adalService.userInfo.userName = globalWitness.username;
+        adalService.userInfo.userName = 'chris.green@hearings.net';
         component.participant = globalWitness;
         const status = ConferenceStatus.InSession;
         component.displayDeviceChangeModal = true;
