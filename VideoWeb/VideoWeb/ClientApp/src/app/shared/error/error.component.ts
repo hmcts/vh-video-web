@@ -72,8 +72,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
 
     private getErrorMessage(): void {
         const defaultBodyMessage = 'Please reconnect. Call us if you keep seeing this message.';
-        // tslint:disable-next-line: quotemark
-        const defaultTitle = "There's a problem with your connection";
+        const defaultTitle = `There's a problem with your connection`;
         const dto = this.hasInternetConnection
             ? this.errorService.getErrorMessageFromStorage()
             : new ErrorMessage(defaultTitle, defaultBodyMessage, true);
