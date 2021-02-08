@@ -19,13 +19,21 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     protected eventService: EventsService,
     protected logger: Logger,
     protected videoWebService: VideoWebService
-) {
+  ) {
     super(adalService, consultationService, eventService, videoWebService, logger);
-}
+  }
 
   ngOnInit(): void {
     this.initParticipants();
     this.setupSubscribers();
+  }
+
+  getRowClasses(participant: ParticipantResponse): string {
+    return 'govuk-table__row';
+  }
+
+  getParticipantStatusClasses(participant: ParticipantResponse): string {
+    return 'govuk-table__cell';
   }
 
   setupSubscribers(): void {
@@ -33,11 +41,10 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
   }
   canCallParticipant(participant: ParticipantResponse): boolean {
     return true;
-    //throw new Error('Method not implemented.');
   }
+
   canCallEndpoint(endpoint: VideoEndpointResponse): boolean {
     return true;
-    //throw new Error('Method not implemented.');
   }
 
 }

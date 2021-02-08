@@ -2,14 +2,20 @@
     <table class="govuk-table participant-table">
         <caption class="govuk-table__caption">Participants</caption>
         <tbody class="govuk-table__body">
-            <tr *ngFor="let participant of nonJudgeParticipants" class="govuk-table__row">
+            <tr *ngFor="let participant of nonJudgeParticipants" [class]="getRowClasses(participant)">
                 <td class="govuk-table__cell">
                     <ng-container *ngIf="canCallParticipant(participant.id)">
                         <app-invite-participant [participantId]="participant.id"></app-invite-participant>
                     </ng-container>
+                    <div *ngIf="participantInRoom(participant.id)">
+                        <img
+                          class="icons"
+                          src="/assets/images/yellow_tick.png"
+                        />
+                    </div>
                 </td>
                 <td class="govuk-table__cell">{{participant.display_name}}</td>
-                <td class="govuk-table__cell">button</td>
+                <td [class]="getParticipantStatusClasses(participant)">{{getParticipantStatus(participant)}}</td>
             </tr>
         </tbody>
     </table>

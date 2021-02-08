@@ -125,7 +125,7 @@
     </table>
   </div>
 
-  <div class="govuk-grid-column-two-thirds" *ngIf="false || showExtraContent">
+  <div class="govuk-grid-column-two-thirds" *ngIf="showExtraContent">
     <div *ngIf="currentTime" class="govuk-panel" [ngClass]="getCurrentTimeClass()">
       <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="getCurrentTimeClass()">
         <div *ngIf="!isWitness && hearing.isOnTime()">
