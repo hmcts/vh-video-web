@@ -5,7 +5,7 @@
 .incomingFeedPrivate {
   position: fixed;
   left: 0;
-  top: 0;
+  top: 70px;
   min-width: 100%;
   min-height: 80vh;
   max-width: 100%;
@@ -37,7 +37,7 @@
   bottom: 0;
   right: 0;
   overflow: auto;
-  z-index: 10;
+  z-index: 11;
 }
 
 .no-mass {
