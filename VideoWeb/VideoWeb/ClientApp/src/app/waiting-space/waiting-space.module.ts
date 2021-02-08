@@ -24,6 +24,8 @@ import { HearingLayoutComponent } from './select-hearing-layout/hearing-layout.c
 import { ConfirmStartHearingPopupComponent } from './confirmation/confirm-start-hearing-popup.component';
 import { JohWaitingRoomComponent } from './joh-waiting-room/joh-waiting-room.component';
 import { PrivateConsultationRoomControlsComponent } from './private-consultation-room-controls/private-consultation-room-controls.component';
+import { PrivateConsultationParticipantsComponent } from './participant-waiting-room/private-consultation-participants/private-consultation-participants.component';
+import { InviteParticipantComponent } from './participant-waiting-room/invite-participant/invite-participant.component';
 
 @NgModule({
     imports: [SharedModule, WaitingSpaceRoutingModule],
@@ -47,7 +49,9 @@ import { PrivateConsultationRoomControlsComponent } from './private-consultation
         ConfirmStartHearingPopupComponent,
         HearingLayoutComponent,
         JudgeContextMenuComponent,
-        JohWaitingRoomComponent
+        JohWaitingRoomComponent,
+        InviteParticipantComponent,
+        PrivateConsultationParticipantsComponent
     ],
     providers: [VideoCallService, NotificationSoundsService, NotificationToastrService]
 })

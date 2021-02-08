@@ -1,0 +1,16 @@
+<div class="participant-wrapper">
+    <table class="govuk-table participant-table">
+        <caption class="govuk-table__caption">Participants</caption>
+        <tbody class="govuk-table__body">
+            <tr *ngFor="let participant of nonJudgeParticipants" class="govuk-table__row">
+                <td class="govuk-table__cell">
+                    <ng-container *ngIf="canCallParticipant(participant.id)">
+                        <app-invite-participant [participantId]="participant.id"></app-invite-participant>
+                    </ng-container>
+                </td>
+                <td class="govuk-table__cell">{{participant.display_name}}</td>
+                <td class="govuk-table__cell">button</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
