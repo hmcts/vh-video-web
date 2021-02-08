@@ -12,12 +12,18 @@ namespace VideoWeb
         {
             CreateWebHostBuilder(args).Build().Run();
         }
-        
+
         private static IHostBuilder CreateWebHostBuilder(string[] args)
         {
+            const string mountPath = "/mnt/secrets/vh-video-web";
+
             return Host.CreateDefaultBuilder(args)
-                .AddAksKeyVaultSecretProvider()
-                .ConfigureWebHostDefaults(webBuilder => {
+                .ConfigureAppConfiguration((configBuilder) =>
+                {
+                    configBuilder.AddAksKeyVaultSecretProvider(mountPath);
+                })
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
                     webBuilder.UseContentRoot(Directory.GetCurrentDirectory());
                     webBuilder.UseIISIntegration();
                     webBuilder.UseStartup<Startup>();
@@ -28,6 +34,10 @@ namespace VideoWeb
                             .AddFilter<Microsoft.Extensions.Logging.ApplicationInsights.
                                     ApplicationInsightsLoggerProvider>
                                 ("", LogLevel.Trace);
+                    });
+                    webBuilder.ConfigureAppConfiguration(configBuilder =>
+                    {
+                        configBuilder.AddAksKeyVaultSecretProvider(mountPath);
                     });
                 });
         }
