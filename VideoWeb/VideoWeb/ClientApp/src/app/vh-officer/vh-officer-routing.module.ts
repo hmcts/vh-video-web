@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { pageUrls } from '../shared/page-url.constants';
 import { CommandCentreComponent } from './command-centre/command-centre.component';
 import { VenueListComponent } from './venue-list/venue-list.component';
-import { ConfigSettingsResolveService } from 'src/app/vh-officer/services/config-settings-resolve.service';
+import { ConfigSettingsResolveService } from 'src/app/services/config-settings-resolve.service';
 
 const routes: Routes = [
     { path: '', redirectTo: pageUrls.AdminVenueList },

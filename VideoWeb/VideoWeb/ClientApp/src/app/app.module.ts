@@ -22,6 +22,7 @@ import { ParticipantStatusUpdateService } from './services/participant-status-up
 import { GlobalErrorHandler } from './shared/providers/global-error-handler';
 import { SharedModule } from './shared/shared.module';
 import { WaitingSpaceModule } from './waiting-space/waiting-space.module';
+import { ConfigSettingsResolveService } from 'src/app/services/config-settings-resolve.service';
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
@@ -53,7 +54,8 @@ export function getSettings(configService: ConfigService) {
         AuthGuard,
         Title,
         PageTrackerService,
-        ParticipantStatusUpdateService
+        ParticipantStatusUpdateService,
+        ConfigSettingsResolveService
     ],
     bootstrap: [AppComponent]
 })

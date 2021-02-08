@@ -32,7 +32,7 @@ namespace VideoWeb.Mappings
                 ClosedDateTime = conference.Closed_date_time,
                 TelephoneConferenceId = conference.Telephone_conference_id,
                 TelephoneConferenceNumber = conference.Telephone_conference_number,
-                CreatedDateTime = conference.CreatedDateTime
+                CreatedDateTime = conference.Created_date_time
             };
             return response;
         }
