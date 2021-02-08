@@ -2663,8 +2663,8 @@
       },
       "VH.Core.Configuration": {
         "type": "Transitive",
-        "resolved": "0.1.0",
-        "contentHash": "im4MAtV8qasoiO9+jaWwoU0XwIheQBNjU+6U1Kn40gOo0yD/tEJuae2YhAX/JBF6qpoUZAkSMwT/q7RudnjFqw==",
+        "resolved": "0.1.12",
+        "contentHash": "uoDl/7HSRkueoe8e2uwPD1qCz1wuY0Tdzqf4HdQALuiK2qWXmFq/JYvnIl0g0IZmY4B1zsn7KKTOLvI4PMttuQ==",
         "dependencies": {
           "Microsoft.AspNetCore.Http.Connections.Common": "3.1.10",
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
@@ -2698,7 +2698,7 @@
           "Swashbuckle.AspNetCore": "5.0.0",
           "Swashbuckle.AspNetCore.Annotations": "5.0.0",
           "Swashbuckle.AspNetCore.Newtonsoft": "5.0.0",
-          "VH.Core.Configuration": "0.1.0",
+          "VH.Core.Configuration": "0.1.12",
           "VideoWeb.Common": "1.0.0",
           "VideoWeb.Contract": "1.0.0",
           "VideoWeb.EventHub": "1.0.0",
