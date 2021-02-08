@@ -1,0 +1,97 @@
+@mixin all-main-container {
+  position: fixed;
+  z-index: 200;
+}
+
+.main-container {
+  @include all-main-container;
+  left: 0;
+  width: 100vw;
+}
+
+.controls-container {
+  margin-top: 1vh !important;
+}
+
+.main-container-judge {
+  @include all-main-container;
+  left: 19%;
+  width: 80%;
+}
+
+.judge-controls-container {
+  float: left;
+}
+
+.judge-controls-padding {
+  padding-left: 0px;
+  margin-left: -5%;
+}
+
+#outgoingFeedVideo {
+  bottom: 5.5vh;
+  width: 259px;
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg); /* Safari and Chrome */
+  -moz-transform: rotateY(180deg); /* Firefox */
+}
+
+.microphoneIcon {
+  height: 18px;
+}
+
+.reduce-margin {
+  margin-bottom: 2px;
+}
+
+.hand {
+  margin-left: 1vw;
+}
+
+#toggle-hand-button .govuk-button:focus {
+  background-color: govuk-colour('green');
+  color: govuk-colour('white');
+}
+
+#toggle-handup-button .govuk-button--warning:focus {
+  background-color: govuk-colour('red');
+  color: govuk-colour('white');
+}
+
+.remote-container {
+  margin-left: -1vw;
+}
+
+.button-spacing {
+  margin-right: 8px;
+}
+
+#hearing-monitor-div {
+  float: right;
+}
+
+#judgeControlsDiv {
+  padding-right: 0;
+}
+
+.icons-container {
+  width: fit-content;
+  display: grid;
+  grid-template-rows: auto;
+  grid-column-gap: 32px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 24px;
+  padding: 12px 32px 12px 32px;
+  float: right;
+  margin: auto;
+}
+
+.icon-btn {
+  grid-row: 1;
+  opacity: 0.5;
+  height: 24px;
+}
+
+.icon-btn:hover {
+  opacity: 1;
+}

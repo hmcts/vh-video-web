@@ -11,24 +11,50 @@
   </div>
 </div>
 
-<div *ngIf="showVideo && isPrivateConsultation" class="govuk-grid-row">
-  <div class="video-background"></div>
-  <div class="govuk-grid-column-one-half">
-    <video id="incomingFeedPrivate" autoplay [srcObject]="this.stream" height="auto" poster="/assets/images/empty_crest.jpg">
-      Your browser does not support Video
-    </video>
+<div *ngIf="true || showVideo && isPrivateConsultation" class="govuk-grid-row">
+  <div class="video-background">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-three-quarters govuk-body" style='float: left'>
+        <span class="room-title">
+          {{getRoomName()}} 
+        </span>
+        <span class="room-status">
+          <span class="unlocked">Unlocked</span>
+        </span>
+        <span class="room-status-desc">
+            Other participants can enter the room. You can lock the room if you want to prevent anyone else entering.
+        </span>
+      </div>
+      <div class="govuk-grid-column-one-quarter">
+        <ng-container *ngIf="connected && showVideo">
+          <app-private-consultation-room-controls [conferenceId]="conference.id" [participant]="participant"
+            [audioOnly]="audioOnly" [isPrivateConsultation]="isPrivateConsultation" [outgoingStream]="outgoingStream"
+            [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
+            [showConsultationControls]="showConsultationControls" (leaveConsulation)="onConsultationCancelled()">
+          </app-private-consultation-room-controls>
+        </ng-container>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <div *ngIf="hearing" class="participant-wrapper">
+          <app-private-consultation-participants [conference]="hearing.getConference()"></app-private-consultation-participants>
+        </div>
+        <div class="video-wrapper">
+          <video id="incomingFeedPrivate" autoplay [srcObject]="this.stream" poster="/assets/images/empty_crest.jpg">
+            Your browser does not support Video
+          </video>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
 <div *ngIf="isWitness && isTransferringIn">
   <div class="video-background">
     <div class="transferMessage">
-      <img
-        class="transferFeedImage"
-        id="transferFeedImage"
-        src="/assets/images/UkGovCrestWhite.png"
-        alt="Witness transferring warning image"
-      />
+      <img class="transferFeedImage" id="transferFeedImage" src="/assets/images/UkGovCrestWhite.png"
+        alt="Witness transferring warning image" />
       <h2 class="govuk-heading-m white govuk-!-margin-top-5">
         Please get ready <br />
         You'll &thinsp; join the hearing in a few seconds
@@ -62,20 +88,15 @@
 
     <div class="govuk-grid-row govuk-!-margin-bottom-4" *ngIf="!showVideo">
       <div class="govuk-grid-column-one-third">
-        <button
-          id="changeCameraButton"
-          class="govuk-button"
-          data-module="govuk-button"
-          type="button"
-          (click)="showChooseCameraDialog()"
-          aria-label="Choose camera and microphone dialog"
-        >
+        <button id="changeCameraButton" class="govuk-button" data-module="govuk-button" type="button"
+          (click)="showChooseCameraDialog()" aria-label="Choose camera and microphone dialog">
           Choose camera and microphone
         </button>
       </div>
       <div class="govuk-grid-column-two-thirds" style="float: right">
         <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-container">
-          <app-participant-network-health [participant]="participant" [showDetail]="false"></app-participant-network-health>
+          <app-participant-network-health [participant]="participant" [showDetail]="false">
+          </app-participant-network-health>
         </div>
       </div>
     </div>
@@ -94,7 +115,7 @@
             <strong>{{ hearing.caseNumber }}</strong>
           </td>
           <td class="govuk-table__cell hearing-details-col2-width">
-            {{ hearing.scheduledStartTime | date: 'dd MMMM	yyyy' }}
+            {{ hearing.scheduledStartTime | date: 'dd MMMM yyyy' }}
             <span class="govuk-!-font-weight-bold">
               {{ hearing.scheduledStartTime | date: 'HH:mm' }} to
               {{ hearing.scheduledEndTime | date: 'HH:mm' }}
@@ -110,7 +131,9 @@
       <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="getCurrentTimeClass()">
         <div *ngIf="!isWitness && hearing.isOnTime()">
           <h2 class="govuk-heading-m white">Please wait</h2>
-          <p class="white">Your video hearing is scheduled to begin at {{ hearing.scheduledStartTime | date: 'HH:mm' }}</p>
+          <p class="white">Your video hearing is scheduled to begin at {{ hearing.scheduledStartTime | date: 'HH:mm'
+            }}
+          </p>
         </div>
 
         <div *ngIf="!isWitness && hearing.isStarting()">
@@ -139,7 +162,9 @@
         <div *ngIf="isWitness && hearing.isInSession()">
           <h2 class="govuk-heading-m white">The hearing has started</h2>
           <p class="white">
-            The judge will bring you into the hearing when they are ready for you. An alert will sound and you will join the hearing a few
+            The judge will bring you into the hearing when they are ready for you. An alert will sound and you will
+            join
+            the hearing a few
             seconds later.
           </p>
         </div>
@@ -147,7 +172,9 @@
         <div *ngIf="isWitness && (hearing.isOnTime() || hearing.isStarting() || hearing.isDelayed())">
           <h2 class="govuk-heading-m white">Please wait</h2>
           <p class="white">
-            The judge will bring you into the hearing when they are ready for you. An alert will sound and you will join the hearing a few
+            The judge will bring you into the hearing when they are ready for you. An alert will sound and you will
+            join
+            the hearing a few
             seconds later.
           </p>
         </div>
@@ -170,27 +197,13 @@
     </div>
 
     <div>
-      <a
-        href="javascript:void(0)"
-        class="govuk-button"
-        role="button"
-        draggable="false"
-        id="openStartPCButton"
-        data-module="govuk-button"
-        (click)="openStartConsultationModal()"
-      >
+      <a href="javascript:void(0)" class="govuk-button" role="button" draggable="false" id="openStartPCButton"
+        data-module="govuk-button" (click)="openStartConsultationModal()">
         Start a private meeting
       </a>
-      
-      <a
-        href="javascript:void(0)"
-        class="govuk-button govuk-button-blue govuk-!-margin-left-5"
-        role="button"
-        draggable="false"
-        id="openJoinPCButton"
-        data-module="govuk-button"
-        (click)="openJoinConsultationModal()"
-      >
+
+      <a href="javascript:void(0)" class="govuk-button govuk-button-blue govuk-!-margin-left-5" role="button"
+        draggable="false" id="openJoinPCButton" data-module="govuk-button" (click)="openJoinConsultationModal()">
         Join a private meeting
       </a>
     </div>
@@ -201,29 +214,21 @@
   </div>
 
   <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': !showExtraContent }">
-    <app-individual-participant-status-list aria-label="list of participants in hearing" [conference]="hearing.getConference()">
+    <app-individual-participant-status-list aria-label="list of participants in hearing"
+      [conference]="hearing.getConference()">
     </app-individual-participant-status-list>
   </div>
 </div>
 
 <app-participant-chat *ngIf="hearing && showExtraContent" [hearing]="hearing"></app-participant-chat>
 
-<app-select-media-devices
-  *ngIf="displayDeviceChangeModal"
-  [waitingRoomMode]="true"
-  [showAudioOnlySetting]="true"
-  [cameraOn]="!audioOnly"
-  (cancelMediaDeviceChange)="onMediaDeviceChangeCancelled()"
-  (acceptMediaDeviceChange)="onMediaDeviceChangeAccepted($event)"
-  #selectMediaDevices
-></app-select-media-devices>
+<app-select-media-devices *ngIf="displayDeviceChangeModal" [waitingRoomMode]="true" [showAudioOnlySetting]="true"
+  [cameraOn]="!audioOnly" (cancelMediaDeviceChange)="onMediaDeviceChangeCancelled()"
+  (acceptMediaDeviceChange)="onMediaDeviceChangeAccepted($event)" #selectMediaDevices></app-select-media-devices>
 
-<app-start-private-consultation
-  *ngIf="displayStartPrivateConsultationModal"
-  [participants]="getPrivateConsultationParticipants()"
-  (cancel)="closeStartPrivateConsultationModal()"
-  (continue)="startPrivateConsultation($event)"
-></app-start-private-consultation>
+<app-start-private-consultation *ngIf="displayStartPrivateConsultationModal"
+  [participants]="getPrivateConsultationParticipants()" (cancel)="closeStartPrivateConsultationModal()"
+  (continue)="startPrivateConsultation($event)"></app-start-private-consultation>
 
 <app-join-private-consultation
   *ngIf="displayJoinPrivateConsultationModal"

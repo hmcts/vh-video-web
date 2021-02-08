@@ -14,8 +14,62 @@
 }
 
 .govuk-button-blue {
-    background: govuk-colour('blue');
+  background: govuk-colour('blue');
 }
 .govuk-button-blue:hover {
   background: govuk-colour('dark-blue');
+}
+
+.participant-wrapper{
+  width: 296px;
+  padding: 4px;
+  float: right;
+}
+
+.room-title{
+  color: lightgray;
+  margin-left: 50px;
+  display: inline-block;
+}
+
+.room-status{
+  margin-left: 10px;
+  display: inline-block;
+}
+
+.room-status-desc{
+  color: #b1b4b6;
+  font-size: 16px;
+  margin-left: 10px;
+  display: inline-block;
+}
+
+.unlocked{
+  padding: 3px 8px 3px 8px;
+  border: 0px solid #f3f2f1;
+  border-radius: 2px;
+  background: #f3f2f1;
+  font-family: "GDS Transport", Arial, sans-serif;
+  text-transform: uppercase;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 14px;
+  color: #0b0c0d;
+}
+
+.video-wrapper{
+  width: auto;
+  overflow: hidden;
+}
+
+#incomingFeedPrivate {
+  position: relative;
+  left: 0;
+  top: 0px;
+  min-width: 100%;
+  min-height: auto;
+  max-width: 100%;
+  max-height: 90vh;
+  z-index: 100;
 }

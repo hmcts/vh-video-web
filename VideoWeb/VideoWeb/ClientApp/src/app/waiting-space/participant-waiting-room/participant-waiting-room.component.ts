@@ -25,7 +25,7 @@ import { NotificationToastrService } from '../services/notification-toastr.servi
 @Component({
     selector: 'app-participant-waiting-room',
     templateUrl: './participant-waiting-room.component.html',
-    styleUrls: ['./participant-waiting-room.component.scss', '../waiting-room-global-styles.scss']
+    styleUrls: ['../waiting-room-global-styles.scss', './participant-waiting-room.component.scss']
 })
 export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
     currentTime: Date;
@@ -156,6 +156,10 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         } else {
             return 'hearing-on-time';
         }
+    }
+
+    getRoomName() {
+        return this.participant?.current_room?.label ?? 'Private Consultation';
     }
 
     get isWitness(): boolean {

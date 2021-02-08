@@ -23,6 +23,9 @@ import { ConfirmCloseHearingPopupComponent } from './confirmation/confirm-close-
 import { HearingLayoutComponent } from './select-hearing-layout/hearing-layout.component';
 import { ConfirmStartHearingPopupComponent } from './confirmation/confirm-start-hearing-popup.component';
 import { JohWaitingRoomComponent } from './joh-waiting-room/joh-waiting-room.component';
+import { PrivateConsultationRoomControlsComponent } from './private-consultation-room-controls/private-consultation-room-controls.component';
+import { PrivateConsultationParticipantsComponent } from './participant-waiting-room/private-consultation-participants/private-consultation-participants.component';
+import { InviteParticipantComponent } from './participant-waiting-room/invite-participant/invite-participant.component';
 import { LoggedUserResolveService } from './services/logged-user-resolve.service';
 
 @NgModule({
@@ -39,6 +42,7 @@ import { LoggedUserResolveService } from './services/logged-user-resolve.service
         ParticipantNetworkHealthComponent,
         WaitingRoomMonitorComponent,
         HearingControlsComponent,
+        PrivateConsultationRoomControlsComponent,
         ParticipantsPanelComponent,
         ParticipantAlertComponent,
         SelectHearingLayoutComponent,
@@ -46,7 +50,9 @@ import { LoggedUserResolveService } from './services/logged-user-resolve.service
         ConfirmStartHearingPopupComponent,
         HearingLayoutComponent,
         JudgeContextMenuComponent,
-        JohWaitingRoomComponent
+        JohWaitingRoomComponent,
+        InviteParticipantComponent,
+        PrivateConsultationParticipantsComponent
     ],
     providers: [VideoCallService, NotificationSoundsService, NotificationToastrService, LoggedUserResolveService]
 })
