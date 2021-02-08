@@ -290,22 +290,25 @@ namespace VideoWeb.Services.Video
     
         /// <summary>Get conferences by hearing ref id</summary>
         /// <param name="hearingRefId">Hearing ID</param>
+        /// <param name="includeClosed">Include closed conferences in search</param>
         /// <returns>Full details including participants and statuses of a conference</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ConferenceDetailsResponse> GetConferenceByHearingRefIdAsync(System.Guid hearingRefId);
+        System.Threading.Tasks.Task<ConferenceDetailsResponse> GetConferenceByHearingRefIdAsync(System.Guid hearingRefId, bool? includeClosed);
     
         /// <summary>Get conferences by hearing ref id</summary>
         /// <param name="hearingRefId">Hearing ID</param>
+        /// <param name="includeClosed">Include closed conferences in search</param>
         /// <returns>Full details including participants and statuses of a conference</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        ConferenceDetailsResponse GetConferenceByHearingRefId(System.Guid hearingRefId);
+        ConferenceDetailsResponse GetConferenceByHearingRefId(System.Guid hearingRefId, bool? includeClosed);
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get conferences by hearing ref id</summary>
         /// <param name="hearingRefId">Hearing ID</param>
+        /// <param name="includeClosed">Include closed conferences in search</param>
         /// <returns>Full details including participants and statuses of a conference</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<ConferenceDetailsResponse> GetConferenceByHearingRefIdAsync(System.Guid hearingRefId, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<ConferenceDetailsResponse> GetConferenceByHearingRefIdAsync(System.Guid hearingRefId, bool? includeClosed, System.Threading.CancellationToken cancellationToken);
     
         /// <summary>Get list of expired conferences</summary>
         /// <returns>Conference summary details</returns>
@@ -2461,35 +2464,43 @@ namespace VideoWeb.Services.Video
     
         /// <summary>Get conferences by hearing ref id</summary>
         /// <param name="hearingRefId">Hearing ID</param>
+        /// <param name="includeClosed">Include closed conferences in search</param>
         /// <returns>Full details including participants and statuses of a conference</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<ConferenceDetailsResponse> GetConferenceByHearingRefIdAsync(System.Guid hearingRefId)
+        public System.Threading.Tasks.Task<ConferenceDetailsResponse> GetConferenceByHearingRefIdAsync(System.Guid hearingRefId, bool? includeClosed)
         {
-            return GetConferenceByHearingRefIdAsync(hearingRefId, System.Threading.CancellationToken.None);
+            return GetConferenceByHearingRefIdAsync(hearingRefId, includeClosed, System.Threading.CancellationToken.None);
         }
     
         /// <summary>Get conferences by hearing ref id</summary>
         /// <param name="hearingRefId">Hearing ID</param>
+        /// <param name="includeClosed">Include closed conferences in search</param>
         /// <returns>Full details including participants and statuses of a conference</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public ConferenceDetailsResponse GetConferenceByHearingRefId(System.Guid hearingRefId)
+        public ConferenceDetailsResponse GetConferenceByHearingRefId(System.Guid hearingRefId, bool? includeClosed)
         {
-            return System.Threading.Tasks.Task.Run(async () => await GetConferenceByHearingRefIdAsync(hearingRefId, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+            return System.Threading.Tasks.Task.Run(async () => await GetConferenceByHearingRefIdAsync(hearingRefId, includeClosed, System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <summary>Get conferences by hearing ref id</summary>
         /// <param name="hearingRefId">Hearing ID</param>
+        /// <param name="includeClosed">Include closed conferences in search</param>
         /// <returns>Full details including participants and statuses of a conference</returns>
         /// <exception cref="VideoApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<ConferenceDetailsResponse> GetConferenceByHearingRefIdAsync(System.Guid hearingRefId, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<ConferenceDetailsResponse> GetConferenceByHearingRefIdAsync(System.Guid hearingRefId, bool? includeClosed, System.Threading.CancellationToken cancellationToken)
         {
             if (hearingRefId == null)
                 throw new System.ArgumentNullException("hearingRefId");
     
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/hearings/{hearingRefId}");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/conferences/hearings/{hearingRefId}?");
             urlBuilder_.Replace("{hearingRefId}", System.Uri.EscapeDataString(ConvertToString(hearingRefId, System.Globalization.CultureInfo.InvariantCulture)));
+            if (includeClosed != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("includeClosed") + "=").Append(System.Uri.EscapeDataString(ConvertToString(includeClosed, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
     
             var client_ = _httpClient;
             try
@@ -6787,6 +6798,9 @@ namespace VideoWeb.Services.Video
     
         [Newtonsoft.Json.JsonProperty("telephone_conference_number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Telephone_conference_number { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("created_date_time", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Created_date_time { get; set; }
     
     
     }
