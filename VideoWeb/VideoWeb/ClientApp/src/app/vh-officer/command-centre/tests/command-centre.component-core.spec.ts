@@ -284,8 +284,8 @@ describe('CommandCentreComponent - Core', () => {
     });
     it('should convert string to date', () => {
         const dateFrom = component.getDateFromString('2021-02-09');
-        expect(dateFrom.getFullYear).toBe(2021);
-        expect(dateFrom.getMonth).toBe(2);
-        expect(dateFrom.getDay).toBe(9);
+        expect(dateFrom.getFullYear).toEqual(2021);
+        expect(dateFrom.getMonth).toEqual(2);
+        expect(dateFrom.getDay).toEqual(9);
     });
 });
