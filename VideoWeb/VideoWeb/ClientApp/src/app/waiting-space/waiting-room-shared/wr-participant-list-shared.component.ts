@@ -86,7 +86,7 @@ export abstract class WRParticipantStatusListDirective {
     }
 
     async handleParticipantStatusChange(message: ParticipantStatusMessage): Promise<void> {
-        const isCurrentUser = this.loggedInUser.participant_id === message.participantId;
+        const isCurrentUser = this.loggedInUser?.participant_id === message.participantId;
         if (isCurrentUser && message.status === ParticipantStatus.InConsultation) {
             this.closeAllPCModals();
         }

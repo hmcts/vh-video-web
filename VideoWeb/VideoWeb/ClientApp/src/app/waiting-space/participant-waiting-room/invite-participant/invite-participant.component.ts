@@ -15,6 +15,5 @@ export class InviteParticipantComponent implements OnInit {
     }
 
     inviteParticipant() {
-        //this.clipboardService.copyFromContent(text);
     }
 }

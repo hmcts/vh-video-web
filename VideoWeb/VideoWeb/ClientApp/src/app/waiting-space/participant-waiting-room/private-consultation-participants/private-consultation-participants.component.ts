@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ParticipantResponse, VideoEndpointResponse } from 'src/app/services/clients/api-client';
+import { ParticipantResponse, ParticipantStatus, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-participant-list-shared.component';
@@ -31,7 +31,12 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
   }
 
   getRowClasses(participant: ParticipantResponse): string {
-    return 'govuk-table__row';
+    let statusClasses = 'govuk-table__row';
+    if (participant.current_room?.label === this.roomLabel) {
+      return `${statusClasses} active`;
+    }
+
+    return statusClasses;
   }
 
   getParticipantStatus(participant: ParticipantResponse): string {
@@ -39,20 +44,18 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
   }
 
   getParticipantStatusClasses(participant: ParticipantResponse): string {
-    return 'govuk-table__cell';
+    let statusClasses = 'govuk-table__cell';
+    switch (participant.status) {
+      case ParticipantStatus.InConsultation:
+        return `${statusClasses} outline`;
+    
+      default:
+        return statusClasses;
+    }
   }
 
   participantIsInRoom(participant: ParticipantResponse):boolean{
-    if (participant.current_room.label === this.roomLabel) {
-      return true;
-    }
-
-    return false;
-    // const currentRoom = this.camelToSpaced(participant.current_room.label.replace('ParticipantConsultationRoom', 'MeetingRoom')).toLowerCase();
-    // if (currentRoom = ) {
-      
-    // }
-    // return part.base.current_rParticipantoom?.label === this.roomId;
+    return participant.current_room?.label === this.roomLabel;
   }
 
   setupSubscribers(): void {
@@ -60,7 +63,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
   }
 
   canCallParticipant(participant: ParticipantResponse): boolean {
-    return true;
+    return !this.participantIsInRoom(participant) && participant.status === ParticipantStatus.Available;
   }
 
   canCallEndpoint(endpoint: VideoEndpointResponse): boolean {

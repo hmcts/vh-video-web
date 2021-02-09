@@ -11,7 +11,7 @@
   </div>
 </div>
 
-<div *ngIf="showVideo && isPrivateConsultation" class="govuk-grid-row">
+<div *ngIf="true || showVideo && isPrivateConsultation" class="govuk-grid-row">
   <div class="video-background">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-three-quarters govuk-body" style='float: left'>
@@ -38,7 +38,7 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
         <div *ngIf="hearing" class="participant-wrapper">
-          <app-private-consultation-participants [roomLabel]="this.participant.current_room?.label"></app-private-consultation-participants>
+          <app-private-consultation-participants [conference]="hearing.getConference()" [roomLabel]="this.participant.current_room?.label"></app-private-consultation-participants>
         </div>
         <div class="video-wrapper">
           <video id="incomingFeedPrivate" autoplay [srcObject]="this.stream" poster="/assets/images/empty_crest.jpg">
