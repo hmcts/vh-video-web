@@ -235,7 +235,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         );
     }
 
-    isJoinByPhone(hearing:HearingSummary): boolean {
+    isJoinByPhone(hearing: HearingSummary): boolean {
         const config = this.route.snapshot.data['configSettings'];
         const datePhone = config.join_by_phone_from_date;
         if (!datePhone || datePhone.length === 0) {
@@ -246,8 +246,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         } else {
             return false;
         }
-    } 
-
+    }
 
     applyFilterInit() {
         this.originalHearings.length = 0;

@@ -12,6 +12,7 @@ import { ParticipantSummary } from './participant-summary';
 export class HearingSummary extends HearingBase {
     protected conference: ConferenceForVhOfficerResponse;
     protected participants: ParticipantSummary[];
+    isJoinByPhone: boolean;
 
     constructor(conference: ConferenceForVhOfficerResponse) {
         super();
@@ -132,8 +133,6 @@ export class HearingSummary extends HearingBase {
         return this.conference.telephone_conference_number;
     }
     get createdDateTime(): Date {
-        return this.conference.created_date_time; 
+        return this.conference.created_date_time;
     }
-
-    isJoinByPhone: boolean 
 }

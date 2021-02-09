@@ -33,7 +33,7 @@ export class ConfigService {
     }
 
     getClientSettingsAs(): Observable<ClientSettingsResponse> {
-        const settings = this.getClientSettings()
+        const settings = this.getClientSettings();
         if (!settings) {
             return from(this.retrieveConfigFromApi());
         } else {

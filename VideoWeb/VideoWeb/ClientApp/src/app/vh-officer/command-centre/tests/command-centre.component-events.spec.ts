@@ -18,11 +18,10 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { VhoQueryService } from '../../services/vho-query-service.service';
 import { CommandCentreComponent } from '../command-centre.component';
 import { EventBusService } from 'src/app/services/event-bus.service';
-import { activatedRoute } from '../../../waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 
 describe('CommandCentreComponent - Events', () => {
     let component: CommandCentreComponent;
-    let activatedRoute: ActivatedRoute
+    let activatedRoute: ActivatedRoute;
     let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
     let screenHelper: jasmine.SpyObj<ScreenHelper>;
     let errorService: jasmine.SpyObj<ErrorService>;
@@ -80,7 +79,6 @@ describe('CommandCentreComponent - Events', () => {
                 data: { configSettings: config }
             }
         };
-   
     });
 
     afterAll(() => {
