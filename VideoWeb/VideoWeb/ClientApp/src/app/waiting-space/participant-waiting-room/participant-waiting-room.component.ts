@@ -30,6 +30,7 @@ import { NotificationToastrService } from '../services/notification-toastr.servi
 export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
     currentTime: Date;
     hearingStartingAnnounced: boolean;
+    privateConsultationAccordianExpanded: boolean = false;
 
     clockSubscription$: Subscription;
 
@@ -227,8 +228,12 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     closeStartPrivateConsultationModal() {
         this.displayStartPrivateConsultationModal = false;
     }
-    
+
     closeJoinPrivateConsultationModal() {
         this.displayJoinPrivateConsultationModal = false;
+    }
+
+    toggleAccordian() {
+        this.privateConsultationAccordianExpanded = !this.privateConsultationAccordianExpanded;
     }
 }

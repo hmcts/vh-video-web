@@ -20,36 +20,36 @@
   background: govuk-colour('dark-blue');
 }
 
-.participant-wrapper{
+.participant-wrapper {
   width: 296px;
   padding: 4px;
   float: right;
 }
 
-.room-title{
+.room-title {
   color: lightgray;
   margin-left: 50px;
   display: inline-block;
 }
 
-.room-status{
+.room-status {
   margin-left: 10px;
   display: inline-block;
 }
 
-.room-status-desc{
+.room-status-desc {
   color: #b1b4b6;
   font-size: 16px;
   margin-left: 10px;
   display: inline-block;
 }
 
-.unlocked{
+.unlocked {
   padding: 3px 8px 3px 8px;
   border: 0px solid #f3f2f1;
   border-radius: 2px;
   background: #f3f2f1;
-  font-family: "GDS Transport", Arial, sans-serif;
+  font-family: 'GDS Transport', Arial, sans-serif;
   text-transform: uppercase;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -58,7 +58,7 @@
   color: #0b0c0d;
 }
 
-.video-wrapper{
+.video-wrapper {
   width: auto;
   overflow: hidden;
 }
