@@ -14,7 +14,7 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ParticipantUpdated } from '../models/video-call-models';
 import { PrivateConsultationRoomControlsComponent } from './private-consultation-room-controls.component';
 
-describe('HearingControlsComponent', () => {
+describe('PrivateConsultationRoomControlsComponent', () => {
     let component: PrivateConsultationRoomControlsComponent;
     const gloalConference = new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse;
     const globalParticipant = gloalConference.participants.filter(x => x.role === Role.Individual)[0];
@@ -60,6 +60,7 @@ describe('HearingControlsComponent', () => {
     });
 
     it('should raise hand on toggle if hand not raised', () => {
+        videoCallService.raiseHand.calls.reset();
         component.handRaised = false;
         component.toggleHandRaised();
         expect(videoCallService.raiseHand).toHaveBeenCalledTimes(1);
@@ -67,6 +68,7 @@ describe('HearingControlsComponent', () => {
     });
 
     it('should lower hand on toggle if hand raised', () => {
+        videoCallService.lowerHand.calls.reset();
         component.handRaised = true;
         component.toggleHandRaised();
         expect(videoCallService.lowerHand).toHaveBeenCalledTimes(1);
@@ -260,6 +262,7 @@ describe('HearingControlsComponent', () => {
     });
 
     it('should not close the hearing on keep hearing open', async () => {
+        videoCallService.endHearing.calls.reset();
         component.displayConfirmPopup = true;
         component.close(false);
         expect(component.displayConfirmPopup).toBeFalsy();
