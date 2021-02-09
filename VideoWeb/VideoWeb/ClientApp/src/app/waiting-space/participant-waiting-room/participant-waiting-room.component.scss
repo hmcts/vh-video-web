@@ -22,8 +22,10 @@
 
 .participant-wrapper{
   width: 333px;
-  padding: 4px;
+  padding: 12px;
   float: right;
+  max-height: 675px;
+  overflow: overlay;
 }
 
 .room-title{

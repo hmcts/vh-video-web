@@ -1,7 +1,7 @@
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 
 export function consultationServiceSpyFactory(): jasmine.SpyObj<ConsultationService> {
-    const consultationServiceMock = jasmine.createSpyObj<ConsultationService>('ConsultationService', [
+    const consultationServiceMock = jasmine.createSpyObj(ConsultationService, [
         'respondToConsultationRequest',
         'startPrivateConsulationWithEndpoint',
         'joinJudicialConsultationRoom',
