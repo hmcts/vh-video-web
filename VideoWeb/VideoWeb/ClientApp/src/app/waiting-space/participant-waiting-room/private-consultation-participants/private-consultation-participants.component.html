@@ -7,7 +7,7 @@
                     <ng-container *ngIf="canCallParticipant(participant.id)">
                         <app-invite-participant [participantId]="participant.id"></app-invite-participant>
                     </ng-container>
-                    <div *ngIf="participantInRoom(participant.id)">
+                    <div *ngIf="participantIsInRoom(participant)">
                         <img
                           class="icons"
                           src="/assets/images/yellow_tick.png"

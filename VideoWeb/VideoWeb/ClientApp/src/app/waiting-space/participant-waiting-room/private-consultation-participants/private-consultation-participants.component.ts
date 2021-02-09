@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -13,6 +13,8 @@ import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-p
   styleUrls: ['./private-consultation-participants.component.scss']
 })
 export class PrivateConsultationParticipantsComponent extends WRParticipantStatusListDirective implements OnInit {
+  @Input() roomLabel: string;
+
   constructor(
     protected adalService: AdalService,
     protected consultationService: ConsultationService,
@@ -32,13 +34,31 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     return 'govuk-table__row';
   }
 
+  getParticipantStatus(participant: ParticipantResponse): string {
+    return this.camelToSpaced(participant.status);
+  }
+
   getParticipantStatusClasses(participant: ParticipantResponse): string {
     return 'govuk-table__cell';
+  }
+
+  participantIsInRoom(participant: ParticipantResponse):boolean{
+    if (participant.current_room.label === this.roomLabel) {
+      return true;
+    }
+
+    return false;
+    // const currentRoom = this.camelToSpaced(participant.current_room.label.replace('ParticipantConsultationRoom', 'MeetingRoom')).toLowerCase();
+    // if (currentRoom = ) {
+      
+    // }
+    // return part.base.current_rParticipantoom?.label === this.roomId;
   }
 
   setupSubscribers(): void {
     this.addSharedEventHubSubcribers();
   }
+
   canCallParticipant(participant: ParticipantResponse): boolean {
     return true;
   }
