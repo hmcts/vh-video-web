@@ -37,9 +37,4 @@ describe('ConfigService', () => {
         configService.getClientSettings();
         expect(apiClientSpy.getClientConfigurationSettings).not.toHaveBeenCalled();
     });
-    it('should not have called method on api client if settings are in the cache', () => {
-        sessionStorage.setItem('clientSettings', JSON.stringify(clientSettings));
-        configService.getClientSettingsAs();
-        expect(apiClientSpy.getClientConfigurationSettings).not.toHaveBeenCalled();
-    });
 });
