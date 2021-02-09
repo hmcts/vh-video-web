@@ -335,8 +335,8 @@ TESTS.xml
 # Local environment settings files
 /VideoWeb/VideoWeb.AcceptanceTests/Configuration/Environments/
 
-# Config for NuGet
-nuget.config
+# Test Run Setting
+/VideoWeb/VideoWeb.AcceptanceTests/parameters.runsettings
 
 # MacOS Desktop Services Store files
 .DS_Store

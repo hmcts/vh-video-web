@@ -37,7 +37,7 @@ describe('UnreadMessagesParticipantComponent', () => {
     beforeEach(() => {
         unreadMessageResponse = new UnreadAdminMessageResponse({
             number_of_unread_messages: 5,
-            participant_username: participant.username
+            participant_id: participant.id
         });
         videoWebServiceSpy.getUnreadMessagesForParticipant.and.callFake(() => Promise.resolve(unreadMessageResponse));
 
@@ -78,18 +78,18 @@ describe('UnreadMessagesParticipantComponent', () => {
 
     it('should reset conference unread counter when vho sends a message', () => {
         const conferenceId = conference.id;
-        const participantUsername = participant.username;
+        const participantId = participant.id;
         const expectedCount = 0;
-        component.resetUnreadCounter(conferenceId, participantUsername);
+        component.resetUnreadCounter(conferenceId, participantId);
         expect(component.unreadCount).toBe(expectedCount);
     });
 
     it('should reset unread message counter when admin has answered', () => {
         const conferenceId = conference.id;
-        const participantUsername = participant.username;
+        const participantId = participant.id;
         const expectedCount = 0;
         component.setupSubscribers();
-        const payload = new ConferenceMessageAnswered(conferenceId, participantUsername);
+        const payload = new ConferenceMessageAnswered(conferenceId, participantId);
 
         mockEventService.adminAnsweredChatSubject.next(payload);
 
@@ -98,10 +98,10 @@ describe('UnreadMessagesParticipantComponent', () => {
 
     it('should not reset unread message counter message is for another conference', () => {
         const conferenceId = Guid.create().toString();
-        const participantUsername = participant.username;
+        const participantId = participant.id;
         const expectedCount = 5;
         component.setupSubscribers();
-        const payload = new ConferenceMessageAnswered(conferenceId, participantUsername);
+        const payload = new ConferenceMessageAnswered(conferenceId, participantId);
 
         mockEventService.adminAnsweredChatSubject.next(payload);
 
@@ -109,24 +109,24 @@ describe('UnreadMessagesParticipantComponent', () => {
     });
 
     it('should return IM image if are unread messages', () => {
-        component.unreadMessages = new UnreadAdminMessageResponse({ participant_username: 'test@1.com', number_of_unread_messages: 5 });
+        component.unreadMessages = new UnreadAdminMessageResponse({ participant_id: '1111-1111', number_of_unread_messages: 5 });
         expect(component.getIMStatus()).toBe('IM_icon.png');
     });
 
     it('should return empty image if there are no unread messages', () => {
-        component.unreadMessages = new UnreadAdminMessageResponse({ participant_username: 'test@1.com', number_of_unread_messages: 0 });
+        component.unreadMessages = new UnreadAdminMessageResponse({ participant_id: '1111-1111', number_of_unread_messages: 0 });
         expect(component.getIMStatus()).toBe('IM-empty.png');
     });
 
     it('should increase unread count when participant sends a message', () => {
         const conferenceId = conference.id;
-        const participantUsername = conference.participants[0].username;
+        const participantId = conference.participants[0].id;
         const expectedCount = component.unreadCount + 1;
         component.setupSubscribers();
         mockEventService.messageSubject.next(
             new InstantMessage({
                 conferenceId,
-                from: participantUsername
+                from: participantId
             })
         );
         expect(component.unreadCount).toBe(expectedCount);
@@ -148,9 +148,9 @@ describe('UnreadMessagesParticipantComponent', () => {
 
     it('should not increase unread count when message is for a different conference', () => {
         const conferenceId = Guid.create().toString();
-        const participantUsername = conference.participants[0].username;
+        const participantId = conference.participants[0].id;
         const expectedCount = component.unreadCount;
-        component.incrementUnreadCounter(conferenceId, participantUsername);
+        component.incrementUnreadCounter(conferenceId, participantId);
         expect(component.unreadCount).toBe(expectedCount);
     });
 

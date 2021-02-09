@@ -1337,17 +1337,17 @@ export class ApiClient {
     /**
      * Get all the instant messages for a conference for a participant
      * @param conferenceId Id of the conference
-     * @param participantUsername the participant in the conference
+     * @param participantId the participant in the conference
      * @return Success
      */
-    getConferenceInstantMessageHistoryForParticipant(conferenceId: string, participantUsername: string): Observable<ChatResponse[]> {
-        let url_ = this.baseUrl + "/conferences/{conferenceId}/instantmessages/participant/{participantUsername}";
+    getConferenceInstantMessageHistoryForParticipant(conferenceId: string, participantId: string): Observable<ChatResponse[]> {
+        let url_ = this.baseUrl + "/conferences/{conferenceId}/instantmessages/participant/{participantId}";
         if (conferenceId === undefined || conferenceId === null)
             throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace("{conferenceId}", encodeURIComponent("" + conferenceId));
-        if (participantUsername === undefined || participantUsername === null)
-            throw new Error("The parameter 'participantUsername' must be defined.");
-        url_ = url_.replace("{participantUsername}", encodeURIComponent("" + participantUsername));
+        if (participantId === undefined || participantId === null)
+            throw new Error("The parameter 'participantId' must be defined.");
+        url_ = url_.replace("{participantId}", encodeURIComponent("" + participantId));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -1472,17 +1472,17 @@ export class ApiClient {
     /**
      * Get number of unread messages for a participant
      * @param conferenceId Id of the conference
-     * @param participantUsername the participant in the conference
+     * @param participantId the participant in the conference
      * @return Success
      */
-    getNumberOfUnreadAdminMessagesForConferenceByParticipant(conferenceId: string, participantUsername: string): Observable<UnreadAdminMessageResponse> {
-        let url_ = this.baseUrl + "/conferences/{conferenceId}/instantmessages/unread/participant/{participantUsername}";
+    getNumberOfUnreadAdminMessagesForConferenceByParticipant(conferenceId: string, participantId: string): Observable<UnreadAdminMessageResponse> {
+        let url_ = this.baseUrl + "/conferences/{conferenceId}/instantmessages/unread/participant/{participantId}";
         if (conferenceId === undefined || conferenceId === null)
             throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace("{conferenceId}", encodeURIComponent("" + conferenceId));
-        if (participantUsername === undefined || participantUsername === null)
-            throw new Error("The parameter 'participantUsername' must be defined.");
-        url_ = url_.replace("{participantUsername}", encodeURIComponent("" + participantUsername));
+        if (participantId === undefined || participantId === null)
+            throw new Error("The parameter 'participantId' must be defined.");
+        url_ = url_.replace("{participantId}", encodeURIComponent("" + participantId));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -2173,6 +2173,71 @@ export class ApiClient {
             }));
         }
         return _observableOf<ParticipantForUserResponse[]>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    getCurrentParticipant(conferenceId: string): Observable<LoggedParticipantResponse> {
+        let url_ = this.baseUrl + "/conferences/{conferenceId}/currentparticipant";
+        if (conferenceId === undefined || conferenceId === null)
+            throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace("{conferenceId}", encodeURIComponent("" + conferenceId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetCurrentParticipant(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetCurrentParticipant(<any>response_);
+                } catch (e) {
+                    return <Observable<LoggedParticipantResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<LoggedParticipantResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetCurrentParticipant(response: HttpResponseBase): Observable<LoggedParticipantResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = LoggedParticipantResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Not Found", status, _responseText, _headers, result404);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("Unauthorized", status, _responseText, _headers);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<LoggedParticipantResponse>(<any>null);
     }
 
     /**
@@ -3211,8 +3276,6 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     id?: string;
     /** The participant's full name */
     name?: string | undefined;
-    /** The participant's username */
-    username?: string | undefined;
     /** The participant's role */
     role?: Role;
     /** The participant's status */
@@ -3240,7 +3303,6 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
-            this.username = _data["username"];
             this.role = _data["role"];
             this.status = _data["status"];
             this.display_name = _data["display_name"];
@@ -3265,7 +3327,6 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
-        data["username"] = this.username;
         data["role"] = this.role;
         data["status"] = this.status;
         data["display_name"] = this.display_name;
@@ -3285,8 +3346,6 @@ export interface IParticipantForUserResponse {
     id?: string;
     /** The participant's full name */
     name?: string | undefined;
-    /** The participant's username */
-    username?: string | undefined;
     /** The participant's role */
     role?: Role;
     /** The participant's status */
@@ -3406,8 +3465,6 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
     id?: string;
     /** The participant's full name */
     name?: string | undefined;
-    /** The participant's username */
-    username?: string | undefined;
     /** The participant's role */
     role?: Role;
     /** The participant's status */
@@ -3433,7 +3490,6 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
-            this.username = _data["username"];
             this.role = _data["role"];
             this.status = _data["status"];
             this.display_name = _data["display_name"];
@@ -3456,7 +3512,6 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
-        data["username"] = this.username;
         data["role"] = this.role;
         data["status"] = this.status;
         data["display_name"] = this.display_name;
@@ -3475,8 +3530,6 @@ export interface IParticipantResponseVho {
     id?: string;
     /** The participant's full name */
     name?: string | undefined;
-    /** The participant's username */
-    username?: string | undefined;
     /** The participant's role */
     role?: Role;
     /** The participant's status */
@@ -3596,8 +3649,6 @@ export class ParticipantResponse implements IParticipantResponse {
     id?: string;
     /** The participant's full name */
     name?: string | undefined;
-    /** The participant's username */
-    username?: string | undefined;
     /** The participant's role */
     role?: Role;
     /** The participant's status */
@@ -3625,7 +3676,6 @@ export class ParticipantResponse implements IParticipantResponse {
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
-            this.username = _data["username"];
             this.role = _data["role"];
             this.status = _data["status"];
             this.display_name = _data["display_name"];
@@ -3650,7 +3700,6 @@ export class ParticipantResponse implements IParticipantResponse {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
-        data["username"] = this.username;
         data["role"] = this.role;
         data["status"] = this.status;
         data["display_name"] = this.display_name;
@@ -3671,8 +3720,6 @@ export interface IParticipantResponse {
     id?: string;
     /** The participant's full name */
     name?: string | undefined;
-    /** The participant's username */
-    username?: string | undefined;
     /** The participant's role */
     role?: Role;
     /** The participant's status */
@@ -3703,6 +3750,7 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
     status?: EndpointStatus;
     defence_advocate_username?: string | undefined;
     pexip_display_name?: string | undefined;
+    is_current_user?: boolean;
 
     constructor(data?: IVideoEndpointResponse) {
         if (data) {
@@ -3720,6 +3768,7 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
             this.status = _data["status"];
             this.defence_advocate_username = _data["defence_advocate_username"];
             this.pexip_display_name = _data["pexip_display_name"];
+            this.is_current_user = _data["is_current_user"];
         }
     }
 
@@ -3737,6 +3786,7 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
         data["status"] = this.status;
         data["defence_advocate_username"] = this.defence_advocate_username;
         data["pexip_display_name"] = this.pexip_display_name;
+        data["is_current_user"] = this.is_current_user;
         return data; 
     }
 }
@@ -3749,6 +3799,7 @@ export interface IVideoEndpointResponse {
     status?: EndpointStatus;
     defence_advocate_username?: string | undefined;
     pexip_display_name?: string | undefined;
+    is_current_user?: boolean;
 }
 
 /** Detailed information about a conference */
@@ -4404,6 +4455,7 @@ export interface IChatResponse {
 export class UnreadAdminMessageResponse implements IUnreadAdminMessageResponse {
     participant_username?: string | undefined;
     number_of_unread_messages?: number;
+    participant_id?: string;
 
     constructor(data?: IUnreadAdminMessageResponse) {
         if (data) {
@@ -4418,6 +4470,7 @@ export class UnreadAdminMessageResponse implements IUnreadAdminMessageResponse {
         if (_data) {
             this.participant_username = _data["participant_username"];
             this.number_of_unread_messages = _data["number_of_unread_messages"];
+            this.participant_id = _data["participant_id"];
         }
     }
 
@@ -4432,6 +4485,7 @@ export class UnreadAdminMessageResponse implements IUnreadAdminMessageResponse {
         data = typeof data === 'object' ? data : {};
         data["participant_username"] = this.participant_username;
         data["number_of_unread_messages"] = this.number_of_unread_messages;
+        data["participant_id"] = this.participant_id;
         return data; 
     }
 }
@@ -4439,6 +4493,7 @@ export class UnreadAdminMessageResponse implements IUnreadAdminMessageResponse {
 export interface IUnreadAdminMessageResponse {
     participant_username?: string | undefined;
     number_of_unread_messages?: number;
+    participant_id?: string;
 }
 
 export class UnreadInstantMessageConferenceCountResponse implements IUnreadInstantMessageConferenceCountResponse {
@@ -4491,8 +4546,6 @@ export enum EventType {
     Disconnected = "Disconnected",
     Transfer = "Transfer",
     Help = "Help",
-    Start = "Start",
-    CountdownFinished = "CountdownFinished",
     Pause = "Pause",
     Close = "Close",
     Leave = "Leave",
@@ -4503,6 +4556,8 @@ export enum EventType {
     Suspend = "Suspend",
     VhoCall = "VhoCall",
     ParticipantNotSignedIn = "ParticipantNotSignedIn",
+    Start = "Start",
+    CountdownFinished = "CountdownFinished",
     EndpointJoined = "EndpointJoined",
     EndpointDisconnected = "EndpointDisconnected",
     EndpointTransfer = "EndpointTransfer",
@@ -4734,13 +4789,14 @@ export interface IParticipantHeartbeatResponse {
 }
 
 export class UpdateParticipantRequest implements IUpdateParticipantRequest {
-    fullname!: string | undefined;
-    first_name!: string | undefined;
-    last_name!: string | undefined;
-    display_name!: string | undefined;
+    fullname!: string;
+    first_name?: string | undefined;
+    last_name?: string | undefined;
+    display_name?: string | undefined;
     representee?: string | undefined;
     contact_email?: string | undefined;
     contact_telephone?: string | undefined;
+    username?: string | undefined;
 
     constructor(data?: IUpdateParticipantRequest) {
         if (data) {
@@ -4760,6 +4816,7 @@ export class UpdateParticipantRequest implements IUpdateParticipantRequest {
             this.representee = _data["representee"];
             this.contact_email = _data["contact_email"];
             this.contact_telephone = _data["contact_telephone"];
+            this.username = _data["username"];
         }
     }
 
@@ -4779,18 +4836,20 @@ export class UpdateParticipantRequest implements IUpdateParticipantRequest {
         data["representee"] = this.representee;
         data["contact_email"] = this.contact_email;
         data["contact_telephone"] = this.contact_telephone;
+        data["username"] = this.username;
         return data; 
     }
 }
 
 export interface IUpdateParticipantRequest {
-    fullname: string | undefined;
-    first_name: string | undefined;
-    last_name: string | undefined;
-    display_name: string | undefined;
+    fullname: string;
+    first_name?: string | undefined;
+    last_name?: string | undefined;
+    display_name?: string | undefined;
     representee?: string | undefined;
     contact_email?: string | undefined;
     contact_telephone?: string | undefined;
+    username?: string | undefined;
 }
 
 export class ParticipantContactDetailsResponseVho implements IParticipantContactDetailsResponseVho {
@@ -4903,6 +4962,54 @@ export interface IParticipantContactDetailsResponseVho {
     judge_in_another_hearing?: boolean;
     /** The participant represented by the representative */
     representee?: string | undefined;
+}
+
+export class LoggedParticipantResponse implements ILoggedParticipantResponse {
+    participant_id?: string;
+    admin_username?: string | undefined;
+    role?: Role;
+    display_name?: string | undefined;
+
+    constructor(data?: ILoggedParticipantResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.participant_id = _data["participant_id"];
+            this.admin_username = _data["admin_username"];
+            this.role = _data["role"];
+            this.display_name = _data["display_name"];
+        }
+    }
+
+    static fromJS(data: any): LoggedParticipantResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new LoggedParticipantResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["participant_id"] = this.participant_id;
+        data["admin_username"] = this.admin_username;
+        data["role"] = this.role;
+        data["display_name"] = this.display_name;
+        return data; 
+    }
+}
+
+export interface ILoggedParticipantResponse {
+    participant_id?: string;
+    admin_username?: string | undefined;
+    role?: Role;
+    display_name?: string | undefined;
 }
 
 export class UserProfileResponse implements IUserProfileResponse {
@@ -5203,10 +5310,10 @@ export interface IJudgeNameListResponse {
 }
 
 export class ConferenceEventRequest implements IConferenceEventRequest {
-    event_id!: string | undefined;
+    event_id?: string | undefined;
     event_type?: EventType;
     time_stamp_utc?: Date;
-    conference_id!: string | undefined;
+    conference_id?: string | undefined;
     participant_id?: string | undefined;
     transfer_from?: string | undefined;
     transfer_to?: string | undefined;
@@ -5259,10 +5366,10 @@ export class ConferenceEventRequest implements IConferenceEventRequest {
 }
 
 export interface IConferenceEventRequest {
-    event_id: string | undefined;
+    event_id?: string | undefined;
     event_type?: EventType;
     time_stamp_utc?: Date;
-    conference_id: string | undefined;
+    conference_id?: string | undefined;
     participant_id?: string | undefined;
     transfer_from?: string | undefined;
     transfer_to?: string | undefined;

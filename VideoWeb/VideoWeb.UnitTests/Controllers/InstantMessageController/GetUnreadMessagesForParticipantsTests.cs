@@ -22,13 +22,19 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
         [Test]
         public async Task Should_return_exception()
         {
-            var conferenceId = Guid.NewGuid();
-            var participantUsername = "individual participant";
+            var conference = InitConference();
+
+            var conferenceId = conference.Id;
+            var participantUsername = conference.Participants[0].Id;
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
                 (int)HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
-            mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername))
+            mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername.ToString()))
                 .ThrowsAsync(apiException);
+            mocker.Mock<IConferenceCache>()
+             .Setup(x => x.GetOrAddConferenceAsync(conferenceId, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+             .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+             .ReturnsAsync(conference);
 
             var result = await sut.GetUnreadMessagesForParticipantAsync(conferenceId, participantUsername);
             var typedResult = (ObjectResult)result;
@@ -38,12 +44,17 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
         [Test]
         public async Task Should_return_okay_code_and_zero_unread_messages_when_there_is_no_im_history()
         {
-            var conferenceId = Guid.NewGuid();
-            var participantUsername = "individual participant";
-            mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername))
-                .ReturnsAsync(new List<InstantMessageResponse>());
+            var conference = InitConference();
 
-            var result = await sut.GetUnreadMessagesForParticipantAsync(conferenceId, participantUsername);
+            var conferenceId = conference.Id;
+            var participantUsername = conference.Participants[0].Id;
+            mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, participantUsername.ToString()))
+                .ReturnsAsync(new List<InstantMessageResponse>());
+            mocker.Mock<IConferenceCache>()
+             .Setup(x => x.GetOrAddConferenceAsync(conferenceId, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+             .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+             .ReturnsAsync(conference);
+            var result = await sut.GetUnreadMessagesForParticipantAsync(conferenceId, Guid.Parse(participantUsername.ToString()));
 
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
@@ -66,7 +77,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
                 .ReturnsAsync(messages);
 
             // check judge messages
-            var result = await sut.GetUnreadMessagesForParticipantAsync(conference.Id, judgeParticipant.Username);
+            var result = await sut.GetUnreadMessagesForParticipantAsync(conference.Id, judgeParticipant.Id);
 
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();
@@ -90,7 +101,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
                 .ReturnsAsync(messages);
 
             // check representative messages
-            var result = await sut.GetUnreadMessagesForParticipantAsync(conference.Id, representativeParticipant.Username);
+            var result = await sut.GetUnreadMessagesForParticipantAsync(conference.Id, representativeParticipant.Id);
 
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();

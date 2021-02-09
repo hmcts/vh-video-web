@@ -29,6 +29,7 @@ using VideoWeb.EventHub.Mappers;
 using VideoWeb.Helpers;
 using VideoWeb.Mappings;
 using VideoWeb.Mappings.Decorators;
+using VideoWeb.Middleware;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
@@ -82,6 +83,10 @@ namespace VideoWeb.Extensions
 
         public static IServiceCollection AddCustomTypes(this IServiceCollection services)
         {
+            services.AddScoped<CheckParticipantCanAccessConferenceAttribute>();
+
+            services.AddControllers().AddControllersAsServices();
+
             services.AddMemoryCache();
 
             services.AddSingleton<ITelemetryInitializer, RequestTelemetry>();
@@ -106,7 +111,6 @@ namespace VideoWeb.Extensions
 
             var container = services.BuildServiceProvider();
             var servicesConfiguration = container.GetService<IOptions<HearingServicesConfiguration>>().Value;
-
 
             services.AddHttpClient<IBookingsApiClient, BookingsApiClient>()
                 .AddHttpMessageHandler<BookingsApiTokenHandler>()
@@ -250,7 +254,7 @@ namespace VideoWeb.Extensions
         private static IVideoApiClient BuildVideoApiClient(HttpClient httpClient,
             HearingServicesConfiguration serviceSettings)
         {
-            return new VideoApiClient(httpClient) { BaseUrl = serviceSettings.VideoApiUrl, ReadResponseAsString = true};
+            return new VideoApiClient(httpClient) { BaseUrl = serviceSettings.VideoApiUrl, ReadResponseAsString = true };
         }
 
         private static IUserApiClient BuildUserApiClient(HttpClient httpClient,

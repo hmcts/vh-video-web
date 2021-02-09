@@ -26,7 +26,6 @@ namespace VideoWeb.Mappings
                 Name = participant.Name,
                 Status = status,
                 Role = role,
-                Username = participant.Username,
                 DisplayName = participant.Display_name,
                 CaseTypeGroup = participant.Case_type_group,
                 Representee = participant.Representee,

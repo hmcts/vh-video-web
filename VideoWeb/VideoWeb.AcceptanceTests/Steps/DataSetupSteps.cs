@@ -112,6 +112,15 @@ namespace VideoWeb.AcceptanceTests.Steps
             CreateConference();
         }
 
+        [Given(@"I have a hearing with a Panel Member")]
+        public void GivenIHaveAHearingWithAPanelMember()
+        {
+            var userTypes = CreateUserTypes(2, 0, 1);
+            AllocateUsers(userTypes);
+            GivenIHaveAHearing();
+            CreateConference();
+        }
+
         [Given(@"I have a hearing with an Observer and Panel Member in (.*) minutes time")]
         public void GivenIHaveAHearingWithAnObserverAndPanelMemberIn(int minutes)
         {
@@ -154,7 +163,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _c.Test.DelayedStartTime = minutes;
         }
 
-        public void GivenIHaveAHearing(int minutes = 0, string venue = DEFAULT_VENUE, bool audioRecordingRequired = false)
+        private void GivenIHaveAHearing(int minutes = 0, string venue = DEFAULT_VENUE, bool audioRecordingRequired = false)
         {
             var request = new HearingRequestBuilder()
                 .WithUsers(_c.Test.Users)
@@ -196,7 +205,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             var request = new UpdateBookingStatusRequest()
             {
                 Updated_by = vho.Username,
-                AdditionalProperties = null,
                 Cancel_reason = null,
                 Status = UpdateBookingStatus.Created
             };
@@ -270,7 +278,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _c.Test.Users.Should().NotBeNullOrEmpty();
         }
 
-        public double GetRandomNumberForParallelExecution(int maximum)
+        private double GetRandomNumberForParallelExecution(int maximum)
         {
             return _random.NextDouble() * maximum;
         }

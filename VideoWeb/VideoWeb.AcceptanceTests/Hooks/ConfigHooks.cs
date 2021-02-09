@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AcceptanceTests.Common.Configuration;
 using AcceptanceTests.Common.Data.TestData;
+using AcceptanceTests.Common.Exceptions;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -23,20 +24,9 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         public ConfigHooks(TestContext context)
         {
-            _configRoot = ConfigurationManager.BuildConfig("CA353381-2F0D-47D7-A97B-79A30AFF8B86", GetTargetEnvironment(), RunOnSauceLabsFromLocal());
+            _configRoot = ConfigurationManager.BuildConfig("CA353381-2F0D-47D7-A97B-79A30AFF8B86", "18c466fd-9265-425f-964e-5989181743a7");
             context.VideoWebConfig = new VideoWebConfig();
             context.Tokens = new VideoWebTokens();
-        }
-
-        private static string GetTargetEnvironment()
-        {
-            return NUnit.Framework.TestContext.Parameters["TargetEnvironment"] ?? "";
-        }
-
-        private static bool RunOnSauceLabsFromLocal()
-        {
-            return NUnit.Framework.TestContext.Parameters["RunOnSauceLabs"] != null &&
-                   NUnit.Framework.TestContext.Parameters["RunOnSauceLabs"].Equals("true");
         }
 
         [BeforeScenario(Order = (int)HooksSequence.ConfigHooks)]
@@ -108,7 +98,12 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         private void RegisterHearingServices(TestContext context)
         {
-            context.VideoWebConfig.VhServices = Options.Create(_configRoot.GetSection("VhServices").Get<VideoWebVhServicesConfig>()).Value;
+            context.VideoWebConfig.VhServices = GetTargetTestEnvironment() == string.Empty ? Options.Create(_configRoot.GetSection("VhServices").Get<VideoWebVhServicesConfig>()).Value
+                : Options.Create(_configRoot.GetSection($"Testing.{GetTargetTestEnvironment()}.VhServices").Get<VideoWebVhServicesConfig>()).Value;
+            if (context.VideoWebConfig.VhServices == null && GetTargetTestEnvironment() != string.Empty)
+            {
+                throw new TestSecretsFileMissingException(GetTargetTestEnvironment());
+            }
             ConfigurationManager.VerifyConfigValuesSet(context.VideoWebConfig.VhServices);
         }
 
@@ -120,7 +115,8 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         private void RegisterSauceLabsSettings(TestContext context)
         {
-            context.VideoWebConfig.SauceLabsConfiguration = Options.Create(_configRoot.GetSection("Saucelabs").Get<SauceLabsSettingsConfig>()).Value;
+            context.VideoWebConfig.SauceLabsConfiguration = RunOnSauceLabsFromLocal() ?  Options.Create(_configRoot.GetSection("LocalSaucelabs").Get<SauceLabsSettingsConfig>()).Value
+                    : Options.Create(_configRoot.GetSection("Saucelabs").Get<SauceLabsSettingsConfig>()).Value;
             if (!context.VideoWebConfig.SauceLabsConfiguration.RunningOnSauceLabs()) return;
             context.VideoWebConfig.SauceLabsConfiguration.SetRemoteServerUrlForDesktop(context.Test.CommonData.CommonConfig.SauceLabsServerUrl);
             context.VideoWebConfig.SauceLabsConfiguration.AccessKey.Should().NotBeNullOrWhiteSpace();
@@ -142,6 +138,17 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
             context.Tokens.CallbackBearerToken = GenerateTemporaryTokens.SetCustomJwTokenForCallback(context.VideoWebConfig.VideoWebKinlyConfiguration);
             context.Tokens.CallbackBearerToken.Should().NotBeNullOrEmpty();
+        }
+
+        private static string GetTargetTestEnvironment()
+        {
+            return NUnit.Framework.TestContext.Parameters["TargetTestEnvironment"] ?? string.Empty;
+        }
+
+        private static bool RunOnSauceLabsFromLocal()
+        {
+            return NUnit.Framework.TestContext.Parameters["RunOnSauceLabs"] != null &&
+                   NUnit.Framework.TestContext.Parameters["RunOnSauceLabs"].Equals("true");
         }
     }
 }

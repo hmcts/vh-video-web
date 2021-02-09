@@ -30,7 +30,7 @@ export class UnreadMessagesParticipantComponent extends UnreadMessagesComponentB
         this.setupSubscribers();
         this.logger.debug('[UnreadMessagesParticipant] - Getting unread message count for participant', payload);
         this.videoWebService
-            .getUnreadMessagesForParticipant(this.hearing.id, this.participant.username)
+            .getUnreadMessagesForParticipant(this.hearing.id, this.participant.id)
             .then(response => (this.unreadMessages = response))
             .catch(err =>
                 this.logger.error(
@@ -54,13 +54,13 @@ export class UnreadMessagesParticipantComponent extends UnreadMessagesComponentB
     getHearing(): Hearing {
         return this.hearing;
     }
-    resetUnreadCounter(conferenceId: string, participantUsername: string): void {
-        if (this.hearing.id === conferenceId && this.participant.username.toLowerCase() === participantUsername.toLowerCase()) {
+    resetUnreadCounter(conferenceId: string, participantId: string): void {
+        if (this.hearing.id === conferenceId && this.participant.id === participantId) {
             this.unreadMessages.number_of_unread_messages = 0;
         }
     }
-    incrementUnreadCounter(conferenceId: string, participantUsername: string): void {
-        if (this.hearing.id === conferenceId && this.participant.username.toLowerCase() === participantUsername.toLowerCase()) {
+    incrementUnreadCounter(conferenceId: string, participantId: string): void {
+        if (this.hearing.id === conferenceId && this.participant.id === participantId) {
             this.unreadMessages.number_of_unread_messages++;
         }
     }

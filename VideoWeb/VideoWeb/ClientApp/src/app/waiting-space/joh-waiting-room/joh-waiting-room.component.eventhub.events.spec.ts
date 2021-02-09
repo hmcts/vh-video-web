@@ -55,7 +55,7 @@ describe('JohWaitingRoomComponent eventhub events', () => {
             notificationSoundsService,
             notificationToastrService
         );
-        adalService.userInfo.userName = globalParticipant.username;
+        adalService.userInfo.userName = 'chris.green@hearings.net';
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));

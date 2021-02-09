@@ -22,7 +22,6 @@ namespace VideoWeb.Mappings
             var mappedParticipants = participants.Select(participant => new ParticipantForUserResponse
                 {
                     Id = participant.Id,
-                    Username = participant.Username,
                     DisplayName = participant.Display_name,
                     Status = Enum.Parse<ParticipantStatus>(participant.Status.ToString()),
                     Role = Enum.Parse<Role>(participant.User_role.ToString()),

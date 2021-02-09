@@ -15,7 +15,8 @@
                     </div>
                 </td>
                 <td class="govuk-table__cell">{{participant.display_name}}</td>
-                <td [class]="getParticipantStatusClasses(participant)">{{getParticipantStatus(participant)}}</td>
+                <!-- <td [class]="getParticipantStatusClasses(participant)">{{getParticipantStatus(participant)}}</td> -->
+                <td [class]="getParticipantStatusClasses(participant)">Status</td>
             </tr>
         </tbody>
     </table>

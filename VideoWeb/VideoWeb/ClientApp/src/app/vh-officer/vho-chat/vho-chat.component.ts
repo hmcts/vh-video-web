@@ -23,6 +23,7 @@ import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
 import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
+import { LoggedParticipantResponse, Role } from '../../services/clients/api-client';
 import { ConferenceUnreadMessageCount } from './vho-conference-unread_message-count.model';
 
 @Component({
@@ -66,7 +67,11 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
     }
 
     get participantUsername() {
-        return this._participant.username.toLowerCase();
+        return this._participant.id;
+    }
+
+    get participantId() {
+        return this._participant.id;
     }
 
     ngAfterViewChecked(): void {
@@ -78,14 +83,23 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         this.initForm();
         this.setupChatSubscription().then(sub => (this.chatHubSubscription = sub));
         this.updateChatWindow();
+        this.setLoggedAdminUser();
     }
 
     updateChatWindow() {
         this.loading = true;
         this.messages = [];
-        this.retrieveChatForConference(this.participant.username).then(messages => {
+        this.retrieveChatForConference(this.participant.id).then(messages => {
             this.messages = messages;
             this.loading = false;
+        });
+    }
+
+    setLoggedAdminUser() {
+        this.loggedInUser = new LoggedParticipantResponse({
+            admin_username: this.adalService.userInfo.userName.toUpperCase(),
+            display_name: this.DEFAULT_ADMIN_USERNAME,
+            role: Role.VideoHearingsOfficer
         });
     }
 
@@ -97,7 +111,7 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         const im = new InstantMessage({
             conferenceId: this.hearing.id,
             id: Guid.create().toString(),
-            to: this.participant.username,
+            to: this.participant.id,
             from: this.adalService.userInfo.userName,
             from_display_name: 'You',
             message: messageBody,

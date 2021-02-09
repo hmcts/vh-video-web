@@ -20,7 +20,7 @@ namespace VideoWeb.UnitTests.Helpers
             participants[0].TiledDisplayName.Should().Contain("T0;");
             participants[1].TiledDisplayName.Should().Contain("T1;");
             participants[2].TiledDisplayName.Should().Contain("T3;");
-            participants[3].TiledDisplayName.Should().Contain("T5;");
+            participants[3].TiledDisplayName.Should().Contain("T2;");
 
         }
 
@@ -30,13 +30,15 @@ namespace VideoWeb.UnitTests.Helpers
             var participants = GetParticipantResponses(false);
             ParticipantTilePositionHelper.AssignTilePositions(participants);
 
+
             participants[0].TiledDisplayName.Should().Contain("T0;");
             participants[1].TiledDisplayName.Should().Contain("T1;");
             participants[2].TiledDisplayName.Should().Contain("T2;");
             participants[3].TiledDisplayName.Should().Contain("T3;");
             participants[4].TiledDisplayName.Should().Contain("T4;");
             participants[5].TiledDisplayName.Should().Contain("T5;");
-            participants[6].TiledDisplayName.Should().Contain("W6;");
+            participants[6].TiledDisplayName.Should().Contain("T6;");
+            participants[7].TiledDisplayName.Should().Contain("W7;");
 
         }
 
@@ -47,13 +49,14 @@ namespace VideoWeb.UnitTests.Helpers
                 new ParticipantResponse{Id= Guid.NewGuid(), Role=Role.Judge,DisplayName = "Judge", HearingRole = "judge"},
                 new ParticipantResponse{Id=Guid.NewGuid(), Role=Role.Individual, DisplayName = "Part1", CaseTypeGroup = "group1", HearingRole = "Applicant"},
                 new ParticipantResponse{Id=Guid.NewGuid(), Role=Role.Representative, DisplayName = "Part2", CaseTypeGroup = "group1", HearingRole = "Applicant"},
-                new ParticipantResponse{Id=Guid.NewGuid(), Role=Role.JudicialOfficeHolder, DisplayName = "Part3", CaseTypeGroup ="group1", HearingRole = "Applicant"},
+                new ParticipantResponse{Id=Guid.NewGuid(), Role=Role.JudicialOfficeHolder, DisplayName = "Part3", CaseTypeGroup ="group2", HearingRole = "Applicant"},
+                new ParticipantResponse { Id = Guid.NewGuid(), Role = Role.Individual, DisplayName = "Part4", CaseTypeGroup = "group1", HearingRole = "Applicant" }
 
             };
 
             if (!lessThanFour)
             {
-                var participant = new ParticipantResponse { Id = Guid.NewGuid(), Role = Role.Individual, DisplayName = "Part4", CaseTypeGroup = "group1", HearingRole = "Applicant" };
+                var participant = new ParticipantResponse { Id = Guid.NewGuid(), Role = Role.Representative, DisplayName = "Part7", CaseTypeGroup = "group1", HearingRole = "Applicant" };
                 var participant1 = new ParticipantResponse { Id = Guid.NewGuid(), Role = Role.JudicialOfficeHolder, DisplayName = "Part5", CaseTypeGroup = "group1", HearingRole = "Applicant" };
                 var participant2 = new ParticipantResponse { Id = Guid.NewGuid(), Role = Role.Individual, DisplayName = "Part6", CaseTypeGroup = "group1", HearingRole = "Witness" };
                 participants.Add(participant);

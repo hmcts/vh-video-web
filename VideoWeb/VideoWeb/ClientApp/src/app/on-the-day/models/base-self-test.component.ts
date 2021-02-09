@@ -54,9 +54,10 @@ export abstract class BaseSelfTestComponentDirective implements OnInit {
         try {
             this.conference = await this.videoWebService.getConferenceById(this.conferenceId);
             this.logger.debug(`[SelfTest] - retrieved conference ${this.conferenceId} successfully`);
-            this.participant = this.conference.participants.find(
-                x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLowerCase()
-            );
+
+            const loggedInUser = await this.videoWebService.getCurrentParticipant(this.conferenceId);
+            this.participant = this.conference.participants.find(x => x.id === loggedInUser.participant_id);
+
             this.loadingData = false;
         } catch (error) {
             this.loadingData = false;

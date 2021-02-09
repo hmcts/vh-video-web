@@ -4,9 +4,9 @@
       "Progress",
       "ClearText"
     ],
-    "log-level": "info",
+    "log-level": "error",
     "timeout-ms": 10000,
-    "log-file": true,
+    "log-file": false,
     "project-file": "VideoWeb.csproj",
     "max-concurrent-test-runners": 4,
     "threshold-high": 95,
@@ -31,9 +31,10 @@
       "!**/ConfigureAuthSchemeExtensions.cs",
       "!Swagger/AuthResponsesOperationFilter.cs",
       "!Pages/Error.cshtml.cs",
-      "!Extensions/ExceptionMiddleware.cs",
+      "!Middleware/*.cs",
       "!Extensions/EnumExtensions.cs",
       "!Helpers/ConferenceHelper.cs",
+      "!Mappings/MapperFactory.cs",
       "!**/AssemblyInfo.cs"
     ]
   }

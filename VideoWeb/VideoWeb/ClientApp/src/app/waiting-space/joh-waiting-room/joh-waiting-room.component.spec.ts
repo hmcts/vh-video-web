@@ -1,11 +1,11 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, LoggedParticipantResponse, ParticipantResponse } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import {
-    activatedRoute,
     adalService,
     clockService,
     consultationService,
@@ -30,10 +30,18 @@ import { JohWaitingRoomComponent } from './joh-waiting-room.component';
 describe('JohWaitingRoomComponent', () => {
     let component: JohWaitingRoomComponent;
     const conferenceTestData = new ConferenceTestData();
-
+    let activatedRoute: ActivatedRoute;
     beforeAll(() => {
         initAllWRDependencies();
     });
+    const logged = new LoggedParticipantResponse({
+        participant_id: globalParticipant.id,
+        display_name: globalParticipant.display_name,
+        role: globalParticipant.role
+    });
+    activatedRoute = <any>{
+        snapshot: { data: { loggedUser: logged } }
+    };
 
     beforeEach(async () => {
         component = new JohWaitingRoomComponent(
@@ -140,7 +148,19 @@ describe('JohWaitingRoomComponent', () => {
         });
     });
 
-    it('should return "hearing-on-time" class despite whatever status', () => {
-        expect(component.getCurrentTimeClass()).toBe('hearing-on-time');
+    const timeClassTestCases = [
+        { conference: conferenceTestData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: 'hearing-on-time' },
+        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.InSession, expected: 'hearing-on-time' },
+        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Paused, expected: 'hearing-on-time' },
+        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Suspended, expected: 'hearing-delayed' },
+        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Closed, expected: 'hearing-on-time' }
+    ];
+
+    timeClassTestCases.forEach(test => {
+        it('should return "hearing-delayed" class if suspended and "hearing-on-time" class if not suspended', () => {
+            component.hearing = new Hearing(test.conference);
+            component.hearing.getConference().status = test.status;
+            expect(component.getCurrentTimeClass()).toBe(test.expected);
+        });
     });
 });

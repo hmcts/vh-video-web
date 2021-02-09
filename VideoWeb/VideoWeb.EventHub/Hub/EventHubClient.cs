@@ -127,6 +127,14 @@ namespace VideoWeb.EventHub.Hub
             return await _userProfileService.GetObfuscatedUsernameAsync(username);
         }
 
+        /// <summary>
+        /// Send message
+        /// </summary>
+        /// <param name="conferenceId">The conference Id</param>
+        /// <param name="message">The body message</param>
+        /// <param name="to">The participant Id or admin username</param>
+        /// <param name="messageUuid">The message Id</param>
+        /// <returns></returns>
         public async Task SendMessage(Guid conferenceId, string message, string to, Guid messageUuid)
         {
             var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name);
@@ -134,11 +142,25 @@ namespace VideoWeb.EventHub.Hub
             // this determines if the message is from admin
             var isSenderAdmin = IsSenderAdmin();
             _logger.LogDebug($"{userName} is sender admin: {isSenderAdmin}");
-            var isRecipientAdmin = await IsRecipientAdmin(to);
+
+            var participantTo = to;
+
+            var fromId = string.Empty;
+            if (isSenderAdmin)
+            {
+                participantTo = await GetParticipantUsernameByIdAsync(conferenceId, participantTo);
+            }
+            else
+            {
+                fromId = await GetParticipantIdByUsernameAsync(conferenceId, Context.User.Identity.Name);
+            }
+
+
+            var isRecipientAdmin = await IsRecipientAdmin(participantTo);
             _logger.LogDebug($"{userName} is recipient admin: {isSenderAdmin}");
             // only admins and participants in the conference can send or receive a message within a conference channel
             var from = Context.User.Identity.Name.ToLowerInvariant();
-            var participantUsername = isSenderAdmin ? to : from;
+            var participantUsername = isSenderAdmin ? participantTo : from;
             var isAllowed =
                 await IsAllowedToSendMessageAsync(conferenceId, isSenderAdmin, isRecipientAdmin, participantUsername);
             if (!isAllowed)
@@ -148,7 +170,7 @@ namespace VideoWeb.EventHub.Hub
 
             var dto = new SendMessageDto
             {
-                Conference = new Conference {Id = conferenceId},
+                Conference = new Conference { Id = conferenceId },
                 From = from,
                 To = to,
                 Message = message,
@@ -158,7 +180,7 @@ namespace VideoWeb.EventHub.Hub
             };
             _logger.LogDebug($"Message validation passed for message {dto.MessageUuid}");
             // send to admin channel
-            await SendToAdmin(dto);
+            await SendToAdmin(dto, fromId);
 
             // determine participant username
             dto.Conference = await GetConference(conferenceId);
@@ -167,14 +189,14 @@ namespace VideoWeb.EventHub.Hub
             await _videoApiClient.AddInstantMessageToConferenceAsync(conferenceId, new AddInstantMessageRequest
             {
                 From = from,
-                To = to,
+                To = participantTo,
                 Message_text = message
             });
 
             if (isSenderAdmin)
             {
                 _logger.LogDebug($"Admin has responded, notifying admin channel");
-                await Clients.Group(VhOfficersGroupName).AdminAnsweredChat(conferenceId, to.ToLower());
+                await Clients.Group(VhOfficersGroupName).AdminAnsweredChat(conferenceId, participantTo.ToLower());
             }
         }
 
@@ -196,16 +218,20 @@ namespace VideoWeb.EventHub.Hub
 
             var username = await _userProfileService.GetObfuscatedUsernameAsync(participant.Username);
             _logger.LogDebug($"Sending message {dto.MessageUuid} to group {username}");
+
+            var from = participant.Id.ToString() == dto.To ? dto.From : participant.Id.ToString();
+
             await Clients.Group(participant.Username.ToLowerInvariant())
-                .ReceiveMessage(dto.Conference.Id, dto.From, dto.To, dto.Message, dto.Timestamp, dto.MessageUuid);
+                .ReceiveMessage(dto.Conference.Id, from, dto.To, dto.Message, dto.Timestamp, dto.MessageUuid);
         }
 
-        private async Task SendToAdmin(SendMessageDto dto)
+        private async Task SendToAdmin(SendMessageDto dto, string fromId)
         {
             var groupName = dto.Conference.Id.ToString();
             _logger.LogDebug($"Sending message {dto.MessageUuid} to group {groupName}");
+            var from = string.IsNullOrEmpty(fromId) ? dto.From : fromId;
             await Clients.Group(groupName)
-                .ReceiveMessage(dto.Conference.Id, dto.From, dto.To, dto.Message, dto.Timestamp, dto.MessageUuid);
+                .ReceiveMessage(dto.Conference.Id, from, dto.To, dto.Message, dto.Timestamp, dto.MessageUuid);
         }
 
         private bool IsConversationBetweenAdminAndParticipant(bool isSenderAdmin, bool isRecipientAdmin)
@@ -378,6 +404,42 @@ namespace VideoWeb.EventHub.Hub
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occured when updating participant device status");
+            }
+        }
+
+        private async Task<string> GetParticipantUsernameByIdAsync(Guid conferenceId, string participantId)
+        {
+            var username = string.Empty;
+            try
+            {
+                var participantGuidId = Guid.Parse(participantId);
+                var conference = await GetConference(conferenceId);
+                var participant = conference.Participants.Single(x => x.Id == participantGuidId);
+
+                return participant.Username;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occured to find the participant in conference {conferenceId} by participant Id {participantId}");
+                return username;
+            }
+        }
+
+        private async Task<string> GetParticipantIdByUsernameAsync(Guid conferenceId, string participantUsername)
+        {
+            var particiantId = string.Empty;
+            try
+            {
+                var conference = await GetConference(conferenceId);
+                var participant = conference.Participants.Single(x =>
+                   x.Username.Equals(participantUsername, StringComparison.InvariantCultureIgnoreCase));
+
+                return participant.Id.ToString();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occured to find the participant in conference {conferenceId} by username");
+                return particiantId;
             }
         }
     }

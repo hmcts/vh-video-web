@@ -71,6 +71,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var result = await _sut.CallVideoEndpointAsync(request);
             var actionResult = result.As<NotFoundObjectResult>();
             actionResult.Should().NotBeNull();
+            actionResult.Value.Should().Be($"Defence advocate does not exist in conference {request.ConferenceId}");
         }
         
         [Test]
@@ -83,7 +84,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             };
             var result = await _sut.CallVideoEndpointAsync(request);
             var actionResult = result.As<NotFoundObjectResult>();
-            actionResult.Should().NotBeNull();            
+            actionResult.Should().NotBeNull();
+            actionResult.Value.Should().Be($"No endpoint id {request.EndpointId} exists");
         }
         
         [Test]

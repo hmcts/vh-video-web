@@ -33,8 +33,8 @@ namespace VideoWeb
             services.AddCustomTypes();
 
             services.RegisterAuthSchemes(Configuration);
-            services.AddMvc(opt => opt.Filters.Add(typeof(LoggingMiddleware))).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0).AddFluentValidation();
+            services.AddMvc(opt => opt.Filters.Add(typeof(LoggingMiddleware)));
+            services.AddMvc().AddFluentValidation();
             services.AddApplicationInsightsTelemetry(Configuration["ApplicationInsights:InstrumentationKey"]);
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
@@ -55,8 +55,6 @@ namespace VideoWeb
             var connectionStrings = Configuration.GetSection("ConnectionStrings").Get<ConnectionStrings>();
             services.AddSingleton(connectionStrings);
         }
-
-        
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

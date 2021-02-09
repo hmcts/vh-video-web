@@ -36,7 +36,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
 
             mocker.Mock<IMapperFactory>().Setup(x => x.Get<Conference, IList<InstantMessageResponse>, UnreadInstantMessageConferenceCountResponse>()).Returns(mocker.Create<UnreadInstantMessageConferenceCountResponseMapper>());
             mocker.Mock<IMapperFactory>().Setup(x => x.Get<Conference, IList<InstantMessageResponse>, UnreadAdminMessageResponse>()).Returns(mocker.Create<UnreadAdminMessageResponseMapper>());
-            mocker.Mock<IMapperFactory>().Setup(x => x.Get<InstantMessageResponse, string, bool, ChatResponse>()).Returns(mocker.Create<ChatResponseMapper>());
+            mocker.Mock<IMapperFactory>().Setup(x => x.Get<InstantMessageResponse, string, bool, Conference, ChatResponse>()).Returns(mocker.Create<ChatResponseMapper>());
 
             sut = mocker.Create<InstantMessagesController>();
             sut.ControllerContext = context;

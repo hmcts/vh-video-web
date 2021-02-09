@@ -5,6 +5,7 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
+    LoggedParticipantResponse,
     EndpointStatus,
     ParticipantResponse,
     ParticipantStatus,
@@ -30,6 +31,7 @@ export abstract class WRParticipantStatusListDirective {
 
     consultationRequestResponseMessage: ConsultationRequestResponseMessage;
     eventHubSubscriptions$ = new Subscription();
+    loggedInUser: LoggedParticipantResponse;
     private readonly loggerPrefix = '[WRParticipantStatusListDirective] -';
 
     protected constructor(
@@ -65,7 +67,7 @@ export abstract class WRParticipantStatusListDirective {
     }
 
     getConsultationRequester(): ParticipantResponse {
-        return this.conference.participants.find(x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase());
+        return this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
     }
 
     addSharedEventHubSubcribers() {
@@ -83,8 +85,8 @@ export abstract class WRParticipantStatusListDirective {
         );
     }
 
-    handleParticipantStatusChange(message: ParticipantStatusMessage): void {
-        const isCurrentUser = this.adalService.userInfo.userName.toLocaleLowerCase() === message.username.toLowerCase();
+    async handleParticipantStatusChange(message: ParticipantStatusMessage): Promise<void> {
+        const isCurrentUser = this.loggedInUser.participant_id === message.participantId;
         if (isCurrentUser && message.status === ParticipantStatus.InConsultation) {
             this.closeAllPCModals();
         }

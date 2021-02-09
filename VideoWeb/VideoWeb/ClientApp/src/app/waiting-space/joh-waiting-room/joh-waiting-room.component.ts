@@ -75,10 +75,12 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseComponent implements
         this.errorCount = 0;
         this.logger.debug(`${this.loggerPrefixJOH} Loading JOH waiting room`);
         this.connected = false;
+        this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.notificationSoundsService.initHearingAlertSound();
         this.getConference().then(() => {
             this.subscribeToClock();
             this.startEventHubSubscribers();
+            this.participant = this.setLoggedParticipant();
             this.getJwtokenAndConnectToPexip();
         });
     }
@@ -123,6 +125,9 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseComponent implements
     }
 
     getCurrentTimeClass() {
+        if (this.hearing.isSuspended()) {
+            return 'hearing-delayed';
+        }
         return 'hearing-on-time';
     }
 

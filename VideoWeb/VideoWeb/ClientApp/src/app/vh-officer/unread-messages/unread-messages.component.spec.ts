@@ -40,7 +40,7 @@ describe('UnreadMessagesComponent', () => {
             p =>
                 new UnreadAdminMessageResponse({
                     number_of_unread_messages: 5,
-                    participant_username: p.username
+                    participant_id: p.id
                 })
         );
         unreadConferenceResponse = new UnreadInstantMessageConferenceCountResponse({
@@ -77,18 +77,18 @@ describe('UnreadMessagesComponent', () => {
 
     it('should reset conference unread counter when vho sends a message', () => {
         const conferenceId = conference.id;
-        const participantUsername = conference.participants[0].username;
+        const participantId = conference.participants[0].id;
         const expectedCount = 5 * (conference.participants.length - 1);
-        component.resetUnreadCounter(conferenceId, participantUsername);
+        component.resetUnreadCounter(conferenceId, participantId);
         expect(component.unreadCount).toBe(expectedCount);
     });
 
     it('should reset unread message counter when admin has answered', () => {
         const conferenceId = conference.id;
-        const participantUsername = conference.participants[0].username;
+        const participantId = conference.participants[0].id;
         const expectedCount = 5 * (conference.participants.length - 1);
         component.setupSubscribers();
-        const payload = new ConferenceMessageAnswered(conferenceId, participantUsername);
+        const payload = new ConferenceMessageAnswered(conferenceId, participantId);
 
         mockEventService.adminAnsweredChatSubject.next(payload);
 
@@ -97,10 +97,10 @@ describe('UnreadMessagesComponent', () => {
 
     it('should not reset unread message counter when conference id does not exist', () => {
         const conferenceId = Guid.create().toString();
-        const participantUsername = conference.participants[0].username;
+        const participantId = conference.participants[0].id;
         const expectedCount = 5 * conference.participants.length;
         component.setupSubscribers();
-        const payload = new ConferenceMessageAnswered(conferenceId, participantUsername);
+        const payload = new ConferenceMessageAnswered(conferenceId, participantId);
 
         mockEventService.adminAnsweredChatSubject.next(payload);
 
@@ -117,18 +117,20 @@ describe('UnreadMessagesComponent', () => {
         expect(component.getIMStatus()).toBe('IM-empty.png');
     });
 
-    it('should increase unread count when non-admin sends a message', () => {
+    it('should increase unread count when non-admin sends a message', async () => {
+        component.hearing = new Hearing(conference);
         const conferenceId = conference.id;
-        const participantUsername = conference.participants[0].username;
-        const expectedCount = component.unreadCount + 1;
+        const participantId = conference.participants[0].id;
+        const expectedCount = component.unreadCount;
         component.setupSubscribers();
         mockEventService.messageSubject.next(
             new InstantMessage({
                 conferenceId: conferenceId,
-                from: participantUsername
+                from: participantId,
+                to: 'Admin'
             })
         );
-        expect(component.unreadCount).toBe(expectedCount);
+        expect(component.unreadCount).toBe(expectedCount + 1);
     });
 
     it('should not increase unread count when admin sends a message', () => {
@@ -147,9 +149,9 @@ describe('UnreadMessagesComponent', () => {
 
     it('should not increase unread count when message is for a different conference', () => {
         const conferenceId = Guid.create().toString();
-        const participantUsername = conference.participants[0].username;
+        const participantId = conference.participants[0].id;
         const expectedCount = component.unreadCount;
-        component.incrementUnreadCounter(conferenceId, participantUsername);
+        component.incrementUnreadCounter(conferenceId, participantId);
         expect(component.unreadCount).toBe(expectedCount);
     });
 

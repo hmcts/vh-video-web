@@ -26,6 +26,7 @@ import { JohWaitingRoomComponent } from './joh-waiting-room/joh-waiting-room.com
 import { PrivateConsultationRoomControlsComponent } from './private-consultation-room-controls/private-consultation-room-controls.component';
 import { PrivateConsultationParticipantsComponent } from './participant-waiting-room/private-consultation-participants/private-consultation-participants.component';
 import { InviteParticipantComponent } from './participant-waiting-room/invite-participant/invite-participant.component';
+import { LoggedUserResolveService } from './services/logged-user-resolve.service';
 
 @NgModule({
     imports: [SharedModule, WaitingSpaceRoutingModule],
@@ -53,6 +54,6 @@ import { InviteParticipantComponent } from './participant-waiting-room/invite-pa
         InviteParticipantComponent,
         PrivateConsultationParticipantsComponent
     ],
-    providers: [VideoCallService, NotificationSoundsService, NotificationToastrService]
+    providers: [VideoCallService, NotificationSoundsService, NotificationToastrService, LoggedUserResolveService]
 })
 export class WaitingSpaceModule {}
