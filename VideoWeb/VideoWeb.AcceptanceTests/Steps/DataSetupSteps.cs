@@ -205,7 +205,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             var request = new UpdateBookingStatusRequest()
             {
                 Updated_by = vho.Username,
-                AdditionalProperties = null,
                 Cancel_reason = null,
                 Status = UpdateBookingStatus.Created
             };
