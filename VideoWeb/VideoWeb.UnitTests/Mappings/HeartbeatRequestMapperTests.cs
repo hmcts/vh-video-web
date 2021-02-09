@@ -33,14 +33,14 @@ namespace VideoWeb.UnitTests.Mappings
             result.Should().NotBeNull().And.BeAssignableTo<AddHeartbeatRequest>();
             result.Browser_name.Should().Be(heartbeat.BrowserName);
             result.Browser_version.Should().Be(heartbeat.BrowserVersion);
-            result.Incoming_audio_percentage_lost.Should().Be(1.56d);
-            result.Incoming_video_percentage_lost.Should().Be(2.56d);
-            result.Outgoing_audio_percentage_lost.Should().Be(3.56d);
-            result.Outgoing_video_percentage_lost.Should().Be(4.56d);
-            result.Incoming_audio_percentage_lost_recent.Should().Be(5.56d);
-            result.Incoming_video_percentage_lost_recent.Should().Be(6.56d);
-            result.Outgoing_audio_percentage_lost_recent.Should().Be(7.56d);
-            result.Outgoing_video_percentage_lost_recent.Should().Be(8.56d);
+            result.Incoming_audio_percentage_lost.Should().Be(1.56m);
+            result.Incoming_video_percentage_lost.Should().Be(2.56m);
+            result.Outgoing_audio_percentage_lost.Should().Be(3.56m);
+            result.Outgoing_video_percentage_lost.Should().Be(4.56m);
+            result.Incoming_audio_percentage_lost_recent.Should().Be(5.56m);
+            result.Incoming_video_percentage_lost_recent.Should().Be(6.56m);
+            result.Outgoing_audio_percentage_lost_recent.Should().Be(7.56m);
+            result.Outgoing_video_percentage_lost_recent.Should().Be(8.56m);
         }
 
         [Test]
