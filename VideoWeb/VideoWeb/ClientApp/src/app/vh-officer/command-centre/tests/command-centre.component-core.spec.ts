@@ -73,7 +73,7 @@ describe('CommandCentreComponent - Core', () => {
         eventsService.getHeartbeat.and.returnValue(mockEventService.participantHeartbeat.asObservable());
 
         eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
-        const config = new ClientSettingsResponse({ join_by_phone_from_date: '' });
+        const config = new ClientSettingsResponse({ join_by_phone_from_date: '2021-02-09' });
         activatedRoute = <any>{
             snapshot: {
                 data: { configSettings: config }
@@ -281,5 +281,11 @@ describe('CommandCentreComponent - Core', () => {
 
         component.applyFilterInit();
         expect(component.hearings.length).toBe(numberHearing);
+    });
+    it('should convert string to date', () => {
+        const dateFrom = component.getDateFromString('2021-02-09');
+        expect(dateFrom.getFullYear).toBe(2021);
+        expect(dateFrom.getMonth).toBe(2);
+        expect(dateFrom.getDay).toBe(9);
     });
 });
