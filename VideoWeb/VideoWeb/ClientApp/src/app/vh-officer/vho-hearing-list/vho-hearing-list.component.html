@@ -7,7 +7,7 @@
     id="{{ conference.id }}-summary"
   >
     <div class="shareIcon"><app-copy-id [conference]="conference"></app-copy-id></div>
-    <div class="phoneIcon">
+    <div class="phoneIcon" *ngIf="conference.isJoinByPhone">
       <app-copy-telephone-id
         [telephoneId]="conference.telephoneConferenceId"
         [telephoneNumber]="conference.telephoneConferenceNumber"
