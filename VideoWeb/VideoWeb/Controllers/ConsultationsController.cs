@@ -318,7 +318,7 @@ namespace VideoWeb.Controllers
             Participant requestedFor)
         {
             await _hubContext.Clients.Group(requestedFor.Username.ToLowerInvariant())
-                .ConsultationMessage(conference.Id, requestedBy.Username, requestedFor.Username,
+                .ConsultationMessage(conference.Id, requestedBy.Id.ToString(), requestedFor.Id.ToString(),
                     null);
 
         }
