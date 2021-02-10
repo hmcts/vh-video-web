@@ -1,4 +1,4 @@
-﻿namespace VideoWeb.Common.Security.HashGen
+namespace VideoWeb.Common.Security.HashGen
 {
     public class KinlyConfiguration
     {
@@ -9,5 +9,6 @@
         public string SelfTestApiSecret { get; set; }
         public int ExpiresInMinutes { get; set; }
         public int HashExpiresInMinutes { get; set; }
+        public string JoinByPhoneFromDate { get; set; }
     }
 }

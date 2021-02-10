@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ConferenceForVhOfficerResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -51,6 +51,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     loadingData: boolean;
 
     displayFilters = false;
+    private readonly loggerPrefix = '[CommandCentre] -';
 
     constructor(
         private queryService: VhoQueryService,
@@ -59,7 +60,8 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         private logger: Logger,
         private router: Router,
         private screenHelper: ScreenHelper,
-        private eventbus: EventBusService
+        private eventbus: EventBusService,
+        private route: ActivatedRoute
     ) {
         this.loadingData = false;
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
@@ -87,25 +89,25 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     setupEventHubSubscribers() {
-        this.logger.debug('[CommandCentre] - Subscribing to conference status changes...');
+        this.logger.debug(`${this.loggerPrefix} Subscribing to conference status changes...`);
         this.eventHubSubscriptions.add(
             this.eventService.getHearingStatusMessage().subscribe(message => {
                 this.handleConferenceStatusChange(message);
             })
         );
 
-        this.logger.debug('[CommandCentre] - Subscribing to participant status changes...');
+        this.logger.debug(`${this.loggerPrefix} Subscribing to participant status changes...`);
         this.eventHubSubscriptions.add(
             this.eventService.getParticipantStatusMessage().subscribe(message => {
                 this.handleParticipantStatusChange(message);
             })
         );
 
-        this.logger.debug('Subscribing to EventHub disconnects');
+        this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub disconnects`);
         this.eventHubSubscriptions.add(
             this.eventService.getServiceDisconnected().subscribe(async reconnectionAttempt => {
                 if (reconnectionAttempt <= 6) {
-                    this.logger.info(`[CommandCentre] - EventHub disconnection for vh officer`);
+                    this.logger.info(`${this.loggerPrefix} EventHub disconnection for vh officer`);
                     await this.refreshConferenceDataDuringDisconnect();
                 } else {
                     this.errorService.goToServiceError('Your connection was lost');
@@ -113,17 +115,17 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             })
         );
 
-        this.logger.debug('[CommandCentre] - Subscribing to EventHub reconnects');
+        this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub reconnects`);
         this.eventHubSubscriptions.add(
             this.eventService.getServiceReconnected().subscribe(async () => {
-                this.logger.info(`[CommandCentre] - EventHub reconnected for vh officer`);
+                this.logger.info(`${this.loggerPrefix} EventHub reconnected for vh officer`);
                 await this.refreshConferenceDataDuringDisconnect();
             })
         );
 
         this.eventHubSubscriptions.add(
             this.eventService.getHeartbeat().subscribe(heartbeat => {
-                this.logger.info(`[CommandCentre] - Participant Network Heartbeat Captured`);
+                this.logger.info(`${this.loggerPrefix} Participant Network Heartbeat Captured`);
                 this.persistHeartbeat(heartbeat);
                 this.handleHeartbeat(heartbeat);
             })
@@ -131,7 +133,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     onConferenceSelected(conference: ConferenceForVhOfficerResponse) {
-        this.logger.info(`[CommandCentre] - Conference ${conference.id} selected`, { conference: conference.id });
+        this.logger.info(`${this.loggerPrefix} Conference ${conference.id} selected`, { conference: conference.id });
         if (!this.isCurrentConference(conference.id)) {
             this.clearSelectedConference();
             this.retrieveConferenceDetails(conference.id);
@@ -180,7 +182,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     async refreshConferenceDataDuringDisconnect() {
-        this.logger.warn('[CommandCentre] - EventHub refresh pending...');
+        this.logger.warn(`${this.loggerPrefix} EventHub refresh pending...`);
         this.retrieveHearingsForVhOfficer(true);
         if (this.selectedHearing) {
             await this.retrieveConferenceDetails(this.selectedHearing.id);
@@ -209,6 +211,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             async (data: ConferenceForVhOfficerResponse[]) => {
                 this.hearings = data.map(c => {
                     const h = new HearingSummary(c);
+                    h.isJoinByPhone = this.isJoinByPhone(h);
                     h.getParticipants().forEach(p => {
                         p.participantHertBeatHealth = this.participantsHeartBeat[p.id];
                     });
@@ -226,11 +229,34 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
                 this.loadingData = false;
             },
             error => {
-                this.logger.error('[CommandCentre] - There was an error setting up VH Officer dashboard', error);
+                this.logger.error(`${this.loggerPrefix} There was an error setting up VH Officer dashboard`, error);
                 this.loadingData = false;
                 this.errorService.handleApiError(error);
             }
         );
+    }
+
+    isJoinByPhone(hearing: HearingSummary): boolean {
+        const config = this.route.snapshot.data['configSettings'];
+
+        const datePhone = config.join_by_phone_from_date;
+        this.logger.debug(`${this.loggerPrefix} Join by date from settings is: ${datePhone}`);
+
+        if (!datePhone || datePhone.length === 0) {
+            return true;
+        }
+
+        const dateFrom = this.getDateFromString(datePhone);
+        if (hearing.createdDateTime) {
+            return Date.parse(hearing.createdDateTime.toString()) >= Date.parse(dateFrom.toString());
+        } else {
+            return false;
+        }
+    }
+
+    getDateFromString(datePhone: string): Date {
+        const dateParts = datePhone.split('-');
+        return new Date(+dateParts[0], +dateParts[1] - 1, +dateParts[2]);
     }
 
     applyFilterInit() {
@@ -255,7 +281,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
             const conference = await this.queryService.getConferenceByIdVHO(conferenceId);
             this.selectedHearing = new Hearing(conference);
         } catch (error) {
-            this.logger.error(`[CommandCentre] - There was an error when selecting conference ${conferenceId}`, error);
+            this.logger.error(`${this.loggerPrefix} There was an error when selecting conference ${conferenceId}`, error);
             this.errorService.handleApiError(error);
         }
     }
@@ -297,7 +323,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         } else {
             // if the venue could not be found (the venue name is not match the judge first name) will not hide the hearing
             this.logger.warn(
-                `[CommandCentre] - Venue for judge first name: ${participant.firstName} could not be found in court rooms accounts`,
+                `${this.loggerPrefix} Venue for judge first name: ${participant.firstName} could not be found in court rooms accounts`,
                 { venue: participant.firstName }
             );
             return false;
