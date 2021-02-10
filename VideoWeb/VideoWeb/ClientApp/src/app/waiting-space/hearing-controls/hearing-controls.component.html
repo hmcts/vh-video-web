@@ -49,8 +49,8 @@
           alt="Remote muted"
         />
 
-        <img
-          *ngIf="!isJudge && !audioOnly"
+        <!-- <img
+          *ngIf="isJudge"
           id="toggle-video-mute-img"
           appTooltip
           [text]="videoMuted ? 'Show camera' : 'Hide camera'"
@@ -59,7 +59,7 @@
           [src]="videoMuted ? '/assets/images/cam-off.png' : '/assets/images/cam-on.png'"
           [alt]="videoMuted ? 'Show camera' : 'Hide camera'"
           (click)="toggleVideoMute()"
-        />
+        /> -->
 
         <img
           *ngIf="!isPrivateConsultation && !isJudge"

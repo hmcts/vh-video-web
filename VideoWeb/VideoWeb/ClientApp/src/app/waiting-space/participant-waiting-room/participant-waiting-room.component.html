@@ -183,7 +183,7 @@
 <app-select-media-devices
   *ngIf="displayDeviceChangeModal"
   [waitingRoomMode]="true"
-  [showAudioOnlySetting]="true"
+  [showAudioOnlySetting]="false"
   [cameraOn]="!audioOnly"
   (cancelMediaDeviceChange)="onMediaDeviceChangeCancelled()"
   (acceptMediaDeviceChange)="onMediaDeviceChangeAccepted($event)"
