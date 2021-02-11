@@ -57,7 +57,9 @@ describe('VideoCallService', () => {
             'setParticipantMute',
             'setMuteAllGuests',
             'clearAllBuzz',
-            'setParticipantSpotlight'
+            'setParticipantSpotlight',
+            'disconnectCall',
+            'addCall'
         ]);
         service = new VideoCallService(logger, userMediaService, apiClient);
         await service.setupClient();
@@ -228,5 +230,23 @@ describe('VideoCallService', () => {
         });
         service.updateVideoCallPreferences(prefs);
         expect(service.retrieveVideoCallPreferences().audioOnly).toEqual(prefs.audioOnly);
+    });
+
+    it('should disconnect from call and reconnect when connecting with new devices', () => {
+        service.pexipAPI = pexipSpy;
+
+        service.reconnectToCallWithNewDevices();
+
+        expect(pexipSpy.disconnectCall).toHaveBeenCalled();
+        expect(pexipSpy.addCall).toHaveBeenCalledWith(null);
+    });
+
+    it('should disconnect from call and reconnect when to audio only call', () => {
+        service.pexipAPI = pexipSpy;
+
+        service.switchToAudioOnlyCall();
+
+        expect(pexipSpy.disconnectCall).toHaveBeenCalled();
+        expect(pexipSpy.addCall).toHaveBeenCalledWith('video');
     });
 });
