@@ -137,8 +137,8 @@
       <button
         [disabled]="!connected"
         *ngIf="isNotStarted()"
-        type="submit"
-        class="govuk-button govuk-button--start"
+        type="button"
+        class="govuk-button govuk-button--start govuk-!-margin-right-3 vh-btn-text"
         (click)="displayConfirmStartPopup()"
       >
         Start video hearing
@@ -146,26 +146,25 @@
       <button
         [disabled]="!connected"
         *ngIf="hearingPaused() || hearingSuspended()"
-        type="submit"
-        class="govuk-button govuk-button--start"
+        type="button"
+        class="govuk-button govuk-button--start govuk-!-margin-right-3 vh-btn-text"
         (click)="displayConfirmStartPopup()"
       >
         Resume video hearing
       </button>
-      <a
-        href="javascript:void(0)"
-        class="govuk-button govuk-button--bigblue govuk-!-margin-left-3"
-        role="button"
-        draggable="false"
+      <button
+        class="govuk-button govuk-button--bigblue vh-btn-text"
+        type="button"
         id="joinPCButton"
         data-module="govuk-button"
         (click)="joinJudicialConsultation()"
+        [disabled]="!connected"
       >
         Enter consultation room
         <span *ngIf="numberOfJudgeOrJOHsInConsultation" id="numberOfJohsInConsultationBadge" class="badge">{{
           numberOfJudgeOrJOHsInConsultation
         }}</span>
-      </a>
+      </button>
     </div>
   </div>
 

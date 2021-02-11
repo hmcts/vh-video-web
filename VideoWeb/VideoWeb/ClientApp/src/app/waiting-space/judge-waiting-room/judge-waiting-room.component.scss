@@ -38,3 +38,12 @@
   max-height: 85vh;
   z-index: 100;
 }
+
+.vh-btn-text {
+}
+
+@media screen and (max-width: 1024px) {
+  .vh-btn-text {
+    font-size: 18px !important;
+  }
+}
