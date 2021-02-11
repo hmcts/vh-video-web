@@ -76,12 +76,8 @@
 
 .icons-container {
   width: fit-content;
-  display: grid;
   grid-template-rows: auto;
   grid-column-gap: 32px;
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 24px;
-  padding: 12px 32px 12px 32px;
   float: right;
   margin: auto;
 }
@@ -90,8 +86,23 @@
   grid-row: 1;
   opacity: 0.5;
   height: 24px;
+  cursor: pointer;
+  margin-right: 10px;
 }
 
 .icon-btn:hover {
   opacity: 1;
+}
+
+.small-button-red {
+  color: #ffffff;
+  padding: 6px 10px;
+  background: rgba(212, 53, 28, 0.7);
+  border: transparent 1px;
+  border-radius: 2px;
+  vertical-align: top;
+  cursor: pointer;
+  &:hover{
+    background: rgba(212, 53, 28, 1);
+  }
 }
