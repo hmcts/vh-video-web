@@ -22,7 +22,7 @@ namespace VideoWeb.UnitTests.Hub
             var participant = conference.Participants.First(x => x.Username == participantUsername);
             var judge = conference.Participants.First(x => x.Role == Role.Judge);
             var judgeName = judge.Username;
-            
+
             var conferenceId = conference.Id;
             var participantId = participant.Id;
             var heartbeat = new Heartbeat
@@ -32,12 +32,12 @@ namespace VideoWeb.UnitTests.Hub
                 OperatingSystem = "Mac OS X",
                 OperatingSystemVersion = "10.15"
             };
-            
+
             ConferenceCacheMock.Setup(cache =>
                     cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
-            
+
             var mockAdminClient = new Mock<IEventHubClient>();
             var mockParticipantClient = new Mock<IEventHubClient>();
             var mockJudgeClient = new Mock<IEventHubClient>();
@@ -48,7 +48,7 @@ namespace VideoWeb.UnitTests.Hub
             var addHeartbeatRequest = new AddHeartbeatRequest
             {
                 Browser_name = heartbeat.BrowserName, Browser_version = heartbeat.BrowserVersion,
-                Incoming_audio_percentage_lost_recent = 10.3
+                Incoming_audio_percentage_lost_recent = 10.3m
             };
             HeartbeatMapper.Setup(x => x.MapToRequest(heartbeat)).Returns(addHeartbeatRequest);
             await Hub.SendHeartbeat(conferenceId, participantId, heartbeat);
@@ -122,7 +122,7 @@ namespace VideoWeb.UnitTests.Hub
             var addHeartbeatRequest = new AddHeartbeatRequest
             {
                 Browser_name = heartbeat.BrowserName, Browser_version = heartbeat.BrowserVersion,
-                Incoming_audio_percentage_lost_recent = 10.3
+                Incoming_audio_percentage_lost_recent = 10.3m
             };
             HeartbeatMapper.Setup(x => x.MapToRequest(heartbeat)).Returns(addHeartbeatRequest);
             await Hub.SendHeartbeat(conferenceId, judgeId, heartbeat);
@@ -180,7 +180,7 @@ namespace VideoWeb.UnitTests.Hub
             var addHeartbeatRequest = new AddHeartbeatRequest
             {
                 Browser_name = heartbeat.BrowserName, Browser_version = heartbeat.BrowserVersion,
-                Incoming_audio_percentage_lost_recent = 10.3
+                Incoming_audio_percentage_lost_recent = 10.3m
             };
             HeartbeatMapper.Setup(x => x.MapToRequest(heartbeat)).Returns(addHeartbeatRequest);
             await Hub.SendHeartbeat(conferenceId, participantId, heartbeat);

@@ -70,5 +70,9 @@ namespace VideoWeb.Contract.Responses
         /// The telephone conference number to dial
         /// </summary>
         public string TelephoneConferenceNumber { get; set; }
+        /// <summary>
+        /// Created date time as UTC
+        /// </summary>
+        public DateTime? CreatedDateTime { get; set; }
     }
 }

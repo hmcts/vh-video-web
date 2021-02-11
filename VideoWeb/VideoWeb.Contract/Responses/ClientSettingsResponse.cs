@@ -39,5 +39,9 @@ namespace VideoWeb.Contract.Responses
         /// The eventhub path
         /// </summary>
         public string EventHubPath { get; set; }
+        /// <summary>
+        /// The date to set option ON to display functionality to join hearing by phone
+        /// </summary>
+        public string JoinByPhoneFromDate { get; set; }
     }
 }

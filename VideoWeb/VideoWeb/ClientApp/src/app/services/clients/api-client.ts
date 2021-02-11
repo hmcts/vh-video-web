@@ -4140,6 +4140,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
     closed_date_time?: Date | undefined;
     telephone_conference_id?: string | undefined;
     telephone_conference_number?: string | undefined;
+    created_date_time?: Date | undefined;
 
     constructor(data?: IConferenceForVhOfficerResponse) {
         if (data) {
@@ -4167,6 +4168,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
             this.closed_date_time = _data['closed_date_time'] ? new Date(_data['closed_date_time'].toString()) : <any>undefined;
             this.telephone_conference_id = _data['telephone_conference_id'];
             this.telephone_conference_number = _data['telephone_conference_number'];
+            this.created_date_time = _data['created_date_time'] ? new Date(_data['created_date_time'].toString()) : <any>undefined;
         }
     }
 
@@ -4195,6 +4197,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
         data['closed_date_time'] = this.closed_date_time ? this.closed_date_time.toISOString() : <any>undefined;
         data['telephone_conference_id'] = this.telephone_conference_id;
         data['telephone_conference_number'] = this.telephone_conference_number;
+        data['created_date_time'] = this.created_date_time ? this.created_date_time.toISOString() : <any>undefined;
         return data;
     }
 }
@@ -4216,6 +4219,7 @@ export interface IConferenceForVhOfficerResponse {
     closed_date_time?: Date | undefined;
     telephone_conference_id?: string | undefined;
     telephone_conference_number?: string | undefined;
+    created_date_time?: Date | undefined;
 }
 
 /** Information about a participant in a conference */
@@ -4673,6 +4677,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     video_api_url?: string | undefined;
     app_insights_instrumentation_key?: string | undefined;
     event_hub_path?: string | undefined;
+    join_by_phone_from_date?: string | undefined;
 
     constructor(data?: IClientSettingsResponse) {
         if (data) {
@@ -4691,6 +4696,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
             this.video_api_url = _data['video_api_url'];
             this.app_insights_instrumentation_key = _data['app_insights_instrumentation_key'];
             this.event_hub_path = _data['event_hub_path'];
+            this.join_by_phone_from_date = _data['join_by_phone_from_date'];
         }
     }
 
@@ -4710,6 +4716,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         data['video_api_url'] = this.video_api_url;
         data['app_insights_instrumentation_key'] = this.app_insights_instrumentation_key;
         data['event_hub_path'] = this.event_hub_path;
+        data['join_by_phone_from_date'] = this.join_by_phone_from_date;
         return data;
     }
 }
@@ -4723,6 +4730,7 @@ export interface IClientSettingsResponse {
     video_api_url?: string | undefined;
     app_insights_instrumentation_key?: string | undefined;
     event_hub_path?: string | undefined;
+    join_by_phone_from_date?: string | undefined;
 }
 
 export enum ConsultationAnswer {
@@ -5595,13 +5603,14 @@ export interface IParticipantHeartbeatResponse {
 }
 
 export class UpdateParticipantRequest implements IUpdateParticipantRequest {
-    fullname!: string | undefined;
-    first_name!: string | undefined;
-    last_name!: string | undefined;
-    display_name!: string | undefined;
+    fullname!: string;
+    first_name?: string | undefined;
+    last_name?: string | undefined;
+    display_name?: string | undefined;
     representee?: string | undefined;
     contact_email?: string | undefined;
     contact_telephone?: string | undefined;
+    username?: string | undefined;
 
     constructor(data?: IUpdateParticipantRequest) {
         if (data) {
@@ -5620,6 +5629,7 @@ export class UpdateParticipantRequest implements IUpdateParticipantRequest {
             this.representee = _data['representee'];
             this.contact_email = _data['contact_email'];
             this.contact_telephone = _data['contact_telephone'];
+            this.username = _data['username'];
         }
     }
 
@@ -5639,18 +5649,20 @@ export class UpdateParticipantRequest implements IUpdateParticipantRequest {
         data['representee'] = this.representee;
         data['contact_email'] = this.contact_email;
         data['contact_telephone'] = this.contact_telephone;
+        data['username'] = this.username;
         return data;
     }
 }
 
 export interface IUpdateParticipantRequest {
-    fullname: string | undefined;
-    first_name: string | undefined;
-    last_name: string | undefined;
-    display_name: string | undefined;
+    fullname: string;
+    first_name?: string | undefined;
+    last_name?: string | undefined;
+    display_name?: string | undefined;
     representee?: string | undefined;
     contact_email?: string | undefined;
     contact_telephone?: string | undefined;
+    username?: string | undefined;
 }
 
 export class ParticipantContactDetailsResponseVho implements IParticipantContactDetailsResponseVho {
@@ -6099,10 +6111,10 @@ export interface IJudgeNameListResponse {
 }
 
 export class ConferenceEventRequest implements IConferenceEventRequest {
-    event_id!: string | undefined;
+    event_id?: string | undefined;
     event_type?: EventType;
     time_stamp_utc?: Date;
-    conference_id!: string | undefined;
+    conference_id?: string | undefined;
     participant_id?: string | undefined;
     transfer_from?: string | undefined;
     transfer_to?: string | undefined;
@@ -6154,10 +6166,10 @@ export class ConferenceEventRequest implements IConferenceEventRequest {
 }
 
 export interface IConferenceEventRequest {
-    event_id: string | undefined;
+    event_id?: string | undefined;
     event_type?: EventType;
     time_stamp_utc?: Date;
-    conference_id: string | undefined;
+    conference_id?: string | undefined;
     participant_id?: string | undefined;
     transfer_from?: string | undefined;
     transfer_to?: string | undefined;
