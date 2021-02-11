@@ -28,7 +28,21 @@ declare interface PexipClient {
 
     makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number, callType: string);
     connect(pin: string, extension: string);
+
+    /**
+     * Escalate existing call to add video/presentation/screensharing. Typically used when currently in a call_type of "none" (roster-only view).
+     * @param call_type Optional (default is to bring up a WebRTC video call)
+     */
+    addCall(call_type);
+
+    /**
+     * Disconnect participant.
+     */
     disconnect();
+    /**
+     * Disconnect the A/V call in use, leaving the control-only participant connected.
+     */
+    disconnectCall();
     setParticipantMute(participantId: string, mute: boolean);
     setParticipantSpotlight(participantId: string, spotlight: boolean);
     setMuteAllGuests(mute: boolean);
@@ -37,7 +51,7 @@ declare interface PexipClient {
     setBuzz();
     clearBuzz(uuid?: string);
     clearAllBuzz(): () => void;
-    getMediaStatistics() : any;
+    getMediaStatistics(): any;
 }
 
 declare interface PexipParticipant {

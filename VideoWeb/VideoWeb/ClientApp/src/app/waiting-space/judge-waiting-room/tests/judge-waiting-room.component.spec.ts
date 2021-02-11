@@ -4,16 +4,13 @@ import { AudioRecordingService } from 'src/app/services/api/audio-recording.serv
 import {
     ConferenceResponse,
     ConferenceStatus,
-    LoggedParticipantResponse,
     HearingLayout,
+    LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus
 } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { SelectedUserMediaDevice } from '../../../shared/models/selected-user-media-device';
-import { UserMediaDevice } from '../../../shared/models/user-media-device';
-import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
 import {
     adalService,
     consultationService,
@@ -42,7 +39,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     beforeAll(() => {
         initAllWRDependencies();
         audioRecordingService = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
-        videoCallService.retrieveVideoCallPreferences.and.returnValue(new VideoCallPreferences());
     });
 
     beforeEach(async () => {
@@ -304,21 +300,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.displayDeviceChangeModal = false;
         component.showChooseCameraDialog();
         expect(component.displayDeviceChangeModal).toBe(true);
-    });
-    it('should hide change device popup on close popup', () => {
-        component.displayDeviceChangeModal = true;
-        component.onMediaDeviceChangeCancelled();
-        expect(component.displayDeviceChangeModal).toBe(false);
-    });
-    it('should change device on select device', () => {
-        const device = new SelectedUserMediaDevice(
-            new UserMediaDevice('camera1', 'id3445', 'videoinput', '1'),
-            new UserMediaDevice('microphone', 'id123', 'audioinput', '1')
-        );
-        component.onMediaDeviceChangeAccepted(device);
-        expect(userMediaService.updatePreferredCamera).toHaveBeenCalled();
-        expect(userMediaService.updatePreferredMicrophone).toHaveBeenCalled();
-        expect(videoCallService.makeCall).toHaveBeenCalled();
     });
 
     it('should on consultation accept stop streams for devices and close choose device popup', async () => {

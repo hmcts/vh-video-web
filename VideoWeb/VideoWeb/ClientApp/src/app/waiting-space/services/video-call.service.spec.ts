@@ -151,17 +151,6 @@ describe('VideoCallService', () => {
         expect(service.pexipAPI.call_tag).toBeDefined();
     });
 
-    it('should call pexip with with audio only', () => {
-        const node = 'node124';
-        const conferenceAlias = 'WR173674fff';
-        const participantDisplayName = 'T1;John Doe';
-        const maxBandwidth = 767;
-        service.pexipAPI = pexipSpy;
-
-        service.makeCall(node, conferenceAlias, participantDisplayName, maxBandwidth, true);
-        expect(pexipSpy.makeCall).toHaveBeenCalledWith(node, conferenceAlias, participantDisplayName, maxBandwidth, 'audioonly');
-    });
-
     it('should set buzz when hand is raised', () => {
         service.pexipAPI = pexipSpy;
         service.raiseHand('conference12', 'participant123');
