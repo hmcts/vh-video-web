@@ -144,7 +144,7 @@ describe('ErrorComponent', () => {
         // ASSERT
         expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalled();
     });
-    
+
     it('should navigate to previous page on reconnect click and internet connection but has been down', () => {
         // ARRANGE
         component.hasLostInternet = true;
@@ -157,7 +157,6 @@ describe('ErrorComponent', () => {
         // ASSERT
         expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalled();
     });
-
 
     it('should not navigate to previous page on reconnect click and no internet connection', () => {
         // ARRANGE

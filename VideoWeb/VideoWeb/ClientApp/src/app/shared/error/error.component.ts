@@ -39,7 +39,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
     }
 
     get hasInternetConnection(): boolean {
-        this.hasLostInternet = this.hasLostInternet || !this.connectionStatusService.status
+        this.hasLostInternet = this.hasLostInternet || !this.connectionStatusService.status;
         return !this.hasLostInternet;
     }
 
