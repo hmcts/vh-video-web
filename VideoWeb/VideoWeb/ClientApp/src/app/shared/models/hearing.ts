@@ -1,3 +1,4 @@
+import * as moment from 'moment';
 import {
     ConferenceResponse,
     ConferenceStatus,
@@ -78,6 +79,15 @@ export class Hearing extends HearingBase {
         const endTime = new Date(this.conference.scheduled_date_time.getTime());
         endTime.setUTCMinutes(endTime.getUTCMinutes() + this.conference.scheduled_duration);
         return endTime;
+    }
+
+    get expiryTime(): Date | null {
+        if (!this.isClosed) {
+            return null;
+        }
+        let closeTime = moment(this.conference.closed_date_time);
+        closeTime = closeTime.add(30, 'minutes');
+        return closeTime.toDate();
     }
 
     isPastClosedTime(): boolean {

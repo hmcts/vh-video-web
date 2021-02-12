@@ -6,8 +6,8 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
     ConsultationAnswer,
-    LoggedParticipantResponse,
     EndpointStatus,
+    LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
     Role,

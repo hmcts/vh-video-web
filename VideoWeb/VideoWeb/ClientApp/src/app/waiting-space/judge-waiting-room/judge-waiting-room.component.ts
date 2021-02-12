@@ -5,11 +5,11 @@ import { AudioRecordingService } from 'src/app/services/api/audio-recording.serv
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
@@ -51,7 +51,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         private audioRecordingService: AudioRecordingService,
         protected userMediaService: UserMediaService,
         protected userMediaStreamService: UserMediaStreamService,
-        protected notificationSoundsService: NotificationSoundsService
+        protected notificationSoundsService: NotificationSoundsService,
+        protected clockService: ClockService
     ) {
         super(
             route,
@@ -67,9 +68,11 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
             consultationService,
             userMediaService,
             userMediaStreamService,
-            notificationSoundsService
+            notificationSoundsService,
+            clockService
         );
         this.displayConfirmStartHearingPopup = false;
+        this.hearingStartingAnnounced = true; // no need to play announcements for a judge
     }
 
     ngOnInit() {
@@ -83,6 +86,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
                 this.logger.debug(`${this.loggerPrefixJudge} Defined default devices in cache`);
                 this.connected = false;
                 this.getConference().then(() => {
+                    this.subscribeToClock();
                     this.startEventHubSubscribers();
 
                     this.participant = this.setLoggedParticipant();
@@ -198,14 +202,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
 
     hearingPaused(): boolean {
         return this.conference.status === ConferenceStatus.Paused;
-    }
-
-    handleConferenceStatusChange(message: ConferenceStatusMessage) {
-        super.handleConferenceStatusChange(message);
-        if (this.validateIsForConference(message.conferenceId) && message.status === ConferenceStatus.Closed) {
-            this.executeEndHearingSequence();
-            this.router.navigate([pageUrls.JudgeHearingList]);
-        }
     }
 
     initAudioRecordingInterval() {

@@ -90,10 +90,10 @@ describe('WaitingRoomComponent EventHub Call', () => {
             deviceTypeService,
             router,
             consultationService,
-            clockService,
             userMediaService,
             userMediaStreamService,
-            notificationSoundsService
+            notificationSoundsService,
+            clockService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

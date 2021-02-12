@@ -13,6 +13,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import {
     adalService,
+    clockService,
     consultationService,
     deviceTypeService,
     errorService,
@@ -67,7 +68,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             audioRecordingService,
             userMediaService,
             userMediaStreamService,
-            notificationSoundsService
+            notificationSoundsService,
+            clockService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
