@@ -107,9 +107,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
             _mocker.Mock<IEventHubClient>().Verify(
-                x => x.AdminConsultationMessage
-                    (It.IsAny<Guid>(), It.IsAny<RoomType>(), It.IsAny<string>(), It.IsAny<ConsultationAnswer>()),
-                Times.Never);
+                x => x.AdminConsultationMessage(It.IsAny<Guid>(), It.IsAny<RoomType>(), It.IsAny<Guid>(),
+                    It.IsAny<ConsultationAnswer>()), Times.Never);
         }
 
         [Test]

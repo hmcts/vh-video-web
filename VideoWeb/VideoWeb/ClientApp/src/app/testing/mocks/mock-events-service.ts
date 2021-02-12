@@ -1,6 +1,7 @@
 import { Subject } from 'rxjs';
 import { EventsService } from 'src/app/services/events.service';
 import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
+import { ConferenceMessageAnswered } from 'src/app/services/models/conference-message-answered';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
@@ -24,6 +25,7 @@ export const messageSubjectMock = new Subject<InstantMessage>();
 export const heartbeatSubjectMock = new Subject<ParticipantHeartbeat>();
 export const hearingTransferSubjectMock = new Subject<HearingTransfer>();
 export const participantMediaStatusSubjectMock = new Subject<ParticipantMediaStatusMessage>();
+export const adminAnsweredChatSubjectMock = new Subject<ConferenceMessageAnswered>();
 export let isConnectedSpy = true;
 
 eventsServiceSpy = jasmine.createSpyObj<EventsService>(
@@ -46,7 +48,8 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'getHearingTransfer',
         'sendTransferRequest',
         'getParticipantMediaStatusMessage',
-        'sendMediaStatus'
+        'sendMediaStatus',
+        'getAdminAnsweredChat'
     ],
     {
         isConnectedToHub: isConnectedSpy
@@ -65,3 +68,4 @@ eventsServiceSpy.getChatMessage.and.returnValue(messageSubjectMock.asObservable(
 eventsServiceSpy.getHeartbeat.and.returnValue(heartbeatSubjectMock.asObservable());
 eventsServiceSpy.getHearingTransfer.and.returnValue(hearingTransferSubjectMock.asObservable());
 eventsServiceSpy.getParticipantMediaStatusMessage.and.returnValue(participantMediaStatusSubjectMock.asObservable());
+eventsServiceSpy.getAdminAnsweredChat.and.returnValue(adminAnsweredChatSubjectMock.asObservable());

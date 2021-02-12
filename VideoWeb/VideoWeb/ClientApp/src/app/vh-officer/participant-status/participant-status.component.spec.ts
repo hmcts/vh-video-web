@@ -2,22 +2,21 @@ import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { Participant } from 'src/app/shared/models/participant';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { eventHubDisconnectSubjectMock, eventsServiceSpy, participantStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { VideoWebService } from '../../services/api/video-web.service';
 import { ErrorService } from '../../services/error.service';
 import { EventsService } from '../../services/events.service';
 import { ParticipantStatusMessage } from '../../services/models/participant-status-message';
 import { ParticipantContactDetails } from '../../shared/models/participant-contact-details';
 import { ParticipantStatusReader } from '../../shared/models/participant-status-reader';
-import { MockEventsService } from '../../testing/mocks/MockEventService';
 import { MockLogger } from '../../testing/mocks/MockLogger';
 import { ParticipantStatusComponent } from './participant-status.component';
 
 describe('ParticipantStatusComponent', () => {
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     let errorServiceSpy: jasmine.SpyObj<ErrorService>;
-    let eventsService: jasmine.SpyObj<EventsService>;
+    let eventsService = eventsServiceSpy;
     let participantStatusReaderSpy: jasmine.SpyObj<ParticipantStatusReader>;
-    const mockEventService = new MockEventsService();
     const testData = new ConferenceTestData();
     const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
         '174DFEFB-8EF2-4093-801D-621DF852021D',
@@ -34,10 +33,6 @@ describe('ParticipantStatusComponent', () => {
         'handleApiError',
         'returnHomeIfUnauthorised'
     ]);
-
-    eventsService = jasmine.createSpyObj<EventsService>('EventsService', ['getParticipantStatusMessage', 'getServiceReconnected']);
-    eventsService.getParticipantStatusMessage.and.returnValue(mockEventService.participantStatusSubject.asObservable());
-    eventsService.getServiceReconnected.and.returnValue(mockEventService.eventHubReconnectSubject.asObservable());
 
     participantStatusReaderSpy = jasmine.createSpyObj<ParticipantStatusReader>('ParticipantStatusReader', [
         'getStatusAsText',
@@ -80,9 +75,9 @@ describe('ParticipantStatusComponent', () => {
 
     it('should refresh data on eventhub disconnect', async () => {
         await component.setupEventHubSubscribers();
-        mockEventService.eventHubDisconnectSubject.next(1);
-        mockEventService.eventHubDisconnectSubject.next(2);
-        mockEventService.eventHubDisconnectSubject.next(3);
+        eventHubDisconnectSubjectMock.next(1);
+        eventHubDisconnectSubjectMock.next(2);
+        eventHubDisconnectSubjectMock.next(3);
 
         expect(videoWebServiceSpy.getParticipantsWithContactDetailsByConferenceId).toHaveBeenCalledTimes(3);
     });
@@ -94,7 +89,7 @@ describe('ParticipantStatusComponent', () => {
         component.participants = null;
         const message = new ParticipantStatusMessage('', '', '', ParticipantStatus.None);
 
-        mockEventService.participantStatusSubject.next(message);
+        participantStatusSubjectMock.next(message);
 
         expect(component.setParticipantStatus).toHaveBeenCalledTimes(0);
     });
@@ -111,7 +106,7 @@ describe('ParticipantStatusComponent', () => {
             ParticipantStatus.Available
         );
 
-        mockEventService.participantStatusSubject.next(message);
+        participantStatusSubjectMock.next(message);
 
         expect(component.participants[0].status).toBe(message.status);
     });
@@ -127,7 +122,7 @@ describe('ParticipantStatusComponent', () => {
             ParticipantStatus.Available
         );
 
-        mockEventService.participantStatusSubject.next(message);
+        participantStatusSubjectMock.next(message);
 
         expect(component.participants[0].status).toBe(ParticipantStatus.Available);
     });
@@ -146,7 +141,7 @@ describe('ParticipantStatusComponent', () => {
             ParticipantStatus.InHearing
         );
 
-        mockEventService.participantStatusSubject.next(message);
+        participantStatusSubjectMock.next(message);
 
         expect(component.participants[0].status).toBe(ParticipantStatus.Disconnected);
         expect(component.participants[0].statusText).toBe('In another hearing');
@@ -166,7 +161,7 @@ describe('ParticipantStatusComponent', () => {
             ParticipantStatus.InConsultation
         );
 
-        mockEventService.participantStatusSubject.next(message);
+        participantStatusSubjectMock.next(message);
 
         expect(component.participants[0].status).toBe(ParticipantStatus.NotSignedIn);
         expect(component.participants[0].statusText).toBe('Unavailable');

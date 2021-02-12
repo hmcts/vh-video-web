@@ -4,13 +4,12 @@ import { of, Subscription, throwError } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
-import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ScreenHelper } from 'src/app/shared/screen-helper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
+import { eventsServiceSpy, hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ConferenceStatus, Role, UserProfileResponse } from '../../services/clients/api-client';
 import { JudgeHearingListComponent } from './judge-hearing-list.component';
@@ -34,8 +33,7 @@ describe('JudgeHearingListComponent', () => {
     let profileService: jasmine.SpyObj<ProfileService>;
     const logger: Logger = new MockLogger();
 
-    let eventsService: jasmine.SpyObj<EventsService>;
-    const mockEventService = new MockEventsService();
+    let eventsService = eventsServiceSpy;
 
     beforeAll(() => {
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForJudge']);
@@ -51,9 +49,6 @@ describe('JudgeHearingListComponent', () => {
         profileService.getUserProfile.and.returnValue(Promise.resolve(mockProfile));
 
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
-
-        eventsService = jasmine.createSpyObj<EventsService>('EventsService', ['start', 'getHearingStatusMessage']);
-        eventsService.getHearingStatusMessage.and.returnValue(mockEventService.hearingStatusSubject.asObservable());
 
         screenHelper = jasmine.createSpyObj<ScreenHelper>('ScreenHelper', ['enableFullScreen']);
     });
@@ -72,6 +67,10 @@ describe('JudgeHearingListComponent', () => {
         videoWebService.getConferencesForJudge.and.returnValue(of(conferences));
 
         screenHelper.enableFullScreen.calls.reset();
+    });
+
+    afterEach(() => {
+        component.ngOnDestroy();
     });
 
     it('should handle api error with error service when unable to retrieve hearings for judge', fakeAsync(() => {
@@ -134,7 +133,7 @@ describe('JudgeHearingListComponent', () => {
         const message = new ConferenceStatusMessage(conference.id, ConferenceStatus.Closed);
         component.setupSubscribers();
 
-        mockEventService.hearingStatusSubject.next(message);
+        hearingStatusSubjectMock.next(message);
 
         const updatedConference = component.conferences.find(x => x.id === conference.id);
         expect(updatedConference.status).toBe(message.status);

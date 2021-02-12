@@ -1,19 +1,19 @@
 import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AdalService } from 'adal-angular4';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { Role, UserProfileResponse, ConferenceStatus } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, Role, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { eventsServiceSpy, hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
-import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { BetaBannerComponent } from './beta-banner.component';
-import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 
 @Component({ selector: 'app-mock-component', template: '' })
 class Mock1Component {}
@@ -31,7 +31,6 @@ describe('BetaBannerComponent', () => {
     let fixture: ComponentFixture<BetaBannerComponent>;
     let router: Router;
     let adalService: MockAdalService;
-    let eventService: MockEventsService;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
     profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
     const profile = new UserProfileResponse({ role: Role.Representative });
@@ -40,7 +39,6 @@ describe('BetaBannerComponent', () => {
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById']);
     videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(conference));
-    const mockEventService = new MockEventsService();
 
     beforeEach(
         waitForAsync(() => {
@@ -52,7 +50,7 @@ describe('BetaBannerComponent', () => {
                     { provide: Logger, useClass: MockLogger },
                     { provide: VideoWebService, useValue: videoWebServiceSpy },
                     { provide: AdalService, useClass: MockAdalService },
-                    { provide: EventsService, useValue: mockEventService }
+                    { provide: EventsService, useValue: eventsServiceSpy }
                 ],
                 schemas: [NO_ERRORS_SCHEMA]
             }).compileComponents();
@@ -61,10 +59,13 @@ describe('BetaBannerComponent', () => {
 
     beforeEach(() => {
         adalService = TestBed.inject<MockAdalService>(AdalService as any);
-        eventService = TestBed.inject<MockEventsService>(EventsService as any);
         router = TestBed.inject(Router);
         fixture = TestBed.createComponent(BetaBannerComponent);
         component = fixture.componentInstance;
+    });
+
+    afterEach(() => {
+        component.ngOnDestroy();
     });
 
     it('navigate to sub-component1 should see sub-component1 in router url', fakeAsync(() => {
@@ -92,7 +93,7 @@ describe('BetaBannerComponent', () => {
         component.ngOnInit();
         const message = new ConferenceStatusMessage(conference.id, ConferenceStatus.Closed);
 
-        mockEventService.hearingStatusSubject.next(message);
+        hearingStatusSubjectMock.next(message);
 
         expect(component.pageUrl).toContain(`${component.exitSurveyUrl}/`);
     });
@@ -101,7 +102,7 @@ describe('BetaBannerComponent', () => {
         component.ngOnInit();
         const message = new ConferenceStatusMessage(conference.id, ConferenceStatus.InSession);
 
-        mockEventService.hearingStatusSubject.next(message);
+        hearingStatusSubjectMock.next(message);
         expect(component.pageUrl).toContain(`${component.inPageFeedbackUrl}/`);
     });
 });
