@@ -1,10 +1,10 @@
 .icons {
-  width: 20px;
-  height: 20px;
-  filter: invert(100%) brightness(0.25); 
   cursor: pointer;
 }
 
-.icons:hover{
-  filter: invert(100%) brightness(1);
+.phone{
+  color: rgba(255,255,255,0.7);
+  &:hover{
+    color: rgba(255,255,255,1);
+  }
 }

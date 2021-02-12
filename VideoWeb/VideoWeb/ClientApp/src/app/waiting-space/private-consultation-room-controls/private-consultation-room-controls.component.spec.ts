@@ -14,7 +14,7 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ParticipantUpdated } from '../models/video-call-models';
 import { PrivateConsultationRoomControlsComponent } from './private-consultation-room-controls.component';
 
-describe('HearingControlsComponent', () => {
+describe('PrivateConsultationRoomControlsComponent', () => {
     let component: PrivateConsultationRoomControlsComponent;
     const gloalConference = new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse;
     const globalParticipant = gloalConference.participants.filter(x => x.role === Role.Individual)[0];
@@ -60,6 +60,7 @@ describe('HearingControlsComponent', () => {
     });
 
     it('should raise hand on toggle if hand not raised', () => {
+        videoCallService.raiseHand.calls.reset();
         component.handRaised = false;
         component.toggleHandRaised();
         expect(videoCallService.raiseHand).toHaveBeenCalledTimes(1);
@@ -67,6 +68,7 @@ describe('HearingControlsComponent', () => {
     });
 
     it('should lower hand on toggle if hand raised', () => {
+        videoCallService.lowerHand.calls.reset();
         component.handRaised = true;
         component.toggleHandRaised();
         expect(videoCallService.lowerHand).toHaveBeenCalledTimes(1);
@@ -177,7 +179,7 @@ describe('HearingControlsComponent', () => {
     it('should not reset mute when participant status to available', () => {
         spyOn(component, 'resetMute').and.callThrough();
         const status = ParticipantStatus.Available;
-        const message = new ParticipantStatusMessage(globalParticipant.id, globalParticipant.username, gloalConference.id, status);
+        const message = new ParticipantStatusMessage(globalParticipant.id, globalParticipant.display_name, gloalConference.id, status);
 
         participantStatusSubject.next(message);
 
@@ -188,7 +190,7 @@ describe('HearingControlsComponent', () => {
         spyOn(component, 'resetMute').and.callThrough();
         const status = ParticipantStatus.InConsultation;
         const participant = globalParticipant;
-        const message = new ParticipantStatusMessage(participant.id, participant.username, gloalConference.id, status);
+        const message = new ParticipantStatusMessage(participant.id, participant.display_name, gloalConference.id, status);
 
         participantStatusSubject.next(message);
 
@@ -199,7 +201,7 @@ describe('HearingControlsComponent', () => {
         spyOn(component, 'resetMute').and.callThrough();
         const status = ParticipantStatus.InConsultation;
         const participant = gloalConference.participants.filter(x => x.role === Role.Representative)[0];
-        const message = new ParticipantStatusMessage(participant.id, participant.username, gloalConference.id, status);
+        const message = new ParticipantStatusMessage(participant.id, participant.display_name, gloalConference.id, status);
 
         participantStatusSubject.next(message);
 
@@ -260,6 +262,7 @@ describe('HearingControlsComponent', () => {
     });
 
     it('should not close the hearing on keep hearing open', async () => {
+        videoCallService.endHearing.calls.reset();
         component.displayConfirmPopup = true;
         component.close(false);
         expect(component.displayConfirmPopup).toBeFalsy();

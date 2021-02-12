@@ -159,8 +159,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         }
     }
 
-    getRoomName() {
-        return this.participant?.current_room?.label ?? 'Private Consultation';
+    getRoomName() : string {
+        return this.camelToSpaced(this.participant?.current_room?.label?.replace('ParticipantConsultationRoom', 'MeetingRoom') ?? 'Private Consultation');
     }
 
     get isWitness(): boolean {
@@ -233,6 +233,16 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         this.displayJoinPrivateConsultationModal = false;
     }
 
+    protected camelToSpaced(word: string) {
+        const splitWord = word
+            .match(/[a-z]+|[^a-z]+/gi)
+            .join(' ')
+            .split(/(?=[A-Z])/)
+            .join(' ');
+        const lowcaseWord = splitWord.toLowerCase();
+        return lowcaseWord.charAt(0).toUpperCase() + lowcaseWord.slice(1);
+    }
+    
     toggleAccordian() {
         this.privateConsultationAccordianExpanded = !this.privateConsultationAccordianExpanded;
     }

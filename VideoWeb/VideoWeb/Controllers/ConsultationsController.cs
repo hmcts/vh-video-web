@@ -226,6 +226,28 @@ namespace VideoWeb.Controllers
             }
         }
 
+        [HttpPost("invite")]
+        [SwaggerOperation(OperationId = "InviteToConsultation")]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> InviteToConsultationAsync(InviteToConsultationRequest request)
+        {
+            var conference = await GetConference(request.ConferenceId);
+
+            var username = User.Identity.Name?.ToLower().Trim();
+            var requestedBy = conference.Participants.SingleOrDefault(x =>
+                x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
+            if (requestedBy == null && !User.IsInRole(AppRoles.VhOfficerRole))
+            {
+                return Unauthorized($"You must be a VHO or a memeber of the conference");
+            }
+
+            await NotifyConsultationRequestAsync(conference, request.RoomLabel, requestedBy?.Id ?? Guid.Empty, request.ParticipantId);
+
+            return Accepted();
+        }
+
         private async Task<Conference> GetConference(Guid conferenceId)
         {
             return await _conferenceCache.GetOrAddConferenceAsync(conferenceId,

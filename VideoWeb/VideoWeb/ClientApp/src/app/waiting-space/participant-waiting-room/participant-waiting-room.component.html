@@ -38,7 +38,7 @@
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
         <div *ngIf="hearing" class="participant-wrapper">
-          <app-private-consultation-participants [conference]="hearing.getConference()"></app-private-consultation-participants>
+          <app-private-consultation-participants [conference]="hearing.getConference()" [roomLabel]="this.participant.current_room?.label"></app-private-consultation-participants>
         </div>
         <div class="video-wrapper">
           <video id="incomingFeedPrivate" autoplay [srcObject]="this.stream" poster="/assets/images/empty_crest.jpg">
@@ -66,7 +66,7 @@
   </div>
 </div>
 
-<ng-container *ngIf="connected && showVideo">
+<ng-container *ngIf="connected && showVideo && !isPrivateConsultation">
   <app-hearing-controls
     [conferenceId]="conference.id"
     [participant]="participant"

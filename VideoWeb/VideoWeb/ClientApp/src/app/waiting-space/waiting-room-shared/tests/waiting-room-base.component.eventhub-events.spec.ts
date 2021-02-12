@@ -60,7 +60,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
     const eventHubReconnectSubject = eventHubReconnectSubjectMock;
     const hearingTransferSubject = hearingTransferSubjectMock;
     const endpointStatusSubject = endpointStatusSubjectMock;
-    const consultationMessageSubject = consultationMessageSubjectMock;
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
 

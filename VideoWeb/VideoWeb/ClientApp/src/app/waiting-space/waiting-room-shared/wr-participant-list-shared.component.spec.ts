@@ -10,7 +10,8 @@ import {
     EndpointStatus,
     ParticipantResponse,
     ParticipantStatus,
-    VideoEndpointResponse
+    VideoEndpointResponse,
+    Role
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';

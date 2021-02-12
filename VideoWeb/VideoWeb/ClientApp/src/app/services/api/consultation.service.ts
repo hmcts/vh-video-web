@@ -4,6 +4,7 @@ import {
     ApiClient,
     ConferenceResponse,
     ConsultationAnswer,
+    InviteToConsultationRequest,
     LeavePrivateConsultationRequest,
     LockConsultationRoomRequest,
     ParticipantResponse,
@@ -114,6 +115,29 @@ export class ConsultationService {
                     new PrivateVideoEndpointConsultationRequest({
                         conference_id: conference.id,
                         endpoint_id: endpoint.id
+                    })
+                )
+                .toPromise();
+        } catch (error) {
+            this.displayConsultationErrorModal();
+            throw error;
+        }
+    }
+
+    
+    async inviteToConsulation(conferenceId: string, roomLabel: string, requestParticipantId: string) {
+        this.logger.info(`[ConsultationService] - Inviting participant to this private consultation`, {
+            conferenceId: conferenceId,
+            requestParticipantId: requestParticipantId,
+            roomLabel: roomLabel,
+        });
+        try {
+            await this.apiClient
+                .inviteToConsultation(
+                    new InviteToConsultationRequest({
+                        conference_id: conferenceId,
+                        participant_id: requestParticipantId,
+                        room_label: roomLabel
                     })
                 )
                 .toPromise();

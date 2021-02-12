@@ -356,8 +356,8 @@ describe('HearingControlsComponent', () => {
     });
 
     it('should emit when leave button has been clicked', () => {
-        spyOn(component.leaveConsulation, 'emit');
+        spyOn(component.leaveConsultation, 'emit');
         component.leavePrivateConsultation();
-        expect(component.leaveConsulation.emit).toHaveBeenCalled();
+        expect(component.leaveConsultation.emit).toHaveBeenCalled();
     });
 });

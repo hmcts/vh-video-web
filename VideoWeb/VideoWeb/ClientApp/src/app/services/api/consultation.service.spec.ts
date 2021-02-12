@@ -73,7 +73,6 @@ describe('ConsultationService', () => {
         });
         await service.respondToConsultationRequest(conference.id, requester.id, requestee.id, ConsultationAnswer.Accepted, 'RoomLabel');
 
-        expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalled();
         expect(modalService.closeAll).toHaveBeenCalled();
         expect(apiClient.respondToConsultationRequest).toHaveBeenCalledWith(request);
     });
@@ -87,7 +86,6 @@ describe('ConsultationService', () => {
 
         await service.respondToConsultationRequest(conference.id, requester.id, requestee.id, ConsultationAnswer.Accepted, 'RoomLabel');
 
-        expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalled();
         expect(modalService.closeAll).toHaveBeenCalled();
         expect(modalService.open).toHaveBeenCalledWith(ConsultationService.ERROR_PC_MODAL);
     });
@@ -102,7 +100,6 @@ describe('ConsultationService', () => {
 
         await service.startPrivateConsulationWithEndpoint(conference, endpoint);
 
-        expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalled();
         expect(modalService.closeAll).toHaveBeenCalled();
         expect(apiClient.callVideoEndpoint).toHaveBeenCalledWith(request);
     });
