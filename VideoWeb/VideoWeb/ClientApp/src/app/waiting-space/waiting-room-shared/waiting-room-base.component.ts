@@ -333,7 +333,7 @@ export abstract class WaitingRoomBaseComponent {
             participant: this.participant.id
         };
         this.logger.debug(`${this.loggerPrefix} Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`, logPayload);
-        this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth, this.audioOnly);
+        this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth);
     }
 
     disconnect() {
@@ -588,13 +588,15 @@ export abstract class WaitingRoomBaseComponent {
 
     async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
         this.logger.debug(`${this.loggerPrefix} Updated device settings`, { selectedMediaDevice });
-        this.disconnect();
         this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
         this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
         this.audioOnly = selectedMediaDevice.audioOnly;
         this.updateAudioOnlyPreference(this.audioOnly);
         await this.updatePexipAudioVideoSource();
-        this.call();
+        this.videoCallService.reconnectToCallWithNewDevices();
+        if (this.audioOnly) {
+            this.videoCallService.switchToAudioOnlyCall();
+        }
     }
 
     protected updateAudioOnlyPreference(audioOnly: boolean) {
