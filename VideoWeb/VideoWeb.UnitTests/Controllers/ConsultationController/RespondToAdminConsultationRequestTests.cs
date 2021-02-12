@@ -145,7 +145,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             _mocker.Mock<IEventHubClient>().Verify(
                 x => x.AdminConsultationMessage
-                (_testConference.Id, RoomType.ConsultationRoom1, _testConference.Participants[0].Id,
+                (_testConference.Id, adminConsultationRequest.ConsultationRoom, adminConsultationRequest.ParticipantId,
                     ConsultationAnswer.Accepted), Times.Once);
 
         }
