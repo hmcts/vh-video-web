@@ -1,7 +1,7 @@
-import { async } from '@angular/core/testing';
 import { convertToParamMap, Router } from '@angular/router';
 import { VideoWebService } from '../services/api/video-web.service';
 import { ConferenceResponse, ConferenceStatus } from '../services/clients/api-client';
+import { pageUrls } from '../shared/page-url.constants';
 import { MockLogger } from '../testing/mocks/MockLogger';
 import { ConferenceGuard } from './conference.guard';
 
@@ -28,13 +28,15 @@ describe('ConferenceGuard', () => {
         expect(result).toBeTruthy();
     });
 
-    it('should not be able to activate component when conference closed', async () => {
-        const response = new ConferenceResponse({ status: ConferenceStatus.Closed });
+    it('should not be able to activate component when conference closed and expired', async () => {
+        const date = new Date(new Date().toUTCString());
+        date.setUTCMinutes(date.getUTCMinutes() - 32);
+        const response = new ConferenceResponse({ status: ConferenceStatus.Closed, closed_date_time: date });
         videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(response));
         const result = await guard.canActivate(activateRoute);
 
         expect(result).toBeFalsy();
-        expect(router.navigate).toHaveBeenCalledWith(['home']);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeHearingList]);
     });
 
     it('should not be able to activate component if conferenceId null', async () => {
