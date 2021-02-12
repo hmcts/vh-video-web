@@ -33,7 +33,7 @@ describe('JudgeHearingListComponent', () => {
     let profileService: jasmine.SpyObj<ProfileService>;
     const logger: Logger = new MockLogger();
 
-    let eventsService = eventsServiceSpy;
+    const eventsService = eventsServiceSpy;
 
     beforeAll(() => {
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForJudge']);

@@ -31,7 +31,7 @@ describe('CommandCentreComponent - Events', () => {
     let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
     let screenHelper: jasmine.SpyObj<ScreenHelper>;
     let errorService: jasmine.SpyObj<ErrorService>;
-    let eventsService = eventsServiceSpy;
+    const eventsService = eventsServiceSpy;
     let router: jasmine.SpyObj<Router>;
     let eventBusServiceSpy: jasmine.SpyObj<EventBusService>;
 

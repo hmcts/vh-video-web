@@ -5,7 +5,6 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { eventHubDisconnectSubjectMock, eventsServiceSpy, participantStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { VideoWebService } from '../../services/api/video-web.service';
 import { ErrorService } from '../../services/error.service';
-import { EventsService } from '../../services/events.service';
 import { ParticipantStatusMessage } from '../../services/models/participant-status-message';
 import { ParticipantContactDetails } from '../../shared/models/participant-contact-details';
 import { ParticipantStatusReader } from '../../shared/models/participant-status-reader';
@@ -15,7 +14,7 @@ import { ParticipantStatusComponent } from './participant-status.component';
 describe('ParticipantStatusComponent', () => {
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     let errorServiceSpy: jasmine.SpyObj<ErrorService>;
-    let eventsService = eventsServiceSpy;
+    const eventsService = eventsServiceSpy;
     let participantStatusReaderSpy: jasmine.SpyObj<ParticipantStatusReader>;
     const testData = new ConferenceTestData();
     const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(

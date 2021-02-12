@@ -14,7 +14,7 @@ import { UnreadMessagesComponent } from './unread-messages.component';
 describe('UnreadMessagesComponent', () => {
     let component: UnreadMessagesComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    let eventsService = eventsServiceSpy;
+    const eventsService = eventsServiceSpy;
     let eventbus: jasmine.SpyObj<EventBusService>;
     const conference = new ConferenceTestData().getConferenceDetailNow();
     let logger: MockLogger;
