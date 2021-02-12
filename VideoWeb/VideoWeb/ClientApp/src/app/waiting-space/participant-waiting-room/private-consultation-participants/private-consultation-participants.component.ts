@@ -32,7 +32,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
 
   getRowClasses(participant: ParticipantResponse): string {
     let statusClasses = 'govuk-table__row';
-    if (participant.current_room?.label === this.roomLabel) {
+    if (this.participantIsInCurrentRoom(participant)) {
       return `${statusClasses} active`;
     }
 
@@ -40,21 +40,33 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
   }
 
   getParticipantStatus(participant: ParticipantResponse): string {
+    if (this.participantIsInCurrentRoom(participant)) {
+      return '';
+    }
+    if (participant.current_room?.label)
+    {
+      return this.camelToSpaced(participant.current_room?.label.replace('ParticipantConsultation', ''));
+    }
     return this.camelToSpaced(participant.status);
   }
 
+  participantIsInCurrentRoom(participant: ParticipantResponse): boolean {
+    return participant.current_room?.label === this.roomLabel;
+  }
+
   getParticipantStatusClasses(participant: ParticipantResponse): string {
-    let statusClasses = 'govuk-table__cell';
     switch (participant.status) {
       case ParticipantStatus.InConsultation:
-        return `${statusClasses} outline`;
-    
+        if (this.participantIsInCurrentRoom(participant)) {
+          return '';
+        }
+        return 'outline';
       default:
-        return statusClasses;
+        return '';
     }
   }
 
-  participantIsInRoom(participant: ParticipantResponse):boolean{
+  participantIsInRoom(participant: ParticipantResponse): boolean {
     return participant.current_room?.label === this.roomLabel;
   }
 

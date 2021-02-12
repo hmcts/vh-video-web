@@ -4,18 +4,15 @@
         <tbody class="govuk-table__body">
             <tr *ngFor="let participant of nonJudgeParticipants" [class]="getRowClasses(participant)">
                 <td class="govuk-table__cell">
-                    <ng-container *ngIf="canCallParticipant(participant.id)">
+                    <!-- <ng-container *ngIf="canCallParticipant(participant.id)"> -->
                         <app-invite-participant [participantId]="participant.id"></app-invite-participant>
-                    </ng-container>
+                    <!-- </ng-container> -->
                     <div *ngIf="participantIsInRoom(participant)">
-                        <img
-                          class="icons"
-                          src="/assets/images/yellow_tick.png"
-                        />
+                        <i class="fas fa-check" aria-hidden="true"></i>
                     </div>
                 </td>
                 <td class="govuk-table__cell">{{participant.display_name}}</td>
-                <td [class]="getParticipantStatusClasses(participant)">{{getParticipantStatus(participant)}}</td>
+                <td class="govuk-table__cell"><span [class]="getParticipantStatusClasses(participant)">{{getParticipantStatus(participant)}}</span></td>
             </tr>
         </tbody>
     </table>
