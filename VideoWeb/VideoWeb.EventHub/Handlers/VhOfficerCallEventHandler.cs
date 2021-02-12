@@ -26,8 +26,7 @@ namespace VideoWeb.EventHub.Handlers
         {
             var targetRoom = ValidationConsultationRoom(callbackEvent);
             return HubContext.Clients.Group(SourceParticipant.Username.ToLowerInvariant())
-                .AdminConsultationMessage(SourceConference.Id, targetRoom,
-                    SourceParticipant.Username.ToLowerInvariant());
+                .AdminConsultationMessage(SourceConference.Id, targetRoom, SourceParticipant.Id);
         }
 
         private RoomType ValidationConsultationRoom(CallbackEvent callbackEvent)
