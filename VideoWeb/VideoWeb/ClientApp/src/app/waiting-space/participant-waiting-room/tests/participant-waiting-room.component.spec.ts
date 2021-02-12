@@ -95,6 +95,21 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         expect(notificationSoundsService.initHearingAlertSound).toHaveBeenCalled();
     }));
 
+    it('should start with "What is a private meeting?" accordian collapsed', fakeAsync(() => {
+        expect(component.privateConsultationAccordianExpanded).toBeFalsy();
+    }));
+
+    it('should expand "What is a private meeting?" accordian', fakeAsync(() => {
+        component.toggleAccordian();
+        expect(component.privateConsultationAccordianExpanded).toBeTruthy();
+    }));
+
+    it('should collapse "What is a private meeting?" accordian', fakeAsync(() => {
+        component.privateConsultationAccordianExpanded = true;
+        component.toggleAccordian();
+        expect(component.privateConsultationAccordianExpanded).toBeFalsy();
+    }));
+
     it('should not announce hearing is starting when already announced', () => {
         spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => Promise.resolve());
         component.hearingStartingAnnounced = true;
