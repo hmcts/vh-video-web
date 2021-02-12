@@ -9,7 +9,9 @@ import {
     Role
 } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
-import { resolve } from 'url';
+import { SelectedUserMediaDevice } from 'src/app/shared/models/selected-user-media-device';
+import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
+import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
 import {
     activatedRoute,
     adalService,
@@ -37,6 +39,7 @@ describe('WaitingRoomComponent message and clock', () => {
 
     beforeAll(() => {
         initAllWRDependencies();
+        videoCallService.retrieveVideoCallPreferences.and.returnValue(new VideoCallPreferences());
     });
 
     beforeEach(() => {
@@ -217,5 +220,34 @@ describe('WaitingRoomComponent message and clock', () => {
     it('should request to leave judicial consultation room', async () => {
         await component.leaveJudicialConsultation();
         expect(consultationService.leaveJudicialConsultationRoom).toHaveBeenCalledWith(component.conference, component.participant);
+    });
+
+    it('should hide change device popup on close popup', () => {
+        component.displayDeviceChangeModal = true;
+        component.onMediaDeviceChangeCancelled();
+        expect(component.displayDeviceChangeModal).toBe(false);
+    });
+
+    it('should change device on select device', async () => {
+        const device = new SelectedUserMediaDevice(
+            new UserMediaDevice('camera1', 'id3445', 'videoinput', '1'),
+            new UserMediaDevice('microphone', 'id123', 'audioinput', '1')
+        );
+        await component.onMediaDeviceChangeAccepted(device);
+        expect(userMediaService.updatePreferredCamera).toHaveBeenCalled();
+        expect(userMediaService.updatePreferredMicrophone).toHaveBeenCalled();
+        expect(videoCallService.reconnectToCallWithNewDevices);
+    });
+
+    it('should switch to only only call when user has selected to turn camera off', async () => {
+        const device = new SelectedUserMediaDevice(
+            new UserMediaDevice('camera1', 'id3445', 'videoinput', '1'),
+            new UserMediaDevice('microphone', 'id123', 'audioinput', '1'),
+            true
+        );
+
+        await component.onMediaDeviceChangeAccepted(device);
+
+        expect(videoCallService.switchToAudioOnlyCall).toHaveBeenCalled();
     });
 });
