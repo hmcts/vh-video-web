@@ -40,12 +40,6 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
 
     setupSubscribers() {
         this.addSharedEventHubSubcribers();
-
-        this.eventHubSubscriptions$.add(
-            this.eventService.getRequestedConsultationMessage().subscribe(message => {
-                // A request for you to join a consultation room
-            })
-        );
     }
 
     canCallParticipant(participant: ParticipantResponse): boolean {
@@ -54,7 +48,7 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
             return false;
         }
 
-        const requester = this.getConsultationRequester();
+        const requester = this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
         if (
             requester.hearing_role === HearingRole.OBSERVER ||
             requester.hearing_role === HearingRole.PANEL_MEMBER ||

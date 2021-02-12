@@ -37,7 +37,7 @@
   -moz-transform: rotateY(180deg); /* Firefox */
 }
 
-.outgoing-video-container{
+.outgoing-video-container {
   position: relative;
   bottom: -713px;
 }
@@ -108,7 +108,7 @@
   border-radius: 2px;
   vertical-align: top;
   cursor: pointer;
-  &:hover{
+  &:hover {
     background: rgba(212, 53, 28, 1);
   }
 }

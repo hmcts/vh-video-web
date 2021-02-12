@@ -4,9 +4,11 @@
         <tbody class="govuk-table__body">
             <tr *ngFor="let participant of nonJudgeParticipants" [class]="getRowClasses(participant)">
                 <td class="govuk-table__cell">
-                    <!-- <ng-container *ngIf="canCallParticipant(participant.id)"> -->
-                        <app-invite-participant [participantId]="participant.id"></app-invite-participant>
-                    <!-- </ng-container> -->
+                    <app-invite-participant
+                        [participantId]="participant.id"
+                        [conferenceId]="conference.id"
+                        [roomLabel]="roomLabel">
+                    </app-invite-participant>
                     <div *ngIf="participantIsInRoom(participant)">
                         <i class="fas fa-check" aria-hidden="true"></i>
                     </div>

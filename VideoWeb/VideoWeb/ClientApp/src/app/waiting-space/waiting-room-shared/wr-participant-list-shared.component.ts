@@ -14,7 +14,6 @@ import {
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { HearingRole } from '../models/hearing-role-model';
 
@@ -28,11 +27,10 @@ export abstract class WRParticipantStatusListDirective {
     observers: ParticipantResponse[];
     panelMembers: ParticipantResponse[];
     wingers: ParticipantResponse[];
-
-    consultationRequestResponseMessage: ConsultationRequestResponseMessage;
+    
     eventHubSubscriptions$ = new Subscription();
     loggedInUser: LoggedParticipantResponse;
-    private readonly loggerPrefix = '[WRParticipantStatusListDirective] -';
+    loggerPrefix = '[WRParticipantStatusListDirective] -';
 
     protected constructor(
         protected adalService: AdalService,
@@ -50,6 +48,7 @@ export abstract class WRParticipantStatusListDirective {
         this.filterWingers();
         this.endpoints = this.conference.endpoints;
     }
+
     abstract setupSubscribers(): void;
     abstract canCallParticipant(participant: ParticipantResponse): boolean;
     abstract canCallEndpoint(endpoint: VideoEndpointResponse): boolean;
@@ -66,18 +65,8 @@ export abstract class WRParticipantStatusListDirective {
         this.eventHubSubscriptions$.unsubscribe();
     }
 
-    getConsultationRequester(): ParticipantResponse {
-        return this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
-    }
-
     addSharedEventHubSubcribers() {
-        this.eventHubSubscriptions$.add(
-            this.eventService.getConsultationRequestResponseMessage().subscribe(async message => {
-                // There has been a response to the consultation request sent
-                this.logger.debug(`${this.loggerPrefix} Recieved ConsultationRequestResponseMessage`);
-            })
-        );
-
+        this.logger.debug(`${this.loggerPrefix} Subscribing to ParticipantStatusMessage`);
         this.eventHubSubscriptions$.add(
             this.eventService.getParticipantStatusMessage().subscribe(message => {
                 this.handleParticipantStatusChange(message);

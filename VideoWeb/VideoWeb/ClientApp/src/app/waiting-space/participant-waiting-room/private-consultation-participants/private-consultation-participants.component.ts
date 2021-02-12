@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -12,7 +12,7 @@ import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-p
   templateUrl: './private-consultation-participants.component.html',
   styleUrls: ['./private-consultation-participants.component.scss']
 })
-export class PrivateConsultationParticipantsComponent extends WRParticipantStatusListDirective implements OnInit {
+export class PrivateConsultationParticipantsComponent extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
   @Input() roomLabel: string;
 
   constructor(
@@ -23,11 +23,54 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     protected videoWebService: VideoWebService
   ) {
     super(adalService, consultationService, eventService, videoWebService, logger);
+    this.loggerPrefix = "[PrivateConsultationParticipantsComponent] - ";
   }
 
   ngOnInit(): void {
     this.initParticipants();
     this.setupSubscribers();
+    this.setupInviteStatusSubscribers();
+  }
+
+  ngOnDestroy() {
+    this.executeTeardown();
+  }
+
+  participantCallStatuses = [];
+
+  setupInviteStatusSubscribers() {
+    this.logger.debug(`${this.loggerPrefix} Subscribing to ConsultationRequestResponseMessage`);
+    this.eventHubSubscriptions$.add(
+        this.eventService.getConsultationRequestResponseMessage().subscribe(message => {
+            if (message.roomLabel == this.roomLabel && message.conferenceId == this.conference.id) {
+              this.participantCallStatuses[message.requestedFor] = message.answer;
+              setTimeout(() => {
+                if (this.participantCallStatuses[message.requestedFor] == message.answer) {
+                  this.participantCallStatuses[message.requestedFor] = null;
+                }
+              }, 5000);
+            }
+        })
+    );
+
+    this.logger.debug(`${this.loggerPrefix} Subscribing to RequestedConsultationMessage`);
+    this.eventHubSubscriptions$.add(
+        this.eventService.getRequestedConsultationMessage().subscribe(message => {
+            // Set "Calling..."
+            // No need to timeout here the text because when the notification times out it will send another event.
+            if (message.roomLabel == this.roomLabel && message.conferenceId == this.conference.id) {
+              this.participantCallStatuses[message.requestedFor] = 'Calling';
+            }
+        })
+    );
+
+    this.logger.debug(`${this.loggerPrefix} Subscribing to ParticipantStatusMessage`);
+    this.eventHubSubscriptions$.add(
+        this.eventService.getParticipantStatusMessage().subscribe(message => {
+            // If the participant state changes reset the state.
+            this.participantCallStatuses[message.participantId] = null;
+        })
+    );
   }
 
   getRowClasses(participant: ParticipantResponse): string {

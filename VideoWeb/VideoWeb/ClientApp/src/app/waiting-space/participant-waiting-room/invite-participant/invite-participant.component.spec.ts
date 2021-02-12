@@ -3,18 +3,9 @@ import { InviteParticipantComponent } from './invite-participant.component';
 
 describe('InviteParticipantComponent', () => {
     let component: InviteParticipantComponent;
-
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-          declarations: [ InviteParticipantComponent ]
-        })
-        .compileComponents();
-      });
     
       beforeEach(() => {
-        const fixture = TestBed.createComponent(InviteParticipantComponent);
-        component = fixture.componentInstance;
-        fixture.detectChanges();
+        component = new InviteParticipantComponent();
       });
       
     it('should create', () => {
