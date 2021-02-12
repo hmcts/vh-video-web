@@ -50,13 +50,24 @@ export class HearingTimeReader {
     }
 
     isPastClosedTime(closedDateTime: Date, status: ConferenceStatus): boolean {
-        if (status !== ConferenceStatus.Closed) {
+        const closed = this.retrieveHearingExpiryTime(closedDateTime, status);
+        if (!closed) {
             return false;
         }
         const now = moment.utc();
-        let closed = moment(closedDateTime);
-        closed = closed.add(30, 'minutes');
         return now.isSameOrAfter(closed) && status === ConferenceStatus.Closed;
+    }
+
+    retrieveHearingExpiryTime(closedDateTime: Date, status: ConferenceStatus) {
+        if (status !== ConferenceStatus.Closed) {
+            return null;
+        }
+        if (!closedDateTime) {
+            return null;
+        }
+
+        let closed = moment(closedDateTime);
+        return closed.add(30, 'minutes');
     }
 
     isNotStarted(status: ConferenceStatus): boolean {
