@@ -109,7 +109,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             typedResult.Should().NotBeNull();
             _mocker.Mock<IEventHubClient>().Verify(
                 x => x.AdminConsultationMessage
-                    (It.IsAny<Guid>(), It.IsAny<RoomType>(), It.IsAny<string>(), It.IsAny<ConsultationAnswer>()),
+                    (It.IsAny<Guid>(), It.IsAny<RoomType>(), It.IsAny<Guid>(), It.IsAny<ConsultationAnswer>()),
                 Times.Never);
         }
 
@@ -145,8 +145,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             _mocker.Mock<IEventHubClient>().Verify(
                 x => x.AdminConsultationMessage
-                (_testConference.Id, RoomType.ConsultationRoom1,
-                    _testConference.Participants[0].Username.ToLowerInvariant(),
+                (_testConference.Id, adminConsultationRequest.ConsultationRoom, adminConsultationRequest.ParticipantId,
                     ConsultationAnswer.Accepted), Times.Once);
 
         }
