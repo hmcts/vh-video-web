@@ -84,52 +84,6 @@ describe('JohWaitingRoomComponent', () => {
         expect(notificationSoundsService.initHearingAlertSound).toHaveBeenCalled();
     }));
 
-    // it('should not announce hearing is starting when already announced', () => {
-    //     spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => Promise.resolve());
-    //     component.hearingStartingAnnounced = true;
-    //     component.checkIfHearingIsStarting();
-    //     expect(component.announceHearingIsAboutToStart).toHaveBeenCalledTimes(0);
-    // });
-
-    // it('should not announce hearing ready to start when hearing is not near start time', () => {
-    //     spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => Promise.resolve());
-    //     component.hearing = new Hearing(new ConferenceTestData().getConferenceDetailFuture());
-    //     component.hearingStartingAnnounced = false;
-    //     component.checkIfHearingIsStarting();
-    //     expect(component.announceHearingIsAboutToStart).toHaveBeenCalledTimes(0);
-    // });
-
-    // it('should announce hearing ready to start and not already announced', () => {
-    //     spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => Promise.resolve());
-    //     component.hearing = new Hearing(new ConferenceTestData().getConferenceDetailNow());
-    //     component.hearingStartingAnnounced = false;
-    //     component.checkIfHearingIsStarting();
-    //     expect(component.announceHearingIsAboutToStart).toHaveBeenCalledTimes(1);
-    // });
-
-    // it('should set hearing announced to true when hearing sound has played', async () => {
-    //     notificationSoundsService.playHearingAlertSound.calls.reset();
-    //     await component.announceHearingIsAboutToStart();
-    //     expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalled();
-    //     expect(component.hearingStartingAnnounced).toBeTruthy();
-    // });
-
-    // it('should clear subscription and go to hearing list when conference is past closed time', () => {
-    //     const conf = new ConferenceTestData().getConferenceDetailNow();
-    //     const status = ConferenceStatus.Closed;
-    //     const closedDateTime = new Date(new Date().toUTCString());
-    //     closedDateTime.setUTCMinutes(closedDateTime.getUTCMinutes() - 30);
-    //     conf.status = status;
-    //     conf.closed_date_time = closedDateTime;
-    //     component.hearing = new Hearing(conf);
-    //     component.clockSubscription$ = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
-
-    //     component.checkIfHearingIsClosed();
-
-    //     expect(component.clockSubscription$.unsubscribe).toHaveBeenCalled();
-    //     expect(router.navigate).toHaveBeenCalledWith([pageUrls.ParticipantHearingList]);
-    // });
-
     const getConferenceStatusTextTestCases = [
         { conference: conferenceTestData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: '' },
         { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.InSession, expected: 'is in session' },
