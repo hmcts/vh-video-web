@@ -37,6 +37,11 @@
   -moz-transform: rotateY(180deg); /* Firefox */
 }
 
+.outgoing-video-container{
+  position: relative;
+  bottom: -713px;
+}
+
 .microphoneIcon {
   height: 18px;
 }
