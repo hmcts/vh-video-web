@@ -107,6 +107,17 @@ describe('ErrorComponent', () => {
         expect(component.isExtensionOrFirewallIssue).toBeFalsy();
     });
 
+    it('should show default error message if internet connection has been down in the past', () => {
+        spyPropertyGetter(connectionStatusServiceSpy, 'status').and.returnValue(true);
+        component.hasLostInternet = true;
+
+        component.ngOnInit();
+        expect(component.errorMessageTitle).toBe(`There's a problem with your connection`);
+        expect(component.errorMessageBody).toBe('Please reconnect. Call us if you keep seeing this message.');
+        expect(component.connectionError).toBeTruthy();
+        expect(component.isExtensionOrFirewallIssue).toBeFalsy();
+    });
+
     it('should show error message if session storage returns a value', () => {
         errorServiceSpy.getErrorMessageFromStorage.and.returnValue(new ErrorMessage('disconnected', 'test message'));
 
@@ -124,6 +135,19 @@ describe('ErrorComponent', () => {
 
     it('should navigate to previous page on reconnect click and internet connection', () => {
         // ARRANGE
+        pageTrackerSpy.getPreviousUrl.calls.reset();
+        spyPropertyGetter(connectionStatusServiceSpy, 'status').and.returnValue(true);
+
+        // ACT
+        component.reconnect();
+
+        // ASSERT
+        expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalled();
+    });
+
+    it('should navigate to previous page on reconnect click and internet connection but has been down', () => {
+        // ARRANGE
+        component.hasLostInternet = true;
         pageTrackerSpy.getPreviousUrl.calls.reset();
         spyPropertyGetter(connectionStatusServiceSpy, 'status').and.returnValue(true);
 
