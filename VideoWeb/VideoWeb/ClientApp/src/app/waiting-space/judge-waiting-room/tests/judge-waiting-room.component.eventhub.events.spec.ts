@@ -9,6 +9,7 @@ import { hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-serv
 import {
     activatedRoute,
     adalService,
+    clockService,
     consultationService,
     deviceTypeService,
     errorService,
@@ -53,7 +54,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             audioRecordingService,
             userMediaService,
             userMediaStreamService,
-            notificationSoundsService
+            notificationSoundsService,
+            clockService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

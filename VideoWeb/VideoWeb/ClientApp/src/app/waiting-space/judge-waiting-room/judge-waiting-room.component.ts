@@ -5,6 +5,7 @@ import { AudioRecordingService } from 'src/app/services/api/audio-recording.serv
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -51,7 +52,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         private audioRecordingService: AudioRecordingService,
         protected userMediaService: UserMediaService,
         protected userMediaStreamService: UserMediaStreamService,
-        protected notificationSoundsService: NotificationSoundsService
+        protected notificationSoundsService: NotificationSoundsService,
+        protected clockService: ClockService
     ) {
         super(
             route,
@@ -67,7 +69,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
             consultationService,
             userMediaService,
             userMediaStreamService,
-            notificationSoundsService
+            notificationSoundsService,
+            clockService
         );
         this.displayConfirmStartHearingPopup = false;
     }
