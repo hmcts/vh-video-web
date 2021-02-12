@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { AdalService } from 'adal-angular4';
-import { Guid } from 'guid-typescript';
 import { Observable, Subject } from 'rxjs';
 import { ErrorService } from 'src/app/services/error.service';
 import { Heartbeat } from '../shared/models/heartbeat';
