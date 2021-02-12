@@ -29,7 +29,8 @@ Scenario: Judge pauses and closes hearing
   And the participant is on the Hearing Room page for 1 minute
   When in the Judge's browser
   And the Judge closes the hearing
-	Then the user is on the Hearing List page
+	Then the user is on the Hearing Room page
+  Then the judge waiting room displays consultation room is available
 	And the hearing status changed to Closed
 
 @HearingTest @Smoketest-Extended @DisableLogging
