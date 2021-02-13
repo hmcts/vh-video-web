@@ -1,3 +1,5 @@
+@import '~govuk-frontend/govuk/base';
+
 @mixin all-main-container {
   position: fixed;
   z-index: 200;
@@ -18,6 +20,18 @@
   @include all-main-container;
   left: 19%;
   width: 80%;
+}
+
+.icon-button {
+  cursor: pointer;
+  opacity: 0.5;
+  margin-right: 20px;
+  font-size: 1.5em;
+  color: govuk-colour('white');
+}
+
+.icon-button:hover {
+  opacity: 1;
 }
 
 .flexBar {
@@ -45,20 +59,8 @@
 }
 
 .outgoing-video-container {
-  position: relative;
-  bottom: -713px;
-}
-
-.microphoneIcon {
-  height: 18px;
-}
-
-.reduce-margin {
-  margin-bottom: 2px;
-}
-
-.hand {
-  margin-left: 1vw;
+  bottom: 25px;
+  position: fixed;
 }
 
 #toggle-hand-button .govuk-button:focus {
@@ -71,58 +73,40 @@
   color: govuk-colour('white');
 }
 
-.lockButton {
-  background-color: #505a5f;
-}
-.lockButton:focus {
-  background-color: govuk-colour('red');
-}
-
-.remote-container {
-  margin-left: -1vw;
-}
-
-.button-spacing {
-  margin-right: 8px;
-}
-
-#hearing-monitor-div {
-  float: right;
-}
-
-#judgeControlsDiv {
-  padding-right: 0;
-}
-
 .icons-container {
-  width: fit-content;
-  grid-template-rows: auto;
-  grid-column-gap: 32px;
-  float: right;
-  margin: auto;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
 
-.icon-btn {
-  grid-row: 1;
-  opacity: 0.5;
-  height: 24px;
-  cursor: pointer;
-  margin-right: 10px;
-}
-
-.icon-btn:hover {
-  opacity: 1;
-}
-
-.small-button-red {
-  color: #ffffff;
+.small-button {
   padding: 6px 10px;
-  background: rgba(212, 53, 28, 0.7);
   border: transparent 1px;
   border-radius: 2px;
   vertical-align: top;
   cursor: pointer;
+}
+
+.small-button.red {
+  color: #ffffff;
+  background: rgba(212, 53, 28, 0.7);
   &:hover {
     background: rgba(212, 53, 28, 1);
+  }
+}
+
+.small-button.greyred {
+  color: #ffffff;
+  background: #505a5f;
+  &:hover {
+    background: rgba(212, 53, 28, 1);
+  }
+}
+
+.small-button.greygreen {
+  color: #ffffff;
+  background: #505a5f;
+  &:hover {
+    background: #00703c;
   }
 }

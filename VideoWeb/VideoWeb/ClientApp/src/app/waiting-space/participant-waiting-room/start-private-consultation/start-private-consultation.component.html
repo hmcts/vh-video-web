@@ -23,8 +23,7 @@
                 <br/>
                 <label
                     id="p-{{ participant.id }}-status-participant"
-                    class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}" >
-                    {{ getParticipantStatus(participant) }}
+                    class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}" [innerHTML]="getParticipantStatus(participant)">
                 </label>
             </label>
           </div>

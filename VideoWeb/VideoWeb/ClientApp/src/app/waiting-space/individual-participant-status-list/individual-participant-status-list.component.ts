@@ -102,7 +102,7 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
             return (
                 'In ' +
                 this.camelToSpaced(participant.current_room.label.replace('ParticipantConsultationRoom', 'MeetingRoom')).toLowerCase() +
-                (participant.current_room.locked ? ' LockedIcon' : '')
+                (participant.current_room.locked ? ' <i class="fas fa-lock-alt"></i>' : '')
             );
         }
 

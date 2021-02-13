@@ -20,7 +20,7 @@
   background: govuk-colour('dark-blue');
 }
 
-.participant-wrapper{
+.participant-wrapper {
   width: 333px;
   padding: 12px;
   float: right;
@@ -46,18 +46,23 @@
   display: inline-block;
 }
 
-.unlocked {
+.lock-badge {
   padding: 3px 8px 3px 8px;
   border: 0px solid #f3f2f1;
   border-radius: 2px;
-  background: #f3f2f1;
-  font-family: 'GDS Transport', Arial, sans-serif;
   text-transform: uppercase;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   font-weight: 400;
   font-size: 14px;
+}
+
+.lock-badge.unlocked {
+  background: #f3f2f1;
   color: #0b0c0d;
+}
+
+.lock-badge.locked {
+  background: #d4351c;
+  color: #fff;
 }
 
 .video-wrapper {

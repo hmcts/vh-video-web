@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -35,7 +36,7 @@ export class PrivateConsultationRoomControlsComponent implements OnInit, OnDestr
     selfViewOpen: boolean;
     displayConfirmPopup: boolean;
 
-    constructor(private videoCallService: VideoCallService, private eventService: EventsService, private logger: Logger) {
+    constructor(private videoCallService: VideoCallService, private eventService: EventsService, private logger: Logger, private consultationService: ConsultationService) {
         this.handRaised = false;
         this.remoteMuted = false;
         this.selfViewOpen = false;
@@ -93,6 +94,10 @@ export class PrivateConsultationRoomControlsComponent implements OnInit, OnDestr
 
     get videoMutedText(): string {
         return this.videoMuted ? 'Switch camera on' : 'Switch camera off';
+    }
+
+    get roomLocked(): boolean {
+        return this.participant?.current_room?.locked ?? false;
     }
 
     setupVideoCallSubscribers() {
@@ -220,7 +225,7 @@ export class PrivateConsultationRoomControlsComponent implements OnInit, OnDestr
         this.leaveConsulation.emit();
     }
 
-    lockPrivateConsultation() {
-        
+    lockPrivateConsultation(lock: boolean) {
+        this.consultationService.lockConsultation(this.conferenceId, this.participant.current_room?.label, lock);
     }
 }

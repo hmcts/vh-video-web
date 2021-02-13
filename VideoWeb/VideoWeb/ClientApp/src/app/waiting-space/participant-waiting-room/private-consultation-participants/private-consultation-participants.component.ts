@@ -99,7 +99,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
       return 'No Answer';
     }
     if (participant.current_room?.label) {
-      return this.camelToSpaced(participant.current_room?.label.replace('ParticipantConsultation', ''));
+      return this.camelToSpaced(participant.current_room?.label.replace('ParticipantConsultation', '')) + (participant.current_room?.locked ? ' <i class="fas fa-lock-alt"></i>' : '');
     }
 
     if (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) {
@@ -115,7 +115,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     if (this.participantIsInCurrentRoom(participant)) {
       return 'yellow';
     }
-    
+
     return this.participantAvailable(participant) ? 'white' : '';
   }
 

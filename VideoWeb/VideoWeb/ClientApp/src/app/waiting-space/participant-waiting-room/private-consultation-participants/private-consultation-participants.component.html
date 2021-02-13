@@ -13,7 +13,7 @@
                     <i *ngIf="participantIsInRoom(participant)" class="fas fa-check" aria-hidden="true"></i>
                 </td>
                 <td class="govuk-table__cell"><span [class]="participantNameClass(participant)">{{participant.display_name}}</span></td>
-                <td class="govuk-table__cell text-right"><span [class]="getParticipantStatusClasses(participant)">{{getParticipantStatus(participant)}}</span></td>
+                <td class="govuk-table__cell text-right"><span [class]="getParticipantStatusClasses(participant)" [innerHTML]="getParticipantStatus(participant)"></span></td>
             </tr>
         </tbody>
     </table>
