@@ -1,4 +1,4 @@
 export class RoomTransfer {
     // tslint:disable-next-line: variable-name
-    constructor(public participantId: string, public toRoom: string, public fromRoom: string) {}
+    constructor(public participant_id: string, public to_room: string, public from_room: string) {}
 }

@@ -219,4 +219,8 @@ export class PrivateConsultationRoomControlsComponent implements OnInit, OnDestr
         this.logger.debug(`${this.loggerPrefix} Leave private consultation clicked`, this.logPayload);
         this.leaveConsulation.emit();
     }
+
+    lockPrivateConsultation() {
+        
+    }
 }

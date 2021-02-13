@@ -2,7 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ParticipantResponse, ParticipantStatus, VideoEndpointResponse } from 'src/app/services/clients/api-client';
+import { ConsultationAnswer, ParticipantResponse, ParticipantStatus, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-participant-list-shared.component';
@@ -23,7 +23,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     protected videoWebService: VideoWebService
   ) {
     super(adalService, consultationService, eventService, videoWebService, logger);
-    this.loggerPrefix = "[PrivateConsultationParticipantsComponent] - ";
+    this.loggerPrefix = '[PrivateConsultationParticipantsComponent] - ';
   }
 
   ngOnInit(): void {
@@ -56,7 +56,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     this.logger.debug(`${this.loggerPrefix} Subscribing to RequestedConsultationMessage`);
     this.eventHubSubscriptions$.add(
         this.eventService.getRequestedConsultationMessage().subscribe(message => {
-            // Set "Calling..."
+            // Set 'Calling...'
             // No need to timeout here the text because when the notification times out it will send another event.
             if (message.roomLabel == this.roomLabel && message.conferenceId == this.conference.id) {
               this.participantCallStatuses[message.requestedFor] = 'Calling';
@@ -76,7 +76,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
   getRowClasses(participant: ParticipantResponse): string {
     let statusClasses = 'govuk-table__row';
     if (this.participantIsInCurrentRoom(participant)) {
-      return `${statusClasses} active`;
+      return `${statusClasses} yellow`;
     }
 
     return statusClasses;
@@ -86,11 +86,37 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     if (this.participantIsInCurrentRoom(participant)) {
       return '';
     }
-    if (participant.current_room?.label)
-    {
+    if (this.participantCallStatuses[participant.id] == 'Calling') {
+      return 'Calling...';
+    }
+    if (this.participantCallStatuses[participant.id] == ConsultationAnswer.Rejected) {
+      return 'Declined';
+    }
+    if (this.participantCallStatuses[participant.id] == ConsultationAnswer.Failed) {
+      return 'Failed';
+    }
+    if (this.participantCallStatuses[participant.id] == ConsultationAnswer.None) {
+      return 'No Answer';
+    }
+    if (participant.current_room?.label) {
       return this.camelToSpaced(participant.current_room?.label.replace('ParticipantConsultation', ''));
     }
-    return this.camelToSpaced(participant.status);
+
+    if (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) {
+      return 'Unavailable';
+    }
+  }
+
+  participantAvailable(participant: ParticipantResponse): boolean {
+    return !(participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation)
+  }
+
+  participantNameClass(participant: ParticipantResponse): string {
+    if (this.participantIsInCurrentRoom(participant)) {
+      return 'yellow';
+    }
+    
+    return this.participantAvailable(participant) ? 'white' : '';
   }
 
   participantIsInCurrentRoom(participant: ParticipantResponse): boolean {
@@ -98,15 +124,22 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
   }
 
   getParticipantStatusClasses(participant: ParticipantResponse): string {
-    switch (participant.status) {
-      case ParticipantStatus.InConsultation:
-        if (this.participantIsInCurrentRoom(participant)) {
-          return '';
-        }
-        return 'outline';
-      default:
-        return '';
+    if (this.participantCallStatuses[participant.id] == 'Calling') {
+      return 'yellow';
     }
+    if (this.participantCallStatuses[participant.id] == ConsultationAnswer.Rejected) {
+      return 'red';
+    }
+    if (this.participantCallStatuses[participant.id] == ConsultationAnswer.Failed) {
+      return 'red';
+    }
+    if (this.participantCallStatuses[participant.id] == ConsultationAnswer.None) {
+      return 'red';
+    }
+    if (participant.status == ParticipantStatus.InConsultation && !this.participantIsInCurrentRoom(participant)) {
+      return 'outline';
+    }
+    return 'white';
   }
 
   participantIsInRoom(participant: ParticipantResponse): boolean {

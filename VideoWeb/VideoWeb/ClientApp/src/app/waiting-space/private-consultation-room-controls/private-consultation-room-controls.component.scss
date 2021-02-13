@@ -20,6 +20,13 @@
   width: 80%;
 }
 
+.flexBar {
+  flex-basis: auto;
+  margin-right: 22px;
+  border-right: solid 1px rgba(255, 255, 255, 0.3);
+  height: 32px;
+}
+
 .judge-controls-container {
   float: left;
 }
@@ -62,6 +69,13 @@
 #toggle-handup-button .govuk-button--warning:focus {
   background-color: govuk-colour('red');
   color: govuk-colour('white');
+}
+
+.lockButton {
+  background-color: #505a5f;
+}
+.lockButton:focus {
+  background-color: govuk-colour('red');
 }
 
 .remote-container {

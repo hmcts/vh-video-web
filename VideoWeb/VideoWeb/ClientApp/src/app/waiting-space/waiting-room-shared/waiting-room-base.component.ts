@@ -238,13 +238,13 @@ export abstract class WaitingRoomBaseComponent {
         this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub room transfer`);
         this.eventHubSubscription$.add(
             this.eventService.getRoomTransfer().subscribe(async roomTransfer => {
-                const participant = this.conference.participants.find(p => p.id === roomTransfer.participantId);
+                const participant = this.conference.participants.find(p => p.id === roomTransfer.participant_id);
                 if (!participant) {
                     return;
                 }
 
-                const room = this.conferenceRooms.find(r => r.label === roomTransfer.toRoom);
-                participant.current_room = room ? new RoomSummaryResponse(room) : new RoomSummaryResponse({ label: roomTransfer.toRoom });
+                const room = this.conferenceRooms.find(r => r.label === roomTransfer.to_room);
+                participant.current_room = room ? new RoomSummaryResponse(room) : new RoomSummaryResponse({ label: roomTransfer.to_room });
             })
         );
 

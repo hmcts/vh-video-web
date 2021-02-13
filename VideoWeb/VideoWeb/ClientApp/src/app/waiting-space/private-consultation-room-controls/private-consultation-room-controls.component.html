@@ -44,6 +44,13 @@
           id="end-hearing-img" class="icon-btn icon-btn--end-hearing" src="/assets/images/hearing_end.png"
           alt="Close the hearing" (click)="displayConfirmationDialog()" />
 
+        <div class="flexBar"></div>
+          
+        <button *ngIf="showConsultationControls" id="leaveButton" class="small-button-red icon-button lockButton" data-module="govuk-button"
+        style="margin-right: 25px;" (click)="lockPrivateConsultation()" type="button">
+          Lock the room <i class="fas fa-lock-open-alt"></i>
+        </button>
+
         <button *ngIf="showConsultationControls" id="leaveButton" class="small-button-red icon-button" data-module="govuk-button"
           style="margin-right: 25px;" (click)="leavePrivateConsultation()" type="button"
           alt="Leave the private consultation">

@@ -30,7 +30,7 @@
 }
 
 .video-background {
-  background: #090909;
+  background: #1e1e1e;
   position: fixed;
   top: 0;
   left: 0;
@@ -38,6 +38,11 @@
   right: 0;
   overflow: auto;
   z-index: 11;
+}
+
+.header-bar {
+  box-shadow: 0px 5px 10px 0px rgb(0 0 0 / 70%);
+  box-shadow: 0px 20px 30px 0px rgb(0 0 0 / 30%);
 }
 
 .no-mass {

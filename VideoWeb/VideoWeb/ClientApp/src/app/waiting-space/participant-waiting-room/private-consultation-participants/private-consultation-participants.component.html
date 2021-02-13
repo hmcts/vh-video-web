@@ -1,20 +1,19 @@
 <div class="participant-wrapper">
+    <h4 class="govuk-heading-s white">Participants</h4>
     <table class="govuk-table participant-table">
-        <caption class="govuk-table__caption">Participants</caption>
         <tbody class="govuk-table__body">
             <tr *ngFor="let participant of nonJudgeParticipants" [class]="getRowClasses(participant)">
                 <td class="govuk-table__cell">
                     <app-invite-participant
+                        *ngIf="!participantIsInRoom(participant) && participantAvailable(participant)"
                         [participantId]="participant.id"
                         [conferenceId]="conference.id"
                         [roomLabel]="roomLabel">
                     </app-invite-participant>
-                    <div *ngIf="participantIsInRoom(participant)">
-                        <i class="fas fa-check" aria-hidden="true"></i>
-                    </div>
+                    <i *ngIf="participantIsInRoom(participant)" class="fas fa-check" aria-hidden="true"></i>
                 </td>
-                <td class="govuk-table__cell">{{participant.display_name}}</td>
-                <td class="govuk-table__cell"><span [class]="getParticipantStatusClasses(participant)">{{getParticipantStatus(participant)}}</span></td>
+                <td class="govuk-table__cell"><span [class]="participantNameClass(participant)">{{participant.display_name}}</span></td>
+                <td class="govuk-table__cell text-right"><span [class]="getParticipantStatusClasses(participant)">{{getParticipantStatus(participant)}}</span></td>
             </tr>
         </tbody>
     </table>

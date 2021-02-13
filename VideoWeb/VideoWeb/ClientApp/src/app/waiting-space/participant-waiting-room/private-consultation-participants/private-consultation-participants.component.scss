@@ -1,18 +1,31 @@
 @import '~govuk-frontend/govuk/base';
 
 .participant-table {
-  color: govuk-colour('white');
+  color: rgba(255, 255, 255, 0.5);
   font-size: 16px;
   .govuk-table__cell {
     border-bottom: 0.5px solid rgba(255, 255, 255, 0.2);
+    padding-top: 15px;
+    padding-bottom: 15px;
   }
 }
 
-.active {
-  color: govuk-colour('yellow');
+.text-right {
+  text-align: right;
 }
 
+.yellow {
+  color: govuk-colour('yellow');
+}
+.red {
+  color: govuk-colour('red');
+}
+.white {
+  color: rgba(255, 255, 255, 0.9);
+}
 .outline {
-  border: 2px solid govuk-colour('white');
+  border: 2px solid rgba(255, 255, 255, 0.9);
   border-radius: 2px;
+  padding: 4px;
+  color: rgba(255, 255, 255, 0.9);
 }
