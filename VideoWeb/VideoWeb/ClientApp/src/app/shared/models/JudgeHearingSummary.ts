@@ -29,4 +29,8 @@ export class JudgeHearingSummary extends HearingSummary {
     }
 
     numberOfEndpoints: number;
+
+    isExpired() {
+        return super.isExpired(this.conference.closed_date_time);
+    }
 }

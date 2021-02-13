@@ -127,7 +127,7 @@
         <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
         <strong class="govuk-warning-text__text">
           <span class="govuk-warning-text__assistive">Warning</span>
-          The consultation room will close at {{ hearing.expiryTime | date: 'HH:mm' }}
+          The consultation room will close at {{ hearing.retrieveExpiryTime() | date: 'HH:mm' }}
         </strong>
       </div>
     </div>
