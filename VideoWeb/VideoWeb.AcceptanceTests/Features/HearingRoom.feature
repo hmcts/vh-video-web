@@ -29,7 +29,8 @@ Scenario: Judge pauses and closes hearing
   And the participant is on the Hearing Room page for 1 minute
   When in the Judge's browser
   And the Judge closes the hearing
-	Then the user is on the Hearing List page
+	Then the user is on the Waiting Room page
+  Then the judge waiting room displays consultation room is available
 	And the hearing status changed to Closed
 
 @HearingTest @Smoketest-Extended @DisableLogging
@@ -46,7 +47,7 @@ Scenario: Two participants join hearing
 	And the first Representative can see the other participants
   When in the Judge's browser
   And the Judge closes the hearing
-	Then the user is on the Hearing List page
+	Then the user is on the Waiting Room page
 	And the hearing status changed to Closed
 	When in the first Individual's browser
 	Then the participants waiting room displays the closed status
@@ -69,7 +70,7 @@ Scenario: Four participants join hearing
 	And the second Representative can see the other participants
   When in the Judge's browser
   And the Judge closes the hearing
-	Then the user is on the Hearing List page
+	Then the user is on the Waiting Room page
 	And the hearing status changed to Closed
 	When in the first Individual's browser
 	Then the participants waiting room displays the closed status
@@ -83,7 +84,7 @@ Scenario: Audio Recording
 	And the countdown finishes
 	And the Judge is on the Hearing Room page for 20 seconds
   When the Judge closes the hearing
-	Then the user is on the Hearing List page
+	Then the user is on the Waiting Room page
 	And the hearing status changed to Closed
   And an audio recording of the hearing has been created
 
@@ -107,7 +108,7 @@ Scenario: VHO Monitors Hearing
   And the VHO can see that the Judge and the first Individual's participants are in the Hearing Room
   When in the Judge's browser
   When the Judge closes the hearing
-	Then the user is on the Hearing List page
+	Then the user is on the Waiting Room page
   When in the Video Hearings Officer's browser
   Then the VHO can see the Judge status is Disconnected
   And the VHO can see the status of participant the first Individual's is Available
@@ -128,7 +129,7 @@ Scenario: Observer and Panel Member join hearing
 	And the Panel Member can see the other participants
   When in the Judge's browser
   And the Judge closes the hearing
-	Then the user is on the Hearing List page
+	Then the user is on the Waiting Room page
 	And the hearing status changed to Closed
 	When in the Observer's browser
 	Then the participants waiting room displays the closed status
@@ -146,7 +147,7 @@ Scenario: Winger joins hearing
 	And the Winger can see the other participants
   When in the Judge's browser
   And the Judge closes the hearing
-	Then the user is on the Hearing List page
+	Then the user is on the Waiting Room page
 	And the hearing status changed to Closed
 	When in the Winger's browser
 	Then the participants waiting room displays the closed status
