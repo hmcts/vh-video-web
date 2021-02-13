@@ -66,7 +66,7 @@ export class HearingTimeReader {
             return null;
         }
 
-        let closed = moment(closedDateTime);
+        const closed = moment(closedDateTime);
         return closed.add(30, 'minutes');
     }
 
