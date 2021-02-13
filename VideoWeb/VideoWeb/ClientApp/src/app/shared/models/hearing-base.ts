@@ -6,6 +6,7 @@ export abstract class HearingBase {
 
     abstract get status(): ConferenceStatus;
     abstract get scheduledStartTime(): Date;
+    abstract get actualCloseTime(): Date | null;
 
     isReadyToStart(): boolean {
         return this.timeReader.isReadyToStart(this.scheduledStartTime);
@@ -31,6 +32,10 @@ export abstract class HearingBase {
         return this.timeReader.isClosed(this.status);
     }
 
+    isExpired(closedDateTime: Date): boolean {
+        return this.timeReader.isPastClosedTime(closedDateTime, this.status);
+    }
+
     isSuspended(): boolean {
         return this.timeReader.isSuspended(this.status);
     }
@@ -41,5 +46,9 @@ export abstract class HearingBase {
 
     isPaused(): boolean {
         return this.timeReader.isPaused(this.status);
+    }
+
+    retrieveExpiryTime(): Date | null {
+        return this.timeReader.retrieveHearingExpiryTime(this.actualCloseTime, this.status)?.toDate();
     }
 }

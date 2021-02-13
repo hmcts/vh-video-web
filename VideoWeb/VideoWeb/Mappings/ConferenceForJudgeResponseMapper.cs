@@ -27,6 +27,7 @@ namespace VideoWeb.Mappings
                 CaseNumber = conference.Case_number,
                 CaseType = conference.Case_type,
                 ScheduledDuration = conference.Scheduled_duration,
+                ClosedDateTime = conference.Closed_date_time,
                 ScheduledDateTime = conference.Scheduled_date_time,
                 Participants = conference.Participants.Select(_participantForJudgeResponseMapper.Map).ToList(),
                 NumberOfEndpoints = conference.Number_of_endpoints

@@ -1,10 +1,9 @@
-import * as moment from 'moment';
 import {
     ConferenceResponse,
-    ConferenceStatus,
-    Role,
     ConferenceResponseVho,
+    ConferenceStatus,
     ParticipantResponseVho,
+    Role,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { HearingBase } from './hearing-base';
@@ -81,13 +80,8 @@ export class Hearing extends HearingBase {
         return endTime;
     }
 
-    get expiryTime(): Date | null {
-        if (!this.isClosed) {
-            return null;
-        }
-        let closeTime = moment(this.conference.closed_date_time);
-        closeTime = closeTime.add(30, 'minutes');
-        return closeTime.toDate();
+    get actualCloseTime(): Date | null {
+        return this.conference.closed_date_time;
     }
 
     isPastClosedTime(): boolean {

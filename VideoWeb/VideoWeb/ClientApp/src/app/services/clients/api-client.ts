@@ -7,10 +7,10 @@
 //----------------------
 // ReSharper disable InconsistentNaming
 
-import { mergeMap as _observableMergeMap, catchError as _observableCatch } from 'rxjs/operators';
-import { Observable, throwError as _observableThrow, of as _observableOf } from 'rxjs';
-import { Injectable, Inject, Optional, InjectionToken } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
+import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
+import { Observable, of as _observableOf, throwError as _observableThrow } from 'rxjs';
+import { catchError as _observableCatch, mergeMap as _observableMergeMap } from 'rxjs/operators';
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
@@ -3893,6 +3893,7 @@ export class ConferenceForJudgeResponse implements IConferenceForJudgeResponse {
     /** Conference UUID */
     id?: string;
     scheduled_date_time?: Date;
+    closed_date_time?: Date | undefined;
     scheduled_duration?: number;
     case_type?: string | undefined;
     case_number?: string | undefined;
@@ -3915,6 +3916,7 @@ export class ConferenceForJudgeResponse implements IConferenceForJudgeResponse {
         if (_data) {
             this.id = _data['id'];
             this.scheduled_date_time = _data['scheduled_date_time'] ? new Date(_data['scheduled_date_time'].toString()) : <any>undefined;
+            this.closed_date_time = _data['closed_date_time'] ? new Date(_data['closed_date_time'].toString()) : <any>undefined;
             this.scheduled_duration = _data['scheduled_duration'];
             this.case_type = _data['case_type'];
             this.case_number = _data['case_number'];
@@ -3939,6 +3941,7 @@ export class ConferenceForJudgeResponse implements IConferenceForJudgeResponse {
         data = typeof data === 'object' ? data : {};
         data['id'] = this.id;
         data['scheduled_date_time'] = this.scheduled_date_time ? this.scheduled_date_time.toISOString() : <any>undefined;
+        data['closed_date_time'] = this.closed_date_time ? this.closed_date_time.toISOString() : <any>undefined;
         data['scheduled_duration'] = this.scheduled_duration;
         data['case_type'] = this.case_type;
         data['case_number'] = this.case_number;
@@ -3957,6 +3960,7 @@ export interface IConferenceForJudgeResponse {
     /** Conference UUID */
     id?: string;
     scheduled_date_time?: Date;
+    closed_date_time?: Date | undefined;
     scheduled_duration?: number;
     case_type?: string | undefined;
     case_number?: string | undefined;

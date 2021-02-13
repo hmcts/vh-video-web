@@ -15,13 +15,16 @@ describe('HearingSummary', () => {
         expect(hearing.id).toBe(c.id);
         expect(hearing.status).toBe(c.status);
         expect(hearing.caseName).toBe(c.case_name);
+        expect(hearing.caseType).toBe(c.case_type);
         expect(hearing.caseNumber).toBe(c.case_number);
         expect(hearing.scheduledStartTime).toEqual(c.scheduled_date_time);
+        expect(hearing.scheduledDuration).toEqual(c.scheduled_duration);
         expect(hearing.scheduledEndTime).toBeDefined();
         expect(hearing.hearingVenueName).toBe(c.hearing_venue_name);
         expect(hearing.startedDateTime).toEqual(c.started_date_time);
         expect(hearing.endedDateTime).toEqual(c.closed_date_time);
         expect(hearing.judgeName).toEqual('Judge Fudge');
+        expect(hearing.actualCloseTime).toEqual(c.closed_date_time);
     });
 
     it('should get applicant rep', () => {

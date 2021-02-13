@@ -39,12 +39,14 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Id = Guid.NewGuid())
                 .With(x => x.Participants = participants)
                 .With(x => x.Number_of_endpoints = 2)
+                .With(x => x.Closed_date_time = DateTime.UtcNow.AddMinutes(-10))
                 .Build();
 
             var response = _sut.Map(conference);
 
             response.Id.Should().Be(conference.Id);
             response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);
+            response.ClosedDateTime.Should().HaveValue().And.Be(conference.Closed_date_time);
             response.ScheduledDuration.Should().Be(conference.Scheduled_duration);
             response.CaseType.Should().Be(conference.Case_type);
             response.CaseNumber.Should().Be(conference.Case_number);
