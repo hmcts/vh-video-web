@@ -109,7 +109,7 @@ Scenario: Hearing Room page accessibility
 	Then the page should be accessible apart from a missing header
   When in the Judge's browser
   And the Judge closes the hearing
-	Then the user is on the Hearing List page
+	Then the user is on the Waiting Room page
 
 # Ignoring this test until we can upgrade to Angular 9. See VIH-6032 for more details
 @Ignore @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari

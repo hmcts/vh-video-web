@@ -152,3 +152,11 @@ Scenario: Winger joins hearing
 	When in the Winger's browser
 	Then the participants waiting room displays the closed status
 
+Scenario: Judge opens a closed hearing
+	Given the Judge user has progressed to the Waiting Room page
+	Then the user is on the Waiting Room page
+	When the Judge starts the hearing  
+  And the Judge closes the hearing 
+	When the user navigates back to the hearing list 
+  And  the user clicks on Consultation Room link
+  Then the judge waiting room displays consultation room is available
