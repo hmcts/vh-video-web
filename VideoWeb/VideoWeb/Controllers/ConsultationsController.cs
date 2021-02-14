@@ -95,7 +95,7 @@ namespace VideoWeb.Controllers
                 var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedById);
                 if (participant == null)
                 {
-                    return NotFound();
+                    //return NotFound();
                 }
 
                 var adminConsultationRequestMapper = _mapperFactory.Get<PrivateConsultationRequest, ConsultationRequestResponse>();

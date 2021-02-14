@@ -186,7 +186,11 @@ export abstract class WaitingRoomBaseComponent {
         this.logger.debug(`${this.loggerPrefix} Subscribing to ConsultationRequestResponseMessage`);
         this.eventHubSubscription$.add(
             this.eventService.getConsultationRequestResponseMessage().subscribe(message => {
+                console.log('############### waiting-room-base : getConsultationRequestResponseMessage ');
+                console.log('############### waiting-room-base : Answer : ' + message.answer);
+                console.log('############### waiting-room-base : requestedFor : ' + message.requestedFor);
                 if (message.answer && message.answer === ConsultationAnswer.Accepted && message.requestedFor === this.participant.id) {
+                    console.log('############### waiting-room-base : getConsultationRequestResponseMessage : accepted ');
                     this.onConsultationAccepted();
                 }
             })
@@ -199,7 +203,11 @@ export abstract class WaitingRoomBaseComponent {
                 if (requestedFor.id === this.participant.id) {
                     // A request for you to join a consultation room
                     this.logger.debug(`${this.loggerPrefix} Recieved RequestedConsultationMessage`);
-                    const requestedBy = new Participant(this.findParticipant(message.requestedBy));
+                    const requestedParticipant = this.findParticipant(message.requestedBy);
+                    const requestedBy =
+                        requestedParticipant === undefined || requestedParticipant === null
+                            ? null
+                            : new Participant(this.findParticipant(message.requestedBy));
                     const roomParticipants = this.findParticipantsInRoom(message.roomLabel).map(x => new Participant(x));
                     this.notificationToastrService.showConsultationInvite(
                         message.roomLabel,
@@ -280,17 +288,19 @@ export abstract class WaitingRoomBaseComponent {
         this.displayStartPrivateConsultationModal = false;
         this.displayJoinPrivateConsultationModal = false;
 
-        if (this.displayDeviceChangeModal) {
-            this.logger.debug(`${this.loggerPrefix} Participant accepted a consultation. Closing change device modal.`);
-            const preferredCamera = await this.userMediaService.getPreferredCamera();
-            const preferredMicrophone = await this.userMediaService.getPreferredMicrophone();
-            const preferredCameraStream = await this.userMediaStreamService.getStreamForCam(preferredCamera);
-            const preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(preferredMicrophone);
+        //console.log('############### waiting-room-base : onConsultationAccepted : ' + this.displayDeviceChangeModal);
+        //this.displayDeviceChangeModal
+        //if (true) {
+        this.logger.debug(`${this.loggerPrefix} Participant accepted a consultation. Closing change device modal.`);
+        const preferredCamera = await this.userMediaService.getPreferredCamera();
+        const preferredMicrophone = await this.userMediaService.getPreferredMicrophone();
+        const preferredCameraStream = await this.userMediaStreamService.getStreamForCam(preferredCamera);
+        const preferredMicrophoneStream = await this.userMediaStreamService.getStreamForMic(preferredMicrophone);
 
-            this.userMediaStreamService.stopStream(preferredCameraStream);
-            this.userMediaStreamService.stopStream(preferredMicrophoneStream);
-            this.displayDeviceChangeModal = false;
-        }
+        this.userMediaStreamService.stopStream(preferredCameraStream);
+        this.userMediaStreamService.stopStream(preferredMicrophoneStream);
+        //this.displayDeviceChangeModal = false;
+        //}
     }
 
     async handleEventHubDisconnection(reconnectionAttempt: number) {

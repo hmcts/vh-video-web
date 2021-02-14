@@ -25,14 +25,20 @@ namespace VideoWeb.EventHub.Handlers
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             var targetRoom = ValidationConsultationRoom(callbackEvent);
-            return HubContext.Clients.Group(SourceParticipant.Username.ToLowerInvariant())
-                .ConsultationRequestResponseMessage(SourceConference.Id, targetRoom,
-                    SourceParticipant.Id, Common.Models.ConsultationAnswer.None);
+
+            var tasks = HubContext.Clients.Group(SourceParticipant.Username.ToLowerInvariant())
+                        .RequestedConsultationMessage(SourceConference.Id, targetRoom, Guid.NewGuid(), SourceParticipant.Id);
+            return Task.WhenAll(tasks);
+            
+            //return HubContext.Clients.Group(SourceParticipant.Username.ToLowerInvariant())
+            //    .ConsultationRequestResponseMessage(SourceConference.Id, targetRoom,
+            //        SourceParticipant.Id, Common.Models.ConsultationAnswer.None);
+            
         }
 
         private string ValidationConsultationRoom(CallbackEvent callbackEvent)
         {
-            if (string.IsNullOrWhiteSpace(callbackEvent.TransferTo) || !callbackEvent.TransferTo.Contains("consultation"))
+            if (string.IsNullOrWhiteSpace(callbackEvent.TransferTo) || !callbackEvent.TransferTo.ToLower().Contains("consultation"))
             {
                 throw new ArgumentException("No consultation room provided");
             }
