@@ -48,7 +48,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
                 if (this.participantCallStatuses[message.requestedFor] == message.answer) {
                   this.participantCallStatuses[message.requestedFor] = null;
                 }
-              }, 5000);
+              }, 10000);
             }
         })
     );
@@ -103,7 +103,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     if (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) {
-      return 'Unavailable';
+      return 'Not available';
     }
   }
 

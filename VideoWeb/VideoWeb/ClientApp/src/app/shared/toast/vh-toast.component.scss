@@ -1,25 +1,60 @@
 @import '~govuk-frontend/govuk/all';
 
 :host {
-    background-color: black;
-    position: relative;
-    overflow: hidden;
-    padding: 10px 10px 10px 10px;
-    width: 250px;
-    border-radius: 2px;
-    color: #FFFFFF;
-    display: flex;
-    flex-direction: column;
+  font-size: 0.9em;
+  position: relative;
+  overflow: hidden;
+  padding: 20px !important;
+  width: 180px !important;
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  font-family: 'GDS Transport', arial, sans-serif;
+
+  &.black {
+    background: #1e1e1e;
+    color: govuk-colour('white');
   }
 
-  .content {
-      margin-bottom: 5px;
+  &.white {
+    background: govuk-colour('white');
+    color: govuk-colour('black');
   }
-  .actions {
-    display: flex;
+}
 
-    .action {
-        flex: 0 0 auto;
-        padding: 5px;
+.content {
+  margin-bottom: 5px;
+}
+
+.actions {
+  margin-top: 1em;
+  display: flex;
+  justify-content: space-around;
+
+  .action {
+    flex: 0 0 auto;
+    padding: 5px;
+  }
+}
+
+.small-button {
+  padding: 6px 10px;
+  border: transparent 1px;
+  border-radius: 2px;
+  vertical-align: top;
+  cursor: pointer;
+
+  &.grey {
+    color: #ffffff;
+    background: rgba(80, 90, 95, 1);
+    &:hover {
+      background: rgba(80, 90, 95, 0.7);
     }
   }
+  &.green:hover {
+    background: govuk-colour('green');
+  }
+  &.red:hover {
+    background: govuk-colour('red');
+  }
+}

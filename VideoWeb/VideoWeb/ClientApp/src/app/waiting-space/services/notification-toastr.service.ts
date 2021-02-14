@@ -19,6 +19,8 @@ export class NotificationToastrService {
         this.notificationSoundService.initConsultationRequestRingtone();
     }
 
+    activeRoomInviteRequests = [];
+
     showConsultationInvite(
         roomLabel: string,
         conferenceId: string,
@@ -27,22 +29,31 @@ export class NotificationToastrService {
         participants: Participant[],
         inHearing: boolean
     ) {
+        let inviteKey = `${conferenceId}_${roomLabel}`;
+        if (this.activeRoomInviteRequests.indexOf(inviteKey) >= 0) {
+            return;
+        }
+        this.activeRoomInviteRequests.push(inviteKey);
         this.logger.debug(`${this.loggerPrefix} creating 'showConsultationInvite' toastr notification`);
         if (!inHearing) {
             this.notificationSoundService.playConsultationRequestRingtone();
         }
+
         let message = `<span class="govuk-!-font-weight-bold">Call from ${requestedBy.displayName}</span>`;
         let participantsList = participants
             .filter(p => p.id !== requestedBy.id)
             .map(p => p.displayName)
-            .join('\n');
+            .join('<br/>');
         if (participantsList) {
-            participantsList = `with\n${participantsList}`;
-            message += `\nwith\n${participantsList}`;
+            message += `<br/>with<br/>${participantsList}`;
         }
 
         let respondToConsultationRequest = async (answer: ConsultationAnswer) => {
             this.logger.info(`${this.loggerPrefix} Responding to consultation request with ${answer}`);
+
+            let index = this.activeRoomInviteRequests.indexOf(inviteKey);
+            this.activeRoomInviteRequests.splice(index, 1);
+
             await this.consultationService.respondToConsultationRequest(conferenceId, requestedBy.id, requestedFor.id, answer, roomLabel);
         };
 
@@ -64,6 +75,7 @@ export class NotificationToastrService {
             buttons: [
                 {
                     label: 'Accept',
+                    hoverColour: 'green',
                     action: async () => {
                         respondToConsultationRequest(ConsultationAnswer.Accepted);
                         this.clearAllToastNotifications();
@@ -71,6 +83,7 @@ export class NotificationToastrService {
                 },
                 {
                     label: 'Decline',
+                    hoverColour: 'red',
                     action: async () => {
                         respondToConsultationRequest(ConsultationAnswer.Rejected);
                         if (this.toastr.toasts.length === 1) {

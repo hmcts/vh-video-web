@@ -207,7 +207,7 @@ export abstract class WaitingRoomBaseComponent {
                         requestedBy,
                         requestedFor,
                         roomParticipants,
-                        this.hearing.isInSession()
+                        this.participant.status !== ParticipantStatus.Available
                     );
                 }
             })

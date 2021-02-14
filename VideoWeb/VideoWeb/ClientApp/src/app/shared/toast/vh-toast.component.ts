@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostBinding } from '@angular/core';
 import { ToastrService, Toast, ToastPackage } from 'ngx-toastr';
 
 interface VhToastOptions {
@@ -11,6 +11,7 @@ interface VhToastOptions {
 
 interface VhToastButton {
     label: string;
+    hoverColour?: 'red' | 'green';
     action: () => void;
 }
 
@@ -20,6 +21,8 @@ interface VhToastButton {
     styleUrls: ['./vh-toast.component.scss']
 })
 export class VhToastComponent extends Toast {
+    @HostBinding('class.black') get black() { return this.vhToastOptions.color === 'black' }
+    @HostBinding('class.white') get white() { return this.vhToastOptions.color === 'white' }
     vhToastOptions: VhToastOptions;
     actioned = false;
 
