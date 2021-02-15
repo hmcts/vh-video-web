@@ -50,8 +50,6 @@ export class Participant {
     }
 
     get hearingRoleText(): string {
-        return this.representee
-            ? `${this.base.hearing_role} for ${this.representee}`
-            : this.base.hearing_role;
+        return this.representee ? `${this.base.hearing_role} for ${this.representee}` : this.base.hearing_role;
     }
 }

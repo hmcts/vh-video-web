@@ -1,6 +1,7 @@
 import { OnDestroy, OnInit } from '@angular/core';
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { AdalService } from 'adal-angular4';
+import { Guid } from 'guid-typescript';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -17,11 +18,12 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
 import { individualTestProfile, judgeTestProfile } from 'src/app/testing/data/test-profiles';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
 import {
-    consultationRequestResponseMessageSubjectMock,
+    requestedConsultationMessageSubjectMock,
     eventsServiceSpy,
     participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
@@ -66,10 +68,8 @@ describe('WaitingRoom ParticipantList Base', () => {
     let consultationService: jasmine.SpyObj<ConsultationService>;
     const eventsService = eventsServiceSpy;
     const judgeProfile = judgeTestProfile;
-    const indProfile = individualTestProfile;
     const logger: Logger = new MockLogger();
     let conference: ConferenceResponse;
-    const consultationRequestResponseMessageSubject = consultationRequestResponseMessageSubjectMock;
     const participantStatusSubject = participantStatusSubjectMock;
 
     beforeAll(() => {
@@ -192,23 +192,6 @@ describe('WaitingRoom ParticipantList Base', () => {
         expect(component.eventHubSubscriptions$.closed).toBe(true);
     });
 
-    it('should logged in user as requester', () => {
-        const result = component.getConsultationRequester();
-        expect(result.id).toBe(component.loggedInUser.participant_id);
-    });
-
-    it('should not display vho consultation request when participant is unavailable', fakeAsync(() => {
-        const index = component.conference.participants.findIndex(x => x.id === component.loggedInUser.participant_id);
-        component.conference.participants[index].status = ParticipantStatus.InHearing;
-        const payload = new ConsultationRequestResponseMessage(conference.id, 'AdminRoom', judgeProfile.username, null);
-
-        spyOn(logger, 'debug');
-        consultationRequestResponseMessageSubject.next(payload);
-        flushMicrotasks();
-
-        expect(logger.debug).toHaveBeenCalled();
-    }));
-
     it('should close all open modals when current user is transferred to a consultation room', fakeAsync(() => {
         consultationService.clearModals.calls.reset();
         const loggedInUser = component.conference.participants.find(x => x.id === component.loggedInUser.participant_id);
@@ -228,5 +211,4 @@ describe('WaitingRoom ParticipantList Base', () => {
 
         expect(consultationService.clearModals).toHaveBeenCalledTimes(0);
     });
-
 });

@@ -13,8 +13,7 @@ export class InviteParticipantComponent {
 
     tooltip: string;
 
-    constructor(private consultationService: ConsultationService) {
-    }
+    constructor(private consultationService: ConsultationService) {}
 
     inviteParticipant() {
         this.consultationService.inviteToConsulation(this.conferenceId, this.roomLabel, this.participantId);

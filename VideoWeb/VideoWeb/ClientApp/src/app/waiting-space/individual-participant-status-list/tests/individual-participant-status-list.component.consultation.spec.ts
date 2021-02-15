@@ -191,7 +191,6 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         });
         const panelMember = component.conference.participants.find(x => x.hearing_role === HearingRole.PANEL_MEMBER);
         component.loggedInUser.participant_id = panelMember.id;
-        expect(component.getConsultationRequester().id).toBe(panelMember.id);
 
         const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, id: '12345' });
         expect(component.canCallParticipant(participant)).toBeFalsy();
@@ -205,7 +204,6 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         });
         const wingerMember = component.conference.participants.find(x => x.hearing_role === HearingRole.WINGER);
         component.loggedInUser.participant_id = wingerMember.id;
-        expect(component.getConsultationRequester().id).toBe(wingerMember.id);
 
         const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, id: '12345' });
         expect(component.canCallParticipant(participant)).toBeFalsy();
@@ -219,7 +217,6 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         });
         const witnessMember = component.conference.participants.find(x => x.hearing_role === HearingRole.WITNESS);
         component.loggedInUser.participant_id = witnessMember.id;
-        expect(component.getConsultationRequester().id).toBe(witnessMember.id);
 
         const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, id: '1234' });
         expect(component.canCallParticipant(participant)).toBeFalsy();

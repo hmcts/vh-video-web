@@ -114,7 +114,5 @@ export function initAllWRDependencies() {
         'initHearingAlertSound',
         'stopHearingAlertSound'
     ]);
-    notificationToastrService = jasmine.createSpyObj<NotificationToastrService>('NotificationToastrService', [
-        'showConsultationInvite'
-    ]);
+    notificationToastrService = jasmine.createSpyObj<NotificationToastrService>('NotificationToastrService', ['showConsultationInvite']);
 }

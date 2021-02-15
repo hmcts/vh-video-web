@@ -32,10 +32,16 @@ import { StartPrivateConsultationComponent } from '../waiting-space/participant-
 import { JoinPrivateConsultationComponent } from '../waiting-space/participant-waiting-room/join-private-consultation/join-private-consultation.component';
 
 @NgModule({
-    imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, SharedRoutingModule,
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        HttpClientModule,
+        SharedRoutingModule,
         ToastrModule.forRoot({
-            toastComponent: VhToastComponent,
-        })],
+            toastComponent: VhToastComponent
+        })
+    ],
     declarations: [
         HeaderComponent,
         FooterComponent,
