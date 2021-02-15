@@ -3148,6 +3148,7 @@ export class ConferenceForJudgeResponse implements IConferenceForJudgeResponse {
     /** Conference UUID */
     id?: string;
     scheduled_date_time?: Date;
+    closed_date_time?: Date | undefined;
     scheduled_duration?: number;
     case_type?: string | undefined;
     case_number?: string | undefined;
@@ -3171,6 +3172,7 @@ export class ConferenceForJudgeResponse implements IConferenceForJudgeResponse {
         if (_data) {
             this.id = _data["id"];
             this.scheduled_date_time = _data["scheduled_date_time"] ? new Date(_data["scheduled_date_time"].toString()) : <any>undefined;
+            this.closed_date_time = _data["closed_date_time"] ? new Date(_data["closed_date_time"].toString()) : <any>undefined;
             this.scheduled_duration = _data["scheduled_duration"];
             this.case_type = _data["case_type"];
             this.case_number = _data["case_number"];
@@ -3196,6 +3198,7 @@ export class ConferenceForJudgeResponse implements IConferenceForJudgeResponse {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["scheduled_date_time"] = this.scheduled_date_time ? this.scheduled_date_time.toISOString() : <any>undefined;
+        data["closed_date_time"] = this.closed_date_time ? this.closed_date_time.toISOString() : <any>undefined;
         data["scheduled_duration"] = this.scheduled_duration;
         data["case_type"] = this.case_type;
         data["case_number"] = this.case_number;
@@ -3215,6 +3218,7 @@ export interface IConferenceForJudgeResponse {
     /** Conference UUID */
     id?: string;
     scheduled_date_time?: Date;
+    closed_date_time?: Date | undefined;
     scheduled_duration?: number;
     case_type?: string | undefined;
     case_number?: string | undefined;
@@ -3448,6 +3452,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
     closed_date_time?: Date | undefined;
     telephone_conference_id?: string | undefined;
     telephone_conference_number?: string | undefined;
+    created_date_time?: Date | undefined;
 
     constructor(data?: IConferenceForVhOfficerResponse) {
         if (data) {
@@ -3477,6 +3482,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
             this.closed_date_time = _data["closed_date_time"] ? new Date(_data["closed_date_time"].toString()) : <any>undefined;
             this.telephone_conference_id = _data["telephone_conference_id"];
             this.telephone_conference_number = _data["telephone_conference_number"];
+            this.created_date_time = _data["created_date_time"] ? new Date(_data["created_date_time"].toString()) : <any>undefined;
         }
     }
 
@@ -3506,6 +3512,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
         data["closed_date_time"] = this.closed_date_time ? this.closed_date_time.toISOString() : <any>undefined;
         data["telephone_conference_id"] = this.telephone_conference_id;
         data["telephone_conference_number"] = this.telephone_conference_number;
+        data["created_date_time"] = this.created_date_time ? this.created_date_time.toISOString() : <any>undefined;
         return data; 
     }
 }
@@ -3527,6 +3534,7 @@ export interface IConferenceForVhOfficerResponse {
     closed_date_time?: Date | undefined;
     telephone_conference_id?: string | undefined;
     telephone_conference_number?: string | undefined;
+    created_date_time?: Date | undefined;
 }
 
 /** Information about a participant in a conference */
@@ -4003,6 +4011,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     video_api_url?: string | undefined;
     app_insights_instrumentation_key?: string | undefined;
     event_hub_path?: string | undefined;
+    join_by_phone_from_date?: string | undefined;
 
     constructor(data?: IClientSettingsResponse) {
         if (data) {
@@ -4022,6 +4031,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
             this.video_api_url = _data["video_api_url"];
             this.app_insights_instrumentation_key = _data["app_insights_instrumentation_key"];
             this.event_hub_path = _data["event_hub_path"];
+            this.join_by_phone_from_date = _data["join_by_phone_from_date"];
         }
     }
 
@@ -4041,6 +4051,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         data["video_api_url"] = this.video_api_url;
         data["app_insights_instrumentation_key"] = this.app_insights_instrumentation_key;
         data["event_hub_path"] = this.event_hub_path;
+        data["join_by_phone_from_date"] = this.join_by_phone_from_date;
         return data; 
     }
 }
@@ -4054,6 +4065,7 @@ export interface IClientSettingsResponse {
     video_api_url?: string | undefined;
     app_insights_instrumentation_key?: string | undefined;
     event_hub_path?: string | undefined;
+    join_by_phone_from_date?: string | undefined;
 }
 
 /** Leave a private consultation */
