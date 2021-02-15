@@ -18,6 +18,9 @@ java:
       secrets:
         - connectionstrings--signalr
         - azuread--vhvideowebclientid
+        - connectionstrings--rediscache
+        - wowzaconfiguration--storageaccountkey
+        - testing--testuserpassword
     vh-video-web:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
@@ -39,13 +42,22 @@ java:
     AZUREAD__VHVIDEOWEBRESOURCEID: https://vh-video-web.{{ .Values.global.environment }}.hearings.reform.hmcts.net
     DISABLEHTTPSREDIRECTION: true
     MSDEPLOY_RENAME_LOCKED_FILES: 1
+    TESTING__TESTUSERNAMESTEM: "@hearings.reform.hmcts.net"
     VHSERVICES__BOOKINGSAPIRESOURCEID: https://vh-bookings-api.{{ .Values.global.environment }}.platform.hmcts.net
     VHSERVICES__BOOKINGSAPIURL: https://vh-bookings-api.{{ .Values.global.environment }}.platform.hmcts.net
+    VHSERVICES__TESTAPIRESOURCEID: https://vh-test-api.{{ .Values.global.environment }}.platform.hmcts.net
+    VHSERVICES__TESTAPIURL:  https://vh-test-api.{{ .Values.global.environment }}.platform.hmcts.net
     VHSERVICES__USERAPIRESOURCEID: https://vh-user-api.{{ .Values.global.environment }}.platform.hmcts.net
     VHSERVICES__USERAPIURL: https://vh-user-api.{{ .Values.global.environment }}.platform.hmcts.net
     VHSERVICES__VIDEOAPIESOURCEID: https://vh-video-api.{{ .Values.global.environment }}.platform.hmcts.net
     VHSERVICES__VIDEOAPIURL: https://vh-video-api.{{ .Values.global.environment }}.platform.hmcts.net
+    VHSERVICES__VIDEOWEBAPIURL: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net
+    VHSERVICES__VIDEOWEBRESOURCEID: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net
+    VHSERVICES__VIDEOURL: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net
     VideoAppUrl: https://vh-video-web.{{ .Values.global.environment }}.hearings.reform.hmcts.net
+    WOWZACONFIGURATION__STORAGEACCOUNTNAME: vhwowza{{ .Values.global.environment }}
+    WOWZACONFIGURATION__STORAGECONTAINERNAME: recordings
     Logging__LogLevel__Default: debug
     Logging__LogLevel__System: debug
     Logging__LogLevel__Microsoft: debug
+ 
