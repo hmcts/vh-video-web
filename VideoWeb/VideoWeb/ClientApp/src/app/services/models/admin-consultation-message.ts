@@ -1,4 +1,4 @@
-import { RoomType, ConsultationAnswer } from '../clients/api-client';
+import { ConsultationAnswer, RoomType } from '../clients/api-client';
 
 export class AdminConsultationMessage {
     constructor(conferenceId: string, roomType: RoomType, requestedFor: string, answer?: ConsultationAnswer) {

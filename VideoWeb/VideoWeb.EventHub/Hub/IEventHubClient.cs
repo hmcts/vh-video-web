@@ -14,7 +14,7 @@ namespace VideoWeb.EventHub.Hub
         Task ConferenceStatusMessage(Guid conferenceId, ConferenceStatus conferenceState);
         Task CountdownFinished(Guid conferenceId);
         Task ConsultationMessage(Guid conferenceId, string requestedBy, string requestedFor, ConsultationAnswer? result);
-        Task AdminConsultationMessage(Guid conferenceId, RoomType room, string requestedFor, ConsultationAnswer? answer = null);
+        Task AdminConsultationMessage(Guid conferenceId, RoomType room, Guid requestedFor, ConsultationAnswer? answer = null);
         Task HelpMessage(Guid conferenceId, string participantName);
         Task ReceiveMessage(Guid conferenceId, string from, string to, string message, DateTime timestamp, Guid messageId);
         Task AdminAnsweredChat(Guid conferenceId, string username);

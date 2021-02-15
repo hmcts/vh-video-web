@@ -102,7 +102,7 @@
       {{ getConferenceStatusText() }}
     </h1>
 
-    <app-select-hearing-layout [conference]="conference"></app-select-hearing-layout>
+    <app-select-hearing-layout *ngIf="!hearing.isClosed()" [conference]="conference"></app-select-hearing-layout>
 
     <h2 class="govuk-heading-m" *ngIf="isNotStarted()">Is everyone connected?</h2>
 
@@ -119,7 +119,20 @@
       The video hearings team has been alerted and we're informing the participants. Please call us now on <strong>0300 303 0655</strong>.
     </p>
 
-    <p class="govuk-body govuk-body govuk-!-margin-bottom-6 govuk-!-margin-top-6">
+    <div *ngIf="hearing.isClosed()">
+      <p class="govuk-body govuk-!-margin-bottom-3">
+        The consultation room is available for up to 30 minutes after the hearing has finished.
+      </p>
+      <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-warning-text__assistive">Warning</span>
+          The consultation room will close at {{ hearing.retrieveExpiryTime() | date: 'HH:mm' }}
+        </strong>
+      </div>
+    </div>
+
+    <p *ngIf="!hearing.isClosed()" class="govuk-body govuk-body govuk-!-margin-bottom-6 govuk-!-margin-top-6">
       <span class="govuk-button__start-icon vh-left">
         <img
           id="recording-on-img"
@@ -137,8 +150,8 @@
       <button
         [disabled]="!connected"
         *ngIf="isNotStarted()"
-        type="submit"
-        class="govuk-button govuk-button--start"
+        type="button"
+        class="govuk-button govuk-button--start govuk-!-margin-right-3 vh-btn-text"
         (click)="displayConfirmStartPopup()"
       >
         Start video hearing
@@ -146,26 +159,25 @@
       <button
         [disabled]="!connected"
         *ngIf="hearingPaused() || hearingSuspended()"
-        type="submit"
-        class="govuk-button govuk-button--start"
+        type="button"
+        class="govuk-button govuk-button--start govuk-!-margin-right-3 vh-btn-text"
         (click)="displayConfirmStartPopup()"
       >
         Resume video hearing
       </button>
-      <a
-        href="javascript:void(0)"
-        class="govuk-button govuk-button--bigblue govuk-!-margin-left-3"
-        role="button"
-        draggable="false"
+      <button
+        class="govuk-button govuk-button--bigblue vh-btn-text"
+        type="button"
         id="joinPCButton"
         data-module="govuk-button"
         (click)="joinJudicialConsultation()"
+        [disabled]="!connected"
       >
         Enter consultation room
         <span *ngIf="numberOfJudgeOrJOHsInConsultation" id="numberOfJohsInConsultationBadge" class="badge">{{
           numberOfJudgeOrJOHsInConsultation
         }}</span>
-      </a>
+      </button>
     </div>
   </div>
 
@@ -175,7 +187,7 @@
   </div>
 </div>
 
-<app-participant-chat *ngIf="isIMEnabled" [hearing]="hearing" [alwaysOn]="hearing.isInSession()"></app-participant-chat>
+<app-participant-chat *ngIf="isIMEnabled && !isAdminConsultation" [hearing]="hearing" [alwaysOn]="hearing.isInSession()"></app-participant-chat>
 
 <app-select-media-devices
   *ngIf="displayDeviceChangeModal"

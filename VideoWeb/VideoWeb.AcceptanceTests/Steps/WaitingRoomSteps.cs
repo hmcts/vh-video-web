@@ -287,6 +287,15 @@ namespace VideoWeb.AcceptanceTests.Steps
             int.Parse(_browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.NumberOfJohsInConsultaionRoom).Text).Should().Be(numberOfPeople);
         }
 
+        
+        [Then(@"the judge waiting room displays consultation room is available")]
+        public void ThenTheJudgeWaitingRoomDisplaysConsultationRoomIsAvailable()
+        {
+            var closeTime = _c.TimeZone.Adjust(DateTime.Now.AddMinutes(30)).ToString(DateFormats.WaitingRoomPageTime);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.ConsultationRoomText).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.ConsultationRoomCloseText(closeTime)).Displayed.Should().BeTrue();
+        }
+
         private void CheckParticipantsAreStillConnected()
         {
             var loggedInParticipants = LoggedInParticipants(_browsers.Keys, _c.Test.ConferenceParticipants);

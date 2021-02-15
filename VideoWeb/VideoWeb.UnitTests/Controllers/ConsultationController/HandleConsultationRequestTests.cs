@@ -107,9 +107,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
             _mocker.Mock<IEventHubClient>().Verify(
-                x => x.AdminConsultationMessage
-                    (It.IsAny<Guid>(), It.IsAny<RoomType>(), It.IsAny<string>(), It.IsAny<ConsultationAnswer>()),
-                Times.Never);
+                x => x.AdminConsultationMessage(It.IsAny<Guid>(), It.IsAny<RoomType>(), It.IsAny<Guid>(),
+                    It.IsAny<ConsultationAnswer>()), Times.Never);
         }
 
         [Test]
@@ -157,8 +156,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             typedResult.Should().NotBeNull();
 
             _mocker.Mock<IEventHubClient>().Verify(x => x.ConsultationMessage(_testConference.Id,
-                _testConference.Participants[1].Username,
-                _testConference.Participants[2].Username, null));
+                _testConference.Participants[1].Id.ToString(),
+                _testConference.Participants[2].Id.ToString(), null));
         }
 
         [TestCase(ConsultationAnswer.Cancelled)]

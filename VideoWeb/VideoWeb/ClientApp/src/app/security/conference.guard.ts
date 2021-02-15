@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
 import { VideoWebService } from '../services/api/video-web.service';
-import { ConferenceStatus } from '../services/clients/api-client';
 import { Logger } from '../services/logging/logger-base';
+import { Hearing } from '../shared/models/hearing';
 import { pageUrls } from '../shared/page-url.constants';
 
 @Injectable({
@@ -16,10 +16,10 @@ export class ConferenceGuard implements CanActivate {
         this.logger.debug(`[ConferenceGuard] Checking if user can view conference ${conferenceId}`);
         try {
             const data = await this.videoWebService.getConferenceById(conferenceId);
-
-            if (data.status === ConferenceStatus.Closed) {
-                this.logger.info('[ConferenceGuard] Returning back to hearing list because status closed');
-                this.router.navigate([pageUrls.Home]);
+            const hearing = new Hearing(data);
+            if (hearing.isPastClosedTime()) {
+                this.logger.info('[ConferenceGuard] Returning back to hearing list because hearing has been closed for over 30 minutes.');
+                this.router.navigate([pageUrls.JudgeHearingList]);
 
                 return false;
             }

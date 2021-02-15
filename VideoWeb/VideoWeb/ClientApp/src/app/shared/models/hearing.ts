@@ -1,9 +1,9 @@
 import {
     ConferenceResponse,
-    ConferenceStatus,
-    Role,
     ConferenceResponseVho,
+    ConferenceStatus,
     ParticipantResponseVho,
+    Role,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { HearingBase } from './hearing-base';
@@ -78,6 +78,10 @@ export class Hearing extends HearingBase {
         const endTime = new Date(this.conference.scheduled_date_time.getTime());
         endTime.setUTCMinutes(endTime.getUTCMinutes() + this.conference.scheduled_duration);
         return endTime;
+    }
+
+    get actualCloseTime(): Date | null {
+        return this.conference.closed_date_time;
     }
 
     isPastClosedTime(): boolean {

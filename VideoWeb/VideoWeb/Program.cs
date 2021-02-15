@@ -2,6 +2,7 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using VH.Core.Configuration;
 
 namespace VideoWeb
 {
@@ -11,11 +12,20 @@ namespace VideoWeb
         {
             CreateWebHostBuilder(args).Build().Run();
         }
-        
+
         private static IHostBuilder CreateWebHostBuilder(string[] args)
         {
+            const string vhInfraCore = "/mnt/secrets/vh-infra-core";
+            const string vhVideoWeb = "/mnt/secrets/vh-video-web";
+
             return Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => {
+                .ConfigureAppConfiguration((configBuilder) =>
+                {
+                    configBuilder.AddAksKeyVaultSecretProvider(vhInfraCore);
+                    configBuilder.AddAksKeyVaultSecretProvider(vhVideoWeb);
+                })
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
                     webBuilder.UseContentRoot(Directory.GetCurrentDirectory());
                     webBuilder.UseIISIntegration();
                     webBuilder.UseStartup<Startup>();
@@ -26,6 +36,11 @@ namespace VideoWeb
                             .AddFilter<Microsoft.Extensions.Logging.ApplicationInsights.
                                     ApplicationInsightsLoggerProvider>
                                 ("", LogLevel.Trace);
+                    });
+                    webBuilder.ConfigureAppConfiguration(configBuilder =>
+                    {
+                        configBuilder.AddAksKeyVaultSecretProvider(vhInfraCore);
+                        configBuilder.AddAksKeyVaultSecretProvider(vhVideoWeb);
                     });
                 });
         }

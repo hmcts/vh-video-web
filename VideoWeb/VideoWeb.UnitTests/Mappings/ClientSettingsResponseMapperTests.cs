@@ -2,6 +2,7 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Common.Configuration;
+using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Mappings;
 
 namespace VideoWeb.UnitTests.Mappings
@@ -16,8 +17,9 @@ namespace VideoWeb.UnitTests.Mappings
                 .Build();
             
             var servicesConfiguration = Builder<HearingServicesConfiguration>.CreateNew().Build();
+            var kinlyConfiguration = Builder<KinlyConfiguration>.CreateNew().Build();
 
-            var response = _sut.Map(azureAdConfiguration, servicesConfiguration);
+            var response = _sut.Map(azureAdConfiguration, servicesConfiguration, kinlyConfiguration);
 
             response.TenantId.Should().Be(azureAdConfiguration.TenantId);
             response.ClientId.Should().Be(azureAdConfiguration.ClientId);
@@ -26,6 +28,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.VideoApiUrl.Should().Be(servicesConfiguration.VideoApiUrl);
             response.AppInsightsInstrumentationKey.Should().Be(azureAdConfiguration.ApplicationInsights.InstrumentationKey);
             response.EventHubPath.Should().Be(servicesConfiguration.EventHubPath);
+            response.JoinByPhoneFromDate.Should().Be(kinlyConfiguration.JoinByPhoneFromDate);
         }
     }
 }

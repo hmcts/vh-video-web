@@ -184,13 +184,14 @@ namespace VideoWeb.Controllers
                 var answer = Enum.Parse<ConsultationAnswer>(request.Answer.ToString());
 
                 await _hubContext.Clients.Group(participant.Username.ToLowerInvariant()).AdminConsultationMessage
-                    (conference.Id, roomType, participant.Username.ToLowerInvariant(), answer);
+                    (conference.Id, roomType, participant.Id, answer);
 
                 return NoContent();
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Admin consultation request could not be responded to for HearingId: {conference.HearingId}");
+                _logger.LogError(e, "Admin consultation request could not be responded to for HearingId: {HearingId}",
+                    conference.HearingId);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -318,7 +319,7 @@ namespace VideoWeb.Controllers
             Participant requestedFor)
         {
             await _hubContext.Clients.Group(requestedFor.Username.ToLowerInvariant())
-                .ConsultationMessage(conference.Id, requestedBy.Username, requestedFor.Username,
+                .ConsultationMessage(conference.Id, requestedBy.Id.ToString(), requestedFor.Id.ToString(),
                     null);
 
         }

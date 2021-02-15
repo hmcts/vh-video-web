@@ -1,9 +1,7 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { ConferenceResponse, ConferenceStatus, LoggedParticipantResponse, ParticipantResponse } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
-import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { HearingRole } from '../../models/hearing-role-model';
 import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
@@ -63,10 +61,10 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             deviceTypeService,
             router,
             consultationService,
-            clockService,
             userMediaService,
             userMediaStreamService,
-            notificationSoundsService
+            notificationSoundsService,
+            clockService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
@@ -93,45 +91,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         expect(notificationSoundsService.initHearingAlertSound).toHaveBeenCalled();
     }));
 
-    it('should not announce hearing is starting when already announced', () => {
-        spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => Promise.resolve());
-        component.hearingStartingAnnounced = true;
-        component.checkIfHearingIsStarting();
-        expect(component.announceHearingIsAboutToStart).toHaveBeenCalledTimes(0);
-    });
-
-    it('should not announce hearing ready to start when hearing is not near start time', () => {
-        spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => Promise.resolve());
-        component.hearing = new Hearing(new ConferenceTestData().getConferenceDetailFuture());
-        component.hearingStartingAnnounced = false;
-        component.checkIfHearingIsStarting();
-        expect(component.announceHearingIsAboutToStart).toHaveBeenCalledTimes(0);
-    });
-
-    it('should announce hearing ready to start and not already announced', () => {
-        spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => Promise.resolve());
-        component.hearing = new Hearing(new ConferenceTestData().getConferenceDetailNow());
-        component.hearingStartingAnnounced = false;
-        component.checkIfHearingIsStarting();
-        expect(component.announceHearingIsAboutToStart).toHaveBeenCalledTimes(1);
-    });
-
-    it('should clear subscription and go to hearing list when conference is past closed time', () => {
-        const conf = new ConferenceTestData().getConferenceDetailNow();
-        const status = ConferenceStatus.Closed;
-        const closedDateTime = new Date(new Date().toUTCString());
-        closedDateTime.setUTCMinutes(closedDateTime.getUTCMinutes() - 30);
-        conf.status = status;
-        conf.closed_date_time = closedDateTime;
-        component.hearing = new Hearing(conf);
-        component.clockSubscription$ = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
-
-        component.checkIfHearingIsClosed();
-
-        expect(component.clockSubscription$.unsubscribe).toHaveBeenCalled();
-        expect(router.navigate).toHaveBeenCalledWith([pageUrls.ParticipantHearingList]);
-    });
-
     const getConferenceStatusTextTestCases = [
         { conference: conferenceTestData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: '' },
         { conference: conferenceTestData.getConferenceDetailNow(), status: ConferenceStatus.NotStarted, expected: 'is about to begin' },
@@ -148,13 +107,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             component.hearing.getConference().status = test.status;
             expect(component.getConferenceStatusText()).toBe(test.expected);
         });
-    });
-
-    it('should set hearing announced to true when hearing sound has played', async () => {
-        notificationSoundsService.playHearingAlertSound.calls.reset();
-        await component.announceHearingIsAboutToStart();
-        expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalled();
-        expect(component.hearingStartingAnnounced).toBeTruthy();
     });
 
     it('should return false when the participant is not a witness', () => {

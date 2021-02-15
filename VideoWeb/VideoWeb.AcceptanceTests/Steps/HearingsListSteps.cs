@@ -50,6 +50,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Click(JudgeHearingListPage.CheckEquipmentButton);
         }
 
+        [When(@"the user clicks on Consultation Room link")]
+        public void WhenTheUserClicksOnConsultationRoomLink()
+        {
+            var closeTime = _c.TimeZone.Adjust(DateTime.Now.AddMinutes(30)).ToString(DateFormats.WaitingRoomPageTime);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.ConsultationRoomLink(closeTime)).Click();
+        }
+
         [Then(@"a warning message appears indicating the Judge has no hearings scheduled")]
         public void ThenAWarningMessageAppearsIndicatingTheJudgeHasNoHearingsScheduled()
         {

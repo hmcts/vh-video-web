@@ -188,7 +188,9 @@ stages:
           value: $(KinlyApiKey)
         - name: KinlyConfiguration:SelfTestApiSecret
           value: $(SelfTestApiKey)
-
+        - name: KinlyConfiguration:JoinByPhoneFromDate
+          value: $(JoinByPhoneFromDate)
+          
         # SauceLabs
         - name: Saucelabs:Username
           value: $(Saucelabs:Username)

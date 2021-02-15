@@ -221,7 +221,9 @@ stages:
             value: $(KinlyApiKey)
           - name: KinlyConfiguration:SelfTestApiSecret
             value: $(SelfTestApiKey)
-
+          - name: KinlyConfiguration:JoinByPhoneFromDate
+            value: $(JoinByPhoneFromDate)
+            
           # VhServices
           - name: VhServices:BookingsApiResourceId
             value: vh-bookings-api-identifieruris
@@ -302,7 +304,9 @@ stages:
             value: $(KinlyApiKey)
           - name: KinlyConfiguration:SelfTestApiSecret
             value: $(SelfTestApiKey)
-
+          - name: KinlyConfiguration:JoinByPhoneFromDate
+            value: $(JoinByPhoneFromDate)
+            
           # SauceLabs
           - name: Saucelabs:Username
             value: $(Saucelabs:Username)
