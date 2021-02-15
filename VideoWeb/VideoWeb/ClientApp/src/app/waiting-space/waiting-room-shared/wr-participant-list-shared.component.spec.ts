@@ -228,5 +228,4 @@ describe('WaitingRoom ParticipantList Base', () => {
 
         expect(consultationService.clearModals).toHaveBeenCalledTimes(0);
     });
-
 });

@@ -1,7 +1,6 @@
 import { Subject } from 'rxjs';
 import { EventsService } from 'src/app/services/events.service';
 import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
-import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
 import { ConferenceMessageAnswered } from 'src/app/services/models/conference-message-answered';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
@@ -55,7 +54,7 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'getParticipantMediaStatusMessage',
         'sendMediaStatus',
         'getRoomUpdate',
-        'getRoomTransfer'
+        'getRoomTransfer',
         'getAdminAnsweredChat'
     ],
     {

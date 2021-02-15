@@ -21,8 +21,12 @@ interface VhToastButton {
     styleUrls: ['./vh-toast.component.scss']
 })
 export class VhToastComponent extends Toast {
-    @HostBinding('class.black') get black() { return this.vhToastOptions.color === 'black' }
-    @HostBinding('class.white') get white() { return this.vhToastOptions.color === 'white' }
+    @HostBinding('class.black') get black() {
+        return this.vhToastOptions.color === 'black';
+    }
+    @HostBinding('class.white') get white() {
+        return this.vhToastOptions.color === 'white';
+    }
     vhToastOptions: VhToastOptions;
     actioned = false;
 
@@ -31,15 +35,15 @@ export class VhToastComponent extends Toast {
     }
 
     remove() {
-      if (!this.actioned){
-        this.vhToastOptions.onNoAction();
-      }
+        if (!this.actioned) {
+            this.vhToastOptions.onNoAction();
+        }
 
-      super.remove();
+        super.remove();
     }
 
     handleAction(fn: () => void) {
-      this.actioned = true;
-      fn();
+        this.actioned = true;
+        fn();
     }
 }

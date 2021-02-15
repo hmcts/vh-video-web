@@ -36,7 +36,12 @@ export class PrivateConsultationRoomControlsComponent implements OnInit, OnDestr
     selfViewOpen: boolean;
     displayConfirmPopup: boolean;
 
-    constructor(private videoCallService: VideoCallService, private eventService: EventsService, private logger: Logger, private consultationService: ConsultationService) {
+    constructor(
+        private videoCallService: VideoCallService,
+        private eventService: EventsService,
+        private logger: Logger,
+        private consultationService: ConsultationService
+    ) {
         this.handRaised = false;
         this.remoteMuted = false;
         this.selfViewOpen = false;

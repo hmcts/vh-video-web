@@ -73,11 +73,7 @@ export class ConsultationService {
         }
     }
 
-    async joinPrivateConsultationRoom(
-        conferenceId: string,
-        participantId: string,
-        roomLabel: string
-    ) {
+    async joinPrivateConsultationRoom(conferenceId: string, participantId: string, roomLabel: string) {
         try {
             this.clearModals();
             await this.apiClient
@@ -124,12 +120,11 @@ export class ConsultationService {
         }
     }
 
-    
     async inviteToConsulation(conferenceId: string, roomLabel: string, requestParticipantId: string) {
         this.logger.info(`[ConsultationService] - Inviting participant to this private consultation`, {
             conferenceId: conferenceId,
             requestParticipantId: requestParticipantId,
-            roomLabel: roomLabel,
+            roomLabel: roomLabel
         });
         try {
             await this.apiClient
@@ -208,7 +203,7 @@ export class ConsultationService {
             )
             .toPromise();
     }
-    
+
     async lockConsultation(conferenceId: string, roomLabel: string, lock: boolean): Promise<void> {
         this.logger.info(`[ConsultationService] - Setting consultation room lock state`, {
             conference: conferenceId,

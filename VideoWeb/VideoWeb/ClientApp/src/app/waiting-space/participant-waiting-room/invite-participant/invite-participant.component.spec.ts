@@ -3,11 +3,11 @@ import { InviteParticipantComponent } from './invite-participant.component';
 
 describe('InviteParticipantComponent', () => {
     let component: InviteParticipantComponent;
-    
-      beforeEach(() => {
+
+    beforeEach(() => {
         component = new InviteParticipantComponent();
-      });
-      
+    });
+
     it('should create', () => {
         expect(component).toBeTruthy();
     });

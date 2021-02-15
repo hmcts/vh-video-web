@@ -29,7 +29,7 @@ export class NotificationToastrService {
         participants: Participant[],
         inHearing: boolean
     ) {
-        let inviteKey = `${conferenceId}_${roomLabel}`;
+        const inviteKey = `${conferenceId}_${roomLabel}`;
         if (this.activeRoomInviteRequests.indexOf(inviteKey) >= 0) {
             return;
         }
@@ -40,7 +40,7 @@ export class NotificationToastrService {
         }
 
         let message = `<span class="govuk-!-font-weight-bold">Call from ${requestedBy.displayName}</span>`;
-        let participantsList = participants
+        const participantsList = participants
             .filter(p => p.id !== requestedBy.id)
             .map(p => p.displayName)
             .join('<br/>');
@@ -48,10 +48,10 @@ export class NotificationToastrService {
             message += `<br/>with<br/>${participantsList}`;
         }
 
-        let respondToConsultationRequest = async (answer: ConsultationAnswer) => {
+        const respondToConsultationRequest = async (answer: ConsultationAnswer) => {
             this.logger.info(`${this.loggerPrefix} Responding to consultation request with ${answer}`);
 
-            let index = this.activeRoomInviteRequests.indexOf(inviteKey);
+            const index = this.activeRoomInviteRequests.indexOf(inviteKey);
             this.activeRoomInviteRequests.splice(index, 1);
 
             await this.consultationService.respondToConsultationRequest(conferenceId, requestedBy.id, requestedFor.id, answer, roomLabel);

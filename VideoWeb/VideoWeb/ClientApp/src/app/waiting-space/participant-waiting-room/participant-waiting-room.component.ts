@@ -30,7 +30,7 @@ import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-ba
 export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
     currentTime: Date;
     hearingStartingAnnounced: boolean;
-    privateConsultationAccordianExpanded: boolean = false;
+    privateConsultationAccordianExpanded = false;
 
     clockSubscription$: Subscription;
 
@@ -160,8 +160,10 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         }
     }
 
-    getRoomName() : string {
-        return this.camelToSpaced(this.participant?.current_room?.label?.replace('ParticipantConsultationRoom', 'MeetingRoom') ?? 'Private Consultation');
+    getRoomName(): string {
+        return this.camelToSpaced(
+            this.participant?.current_room?.label?.replace('ParticipantConsultationRoom', 'MeetingRoom') ?? 'Private Consultation'
+        );
     }
 
     get isWitness(): boolean {
@@ -212,7 +214,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     }
 
     async setRoomLock(lock: boolean) {
-        let roomLabel = this.participant.current_room?.label;
+        const roomLabel = this.participant.current_room?.label;
         if (!roomLabel) {
             return;
         }
@@ -243,7 +245,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         const lowcaseWord = splitWord.toLowerCase();
         return lowcaseWord.charAt(0).toUpperCase() + lowcaseWord.slice(1);
     }
-    
+
     toggleAccordian() {
         this.privateConsultationAccordianExpanded = !this.privateConsultationAccordianExpanded;
     }

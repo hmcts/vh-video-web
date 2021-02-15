@@ -27,7 +27,7 @@ export abstract class WRParticipantStatusListDirective {
     observers: ParticipantResponse[];
     panelMembers: ParticipantResponse[];
     wingers: ParticipantResponse[];
-    
+
     eventHubSubscriptions$ = new Subscription();
     loggedInUser: LoggedParticipantResponse;
     loggerPrefix = '[WRParticipantStatusListDirective] -';
