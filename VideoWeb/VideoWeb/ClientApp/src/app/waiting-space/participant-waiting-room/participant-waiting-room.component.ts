@@ -9,18 +9,19 @@ import { ClockService } from 'src/app/services/clock.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { DeviceTypeService } from '../../services/device-type.service';
 import { HeartbeatModelMapper } from '../../shared/mappers/heartbeat-model-mapper';
-import { VideoCallService } from '../services/video-call.service';
-import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
-import { UserMediaService } from 'src/app/services/user-media.service';
-import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { HearingRole } from '../models/hearing-role-model';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { Participant } from 'src/app/shared/models/participant';
 import { NotificationToastrService } from '../services/notification-toastr.service';
+import { VideoCallService } from '../services/video-call.service';
+import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -46,11 +47,11 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
         protected consultationService: ConsultationService,
-        private clockService: ClockService,
         protected userMediaService: UserMediaService,
         protected userMediaStreamService: UserMediaStreamService,
         protected notificationSoundsService: NotificationSoundsService,
-        protected notificationToastrService: NotificationToastrService
+        protected notificationToastrService: NotificationToastrService,
+        protected clockService: ClockService
     ) {
         super(
             route,
@@ -67,7 +68,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
             userMediaService,
             userMediaStreamService,
             notificationSoundsService,
-            notificationToastrService
+            notificationToastrService,
+            clockService
         );
     }
 

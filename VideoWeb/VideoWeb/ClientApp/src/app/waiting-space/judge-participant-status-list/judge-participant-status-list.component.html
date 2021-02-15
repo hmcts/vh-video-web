@@ -121,7 +121,7 @@
     </div>
   </div>
 
-  <div *ngIf="nonJudgeParticipants.length > 0">
+  <div *ngIf="nonJudgeParticipants.length > 0 && !hearing.isClosed()">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
         <h2 class="govuk-heading-s">Participants ({{ nonJudgeParticipants.length }})</h2>
@@ -204,7 +204,7 @@
     </div>
   </div>
 
-  <div *ngIf="endpoints.length > 0">
+  <div *ngIf="endpoints.length > 0 && !hearing.isClosed()">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
         <h2 class="govuk-heading-s">Video access points ({{ endpoints.length }})</h2>
@@ -232,7 +232,7 @@
     </div>
   </div>
 
-  <div *ngIf="observers.length > 0">
+  <div *ngIf="observers.length > 0 && !hearing.isClosed()">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
         <h2 class="govuk-heading-s">Observers ({{ observers.length }})</h2>

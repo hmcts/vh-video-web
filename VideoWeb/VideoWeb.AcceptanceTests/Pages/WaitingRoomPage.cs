@@ -1,5 +1,8 @@
 using AcceptanceTests.Common.PageObject.Helpers;
+using Microsoft.VisualBasic;
 using OpenQA.Selenium;
+using System;
+using VideoWeb.AcceptanceTests.Data;
 
 namespace VideoWeb.AcceptanceTests.Pages
 {
@@ -23,5 +26,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By IncomingPrivateConsultationFeed = By.Id("incomingFeedPrivate");
         public static By SelfViewButton = By.Id("toggle-self-view-img");
         public static By SelfViewVideo = By.Id("outgoingFeedVideo");
+        public static By ConsultationRoomText = CommonLocators.ElementContainingText("The consultation room is available for up to 30 minutes after the hearing has finished.");
+        public static By ConsultationRoomCloseText(string closeTime) => CommonLocators.ElementContainingText($"The consultation room will close at {closeTime}");
     }
 }

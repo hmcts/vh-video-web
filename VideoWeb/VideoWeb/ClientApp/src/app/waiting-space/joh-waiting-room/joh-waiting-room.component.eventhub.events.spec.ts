@@ -49,11 +49,11 @@ describe('JohWaitingRoomComponent eventhub events', () => {
             deviceTypeService,
             router,
             consultationService,
-            clockService,
             userMediaService,
             userMediaStreamService,
             notificationSoundsService,
-            notificationToastrService
+            notificationToastrService,
+            clockService
         );
         adalService.userInfo.userName = 'chris.green@hearings.net';
 

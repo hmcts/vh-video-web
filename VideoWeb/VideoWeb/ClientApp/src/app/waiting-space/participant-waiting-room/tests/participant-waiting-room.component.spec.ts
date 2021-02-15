@@ -1,9 +1,7 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { ConferenceResponse, ConferenceStatus, LoggedParticipantResponse, ParticipantResponse } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
-import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { HearingRole } from '../../models/hearing-role-model';
 import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
@@ -64,11 +62,11 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             deviceTypeService,
             router,
             consultationService,
-            clockService,
             userMediaService,
             userMediaStreamService,
             notificationSoundsService,
-            notificationToastrService
+            notificationToastrService,
+            clockService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
@@ -165,13 +163,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             component.hearing.getConference().status = test.status;
             expect(component.getConferenceStatusText()).toBe(test.expected);
         });
-    });
-
-    it('should set hearing announced to true when hearing sound has played', async () => {
-        notificationSoundsService.playHearingAlertSound.calls.reset();
-        await component.announceHearingIsAboutToStart();
-        expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalled();
-        expect(component.hearingStartingAnnounced).toBeTruthy();
     });
 
     it('should return false when the participant is not a witness', () => {

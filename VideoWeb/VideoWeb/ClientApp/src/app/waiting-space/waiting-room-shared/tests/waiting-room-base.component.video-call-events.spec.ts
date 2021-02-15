@@ -61,11 +61,11 @@ describe('WaitingRoomComponent Video Call', () => {
             deviceTypeService,
             router,
             consultationService,
-            clockService,
             userMediaService,
             userMediaStreamService,
             notificationSoundsService,
-            notificationToastrService
+            notificationToastrService,
+            clockService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

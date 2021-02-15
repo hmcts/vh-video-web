@@ -28,11 +28,11 @@ export class WRTestComponent extends WaitingRoomBaseComponent {
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
         protected consultationService: ConsultationService,
-        private clockService: ClockService,
         protected userMediaService: UserMediaService,
         protected userMediaStreamService: UserMediaStreamService,
         protected notificationSoundsService: NotificationSoundsService,
-        protected notificationToastrService: NotificationToastrService
+        protected notificationToastrService: NotificationToastrService,
+        protected clockService: ClockService
     ) {
         super(
             route,
@@ -49,7 +49,8 @@ export class WRTestComponent extends WaitingRoomBaseComponent {
             userMediaService,
             userMediaStreamService,
             notificationSoundsService,
-            notificationToastrService
+            notificationToastrService,
+            clockService
         );
     }
 }

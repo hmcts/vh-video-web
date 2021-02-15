@@ -6821,6 +6821,9 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonProperty("telephone_conference_number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Telephone_conference_number { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("created_date_time", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Created_date_time { get; set; }
+    
     
     }
     
@@ -6894,6 +6897,10 @@ namespace VideoWeb.Services.Video
         /// <summary>Scheduled date time as UTC</summary>
         [Newtonsoft.Json.JsonProperty("scheduled_date_time", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTime Scheduled_date_time { get; set; }
+    
+        /// <summary>The time a conference was closed</summary>
+        [Newtonsoft.Json.JsonProperty("closed_date_time", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Closed_date_time { get; set; }
     
         /// <summary>The scheduled duration in minutes</summary>
         [Newtonsoft.Json.JsonProperty("scheduled_duration", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]

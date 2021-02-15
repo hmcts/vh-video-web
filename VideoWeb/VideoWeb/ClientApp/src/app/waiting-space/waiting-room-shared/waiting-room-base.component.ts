@@ -14,6 +14,7 @@ import {
     RoomSummaryResponse,
     TokenResponse
 } from 'src/app/services/clients/api-client';
+import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -28,6 +29,7 @@ import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-map
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
 import { Room } from 'src/app/shared/models/room';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
 import { HearingRole } from '../models/hearing-role-model';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models/video-call-models';
@@ -40,6 +42,7 @@ declare var HeartbeatFactory: any;
 export abstract class WaitingRoomBaseComponent {
     protected maxBandwidth = null;
     audioOnly: boolean;
+    hearingStartingAnnounced: boolean;
 
     loadingData: boolean;
     errorCount: number;
@@ -51,6 +54,8 @@ export abstract class WaitingRoomBaseComponent {
 
     eventHubSubscription$ = new Subscription();
     videoCallSubscription$ = new Subscription();
+    clockSubscription$: Subscription = new Subscription();
+    currentTime: Date;
     heartbeat: any;
 
     stream: MediaStream | URL;
@@ -86,7 +91,8 @@ export abstract class WaitingRoomBaseComponent {
         protected userMediaService: UserMediaService,
         protected userMediaStreamService: UserMediaStreamService,
         protected notificationSoundsService: NotificationSoundsService,
-        protected notificationToastrService: NotificationToastrService
+        protected notificationToastrService: NotificationToastrService,
+        protected clockService: ClockService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -392,7 +398,7 @@ export abstract class WaitingRoomBaseComponent {
             participant: this.participant.id
         };
         this.logger.debug(`${this.loggerPrefix} Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`, logPayload);
-        this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth, this.audioOnly);
+        this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth);
     }
 
     disconnect() {
@@ -647,13 +653,15 @@ export abstract class WaitingRoomBaseComponent {
 
     async onMediaDeviceChangeAccepted(selectedMediaDevice: SelectedUserMediaDevice) {
         this.logger.debug(`${this.loggerPrefix} Updated device settings`, { selectedMediaDevice });
-        this.disconnect();
         this.userMediaService.updatePreferredCamera(selectedMediaDevice.selectedCamera);
         this.userMediaService.updatePreferredMicrophone(selectedMediaDevice.selectedMicrophone);
         this.audioOnly = selectedMediaDevice.audioOnly;
         this.updateAudioOnlyPreference(this.audioOnly);
         await this.updatePexipAudioVideoSource();
-        this.call();
+        this.videoCallService.reconnectToCallWithNewDevices();
+        if (this.audioOnly) {
+            this.videoCallService.switchToAudioOnlyCall();
+        }
     }
 
     protected updateAudioOnlyPreference(audioOnly: boolean) {
@@ -691,5 +699,34 @@ export abstract class WaitingRoomBaseComponent {
         this.disconnect();
         this.eventHubSubscription$.unsubscribe();
         this.videoCallSubscription$.unsubscribe();
+        this.clockSubscription$.unsubscribe();
+    }
+
+    subscribeToClock(): void {
+        this.clockSubscription$.add(
+            this.clockService.getClock().subscribe(time => {
+                this.currentTime = time;
+                this.checkIfHearingIsClosed();
+                this.checkIfHearingIsStarting();
+            })
+        );
+    }
+
+    checkIfHearingIsClosed(): void {
+        if (this.hearing.isPastClosedTime()) {
+            this.clockSubscription$.unsubscribe();
+            this.router.navigate([pageUrls.Home]);
+        }
+    }
+
+    checkIfHearingIsStarting(): void {
+        if (this.hearing.isStarting() && !this.hearingStartingAnnounced) {
+            this.announceHearingIsAboutToStart();
+        }
+    }
+
+    async announceHearingIsAboutToStart(): Promise<void> {
+        this.hearingStartingAnnounced = true;
+        await this.notificationSoundsService.playHearingAlertSound();
     }
 }

@@ -15,12 +15,14 @@ namespace VideoWeb
 
         private static IHostBuilder CreateWebHostBuilder(string[] args)
         {
-            const string mountPath = "/mnt/secrets/vh-video-web";
+            const string vhInfraCore = "/mnt/secrets/vh-infra-core";
+            const string vhVideoWeb = "/mnt/secrets/vh-video-web";
 
             return Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((configBuilder) =>
                 {
-                    configBuilder.AddAksKeyVaultSecretProvider(mountPath);
+                    configBuilder.AddAksKeyVaultSecretProvider(vhInfraCore);
+                    configBuilder.AddAksKeyVaultSecretProvider(vhVideoWeb);
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
@@ -37,7 +39,8 @@ namespace VideoWeb
                     });
                     webBuilder.ConfigureAppConfiguration(configBuilder =>
                     {
-                        configBuilder.AddAksKeyVaultSecretProvider(mountPath);
+                        configBuilder.AddAksKeyVaultSecretProvider(vhInfraCore);
+                        configBuilder.AddAksKeyVaultSecretProvider(vhVideoWeb);
                     });
                 });
         }
