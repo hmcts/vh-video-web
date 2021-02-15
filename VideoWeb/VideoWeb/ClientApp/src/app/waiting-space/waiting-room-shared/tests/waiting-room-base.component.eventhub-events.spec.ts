@@ -49,6 +49,7 @@ import {
     videoWebService
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
+import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
 
 describe('WaitingRoomComponent EventHub Call', () => {
     let component: WRTestComponent;
@@ -56,6 +57,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
     const participantStatusSubject = participantStatusSubjectMock;
     const hearingStatusSubject = hearingStatusSubjectMock;
     const consultationRequestResponseMessageSubject = consultationRequestResponseMessageSubjectMock;
+    const requestedConsultationMessageSubject = requestedConsultationMessageSubjectMock;
     const eventHubDisconnectSubject = eventHubDisconnectSubjectMock;
     const eventHubReconnectSubject = eventHubReconnectSubjectMock;
     const hearingTransferSubject = hearingTransferSubjectMock;
@@ -111,6 +113,17 @@ describe('WaitingRoomComponent EventHub Call', () => {
             clearTimeout(component.callbackTimeout);
         }
     });
+
+    it('should not display vho consultation request when participant is unavailable', fakeAsync(() => {
+        component.participant.status = ParticipantStatus.InHearing;
+        const payload = new RequestedConsultationMessage(component.conference.id, 'AdminRoom', Guid.EMPTY, component.participant.id);
+
+        spyOn(logger, 'debug');
+        requestedConsultationMessageSubject.next(payload);
+        flushMicrotasks();
+
+        expect(notificationToastrService.showConsultationInvite).toHaveBeenCalledTimes(0);
+    }));
 
     it('should update transferring in when inTransfer message has been received', fakeAsync(() => {
         const transferDirection = TransferDirection.In;
