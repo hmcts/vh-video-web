@@ -64,7 +64,7 @@ export class StartPrivateConsultationComponent {
                 this.camelToSpaced(
                     participant.base.current_room.label.replace('ParticipantConsultationRoom', 'MeetingRoom')
                 ).toLowerCase() +
-                (participant.base.current_room.locked ? ' <i class="fas fa-lock-alt"></i>' : '')
+                (participant.base.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
             );
         }
         return;

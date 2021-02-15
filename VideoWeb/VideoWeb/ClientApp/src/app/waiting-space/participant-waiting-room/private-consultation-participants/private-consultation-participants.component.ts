@@ -100,7 +100,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         if (participant.current_room?.label) {
             return (
                 this.camelToSpaced(participant.current_room?.label.replace('ParticipantConsultation', '')) +
-                (participant.current_room?.locked ? ' <i class="fas fa-lock-alt"></i>' : '')
+                (participant.current_room?.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
             );
         }
 

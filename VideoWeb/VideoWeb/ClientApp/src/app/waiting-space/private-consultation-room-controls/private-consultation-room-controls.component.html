@@ -16,7 +16,7 @@
           [text]="selfViewOpen ? 'Hide my self-view' : 'Show my self-view'"
           [colour]="'grey'"
           (click)="toggleView()">
-          <i class="far" [class]="selfViewOpen ? 'fa-eye' : 'fa-eye-slash'"></i>
+          <span class="far" [class]="selfViewOpen ? 'fa-eye' : 'fa-eye-slash'"></span>
         </div>
         
         <div class="icon-button"
@@ -26,7 +26,7 @@
           [text]="videoMuted ? 'Show camera' : 'Hide camera'"
           [colour]="'grey'"
           (click)="toggleVideoMute()">
-          <i class="far" [class]="videoMuted ? 'fa-video-slash' : 'fa-video'"></i>
+          <span class="far" [class]="videoMuted ? 'fa-video-slash' : 'fa-video'"></span>
         </div>
         
         <div class="icon-button"
@@ -36,7 +36,7 @@
           [text]="audioMuted ? 'Unmute microphone' : 'Mute microphone'"
           [colour]="'grey'"
           (click)="toggleMute()">
-          <i class="far" [class]="audioMuted ? 'fa-microphone-slash' : 'fa-microphone'"></i>
+          <span class="far" [class]="audioMuted ? 'fa-microphone-slash' : 'fa-microphone'"></span>
         </div>
         
         <div class="icon-button"
@@ -45,7 +45,7 @@
           *ngIf="remoteMuted && !isJudge"
           text="You have been been remote muted"
           [colour]="'grey'">
-          <i class="far fa-microphone-slash" style="color: red"></i>
+          <span class="far fa-microphone-slash" style="color: red"></span>
         </div>
         
         <div class="icon-button"
@@ -55,7 +55,7 @@
           [text]="handRaised ? 'Lower hand' : 'Raise hand'"
           [colour]="'grey'"
           (click)="toggleHandRaised()">
-          <i class="far" [class]="handRaised ? 'fa-hand' : 'fa-hand-slash'"></i>
+          <span class="far" [class]="handRaised ? 'fa-hand' : 'fa-hand-slash'"></span>
         </div>
         
         <div class="icon-button"
@@ -65,7 +65,7 @@
           text="Pause the hearing"
           [colour]="'grey'"
           (click)="pause()">
-          <i class="far fa-pause"></i>
+          <span class="far fa-pause"></span>
         </div>
         
         <div class="icon-button"
@@ -75,7 +75,7 @@
           text="Close the hearing"
           [colour]="'grey'"
           (click)="displayConfirmationDialog()">
-          <i class="far fa-stop"></i>
+          <span class="far fa-stop"></span>
         </div>
 
         <div class="flexBar"></div>
@@ -85,7 +85,7 @@
           (click)="lockPrivateConsultation(!roomLocked)"
           type="button">
           {{ roomLocked ? 'Unlock the room ' : 'Lock the room ' }}
-          <i class="fas" [class]="roomLocked ? 'fa-lock-alt' : 'fa-lock-open-alt'"></i>
+          <span class="fas" [class]="roomLocked ? 'fa-lock-alt' : 'fa-lock-open-alt'"></span>
         </button>
 
         <button *ngIf="showConsultationControls" id="leaveButton" class="small-button red" data-module="govuk-button"
