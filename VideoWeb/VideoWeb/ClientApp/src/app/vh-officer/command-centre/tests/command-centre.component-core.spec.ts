@@ -1,9 +1,9 @@
 import { discardPeriodicTasks, fakeAsync, tick } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { ClientSettingsResponse, ConferenceResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
-import { EventsService } from 'src/app/services/events.service';
+import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
@@ -11,16 +11,14 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ScreenHelper } from 'src/app/shared/screen-helper';
 import { TestFixtureHelper } from 'src/app/testing/Helper/test-fixture-helper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { SessionStorage } from '../../../services/session-storage';
 import { MenuOption } from '../../models/menus-options';
+import { CourtRoomsAccounts } from '../../services/models/court-rooms-accounts';
+import { VhoStorageKeys } from '../../services/models/session-keys';
 import { VhoQueryService } from '../../services/vho-query-service.service';
 import { CommandCentreComponent } from '../command-centre.component';
-import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-bus.service';
-import { CourtRoomsAccounts } from '../../services/models/court-rooms-accounts';
-import { SessionStorage } from '../../../services/session-storage';
-import { VhoStorageKeys } from '../../services/models/session-keys';
-import { ActivatedRoute } from '@angular/router';
 
 describe('CommandCentreComponent - Core', () => {
     let component: CommandCentreComponent;
@@ -31,8 +29,6 @@ describe('CommandCentreComponent - Core', () => {
     const conferences = new ConferenceTestData().getVhoTestData();
     const hearings = conferences.map(c => new HearingSummary(c));
     let errorService: jasmine.SpyObj<ErrorService>;
-    let eventsService: jasmine.SpyObj<EventsService>;
-    const mockEventService = new MockEventsService();
     let router: jasmine.SpyObj<Router>;
     let eventBusServiceSpy: jasmine.SpyObj<EventBusService>;
 
@@ -58,20 +54,6 @@ describe('CommandCentreComponent - Core', () => {
             'returnHomeIfUnauthorised'
         ]);
 
-        eventsService = jasmine.createSpyObj<EventsService>('EventsService', [
-            'start',
-            'getHearingStatusMessage',
-            'getParticipantStatusMessage',
-            'getServiceDisconnected',
-            'getServiceReconnected',
-            'getHeartbeat'
-        ]);
-        eventsService.getHearingStatusMessage.and.returnValue(mockEventService.hearingStatusSubject.asObservable());
-        eventsService.getParticipantStatusMessage.and.returnValue(mockEventService.participantStatusSubject.asObservable());
-        eventsService.getServiceDisconnected.and.returnValue(mockEventService.eventHubDisconnectSubject.asObservable());
-        eventsService.getServiceReconnected.and.returnValue(mockEventService.eventHubReconnectSubject.asObservable());
-        eventsService.getHeartbeat.and.returnValue(mockEventService.participantHeartbeat.asObservable());
-
         eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
         const config = new ClientSettingsResponse({ join_by_phone_from_date: '2021-02-09' });
         activatedRoute = <any>{
@@ -96,7 +78,7 @@ describe('CommandCentreComponent - Core', () => {
         component = new CommandCentreComponent(
             vhoQueryService,
             errorService,
-            eventsService,
+            eventsServiceSpy,
             logger,
             router,
             screenHelper,

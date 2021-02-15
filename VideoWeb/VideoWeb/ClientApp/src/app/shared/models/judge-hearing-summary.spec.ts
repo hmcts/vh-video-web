@@ -1,4 +1,4 @@
-import { ConferenceForJudgeResponse, Role } from 'src/app/services/clients/api-client';
+import { ConferenceForJudgeResponse, ConferenceStatus, Role } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { HearingSummary } from './hearing-summary';
@@ -65,5 +65,27 @@ describe('JudgeHearingSummary', () => {
         expect(participants.filter(x => x.hearingRole === HearingRole.PANEL_MEMBER).length).toBe(0);
         expect(participants.filter(x => x.hearingRole === HearingRole.WINGER).length).toBe(0);
         expect(participants.length).toBe(5);
+    });
+
+    it('should return isExpired false when hearing is not closed', () => {
+        conference.status = ConferenceStatus.Paused;
+        const hearing = new JudgeHearingSummary(conference);
+        expect(hearing.isExpired()).toBeFalsy();
+    });
+
+    it('should return isExpired false when hearing closed for less than 30 minutes', () => {
+        conference.status = ConferenceStatus.Closed;
+        conference.closed_date_time = new Date();
+        const hearing = new JudgeHearingSummary(conference);
+        expect(hearing.isExpired()).toBeFalsy();
+    });
+
+    it('should return isExpired true when hearing closed for more than 30 minutes', () => {
+        conference.status = ConferenceStatus.Closed;
+        const closedDateTime = new Date(new Date().toUTCString());
+        closedDateTime.setUTCMinutes(closedDateTime.getUTCMinutes() - 30);
+        conference.closed_date_time = closedDateTime;
+        const hearing = new JudgeHearingSummary(conference);
+        expect(hearing.isExpired()).toBeTruthy();
     });
 });

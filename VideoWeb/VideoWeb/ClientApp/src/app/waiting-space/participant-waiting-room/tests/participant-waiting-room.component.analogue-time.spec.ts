@@ -42,10 +42,10 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
             deviceTypeService,
             router,
             consultationService,
-            clockService,
             userMediaService,
             userMediaStreamService,
-            notificationSoundsService
+            notificationSoundsService,
+            clockService
         );
     });
 

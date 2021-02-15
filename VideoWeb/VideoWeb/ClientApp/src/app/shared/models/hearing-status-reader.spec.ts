@@ -157,4 +157,16 @@ describe('HearingTimeReader', () => {
         const status = ConferenceStatus.Closed;
         expect(timereader.isSuspended(status)).toBeFalsy();
     });
+
+    it('should retrieveHearingExpiryTime null when conference is not closed', () => {
+        expect(timereader.retrieveHearingExpiryTime(new Date(), ConferenceStatus.Paused)).toBeNull();
+    });
+
+    it('should retrieveHearingExpiryTime null when closed time is not assigned', () => {
+        expect(timereader.retrieveHearingExpiryTime(null, ConferenceStatus.Closed)).toBeNull();
+    });
+
+    it('should retrieveHearingExpiryTime value when closed time is not assigned', () => {
+        expect(timereader.retrieveHearingExpiryTime(new Date(), ConferenceStatus.Closed)).toBeDefined();
+    });
 });

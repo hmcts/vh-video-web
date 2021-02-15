@@ -24,7 +24,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
     };
 
     conferences: ConferenceForJudgeResponse[];
-    conferencesSubscription: Subscription;
+    conferencesSubscription = new Subscription();
     hearingListForm: FormGroup;
     loadingData: boolean;
     interval: any;
@@ -67,21 +67,23 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
 
     retrieveHearingsForUser() {
         this.logger.debug('[JudgeHearingList] - Updating hearing list');
-        this.conferencesSubscription = this.videoWebService.getConferencesForJudge().subscribe(
-            (data: ConferenceForJudgeResponse[]) => {
-                this.logger.debug('[JudgeHearingList] - Got updated list');
-                this.loadingData = false;
-                this.conferences = data;
-                if (this.conferences.length > 0) {
-                    this.screenHelper.enableFullScreen(true);
+        this.conferencesSubscription.add(
+            this.videoWebService.getConferencesForJudge().subscribe(
+                (data: ConferenceForJudgeResponse[]) => {
+                    this.logger.debug('[JudgeHearingList] - Got updated list');
+                    this.loadingData = false;
+                    this.conferences = data;
+                    if (this.conferences.length > 0) {
+                        this.screenHelper.enableFullScreen(true);
+                    }
+                },
+                error => {
+                    this.logger.warn('[JudgeHearingList] - There was a problem updating the hearing list');
+                    this.loadingData = false;
+                    this.screenHelper.enableFullScreen(false);
+                    this.errorService.handleApiError(error);
                 }
-            },
-            error => {
-                this.logger.warn('[JudgeHearingList] - There was a problem updating the hearing list');
-                this.loadingData = false;
-                this.screenHelper.enableFullScreen(false);
-                this.errorService.handleApiError(error);
-            }
+            )
         );
     }
 

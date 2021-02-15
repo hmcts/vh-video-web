@@ -23,5 +23,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By MessagesTabButton = By.Id("messagesTabButton");
         public static By SelectParticipantToMessage(Guid participantId) => By.Id($"{participantId:D}-unread-messages-image");
         public static By TelephoneIcon = By.Id("telephoneIcon");
+        public static By ConsultationRoomLink(string closeTime) => By.XPath($"//a[contains(text(),'Juducial consultation room open until {closeTime}')]");
     }
 }
