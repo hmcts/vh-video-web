@@ -21,7 +21,7 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { ScreenHelper } from './screen-helper';
 import { SelectMediaDevicesComponent } from './select-media-devices/select-media-devices.component';
-import { SelfTestComponent } from './self-test/self-hmcts.netponent';
+import { SelfTestComponent } from './self-test/self-test.component';
 import { SharedRoutingModule } from './shared-routing.module';
 import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-browser.component';
 import { TooltipDirective } from './directives/tooltip.directive';

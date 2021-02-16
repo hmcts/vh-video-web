@@ -6,14 +6,14 @@ import { TestCallScoreResponse, AddSelfTestFailureEventRequest, SelfTestFailureR
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { BaseSelfTestComponentDirective } from '../models/base-self-hmcts.netponent';
+import { BaseSelfTestComponentDirective } from '../models/base-self-test.component';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { EventType } from 'src/app/services/clients/api-client';
 import { DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 
 @Component({
     selector: 'app-participant-self-test',
-    templateUrl: './participant-self-hmcts.netponent.html'
+    templateUrl: './participant-self-test.component.html'
 })
 export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective {
     selfTestCompleted = false;

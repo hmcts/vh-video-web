@@ -5,12 +5,12 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { SelfTestComponent } from 'src/app/shared/self-test/self-hmcts.netponent';
-import { BaseSelfTestComponentDirective } from '../models/base-self-hmcts.netponent';
+import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
+import { BaseSelfTestComponentDirective } from '../models/base-self-test.component';
 
 @Component({
     selector: 'app-judge-self-test',
-    templateUrl: './judge-self-hmcts.netponent.html'
+    templateUrl: './judge-self-test.component.html'
 })
 export class JudgeSelfTestComponent extends BaseSelfTestComponentDirective {
     @ViewChild(SelfTestComponent, { static: false })

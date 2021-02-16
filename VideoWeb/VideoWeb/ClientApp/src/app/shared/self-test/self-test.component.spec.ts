@@ -26,7 +26,7 @@ import {
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 import { SelectedUserMediaDevice } from '../models/selected-user-media-device';
-import { SelfTestComponent } from './self-hmcts.netponent';
+import { SelfTestComponent } from './self-test.component';
 
 describe('SelfTestComponent', () => {
     let component: SelfTestComponent;

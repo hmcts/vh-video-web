@@ -13,11 +13,11 @@ import { IntroductionComponent } from './introduction/introduction.component';
 import { JudgeHearingListComponent } from './judge-hearing-list/judge-hearing-list.component';
 import { MicrophoneCheckComponent } from './microphone-check/microphone-check.component';
 import { ParticipantHearingsComponent } from './participant-hearings/participant-hearings.component';
-import { ParticipantSelfTestComponent } from './participant-self-test/participant-self-hmcts.netponent';
+import { ParticipantSelfTestComponent } from './participant-self-test/participant-self-test.component';
 import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone/switch-on-camera-microphone.component';
 import { VideoCheckComponent } from './video-check/video-check.component';
-import { JudgeSelfTestComponent } from './judge-self-test/judge-self-hmcts.netponent';
-import { IndependentSelfTestComponent } from './independent-self-test/independent-self-hmcts.netponent';
+import { JudgeSelfTestComponent } from './judge-self-test/judge-self-test.component';
+import { IndependentSelfTestComponent } from './independent-self-test/independent-self-test.component';
 import { UnsupportedDeviceComponent } from '../shared/unsupported-device/unsupported-device.component';
 import { ParticipantStatusGuard } from '../security/participant-status.guard';
 

@@ -4,11 +4,11 @@ import { TestCallScoreResponse, TestScore, SelfTestPexipResponse } from 'src/app
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { SelfTestComponent } from 'src/app/shared/self-test/self-hmcts.netponent';
+import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { JudgeSelfTestComponent } from './judge-self-hmcts.netponent';
+import { JudgeSelfTestComponent } from './judge-self-test.component';
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 
 describe('JudgeSelfTestComponent', () => {

@@ -4,11 +4,11 @@ import { SelfTestPexipResponse, TestCallScoreResponse, TestScore } from 'src/app
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { SelfTestComponent } from 'src/app/shared/self-test/self-hmcts.netponent';
+import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { ParticipantSelfTestComponent } from './participant-self-hmcts.netponent';
+import { ParticipantSelfTestComponent } from './participant-self-test.component';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 

@@ -15,9 +15,9 @@ import { ParticipantHearingsComponent } from './participant-hearings/participant
 import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone/switch-on-camera-microphone.component';
 import { VideoCheckComponent } from './video-check/video-check.component';
 import { IntroductionComponent } from './introduction/introduction.component';
-import { ParticipantSelfTestComponent } from './participant-self-test/participant-self-hmcts.netponent';
-import { JudgeSelfTestComponent } from './judge-self-test/judge-self-hmcts.netponent';
-import { IndependentSelfTestComponent } from './independent-self-test/independent-self-hmcts.netponent';
+import { ParticipantSelfTestComponent } from './participant-self-test/participant-self-test.component';
+import { JudgeSelfTestComponent } from './judge-self-test/judge-self-test.component';
+import { IndependentSelfTestComponent } from './independent-self-test/independent-self-test.component';
 import { PluraliseTextPipe } from '../shared/pipes/pluraliseText.pipe';
 import { SelfTestActionsComponent } from './self-test-actions/self-test-actions.component';
 import { UnsupportedDeviceComponent } from '../shared/unsupported-device/unsupported-device.component';
