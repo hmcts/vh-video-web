@@ -1,0 +1,7 @@
+---
+dependencies:
+  - name: java
+    version: 3.4.4
+    repository: https://hmctspublic.azurecr.io/helm/v1/repo/
+
+# This Java dependency is a generic chart, that has everything already setup, it doesn't use any Java
