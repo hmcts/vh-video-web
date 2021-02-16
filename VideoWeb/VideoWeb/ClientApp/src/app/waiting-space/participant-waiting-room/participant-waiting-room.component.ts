@@ -162,7 +162,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
 
     getRoomName(): string {
         return this.camelToSpaced(
-            this.participant?.current_room?.label?.replace('ParticipantConsultationRoom', 'MeetingRoom') ?? 'Private Consultation'
+            this.participant?.current_room?.label?.replace('ParticipantConsultationRoom', 'MeetingRoom') ?? 'MeetingRoom'
         );
     }
 
