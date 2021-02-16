@@ -15,7 +15,7 @@ export class InviteParticipantComponent {
 
     constructor(private consultationService: ConsultationService) {}
 
-    inviteParticipant() {
-        this.consultationService.inviteToConsulation(this.conferenceId, this.roomLabel, this.participantId);
+    async inviteParticipant() {
+        await this.consultationService.inviteToConsulation(this.conferenceId, this.roomLabel, this.participantId);
     }
 }

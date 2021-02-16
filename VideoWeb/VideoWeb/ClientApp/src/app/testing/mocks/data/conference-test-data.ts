@@ -13,6 +13,7 @@ import {
     ParticipantResponseVho,
     ParticipantStatus,
     Role,
+    RoomSummaryResponse,
     SelfTestPexipResponse,
     TaskResponse,
     TaskType,
@@ -314,7 +315,8 @@ export class ConferenceTestData {
             case_type_group: 'Defendent',
             display_name: 'Greeno',
             tiled_display_name: 'T1;Greeno;9F681318-4955-49AF-A887-DED64554429D',
-            hearing_role: HearingRole.LITIGANT_IN_PERSON
+            hearing_role: HearingRole.LITIGANT_IN_PERSON,
+            current_room: new RoomSummaryResponse()
         });
 
         const participant2 = new ParticipantResponseVho({
@@ -326,7 +328,8 @@ export class ConferenceTestData {
             display_name: 'James Green',
             case_type_group: 'Defendent',
             tiled_display_name: 'T2;James Green;9F681318-4955-49AF-A887-DED64554429J',
-            hearing_role: HearingRole.REPRESENTATIVE
+            hearing_role: HearingRole.REPRESENTATIVE,
+            current_room: new RoomSummaryResponse()
         });
 
         const participant3 = new ParticipantResponseVho({
@@ -337,7 +340,8 @@ export class ConferenceTestData {
             display_name: 'Judge Fudge',
             case_type_group: 'Judge',
             tiled_display_name: 'T0;Judge Fudge;9F681318-4955-49AF-A887-DED64554429T',
-            hearing_role: HearingRole.JUDGE
+            hearing_role: HearingRole.JUDGE,
+            current_room: new RoomSummaryResponse()
         });
 
         participants.push(participant1);

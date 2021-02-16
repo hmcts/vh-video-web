@@ -1,7 +1,7 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { ConferenceResponse, ConferenceStatus, LoggedParticipantResponse, ParticipantResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, LoggedParticipantResponse, ParticipantResponse, Role, RoomSummaryResponse } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -182,6 +182,11 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
         expect(component.isWitness).toBeFalsy();
     });
+    it('should return false when the participant is not a witness', () => {
+        component.participant = null;
+
+        expect(component.isWitness).toBeFalsy();
+    });
     it('should show extra content when not showing video and witness is not being transferred in', () => {
         component.isTransferringIn = false;
         component.showVideo = false;
@@ -205,5 +210,58 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.showVideo = true;
 
         expect(component.showExtraContent).toBeFalsy();
+    });
+    it('should set hearing start announce  when hearing is about to start', fakeAsync(() => {
+        component.announceHearingIsAboutToStart()
+        flushMicrotasks();
+        expect(component.hearingStartingAnnounced).toBeTruthy();
+    }));
+    it('should return "Meeting room" from getRoomName when room label is null', () => {
+        component.participant = null;
+        expect(component.getRoomName()).toEqual('Meeting room');
+    });
+    it('should set consultation modal when start is called', () => {
+        component.openStartConsultationModal()
+        expect(component.displayStartPrivateConsultationModal).toBeTruthy();
+    });
+    it('should set consultation modal visibility when join is called', () => {
+        component.openJoinConsultationModal()
+        expect(component.displayJoinPrivateConsultationModal).toBeTruthy();
+    });
+    it('should return non judge participants from getPrivateConsultationParticipants', () => {
+        var judge = new ParticipantResponse();
+        judge.role = Role.Judge;
+        var nonJudge = new ParticipantResponse();
+        nonJudge.role = Role.Representative;
+        component.conference.participants = [judge, judge, nonJudge, nonJudge, nonJudge];
+        expect(component.getPrivateConsultationParticipants().length).toBe(3);
+    });
+    it('should not return current participant from private consultation participants', () => {
+        var thisParticipant = new ParticipantResponse();
+        thisParticipant.id = 'guid'
+        var otherParticipant = new ParticipantResponse();
+        thisParticipant.id = 'other-guid'
+        component.participant = thisParticipant;
+        component.conference.participants = [thisParticipant, otherParticipant];
+        expect(component.getPrivateConsultationParticipants().length).toBe(1);
+    });
+    it('should call consultation service when starting consultation', fakeAsync(() => {
+        component.startPrivateConsultation(null);
+        flushMicrotasks();
+        expect(consultationService.createParticipantConsultationRoom).toHaveBeenCalledTimes(1);
+    }));
+    it('should call consultation service when locking room', fakeAsync(() => {
+        component.participant.current_room.label = 'label';
+        component.setRoomLock(true);
+        flushMicrotasks();
+        expect(consultationService.lockConsultation).toHaveBeenCalledTimes(1);
+    }));
+    it('should close start consultation modal when close is called', () => {
+        component.closeStartPrivateConsultationModal()
+        expect(component.displayStartPrivateConsultationModal).toBeFalsy();
+    });
+    it('should close join consultation modal when close is called', () => {
+        component.closeStartPrivateConsultationModal()
+        expect(component.displayJoinPrivateConsultationModal).toBeFalsy();
     });
 });
