@@ -212,7 +212,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         expect(component.showExtraContent).toBeFalsy();
     });
     it('should set hearing start announce  when hearing is about to start', fakeAsync(() => {
-        component.announceHearingIsAboutToStart()
+        component.announceHearingIsAboutToStart();
         flushMicrotasks();
         expect(component.hearingStartingAnnounced).toBeTruthy();
     }));
@@ -221,26 +221,26 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         expect(component.getRoomName()).toEqual('Meeting room');
     });
     it('should set consultation modal when start is called', () => {
-        component.openStartConsultationModal()
+        component.openStartConsultationModal();
         expect(component.displayStartPrivateConsultationModal).toBeTruthy();
     });
     it('should set consultation modal visibility when join is called', () => {
-        component.openJoinConsultationModal()
+        component.openJoinConsultationModal();
         expect(component.displayJoinPrivateConsultationModal).toBeTruthy();
     });
     it('should return non judge participants from getPrivateConsultationParticipants', () => {
-        var judge = new ParticipantResponse();
+        const judge = new ParticipantResponse();
         judge.role = Role.Judge;
-        var nonJudge = new ParticipantResponse();
+        const nonJudge = new ParticipantResponse();
         nonJudge.role = Role.Representative;
         component.conference.participants = [judge, judge, nonJudge, nonJudge, nonJudge];
         expect(component.getPrivateConsultationParticipants().length).toBe(3);
     });
     it('should not return current participant from private consultation participants', () => {
-        var thisParticipant = new ParticipantResponse();
-        thisParticipant.id = 'guid'
-        var otherParticipant = new ParticipantResponse();
-        thisParticipant.id = 'other-guid'
+        const thisParticipant = new ParticipantResponse();
+        thisParticipant.id = 'guid';
+        const otherParticipant = new ParticipantResponse();
+        thisParticipant.id = 'other-guid';
         component.participant = thisParticipant;
         component.conference.participants = [thisParticipant, otherParticipant];
         expect(component.getPrivateConsultationParticipants().length).toBe(1);
@@ -257,11 +257,11 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         expect(consultationService.lockConsultation).toHaveBeenCalledTimes(1);
     }));
     it('should close start consultation modal when close is called', () => {
-        component.closeStartPrivateConsultationModal()
+        component.closeStartPrivateConsultationModal();
         expect(component.displayStartPrivateConsultationModal).toBeFalsy();
     });
     it('should close join consultation modal when close is called', () => {
-        component.closeStartPrivateConsultationModal()
+        component.closeStartPrivateConsultationModal();
         expect(component.displayJoinPrivateConsultationModal).toBeFalsy();
     });
 });
