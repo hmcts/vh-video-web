@@ -8,7 +8,7 @@ namespace VideoWeb.AcceptanceTests.Builders
     {
         private readonly CreateHearingRequest _request;
         private const string DEFAULT_VENUE = "Birmingham Civil and Family Justice Centre";
-        private const string CASE_TYPE_NAME = "Civil Money Claims";
+        private const string CASE_TYPE_NAME = "Generic";
         private const string CACD_CASE_TYPE_NAME = "Court of Appeal Criminal Division";
 
         public HearingRequestBuilder()

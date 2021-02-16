@@ -5,7 +5,7 @@ namespace VideoWeb.UnitTests.Builders
 {
     public class ClaimsPrincipalBuilder
     {
-        public static string Username = "john@doe.com";
+        public static string Username = "john@hmcts.net";
 
         private readonly List<Claim> _claims;
         public ClaimsPrincipalBuilder()

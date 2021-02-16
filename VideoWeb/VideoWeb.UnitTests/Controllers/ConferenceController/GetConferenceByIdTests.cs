@@ -159,7 +159,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             typedResult.Should().BeNull();
         }
 
-        private ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@doe.com")
+        private static ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@hmcts.net")
         {
             var judge = new ParticipantDetailsResponseBuilder(UserRole.Judge, "Judge").Build();
             var individualDefendant = new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").Build();

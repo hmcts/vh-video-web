@@ -6,7 +6,7 @@ import { ConferenceResponse, ParticipantResponse, SelfTestPexipResponse, TestCal
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { vhContactDetails } from 'src/app/shared/contact-information';
-import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
+import { SelfTestComponent } from 'src/app/shared/self-test/self-hmcts.netponent';
 
 @Directive()
 export abstract class BaseSelfTestComponentDirective implements OnInit {

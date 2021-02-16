@@ -23,8 +23,8 @@ import { SelectedUserMediaDevice } from '../models/selected-user-media-device';
 
 @Component({
     selector: 'app-self-test',
-    templateUrl: './self-test.component.html',
-    styleUrls: ['./self-test.component.scss']
+    templateUrl: './self-hmcts.netponent.html',
+    styleUrls: ['./self-hmcts.netponent.scss']
 })
 export class SelfTestComponent implements OnInit, OnDestroy {
     private readonly loggerPrefix = '[SelfTest] -';

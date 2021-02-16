@@ -72,7 +72,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             var conferenceId = conference.Id;
             var messages = Builder<InstantMessageResponse>.CreateListOfSize(5)
                 .TheFirst(2)
-                .With(x => x.From = "john@doe.com").TheNext(3)
+                .With(x => x.From = "john@hmcts.net").TheNext(3)
                 .With(x => x.From = "some@other.com")
                 .Build().ToList();
 
@@ -128,7 +128,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
                 .All()
                 .With(x => x.Id = Guid.NewGuid())
                 .TheFirst(1)
-                .With(x => x.Username = "john@doe.com")
+                .With(x => x.Username = "john@hmcts.net")
                 .TheLast(1)
                 .With(x => x.Username = "some@other.com")
                 .TheFirst(1).With(x => x.Role = Role.Judge)

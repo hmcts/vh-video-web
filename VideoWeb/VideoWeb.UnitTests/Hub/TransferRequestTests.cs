@@ -15,7 +15,7 @@ namespace VideoWeb.UnitTests.Hub
         [Test]
         public async Task Should_Send_TransferRequest_To_VhoOfficers_Group_And_Judge()
         {
-            var participantUsername = "individual@test.com";
+            var participantUsername = "individual@hmcts.net";
             var conference = CreateTestConference(participantUsername);
             var participant = conference.Participants.First(x => x.Username == participantUsername);
             var judge = conference.Participants.First(x => x.Role == Role.Judge);
@@ -71,7 +71,7 @@ namespace VideoWeb.UnitTests.Hub
         [Test]
         public async Task Should_Throw_ParticipantNotFoundException_With_Random_ParticipantId()
         {
-            var participantUsername = "individual@test.com";
+            var participantUsername = "individual@hmcts.net";
             var conference = CreateTestConference(participantUsername);
             var judge = conference.Participants.First(x => x.Role == Role.Judge);
             var judgeName = judge.Username;
@@ -126,7 +126,7 @@ namespace VideoWeb.UnitTests.Hub
         [Test]
         public async Task Should_Throw_ParticipantNotFoundException_With_No_ParticipantId()
         {
-            var participantUsername = "individual@test.com";
+            var participantUsername = "individual@hmcts.net";
             var conference = CreateTestConference(participantUsername);
             var judge = conference.Participants.First(x => x.Role == Role.Judge);
             var judgeName = judge.Username;
