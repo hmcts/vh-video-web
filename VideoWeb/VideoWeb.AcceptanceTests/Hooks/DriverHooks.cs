@@ -1,8 +1,6 @@
 using System.Collections.Generic;
-using System.Linq;
 using AcceptanceTests.Common.Api;
 using AcceptanceTests.Common.Driver.Drivers;
-using AcceptanceTests.Common.Driver.Enums;
 using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.Driver.Settings;
 using AcceptanceTests.Common.PageObject.Pages;
@@ -60,8 +58,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
             var sauceLabsOptions = new SauceLabsOptions()
             {
-                EnableLogging = false, // Temporarily disable whilst Sauce Labs fix the issue
-                //EnableLogging = EnableLogging(context.VideoWebConfig.TestConfig.TargetOS, context.VideoWebConfig.TestConfig.TargetBrowser, scenario.ScenarioInfo),
+                EnableLogging = false,
                 Name = scenario.ScenarioInfo.Title
             };
 
@@ -76,15 +73,6 @@ namespace VideoWeb.AcceptanceTests.Hooks
             }
 
             context.Driver = new DriverSetup(context.VideoWebConfig.SauceLabsConfiguration, driverOptions, sauceLabsOptions, proxy);
-        }
-
-        private static bool EnableLogging(TargetOS os, TargetBrowser browser, ScenarioInfo scenario)
-        {
-            if (os == TargetOS.Windows && browser == TargetBrowser.Firefox)
-            {
-                return false;
-            }
-            return !scenario.Tags.Contains("DisableLogging");
         }
 
         [BeforeScenario(Order = (int)HooksSequence.SetTimeZone)]
