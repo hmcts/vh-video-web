@@ -72,8 +72,8 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             var conferenceId = conference.Id;
             var messages = Builder<InstantMessageResponse>.CreateListOfSize(5)
                 .TheFirst(2)
-                .With(x => x.From = "john@doe.com").TheNext(3)
-                .With(x => x.From = "some@other.com")
+                .With(x => x.From = "john@hmcts.net").TheNext(3)
+                .With(x => x.From = "some_other@hmcts.net")
                 .Build().ToList();
 
             mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, conference.Participants[0].Username))
@@ -90,7 +90,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
                 Times.Exactly(2));
 
             mocker.Mock<IMessageDecoder>().Verify(x => x.IsMessageFromUser(
-                    It.Is<InstantMessageResponse>(m => m.From == "some@other.com"), conference.Participants[0].Username),
+                    It.Is<InstantMessageResponse>(m => m.From == "some_other@hmcts.net"), conference.Participants[0].Username),
                 Times.Exactly(3));
 
             var typedResult = (OkObjectResult)result;
@@ -128,9 +128,9 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
                 .All()
                 .With(x => x.Id = Guid.NewGuid())
                 .TheFirst(1)
-                .With(x => x.Username = "john@doe.com")
+                .With(x => x.Username = "john@hmcts.net")
                 .TheLast(1)
-                .With(x => x.Username = "some@other.com")
+                .With(x => x.Username = "some_other@hmcts.net")
                 .TheFirst(1).With(x => x.Role = Role.Judge)
                 .TheRest().With(x => x.Role = Role.Individual).Build().ToList();
 

@@ -36,7 +36,7 @@ class ChatBaseTest extends ChatBaseComponent {
     }
 
     get participantUsername(): string {
-        return 'participant.unit@test.com';
+        return 'participant.unit@hmcts.net';
     }
 
     get participantId(): string {
@@ -84,7 +84,7 @@ describe('ChatBaseComponent', () => {
             participant_id: '1111-1111',
             display_name: 'somename',
             role: Role.Judge,
-            admin_username: 'admin@test.com'
+            admin_username: 'admin@hmcts.net'
         });
     });
 
@@ -92,7 +92,7 @@ describe('ChatBaseComponent', () => {
         const instantMessage = new InstantMessage({
             conferenceId: conference.id,
             id: Guid.create().toString(),
-            from: 'admin@test.com',
+            from: 'admin@hmcts.net',
             to: '1111-1111',
             message: 'test message',
             timestamp: new Date()

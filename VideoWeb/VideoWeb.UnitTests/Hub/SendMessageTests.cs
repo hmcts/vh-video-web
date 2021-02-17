@@ -18,10 +18,10 @@ namespace VideoWeb.UnitTests.Hub
 {
     public class SendMessageTests : EventHubBaseTests
     {
-        private static string JudgeUsername => "judge@test.com";
-        private static string IndividualUsername => "individual@test.com";
-        private static string RepresentativeUsername => "representative@test.com";
-        private static string AdminUsername => "admin@test.com";
+        private static string JudgeUsername => "judge@hmcts.net";
+        private static string IndividualUsername => "individual@hmcts.net";
+        private static string RepresentativeUsername => "representative@hmcts.net";
+        private static string AdminUsername => "admin@hmcts.net";
         private UserProfile JudgeUserProfile { get; set; }
         private UserProfile IndividualUserProfile { get; set; }
         private UserProfile RepresentativeUserProfile { get; set; }
