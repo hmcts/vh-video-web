@@ -5,7 +5,7 @@ import {
     LoggedParticipantResponse,
     ParticipantResponseVho,
     ParticipantStatus,
-    Role,
+    Role
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
