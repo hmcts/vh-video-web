@@ -58,12 +58,26 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Build();
         }
 
-        public static StartPrivateConsultationRequest GetStartConsultationRequest(Conference conference)
+        public static StartPrivateConsultationRequest GetStartJohConsultationRequest(Conference conference)
         {
             return Builder<StartPrivateConsultationRequest>.CreateNew()
                 .With(x => x.ConferenceId = conference.Id)
                 .With(x => x.RequestedBy = conference.Participants[1].Id)
                 .With(x => x.RoomType = VirtualCourtRoomType.JudgeJOH)
+                .Build();
+        }
+
+        public static StartPrivateConsultationRequest GetStartParticipantConsultationRequest(Conference conference)
+        {
+            return Builder<StartPrivateConsultationRequest>.CreateNew()
+                .With(x => x.ConferenceId = conference.Id)
+                .With(x => x.RequestedBy = conference.Participants[1].Id)
+                .With(x => x.RoomType = VirtualCourtRoomType.Participant)
+                .With(x => x.InviteParticipants = new []
+                {
+                    conference.Participants[2].Id,
+                    conference.Participants[3].Id
+                })
                 .Build();
         }
 
