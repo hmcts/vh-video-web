@@ -5,7 +5,17 @@
 <div *ngIf="showVideo && !isPrivateConsultation" class="govuk-grid-row">
   <div class="video-background"></div>
   <div class="govuk-grid-column-one-half">
-    <video id="incomingFeed" [srcObject]="this.stream" autoplay height="auto" poster="/assets/images/empty_crest.jpg">
+    <video
+      *ngIf="presentationStream"
+      id="incomingFeedPresentation"
+      [srcObject]="presentationStream"
+      autoplay
+      height="auto"
+      poster="/assets/images/empty_crest.jpg"
+    >
+      Your browser does not support Video
+    </video>
+    <video id="incomingFeed" [srcObject]="stream" autoplay height="auto" poster="/assets/images/empty_crest.jpg">
       Your browser does not support Video
     </video>
   </div>

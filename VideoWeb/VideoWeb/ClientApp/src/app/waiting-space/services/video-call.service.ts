@@ -6,7 +6,19 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
-import { CallError, CallSetup, ConferenceUpdated, ConnectedCall, DisconnectedCall, ParticipantUpdated } from '../models/video-call-models';
+import {
+    CallError,
+    CallSetup,
+    ConferenceUpdated,
+    ConnectedCall,
+    ConnectedPresentation,
+    ConnectedScreenshare,
+    DisconnectedCall,
+    DisconnectedPresentation,
+    ParticipantUpdated,
+    Presentation,
+    StoppedScreenshare
+} from '../models/video-call-models';
 import { VideoCallPreferences } from './video-call-preferences.mode';
 
 declare var PexRTC: any;
@@ -28,6 +40,12 @@ export class VideoCallService {
     private onCallTransferSubject = new Subject<any>();
     private onParticipantUpdatedSubject = new Subject<ParticipantUpdated>();
     private onConferenceUpdatedSubject = new Subject<ConferenceUpdated>();
+
+    private onConnectedScreenshareSubject = new Subject<ConnectedScreenshare>();
+    private onStoppedScreenshareSubject = new Subject<StoppedScreenshare>();
+    private onPresentationSubject = new Subject<Presentation>();
+    private onConnectedPresentationSubject = new Subject<ConnectedPresentation>();
+    private onDisconnectedPresentationSubject = new Subject<DisconnectedPresentation>();
 
     pexipAPI: PexipClient;
     localOutgoingStream: any;
@@ -55,6 +73,7 @@ export class VideoCallService {
         this.pexipAPI = new PexRTC();
         await this.retrievePreferredDevices();
         this.initCallTag();
+        this.pexipAPI.screenshare_fps = 30;
 
         this.pexipAPI.onSetup = function (stream, pinStatus, conferenceExtension) {
             self.onSetupSubject.next(new CallSetup(stream));
@@ -82,6 +101,34 @@ export class VideoCallService {
 
         this.pexipAPI.onCallTransfer = function (alias) {
             self.onCallTransferSubject.next(alias);
+        };
+
+        this.pexipAPI.onPresentation = function (setting, presenter, uuid) {
+            console.info(`${self.loggerPrefix} Presentation status changed: ${setting}`);
+            self.onPresentationSubject.next(new Presentation(setting));
+        };
+
+        this.pexipAPI.onPresentationConnected = function (stream) {
+            console.info(`${self.loggerPrefix} Presentation connected`);
+            console.info(stream);
+            console.info((<MediaStream>stream).getAudioTracks().length);
+            self.onConnectedPresentationSubject.next(new ConnectedPresentation(stream));
+        };
+
+        this.pexipAPI.onPresentationDisconnected = function (reason) {
+            console.info(`${self.loggerPrefix} Presentation disconnected : ${JSON.stringify(reason)}`);
+            self.onDisconnectedPresentationSubject.next(new DisconnectedPresentation(reason));
+        };
+
+        this.pexipAPI.onScreenshareConnected = function (stream) {
+            console.info(`${self.loggerPrefix} Screenshare connected`);
+            console.info(stream);
+            self.onConnectedScreenshareSubject.next(new ConnectedScreenshare(stream));
+        };
+
+        this.pexipAPI.onScreenshareStopped = function (reason) {
+            console.info(`${self.loggerPrefix} Presentation disconnected : ${JSON.stringify(reason)}`);
+            self.onStoppedScreenshareSubject.next(new StoppedScreenshare(reason));
         };
     }
 
@@ -152,6 +199,26 @@ export class VideoCallService {
 
     onConferenceUpdated(): Observable<ConferenceUpdated> {
         return this.onConferenceUpdatedSubject.asObservable();
+    }
+
+    onPresentation(): Observable<Presentation> {
+        return this.onPresentationSubject.asObservable();
+    }
+
+    onPresentationConnected(): Observable<ConnectedPresentation> {
+        return this.onConnectedPresentationSubject.asObservable();
+    }
+
+    onPresentationDisconnected(): Observable<DisconnectedPresentation> {
+        return this.onDisconnectedPresentationSubject.asObservable();
+    }
+
+    onScreenshareConnected(): Observable<ConnectedScreenshare> {
+        return this.onConnectedScreenshareSubject.asObservable();
+    }
+
+    onScreenshareStopped(): Observable<StoppedScreenshare> {
+        return this.onStoppedScreenshareSubject.asObservable();
     }
 
     updateCameraForCall(camera: UserMediaDevice) {
@@ -301,5 +368,26 @@ export class VideoCallService {
         this.localOutgoingStream = this.pexipAPI.video_source;
         this.pexipAPI.video_source = false;
         this.pexipAPI.addCall('video');
+    }
+
+    async selectScreen() {
+        const displayStream = await this.userMediaService.selectScreenToShare();
+        this.pexipAPI.user_presentation_stream = displayStream;
+    }
+
+    startScreenShare() {
+        this.pexipAPI.present('screen');
+    }
+
+    stopScreenShare() {
+        this.pexipAPI.present(null);
+    }
+
+    retrievePresentation() {
+        this.pexipAPI.getPresentation();
+    }
+
+    stopPresentation() {
+        this.pexipAPI.stopPresentation();
     }
 }

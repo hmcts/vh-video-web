@@ -5,7 +5,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
-import { ParticipantUpdated } from '../models/video-call-models';
+import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 
 @Component({
@@ -24,6 +24,8 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
     @Input() showConsultationControls: boolean;
 
     @Output() leaveConsulation = new EventEmitter();
+
+    screenShareStream: MediaStream | URL;
 
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
@@ -108,6 +110,28 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
                 .onParticipantUpdated()
                 .subscribe(updatedParticipant => this.handleParticipantUpdatedInVideoCall(updatedParticipant))
         );
+
+        this.videoCallSubscription$.add(
+            this.videoCallService
+                .onScreenshareConnected()
+                .subscribe(connectedScreenShare => this.handleScreenShareConnected(connectedScreenShare))
+        );
+
+        this.videoCallSubscription$.add(
+            this.videoCallService
+                .onScreenshareStopped()
+                .subscribe(discconnectedScreenShare => this.handleScreenShareStopped(discconnectedScreenShare))
+        );
+    }
+
+    handleScreenShareConnected(connectedScreenShare: ConnectedScreenshare): void {
+        this.logger.info(`${this.loggerPrefix} Screenshare connected`, this.logPayload);
+        this.screenShareStream = connectedScreenShare.stream;
+    }
+
+    handleScreenShareStopped(disconnectedScreenShare: StoppedScreenshare): void {
+        this.logger.info(`${this.loggerPrefix} Screenshare stopped. Reason ${disconnectedScreenShare.reason}`, this.logPayload);
+        this.screenShareStream = null;
     }
 
     handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): boolean {
@@ -225,5 +249,14 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
     leavePrivateConsultation() {
         this.logger.debug(`${this.loggerPrefix} Leave private consultation clicked`, this.logPayload);
         this.leaveConsulation.emit();
+    }
+
+    async startScreenShare() {
+        await this.videoCallService.selectScreen();
+        this.videoCallService.startScreenShare();
+    }
+
+    stopScreenShare() {
+        this.videoCallService.stopScreenShare();
     }
 }
