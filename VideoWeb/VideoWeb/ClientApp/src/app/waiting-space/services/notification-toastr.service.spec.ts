@@ -6,9 +6,7 @@ import { NotificationToastrService } from './notification-toastr.service';
 describe('NotificationToastrService', () => {
     let service: NotificationToastrService;
     const logger: Logger = new MockLogger();
-    beforeAll(() => {
-
-    });
+    beforeAll(() => {});
 
     beforeEach(() => {
         service = new NotificationToastrService(logger, toastrService, consultationService, notificationSoundsService);

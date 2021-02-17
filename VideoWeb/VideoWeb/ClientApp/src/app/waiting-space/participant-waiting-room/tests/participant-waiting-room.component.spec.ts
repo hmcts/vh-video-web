@@ -1,7 +1,14 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { ConferenceResponse, ConferenceStatus, LoggedParticipantResponse, ParticipantResponse, Role, RoomSummaryResponse } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    ConferenceStatus,
+    LoggedParticipantResponse,
+    ParticipantResponse,
+    Role,
+    RoomSummaryResponse
+} from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
