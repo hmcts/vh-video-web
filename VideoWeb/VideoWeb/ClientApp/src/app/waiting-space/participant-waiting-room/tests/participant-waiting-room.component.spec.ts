@@ -28,6 +28,7 @@ import {
     logger,
     notificationSoundsService,
     notificationToastrService,
+    roomClosingToastrService,
     router,
     userMediaService,
     userMediaStreamService,
@@ -75,6 +76,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             userMediaStreamService,
             notificationSoundsService,
             notificationToastrService,
+            roomClosingToastrService,
             clockService
         );
 

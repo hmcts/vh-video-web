@@ -20,6 +20,7 @@ import { HearingRole } from '../../models/hearing-role-model';
 import { NotificationSoundsService } from '../../services/notification-sounds.service';
 import { WRTestComponent } from './WRTestComponent';
 import { NotificationToastrService } from 'src/app/waiting-space/services/notification-toastr.service';
+import { RoomClosingToastrService } from 'src/app/waiting-space/services/room-closing-toast.service';
 import { ToastrService } from 'ngx-toastr';
 const conferenceTestData = new ConferenceTestData();
 
@@ -50,6 +51,7 @@ export const videoCallService = videoCallServiceSpy;
 export let consultationService: jasmine.SpyObj<ConsultationService>;
 export let notificationSoundsService: jasmine.SpyObj<NotificationSoundsService>;
 export let notificationToastrService: jasmine.SpyObj<NotificationToastrService>;
+export let roomClosingToastrService: jasmine.SpyObj<RoomClosingToastrService>;
 export let toastrService: jasmine.SpyObj<ToastrService>;
 export let logger: jasmine.SpyObj<Logger>;
 export let userMediaService: jasmine.SpyObj<UserMediaService>;
@@ -120,4 +122,5 @@ export function initAllWRDependencies() {
     ]);
     notificationToastrService = jasmine.createSpyObj<NotificationToastrService>('NotificationToastrService', ['showConsultationInvite']);
     toastrService = jasmine.createSpyObj<ToastrService>('ToastrService', ['show', 'clear']);
+    roomClosingToastrService = jasmine.createSpyObj<RoomClosingToastrService>('RoomClosingToastrService', ['showRoomClosingAlert']);
 }

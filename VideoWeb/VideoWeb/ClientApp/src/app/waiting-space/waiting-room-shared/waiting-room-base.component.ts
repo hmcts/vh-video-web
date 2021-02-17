@@ -43,6 +43,7 @@ import {
 } from '../models/video-call-models';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
+import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 
 declare var HeartbeatFactory: any;
@@ -63,6 +64,7 @@ export abstract class WaitingRoomBaseComponent {
     eventHubSubscription$ = new Subscription();
     videoCallSubscription$ = new Subscription();
     clockSubscription$: Subscription = new Subscription();
+    closedSubscription$: Subscription = new Subscription();
     currentTime: Date;
     heartbeat: any;
 
@@ -102,6 +104,7 @@ export abstract class WaitingRoomBaseComponent {
         protected userMediaStreamService: UserMediaStreamService,
         protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
+        protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService
     ) {
         this.isAdminConsultation = false;
@@ -767,6 +770,7 @@ export abstract class WaitingRoomBaseComponent {
         this.eventHubSubscription$.unsubscribe();
         this.videoCallSubscription$.unsubscribe();
         this.clockSubscription$.unsubscribe();
+        this.closedSubscription$.unsubscribe();
     }
 
     subscribeToClock(): void {
@@ -777,6 +781,9 @@ export abstract class WaitingRoomBaseComponent {
                 this.checkIfHearingIsStarting();
             })
         );
+        this.closedSubscription$ = this.clockService.getClock().subscribe(time => {
+            this.roomClosingToastrService.showRoomClosingAlert(this.hearing, time);
+        });
     }
 
     checkIfHearingIsClosed(): void {

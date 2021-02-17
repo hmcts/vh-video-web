@@ -84,6 +84,10 @@ export class Hearing extends HearingBase {
         return this.conference.closed_date_time;
     }
 
+    retrieveHearingExpiryTime(): moment.Moment {
+        return this.timeReader.retrieveHearingExpiryTime(this.conference.closed_date_time, this.conference.status);
+    }
+
     isPastClosedTime(): boolean {
         return this.timeReader.isPastClosedTime(this.conference.closed_date_time, this.conference.status);
     }

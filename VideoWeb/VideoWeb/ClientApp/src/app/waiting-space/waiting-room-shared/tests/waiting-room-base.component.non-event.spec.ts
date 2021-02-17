@@ -29,6 +29,7 @@ import {
     logger,
     notificationSoundsService,
     notificationToastrService,
+    roomClosingToastrService,
     router,
     userMediaService,
     userMediaStreamService,
@@ -62,6 +63,7 @@ describe('WaitingRoomComponent message and clock', () => {
             userMediaStreamService,
             notificationSoundsService,
             notificationToastrService,
+            roomClosingToastrService,
             clockService
         );
 
