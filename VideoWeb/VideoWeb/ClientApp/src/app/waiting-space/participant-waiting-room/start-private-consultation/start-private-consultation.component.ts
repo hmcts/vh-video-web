@@ -67,7 +67,6 @@ export class StartPrivateConsultationComponent {
                 (participant.base.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
             );
         }
-        return;
     }
 
     protected camelToSpaced(word: string) {

@@ -5,9 +5,11 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
     LoggedParticipantResponse,
+    ParticipantResponse,
     ParticipantResponseVho,
     ParticipantStatus,
-    Role
+    Role,
+    RoomSummaryResponse
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Participant } from 'src/app/shared/models/participant';
@@ -84,5 +86,48 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should return participant available', () => {
+        const p = conference.participants[0];
+        p.status = ParticipantStatus.Available;
+        expect(component.participantAvailable(p)).toEqual(true);
+    });
+
+    it('should get row classes', () => {
+        component.roomLabel = 'test-room';
+        const p = conference.participants[0];
+        p.current_room.label = 'test-room-two';
+        expect(component.getRowClasses(p)).toEqual('govuk-table__row');
+    });
+
+    it('should get yellow row classes', () => {
+        component.roomLabel = 'test-room';
+        const p = conference.participants[0];
+        p.current_room.label = 'test-room';
+        expect(component.getRowClasses(p)).toEqual('govuk-table__row yellow');
+    });
+
+    it('should get same room status', () => {
+        component.roomLabel = 'test-room';
+        const p = conference.participants[0];
+        p.current_room.label = 'test-room';
+        expect(component.getParticipantStatus(p)).toEqual('');
+    });
+
+    it('should return can call participant', () => {
+        component.roomLabel = 'test-room';
+        const p = conference.participants[0];
+        p.status = ParticipantStatus.Available;
+        p.current_room.label = 'not-test-room';
+        expect(component.canCallParticipant(p)).toBeTruthy();
+    });
+
+    it('should return can not call participant', () => {
+        component.roomLabel = 'test-room';
+        const p = conference.participants[0];
+        p.status = ParticipantStatus.Disconnected;
+        p.current_room.label = 'test-room';
+        expect(component.canCallParticipant(p)).toBeFalsy();
     });
 });
