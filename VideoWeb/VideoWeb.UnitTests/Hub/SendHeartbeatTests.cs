@@ -17,7 +17,7 @@ namespace VideoWeb.UnitTests.Hub
         [Test]
         public async Task Should_send_heartbeat_to_vhofficers_group_and_judges()
         {
-            var participantUsername = "individual@test.com";
+            var participantUsername = "individual@hmcts.net";
             var conference = InitConference(participantUsername);
             var participant = conference.Participants.First(x => x.Username == participantUsername);
             var judge = conference.Participants.First(x => x.Role == Role.Judge);
@@ -92,7 +92,7 @@ namespace VideoWeb.UnitTests.Hub
         [Test]
         public async Task Should_send_heartbeat_to_vhofficers_group_from_judge()
         {
-            const string participantUsername = "individual@test.com";
+            const string participantUsername = "individual@hmcts.net";
             var conference = InitConference(participantUsername);
             var judge = conference.Participants.First(x => x.Role == Role.Judge);
             var judgeUserName = judge.Username;

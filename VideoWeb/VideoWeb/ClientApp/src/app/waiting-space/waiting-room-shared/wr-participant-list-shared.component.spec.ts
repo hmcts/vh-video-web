@@ -213,7 +213,7 @@ describe('WaitingRoom ParticipantList Base', () => {
 
     it('should not display vho consultation request when participant not found', fakeAsync(() => {
         consultationService.displayAdminConsultationRequest.calls.reset();
-        const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, 'doesnotexist@test.com', null);
+        const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, 'doesnotexist@hmcts.net', null);
 
         adminConsultationMessageSubject.next(payload);
         flushMicrotasks();

@@ -194,7 +194,7 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
     it('should not be able to call endpoint linked to another defence advocate', () => {
         const endpoint = new VideoEndpointResponse({
             status: EndpointStatus.Connected,
-            defence_advocate_username: 'another@test.com'
+            defence_advocate_username: 'another@hmcts.net'
         });
         expect(component.canCallEndpoint(endpoint)).toBeFalsy();
     });
