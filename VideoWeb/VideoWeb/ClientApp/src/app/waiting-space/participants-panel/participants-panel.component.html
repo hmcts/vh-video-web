@@ -74,10 +74,6 @@
             <img src="/assets/images/jvs.png" class="panel-icon panel-icon-crest" alt="JVS endpoint icon" />
           </div>
           <div class="pPin" *ngIf="isParticipantInHearing(participant) && !participant.isLocalVideoMuted">
-            <app-hearing-controls
-            *ngIf="isSpotlighted(participant)"
-            (muteCamera)="muteVideo($event, participant)"
-          ></app-hearing-controls>
             <img
               appTooltip
               [text]="

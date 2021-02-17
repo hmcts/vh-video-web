@@ -166,6 +166,9 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         });
         participant.isLocalAudioMuted = message.mediaStatus.is_local_audio_muted;
         participant.isLocalVideoMuted = message.mediaStatus.is_local_video_muted;
+        if (participant.isLocalVideoMuted && participant.isSpotlighted) {
+            this.toggleSpotlightParticipant(participant);
+        }
     }
 
     handleHearingTransferChange(message: HearingTransfer) {
@@ -330,16 +333,6 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
             pexipParticipant: p.pexipId
         });
         this.videoCallService.lowerHandById(p.pexipId, this.conferenceId, p.id);
-    }
-
-    muteVideo(videoMuted: boolean, participant : PanelModel) {
-        if(videoMuted && participant.isSpotlighted) {
-            this.toggleSpotlightParticipant(participant);
-        }
-    }
-
-    isSpotlighted(participant : PanelModel) {
-        participant.isSpotlighted
     }
 
     async callWitnessIntoHearing(participant: PanelModel) {
