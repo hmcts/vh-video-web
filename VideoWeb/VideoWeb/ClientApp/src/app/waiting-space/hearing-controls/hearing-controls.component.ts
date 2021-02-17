@@ -24,6 +24,7 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
     @Input() showConsultationControls: boolean;
 
     @Output() leaveConsulation = new EventEmitter();
+    @Output() muteCamera = new EventEmitter();
 
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
@@ -182,6 +183,8 @@ export class HearingControlsComponent implements OnInit, OnDestroy {
         this.logger.info(`${this.loggerPrefix} Participant video mute status updated to ${muteVideo}`, this.logPayload);
         this.videoMuted = muteVideo;
         await this.publishMediaDeviceStatus();
+
+        this.muteCamera.emit(this.videoMuted);
     }
 
     async publishMediaDeviceStatus() {

@@ -332,6 +332,16 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         this.videoCallService.lowerHandById(p.pexipId, this.conferenceId, p.id);
     }
 
+    muteVideo(videoMuted: boolean, participant : PanelModel) {
+        if(videoMuted && participant.isSpotlighted) {
+            this.toggleSpotlightParticipant(participant);
+        }
+    }
+
+    isSpotlighted(participant : PanelModel) {
+        participant.isSpotlighted
+    }
+
     async callWitnessIntoHearing(participant: PanelModel) {
         if (!participant.isAvailable() || !participant.isWitness) {
             return;
