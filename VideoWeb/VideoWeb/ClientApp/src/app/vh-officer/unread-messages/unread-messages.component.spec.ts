@@ -129,7 +129,7 @@ describe('UnreadMessagesComponent', () => {
 
     it('should not increase unread count when admin sends a message', () => {
         const conferenceId = conference.id;
-        const participantUsername = 'admin@test.com';
+        const participantUsername = 'admin@hmcts.net';
         const expectedCount = component.unreadCount;
         component.setupSubscribers();
         messageSubjectMock.next(
@@ -151,7 +151,7 @@ describe('UnreadMessagesComponent', () => {
 
     it('should not increase unread count when message is for participant not in conference', () => {
         const conferenceId = conference.id;
-        const participantUsername = 'random@test.com';
+        const participantUsername = 'random@hmcts.net';
         const expectedCount = component.unreadCount;
         component.setupSubscribers();
         messageSubjectMock.next(

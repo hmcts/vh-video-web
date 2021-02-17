@@ -47,7 +47,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
         public async Task should_return_unauthorised_if_judge_not_assigned_to_conference()
         {
             var user = new ClaimsPrincipalBuilder()
-                .WithUsername("notforconference@test.com")
+                .WithUsername("notforconference@hmcts.net")
                 .WithRole(AppRoles.JudgeRole).Build();
 
             Controller = SetupControllerWithClaims(user);

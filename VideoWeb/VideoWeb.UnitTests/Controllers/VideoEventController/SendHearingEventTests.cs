@@ -284,7 +284,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             };
         }
 
-        private ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@doe.com")
+        private ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@hmcts.net")
         {
             var participants = Builder<ParticipantDetailsResponse>.CreateListOfSize(2).Build().ToList();
             if (!string.IsNullOrWhiteSpace(username))

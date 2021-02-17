@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using System.Net;
@@ -25,7 +25,7 @@ namespace VideoWeb.UnitTests.Hub
         [Test]
         public async Task Should_return_obfuscated_username()
         {
-            var userProfile = new UserProfile { User_role = "VhOfficer", User_name = "vhOfficer.User@email.com", First_name = "Manual", Last_name = "User"};
+            var userProfile = new UserProfile { User_role = "VhOfficer", User_name = "vhOfficer.User@hmcts.net", First_name = "Manual", Last_name = "User"};
             _userApiClientMock.Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>())).ReturnsAsync(userProfile);
 
             var obfuscatedUsername = "M***** U***";
@@ -36,7 +36,7 @@ namespace VideoWeb.UnitTests.Hub
         [Test]
         public async Task Should_return_empty_string_if_user_profile_incorrect()
         {
-            var userProfile = new UserProfile { User_role = "VhOfficer", User_name = "vhOfficer.User@email.com", First_name = "Manual", Last_name = "User" };
+            var userProfile = new UserProfile { User_role = "VhOfficer", User_name = "vhOfficer.User@hmcts.net", First_name = "Manual", Last_name = "User" };
             var apiException = new UserApiException("User does not exist", (int)HttpStatusCode.NotFound,
                 "Invalid User Id", null, null);
             _userApiClientMock.Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>())).ThrowsAsync(apiException);
@@ -47,9 +47,9 @@ namespace VideoWeb.UnitTests.Hub
         }
 
         [Test]
-        public async Task should_return_profile_by_username()
+        public async Task Should_return_profile_by_username()
         {
-            var username = "judge@test.com";
+            var username = "judge@hmcts.net";
             var role = Role.Judge.ToString();
             var profile =  Builder<UserProfile>.CreateNew()
                 .With(x => x.User_name = username)

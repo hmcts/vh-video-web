@@ -31,7 +31,7 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_return_true_when_message_is_from_provided_username()
         {
-            var loggedInUsername = "john@doe.com";
+            var loggedInUsername = "john@hmcts.net";
 
             var message = new InstantMessageResponse
             {
@@ -44,7 +44,7 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_return_false_when_message_is_from_another_user()
         {
-            var loggedInUsername = "john@doe.com";
+            var loggedInUsername = "john@hmcts.net";
             var otherUsername = "someone@else.com";
 
             var message = new InstantMessageResponse
@@ -58,7 +58,7 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public async Task Should_get_participant_display_name_when_message_from_participant_in_conference()
         {
-            const string loggedInUsername = "john@doe.com";
+            const string loggedInUsername = "john@hmcts.net";
             const string displayName = "johnny";
             var conference = CreateConferenceResponse(loggedInUsername, displayName);
 
@@ -86,7 +86,7 @@ namespace VideoWeb.UnitTests.Mappings
             };
             _userApiClientMock.Setup(x => x.GetUserByAdUserNameAsync(nonParticipantUsername)).ReturnsAsync(userProfile);
 
-            var loggedInUsername = "john@doe.com";
+            var loggedInUsername = "john@hmcts.net";
             var displayName = "johnny";
             var conference = CreateConferenceResponse(loggedInUsername, displayName);
 
