@@ -22,7 +22,7 @@ using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
 {
-    public class LeavePrivateConsultationTests
+    public class LeaveConsultationTests
     {
         private AutoMock _mocker;
         private ConsultationsController _sut;
@@ -59,57 +59,61 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [Test]
         public async Task Should_return_participant_not_found_when_request_is_sent()
         {
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.LeaveConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
-                .Returns(Task.FromResult(default(object)));
+            // Arrange
             var conference = new Conference {Id = Guid.NewGuid()};
-
             _mocker.Mock<IConferenceCache>().Setup(cache =>
                     cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(conference);
-
             var leaveConsultationRequest = Builder<LeavePrivateConsultationRequest>.CreateNew()
                 .With(x => x.ConferenceId = conference.Id).Build();
+
+            // Act
             var result = await _sut.LeaveConsultationAsync(leaveConsultationRequest);
 
-            var typedResult = (NotFoundResult) result;
-            typedResult.Should().NotBeNull();
+            // Assert
+            result.Should().BeOfType<NotFoundResult>();
         }
 
         [Test]
         public async Task Should_return_no_content_when_request_is_sent()
         {
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.LeaveConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
-                .Returns(Task.FromResult(default(object)));
-
+            // Arrange
             var leaveConsultationRequest = ConsultationHelper.GetLeaveConsultationRequest(_testConference);
+
+            // Act
             var result = await _sut.LeaveConsultationAsync(leaveConsultationRequest);
 
-            var typedResult = (NoContentResult) result;
-            typedResult.Should().NotBeNull();
+            // Assert
+            _mocker.Mock<IVideoApiClient>().Verify(x => x.LeaveConsultationAsync(It.IsAny<LeaveConsultationRequest>()), Times.Once);
+            result.Should().BeOfType<NoContentResult>();
         }
 
         [Test]
         public async Task Should_return_bad_request()
         {
+            // Arrange
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id", null, default, null);
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.LeaveConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
                 .ThrowsAsync(apiException);
 
+            // Act
             var result =
                 await _sut.LeaveConsultationAsync(
                     ConsultationHelper.GetLeaveConsultationRequest(_testConference));
-            var typedResult = (ObjectResult) result;
+
+            // Assert
+            result.Should().BeOfType<ObjectResult>();
+            var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
         }
 
         [Test]
         public async Task Should_return_exception()
         {
+            // Arrange
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
                 (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
@@ -117,27 +121,27 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Setup(x => x.LeaveConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
                 .ThrowsAsync(apiException);
 
+            // Act
             var result =
                 await _sut.LeaveConsultationAsync(
                     ConsultationHelper.GetLeaveConsultationRequest(_testConference));
-            var typedResult = (ObjectResult) result;
-            typedResult.Should().NotBeNull();
+
+            // Assert
+            result.Should().BeOfType<ObjectResult>();
         }
 
         [Test]
         public void Should_throw_InvalidOperationException_two_participants_requested_found()
         {
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.LeaveConsultationAsync(It.IsAny<LeaveConsultationRequest>()))
-                .Returns(Task.FromResult(default(object)));
+            // Arrange
             var conference = _testConference;
-
             var leaveConsultationRequest = Builder<LeavePrivateConsultationRequest>.CreateNew()
                 .With(x => x.ConferenceId = conference.Id).Build();
             var findId = leaveConsultationRequest.ParticipantId;
             conference.Participants[0].Id = findId;
             conference.Participants[1].Id = findId;
 
+            // Act / Assert
             Assert.ThrowsAsync<InvalidOperationException>(() =>
                 _sut.LeaveConsultationAsync(leaveConsultationRequest));
 

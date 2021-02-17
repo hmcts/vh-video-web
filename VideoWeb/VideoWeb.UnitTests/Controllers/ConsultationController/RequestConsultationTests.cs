@@ -22,7 +22,6 @@ using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
-using RoomType = VideoWeb.Common.Models.RoomType;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
 {
@@ -37,19 +36,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         {
             _mocker = AutoMock.GetLoose();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
-            var eventHubContextMock = _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>();
-            var eventHubClientMock = _mocker.Mock<IEventHubClient>();
 
             _testConference = ConsultationHelper.BuildConferenceForTest();
-
-            foreach (var participant in _testConference.Participants)
-            {
-                eventHubContextMock.Setup(x => x.Clients.Group(participant.Username.ToLowerInvariant()))
-                    .Returns(eventHubClientMock.Object);
-            }
-
-            eventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
-                .Returns(eventHubClientMock.Object);
 
             var context = new ControllerContext
             {
@@ -58,6 +46,9 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                     User = claimsPrincipal
                 }
             };
+
+            _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Group(It.IsAny<string>())).Returns(_mocker.Mock<IEventHubClient>().Object);
+            _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients).Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
 
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<PrivateConsultationRequest, ConsultationRequestResponse>()).Returns(_mocker.Create<PrivateConsultationRequestMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Dictionary<string, string[]>, BadRequestModelResponse>()).Returns(_mocker.Create<BadRequestResponseMapper>());
@@ -76,9 +67,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [Test]
         public async Task Should_return_participant_not_found_when_request_is_sent()
         {
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.RespondToConsultationRequestAsync(It.IsAny<ConsultationRequestResponse>()))
-                .Returns(Task.FromResult(default(object)));
+            // Arrange
             var conference = new Conference {Id = Guid.NewGuid()};
             _mocker.Mock<IConferenceCache>().Setup(cache =>
                     cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
@@ -87,23 +76,25 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             var consultationRequest = Builder<PrivateConsultationRequest>.CreateNew()
                 .With(x => x.ConferenceId = conference.Id).Build();
+
+            // Act
             var result = await _controller.RespondToConsultationRequestAsync(consultationRequest);
 
-            var typedResult = (NotFoundResult) result;
-            typedResult.Should().NotBeNull();
+            // Assert
+            result.Should().BeOfType<NotFoundResult>();
         }
 
         [Test]
         public async Task Should_return_no_content_when_request_is_sent()
         {
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.RespondToConsultationRequestAsync(It.IsAny<ConsultationRequestResponse>()))
-                .Returns(Task.FromResult(default(object)));
-
+            // Arrange
+            
+            // Act
             var result =
                 await _controller.RespondToConsultationRequestAsync(
                     ConsultationHelper.GetConsultationRequest(_testConference));
 
+            // Assert
             result.Should().BeOfType<NoContentResult>();
             _mocker.Mock<IEventHubClient>().Verify(
                 x => x.ConsultationRequestResponseMessage
@@ -114,15 +105,19 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [Test]
         public async Task Should_return_bad_request()
         {
+            // Arrange
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
                 "{\"ConsultationRoom\":[\"No consultation room available\"]}", null, default, null);
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.RespondToConsultationRequestAsync(It.IsAny<ConsultationRequestResponse>()))
                 .ThrowsAsync(apiException);
 
+            // Act
             var result =
                 await _controller.RespondToConsultationRequestAsync(
                     ConsultationHelper.GetConsultationRequest(_testConference));
+
+            // Assert
             var typedResult = (ObjectResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
         }
@@ -130,32 +125,21 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [Test]
         public async Task Should_return_exception()
         {
+            // Arrange
             var apiException = new VideoApiException("Internal Server Error",
                 (int) HttpStatusCode.InternalServerError, "The server collapse due to unhandled error", default, null);
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.RespondToConsultationRequestAsync(It.IsAny<ConsultationRequestResponse>()))
                 .ThrowsAsync(apiException);
-
+            
+            // Act
             var result =
                 await _controller.RespondToConsultationRequestAsync(
                     ConsultationHelper.GetConsultationRequest(_testConference));
+
+            // Assert
             var typedResult = (ObjectResult) result;
             typedResult.Should().NotBeNull();
-        }
-
-        [Test]
-        public async Task Should_send_message_to_other_party_when_requested()
-        {
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.RespondToConsultationRequestAsync(It.IsAny<ConsultationRequestResponse>()))
-                .Returns(Task.FromResult(HttpStatusCode.NoContent));
-
-            var consultationRequest = ConsultationHelper.GetConsultationRequest(_testConference);
-            var result = await _controller.RespondToConsultationRequestAsync(consultationRequest);
-            var typedResult = (NoContentResult) result;
-            typedResult.Should().NotBeNull();
-
-            _mocker.Mock<IEventHubClient>().Verify(x => x.ConsultationRequestResponseMessage(_testConference.Id, consultationRequest.RoomLabel, consultationRequest.RequestedForId, consultationRequest.Answer));
         }
 
         [TestCase(ConsultationAnswer.None)]
@@ -163,17 +147,17 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [TestCase(ConsultationAnswer.Rejected)]
         public async Task Should_send_message_to_other_party_when_answered(ConsultationAnswer answer)
         {
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.RespondToConsultationRequestAsync(It.IsAny<ConsultationRequestResponse>()))
-                .Returns(Task.FromResult(HttpStatusCode.NoContent));
-
+            // Arange
             var consultationRequest = ConsultationHelper.GetConsultationRequest(_testConference);
             consultationRequest.Answer = answer;
-            var result = await _controller.RespondToConsultationRequestAsync(consultationRequest);
-            var typedResult = (NoContentResult) result;
-            typedResult.Should().NotBeNull();
 
-            _mocker.Mock<IEventHubClient>().Verify(x => x.ConsultationRequestResponseMessage(_testConference.Id, consultationRequest.RoomLabel, consultationRequest.RequestedForId, consultationRequest.Answer));
+            // Act
+            var result = await _controller.RespondToConsultationRequestAsync(consultationRequest);
+
+            // Assert
+            result.Should().BeOfType<NoContentResult>();
+            _mocker.Mock<IEventHubClient>().Verify(x => x.ConsultationRequestResponseMessage(_testConference.Id, consultationRequest.RoomLabel, consultationRequest.RequestedForId, consultationRequest.Answer),
+                Times.Exactly(_testConference.Participants.Count));
         }
 
         [Test]

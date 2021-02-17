@@ -35,16 +35,8 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             _testConference = ConsultationHelper.BuildConferenceForTest();
 
-            var eventHubContextMock = _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>();
-            var eventHubClientMock = _mocker.Mock<IEventHubClient>();
-            foreach (var participant in _testConference.Participants)
-            {
-                eventHubContextMock.Setup(x => x.Clients.Group(participant.Username.ToLowerInvariant()))
-                    .Returns(eventHubClientMock.Object);
-            }
-
-            eventHubContextMock.Setup(x => x.Clients.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
-                .Returns(eventHubClientMock.Object);
+            _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Group(It.IsAny<string>())).Returns(_mocker.Mock<IEventHubClient>().Object);
+            _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients).Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
 
             _mocker.Mock<IConferenceCache>().Setup(cache =>
                     cache.GetOrAddConferenceAsync(_testConference.Id,
@@ -56,8 +48,9 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_return_unauthorized_if_user_is_notin_conference_or_vh_officer()
+        public async Task should_return_unauthorized_if_user_is_not_in_conference_or_vh_officer()
         {
+            // Arrange
             var cp = new ClaimsPrincipalBuilder().WithRole(AppRoles.RepresentativeRole)
                 .WithUsername("nf@test.com").Build();
             _sut = SetupControllerWithClaims(cp);
@@ -66,13 +59,64 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             {
                 ConferenceId = _testConference.Id,
                 ParticipantId = _testConference.Participants[0].Id,
-                RoomLabel = "Private Meeting"
+                RoomLabel = "Room1"
             };
+
+            // Act
             var result = await _sut.InviteToConsultationAsync(request);
-            var actionResult = result.As<UnauthorizedObjectResult>();
-            actionResult.Should().NotBeNull();
+
+            // Assert
+            result.Should().BeOfType<UnauthorizedObjectResult>();
         }
-        
+
+        [Test]
+        public async Task should_return_accepted_if_user_is_vh_officer()
+        {
+            // Arrange
+            var cp = new ClaimsPrincipalBuilder().WithRole(AppRoles.VhOfficerRole)
+                .WithUsername("nf@test.com").Build();
+            _sut = SetupControllerWithClaims(cp);
+
+            var request = new InviteToConsultationRequest
+            {
+                ConferenceId = _testConference.Id,
+                ParticipantId = _testConference.Participants[0].Id,
+                RoomLabel = "Room1"
+            };
+
+            // Act
+            var result = await _sut.InviteToConsultationAsync(request);
+
+            // Assert
+            result.Should().BeOfType<AcceptedResult>();
+            _mocker.Mock<IEventHubClient>().Verify(x => x.RequestedConsultationMessage(_testConference.Id, "Room1", Guid.Empty, _testConference.Participants[0].Id),
+                Times.Exactly(_testConference.Participants.Count));
+        }
+
+        [Test]
+        public async Task should_return_accepted_if_user_is_in_consultation()
+        {
+            // Arrange
+            var cp = new ClaimsPrincipalBuilder().WithRole(AppRoles.RepresentativeRole)
+                .WithUsername("rep1@hmcts.net").Build();
+            _sut = SetupControllerWithClaims(cp);
+
+            var request = new InviteToConsultationRequest
+            {
+                ConferenceId = _testConference.Id,
+                ParticipantId = _testConference.Participants[0].Id,
+                RoomLabel = "Room1"
+            };
+
+            // Act
+            var result = await _sut.InviteToConsultationAsync(request);
+
+            // Assert
+            result.Should().BeOfType<AcceptedResult>();
+            _mocker.Mock<IEventHubClient>().Verify(x => x.RequestedConsultationMessage(_testConference.Id, "Room1", _testConference.Participants[2].Id, _testConference.Participants[0].Id),
+                Times.Exactly(_testConference.Participants.Count));
+        }
+
         private ConsultationsController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)
         {
             var cp = claimsPrincipal ?? new ClaimsPrincipalBuilder().WithRole(AppRoles.RepresentativeRole)
