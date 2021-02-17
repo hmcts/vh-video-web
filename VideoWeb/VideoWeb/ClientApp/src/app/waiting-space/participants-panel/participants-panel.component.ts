@@ -166,6 +166,9 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         });
         participant.isLocalAudioMuted = message.mediaStatus.is_local_audio_muted;
         participant.isLocalVideoMuted = message.mediaStatus.is_local_video_muted;
+        if (participant.isLocalVideoMuted && participant.isSpotlighted) {
+            this.toggleSpotlightParticipant(participant);
+        }
     }
 
     handleHearingTransferChange(message: HearingTransfer) {
