@@ -14,7 +14,7 @@ namespace VideoWeb.UnitTests.Hub
         [Test]
         public async Task should_publish_media_status_to_participants_and_admin_when_ids_are_valid()
         {
-            var participantUsername = "individual@test.com";
+            var participantUsername = "individual@hmcts.net";
             var conference = CreateTestConference(participantUsername);
 
             var conferenceId = conference.Id;
@@ -40,7 +40,7 @@ namespace VideoWeb.UnitTests.Hub
         [Test]
         public async Task should_not_publish_media_status_when_participant_id_does_not_exist()
         {
-            var participantUsername = "individual@test.com";
+            var participantUsername = "individual@hmcts.net";
             var conference = CreateTestConference(participantUsername);
 
             var conferenceId = conference.Id;

@@ -59,7 +59,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         public async Task should_return_not_found_if_defence_advocate_is_not_found()
         {
             var cp = new ClaimsPrincipalBuilder().WithRole(AppRoles.RepresentativeRole)
-                .WithUsername("nf@test.com").Build();
+                .WithUsername("nf@hmcts.net").Build();
             _sut = SetupControllerWithClaims(cp);
             
             var request = new PrivateVideoEndpointConsultationRequest
@@ -128,7 +128,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         private ConsultationsController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)
         {
             var cp = claimsPrincipal ?? new ClaimsPrincipalBuilder().WithRole(AppRoles.RepresentativeRole)
-                .WithUsername("rep1@test.com").Build();
+                .WithUsername("rep1@hmcts.net").Build();
             var context = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext
