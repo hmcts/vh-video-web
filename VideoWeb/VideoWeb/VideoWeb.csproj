@@ -55,7 +55,10 @@
     <PackageReference Include="Microsoft.OpenApi" Version="1.1.4" />
     <PackageReference Include="Polly" Version="7.2.1" />
     <PackageReference Include="Scrutor" Version="3.3.0" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.2.0.14119" />
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.18.0.27296">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="5.0.0" />

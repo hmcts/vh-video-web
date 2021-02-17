@@ -22,12 +22,12 @@
       },
       "FluentValidation.AspNetCore": {
         "type": "Direct",
-        "requested": "[8.6.1, )",
-        "resolved": "8.6.1",
-        "contentHash": "vRMnNKf8W7Rfj4eOw/OCqDvsUooflCPpv/OUZ86MTevrUoVNJ236XYEegNWsv3U1t4dUcGxpK94VQZYyuBciYQ==",
+        "requested": "[9.5.1, )",
+        "resolved": "9.5.1",
+        "contentHash": "m4V/ovMBzr5kot9th5GUDMnXMI3SsnOnZB5xXR0dYdQAJPHjWlyjuCJrLeK+q83WCAet9cay0JraEnrLG4Ruew==",
         "dependencies": {
-          "FluentValidation": "8.6.1",
-          "FluentValidation.DependencyInjectionExtensions": "8.6.1"
+          "FluentValidation": "9.5.1",
+          "FluentValidation.DependencyInjectionExtensions": "9.5.1"
         }
       },
       "MicroElements.Swashbuckle.FluentValidation": {
@@ -206,9 +206,9 @@
       },
       "SonarAnalyzer.CSharp": {
         "type": "Direct",
-        "requested": "[8.2.0.14119, )",
-        "resolved": "8.2.0.14119",
-        "contentHash": "uq6tGr6guoDzeGjM/7kQWSTYUqv6RgPCVfzYoJg0jdVhIjNPQvSL0kMcugDziOWFP1OIv89kBD9LubVOMbCvvg=="
+        "requested": "[8.18.0.27296, )",
+        "resolved": "8.18.0.27296",
+        "contentHash": "GoHb0jtrazBEzinjD/IV4zcMVSLMcVYA9UwZiJULyUxtRTFt/g9uduzpoGbAvpgjE3/fLf2KC2Tf6JjhHhkeKg=="
       },
       "Swashbuckle.AspNetCore": {
         "type": "Direct",
@@ -256,18 +256,15 @@
       },
       "FluentValidation": {
         "type": "Transitive",
-        "resolved": "8.6.1",
-        "contentHash": "g0xw/YCVgJ1IYpBgKF9iuci/Arf6Dsq9H/WeeT9zaBpjrEA+Cr2GjWXHu1F0DKqVzp4J4hta4gGrRt6H4aESqQ==",
-        "dependencies": {
-          "System.ComponentModel.Annotations": "4.4.1"
-        }
+        "resolved": "9.5.1",
+        "contentHash": "By09e2m4N3giD7Giq8NCFgkgN5Hkm8Lv/bk8AadD9Xc6jjj2WDGrD6l9keZbWbkO9aygiHQREIt47iS2sVSU7w=="
       },
       "FluentValidation.DependencyInjectionExtensions": {
         "type": "Transitive",
-        "resolved": "8.6.1",
-        "contentHash": "AsI9IrXuTWbiJdkxMqQn3ZIg3EqfX2RdtaR3vZsXOx+lvAwEVpCdRiKJiypiUV0tkPpH76058MIJRUtNistk1g==",
+        "resolved": "9.5.1",
+        "contentHash": "r0ckWF7AuMt3gx9HmY8UL7l/jdFvk4zarSc+pa5GzwkeDkOl7IKXSpY68bszDLT1d31Br9fv0+ap70UME13S9w==",
         "dependencies": {
-          "FluentValidation": "8.6.1",
+          "FluentValidation": "9.5.1",
           "Microsoft.Extensions.Dependencyinjection.Abstractions": "2.1.0"
         }
       },
@@ -1244,11 +1241,6 @@
         "dependencies": {
           "System.Runtime": "4.3.0"
         }
-      },
-      "System.ComponentModel.Annotations": {
-        "type": "Transitive",
-        "resolved": "4.4.1",
-        "contentHash": "ToiYqSCioqhtspq2O/jYKtyTC/T0uwWHBTYlzCi6PRbSSHArN1IaRWeHffDamvms5sye5FDUWCfNZgubQpNRsA=="
       },
       "System.ComponentModel.Primitives": {
         "type": "Transitive",
@@ -2260,7 +2252,6 @@
           "Microsoft.Extensions.Caching.Abstractions": "3.1.10",
           "Microsoft.Extensions.Options": "3.1.10",
           "Microsoft.IdentityModel.Clients.ActiveDirectory": "5.2.8",
-          "SonarAnalyzer.CSharp": "8.2.0.14119",
           "StackExchange.Redis": "2.1.28",
           "System.IdentityModel.Tokens.Jwt": "5.6.0",
           "VideoWeb.Services": "1.0.0"
@@ -2269,7 +2260,6 @@
       "videoweb.contract": {
         "type": "Project",
         "dependencies": {
-          "SonarAnalyzer.CSharp": "8.2.0.14119",
           "VideoWeb.Common": "1.0.0",
           "VideoWeb.Services": "1.0.0"
         }
