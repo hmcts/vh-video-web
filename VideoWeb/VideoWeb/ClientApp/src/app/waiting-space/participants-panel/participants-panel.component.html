@@ -13,6 +13,7 @@
         >
           {{ participant.displayName }}
         </div>
+
         <ng-container *ngIf="!isParticipantDisconnected(participant); else participantDisconnected">
           <div class="pRole" id="panel_participant_role_{{ i }}"></div>
           <div class="pmute" *ngIf="isParticipantInHearing(participant)">
