@@ -3,6 +3,7 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -12,6 +13,8 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
+using VideoWeb.EventHub.Hub;
+using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Mappings.Requests;
 using VideoWeb.Services.Video;
@@ -50,6 +53,9 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(_testConference);
 
+            _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Group(It.IsAny<string>())).Returns(_mocker.Mock<IEventHubClient>().Object);
+            _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients).Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
+
             _controller = _mocker.Create<ConsultationsController>();
             _controller.ControllerContext = context;
         }
@@ -57,10 +63,6 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [Test]
         public async Task Should_return_participant_not_found_when_request_is_sent()
         {
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.StartPrivateConsultationAsync(It.IsAny<StartConsultationRequest>()))
-                .Returns(Task.FromResult(default(object)));
-
             var conference = new Conference { Id = Guid.NewGuid() };
             _mocker.Mock<IConferenceCache>().Setup(cache =>
                     cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
@@ -78,15 +80,36 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [Test]
         public async Task Should_return_accepted_when_request_is_sent()
         {
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.StartPrivateConsultationAsync(It.IsAny<StartConsultationRequest>()))
-                .Returns(Task.FromResult(default(object)));
+            // Arrange
+            var request = ConsultationHelper.GetStartJohConsultationRequest(_testConference);
 
-            var result =
-                await _controller.StartConsultationAsync(
-                    ConsultationHelper.GetStartConsultationRequest(_testConference));
-            var typedResult = (AcceptedResult)result;
-            typedResult.Should().NotBeNull();
+            // Act
+            var result = await _controller.StartConsultationAsync(request);
+
+            // Assert
+            result.Should().BeOfType<AcceptedResult>();
+            _mocker.Mock<IVideoApiClient>()
+                .Verify(x => x.StartPrivateConsultationAsync(It.IsAny<StartConsultationRequest>()), Times.Once);
+        }
+
+        [Test]
+        public async Task Should_return_accepted_when_request_is_sent_participant_room_type()
+        {
+            // Arrange
+            var request = ConsultationHelper.GetStartParticipantConsultationRequest(_testConference);
+            _mocker.Mock<IVideoApiClient>()
+                .Setup(x => x.CreatePrivateConsultationAsync(It.IsAny<StartConsultationRequest>())).ReturnsAsync(new RoomResponse { Label = "Room1", Locked = false });
+
+            // Act
+            var result = await _controller.StartConsultationAsync(request);
+
+            // Assert
+            result.Should().BeOfType<AcceptedResult>();
+            _mocker.Mock<IVideoApiClient>()
+                .Verify(x => x.CreatePrivateConsultationAsync(It.IsAny<StartConsultationRequest>()), Times.Once);
+            _mocker.Mock<IEventHubClient>().Verify(x => x.RoomUpdate(It.Is<Room>(r => r.ConferenceId == _testConference.Id && r.Label == "Room1" && !r.Locked)), Times.Exactly(_testConference.Participants.Count));
+            _mocker.Mock<IEventHubClient>().Verify(x => x.RequestedConsultationMessage(_testConference.Id, "Room1", request.RequestedBy, It.IsIn(request.InviteParticipants)),
+                Times.Exactly(request.InviteParticipants.Length * _testConference.Participants.Count));
         }
 
         [Test]
@@ -100,7 +123,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             var result =
                 await _controller.StartConsultationAsync(
-                    ConsultationHelper.GetStartConsultationRequest(_testConference));
+                    ConsultationHelper.GetStartJohConsultationRequest(_testConference));
 
             var typedResult = (StatusCodeResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
@@ -118,7 +141,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             var result =
                 await _controller.StartConsultationAsync(
-                    ConsultationHelper.GetStartConsultationRequest(_testConference));
+                    ConsultationHelper.GetStartJohConsultationRequest(_testConference));
             var typedResult = (StatusCodeResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
         }

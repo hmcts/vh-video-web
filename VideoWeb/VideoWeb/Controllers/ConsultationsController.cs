@@ -282,16 +282,16 @@ namespace VideoWeb.Controllers
             Guid requestedForId, ConsultationAnswer answer)
         {
             var tasks = conference.Participants.Select(p => 
-                _hubContext.Clients.Group(p.Username.ToLowerInvariant())
-                    .ConsultationRequestResponseMessage(conference.Id, roomLabel, requestedForId, answer));
+                _hubContext.Clients?.Group(p.Username.ToLowerInvariant())
+                    .ConsultationRequestResponseMessage(conference.Id, roomLabel, requestedForId, answer) ?? Task.CompletedTask);
             await Task.WhenAll(tasks);
         }
 
         private async Task NotifyRoomUpdateAsync(Conference conference, Room room)
         {
             var tasks = conference.Participants.Select(p =>
-                _hubContext.Clients.Group(p.Username.ToLowerInvariant())
-                .RoomUpdate(room));
+                _hubContext.Clients?.Group(p.Username.ToLowerInvariant())
+                .RoomUpdate(room) ?? Task.CompletedTask);
             await Task.WhenAll(tasks);
         }
     }
