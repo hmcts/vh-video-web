@@ -10,7 +10,8 @@ import {
     ParticipantResponse,
     ParticipantResponseVho,
     ParticipantStatus,
-    Role
+    Role,
+    RoomSummaryResponse
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
@@ -220,5 +221,37 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
         const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, id: '1234' });
         expect(component.canCallParticipant(participant)).toBeFalsy();
+    });
+
+    it('should return participant unavailable status css class', () => {
+        const participant = component.conference.participants[0];
+        participant.status = ParticipantStatus.Disconnected;
+        expect(component.getParticipantStatusCss(participant)).toEqual('unavailable');
+    });
+
+    it('should return participant in consultation status css class', () => {
+        const participant = component.conference.participants[0];
+        participant.status = ParticipantStatus.InConsultation;
+        expect(component.getParticipantStatusCss(participant)).toEqual('in-consultation');
+    });
+
+    it('should not return status css class', () => {
+        const participant = component.conference.participants[0];
+        participant.status = ParticipantStatus.InConsultation;
+        expect(component.getParticipantStatusCss(participant)).toEqual('in-consultation');
+    });
+
+    it('should return participant unavailable status', () => {
+        const participant = component.conference.participants[0];
+        participant.status = ParticipantStatus.Disconnected;
+        expect(component.getParticipantStatus(participant)).toEqual('Unavailable');
+    });
+
+    it('should return participant in consultation status', () => {
+        const participant = component.conference.participants[0];
+        participant.status = ParticipantStatus.InConsultation;
+        participant.current_room = new RoomSummaryResponse();
+        participant.current_room.label = 'MeetingRoom1';
+        expect(component.getParticipantStatus(participant)).toEqual('In meeting room 1');
     });
 });

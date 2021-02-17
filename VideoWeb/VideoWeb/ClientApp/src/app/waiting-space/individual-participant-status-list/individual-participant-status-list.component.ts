@@ -105,7 +105,5 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
                 (participant.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
             );
         }
-
-        return;
     }
 }

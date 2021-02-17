@@ -20,7 +20,9 @@ import { HearingRole } from '../../models/hearing-role-model';
 import { NotificationSoundsService } from '../../services/notification-sounds.service';
 import { WRTestComponent } from './WRTestComponent';
 import { NotificationToastrService } from 'src/app/waiting-space/services/notification-toastr.service';
-import { ToastrService } from 'ngx-toastr';
+import { ActiveToast, OverlayRef, ToastPackage, ToastRef, ToastrService } from 'ngx-toastr';
+import { Component } from '@angular/core';
+import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 const conferenceTestData = new ConferenceTestData();
 
 export let component: WRTestComponent;
@@ -51,7 +53,6 @@ export let consultationService: jasmine.SpyObj<ConsultationService>;
 export let notificationSoundsService: jasmine.SpyObj<NotificationSoundsService>;
 export let notificationToastrService: jasmine.SpyObj<NotificationToastrService>;
 export let toastrService: jasmine.SpyObj<ToastrService>;
-
 export let logger: jasmine.SpyObj<Logger>;
 export let userMediaService: jasmine.SpyObj<UserMediaService>;
 export let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
@@ -115,7 +116,10 @@ export function initAllWRDependencies() {
         'playHearingAlertSound',
         'initHearingAlertSound',
         'stopHearingAlertSound',
-        'initConsultationRequestRingtone'
+        'initConsultationRequestRingtone',
+        'playConsultationRequestRingtone',
+        'stopConsultationRequestRingtone'
     ]);
     notificationToastrService = jasmine.createSpyObj<NotificationToastrService>('NotificationToastrService', ['showConsultationInvite']);
+    toastrService = jasmine.createSpyObj<ToastrService>('ToastrService', ['show', 'clear']);
 }
