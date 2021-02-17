@@ -20,7 +20,7 @@ import { HearingRole } from '../../models/hearing-role-model';
 import { NotificationSoundsService } from '../../services/notification-sounds.service';
 import { WRTestComponent } from './WRTestComponent';
 import { NotificationToastrService } from 'src/app/waiting-space/services/notification-toastr.service';
-import { ActiveToast, OverlayRef, ToastRef, ToastrService } from 'ngx-toastr';
+import { ActiveToast, OverlayRef, ToastPackage, ToastRef, ToastrService } from 'ngx-toastr';
 import { Component } from '@angular/core';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 const conferenceTestData = new ConferenceTestData();
@@ -53,8 +53,6 @@ export let consultationService: jasmine.SpyObj<ConsultationService>;
 export let notificationSoundsService: jasmine.SpyObj<NotificationSoundsService>;
 export let notificationToastrService: jasmine.SpyObj<NotificationToastrService>;
 export let toastrService: jasmine.SpyObj<ToastrService>;
-export let mockToast: jasmine.SpyObj<ActiveToast<Component>>;
-export let mockToastRef: jasmine.SpyObj<ToastRef<Component>>;
 export let logger: jasmine.SpyObj<Logger>;
 export let userMediaService: jasmine.SpyObj<UserMediaService>;
 export let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
@@ -119,10 +117,9 @@ export function initAllWRDependencies() {
         'initHearingAlertSound',
         'stopHearingAlertSound',
         'initConsultationRequestRingtone',
-        'playConsultationRequestRingtone'
+        'playConsultationRequestRingtone',
+        'stopConsultationRequestRingtone'
     ]);
     notificationToastrService = jasmine.createSpyObj<NotificationToastrService>('NotificationToastrService', ['showConsultationInvite']);
-    toastrService = jasmine.createSpyObj<ToastrService>('ToastrService', ['show']);
-    mockToast = jasmine.createSpyObj<ActiveToast<Component>>('ActiveToast', ['toastRef']);
-    mockToastRef = jasmine.createSpyObj<ToastRef<Component>>('ToastRef', ['componentInstance']);
+    toastrService = jasmine.createSpyObj<ToastrService>('ToastrService', ['show', 'clear']);
 }
