@@ -14,7 +14,7 @@ import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 
 import { StartPrivateConsultationComponent } from './start-private-consultation.component';
 
-describe('PrivateConsultationParticipantsComponent', () => {
+describe('StartPrivateConsultationComponent', () => {
     let component: StartPrivateConsultationComponent;
 
     let conference: ConferenceResponse;

@@ -56,7 +56,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         }
 
         [Test]
-        public async Task should_return_unauthorized_if_user_is_not_vh_officer()
+        public async Task should_return_unauthorized_if_user_is_notin_conference_or_vh_officer()
         {
             var cp = new ClaimsPrincipalBuilder().WithRole(AppRoles.RepresentativeRole)
                 .WithUsername("nf@test.com").Build();
