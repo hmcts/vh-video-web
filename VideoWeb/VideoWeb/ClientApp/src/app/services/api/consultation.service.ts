@@ -22,6 +22,7 @@ import { ModalService } from '../modal.service';
 })
 export class ConsultationService {
     static ERROR_PC_MODAL = 'pc-error-modal';
+    static LEAVE_PC_MODAL = 'pc-leave-modal';
 
     constructor(
         private apiClient: ApiClient,
@@ -228,6 +229,11 @@ export class ConsultationService {
     displayConsultationErrorModal() {
         this.logger.debug('[ConsultationService] - Displaying consultation error modal.');
         this.displayModal(ConsultationService.ERROR_PC_MODAL);
+    }
+
+    displayConsultationLeaveModal() {
+        this.logger.debug('[ConsultationService] - Displaying consultation leave modal.');
+        this.displayModal(ConsultationService.LEAVE_PC_MODAL);
     }
 
     displayModal(modalId: string) {
