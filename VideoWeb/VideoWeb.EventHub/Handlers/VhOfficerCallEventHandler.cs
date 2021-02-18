@@ -26,22 +26,18 @@ namespace VideoWeb.EventHub.Handlers
         {
             var targetRoom = ValidationConsultationRoom(callbackEvent);
             return HubContext.Clients.Group(SourceParticipant.Username.ToLowerInvariant())
-                .AdminConsultationMessage(SourceConference.Id, targetRoom, SourceParticipant.Id);
+                .ConsultationRequestResponseMessage(SourceConference.Id, targetRoom,
+                    SourceParticipant.Id, Common.Models.ConsultationAnswer.None);
         }
 
-        private RoomType ValidationConsultationRoom(CallbackEvent callbackEvent)
+        private string ValidationConsultationRoom(CallbackEvent callbackEvent)
         {
-            if (string.IsNullOrWhiteSpace(callbackEvent.TransferTo))
-            {
-                throw new ArgumentException("No consultation room provided");
-            }
-            var transferTo = Enum.Parse<RoomType>(callbackEvent.TransferTo);
-            if (transferTo != RoomType.ConsultationRoom1 && transferTo != RoomType.ConsultationRoom2) 
+            if (string.IsNullOrWhiteSpace(callbackEvent.TransferTo) || !callbackEvent.TransferTo.Contains("consultation"))
             {
                 throw new ArgumentException("No consultation room provided");
             }
 
-            return transferTo;
+            return callbackEvent.TransferTo;
         }
     }
 }

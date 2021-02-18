@@ -4,6 +4,7 @@ import { ConferenceResponse, ConferenceStatus, ParticipantResponse } from 'src/a
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
+import { Room } from '../../shared/models/room';
 import {
     activatedRoute,
     adalService,
@@ -18,6 +19,7 @@ import {
     initAllWRDependencies,
     logger,
     notificationSoundsService,
+    notificationToastrService,
     router,
     userMediaService,
     userMediaStreamService,
@@ -50,6 +52,7 @@ describe('JohWaitingRoomComponent eventhub events', () => {
             userMediaService,
             userMediaStreamService,
             notificationSoundsService,
+            notificationToastrService,
             clockService
         );
         adalService.userInfo.userName = 'chris.green@hearings.net';
@@ -72,7 +75,6 @@ describe('JohWaitingRoomComponent eventhub events', () => {
         const status = ConferenceStatus.InSession;
         const message = new ConferenceStatusMessage(globalConference.id, status);
         notificationSoundsService.playHearingAlertSound.calls.reset();
-
         hearingStatusSubject.next(message);
         flushMicrotasks();
 

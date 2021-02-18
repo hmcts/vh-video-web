@@ -1128,11 +1128,6 @@
         "resolved": "87.0.4280.2000",
         "contentHash": "jq1wC5pUz5Ov2CydyeIBEwdQ6tQ5IRy08mTjBM2OOca72fXLSLuGtEc4qVTjmNJ/LpTzWRrh7klSpBn1Lt4Raw=="
       },
-      "SonarAnalyzer.CSharp": {
-        "type": "Transitive",
-        "resolved": "8.2.0.14119",
-        "contentHash": "uq6tGr6guoDzeGjM/7kQWSTYUqv6RgPCVfzYoJg0jdVhIjNPQvSL0kMcugDziOWFP1OIv89kBD9LubVOMbCvvg=="
-      },
       "StackExchange.Redis": {
         "type": "Transitive",
         "resolved": "2.1.28",
@@ -2263,7 +2258,6 @@
           "Microsoft.Extensions.Caching.Abstractions": "3.1.10",
           "Microsoft.Extensions.Options": "3.1.10",
           "Microsoft.IdentityModel.Clients.ActiveDirectory": "5.2.8",
-          "SonarAnalyzer.CSharp": "8.2.0.14119",
           "StackExchange.Redis": "2.1.28",
           "System.IdentityModel.Tokens.Jwt": "5.6.0",
           "VideoWeb.Services": "1.0.0"
@@ -2272,7 +2266,6 @@
       "videoweb.contract": {
         "type": "Project",
         "dependencies": {
-          "SonarAnalyzer.CSharp": "8.2.0.14119",
           "VideoWeb.Common": "1.0.0",
           "VideoWeb.Services": "1.0.0"
         }

@@ -9,7 +9,6 @@ import { ClockService } from 'src/app/services/clock.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -17,17 +16,21 @@ import { DeviceTypeService } from '../../services/device-type.service';
 import { HeartbeatModelMapper } from '../../shared/mappers/heartbeat-model-mapper';
 import { HearingRole } from '../models/hearing-role-model';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
+import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { Participant } from 'src/app/shared/models/participant';
+import { NotificationToastrService } from '../services/notification-toastr.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
 
 @Component({
     selector: 'app-participant-waiting-room',
     templateUrl: './participant-waiting-room.component.html',
-    styleUrls: ['./participant-waiting-room.component.scss', '../waiting-room-global-styles.scss']
+    styleUrls: ['../waiting-room-global-styles.scss', './participant-waiting-room.component.scss']
 })
 export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
     currentTime: Date;
     hearingStartingAnnounced: boolean;
+    privateConsultationAccordianExpanded = false;
 
     clockSubscription$: Subscription;
 
@@ -46,6 +49,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         protected userMediaService: UserMediaService,
         protected userMediaStreamService: UserMediaStreamService,
         protected notificationSoundsService: NotificationSoundsService,
+        protected notificationToastrService: NotificationToastrService,
         protected clockService: ClockService
     ) {
         super(
@@ -63,6 +67,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
             userMediaService,
             userMediaStreamService,
             notificationSoundsService,
+            notificationToastrService,
             clockService
         );
     }
@@ -155,6 +160,12 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         }
     }
 
+    getRoomName(): string {
+        return this.camelToSpaced(
+            this.participant?.current_room?.label?.replace('ParticipantConsultationRoom', 'MeetingRoom') ?? 'MeetingRoom'
+        );
+    }
+
     get isWitness(): boolean {
         return this.participant?.hearing_role === HearingRole.WITNESS;
     }
@@ -169,5 +180,73 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         } else {
             this.notificationSoundsService.stopHearingAlertSound();
         }
+    }
+
+    openStartConsultationModal() {
+        this.displayStartPrivateConsultationModal = true;
+    }
+
+    openJoinConsultationModal() {
+        this.displayJoinPrivateConsultationModal = true;
+    }
+
+    getPrivateConsultationParticipants(): Participant[] {
+        return this.conference.participants.map(p => new Participant(p)).filter(p => !p.isJudge && p.id !== this.participant.id);
+    }
+
+    async startPrivateConsultation(participants: string[]) {
+        this.logger.info(`[ParticipantWaitingRoomComponent] - attempting to start a private participant consultation`, {
+            conference: this.conference?.id,
+            participant: this.participant.id
+        });
+        await this.consultationService.createParticipantConsultationRoom(this.conference, this.participant, participants);
+        this.closeStartPrivateConsultationModal();
+    }
+
+    async joinPrivateConsultation(roomLabel: string) {
+        this.logger.info(`[ParticipantWaitingRoomComponent] - attempting to join a private participant consultation`, {
+            conference: this.conference?.id,
+            participant: this.participant.id,
+            roomLabel: roomLabel
+        });
+        await this.consultationService.joinPrivateConsultationRoom(this.conference.id, this.participant.id, roomLabel);
+        this.closeJoinPrivateConsultationModal();
+    }
+
+    async setRoomLock(lock: boolean) {
+        const roomLabel = this.participant.current_room?.label;
+        if (!roomLabel) {
+            return;
+        }
+
+        this.logger.info(`[ParticipantWaitingRoomComponent] - attempting to set room lock state`, {
+            conference: this.conference?.id,
+            participant: this.participant.id,
+            roomLabel: roomLabel,
+            lock: lock
+        });
+        await this.consultationService.lockConsultation(this.conference.id, roomLabel, lock);
+    }
+
+    closeStartPrivateConsultationModal() {
+        this.displayStartPrivateConsultationModal = false;
+    }
+
+    closeJoinPrivateConsultationModal() {
+        this.displayJoinPrivateConsultationModal = false;
+    }
+
+    protected camelToSpaced(word: string) {
+        const splitWord = word
+            .match(/[a-z]+|[^a-z]+/gi)
+            .join(' ')
+            .split(/(?=[A-Z])/)
+            .join(' ');
+        const lowcaseWord = splitWord.toLowerCase();
+        return lowcaseWord.charAt(0).toUpperCase() + lowcaseWord.slice(1);
+    }
+
+    toggleAccordian() {
+        this.privateConsultationAccordianExpanded = !this.privateConsultationAccordianExpanded;
     }
 }

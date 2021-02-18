@@ -20,7 +20,6 @@ using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 using Endpoint = VideoWeb.Common.Models.Endpoint;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
-using RoomType = VideoWeb.Services.Video.RoomType;
 
 namespace VideoWeb.UnitTests.Controllers.VideoEventController
 {
@@ -251,7 +250,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 .With(x => x.Conference_id = _testConference.Id.ToString())
                 .With(x => x.Participant_id = _testConference.Endpoints[0].Id.ToString())
                 .With(x => x.Event_type = incomingEventType)
-                .With(x => x.Transfer_to = RoomType.ConsultationRoom1.ToString())
+                .With(x => x.Transfer_to = "ParticipantConsultationRoom10")
                 .With(x => x.Transfer_from = RoomType.WaitingRoom.ToString())
                 .With(x => x.Phone = null)
                 .Build();

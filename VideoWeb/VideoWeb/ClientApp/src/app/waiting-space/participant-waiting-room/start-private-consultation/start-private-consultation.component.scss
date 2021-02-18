@@ -1,0 +1,64 @@
+@import '~govuk-frontend/govuk/base';
+
+.modal {
+  display: block;
+  /* Hidden by default */
+  position: fixed;
+  /* Stay in place */
+  z-index: 11;
+  /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%;
+  /* Full width */
+  height: 100%;
+  /* Full height */
+  overflow: auto;
+  /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0);
+  /* Fallback color */
+  background-color: rgba(0, 0, 0, 0);
+  /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+
+.modal-content {
+  -webkit-box-shadow: 0 6px 30px rgba(0, 0, 0, 0.7);
+  -moz-box-shadow: 0 6px 30px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.7);
+  background-color: #fefefe;
+  margin: 5% auto;
+  padding: 20px;
+  border: none;
+  border-radius: 5px;
+  width: 50%;
+  max-width: 700px;
+}
+
+.label-status {
+  color: govuk-colour('white');
+  padding: 3px 5px 3px 5px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+.label-status--unavailable {
+  background-color: govuk-colour('dark-grey');
+}
+
+.label-status--in-consultation {
+  background-color: govuk-colour('white');
+  border: 2px solid govuk-colour('blue');
+  border-radius: 2px;
+  color: govuk-colour('blue');
+}
+
+.govuk-checkboxes--small {
+  display: flex;
+}
+
+.buttons {
+  margin-top: 10px;
+}

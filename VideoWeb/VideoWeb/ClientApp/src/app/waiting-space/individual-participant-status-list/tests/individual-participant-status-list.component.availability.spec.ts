@@ -72,8 +72,6 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
             activatedRoute
         );
         conference = new ConferenceTestData().getConferenceDetailFuture();
-        component.consultationRequester = new Participant(conference.participants[0]);
-        component.consultationRequestee = new Participant(conference.participants[1]);
         component.conference = conference;
         component.loggedInUser = new LoggedParticipantResponse({
             participant_id: conference.participants[2].id,

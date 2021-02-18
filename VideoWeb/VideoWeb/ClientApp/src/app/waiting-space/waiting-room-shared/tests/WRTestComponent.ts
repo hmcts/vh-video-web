@@ -13,6 +13,7 @@ import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-map
 import { NotificationSoundsService } from '../../services/notification-sounds.service';
 import { VideoCallService } from '../../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-base.component';
+import { NotificationToastrService } from 'src/app/waiting-space/services/notification-toastr.service';
 
 export class WRTestComponent extends WaitingRoomBaseComponent {
     constructor(
@@ -30,6 +31,7 @@ export class WRTestComponent extends WaitingRoomBaseComponent {
         protected userMediaService: UserMediaService,
         protected userMediaStreamService: UserMediaStreamService,
         protected notificationSoundsService: NotificationSoundsService,
+        protected notificationToastrService: NotificationToastrService,
         protected clockService: ClockService
     ) {
         super(
@@ -47,6 +49,7 @@ export class WRTestComponent extends WaitingRoomBaseComponent {
             userMediaService,
             userMediaStreamService,
             notificationSoundsService,
+            notificationToastrService,
             clockService
         );
     }

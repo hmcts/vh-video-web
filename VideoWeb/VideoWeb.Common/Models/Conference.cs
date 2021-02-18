@@ -11,6 +11,7 @@ namespace VideoWeb.Common.Models
             Participants = new List<Participant>();
             Endpoints = new List<Endpoint>();
         }
+
         public Guid Id { get; set; }
         public Guid HearingId { get; set; }
         public List<Participant> Participants { get; set; }

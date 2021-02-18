@@ -26,7 +26,7 @@ describe('CommandCentreComponent - Core', () => {
     let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
     let screenHelper: jasmine.SpyObj<ScreenHelper>;
     const logger: Logger = new MockLogger();
-    const conferences = new ConferenceTestData().getVhoTestData();
+    const conferences = new ConferenceTestData().getTestData();
     const hearings = conferences.map(c => new HearingSummary(c));
     let errorService: jasmine.SpyObj<ErrorService>;
     let router: jasmine.SpyObj<Router>;

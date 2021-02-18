@@ -48,4 +48,8 @@ export class Participant {
     get representee(): string {
         return this.participant.representee;
     }
+
+    get hearingRoleText(): string {
+        return this.representee ? `${this.base.hearing_role} for ${this.representee}` : this.base.hearing_role;
+    }
 }

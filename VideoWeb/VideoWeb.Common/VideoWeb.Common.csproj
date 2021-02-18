@@ -12,7 +12,10 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.10" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.10" />
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.8" />
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.2.0.14119" />
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.18.0.27296">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="StackExchange.Redis" Version="2.1.28" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.6.0" />
   </ItemGroup>

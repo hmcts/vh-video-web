@@ -116,7 +116,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             };
 
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.StartPrivateConsultationWithEndpointAsync(It.IsAny<EndpointConsultationRequest>()))
+                .Setup(x => x.StartConsultationWithEndpointAsync(It.IsAny<EndpointConsultationRequest>()))
                 .ThrowsAsync(apiException);
             
             var result = await _sut.CallVideoEndpointAsync(request);

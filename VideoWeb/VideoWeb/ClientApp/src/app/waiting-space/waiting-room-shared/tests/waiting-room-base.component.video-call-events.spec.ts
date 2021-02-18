@@ -1,4 +1,4 @@
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ConferenceStatus, ParticipantResponse, TokenResponse } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import {
@@ -23,6 +23,7 @@ import {
     initAllWRDependencies,
     logger,
     notificationSoundsService,
+    notificationToastrService,
     router,
     userMediaService,
     userMediaStreamService,
@@ -63,6 +64,7 @@ describe('WaitingRoomComponent Video Call', () => {
             userMediaService,
             userMediaStreamService,
             notificationSoundsService,
+            notificationToastrService,
             clockService
         );
 
@@ -192,5 +194,12 @@ describe('WaitingRoomComponent Video Call', () => {
         component.stream = incomingStream;
         onTransferSubject.next('new_room');
         expect(component.stream).toBeNull();
+    });
+    it('should setup participant heartbeat', () => {
+        component.conference.pexip_node_uri = 'sip.urifortest';
+        component.token = new TokenResponse({ token: 'tokenvvvvvv' });
+        component.setupParticipantHeartbeat();
+
+        expect(component.heartbeat).toBeDefined();
     });
 });

@@ -26,7 +26,7 @@ describe('VhoQueryService', () => {
 
     it('should init interval on start', fakeAsync(() => {
         const venueNames = ['venue1', 'venue2'];
-        const data = testData.getVhoTestData();
+        const data = testData.getTestData();
         apiClient.getConferencesForVhOfficer.and.returnValue(of(data));
         spyOn(window, 'setInterval');
         service.startQuery(venueNames);
@@ -44,7 +44,7 @@ describe('VhoQueryService', () => {
     }));
 
     it('should get conferences for vh officer', async () => {
-        const data = testData.getVhoTestData();
+        const data = testData.getTestData();
         apiClient.getConferencesForVhOfficer.and.returnValue(of(data));
         const venueNames = ['venue1', 'venue2'];
         service.venueNames = venueNames;

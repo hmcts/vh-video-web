@@ -28,6 +28,7 @@ import {
     initAllWRDependencies,
     logger,
     notificationSoundsService,
+    notificationToastrService,
     router,
     userMediaService,
     userMediaStreamService,
@@ -60,6 +61,7 @@ describe('WaitingRoomComponent message and clock', () => {
             userMediaService,
             userMediaStreamService,
             notificationSoundsService,
+            notificationToastrService,
             clockService
         );
 
@@ -222,8 +224,10 @@ describe('WaitingRoomComponent message and clock', () => {
     });
 
     it('should request to leave judicial consultation room', async () => {
+        consultationService.leaveConsultation.calls.reset();
+        consultationService.leaveConsultation.and.returnValue(Promise.resolve());
         await component.leaveJudicialConsultation();
-        expect(consultationService.leaveJudicialConsultationRoom).toHaveBeenCalledWith(component.conference, component.participant);
+        expect(consultationService.leaveConsultation).toHaveBeenCalled();
     });
 
     it('should hide change device popup on close popup', () => {

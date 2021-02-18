@@ -85,8 +85,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var leaveConsultationRequest = ConsultationHelper.GetLeaveConsultationRequest(_testConference);
             var result = await _sut.LeaveConsultationAsync(leaveConsultationRequest);
 
-            var typedResult = (OkResult)result;
-            typedResult.Should().NotBeNull();
+            result.Should().BeOfType<NoContentResult>();
         }
 
 
@@ -102,7 +101,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var result =
                 await _sut.LeaveConsultationAsync(
                     ConsultationHelper.GetLeaveConsultationRequest(_testConference));
-            var typedResult = (StatusCodeResult)result;
+            var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.BadRequest);
         }
 
@@ -119,7 +118,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var result =
                 await _sut.LeaveConsultationAsync(
                     ConsultationHelper.GetLeaveConsultationRequest(_testConference));
-            var typedResult = (StatusCodeResult)result;
+            var typedResult = (ObjectResult)result;
             typedResult.StatusCode.Should().Be((int)HttpStatusCode.InternalServerError);
         }
     }

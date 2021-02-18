@@ -53,25 +53,31 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .With(x => x.ConferenceId = conference.Id)
                 .With(x => x.RequestedById = conference.Participants[1].Id)
                 .With(x => x.RequestedForId = conference.Participants[2].Id)
-                .With(x => x.Answer = null)
-                .Build();
-        }
-        public static PrivateAdminConsultationRequest GetAdminConsultationRequest(Conference conference, ConsultationAnswer answer)
-        {
-            return Builder<PrivateAdminConsultationRequest>.CreateNew()
-                .With(x => x.ConferenceId = conference.Id)
-                .With(x => x.ParticipantId = conference.Participants[1].Id)
-                .With(x => x.ConsultationRoom = RoomType.ConsultationRoom1)
-                .With(x => x.Answer = answer)
+                .With(x => x.RoomLabel = "RoomLabel")
+                .With(x => x.Answer = ConsultationAnswer.None)
                 .Build();
         }
 
-        public static StartPrivateConsultationRequest GetStartConsultationRequest(Conference conference)
+        public static StartPrivateConsultationRequest GetStartJohConsultationRequest(Conference conference)
         {
             return Builder<StartPrivateConsultationRequest>.CreateNew()
                 .With(x => x.ConferenceId = conference.Id)
                 .With(x => x.RequestedBy = conference.Participants[1].Id)
                 .With(x => x.RoomType = VirtualCourtRoomType.JudgeJOH)
+                .Build();
+        }
+
+        public static StartPrivateConsultationRequest GetStartParticipantConsultationRequest(Conference conference)
+        {
+            return Builder<StartPrivateConsultationRequest>.CreateNew()
+                .With(x => x.ConferenceId = conference.Id)
+                .With(x => x.RequestedBy = conference.Participants[1].Id)
+                .With(x => x.RoomType = VirtualCourtRoomType.Participant)
+                .With(x => x.InviteParticipants = new []
+                {
+                    conference.Participants[2].Id,
+                    conference.Participants[3].Id
+                })
                 .Build();
         }
 

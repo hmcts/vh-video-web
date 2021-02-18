@@ -1,6 +1,7 @@
 import { OnDestroy, OnInit } from '@angular/core';
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { AdalService } from 'adal-angular4';
+import { Guid } from 'guid-typescript';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -10,20 +11,19 @@ import {
     EndpointStatus,
     ParticipantResponse,
     ParticipantStatus,
-    Role,
-    RoomType,
-    VideoEndpointResponse
+    VideoEndpointResponse,
+    Role
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { AdminConsultationMessage } from 'src/app/services/models/admin-consultation-message';
+import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { Participant } from 'src/app/shared/models/participant';
+import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
 import { individualTestProfile, judgeTestProfile } from 'src/app/testing/data/test-profiles';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
 import {
-    adminConsultationMessageSubjectMock,
+    requestedConsultationMessageSubjectMock,
     eventsServiceSpy,
     participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
@@ -42,7 +42,6 @@ class WrParticipantStatusListTest extends WRParticipantStatusListDirective imple
     }
 
     ngOnInit() {
-        this.consultationService.resetWaitingForResponse();
         this.initParticipants();
         this.setupSubscribers();
     }
@@ -69,10 +68,8 @@ describe('WaitingRoom ParticipantList Base', () => {
     let consultationService: jasmine.SpyObj<ConsultationService>;
     const eventsService = eventsServiceSpy;
     const judgeProfile = judgeTestProfile;
-    const indProfile = individualTestProfile;
     const logger: Logger = new MockLogger();
     let conference: ConferenceResponse;
-    const adminConsultationMessageSubject = adminConsultationMessageSubjectMock;
     const participantStatusSubject = participantStatusSubjectMock;
 
     beforeAll(() => {
@@ -190,69 +187,10 @@ describe('WaitingRoom ParticipantList Base', () => {
         });
     });
 
-    it('should clear timeouts and subsciptions on teardown', () => {
+    it('should clear subsciptions on teardown', () => {
         component.executeTeardown();
-        expect(consultationService.clearOutgoingCallTimeout).toHaveBeenCalled();
+        expect(component.eventHubSubscriptions$.closed).toBe(true);
     });
-
-    it('should logged in user as requester', () => {
-        const result = component.getConsultationRequester();
-        expect(result.id).toBe(component.loggedInUser.participant_id);
-    });
-
-    it('should not display vho consultation request when participant is unavailable', fakeAsync(() => {
-        consultationService.displayAdminConsultationRequest.calls.reset();
-        const index = component.conference.participants.findIndex(x => x.id === component.loggedInUser.participant_id);
-        component.conference.participants[index].status = ParticipantStatus.InHearing;
-        const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, null);
-        adminConsultationMessageSubject.next(payload);
-        flushMicrotasks();
-
-        expect(consultationService.displayAdminConsultationRequest).toHaveBeenCalledTimes(0);
-    }));
-
-    it('should not display vho consultation request when participant not found', fakeAsync(() => {
-        consultationService.displayAdminConsultationRequest.calls.reset();
-        const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, 'doesnotexist@hmcts.net', null);
-
-        adminConsultationMessageSubject.next(payload);
-        flushMicrotasks();
-
-        expect(consultationService.displayAdminConsultationRequest).toHaveBeenCalledTimes(0);
-    }));
-
-    it('should display vho consultation request', fakeAsync(() => {
-        consultationService.displayAdminConsultationRequest.calls.reset();
-        const judgeUser = conference.participants.find(x => x.role === Role.Judge);
-
-        const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeUser.id, null);
-
-        adminConsultationMessageSubject.next(payload);
-        flushMicrotasks();
-
-        expect(consultationService.displayAdminConsultationRequest).toHaveBeenCalled();
-    }));
-
-    it('should cancel incoming timeout request when admin call is rejected', fakeAsync(() => {
-        consultationService.cancelTimedOutIncomingRequest.calls.reset();
-        const judgeUser = conference.participants.find(x => x.role === Role.Judge);
-
-        const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeUser.id, ConsultationAnswer.Rejected);
-        adminConsultationMessageSubject.next(payload);
-        flushMicrotasks();
-
-        expect(consultationService.cancelTimedOutIncomingRequest).toHaveBeenCalled();
-    }));
-
-    it('should do nothing when admin call is anything other than rejected', fakeAsync(() => {
-        consultationService.cancelTimedOutIncomingRequest.calls.reset();
-
-        const payload = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judgeProfile.username, ConsultationAnswer.Accepted);
-        adminConsultationMessageSubject.next(payload);
-        flushMicrotasks();
-
-        expect(consultationService.cancelTimedOutIncomingRequest).toHaveBeenCalledTimes(0);
-    }));
 
     it('should close all open modals when current user is transferred to a consultation room', fakeAsync(() => {
         consultationService.clearModals.calls.reset();
@@ -272,38 +210,5 @@ describe('WaitingRoom ParticipantList Base', () => {
         participantStatusSubject.next(payload);
 
         expect(consultationService.clearModals).toHaveBeenCalledTimes(0);
-    });
-
-    it('should display no consultation room', () => {
-        component.handleNoConsulationRoom();
-        expect(consultationService.displayNoConsultationRoomAvailableModal).toHaveBeenCalledTimes(1);
-    });
-
-    it('should send response to vho consultation request', async () => {
-        const judge = component.conference.participants.find(x => x.id === component.loggedInUser.participant_id);
-        const answer = ConsultationAnswer.Rejected;
-        component.consultationRequestee = new Participant(judge);
-        component.adminConsultationMessage = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judge.id);
-        await component.respondToVhoConsultationRequest(answer);
-
-        expect(consultationService.respondToAdminConsultationRequest).toHaveBeenCalledWith(
-            component.conference,
-            judge,
-            answer,
-            RoomType.AdminRoom
-        );
-    });
-
-    it('should handle error when sending response to vho consultation request fails', async () => {
-        const error = { error: 'unable to reach api' };
-        consultationService.respondToAdminConsultationRequest.and.callFake(() => Promise.reject(error));
-
-        const judge = component.conference.participants.find(x => x.id === component.loggedInUser.participant_id);
-        const answer = ConsultationAnswer.Rejected;
-        component.consultationRequestee = new Participant(judge);
-        component.adminConsultationMessage = new AdminConsultationMessage(conference.id, RoomType.AdminRoom, judge.id);
-        spyOn(logger, 'error');
-        await component.respondToVhoConsultationRequest(answer);
-        expect(logger.error).toHaveBeenCalled();
     });
 });
