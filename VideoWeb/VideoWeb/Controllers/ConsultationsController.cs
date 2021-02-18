@@ -88,24 +88,25 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> RespondToConsultationRequestAsync(PrivateConsultationRequest request)
         {
+            var conference = await GetConference(request.ConferenceId);
+            var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedById);
+            if (participant == null)
+            {
+                return NotFound();
+            }
+
+            var adminConsultationRequestMapper = _mapperFactory.Get<PrivateConsultationRequest, ConsultationRequestResponse>();
+            var mappedRequest = adminConsultationRequestMapper.Map(request);
+
             try
             {
-                var conference = await GetConference(request.ConferenceId);
-                var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedById);
-                if (participant == null)
-                {
-                    return NotFound();
-                }
-
-                var adminConsultationRequestMapper = _mapperFactory.Get<PrivateConsultationRequest, ConsultationRequestResponse>();
-                var mappedRequest = adminConsultationRequestMapper.Map(request);
                 await _videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
-
                 await NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedById, request.RequestedForId, request.Answer);
                 return NoContent();
             }
             catch (VideoApiException e)
             {
+                await NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedById, request.RequestedForId, ConsultationAnswer.Failed);
                 _logger.LogError(e, "Consultation request could not be responded to");
                 return StatusCode(e.StatusCode, e.Response);
             }
@@ -239,7 +240,7 @@ namespace VideoWeb.Controllers
                 x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
             if (requestedBy == null && !User.IsInRole(AppRoles.VhOfficerRole))
             {
-                return Unauthorized("You must be a VHO or a memeber of the conference");
+                return Unauthorized("You must be a VHO or a member of the conference");
             }
 
             await NotifyConsultationRequestAsync(conference, request.RoomLabel, requestedBy?.Id ?? Guid.Empty, request.ParticipantId);

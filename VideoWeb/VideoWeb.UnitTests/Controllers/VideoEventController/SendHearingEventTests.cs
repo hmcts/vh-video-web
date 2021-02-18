@@ -250,7 +250,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 .With(x => x.Conference_id = _testConference.Id.ToString())
                 .With(x => x.Participant_id = _testConference.Endpoints[0].Id.ToString())
                 .With(x => x.Event_type = incomingEventType)
-                .With(x => x.Transfer_to = "ConsultationRoom")
+                .With(x => x.Transfer_to = "ParticipantConsultationRoom10")
                 .With(x => x.Transfer_from = RoomType.WaitingRoom.ToString())
                 .With(x => x.Phone = null)
                 .Build();

@@ -40,8 +40,6 @@ namespace VideoWeb.UnitTests.EventHandlers
             };
             
             await _eventHandler.HandleAsync(callbackEvent);
-            
-            // Verify messages sent to event hub clients
             EventHubClientMock.Verify(x => x.EndpointStatusMessage(participantForEvent.Id, conference.Id, status),
                 Times.Exactly(participantCount));
         }
@@ -65,8 +63,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             };
 
             Assert.ThrowsAsync<ArgumentException>(() => _eventHandler.HandleAsync(callbackEvent)).Message.Should()
-                .Be("No consultation room provided");
-            // Verify messages sent to event hub clients
+                .Be($"Unable to derive state, no {nameof(callbackEvent.TransferTo)} provided (Parameter '{nameof(callbackEvent.TransferTo)}')");
             EventHubClientMock.Verify(x => x.EndpointStatusMessage(participantForEvent.Id, conference.Id, It.IsAny<EndpointState>()),
                 Times.Never);
         }

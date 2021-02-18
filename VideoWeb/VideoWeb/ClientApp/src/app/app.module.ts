@@ -11,7 +11,6 @@ import { HomeComponent } from './home/home.component';
 import { OnTheDayModule } from './on-the-day/on-the-day.module';
 import { AuthGuard } from './security/auth.guard';
 import { SecurityModule } from './security/security.module';
-import { SendVideoEventsComponent } from './send-video-events/send-video-events.component';
 import { ConfigService } from './services/api/config.service';
 import { API_BASE_URL } from './services/clients/api-client';
 import { Logger } from './services/logging/logger-base';
@@ -30,7 +29,7 @@ export function getSettings(configService: ConfigService) {
 }
 
 @NgModule({
-    declarations: [AppComponent, HomeComponent, SendVideoEventsComponent],
+    declarations: [AppComponent, HomeComponent],
     imports: [
         BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
         HttpClientModule,

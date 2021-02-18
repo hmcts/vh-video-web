@@ -35,7 +35,7 @@ namespace VideoWeb.EventHub.Handlers
         {
             if (string.IsNullOrWhiteSpace(callbackEvent.TransferTo))
             {
-                throw new ArgumentException("No consultation room provided");   
+                throw new ArgumentException($"Unable to derive state, no {nameof(callbackEvent.TransferTo)} provided", nameof(callbackEvent.TransferTo));
             }
 
             var isRoomToEnum = Enum.TryParse<VHRoom>(callbackEvent.TransferTo, out var transferTo);

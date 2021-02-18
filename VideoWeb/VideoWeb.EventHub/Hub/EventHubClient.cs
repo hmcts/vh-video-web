@@ -41,7 +41,7 @@ namespace VideoWeb.EventHub.Hub
         public override async Task OnConnectedAsync()
         {
             var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name);
-            _logger.LogTrace($"Connected to event hub server-side: {userName} ");
+            _logger.LogTrace("Connected to event hub server-side: {userName}", userName);
             var isAdmin = IsSenderAdmin();
 
             await AddUserToUserGroup(isAdmin);
@@ -73,12 +73,11 @@ namespace VideoWeb.EventHub.Hub
             var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name.ToLowerInvariant());
             if (exception == null)
             {
-                _logger.LogInformation($"Disconnected from chat hub server-side: {userName} ");
+                _logger.LogInformation("Disconnected from chat hub server-side: {userName}", userName);
             }
             else
             {
-                _logger.LogWarning(exception,
-                    $"There was an error when disconnecting from chat hub server-side: {userName}");
+                _logger.LogWarning(exception, "There was an error when disconnecting from chat hub server-side: {userName}", userName);
             }
 
             var isAdmin = IsSenderAdmin();
@@ -138,10 +137,10 @@ namespace VideoWeb.EventHub.Hub
         public async Task SendMessage(Guid conferenceId, string message, string to, Guid messageUuid)
         {
             var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name);
-            _logger.LogTrace($"{userName} is attempting to SendMessages");
+            _logger.LogTrace("{userName} is attempting to SendMessages", userName);
             // this determines if the message is from admin
             var isSenderAdmin = IsSenderAdmin();
-            _logger.LogDebug($"{userName} is sender admin: {isSenderAdmin}");
+            _logger.LogDebug("{userName} is sender admin: {isSenderAdmin}", userName, isSenderAdmin);
 
             var participantTo = to;
 
@@ -157,7 +156,7 @@ namespace VideoWeb.EventHub.Hub
 
 
             var isRecipientAdmin = await IsRecipientAdmin(participantTo);
-            _logger.LogDebug($"{userName} is recipient admin: {isSenderAdmin}");
+            _logger.LogDebug("{userName} is recipient admin: {isSenderAdmin}", userName, isSenderAdmin);
             // only admins and participants in the conference can send or receive a message within a conference channel
             var from = Context.User.Identity.Name.ToLowerInvariant();
             var participantUsername = isSenderAdmin ? participantTo : from;
@@ -178,14 +177,14 @@ namespace VideoWeb.EventHub.Hub
                 Timestamp = DateTime.UtcNow,
                 MessageUuid = messageUuid
             };
-            _logger.LogDebug($"Message validation passed for message {dto.MessageUuid}");
+            _logger.LogDebug("Message validation passed for message {MessageUuid}", dto.MessageUuid);
             // send to admin channel
             await SendToAdmin(dto, fromId);
 
             // determine participant username
             dto.Conference = await GetConference(conferenceId);
             await SendToParticipant(dto);
-            _logger.LogDebug($"Pushing message to Video API history {dto.MessageUuid}");
+            _logger.LogDebug("Pushing message to Video API history {MessageUuid}", dto.MessageUuid);
             await _videoApiClient.AddInstantMessageToConferenceAsync(conferenceId, new AddInstantMessageRequest
             {
                 From = from,
@@ -195,7 +194,7 @@ namespace VideoWeb.EventHub.Hub
 
             if (isSenderAdmin)
             {
-                _logger.LogDebug($"Admin has responded, notifying admin channel");
+                _logger.LogDebug("Admin has responded, notifying admin channel");
                 await Clients.Group(VhOfficersGroupName).AdminAnsweredChat(conferenceId, participantTo.ToLower());
             }
         }
@@ -217,7 +216,7 @@ namespace VideoWeb.EventHub.Hub
                 x.Username.Equals(dto.ParticipantUsername, StringComparison.InvariantCultureIgnoreCase));
 
             var username = await _userProfileService.GetObfuscatedUsernameAsync(participant.Username);
-            _logger.LogDebug($"Sending message {dto.MessageUuid} to group {username}");
+            _logger.LogDebug("Sending message {MessageUuid} to group {username}", dto.MessageUuid, username);
 
             var from = participant.Id.ToString() == dto.To ? dto.From : participant.Id.ToString();
 
@@ -228,7 +227,7 @@ namespace VideoWeb.EventHub.Hub
         private async Task SendToAdmin(SendMessageDto dto, string fromId)
         {
             var groupName = dto.Conference.Id.ToString();
-            _logger.LogDebug($"Sending message {dto.MessageUuid} to group {groupName}");
+            _logger.LogDebug("Sending message {MessageUuid} to group {groupName}", dto.MessageUuid, groupName);
             var from = string.IsNullOrEmpty(fromId) ? dto.From : fromId;
             await Clients.Group(groupName)
                 .ReceiveMessage(dto.Conference.Id, from, dto.To, dto.Message, dto.Timestamp, dto.MessageUuid);
@@ -241,13 +240,13 @@ namespace VideoWeb.EventHub.Hub
                 if (isSenderAdmin && isRecipientAdmin)
                 {
 
-                    _logger.LogDebug($"Sender and recipient are admins");
+                    _logger.LogDebug("Sender and recipient are admins");
                     throw new InvalidInstantMessageException("Admins are not allowed to IM each other");
                 }
 
                 if (!isSenderAdmin && !isRecipientAdmin)
                 {
-                    _logger.LogDebug($"Sender and recipient are participants");
+                    _logger.LogDebug("Sender and recipient are participants");
                     throw new InvalidInstantMessageException("Participants are not allowed to IM each other");
                 }
             }
@@ -257,7 +256,7 @@ namespace VideoWeb.EventHub.Hub
                 return false;
             }
 
-            _logger.LogDebug($"Sender and recipient are allowed to converse");
+            _logger.LogDebug("Sender and recipient are allowed to converse");
             return true;
         }
 
@@ -280,7 +279,7 @@ namespace VideoWeb.EventHub.Hub
                 if (participant == null)
                 {
 
-                    _logger.LogDebug($"Participant {username} does not exist in conversation");
+                    _logger.LogDebug("Participant {username} does not exist in conversation", username);
                     throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
                 }
             }
@@ -290,7 +289,7 @@ namespace VideoWeb.EventHub.Hub
                 return false;
             }
 
-            _logger.LogDebug($"Participant {username} exists in conversation");
+            _logger.LogDebug("Participant {username} exists in conversation", username);
             return true;
         }
 
@@ -352,8 +351,7 @@ namespace VideoWeb.EventHub.Hub
                 var transferringParticipant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
                 if (transferringParticipant == null)
                 {
-                    _logger.LogDebug("Participant {participant} does not exist in {conference}", participantId,
-                        conferenceId);
+                    _logger.LogDebug("Participant {participant} does not exist in {conference}", participantId, conferenceId);
                     throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
                 }
 
@@ -385,8 +383,7 @@ namespace VideoWeb.EventHub.Hub
                 var participant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
                 if (participant == null)
                 {
-                    _logger.LogDebug("Participant {participant} does not exist in {conference}", participantId,
-                        conferenceId);
+                    _logger.LogDebug("Participant {participant} does not exist in {conference}", participantId, conferenceId);
                     throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
                 }
 
@@ -420,7 +417,7 @@ namespace VideoWeb.EventHub.Hub
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error occured to find the participant in conference {conferenceId} by participant Id {participantId}");
+                _logger.LogError(ex, "Error occured to find the participant in conference {conferenceId} by participant Id {participantId}", conferenceId, participantId);
                 return username;
             }
         }
@@ -438,7 +435,7 @@ namespace VideoWeb.EventHub.Hub
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error occured to find the participant in conference {conferenceId} by username");
+                _logger.LogError(ex, "Error occured to find the participant in conference {conferenceId} by username", conferenceId);
                 return particiantId;
             }
         }
