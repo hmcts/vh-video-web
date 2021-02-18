@@ -20,9 +20,7 @@ import { HearingRole } from '../../models/hearing-role-model';
 import { NotificationSoundsService } from '../../services/notification-sounds.service';
 import { WRTestComponent } from './WRTestComponent';
 import { NotificationToastrService } from 'src/app/waiting-space/services/notification-toastr.service';
-import { ActiveToast, OverlayRef, ToastPackage, ToastRef, ToastrService } from 'ngx-toastr';
-import { Component } from '@angular/core';
-import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
+import { ToastrService } from 'ngx-toastr';
 const conferenceTestData = new ConferenceTestData();
 
 export let component: WRTestComponent;
