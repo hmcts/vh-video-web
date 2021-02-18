@@ -143,16 +143,12 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         return 'white';
     }
 
-    participantIsInRoom(participant: ParticipantResponse): boolean {
-        return participant.current_room?.label === this.roomLabel;
-    }
-
     setupSubscribers(): void {
         this.addSharedEventHubSubcribers();
     }
 
     canCallParticipant(participant: ParticipantResponse): boolean {
-        return !this.participantIsInRoom(participant) && participant.status === ParticipantStatus.Available;
+        return !this.participantIsInCurrentRoom(participant) && participant.status === ParticipantStatus.Available;
     }
 
     canCallEndpoint(endpoint: VideoEndpointResponse): boolean {
