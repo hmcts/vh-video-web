@@ -1,21 +1,18 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
     LoggedParticipantResponse,
-    ParticipantResponse,
     ParticipantResponseVho,
     ParticipantStatus,
-    Role,
-    RoomSummaryResponse
+    Role
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Participant } from 'src/app/shared/models/participant';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
-import { eventsServiceSpy, requestedConsultationMessageSubjectMock } from 'src/app/testing/mocks/mock-events-service';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 
 import { PrivateConsultationParticipantsComponent } from './private-consultation-participants.component';
@@ -98,14 +95,14 @@ describe('PrivateConsultationParticipantsComponent', () => {
         component.roomLabel = 'test-room';
         const p = conference.participants[0];
         p.current_room.label = 'test-room-two';
-        expect(component.getRowClasses(p)).toEqual('govuk-table__row');
+        expect(component.getRowClasses(p)).toEqual('');
     });
 
     it('should get yellow row classes', () => {
         component.roomLabel = 'test-room';
         const p = conference.participants[0];
         p.current_room.label = 'test-room';
-        expect(component.getRowClasses(p)).toEqual('govuk-table__row yellow');
+        expect(component.getRowClasses(p)).toEqual('yellow');
     });
 
     it('should get same room status', () => {

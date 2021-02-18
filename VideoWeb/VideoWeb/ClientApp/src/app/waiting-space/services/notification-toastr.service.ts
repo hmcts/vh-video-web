@@ -58,7 +58,7 @@ export class NotificationToastrService {
         };
 
         const toast = this.toastr.show('', '', {
-            timeOut: 1200000,
+            timeOut: 120000,
             tapToDismiss: false,
             toastComponent: VhToastComponent
         });

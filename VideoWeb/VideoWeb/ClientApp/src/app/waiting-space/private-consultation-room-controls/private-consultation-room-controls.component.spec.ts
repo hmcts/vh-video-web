@@ -9,7 +9,6 @@ import {
     hearingCountdownCompleteSubjectMock,
     participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
-import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
 import { onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ParticipantUpdated } from '../models/video-call-models';
@@ -21,7 +20,6 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     const globalParticipant = gloalConference.participants.filter(x => x.role === Role.Individual)[0];
 
     const eventsService = eventsServiceSpy;
-    const consultationService = consultationServiceSpyFactory();
     const participantStatusSubject = participantStatusSubjectMock;
 
     const videoCallService = videoCallServiceSpy;
@@ -32,7 +30,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     const testData = new VideoCallTestData();
 
     beforeEach(() => {
-        component = new PrivateConsultationRoomControlsComponent(videoCallService, eventsService, logger, consultationService);
+        component = new PrivateConsultationRoomControlsComponent(videoCallService, eventsService, logger);
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
         component.setupEventhubSubscribers();
@@ -351,8 +349,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     });
 
     it('should emit when leave button has been clicked', () => {
-        spyOn(component.leaveConsulation, 'emit');
+        spyOn(component.leaveConsultation, 'emit');
         component.leavePrivateConsultation();
-        expect(component.leaveConsulation.emit).toHaveBeenCalled();
+        expect(component.leaveConsultation.emit).toHaveBeenCalled();
     });
 });

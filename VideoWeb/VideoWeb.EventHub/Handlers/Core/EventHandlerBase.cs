@@ -120,11 +120,11 @@ namespace VideoWeb.EventHub.Handlers.Core
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
                     .RoomTransfer(roomTransfer);
-                Logger.LogTrace($"Room Transfer: Conference Id: { SourceConference.Id } | Participant Id: { participant.Id } | " +
-                    $"Role: { participant.Role } | From Room: { roomTransfer.FromRoom } | To Room: { roomTransfer.ToRoom } | Participant Transferred: {roomTransfer.ParticipantId} | Timestamp: { DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fffffff") } ");
+                Logger.LogTrace("RoomTransfer sent to group: {group} | Role: { participantRole }", participant.Username, participant.Role);
             }
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .RoomTransfer(roomTransfer);
+            Logger.LogTrace("RoomTransfer sent to group: {group}", Hub.EventHub.VhOfficersGroupName);
         }
 
         protected abstract Task PublishStatusAsync(CallbackEvent callbackEvent);

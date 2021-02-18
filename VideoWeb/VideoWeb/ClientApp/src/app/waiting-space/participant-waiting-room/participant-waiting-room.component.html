@@ -26,10 +26,16 @@
     </div>
     <div class="govuk-grid-column-one-quarter">
       <ng-container *ngIf="connected && showVideo">
-        <app-private-consultation-room-controls [conferenceId]="conference.id" [participant]="participant"
-          [audioOnly]="audioOnly" [isPrivateConsultation]="isPrivateConsultation" [outgoingStream]="outgoingStream"
+        <app-private-consultation-room-controls
+          [conferenceId]="conference.id"
+          [participant]="participant"
+          [audioOnly]="audioOnly"
+          [isPrivateConsultation]="isPrivateConsultation"
+          [outgoingStream]="outgoingStream"
           [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
-          [showConsultationControls]="showConsultationControls" (leaveConsulation)="onConsultationCancelled()">
+          [showConsultationControls]="showConsultationControls"
+          (leaveConsultation)="onConsultationCancelled()"
+          (lockConsultation)="setRoomLock($event)">
         </app-private-consultation-room-controls>
       </ng-container>
     </div>

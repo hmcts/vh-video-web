@@ -73,12 +73,11 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     getRowClasses(participant: ParticipantResponse): string {
-        const statusClasses = 'govuk-table__row';
         if (this.participantIsInCurrentRoom(participant)) {
-            return `${statusClasses} yellow`;
+            return 'yellow';
         }
 
-        return statusClasses;
+        return '';
     }
 
     getParticipantStatus(participant: ParticipantResponse): string {
