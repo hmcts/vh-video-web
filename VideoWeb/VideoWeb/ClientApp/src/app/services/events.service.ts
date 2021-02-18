@@ -163,8 +163,8 @@ export class EventsService {
 
         this.connection.on(
             'RequestedConsultationMessage',
-            (conferenceId: string, requestedBy: string, requestedFor: string, roomLabel: string) => {
-                const message = new RequestedConsultationMessage(conferenceId, requestedBy, requestedFor, roomLabel);
+            (conferenceId: string, roomLabel: string, requestedBy: string, requestedFor: string) => {
+                const message = new RequestedConsultationMessage(conferenceId, roomLabel, requestedBy, requestedFor);
                 this.logger.debug('[EventsService] - RequestConsultationMessage received', message);
                 this.requestedConsultationMessageSubject.next(message);
             }
@@ -172,8 +172,8 @@ export class EventsService {
 
         this.connection.on(
             'ConsultationRequestResponseMessage',
-            (conferenceId: string, roomType: string, requestedFor: string, answer: ConsultationAnswer) => {
-                const message = new ConsultationRequestResponseMessage(conferenceId, roomType, requestedFor, answer);
+            (conferenceId: string, roomLabel: string, requestedFor: string, answer: ConsultationAnswer) => {
+                const message = new ConsultationRequestResponseMessage(conferenceId, roomLabel, requestedFor, answer);
                 this.logger.debug('[EventsService] - ConsultationRequestResponseMessage received', message);
                 this.consultationRequestResponseMessageSubject.next(message);
             }
