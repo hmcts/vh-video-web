@@ -72,7 +72,7 @@ describe('CommandCentreComponent - Events', () => {
         };
     });
 
-    afterAll(() => {
+    afterEach(() => {
         component.ngOnDestroy();
         TestFixtureHelper.clearVenues();
     });
@@ -203,6 +203,7 @@ describe('CommandCentreComponent - Events', () => {
             'Mac OS X',
             '10.15.1'
         );
+        component.setupEventHubSubscribers();
         heartbeatSubjectMock.next(heartBeat);
         expect(component.hearings[0].getParticipants()[0].participantHertBeatHealth).toBe(heartBeat);
     });

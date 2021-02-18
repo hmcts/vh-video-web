@@ -20,7 +20,6 @@ namespace VideoWeb.Controllers
     [ApiController]
     [Route("callback")]
     [Authorize(AuthenticationSchemes = "Callback")]
-    [AllowAnonymous]
     public class VideoEventsController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
@@ -45,7 +44,6 @@ namespace VideoWeb.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [SwaggerOperation(OperationId = "SendEvent")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]

@@ -380,7 +380,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         flushMicrotasks();
 
         expect(component.conferenceRooms.length).toBe(countRoom);
-        expect(component.conferenceRooms.find(x => (x.label = 'ConsultationRoom')).locked).toBe(true);
+        expect(component.conferenceRooms.find(x => x.label === 'ConsultationRoom').locked).toBe(true);
     }));
     it('should update by adding conference room', fakeAsync(() => {
         const payload = new Room('HearingRoom', false);
@@ -389,7 +389,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         flushMicrotasks();
 
         expect(component.conferenceRooms.length).toBeGreaterThan(countRoom);
-        expect(component.conferenceRooms.find(x => (x.label = 'HearingRoom')).locked).toBe(false);
+        expect(component.conferenceRooms.find(x => x.label === 'HearingRoom').locked).toBe(false);
     }));
     it('should transfere existing participant to conference room', fakeAsync(() => {
         const payload = new RoomTransfer(globalParticipant.id, 'ConsultationRoom_to', 'ConsultationRoom_from');

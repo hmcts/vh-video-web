@@ -77,7 +77,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
     });
 
     afterEach(() => {
-        component.eventHubSubscriptions$.unsubscribe();
+        component.ngOnDestroy();
     });
 
     it('should create', () => {

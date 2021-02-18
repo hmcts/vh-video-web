@@ -75,7 +75,6 @@ describe('JohWaitingRoomComponent eventhub events', () => {
         const status = ConferenceStatus.InSession;
         const message = new ConferenceStatusMessage(globalConference.id, status);
         notificationSoundsService.playHearingAlertSound.calls.reset();
-        const room = new Room('label', false);
         hearingStatusSubject.next(message);
         flushMicrotasks();
 

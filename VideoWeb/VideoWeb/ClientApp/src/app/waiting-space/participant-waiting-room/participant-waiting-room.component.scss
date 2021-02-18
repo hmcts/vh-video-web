@@ -40,7 +40,7 @@
 }
 
 .room-status-desc {
-  color: #b1b4b6;
+  color: lightgray;
   font-size: 16px;
   margin-left: 10px;
   display: inline-block;
@@ -48,7 +48,7 @@
 
 .lock-badge {
   padding: 3px 8px 3px 8px;
-  border: 0px solid #f3f2f1;
+  border: 0px solid lightgray;
   border-radius: 2px;
   text-transform: uppercase;
   font-weight: 400;
@@ -56,13 +56,13 @@
 }
 
 .lock-badge.unlocked {
-  background: #f3f2f1;
+  background: lightgray;
   color: #0b0c0d;
 }
 
 .lock-badge.locked {
-  background: #d4351c;
-  color: #fff;
+  background: govuk-colour('red');
+  color: govuk-colour('white');
 }
 
 .video-wrapper {

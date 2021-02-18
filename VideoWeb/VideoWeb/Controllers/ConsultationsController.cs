@@ -70,12 +70,11 @@ namespace VideoWeb.Controllers
             {
                 if (participant != null)
                 {
-                    _logger.LogError(e, $"Participant: {participant.Username} was not able to leave the private consultation. " +
-                                        $"An error occured");
+                    _logger.LogError(e, "Participant: {participant.Username} was not able to leave the private consultation. An error occured", participant.Username);
                 }
                 else
                 {
-                    _logger.LogError(e, $"Invalid participant");
+                    _logger.LogError(e, "Invalid participant");
                 }
 
                 return StatusCode(e.StatusCode, e.Response);
@@ -107,7 +106,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Consultation request could not be responded to");
+                _logger.LogError(e, "Consultation request could not be responded to");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -149,7 +148,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException ex)
             {
-                _logger.LogError(ex, $"Unable to start endpoint private consultation");
+                _logger.LogError(ex, "Unable to start endpoint private consultation");
                 return StatusCode(ex.StatusCode, ex.Response);
             }
 
@@ -170,7 +169,7 @@ namespace VideoWeb.Controllers
                 var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedBy);
                 if (requestedBy == null)
                 {
-                    _logger.LogWarning($"The participant with Id: {request.RequestedBy} is not found");
+                    _logger.LogWarning("The participant with Id: {requestedBy} is not found", request.RequestedBy);
                     return NotFound();
                 }
 
@@ -195,7 +194,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Start consultation error ConferenceId: {request.ConferenceId}, participantId: {request.RequestedBy}, ErrorCode: {e.StatusCode}");
+                _logger.LogError(e, "Start consultation error Conference");
                 return StatusCode(e.StatusCode);
             }
         }
@@ -221,7 +220,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Could not update the lock state of the consultation room");
+                _logger.LogError(e, "Could not update the lock state of the consultation room");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -240,7 +239,7 @@ namespace VideoWeb.Controllers
                 x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
             if (requestedBy == null && !User.IsInRole(AppRoles.VhOfficerRole))
             {
-                return Unauthorized($"You must be a VHO or a memeber of the conference");
+                return Unauthorized("You must be a VHO or a memeber of the conference");
             }
 
             await NotifyConsultationRequestAsync(conference, request.RoomLabel, requestedBy?.Id ?? Guid.Empty, request.ParticipantId);
