@@ -13,6 +13,10 @@ declare interface PexipClient {
     h264_enabled: boolean;
     mutedAudio: boolean;
     mutedVideo: boolean;
+    is_screenshare: boolean;
+    user_media_stream: MediaStream;
+    user_presentation_stream: MediaStream;
+    screenshare_fps: number;
     call_type: string;
     call_uuid: string;
     call_tag: string;
@@ -25,6 +29,34 @@ declare interface PexipClient {
     onParticipantUpdate: (participantUpdate: PexipParticipant) => void;
     onConferenceUpdate: (conferenceUpdate: PexipConference) => void;
     onCallTransfer: (reason: any) => void;
+
+    /**
+     * The WebRTC incoming full-frame rate presentation stream has been set up successfully.
+     */
+    onPresentationConnected: (stream: MediaStream | URL) => void;
+
+    /**
+     * The WebRTC incoming presentation stream has been stopped. Note that this does not occur when someone else starts presenting; rather, it occurs on errors and call disconnect.
+     */
+    onPresentationDisconnected: (reason: string) => void;
+
+    /**
+     * The outgoing screenshare has been set up correctly.
+     */
+    onScreenshareConnected: (stream: MediaStream | URL) => void;
+
+    /**
+     * The WebRTC screensharing presentation stream has been stopped. The floor may have been taken by another presenter, or the user stopped the screenshare, or some other error occurred.
+     */
+    onScreenshareStopped: (reason: string) => void;
+
+    /**
+     * A presentation has started or stopped.
+     * @param setting true = presentation has started; false = presentation has stopped.
+     * @param presenter The name of the presenter (only given when setting = true, else null).
+     * @param uuid The UUID of the presenter.
+     */
+    onPresentation(setting: boolean, presenter: string, uuid: string);
 
     makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number, callType: string);
     connect(pin: string, extension: string);
@@ -52,6 +84,23 @@ declare interface PexipClient {
     clearBuzz(uuid?: string);
     clearAllBuzz(): () => void;
     getMediaStatistics(): any;
+
+    /**
+     * Activate or stop screen capture sharing.
+     * Currently only "screen" is supported, or null to stop screen sharing.
+     */
+    present(callType: string);
+
+    /**
+     * Stops a full-frame rate presentation stream if it is running.
+     */
+    stopPresentation();
+
+    /**
+     * Request the full-frame rate presentation stream to be activated.
+     * Although this method can be used at any time, it only makes sense to do this after onPresentation callback has said that a presentation is available.
+     */
+    getPresentation();
 }
 
 declare interface PexipParticipant {
