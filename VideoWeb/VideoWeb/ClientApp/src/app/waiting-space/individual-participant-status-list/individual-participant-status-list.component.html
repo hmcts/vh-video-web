@@ -73,15 +73,11 @@
             {{ participant.case_type_group }}
           </p>
 
-          <div *ngIf="canCallParticipant(participant) && !isWitness(participant)">
-            <img src="/assets/images/glyphicons-181-facetime-video.png" width="20" height="13" alt="video camera icon" />
-            <a
-              id="p-call-{{ participant.id }}-btn"
-              class="govuk-link govuk-!-margin-bottom-0 vh-ml5"
-              href="javascript:void(0)"
-              (click)="beginCallWith(participant)"
-              >Contact this person by video</a
-            >
+          <div class="govuk-body-s govuk-!-margin-bottom-3">
+            <label
+              id="p-{{ participant.id }}-status-participant"
+              class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}" [innerHTML]="getParticipantStatus(participant)">
+            </label>
           </div>
           <div class="vh-line" *ngIf="!lastItem"></div>
         </div>
@@ -99,16 +95,6 @@
       <div *ngFor="let endpoint of endpoints; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
         <div id="p-row-{{ endpoint.id }}-endpoints" class="govuk-grid-column-full">
           <p id="p-{{ endpoint.id }}-name-endpoints" class="govuk-heading-s govuk-!-margin-bottom-0">{{ endpoint.display_name }}</p>
-          <div *ngIf="canCallEndpoint(endpoint)">
-            <img src="/assets/images/glyphicons-181-facetime-video.png" width="20" height="13" alt="video camera icon" />
-            <a
-              id="p-call-{{ endpoint.id }}-btn"
-              class="govuk-link govuk-!-margin-bottom-0 vh-ml5"
-              href="javascript:void(0)"
-              (click)="beginEndpointCallWith(endpoint)"
-              >Contact this endpoint by video</a
-            >
-          </div>
           <div class="vh-line" *ngIf="!lastItem"></div>
         </div>
       </div>
@@ -131,38 +117,6 @@
     </div>
   </div>
 </div>
-
-<app-modal id="raise-pc-modal" class="modal clear consultation">
-  <app-raise-consultation
-    *ngIf="consultationRequestee"
-    [consultationRequestee]="consultationRequestee"
-    (cancelledRequest)="cancelConsultationRequest()"
-  ></app-raise-consultation>
-</app-modal>
-
-<app-modal id="receive-pc-modal" class="modal clear consultation">
-  <app-receive-consultation
-    *ngIf="consultationRequester"
-    [consultationRequester]="consultationRequester"
-    (respondedToConsulation)="answerConsultationRequest($event)"
-  ></app-receive-consultation>
-</app-modal>
-
-<app-modal id="accepted-pc-modal" class="modal clear consultation">
-  <app-accepted-consultation *ngIf="consultationRequestee" [consultationRequestee]="consultationRequestee"></app-accepted-consultation>
-</app-modal>
-
-<app-modal id="rejected-pc-modal" class="modal clear consultation">
-  <app-rejected-consultation (closedModal)="closeAllPCModals()"></app-rejected-consultation>
-</app-modal>
-
-<app-modal id="vho-raise-pc-modal" class="modal clear consultation">
-  <app-vho-raise-consultation (answeredVhoCall)="respondToVhoConsultationRequest($event)"></app-vho-raise-consultation>
-</app-modal>
-
-<app-modal id="no-room-pc-modal" class="modal clear consultation">
-  <app-no-consultation-room (closedModal)="closeAllPCModals()"></app-no-consultation-room>
-</app-modal>
 
 <app-modal id="pc-error-modal" class="modal clear consultation">
   <app-consultation-error (closedModal)="closeAllPCModals()"></app-consultation-error>

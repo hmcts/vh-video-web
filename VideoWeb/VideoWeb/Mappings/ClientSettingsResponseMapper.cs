@@ -1,11 +1,12 @@
 using VideoWeb.Common.Configuration;
+using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
-    public class ClientSettingsResponseMapper : IMapTo<AzureAdConfiguration, HearingServicesConfiguration, ClientSettingsResponse>
+    public class ClientSettingsResponseMapper : IMapTo<AzureAdConfiguration, HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse>
     {
-        public ClientSettingsResponse Map(AzureAdConfiguration azureAdConfiguration, HearingServicesConfiguration servicesConfiguration)
+        public ClientSettingsResponse Map(AzureAdConfiguration azureAdConfiguration, HearingServicesConfiguration servicesConfiguration, KinlyConfiguration kinlyConfiguration)
         {
             return new ClientSettingsResponse
             {
@@ -15,7 +16,8 @@ namespace VideoWeb.Mappings
                 PostLogoutRedirectUri = azureAdConfiguration.PostLogoutRedirectUri,
                 VideoApiUrl = servicesConfiguration.VideoApiUrl,
                 AppInsightsInstrumentationKey = azureAdConfiguration.ApplicationInsights.InstrumentationKey,
-                EventHubPath = servicesConfiguration.EventHubPath
+                EventHubPath = servicesConfiguration.EventHubPath,
+                JoinByPhoneFromDate = kinlyConfiguration.JoinByPhoneFromDate
             };
         }
 

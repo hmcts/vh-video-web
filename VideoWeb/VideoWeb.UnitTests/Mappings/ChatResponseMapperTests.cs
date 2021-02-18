@@ -15,8 +15,8 @@ namespace VideoWeb.UnitTests.Mappings
         public void Should_map_all_properties()
         {
             
-            const string senderUsername = "john@doe.com";
-            const string recipientUsername = "other@doe.com";
+            const string senderUsername = "john@hmcts.net";
+            const string recipientUsername = "other@hmcts.net";
             const string fromDisplayName = "Johnny";
             var conference = new Conference
             {

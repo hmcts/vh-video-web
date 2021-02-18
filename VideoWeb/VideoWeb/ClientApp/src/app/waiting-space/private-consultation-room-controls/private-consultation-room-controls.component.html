@@ -1,0 +1,101 @@
+<div class="govuk-grid-row">
+  <div [ngClass]="isJudge && !isPrivateConsultation ? 'main-container-judge' : 'main-container'">
+    <div class="outgoing-video-container">
+      <video [ngClass]="{ 'vh-fade-in': selfViewOpen, 'vh-fade-out': !selfViewOpen }" id="outgoingFeedVideo"
+        [muted]="true" [srcObject]="this.outgoingStream" autoplay height="auto">
+        Your browser does not support Video
+      </video>
+    </div>
+    <div class="controls-container govuk-grid-column-one-quarters" [ngClass]="{ 'judge-controls-padding': isJudge }">
+      <div class="icons-container">
+        
+        <div class="icon-button"
+          id="toggle-self-view-img" 
+          appTooltip
+          *ngIf="!audioOnly"
+          [text]="selfViewOpen ? 'Hide my self-view' : 'Show my self-view'"
+          [colour]="'grey'"
+          (click)="toggleView()">
+          <span class="far" [class]="selfViewOpen ? 'fa-eye' : 'fa-eye-slash'"></span>
+        </div>
+        
+        <div class="icon-button"
+          id="toggle-video-mute-img" 
+          appTooltip
+          *ngIf="!isJudge && !audioOnly"
+          [text]="videoMuted ? 'Show camera' : 'Hide camera'"
+          [colour]="'grey'"
+          (click)="toggleVideoMute()">
+          <span class="far" [class]="videoMuted ? 'fa-video-slash' : 'fa-video'"></span>
+        </div>
+        
+        <div class="icon-button"
+          id="toggle-audio-mute-img" 
+          appTooltip
+          *ngIf="!remoteMuted || isJudge"
+          [text]="audioMuted ? 'Unmute microphone' : 'Mute microphone'"
+          [colour]="'grey'"
+          (click)="toggleMute()">
+          <span class="far" [class]="audioMuted ? 'fa-microphone-slash' : 'fa-microphone'"></span>
+        </div>
+        
+        <div class="icon-button"
+          id="toggle-audio-mute-locked-img" 
+          appTooltip
+          *ngIf="remoteMuted && !isJudge"
+          text="You have been been remote muted"
+          [colour]="'grey'">
+          <span class="far fa-microphone-slash" style="color: red"></span>
+        </div>
+        
+        <div class="icon-button"
+          id="toggle-hand-raised-img" 
+          appTooltip
+          *ngIf="!isPrivateConsultation && !isJudge"
+          [text]="handRaised ? 'Lower hand' : 'Raise hand'"
+          [colour]="'grey'"
+          (click)="toggleHandRaised()">
+          <span class="far" [class]="handRaised ? 'fa-hand' : 'fa-hand-slash'"></span>
+        </div>
+        
+        <div class="icon-button"
+          id="pause-hearing-img" 
+          appTooltip
+          *ngIf="!isPrivateConsultation && isJudge"
+          text="Pause the hearing"
+          [colour]="'grey'"
+          (click)="pause()">
+          <span class="far fa-pause"></span>
+        </div>
+        
+        <div class="icon-button"
+          id="end-hearing-img" 
+          appTooltip
+          *ngIf="!isPrivateConsultation && isJudge"
+          text="Close the hearing"
+          [colour]="'grey'"
+          (click)="displayConfirmationDialog()">
+          <span class="far fa-stop"></span>
+        </div>
+
+        <div class="flexBar"></div>
+          
+        <button *ngIf="isPrivateConsultation && showConsultationControls" id="lockButton" class="small-button " [class]="roomLocked ? 'greygreen' : 'greyred'" data-module="govuk-button"
+          style="margin-right: 15px;"
+          (click)="lockPrivateConsultation(!roomLocked)"
+          type="button">
+          {{ roomLocked ? 'Unlock the room ' : 'Lock the room ' }}
+          <span class="fas" [class]="roomLocked ? 'fa-lock-alt' : 'fa-lock-open-alt'"></span>
+        </button>
+
+        <button *ngIf="showConsultationControls" id="leaveButton" class="small-button red" data-module="govuk-button"
+          style="margin-right: 25px;" (click)="leavePrivateConsultation()" type="button"
+          alt="Leave the private consultation">
+          Leave
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<app-confirm-close-hearing-popup *ngIf="displayConfirmPopup" (popupAnswered)="close($event)">
+</app-confirm-close-hearing-popup>

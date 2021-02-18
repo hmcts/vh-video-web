@@ -1,0 +1,24 @@
+<div class="modal-content">
+  <div class="govuk-grid-row govuk-body">
+    <div class="govuk-grid-column-full">
+      <p class="govuk-!-font-size-27 govuk-!-font-weight-bold govuk-!-margin-bottom-3">You are about to leave the meeting</p>
+      <p class="govuk-!-font-size-19">You'll be returning to the waiting room.</p>
+      <button
+        class="govuk-button govuk-!-margin-top-6 govuk-!-margin-bottom-0 "
+        data-module="govuk-button"
+        (click)="leaveConsultation()"
+        alt="Leave"
+      >
+        Leave
+      </button>
+      <button
+        class="govuk-button govuk-!-margin-top-6 govuk-!-margin-left-2 govuk-!-margin-bottom-0 govuk-button--secondary"
+        data-module="govuk-button"
+        (click)="closeModal()"
+        alt="Stay"
+      >
+        Stay
+      </button>
+    </div>
+  </div>
+</div>

@@ -72,8 +72,6 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
             activatedRoute
         );
         conference = new ConferenceTestData().getConferenceDetailFuture();
-        component.consultationRequester = new Participant(conference.participants[0]);
-        component.consultationRequestee = new Participant(conference.participants[1]);
         component.conference = conference;
         component.loggedInUser = new LoggedParticipantResponse({
             participant_id: conference.participants[2].id,
@@ -194,7 +192,7 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
     it('should not be able to call endpoint linked to another defence advocate', () => {
         const endpoint = new VideoEndpointResponse({
             status: EndpointStatus.Connected,
-            defence_advocate_username: 'another@test.com'
+            defence_advocate_username: 'another@hmcts.net'
         });
         expect(component.canCallEndpoint(endpoint)).toBeFalsy();
     });

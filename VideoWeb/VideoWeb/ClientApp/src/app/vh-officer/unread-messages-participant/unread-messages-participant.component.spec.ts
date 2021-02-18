@@ -2,7 +2,6 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { UnreadAdminMessageResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockEventsService } from 'src/app/testing/mocks/MockEventService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { Hearing } from '../../shared/models/hearing';
 import { UnreadMessagesParticipantComponent } from './unread-messages-participant.component';
@@ -11,24 +10,18 @@ import { Participant } from 'src/app/shared/models/participant';
 import { ConferenceMessageAnswered } from 'src/app/services/models/conference-message-answered';
 import { Guid } from 'guid-typescript';
 import { InstantMessage } from 'src/app/services/models/instant-message';
+import { adminAnsweredChatSubjectMock, eventsServiceSpy, messageSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 
 describe('UnreadMessagesParticipantComponent', () => {
     let component: UnreadMessagesParticipantComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    let eventsService: jasmine.SpyObj<EventsService>;
     const conference = new ConferenceTestData().getConferenceDetailNow();
     const participant = conference.participants[0];
-    const mockEventService = new MockEventsService();
     let logger: MockLogger;
 
     let unreadMessageResponse: UnreadAdminMessageResponse;
 
     beforeAll(() => {
-        eventsService = jasmine.createSpyObj<EventsService>('EventsService', ['start', 'getAdminAnsweredChat', 'getChatMessage']);
-
-        eventsService.getAdminAnsweredChat.and.returnValue(mockEventService.adminAnsweredChatSubject.asObservable());
-        eventsService.getChatMessage.and.returnValue(mockEventService.messageSubject.asObservable());
-
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getUnreadMessagesForParticipant']);
 
         logger = new MockLogger();
@@ -41,7 +34,7 @@ describe('UnreadMessagesParticipantComponent', () => {
         });
         videoWebServiceSpy.getUnreadMessagesForParticipant.and.callFake(() => Promise.resolve(unreadMessageResponse));
 
-        component = new UnreadMessagesParticipantComponent(videoWebServiceSpy, eventsService, logger);
+        component = new UnreadMessagesParticipantComponent(videoWebServiceSpy, eventsServiceSpy, logger);
         component.unreadMessages = unreadMessageResponse;
         component.hearing = new Hearing(conference);
         component.participant = new Participant(participant);
@@ -91,7 +84,7 @@ describe('UnreadMessagesParticipantComponent', () => {
         component.setupSubscribers();
         const payload = new ConferenceMessageAnswered(conferenceId, participantId);
 
-        mockEventService.adminAnsweredChatSubject.next(payload);
+        adminAnsweredChatSubjectMock.next(payload);
 
         expect(component.unreadCount).toBe(expectedCount);
     });
@@ -103,7 +96,7 @@ describe('UnreadMessagesParticipantComponent', () => {
         component.setupSubscribers();
         const payload = new ConferenceMessageAnswered(conferenceId, participantId);
 
-        mockEventService.adminAnsweredChatSubject.next(payload);
+        adminAnsweredChatSubjectMock.next(payload);
 
         expect(component.unreadCount).toBe(expectedCount);
     });
@@ -123,7 +116,7 @@ describe('UnreadMessagesParticipantComponent', () => {
         const participantId = conference.participants[0].id;
         const expectedCount = component.unreadCount + 1;
         component.setupSubscribers();
-        mockEventService.messageSubject.next(
+        messageSubjectMock.next(
             new InstantMessage({
                 conferenceId,
                 from: participantId
@@ -134,10 +127,10 @@ describe('UnreadMessagesParticipantComponent', () => {
 
     it('should not increase unread count when admin sends a message', () => {
         const conferenceId = conference.id;
-        const participantUsername = 'admin@test.com';
+        const participantUsername = 'admin@hmcts.net';
         const expectedCount = component.unreadCount;
         component.setupSubscribers();
-        mockEventService.messageSubject.next(
+        messageSubjectMock.next(
             new InstantMessage({
                 conferenceId,
                 from: participantUsername
@@ -156,10 +149,10 @@ describe('UnreadMessagesParticipantComponent', () => {
 
     it('should not increase unread count when message is for participant not in conference', () => {
         const conferenceId = conference.id;
-        const participantUsername = 'random@test.com';
+        const participantUsername = 'random@hmcts.net';
         const expectedCount = component.unreadCount;
         component.setupSubscribers();
-        mockEventService.messageSubject.next(
+        messageSubjectMock.next(
             new InstantMessage({
                 conferenceId,
                 from: participantUsername

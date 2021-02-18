@@ -34,7 +34,6 @@ export class UserMediaStreamService {
             return true;
         } catch (exception) {
             this.logger.error(`${this.loggerPrefix} Could not get cam and mic access`, exception);
-
             return false;
         }
     }
@@ -59,8 +58,7 @@ export class UserMediaStreamService {
     async getStreamForMic(device: UserMediaDevice): Promise<MediaStream> {
         try {
             if (device) {
-                const stream = await this.navigator.mediaDevices.getUserMedia({ audio: { deviceId: { exact: device.deviceId } } });
-                return stream;
+                return await this.navigator.mediaDevices.getUserMedia({ audio: { deviceId: { exact: device.deviceId } } });
             } else {
                 return this.getDefaultMicStream();
             }
@@ -73,8 +71,7 @@ export class UserMediaStreamService {
     async getStreamForCam(device: UserMediaDevice): Promise<MediaStream> {
         try {
             if (device) {
-                const stream = await this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } });
-                return stream;
+                return await this.navigator.mediaDevices.getUserMedia({ video: { deviceId: { exact: device.deviceId } } });
             } else {
                 return this.getDefaultCamStream();
             }
@@ -85,7 +82,7 @@ export class UserMediaStreamService {
     }
 
     private async getDefaultCamStream(): Promise<MediaStream> {
-        return await this.navigator.mediaDevices.getUserMedia({
+        return this.navigator.mediaDevices.getUserMedia({
             audio: false,
             video: true
         });

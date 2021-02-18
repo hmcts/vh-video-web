@@ -44,7 +44,7 @@ Scenario: Video Hearings Officer cannot call users in a hearing
 	Then the option to call the first Individual's is not visible
   When in the Judge's browser
   And the Judge closes the hearing
-	Then the user is on the Hearing List page
+	Then the user is on the Waiting Room page
 
 @VIH-6132 @DisableLogging
 Scenario: Video Hearings Officer Calls Observer

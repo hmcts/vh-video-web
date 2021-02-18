@@ -50,6 +50,7 @@
     "ngx-clipboard": "^13.0.1",
     "ngx-device-detector": "^2.0.5",
     "ngx-moment": "^5.0.0",
+    "ngx-toastr": "^13.2.0",
     "run-script-os": "^1.1.4",
     "rxjs": "^6.6.3",
     "snyk": "^1.437.3",

@@ -4,21 +4,18 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings.Requests
 {
-    public class PrivateConsultationRequestMapper : IMapTo<PrivateConsultationRequest, ConsultationRequest>
+    public class PrivateConsultationRequestMapper : IMapTo<PrivateConsultationRequest, ConsultationRequestResponse>
     {
-        public ConsultationRequest Map(PrivateConsultationRequest request)
+        public ConsultationRequestResponse Map(PrivateConsultationRequest request)
         {
-            ConsultationAnswer? answer = null;
-            if (request.Answer.HasValue)
-            {
-                answer = Enum.Parse<ConsultationAnswer>(request.Answer.ToString()!);
-            }
+            var answer = Enum.Parse<ConsultationAnswer>(request.Answer.ToString());
 
-            return new ConsultationRequest
+            return new ConsultationRequestResponse
             {
                 Conference_id = request.ConferenceId,
                 Requested_by = request.RequestedById,
                 Requested_for = request.RequestedForId,
+                Room_label = request.RoomLabel,
                 Answer = answer
             };
         }

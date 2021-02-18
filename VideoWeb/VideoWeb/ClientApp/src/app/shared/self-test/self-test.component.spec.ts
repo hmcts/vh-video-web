@@ -358,8 +358,8 @@ describe('SelfTestComponent', () => {
     });
 
     it('should return true when streams are active urls', () => {
-        component.outgoingStream = new URL('http://www.test.com');
-        component.incomingStream = new URL('http://www.test.com');
+        component.outgoingStream = new URL('http://www.hmcts.net');
+        component.incomingStream = new URL('http://www.hmcts.net');
         expect(component.streamsActive).toBeTruthy();
     });
 

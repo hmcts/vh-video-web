@@ -12,3 +12,71 @@
   height: 123.5px;
   width: 150px;
 }
+
+.govuk-button-blue {
+  background: govuk-colour('blue');
+}
+.govuk-button-blue:hover {
+  background: govuk-colour('dark-blue');
+}
+
+.participant-wrapper {
+  width: 333px;
+  padding: 12px;
+  float: right;
+  max-height: 675px;
+  overflow: overlay;
+}
+
+.room-title {
+  color: lightgray;
+  margin-left: 50px;
+  display: inline-block;
+}
+
+.room-status {
+  margin-left: 10px;
+  display: inline-block;
+}
+
+.room-status-desc {
+  color: lightgray;
+  font-size: 16px;
+  margin-left: 10px;
+  display: inline-block;
+}
+
+.lock-badge {
+  padding: 3px 8px 3px 8px;
+  border: 0px solid lightgray;
+  border-radius: 2px;
+  text-transform: uppercase;
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.lock-badge.unlocked {
+  background: lightgray;
+  color: #0b0c0d;
+}
+
+.lock-badge.locked {
+  background: govuk-colour('red');
+  color: govuk-colour('white');
+}
+
+.video-wrapper {
+  width: auto;
+  overflow: hidden;
+}
+
+#incomingFeedPrivate {
+  position: relative;
+  left: 0;
+  top: 0px;
+  min-width: 100%;
+  min-height: auto;
+  max-width: 100%;
+  max-height: 90vh;
+  z-index: 100;
+}

@@ -4275,6 +4275,30 @@ namespace VideoWeb.Services.TestApi
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public enum LinkedParticipantType
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"Interpreter")]
+        Interpreter = 0,
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class LinkedParticipantResponse 
+    {
+        [Newtonsoft.Json.JsonProperty("participant_id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid Participant_id { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("linked_id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid Linked_id { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public LinkedParticipantType Type { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
     public partial class ParticipantDetailsResponse 
     {
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -4320,6 +4344,9 @@ namespace VideoWeb.Services.TestApi
         [Newtonsoft.Json.JsonProperty("current_status", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public ParticipantState Current_status { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("linked_participants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.List<LinkedParticipantResponse> Linked_participants { get; set; }
     
     
     }
@@ -4443,6 +4470,22 @@ namespace VideoWeb.Services.TestApi
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class LinkedParticipantRequest 
+    {
+        [Newtonsoft.Json.JsonProperty("participant_ref_id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid Participant_ref_id { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("linked_ref_id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid Linked_ref_id { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public LinkedParticipantType Type { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
     public partial class ParticipantRequest 
     {
         [Newtonsoft.Json.JsonProperty("participant_ref_id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -4481,6 +4524,9 @@ namespace VideoWeb.Services.TestApi
     
         [Newtonsoft.Json.JsonProperty("representee", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Representee { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("linked_participants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.List<LinkedParticipantRequest> Linked_participants { get; set; }
     
     
     }
@@ -4569,6 +4615,9 @@ namespace VideoWeb.Services.TestApi
     
         [Newtonsoft.Json.JsonProperty("scheduled_date_time", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTime Scheduled_date_time { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("closed_date_time", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Closed_date_time { get; set; }
     
         [Newtonsoft.Json.JsonProperty("scheduled_duration", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int Scheduled_duration { get; set; }
@@ -4684,6 +4733,9 @@ namespace VideoWeb.Services.TestApi
     
         [Newtonsoft.Json.JsonProperty("telephone_conference_number", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Telephone_conference_number { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("created_date_time", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.DateTime? Created_date_time { get; set; }
     
     
     }
@@ -4961,6 +5013,27 @@ namespace VideoWeb.Services.TestApi
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public enum LinkedParticipantType2
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"Interpreter")]
+        Interpreter = 0,
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
+    public partial class LinkedParticipantResponse2 
+    {
+        [Newtonsoft.Json.JsonProperty("linked_id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Guid Linked_id { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public LinkedParticipantType2 Type { get; set; }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
     public partial class ParticipantResponse 
     {
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -5004,6 +5077,9 @@ namespace VideoWeb.Services.TestApi
     
         [Newtonsoft.Json.JsonProperty("representee", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Representee { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("linked_participants", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.List<LinkedParticipantResponse2> Linked_participants { get; set; }
     
     
     }

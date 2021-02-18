@@ -1,0 +1,22 @@
+<div class="content">
+    <ng-container *ngIf="vhToastOptions.htmlBody">
+        <div [innerHtml]="vhToastOptions.htmlBody">
+        </div>
+    </ng-container>
+    <ng-container *ngIf="!vhToastOptions.htmlBody">
+        <div class="govuk-body">
+            {{vhToastOptions.body}}
+        </div>
+    </ng-container>
+</div>
+
+<div class="actions" *ngIf="vhToastOptions.buttons">
+    <div class="action" *ngFor="let btn of vhToastOptions.buttons">
+        <button
+        class="small-button grey"
+        [class.green]="btn.hoverColour === 'green'"
+        [class.red]="btn.hoverColour === 'red'"
+        data-module="govuk-button"
+        (click)="handleAction(btn.action)">{{btn.label}}</button>
+    </div>
+</div>

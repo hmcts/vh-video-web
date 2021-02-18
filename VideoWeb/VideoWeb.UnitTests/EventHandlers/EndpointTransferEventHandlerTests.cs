@@ -18,12 +18,6 @@ namespace VideoWeb.UnitTests.EventHandlers
 
         [TestCase(RoomType.WaitingRoom, RoomType.HearingRoom, EndpointState.Connected)]
         [TestCase(RoomType.HearingRoom, RoomType.WaitingRoom, EndpointState.Connected)]
-        [TestCase(RoomType.ConsultationRoom1, RoomType.WaitingRoom, EndpointState.Connected)]
-        [TestCase(RoomType.ConsultationRoom2, RoomType.WaitingRoom, EndpointState.Connected)]
-        [TestCase(RoomType.ConsultationRoom1, RoomType.HearingRoom, EndpointState.Connected)]
-        [TestCase(RoomType.ConsultationRoom2, RoomType.HearingRoom, EndpointState.Connected)]
-        [TestCase(RoomType.WaitingRoom, RoomType.ConsultationRoom1, EndpointState.InConsultation)]
-        [TestCase(RoomType.WaitingRoom, RoomType.ConsultationRoom2, EndpointState.InConsultation)]
         public async Task Should_send_endpoint_status_messages_to_clients(RoomType from, RoomType to,
             EndpointState status)
         {
@@ -46,8 +40,6 @@ namespace VideoWeb.UnitTests.EventHandlers
             };
             
             await _eventHandler.HandleAsync(callbackEvent);
-            
-            // Verify messages sent to event hub clients
             EventHubClientMock.Verify(x => x.EndpointStatusMessage(participantForEvent.Id, conference.Id, status),
                 Times.Exactly(participantCount));
         }
@@ -71,8 +63,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             };
 
             Assert.ThrowsAsync<ArgumentException>(() => _eventHandler.HandleAsync(callbackEvent)).Message.Should()
-                .Be("No consultation room provided");
-            // Verify messages sent to event hub clients
+                .Be($"Unable to derive state, no {nameof(callbackEvent.TransferTo)} provided (Parameter '{nameof(callbackEvent.TransferTo)}')");
             EventHubClientMock.Verify(x => x.EndpointStatusMessage(participantForEvent.Id, conference.Id, It.IsAny<EndpointState>()),
                 Times.Never);
         }

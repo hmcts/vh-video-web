@@ -15,16 +15,8 @@ namespace VideoWeb.Common.Models
         /// </summary>
         Rejected,
         /// <summary>
-        /// Cancel a consultation request
-        /// </summary>
-        Cancelled,
-        /// <summary>
         /// Consultation request failed
         /// </summary>
-        Failed,
-        /// <summary>
-        /// No consultation rooms available
-        /// </summary>
-        NoRoomsAvailable
+        Failed
     }
 }

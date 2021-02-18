@@ -12,6 +12,7 @@ import {
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingRole } from '../models/hearing-role-model';
 import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-participant-list-shared.component';
 
@@ -32,6 +33,8 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     wingers: ParticipantResponse[];
     isUserJudge: boolean;
 
+    hearing: Hearing;
+
     constructor(
         protected adalService: AdalService,
         protected consultationService: ConsultationService,
@@ -44,8 +47,8 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     }
 
     ngOnInit() {
+        this.hearing = new Hearing(this.conference);
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
-        this.consultationService.resetWaitingForResponse();
         this.initParticipants();
         this.setupSubscribers();
     }

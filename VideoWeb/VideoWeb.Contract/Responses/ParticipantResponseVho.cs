@@ -3,6 +3,7 @@ using VideoWeb.Common.Models;
 
 namespace VideoWeb.Contract.Responses
 {
+
     /// <summary>
     ///  Information about a participant in a conference
     /// </summary>
@@ -52,5 +53,10 @@ namespace VideoWeb.Contract.Responses
         /// The hearing role
         /// </summary>
         public string HearingRole { get; set; }
+
+        /// <summary>
+        /// Current conference room
+        /// </summary>
+        public RoomSummaryResponse CurrentRoom { get; set; }
     }
 }
