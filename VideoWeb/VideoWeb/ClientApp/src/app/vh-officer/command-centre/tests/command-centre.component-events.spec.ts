@@ -37,7 +37,7 @@ describe('CommandCentreComponent - Events', () => {
 
     const logger: Logger = new MockLogger();
 
-    const conferences = new ConferenceTestData().getVhoTestData();
+    const conferences = new ConferenceTestData().getTestData();
     const hearings = conferences.map(c => new HearingSummary(c));
     const conference = new ConferenceTestData().getConferenceDetailNow();
     const hearing = new Hearing(conference);

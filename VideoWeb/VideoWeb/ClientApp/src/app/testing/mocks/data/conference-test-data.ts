@@ -31,7 +31,7 @@ export class ConferenceTestData {
 
     getConferenceNow(): ConferenceForVhOfficerResponse {
         const currentDateTime = new Date();
-        const conference = new ConferenceForVhOfficerResponse({
+        return new ConferenceForVhOfficerResponse({
             id: '363725D0-E3D6-4D4A-8D0A-E8E57575FBC4',
             case_name: 'C V I',
             case_number: '123ABC',
@@ -42,14 +42,12 @@ export class ConferenceTestData {
             participants: this.getListOfParticipants(),
             hearing_venue_name: 'Birmingham'
         });
-
-        return conference;
     }
 
     getConferencePast(): ConferenceForVhOfficerResponse {
         const pastDate = new Date(new Date().getTime());
         pastDate.setUTCHours(pastDate.getUTCHours() - 26);
-        const conference = new ConferenceForVhOfficerResponse({
+        return new ConferenceForVhOfficerResponse({
             id: '58CB20C7-377D-4581-8069-3776F583684B',
             case_name: 'BW V BP',
             case_number: 'ABC1234',
@@ -61,31 +59,12 @@ export class ConferenceTestData {
             telephone_conference_id: '0345855',
             telephone_conference_number: '+441234567890'
         });
-        return conference;
-    }
-
-    getVHOConferencePast(): ConferenceForVhOfficerResponse {
-        const pastDate = new Date(new Date().getTime());
-        pastDate.setUTCHours(pastDate.getUTCHours() - 26);
-        const conference = new ConferenceForVhOfficerResponse({
-            id: '58CB20C7-377D-4581-8069-3776F583684B',
-            case_name: 'BW V BP',
-            case_number: 'ABC1234',
-            case_type: 'Financial Tax Remedy',
-            scheduled_date_time: pastDate,
-            scheduled_duration: 50,
-            status: ConferenceStatus.NotStarted,
-            participants: this.getListOfParticipants(),
-            telephone_conference_id: '0345855',
-            telephone_conference_number: '+441234567890'
-        });
-        return conference;
     }
 
     getConferenceFuture(): ConferenceForVhOfficerResponse {
         const futureDate = new Date(new Date().getTime());
         futureDate.setUTCHours(futureDate.getUTCHours() + 26);
-        const conference = new ConferenceForVhOfficerResponse({
+        return new ConferenceForVhOfficerResponse({
             id: '612AB52C-BDA5-4F4D-95B8-3F49065219A6',
             case_name: 'WM V T',
             case_number: '0987UDIHH',
@@ -100,13 +79,12 @@ export class ConferenceTestData {
             telephone_conference_id: '0345855',
             telephone_conference_number: '+441234567890'
         });
-        return conference;
     }
 
     getConferenceInSession(): ConferenceForVhOfficerResponse {
         const futureDate = new Date(new Date().getTime());
         futureDate.setUTCHours(futureDate.getUTCHours() + 26);
-        const conference = new ConferenceForVhOfficerResponse({
+        return new ConferenceForVhOfficerResponse({
             id: '612AB52C-BDA5-4F4D-95B8-3F49065219A6',
             case_name: 'WM V T',
             case_number: '0987UDIHH',
@@ -119,21 +97,9 @@ export class ConferenceTestData {
             started_date_time: futureDate,
             closed_date_time: null
         });
-        return conference;
     }
 
     getTestData(): Array<ConferenceForVhOfficerResponse> {
-        const testData: Array<ConferenceForVhOfficerResponse> = [];
-        const conference1 = this.getConferenceNow();
-        const conference2 = this.getConferencePast();
-        const conference3 = this.getConferenceFuture();
-        testData.push(conference1);
-        testData.push(conference2);
-        testData.push(conference3);
-        return testData;
-    }
-
-    getVhoTestData(): Array<ConferenceForVhOfficerResponse> {
         const testData: Array<ConferenceForVhOfficerResponse> = [];
         const conference1 = this.getConferenceNow();
         const conference2 = this.getConferencePast();
@@ -180,7 +146,7 @@ export class ConferenceTestData {
 
     private initConferenceDetails(scheduledDateTime): ConferenceResponse {
         const participants = this.getListOfParticipantDetails();
-        const conference = new ConferenceResponse({
+        return new ConferenceResponse({
             id: '612AB52C-BDA5-4F4D-95B8-3F49065219A6',
             case_name: 'WM V T',
             case_number: '0987UDIHH',
@@ -194,8 +160,6 @@ export class ConferenceTestData {
             hearing_venue_name: 'venue name',
             endpoints: this.getListOfEndpoints()
         });
-
-        return conference;
     }
 
     getListOfParticipants(): ParticipantForUserResponse[] {
@@ -450,10 +414,9 @@ export class ConferenceTestData {
     }
 
     getPexipConfig(): SelfTestPexipResponse {
-        const pexipConfig = new SelfTestPexipResponse({
+        return new SelfTestPexipResponse({
             pexip_self_test_node: 'sip.dev.self-test.hearings.hmcts.net'
         });
-        return pexipConfig;
     }
 
     getHearingsFilter(): HearingsFilter {
