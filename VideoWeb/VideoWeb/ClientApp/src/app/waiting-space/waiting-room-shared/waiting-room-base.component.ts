@@ -729,7 +729,7 @@ export abstract class WaitingRoomBaseComponent {
         this.hearingStartingAnnounced = true;
         await this.notificationSoundsService.playHearingAlertSound();
     }
-    
+
     closeAllPCModals(): void {
         this.consultationService.clearModals();
     }

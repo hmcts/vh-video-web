@@ -6,7 +6,7 @@ describe('ConsultationLeaveComponent', () => {
     beforeEach(() => {
         component = new ConsultationLeaveComponent();
     });
-    
+
     it('should emit leave', () => {
         // Arrange
         spyOn(component.leave, 'emit');
@@ -26,7 +26,7 @@ describe('ConsultationLeaveComponent', () => {
 
         // ACT
         component.closeModal();
-        
+
         // Assert
         expect(component.closedModal.emit).toHaveBeenCalled();
     });
