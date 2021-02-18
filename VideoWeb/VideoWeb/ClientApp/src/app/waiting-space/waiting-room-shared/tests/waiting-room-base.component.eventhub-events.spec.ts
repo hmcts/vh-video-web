@@ -24,7 +24,9 @@ import {
     eventHubReconnectSubjectMock,
     hearingStatusSubjectMock,
     hearingTransferSubjectMock,
-    participantStatusSubjectMock
+    participantStatusSubjectMock,
+    roomUpdateSubjectMock,
+    roomTransferSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import {
     adalService,
@@ -50,6 +52,8 @@ import {
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
 import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
+import { Room } from '../../../shared/models/room';
+import { RoomTransfer } from '../../../shared/models/room-transfer';
 
 describe('WaitingRoomComponent EventHub Call', () => {
     let component: WRTestComponent;
@@ -358,5 +362,40 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
         const endpoint = component.hearing.getEndpoints().find(x => x.id === message.endpointId);
         expect(endpoint.status === message.status).toBeTruthy();
+    }));
+    it('should receive requested consultation message', fakeAsync(() => {
+        const requestedby = globalConference.participants.find(x => x.id !== globalParticipant.id);
+        const payload = new RequestedConsultationMessage(globalConference.id, 'ConsultationRoom', requestedby.id, globalParticipant.id);
+        requestedConsultationMessageSubjectMock.next(payload);
+        flushMicrotasks();
+
+        expect(notificationToastrService.showConsultationInvite).toHaveBeenCalled();
+    }));
+    it('should update existing conference room to be locked', fakeAsync(() => {
+        const payload = new Room('ConsultationRoom', false);
+        component.conferenceRooms.push(payload);
+        const countRoom = component.conferenceRooms.length;
+        payload.locked = true;
+        roomUpdateSubjectMock.next(payload);
+        flushMicrotasks();
+
+        expect(component.conferenceRooms.length).toBe(countRoom);
+        expect(component.conferenceRooms.find(x => (x.label = 'ConsultationRoom')).locked).toBe(true);
+    }));
+    it('should update by adding conference room', fakeAsync(() => {
+        const payload = new Room('HearingRoom', false);
+        const countRoom = component.conferenceRooms.length;
+        roomUpdateSubjectMock.next(payload);
+        flushMicrotasks();
+
+        expect(component.conferenceRooms.length).toBeGreaterThan(countRoom);
+        expect(component.conferenceRooms.find(x => (x.label = 'HearingRoom')).locked).toBe(false);
+    }));
+    it('should transfere existing participant to conference room', fakeAsync(() => {
+        const payload = new RoomTransfer(globalParticipant.id, 'ConsultationRoom_to', 'ConsultationRoom_from');
+        roomTransferSubjectMock.next(payload);
+        flushMicrotasks();
+
+        expect(globalParticipant.current_room.label).toBe('ConsultationRoom_to');
     }));
 });
