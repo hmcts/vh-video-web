@@ -27,6 +27,7 @@ import { PrivateConsultationRoomControlsComponent } from './private-consultation
 import { PrivateConsultationParticipantsComponent } from './participant-waiting-room/private-consultation-participants/private-consultation-participants.component';
 import { InviteParticipantComponent } from './participant-waiting-room/invite-participant/invite-participant.component';
 import { LoggedUserResolveService } from './services/logged-user-resolve.service';
+import { ConsultationLeaveComponent } from './consultation-modals/consultation-leave/consultation-leave.component';
 
 @NgModule({
     imports: [SharedModule, WaitingSpaceRoutingModule],
@@ -39,6 +40,7 @@ import { LoggedUserResolveService } from './services/logged-user-resolve.service
         ParticipantChatComponent,
         AudioAlertComponent,
         ConsultationErrorComponent,
+        ConsultationLeaveComponent,
         ParticipantNetworkHealthComponent,
         WaitingRoomMonitorComponent,
         HearingControlsComponent,

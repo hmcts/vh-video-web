@@ -34,7 +34,7 @@
           [outgoingStream]="outgoingStream"
           [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
           [showConsultationControls]="showConsultationControls"
-          (leaveConsultation)="onConsultationCancelled()"
+          (leaveConsultation)="showLeaveConsultationModal()"
           (lockConsultation)="setRoomLock($event)">
         </app-private-consultation-room-controls>
       </ng-container>
@@ -262,3 +262,7 @@
   (cancel)="closeJoinPrivateConsultationModal()"
   (continue)="joinPrivateConsultation($event)"
 ></app-join-private-consultation>
+
+<app-modal id="pc-leave-modal" class="modal clear consultation">
+  <app-consultation-leave (leave)="onConsultationCancelled()" (closedModal)="closeAllPCModals()"></app-consultation-leave>
+</app-modal>

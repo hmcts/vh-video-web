@@ -74,6 +74,22 @@ describe('WaitingRoomComponent message and clock', () => {
         videoWebService.getConferenceById.calls.reset();
     });
 
+    it('should call consultation service to close all modals', () => {
+        // Act
+        component.closeAllPCModals();
+
+        // Assert
+        expect(consultationService.clearModals).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call consultation service to show leave consultation modal', () => {
+        // Act
+        component.showLeaveConsultationModal();
+
+        // Assert
+        expect(consultationService.displayConsultationLeaveModal).toHaveBeenCalledTimes(1);
+    });
+
     it('should get conference', fakeAsync(async () => {
         component.hearing = undefined;
         component.conference = undefined;
