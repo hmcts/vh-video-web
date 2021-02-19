@@ -411,7 +411,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         expect(globalParticipant.current_room).toBeNull();
     }));
 
-    it('should set room label for waiting room transfer', fakeAsync(() => {
+    it('should set room label for consultation room transfer', fakeAsync(() => {
         const payload = new RoomTransfer(globalParticipant.id, 'ConsultationRoom_to', 'ConsultationRoom_from');
         roomTransferSubjectMock.next(payload);
         flushMicrotasks();
