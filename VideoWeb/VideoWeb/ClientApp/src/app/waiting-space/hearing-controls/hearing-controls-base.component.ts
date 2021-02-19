@@ -24,7 +24,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     @Output() public lockConsultation = new EventEmitter<boolean>();
 
     videoCallSubscription$ = new Subscription();
-    eventhubSubscription$ = new Subscription(); 
+    eventhubSubscription$ = new Subscription();
 
     screenShareStream: MediaStream | URL;
 
@@ -111,8 +111,8 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             this.videoCallService
                 .onParticipantUpdated()
                 .subscribe(updatedParticipant => this.handleParticipantUpdatedInVideoCall(updatedParticipant))
-        ); 
-        
+        );
+
         this.videoCallSubscription$.add(
             this.videoCallService
                 .onScreenshareConnected()
@@ -177,7 +177,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             await this.toggleMute();
         }
     }
-    
+
     async resetMute() {
         if (this.audioMuted) {
             this.logger.debug(`${this.loggerPrefix} Resetting participant mute status`, this.logPayload);
@@ -254,7 +254,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.logger.debug(`${this.loggerPrefix} Lock private consultation clicked`, this.logPayload);
         this.lockConsultation.emit(lock);
     }
-    
+
     async startScreenShare() {
         await this.videoCallService.selectScreen();
         this.videoCallService.startScreenShare();

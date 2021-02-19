@@ -144,7 +144,7 @@ export class VideoCallService {
             this.updateMicrophoneForCall(preferredMic);
         }
     }
-    
+
     makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
         this.initCallTag();
         this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);

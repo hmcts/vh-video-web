@@ -418,7 +418,7 @@ export abstract class WaitingRoomBaseComponent {
 
         await this.videoCallService.setupClient();
     }
-    
+
     handlePresentationStatusChange(presentation: Presentation): void {
         if (presentation.presentationStarted) {
             this.videoCallService.retrievePresentation();
@@ -798,6 +798,6 @@ export abstract class WaitingRoomBaseComponent {
     }
 
     switchStreamWindows(): void {
-        this.streamInMain = !this.streamInMain
+        this.streamInMain = !this.streamInMain;
     }
 }
