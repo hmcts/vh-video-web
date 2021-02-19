@@ -250,7 +250,7 @@ export abstract class WaitingRoomBaseComponent {
                 }
 
                 participant.current_room = null;
-                if (roomTransfer.to_room.indexOf('Consultation') >= 0) {
+                if (roomTransfer.to_room.toLowerCase().indexOf('consultation') >= 0) {
                     const room = this.conferenceRooms.find(r => r.label === roomTransfer.to_room);
                     participant.current_room = room
                         ? new RoomSummaryResponse(room)

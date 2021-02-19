@@ -418,4 +418,12 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
         expect(globalParticipant.current_room?.label).toEqual('ConsultationRoom_to');
     }));
+
+    it('should set null room for hearing transfer', fakeAsync(() => {
+        const payload = new RoomTransfer(globalParticipant.id, 'HearingRoom_to', 'HearingRoom_from');
+        roomTransferSubjectMock.next(payload);
+        flushMicrotasks();
+
+        expect(globalParticipant.current_room).toBeNull();
+    }));
 });
