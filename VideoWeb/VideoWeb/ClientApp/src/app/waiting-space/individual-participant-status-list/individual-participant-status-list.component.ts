@@ -1,13 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConsultationAnswer, ParticipantResponse, ParticipantStatus, VideoEndpointResponse } from 'src/app/services/clients/api-client';
+import { ParticipantResponse, ParticipantStatus, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ConsultationMessage } from 'src/app/services/models/consultation-message';
 import { Hearing } from 'src/app/shared/models/hearing';
-import { Participant } from 'src/app/shared/models/participant';
 import { HearingRole } from '../models/hearing-role-model';
 import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-participant-list-shared.component';
 
@@ -23,13 +22,14 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         protected consultationService: ConsultationService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected videoWebService: VideoWebService
+        protected videoWebService: VideoWebService,
+        protected route: ActivatedRoute
     ) {
         super(adalService, consultationService, eventService, videoWebService, logger);
     }
 
     ngOnInit() {
-        this.consultationService.resetWaitingForResponse();
+        this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.initParticipants();
         this.setupSubscribers();
     }
@@ -40,23 +40,6 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
 
     setupSubscribers() {
         this.addSharedEventHubSubcribers();
-        this.eventHubSubscriptions$.add(
-            this.eventService.getConsultationMessage().subscribe(message => {
-                switch (message.result) {
-                    case ConsultationAnswer.Accepted:
-                    case ConsultationAnswer.Rejected:
-                    case ConsultationAnswer.Cancelled:
-                        this.consultationService.handleConsultationResponse(message.result);
-                        break;
-                    case ConsultationAnswer.NoRoomsAvailable:
-                        this.handleNoConsulationRoom();
-                        break;
-                    default:
-                        this.displayConsultationRequestPopup(message);
-                        break;
-                }
-            })
-        );
     }
 
     canCallParticipant(participant: ParticipantResponse): boolean {
@@ -65,7 +48,7 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
             return false;
         }
 
-        const requester = this.getConsultationRequester();
+        const requester = this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
         if (
             requester.hearing_role === HearingRole.OBSERVER ||
             requester.hearing_role === HearingRole.PANEL_MEMBER ||
@@ -75,7 +58,7 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
             return false;
         }
 
-        if (participant.username.toLocaleLowerCase().trim() === this.adalService.userInfo.userName.toLocaleLowerCase().trim()) {
+        if (participant.id === this.loggedInUser.participant_id) {
             return false;
         }
         return this.isParticipantAvailable(participant);
@@ -89,105 +72,38 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         if (!endpoint.defence_advocate_username) {
             return false;
         }
-        const requester = this.getConsultationRequester();
-        if (requester.username.toLowerCase() !== endpoint.defence_advocate_username) {
+        if (
+            endpoint.defence_advocate_username.toLocaleLowerCase().trim() !== this.adalService.userInfo.userName.toLocaleLowerCase().trim()
+        ) {
             return false;
         }
 
         return this.isEndpointAvailable(endpoint);
     }
 
-    async beginCallWith(participant: ParticipantResponse): Promise<void> {
-        if (!this.canCallParticipant(participant)) {
-            return;
-        }
-        const requestee = this.conference.participants.find(x => x.id === participant.id);
-        const requester = this.getConsultationRequester();
-
-        this.consultationRequester = new Participant(requester);
-        this.consultationRequestee = new Participant(requestee);
-        this.logger.info(
-            `[IndividualParticipantStatusList] - ${this.videoWebService.getObfuscatedName(
-                requester.username
-            )} requesting private consultation with ${this.videoWebService.getObfuscatedName(requestee.username)}`,
-            {
-                conference: this.conference.id,
-                requester: this.consultationRequester.id,
-                requestee: this.consultationRequestee.id
-            }
-        );
-
-        try {
-            await this.consultationService.raiseConsultationRequest(this.conference, requester, requestee);
-            this.logger.info('[IndividualParticipantStatusList] - Raised consultation request event');
-        } catch (error) {
-            this.logger.error('[IndividualParticipantStatusList] - Failed to raise consultation request', error);
-        }
-    }
-
-    async beginEndpointCallWith(endpoint: VideoEndpointResponse) {
-        if (!this.canCallEndpoint(endpoint)) {
-            return;
-        }
-        this.logger.debug(`[IndividualParticipantStatusList] - attempting to video call ${endpoint.display_name}`);
-        try {
-            await this.consultationService.startPrivateConsulationWithEndpoint(this.conference, endpoint);
-            this.logger.info('[IndividualParticipantStatusList] - Starting private consultation with endpoint');
-        } catch (error) {
-            this.logger.error('[IndividualParticipantStatusList] - Failed to raise private consultation with endpoint', error);
-        }
-    }
-
-    async cancelConsultationRequest() {
-        await this.answerConsultationRequest(ConsultationAnswer.Cancelled);
-    }
-
-    private async displayConsultationRequestPopup(message: ConsultationMessage) {
-        this.initConsultationParticipants(message);
-
-        this.logger.info(
-            `[IndividualParticipantStatusList] - Incoming request for private consultation from ${this.videoWebService.getObfuscatedName(
-                this.consultationRequester.displayName
-            )}`
-        );
-        this.consultationService.displayIncomingPrivateConsultation();
-    }
-
-    async answerConsultationRequest(consultationAnswer: ConsultationAnswer) {
-        this.logger.info(
-            `[IndividualParticipantStatusList] - ${this.videoWebService.getObfuscatedName(
-                this.consultationRequestee.username
-            )} responded to consultation: ${consultationAnswer}`,
-            {
-                conference: this.conference.id,
-                requester: this.consultationRequester.id,
-                requestee: this.consultationRequestee.id,
-                answer: consultationAnswer
-            }
-        );
-        this.logger.info(
-            `[IndividualParticipantStatusList] - ${this.consultationRequestee.displayName} responded to consultation: ${consultationAnswer}`
-        );
-        try {
-            await this.consultationService.respondToConsultationRequest(
-                this.conference,
-                this.consultationRequester.base,
-                this.consultationRequestee.base,
-                consultationAnswer
-            );
-        } catch (error) {
-            this.logger.error('[IndividualParticipantStatusList] - Failed to respond to consultation request', error);
-        }
-    }
-
-    private initConsultationParticipants(message: ConsultationMessage): void {
-        const requester = this.conference.participants.find(x => x.username === message.requestedBy);
-        const requestee = this.conference.participants.find(x => x.username === message.requestedFor);
-        this.consultationRequester = new Participant(requester);
-        this.consultationRequestee = new Participant(requestee);
-    }
-
     getParticipantStatusText(participant: ParticipantResponse): string {
         return participant.status === ParticipantStatus.Available ? 'Available' : 'Unavailable';
+    }
+
+    getParticipantStatusCss(participant: ParticipantResponse): string {
+        if (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) {
+            return 'unavailable';
+        } else if (participant.status === ParticipantStatus.InConsultation) {
+            return 'in-consultation';
+        }
+    }
+
+    getParticipantStatus(participant: ParticipantResponse): string {
+        if (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) {
+            return 'Unavailable';
+        }
+
+        if (participant.status === ParticipantStatus.InConsultation && participant.current_room != null) {
+            return (
+                'In ' +
+                this.camelToSpaced(participant.current_room.label.replace('ParticipantConsultationRoom', 'MeetingRoom')).toLowerCase() +
+                (participant.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
+            );
+        }
     }
 }

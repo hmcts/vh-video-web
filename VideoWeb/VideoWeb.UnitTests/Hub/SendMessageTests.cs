@@ -12,15 +12,16 @@ using VideoWeb.EventHub.Hub;
 using VideoWeb.Services.User;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
+using VideoWeb.Common.Caching;
 
 namespace VideoWeb.UnitTests.Hub
 {
     public class SendMessageTests : EventHubBaseTests
     {
-        private static string JudgeUsername => "judge@test.com";
-        private static string IndividualUsername => "individual@test.com";
-        private static string RepresentativeUsername => "representative@test.com";
-        private static string AdminUsername => "admin@test.com";
+        private static string JudgeUsername => "judge@hmcts.net";
+        private static string IndividualUsername => "individual@hmcts.net";
+        private static string RepresentativeUsername => "representative@hmcts.net";
+        private static string AdminUsername => "admin@hmcts.net";
         private UserProfile JudgeUserProfile { get; set; }
         private UserProfile IndividualUserProfile { get; set; }
         private UserProfile RepresentativeUserProfile { get; set; }
@@ -37,6 +38,12 @@ namespace VideoWeb.UnitTests.Hub
 
         private Conference Conference { get; set; }
 
+        private Mock<IConferenceCache> ConferenceCache { get; set; }
+
+        private Guid IndividualParticipantId { get; set; }
+        private Guid JudgeParticipantId { get; set; }
+        private Guid RepresentativeParticipantId { get; set; }
+
         [Test]
         public async Task
             should_send_message_to_admin_group_and_participant_group_when_judge_sends_message_to_default_admin()
@@ -46,6 +53,7 @@ namespace VideoWeb.UnitTests.Hub
             var claims = new ClaimsPrincipalBuilder().WithUsername(JudgeUsername).WithRole(AppRoles.JudgeRole).Build();
             UpdateUserIdentity(claims);
 
+            var fromJudgeId = JudgeParticipantId.ToString();
             var fromUsername = JudgeUsername;
             var toUsername = EventHub.Hub.EventHub.DefaultAdminName;
             const string message = "test message";
@@ -53,7 +61,9 @@ namespace VideoWeb.UnitTests.Hub
 
             await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid);
 
-            AssertMessageSentToHubAndApi(fromUsername, toUsername, message, messageUuid, JudgeGroupChannel);
+            AssertMessageSentToHub(fromJudgeId, toUsername, message, messageUuid, JudgeGroupChannel);
+            AssertMessageSentStatusToApi(fromUsername, toUsername, message, Times.Once());
+
             AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id, toUsername), Times.Never);
         }
 
@@ -67,6 +77,7 @@ namespace VideoWeb.UnitTests.Hub
                 .Build();
             UpdateUserIdentity(claims);
 
+            var fromIndividualId = IndividualParticipantId.ToString();
             var fromUsername = IndividualUsername;
             var toUsername = EventHub.Hub.EventHub.DefaultAdminName;
             const string message = "test message";
@@ -74,7 +85,9 @@ namespace VideoWeb.UnitTests.Hub
 
             await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid);
 
-            AssertMessageSentToHubAndApi(fromUsername, toUsername, message, messageUuid, IndividualGroupChannel);
+            AssertMessageSentToHub(fromIndividualId, toUsername, message, messageUuid, IndividualGroupChannel);
+            AssertMessageSentStatusToApi(fromUsername, toUsername, message, Times.Once());
+
             AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id, toUsername), Times.Never);
         }
 
@@ -85,7 +98,7 @@ namespace VideoWeb.UnitTests.Hub
             // setup claims to return judge username
             var claims = new ClaimsPrincipalBuilder().WithUsername(JudgeUsername).WithRole(AppRoles.JudgeRole).Build();
             UpdateUserIdentity(claims);
-
+            var fromJudgeId = JudgeParticipantId.ToString();
             var fromUsername = JudgeUsername;
             var toUsername = AdminUserProfile.User_name;
             const string message = "test message";
@@ -93,7 +106,9 @@ namespace VideoWeb.UnitTests.Hub
 
             await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid);
 
-            AssertMessageSentToHubAndApi(fromUsername, toUsername, message, messageUuid, JudgeGroupChannel);
+            AssertMessageSentToHub(fromJudgeId, toUsername, message, messageUuid, JudgeGroupChannel);
+            AssertMessageSentStatusToApi(fromUsername, toUsername, message, Times.Once());
+
             AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id, toUsername), Times.Never);
         }
 
@@ -107,6 +122,7 @@ namespace VideoWeb.UnitTests.Hub
                 .Build();
             UpdateUserIdentity(claims);
 
+            var fromIndividualId = IndividualParticipantId.ToString();
             var fromUsername = IndividualUsername;
             var toUsername = AdminUserProfile.User_name;
             const string message = "test message";
@@ -114,7 +130,9 @@ namespace VideoWeb.UnitTests.Hub
 
             await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid);
 
-            AssertMessageSentToHubAndApi(fromUsername, toUsername, message, messageUuid, IndividualGroupChannel);
+            AssertMessageSentToHub(fromIndividualId, toUsername, message, messageUuid, IndividualGroupChannel);
+            AssertMessageSentStatusToApi(fromUsername, toUsername, message, Times.Once());
+
             AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id, toUsername), Times.Never);
         }
 
@@ -127,15 +145,19 @@ namespace VideoWeb.UnitTests.Hub
                 .Build();
             UpdateUserIdentity(claims);
 
+
             var fromUsername = AdminUsername;
+            var toJudgeId = JudgeParticipantId;
             var toUsername = JudgeUsername;
             const string message = "test message";
             var messageUuid = Guid.NewGuid();
 
-            await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid);
+            await Hub.SendMessage(Conference.Id, message, toJudgeId.ToString(), messageUuid);
 
-            AssertMessageSentToHubAndApi(fromUsername, toUsername, message, messageUuid, JudgeGroupChannel);
-            AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id, toUsername), Times.Once);
+            AssertMessageSentToHub(fromUsername, toJudgeId.ToString(), message, messageUuid, JudgeGroupChannel);
+            AssertMessageSentStatusToApi(fromUsername, toUsername, message, Times.Once());
+
+            AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id, JudgeUsername), Times.Once);
         }
 
         [Test]
@@ -147,6 +169,7 @@ namespace VideoWeb.UnitTests.Hub
             var claims = new ClaimsPrincipalBuilder().WithUsername(JudgeUsername).WithRole(AppRoles.JudgeRole).Build();
             UpdateUserIdentity(claims);
 
+            var fromParticipantId = Guid.NewGuid().ToString();
             var fromUsername = "does@notexist.com";
             var toUsername = EventHub.Hub.EventHub.DefaultAdminName;
             const string message = "test message";
@@ -154,8 +177,8 @@ namespace VideoWeb.UnitTests.Hub
 
             await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid);
 
-            AssertMessageNotSentToHubOrApi(fromUsername, toUsername, message, messageUuid, JudgeGroupChannel);
-            AssertMessageNotSentToHubOrApi(fromUsername, toUsername, message, messageUuid, IndividualGroupChannel);
+            AssertMessageNotSentToHub(fromParticipantId, toUsername, message, messageUuid, JudgeGroupChannel);
+            AssertMessageNotSentToApi(fromUsername, toUsername, message);
             AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id, toUsername), Times.Never);
         }
 
@@ -171,13 +194,14 @@ namespace VideoWeb.UnitTests.Hub
 
             var fromUsername = AdminUsername;
             var toUsername = "does@notexist.com";
+            var toParticipantId = Guid.NewGuid().ToString();
             const string message = "test message";
             var messageUuid = Guid.NewGuid();
 
             await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid);
 
-            AssertMessageNotSentToHubOrApi(fromUsername, toUsername, message, messageUuid, JudgeGroupChannel);
-            AssertMessageNotSentToHubOrApi(fromUsername, toUsername, message, messageUuid, IndividualGroupChannel);
+            AssertMessageNotSentToHub(fromUsername, toParticipantId, message, messageUuid, JudgeGroupChannel);
+            AssertMessageNotSentToApi(fromUsername, toUsername, message);
             AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id, toUsername), Times.Never);
         }
 
@@ -191,15 +215,17 @@ namespace VideoWeb.UnitTests.Hub
                 .Build();
             UpdateUserIdentity(claims);
 
+            var fromParticipantId = RepresentativeParticipantId.ToString();
             var fromUsername = RepresentativeUsername;
+            var toParticipantId = IndividualParticipantId.ToString();
             var toUsername = IndividualUsername;
             const string message = "test message";
             var messageUuid = Guid.NewGuid();
 
             await Hub.SendMessage(Conference.Id, message, toUsername, messageUuid);
 
-            AssertMessageNotSentToHubOrApi(fromUsername, toUsername, message, messageUuid, IndividualGroupChannel);
-            AssertMessageNotSentToHubOrApi(fromUsername, toUsername, message, messageUuid, RepresentativeGroupChannel);
+            AssertMessageNotSentToHub(fromParticipantId, toParticipantId, message, messageUuid, IndividualGroupChannel);
+            AssertMessageNotSentToApi(fromUsername, toUsername, message);
             AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id, toUsername), Times.Never);
 
             LoggerMock.Verify(
@@ -208,14 +234,14 @@ namespace VideoWeb.UnitTests.Hub
                     It.IsAny<EventId>(),
                     It.IsAny<It.IsAnyType>(),
                     It.IsAny<InvalidInstantMessageException>(),
-                    (Func<It.IsAnyType, Exception, string>) It.IsAny<object>()),
+                    (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()),
                 Times.Once);
         }
 
-        private void AssertMessageSentToHubAndApi(string fromUsername, string toUsername, string message,
+        private void AssertMessageSentToHub(string fromUsername, string toUsername, string message,
             Guid messageUuid, Mock<IEventHubClient> userChannel)
         {
-            AssertMessageSentStatusToHubAndApi(fromUsername, toUsername, message, messageUuid, userChannel,
+            AssertMessageSentStatusToHub(fromUsername, toUsername, message, messageUuid, userChannel,
                 Times.Once());
 
             // ensure other participants didn't receive the message
@@ -230,14 +256,20 @@ namespace VideoWeb.UnitTests.Hub
             }
         }
 
-        private void AssertMessageNotSentToHubOrApi(string fromUsername, string toUsername, string message,
+        private void AssertMessageNotSentToHub(string fromUsername, string toUsername, string message,
             Guid messageUuid, Mock<IEventHubClient> userChannel)
         {
-            AssertMessageSentStatusToHubAndApi(fromUsername, toUsername, message, messageUuid, userChannel,
+            AssertMessageSentStatusToHub(fromUsername, toUsername, message, messageUuid, userChannel,
                 Times.Never());
         }
 
-        private void AssertMessageSentStatusToHubAndApi(string fromUsername, string toUsername, string message,
+        private void AssertMessageNotSentToApi(string fromUsername, string toUsername, string message)
+        {
+            AssertMessageSentStatusToApi(fromUsername, toUsername, message, Times.Never());
+        }
+
+
+        private void AssertMessageSentStatusToHub(string fromUsername, string toUsername, string message,
             Guid messageUuid,
             Mock<IEventHubClient> userChannel, Times times)
         {
@@ -253,6 +285,10 @@ namespace VideoWeb.UnitTests.Hub
                         messageUuid),
                 times);
 
+        }
+
+        private void AssertMessageSentStatusToApi(string fromUsername, string toUsername, string message, Times times)
+        {
             VideoApiClientMock.Verify(x => x.AddInstantMessageToConferenceAsync(
                     It.Is<Guid>(c => c == Conference.Id),
                     It.Is<AddInstantMessageRequest>(
@@ -260,6 +296,7 @@ namespace VideoWeb.UnitTests.Hub
                     ))
                 , times);
         }
+
 
         private void SetupSendMessageTests()
         {
@@ -279,6 +316,7 @@ namespace VideoWeb.UnitTests.Hub
             IndividualGroupChannel = new Mock<IEventHubClient>();
             RepresentativeGroupChannel = new Mock<IEventHubClient>();
             AdminGroupChannel = new Mock<IEventHubClient>();
+            ConferenceCache = new Mock<IConferenceCache>();
 
             UserProfileServiceMock.Setup(x => x.GetUserAsync(JudgeUsername)).ReturnsAsync(JudgeUserProfile);
             UserProfileServiceMock.Setup(x => x.GetUserAsync(IndividualUsername)).ReturnsAsync(IndividualUserProfile);
@@ -290,6 +328,10 @@ namespace VideoWeb.UnitTests.Hub
             var individual = Conference.Participants.First(p => p.Role == Role.Individual);
             var representative = Conference.Participants.First(p => p.Role == Role.Representative);
 
+            IndividualParticipantId = individual.Id;
+            JudgeParticipantId = judge.Id;
+            RepresentativeParticipantId = representative.Id;
+
             EventHubClientMock.Setup(x => x.Group(EventHub.Hub.EventHub.VhOfficersGroupName))
                 .Returns(AdminGroupChannel.Object);
             EventHubClientMock.Setup(x => x.Group(Conference.Id.ToString())).Returns(ConferenceGroupChannel.Object);
@@ -298,6 +340,11 @@ namespace VideoWeb.UnitTests.Hub
                 .Returns(IndividualGroupChannel.Object);
             EventHubClientMock.Setup(x => x.Group(representative.Username.ToLowerInvariant()))
                 .Returns(RepresentativeGroupChannel.Object);
+
+            ConferenceCache
+           .Setup(x => x.GetOrAddConferenceAsync(Conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+           .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+           .ReturnsAsync(Conference);
         }
 
         private Conference InitConference()

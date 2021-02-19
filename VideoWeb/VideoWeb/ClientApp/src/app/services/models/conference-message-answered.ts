@@ -1,3 +1,3 @@
 export class ConferenceMessageAnswered {
-    constructor(public conferenceId: string, public particpantUsername: string) {}
+    constructor(public conferenceId: string, public participantId: string) {}
 }

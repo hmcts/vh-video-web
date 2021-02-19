@@ -6,6 +6,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { PageTrackerService } from 'src/app/services/page-tracker.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { ConnectionStatusService } from 'src/app/services/connection-status.service';
+import { ErrorMessage } from '../models/error-message';
 
 @Component({
     selector: 'app-error',
@@ -23,6 +24,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
     showReconnect: boolean;
     attemptingReconnect: boolean;
     isExtensionOrFirewallIssue = false;
+    hasLostInternet = false;
 
     constructor(
         private router: Router,
@@ -37,7 +39,8 @@ export class ErrorComponent implements OnInit, OnDestroy {
     }
 
     get hasInternetConnection(): boolean {
-        return this.connectionStatusService.status;
+        this.hasLostInternet = this.hasLostInternet || !this.connectionStatusService.status;
+        return !this.hasLostInternet;
     }
 
     ngOnInit(): void {
@@ -71,7 +74,10 @@ export class ErrorComponent implements OnInit, OnDestroy {
 
     private getErrorMessage(): void {
         const defaultBodyMessage = 'Please reconnect. Call us if you keep seeing this message.';
-        const dto = this.errorService.getErrorMessageFromStorage();
+        const defaultTitle = `There's a problem with your connection`;
+        const dto = this.hasInternetConnection
+            ? this.errorService.getErrorMessageFromStorage()
+            : new ErrorMessage(defaultTitle, defaultBodyMessage, true);
         this.errorMessageTitle = dto?.title;
         this.isExtensionOrFirewallIssue = this.errorMessageTitle === 'FirewallProblem';
         this.errorMessageBody = dto?.body ? dto.body : defaultBodyMessage;
@@ -85,7 +91,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
             return;
         }
         this.attemptingReconnect = true;
-        if (this.hasInternetConnection) {
+        if (this.connectionStatusService.status) {
             const previousPage = this.pageTracker.getPreviousUrl();
             this.logger.debug(`${this.loggerPrefix} Internet connection detected. Navigating to previous page`, {
                 returnUrl: previousPage

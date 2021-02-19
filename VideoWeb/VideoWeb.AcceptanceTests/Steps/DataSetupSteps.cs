@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Threading;
 using AcceptanceTests.Common.Api.Helpers;
 using FluentAssertions;
 using NUnit.Framework;
@@ -26,13 +25,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         private const int ALLOCATE_USERS_FOR_HEARING_TESTS = 15;
         private readonly TestContext _c;
         private readonly ScenarioContext _scenario;
-        private readonly Random _random;
 
         public DataSetupSteps(TestContext c, ScenarioContext scenario)
         {
             _c = c;
             _scenario = scenario;
-            _random = new Random();
         }
 
         [Given(@"I have a hearing")]
@@ -205,7 +202,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             var request = new UpdateBookingStatusRequest()
             {
                 Updated_by = vho.Username,
-                AdditionalProperties = null,
                 Cancel_reason = null,
                 Status = UpdateBookingStatus.Created
             };
@@ -267,9 +263,6 @@ namespace VideoWeb.AcceptanceTests.Steps
                 User_types = userTypes
             };
 
-            // Prevent getting same user
-            Thread.Sleep(TimeSpan.FromSeconds(GetRandomNumberForParallelExecution(15)));
-
             var response = _c.Apis.TestApi.AllocateUsers(request);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             response.Should().NotBeNull();
@@ -277,11 +270,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             users.Should().NotBeNullOrEmpty();
             _c.Test.Users = UserDetailsResponseToUsersMapper.Map(users);
             _c.Test.Users.Should().NotBeNullOrEmpty();
-        }
-
-        private double GetRandomNumberForParallelExecution(int maximum)
-        {
-            return _random.NextDouble() * maximum;
         }
     }
 }

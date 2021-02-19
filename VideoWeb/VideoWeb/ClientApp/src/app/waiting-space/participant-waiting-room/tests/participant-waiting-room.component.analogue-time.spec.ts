@@ -14,6 +14,7 @@ import {
     initAllWRDependencies,
     logger,
     notificationSoundsService,
+    notificationToastrService,
     router,
     userMediaService,
     userMediaStreamService,
@@ -42,10 +43,11 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
             deviceTypeService,
             router,
             consultationService,
-            clockService,
             userMediaService,
             userMediaStreamService,
-            notificationSoundsService
+            notificationSoundsService,
+            notificationToastrService,
+            clockService
         );
     });
 

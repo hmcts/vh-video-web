@@ -29,10 +29,6 @@ export class Participant {
         return this.participant.case_type_group;
     }
 
-    get username() {
-        return this.participant.username;
-    }
-
     get status(): ParticipantStatus {
         return this.participant.status;
     }
@@ -51,5 +47,9 @@ export class Participant {
 
     get representee(): string {
         return this.participant.representee;
+    }
+
+    get hearingRoleText(): string {
+        return this.representee ? `${this.base.hearing_role} for ${this.representee}` : this.base.hearing_role;
     }
 }

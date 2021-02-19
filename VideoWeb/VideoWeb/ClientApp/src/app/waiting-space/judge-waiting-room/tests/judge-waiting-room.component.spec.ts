@@ -1,20 +1,19 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import {
     ConferenceResponse,
     ConferenceStatus,
     HearingLayout,
+    LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus
 } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
-import { SelectedUserMediaDevice } from '../../../shared/models/selected-user-media-device';
-import { UserMediaDevice } from '../../../shared/models/user-media-device';
-import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
 import {
-    activatedRoute,
     adalService,
+    clockService,
     consultationService,
     deviceTypeService,
     errorService,
@@ -25,6 +24,7 @@ import {
     initAllWRDependencies,
     logger,
     notificationSoundsService,
+    notificationToastrService,
     router,
     userMediaService,
     userMediaStreamService,
@@ -36,14 +36,23 @@ import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
     let audioRecordingService: jasmine.SpyObj<AudioRecordingService>;
-
+    let activatedRoute: ActivatedRoute;
+    let logged: LoggedParticipantResponse;
     beforeAll(() => {
         initAllWRDependencies();
         audioRecordingService = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
-        videoCallService.retrieveVideoCallPreferences.and.returnValue(new VideoCallPreferences());
     });
 
     beforeEach(async () => {
+        logged = new LoggedParticipantResponse({
+            participant_id: globalParticipant.id,
+            display_name: globalParticipant.display_name,
+            role: globalParticipant.role
+        });
+        activatedRoute = <any>{
+            snapshot: { data: { loggedUser: logged }, paramMap: convertToParamMap({ conferenceId: globalConference.id }) }
+        };
+
         userMediaService.setDefaultDevicesInCache.and.returnValue(Promise.resolve());
         component = new JudgeWaitingRoomComponent(
             activatedRoute,
@@ -60,7 +69,9 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             audioRecordingService,
             userMediaService,
             userMediaStreamService,
-            notificationSoundsService
+            notificationSoundsService,
+            notificationToastrService,
+            clockService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
@@ -294,21 +305,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         component.showChooseCameraDialog();
         expect(component.displayDeviceChangeModal).toBe(true);
     });
-    it('should hide change device popup on close popup', () => {
-        component.displayDeviceChangeModal = true;
-        component.onMediaDeviceChangeCancelled();
-        expect(component.displayDeviceChangeModal).toBe(false);
-    });
-    it('should change device on select device', () => {
-        const device = new SelectedUserMediaDevice(
-            new UserMediaDevice('camera1', 'id3445', 'videoinput', '1'),
-            new UserMediaDevice('microphone', 'id123', 'audioinput', '1')
-        );
-        component.onMediaDeviceChangeAccepted(device);
-        expect(userMediaService.updatePreferredCamera).toHaveBeenCalled();
-        expect(userMediaService.updatePreferredMicrophone).toHaveBeenCalled();
-        expect(videoCallService.makeCall).toHaveBeenCalled();
-    });
 
     it('should on consultation accept stop streams for devices and close choose device popup', async () => {
         component.displayDeviceChangeModal = true;
@@ -348,28 +344,28 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
     it('should not enable IM when hearing has not been initalised', () => {
         component.hearing = null;
-        expect(component.isIMEnabled()).toBeFalsy();
+        expect(component.defineIsIMEnabled()).toBeFalsy();
     });
 
     it('should not enable IM when participant is in a consultation', () => {
         component.participant.status = ParticipantStatus.InConsultation;
-        expect(component.isIMEnabled()).toBeFalsy();
+        expect(component.defineIsIMEnabled()).toBeFalsy();
     });
 
     it('should enable IM for non ipad devices', () => {
         deviceTypeService.isIpad.and.returnValue(false);
-        expect(component.isIMEnabled()).toBeTruthy();
+        expect(component.defineIsIMEnabled()).toBeTruthy();
     });
 
     it('should enable IM for ipad devices and video is not on screen', () => {
         deviceTypeService.isIpad.and.returnValue(true);
         component.showVideo = false;
-        expect(component.isIMEnabled()).toBeTruthy();
+        expect(component.defineIsIMEnabled()).toBeTruthy();
     });
 
     it('should not enable IM for ipad devices and video is on screen', () => {
         deviceTypeService.isIpad.and.returnValue(true);
         component.showVideo = true;
-        expect(component.isIMEnabled()).toBeFalsy();
+        expect(component.defineIsIMEnabled()).toBeFalsy();
     });
 });

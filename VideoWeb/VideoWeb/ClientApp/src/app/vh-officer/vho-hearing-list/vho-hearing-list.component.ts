@@ -49,7 +49,7 @@ export class VhoHearingListComponent implements OnInit {
     mapToHearingWithParticipants(conference: HearingSummary): Hearing {
         const participants = conference
             .getParticipants()
-            .map(x => new ParticipantResponseVho({ id: x.id, name: x.displayName, username: x.username, role: x.role }));
+            .map(x => new ParticipantResponseVho({ id: x.id, name: x.displayName, role: x.role }));
         return this.mapToHearing(conference, participants);
     }
 }

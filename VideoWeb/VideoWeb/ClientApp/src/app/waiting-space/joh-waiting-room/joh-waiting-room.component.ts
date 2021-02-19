@@ -1,8 +1,6 @@
-import { HostListener } from '@angular/core';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
-import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
@@ -15,8 +13,8 @@ import { ConferenceStatusMessage } from 'src/app/services/models/conference-stat
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
-import { pageUrls } from 'src/app/shared/page-url.constants';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
+import { NotificationToastrService } from '../services/notification-toastr.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
 
@@ -27,10 +25,6 @@ import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-ba
 })
 export class JohWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
     private readonly loggerPrefixJOH = '[JOH WR] -';
-
-    hearingStartingAnnounced: boolean;
-    clockSubscription$: Subscription;
-    currentTime: Date;
 
     constructor(
         protected route: ActivatedRoute,
@@ -44,10 +38,11 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseComponent implements
         protected deviceTypeService: DeviceTypeService,
         protected router: Router,
         protected consultationService: ConsultationService,
-        private clockService: ClockService,
         protected userMediaService: UserMediaService,
         protected userMediaStreamService: UserMediaStreamService,
-        protected notificationSoundsService: NotificationSoundsService
+        protected notificationSoundsService: NotificationSoundsService,
+        protected notificationToastrService: NotificationToastrService,
+        protected clockService: ClockService
     ) {
         super(
             route,
@@ -63,7 +58,9 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseComponent implements
             consultationService,
             userMediaService,
             userMediaStreamService,
-            notificationSoundsService
+            notificationSoundsService,
+            notificationToastrService,
+            clockService
         );
     }
 
@@ -72,38 +69,14 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseComponent implements
         this.errorCount = 0;
         this.logger.debug(`${this.loggerPrefixJOH} Loading JOH waiting room`);
         this.connected = false;
+        this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.notificationSoundsService.initHearingAlertSound();
         this.getConference().then(() => {
             this.subscribeToClock();
             this.startEventHubSubscribers();
+            this.participant = this.setLoggedParticipant();
             this.getJwtokenAndConnectToPexip();
         });
-    }
-
-    subscribeToClock(): void {
-        this.clockSubscription$ = this.clockService.getClock().subscribe(time => {
-            this.currentTime = time;
-            this.checkIfHearingIsClosed();
-            this.checkIfHearingIsStarting();
-        });
-    }
-
-    checkIfHearingIsStarting(): void {
-        if (this.hearing.isStarting() && !this.hearingStartingAnnounced) {
-            this.announceHearingIsAboutToStart();
-        }
-    }
-
-    checkIfHearingIsClosed(): void {
-        if (this.hearing.isPastClosedTime()) {
-            this.clockSubscription$.unsubscribe();
-            this.router.navigate([pageUrls.ParticipantHearingList]);
-        }
-    }
-
-    async announceHearingIsAboutToStart(): Promise<void> {
-        this.hearingStartingAnnounced = true;
-        await this.notificationSoundsService.playHearingAlertSound();
     }
 
     getConferenceStatusText(): string {

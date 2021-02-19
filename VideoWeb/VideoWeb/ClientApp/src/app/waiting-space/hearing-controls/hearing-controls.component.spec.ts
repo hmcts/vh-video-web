@@ -187,7 +187,7 @@ describe('HearingControlsComponent', () => {
     it('should not reset mute when participant status to available', () => {
         spyOn(component, 'resetMute').and.callThrough();
         const status = ParticipantStatus.Available;
-        const message = new ParticipantStatusMessage(globalParticipant.id, globalParticipant.username, gloalConference.id, status);
+        const message = new ParticipantStatusMessage(globalParticipant.id, '', gloalConference.id, status);
 
         participantStatusSubject.next(message);
 
@@ -198,7 +198,7 @@ describe('HearingControlsComponent', () => {
         spyOn(component, 'resetMute').and.callThrough();
         const status = ParticipantStatus.InConsultation;
         const participant = globalParticipant;
-        const message = new ParticipantStatusMessage(participant.id, participant.username, gloalConference.id, status);
+        const message = new ParticipantStatusMessage(participant.id, '', gloalConference.id, status);
 
         participantStatusSubject.next(message);
 
@@ -209,7 +209,7 @@ describe('HearingControlsComponent', () => {
         spyOn(component, 'resetMute').and.callThrough();
         const status = ParticipantStatus.InConsultation;
         const participant = gloalConference.participants.filter(x => x.role === Role.Representative)[0];
-        const message = new ParticipantStatusMessage(participant.id, participant.username, gloalConference.id, status);
+        const message = new ParticipantStatusMessage(participant.id, '', gloalConference.id, status);
 
         participantStatusSubject.next(message);
 
@@ -356,8 +356,8 @@ describe('HearingControlsComponent', () => {
     });
 
     it('should emit when leave button has been clicked', () => {
-        spyOn(component.leaveConsulation, 'emit');
+        spyOn(component.leaveConsultation, 'emit');
         component.leavePrivateConsultation();
-        expect(component.leaveConsulation.emit).toHaveBeenCalled();
+        expect(component.leaveConsultation.emit).toHaveBeenCalled();
     });
 });

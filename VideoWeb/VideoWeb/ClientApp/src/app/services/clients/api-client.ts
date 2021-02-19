@@ -1069,92 +1069,10 @@ export class ApiClient {
     }
 
     /**
-     * Raise or answer to a private consultation request with another participant
-     * @param body (optional) Private consultation request with or without an answer
-     * @return Success
-     */
-    handleConsultationRequest(body: PrivateConsultationRequest | undefined): Observable<void> {
-        let url_ = this.baseUrl + '/consultations';
-        url_ = url_.replace(/[?&]$/, '');
-
-        const content_ = JSON.stringify(body);
-
-        let options_: any = {
-            body: content_,
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
-            })
-        };
-
-        return this.http
-            .request('post', url_, options_)
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processHandleConsultationRequest(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processHandleConsultationRequest(<any>response_);
-                        } catch (e) {
-                            return <Observable<void>>(<any>_observableThrow(e));
-                        }
-                    } else return <Observable<void>>(<any>_observableThrow(response_));
-                })
-            );
-    }
-
-    protected processHandleConsultationRequest(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return _observableOf<void>(<any>null);
-                })
-            );
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result400: any = null;
-                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = BadRequestModelResponse.fromJS(resultData400);
-                    return throwException('Bad Request', status, _responseText, _headers, result400);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<void>(<any>null);
-    }
-
-    /**
      * @param body (optional)
      * @return Success
      */
-    leavePrivateConsultation(body: LeavePrivateConsultationRequest | undefined): Observable<void> {
+    leaveConsultation(body: LeavePrivateConsultationRequest | undefined): Observable<void> {
         let url_ = this.baseUrl + '/consultations/leave';
         url_ = url_.replace(/[?&]$/, '');
 
@@ -1173,14 +1091,14 @@ export class ApiClient {
             .request('post', url_, options_)
             .pipe(
                 _observableMergeMap((response_: any) => {
-                    return this.processLeavePrivateConsultation(response_);
+                    return this.processLeaveConsultation(response_);
                 })
             )
             .pipe(
                 _observableCatch((response_: any) => {
                     if (response_ instanceof HttpResponseBase) {
                         try {
-                            return this.processLeavePrivateConsultation(<any>response_);
+                            return this.processLeaveConsultation(<any>response_);
                         } catch (e) {
                             return <Observable<void>>(<any>_observableThrow(e));
                         }
@@ -1189,7 +1107,7 @@ export class ApiClient {
             );
     }
 
-    protected processLeavePrivateConsultation(response: HttpResponseBase): Observable<void> {
+    protected processLeaveConsultation(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
@@ -1244,8 +1162,8 @@ export class ApiClient {
      * @param body (optional)
      * @return Success
      */
-    respondToAdminConsultationRequest(body: PrivateAdminConsultationRequest | undefined): Observable<void> {
-        let url_ = this.baseUrl + '/consultations/vhofficer/respond';
+    respondToConsultationRequest(body: PrivateConsultationRequest | undefined): Observable<void> {
+        let url_ = this.baseUrl + '/consultations/respond';
         url_ = url_.replace(/[?&]$/, '');
 
         const content_ = JSON.stringify(body);
@@ -1263,14 +1181,14 @@ export class ApiClient {
             .request('post', url_, options_)
             .pipe(
                 _observableMergeMap((response_: any) => {
-                    return this.processRespondToAdminConsultationRequest(response_);
+                    return this.processRespondToConsultationRequest(response_);
                 })
             )
             .pipe(
                 _observableCatch((response_: any) => {
                     if (response_ instanceof HttpResponseBase) {
                         try {
-                            return this.processRespondToAdminConsultationRequest(<any>response_);
+                            return this.processRespondToConsultationRequest(<any>response_);
                         } catch (e) {
                             return <Observable<void>>(<any>_observableThrow(e));
                         }
@@ -1279,7 +1197,7 @@ export class ApiClient {
             );
     }
 
-    protected processRespondToAdminConsultationRequest(response: HttpResponseBase): Observable<void> {
+    protected processRespondToConsultationRequest(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
@@ -1514,8 +1432,8 @@ export class ApiClient {
      * @param body (optional)
      * @return Success
      */
-    leaveConsultation(body: LeavePrivateConsultationRequest | undefined): Observable<void> {
-        let url_ = this.baseUrl + '/consultations/end';
+    lockConsultationRoomRequest(body: LockConsultationRoomRequest | undefined): Observable<void> {
+        let url_ = this.baseUrl + '/consultations/lock';
         url_ = url_.replace(/[?&]$/, '');
 
         const content_ = JSON.stringify(body);
@@ -1533,14 +1451,14 @@ export class ApiClient {
             .request('post', url_, options_)
             .pipe(
                 _observableMergeMap((response_: any) => {
-                    return this.processLeaveConsultation(response_);
+                    return this.processLockConsultationRoomRequest(response_);
                 })
             )
             .pipe(
                 _observableCatch((response_: any) => {
                     if (response_ instanceof HttpResponseBase) {
                         try {
-                            return this.processLeaveConsultation(<any>response_);
+                            return this.processLockConsultationRoomRequest(<any>response_);
                         } catch (e) {
                             return <Observable<void>>(<any>_observableThrow(e));
                         }
@@ -1549,7 +1467,7 @@ export class ApiClient {
             );
     }
 
-    protected processLeaveConsultation(response: HttpResponseBase): Observable<void> {
+    protected processLockConsultationRoomRequest(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
@@ -1560,7 +1478,97 @@ export class ApiClient {
                 _headers[key] = response.headers.get(key);
             }
         }
-        if (status === 200) {
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return _observableOf<void>(<any>null);
+                })
+            );
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result404: any = null;
+                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result404 = ProblemDetails.fromJS(resultData404);
+                    return throwException('Not Found', status, _responseText, _headers, result404);
+                })
+            );
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result400: any = null;
+                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result400 = ProblemDetails.fromJS(resultData400);
+                    return throwException('Bad Request', status, _responseText, _headers, result400);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
+     * @param body (optional)
+     * @return Success
+     */
+    inviteToConsultation(body: InviteToConsultationRequest | undefined): Observable<void> {
+        let url_ = this.baseUrl + '/consultations/invite';
+        url_ = url_.replace(/[?&]$/, '');
+
+        const content_ = JSON.stringify(body);
+
+        let options_: any = {
+            body: content_,
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json-patch+json'
+            })
+        };
+
+        return this.http
+            .request('post', url_, options_)
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processInviteToConsultation(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processInviteToConsultation(<any>response_);
+                        } catch (e) {
+                            return <Observable<void>>(<any>_observableThrow(e));
+                        }
+                    } else return <Observable<void>>(<any>_observableThrow(response_));
+                })
+            );
+    }
+
+    protected processInviteToConsultation(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 202) {
             return blobToText(responseBlob).pipe(
                 _observableMergeMap(_responseText => {
                     return _observableOf<void>(<any>null);
@@ -1760,16 +1768,15 @@ export class ApiClient {
     /**
      * Get all the instant messages for a conference for a participant
      * @param conferenceId Id of the conference
-     * @param participantUsername the participant in the conference
+     * @param participantId the participant in the conference
      * @return Success
      */
-    getConferenceInstantMessageHistoryForParticipant(conferenceId: string, participantUsername: string): Observable<ChatResponse[]> {
-        let url_ = this.baseUrl + '/conferences/{conferenceId}/instantmessages/participant/{participantUsername}';
+    getConferenceInstantMessageHistoryForParticipant(conferenceId: string, participantId: string): Observable<ChatResponse[]> {
+        let url_ = this.baseUrl + '/conferences/{conferenceId}/instantmessages/participant/{participantId}';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
-        if (participantUsername === undefined || participantUsername === null)
-            throw new Error("The parameter 'participantUsername' must be defined.");
-        url_ = url_.replace('{participantUsername}', encodeURIComponent('' + participantUsername));
+        if (participantId === undefined || participantId === null) throw new Error("The parameter 'participantId' must be defined.");
+        url_ = url_.replace('{participantId}', encodeURIComponent('' + participantId));
         url_ = url_.replace(/[?&]$/, '');
 
         let options_: any = {
@@ -1928,19 +1935,18 @@ export class ApiClient {
     /**
      * Get number of unread messages for a participant
      * @param conferenceId Id of the conference
-     * @param participantUsername the participant in the conference
+     * @param participantId the participant in the conference
      * @return Success
      */
     getNumberOfUnreadAdminMessagesForConferenceByParticipant(
         conferenceId: string,
-        participantUsername: string
+        participantId: string
     ): Observable<UnreadAdminMessageResponse> {
-        let url_ = this.baseUrl + '/conferences/{conferenceId}/instantmessages/unread/participant/{participantUsername}';
+        let url_ = this.baseUrl + '/conferences/{conferenceId}/instantmessages/unread/participant/{participantId}';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
-        if (participantUsername === undefined || participantUsername === null)
-            throw new Error("The parameter 'participantUsername' must be defined.");
-        url_ = url_.replace('{participantUsername}', encodeURIComponent('' + participantUsername));
+        if (participantId === undefined || participantId === null) throw new Error("The parameter 'participantId' must be defined.");
+        url_ = url_.replace('{participantId}', encodeURIComponent('' + participantId));
         url_ = url_.replace(/[?&]$/, '');
 
         let options_: any = {
@@ -2809,6 +2815,88 @@ export class ApiClient {
             );
         }
         return _observableOf<ParticipantForUserResponse[]>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    getCurrentParticipant(conferenceId: string): Observable<LoggedParticipantResponse> {
+        let url_ = this.baseUrl + '/conferences/{conferenceId}/currentparticipant';
+        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({
+                Accept: 'application/json'
+            })
+        };
+
+        return this.http
+            .request('get', url_, options_)
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processGetCurrentParticipant(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processGetCurrentParticipant(<any>response_);
+                        } catch (e) {
+                            return <Observable<LoggedParticipantResponse>>(<any>_observableThrow(e));
+                        }
+                    } else return <Observable<LoggedParticipantResponse>>(<any>_observableThrow(response_));
+                })
+            );
+    }
+
+    protected processGetCurrentParticipant(response: HttpResponseBase): Observable<LoggedParticipantResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result200: any = null;
+                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result200 = LoggedParticipantResponse.fromJS(resultData200);
+                    return _observableOf(result200);
+                })
+            );
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result404: any = null;
+                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result404 = ProblemDetails.fromJS(resultData404);
+                    return throwException('Not Found', status, _responseText, _headers, result404);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<LoggedParticipantResponse>(<any>null);
     }
 
     /**
@@ -3813,6 +3901,7 @@ export class ConferenceForJudgeResponse implements IConferenceForJudgeResponse {
     /** Conference UUID */
     id?: string;
     scheduled_date_time?: Date;
+    closed_date_time?: Date | undefined;
     scheduled_duration?: number;
     case_type?: string | undefined;
     case_number?: string | undefined;
@@ -3835,6 +3924,7 @@ export class ConferenceForJudgeResponse implements IConferenceForJudgeResponse {
         if (_data) {
             this.id = _data['id'];
             this.scheduled_date_time = _data['scheduled_date_time'] ? new Date(_data['scheduled_date_time'].toString()) : <any>undefined;
+            this.closed_date_time = _data['closed_date_time'] ? new Date(_data['closed_date_time'].toString()) : <any>undefined;
             this.scheduled_duration = _data['scheduled_duration'];
             this.case_type = _data['case_type'];
             this.case_number = _data['case_number'];
@@ -3859,6 +3949,7 @@ export class ConferenceForJudgeResponse implements IConferenceForJudgeResponse {
         data = typeof data === 'object' ? data : {};
         data['id'] = this.id;
         data['scheduled_date_time'] = this.scheduled_date_time ? this.scheduled_date_time.toISOString() : <any>undefined;
+        data['closed_date_time'] = this.closed_date_time ? this.closed_date_time.toISOString() : <any>undefined;
         data['scheduled_duration'] = this.scheduled_duration;
         data['case_type'] = this.case_type;
         data['case_number'] = this.case_number;
@@ -3877,6 +3968,7 @@ export interface IConferenceForJudgeResponse {
     /** Conference UUID */
     id?: string;
     scheduled_date_time?: Date;
+    closed_date_time?: Date | undefined;
     scheduled_duration?: number;
     case_type?: string | undefined;
     case_number?: string | undefined;
@@ -3958,13 +4050,54 @@ export enum ParticipantStatus {
     Disconnected = 'Disconnected'
 }
 
+export class RoomSummaryResponse implements IRoomSummaryResponse {
+    /** Room label */
+    label?: string | undefined;
+    /** Is the room locked */
+    locked?: boolean;
+
+    constructor(data?: IRoomSummaryResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.label = _data['label'];
+            this.locked = _data['locked'];
+        }
+    }
+
+    static fromJS(data: any): RoomSummaryResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new RoomSummaryResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['label'] = this.label;
+        data['locked'] = this.locked;
+        return data;
+    }
+}
+
+export interface IRoomSummaryResponse {
+    /** Room label */
+    label?: string | undefined;
+    /** Is the room locked */
+    locked?: boolean;
+}
+
 export class ParticipantForUserResponse implements IParticipantForUserResponse {
     /** The participant id in a conference */
     id?: string;
     /** The participant's full name */
     name?: string | undefined;
-    /** The participant's username */
-    username?: string | undefined;
     /** The participant's role */
     role?: Role;
     /** The participant's status */
@@ -3977,6 +4110,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     first_name?: string | undefined;
     last_name?: string | undefined;
     hearing_role?: string | undefined;
+    current_room?: RoomSummaryResponse | undefined;
 
     constructor(data?: IParticipantForUserResponse) {
         if (data) {
@@ -3990,7 +4124,6 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
         if (_data) {
             this.id = _data['id'];
             this.name = _data['name'];
-            this.username = _data['username'];
             this.role = _data['role'];
             this.status = _data['status'];
             this.display_name = _data['display_name'];
@@ -4000,6 +4133,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
             this.first_name = _data['first_name'];
             this.last_name = _data['last_name'];
             this.hearing_role = _data['hearing_role'];
+            this.current_room = _data['current_room'] ? RoomSummaryResponse.fromJS(_data['current_room']) : <any>undefined;
         }
     }
 
@@ -4014,7 +4148,6 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
         data = typeof data === 'object' ? data : {};
         data['id'] = this.id;
         data['name'] = this.name;
-        data['username'] = this.username;
         data['role'] = this.role;
         data['status'] = this.status;
         data['display_name'] = this.display_name;
@@ -4024,6 +4157,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
         data['first_name'] = this.first_name;
         data['last_name'] = this.last_name;
         data['hearing_role'] = this.hearing_role;
+        data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
         return data;
     }
 }
@@ -4033,8 +4167,6 @@ export interface IParticipantForUserResponse {
     id?: string;
     /** The participant's full name */
     name?: string | undefined;
-    /** The participant's username */
-    username?: string | undefined;
     /** The participant's role */
     role?: Role;
     /** The participant's status */
@@ -4047,6 +4179,7 @@ export interface IParticipantForUserResponse {
     first_name?: string | undefined;
     last_name?: string | undefined;
     hearing_role?: string | undefined;
+    current_room?: RoomSummaryResponse | undefined;
 }
 
 export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerResponse {
@@ -4066,6 +4199,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
     closed_date_time?: Date | undefined;
     telephone_conference_id?: string | undefined;
     telephone_conference_number?: string | undefined;
+    created_date_time?: Date | undefined;
 
     constructor(data?: IConferenceForVhOfficerResponse) {
         if (data) {
@@ -4093,6 +4227,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
             this.closed_date_time = _data['closed_date_time'] ? new Date(_data['closed_date_time'].toString()) : <any>undefined;
             this.telephone_conference_id = _data['telephone_conference_id'];
             this.telephone_conference_number = _data['telephone_conference_number'];
+            this.created_date_time = _data['created_date_time'] ? new Date(_data['created_date_time'].toString()) : <any>undefined;
         }
     }
 
@@ -4121,6 +4256,7 @@ export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerRe
         data['closed_date_time'] = this.closed_date_time ? this.closed_date_time.toISOString() : <any>undefined;
         data['telephone_conference_id'] = this.telephone_conference_id;
         data['telephone_conference_number'] = this.telephone_conference_number;
+        data['created_date_time'] = this.created_date_time ? this.created_date_time.toISOString() : <any>undefined;
         return data;
     }
 }
@@ -4142,6 +4278,7 @@ export interface IConferenceForVhOfficerResponse {
     closed_date_time?: Date | undefined;
     telephone_conference_id?: string | undefined;
     telephone_conference_number?: string | undefined;
+    created_date_time?: Date | undefined;
 }
 
 /** Information about a participant in a conference */
@@ -4150,8 +4287,6 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
     id?: string;
     /** The participant's full name */
     name?: string | undefined;
-    /** The participant's username */
-    username?: string | undefined;
     /** The participant's role */
     role?: Role;
     /** The participant's status */
@@ -4162,6 +4297,7 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
     /** The representee the participant is acting on behalf */
     representee?: string | undefined;
     hearing_role?: string | undefined;
+    current_room?: RoomSummaryResponse | undefined;
 
     constructor(data?: IParticipantResponseVho) {
         if (data) {
@@ -4175,7 +4311,6 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
         if (_data) {
             this.id = _data['id'];
             this.name = _data['name'];
-            this.username = _data['username'];
             this.role = _data['role'];
             this.status = _data['status'];
             this.display_name = _data['display_name'];
@@ -4183,6 +4318,7 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
             this.case_type_group = _data['case_type_group'];
             this.representee = _data['representee'];
             this.hearing_role = _data['hearing_role'];
+            this.current_room = _data['current_room'] ? RoomSummaryResponse.fromJS(_data['current_room']) : <any>undefined;
         }
     }
 
@@ -4197,7 +4333,6 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
         data = typeof data === 'object' ? data : {};
         data['id'] = this.id;
         data['name'] = this.name;
-        data['username'] = this.username;
         data['role'] = this.role;
         data['status'] = this.status;
         data['display_name'] = this.display_name;
@@ -4205,6 +4340,7 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
         data['case_type_group'] = this.case_type_group;
         data['representee'] = this.representee;
         data['hearing_role'] = this.hearing_role;
+        data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
         return data;
     }
 }
@@ -4215,8 +4351,6 @@ export interface IParticipantResponseVho {
     id?: string;
     /** The participant's full name */
     name?: string | undefined;
-    /** The participant's username */
-    username?: string | undefined;
     /** The participant's role */
     role?: Role;
     /** The participant's status */
@@ -4227,6 +4361,7 @@ export interface IParticipantResponseVho {
     /** The representee the participant is acting on behalf */
     representee?: string | undefined;
     hearing_role?: string | undefined;
+    current_room?: RoomSummaryResponse | undefined;
 }
 
 /** Detailed information about a conference for VHO officer */
@@ -4332,8 +4467,6 @@ export class ParticipantResponse implements IParticipantResponse {
     id?: string;
     /** The participant's full name */
     name?: string | undefined;
-    /** The participant's username */
-    username?: string | undefined;
     /** The participant's role */
     role?: Role;
     /** The participant's status */
@@ -4346,6 +4479,7 @@ export class ParticipantResponse implements IParticipantResponse {
     first_name?: string | undefined;
     last_name?: string | undefined;
     hearing_role?: string | undefined;
+    current_room?: RoomSummaryResponse | undefined;
 
     constructor(data?: IParticipantResponse) {
         if (data) {
@@ -4359,7 +4493,6 @@ export class ParticipantResponse implements IParticipantResponse {
         if (_data) {
             this.id = _data['id'];
             this.name = _data['name'];
-            this.username = _data['username'];
             this.role = _data['role'];
             this.status = _data['status'];
             this.display_name = _data['display_name'];
@@ -4369,6 +4502,7 @@ export class ParticipantResponse implements IParticipantResponse {
             this.first_name = _data['first_name'];
             this.last_name = _data['last_name'];
             this.hearing_role = _data['hearing_role'];
+            this.current_room = _data['current_room'] ? RoomSummaryResponse.fromJS(_data['current_room']) : <any>undefined;
         }
     }
 
@@ -4383,7 +4517,6 @@ export class ParticipantResponse implements IParticipantResponse {
         data = typeof data === 'object' ? data : {};
         data['id'] = this.id;
         data['name'] = this.name;
-        data['username'] = this.username;
         data['role'] = this.role;
         data['status'] = this.status;
         data['display_name'] = this.display_name;
@@ -4393,6 +4526,7 @@ export class ParticipantResponse implements IParticipantResponse {
         data['first_name'] = this.first_name;
         data['last_name'] = this.last_name;
         data['hearing_role'] = this.hearing_role;
+        data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
         return data;
     }
 }
@@ -4403,8 +4537,6 @@ export interface IParticipantResponse {
     id?: string;
     /** The participant's full name */
     name?: string | undefined;
-    /** The participant's username */
-    username?: string | undefined;
     /** The participant's role */
     role?: Role;
     /** The participant's status */
@@ -4417,6 +4549,7 @@ export interface IParticipantResponse {
     first_name?: string | undefined;
     last_name?: string | undefined;
     hearing_role?: string | undefined;
+    current_room?: RoomSummaryResponse | undefined;
 }
 
 export enum EndpointStatus {
@@ -4434,6 +4567,7 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
     status?: EndpointStatus;
     defence_advocate_username?: string | undefined;
     pexip_display_name?: string | undefined;
+    is_current_user?: boolean;
 
     constructor(data?: IVideoEndpointResponse) {
         if (data) {
@@ -4450,6 +4584,7 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
             this.status = _data['status'];
             this.defence_advocate_username = _data['defence_advocate_username'];
             this.pexip_display_name = _data['pexip_display_name'];
+            this.is_current_user = _data['is_current_user'];
         }
     }
 
@@ -4467,6 +4602,7 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
         data['status'] = this.status;
         data['defence_advocate_username'] = this.defence_advocate_username;
         data['pexip_display_name'] = this.pexip_display_name;
+        data['is_current_user'] = this.is_current_user;
         return data;
     }
 }
@@ -4479,6 +4615,7 @@ export interface IVideoEndpointResponse {
     status?: EndpointStatus;
     defence_advocate_username?: string | undefined;
     pexip_display_name?: string | undefined;
+    is_current_user?: boolean;
 }
 
 /** Detailed information about a conference */
@@ -4607,6 +4744,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     video_api_url?: string | undefined;
     app_insights_instrumentation_key?: string | undefined;
     event_hub_path?: string | undefined;
+    join_by_phone_from_date?: string | undefined;
 
     constructor(data?: IClientSettingsResponse) {
         if (data) {
@@ -4625,6 +4763,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
             this.video_api_url = _data['video_api_url'];
             this.app_insights_instrumentation_key = _data['app_insights_instrumentation_key'];
             this.event_hub_path = _data['event_hub_path'];
+            this.join_by_phone_from_date = _data['join_by_phone_from_date'];
         }
     }
 
@@ -4644,6 +4783,7 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         data['video_api_url'] = this.video_api_url;
         data['app_insights_instrumentation_key'] = this.app_insights_instrumentation_key;
         data['event_hub_path'] = this.event_hub_path;
+        data['join_by_phone_from_date'] = this.join_by_phone_from_date;
         return data;
     }
 }
@@ -4657,152 +4797,7 @@ export interface IClientSettingsResponse {
     video_api_url?: string | undefined;
     app_insights_instrumentation_key?: string | undefined;
     event_hub_path?: string | undefined;
-}
-
-export enum ConsultationAnswer {
-    None = 'None',
-    Accepted = 'Accepted',
-    Rejected = 'Rejected',
-    Cancelled = 'Cancelled',
-    Failed = 'Failed',
-    NoRoomsAvailable = 'NoRoomsAvailable'
-}
-
-/** Raise or respond to a private consultation request */
-export class PrivateConsultationRequest implements IPrivateConsultationRequest {
-    conference_id?: string;
-    requested_by_id?: string;
-    requested_for_id?: string;
-    /** Consultation Answer (absent value is treated as raising a consultation request) */
-    answer?: ConsultationAnswer | undefined;
-
-    constructor(data?: IPrivateConsultationRequest) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.conference_id = _data['conference_id'];
-            this.requested_by_id = _data['requested_by_id'];
-            this.requested_for_id = _data['requested_for_id'];
-            this.answer = _data['answer'];
-        }
-    }
-
-    static fromJS(data: any): PrivateConsultationRequest {
-        data = typeof data === 'object' ? data : {};
-        let result = new PrivateConsultationRequest();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data['conference_id'] = this.conference_id;
-        data['requested_by_id'] = this.requested_by_id;
-        data['requested_for_id'] = this.requested_for_id;
-        data['answer'] = this.answer;
-        return data;
-    }
-}
-
-/** Raise or respond to a private consultation request */
-export interface IPrivateConsultationRequest {
-    conference_id?: string;
-    requested_by_id?: string;
-    requested_for_id?: string;
-    /** Consultation Answer (absent value is treated as raising a consultation request) */
-    answer?: ConsultationAnswer | undefined;
-}
-
-export class BadModel implements IBadModel {
-    title?: string | undefined;
-    errors?: string[] | undefined;
-
-    constructor(data?: IBadModel) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.title = _data['title'];
-            if (Array.isArray(_data['errors'])) {
-                this.errors = [] as any;
-                for (let item of _data['errors']) this.errors!.push(item);
-            }
-        }
-    }
-
-    static fromJS(data: any): BadModel {
-        data = typeof data === 'object' ? data : {};
-        let result = new BadModel();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data['title'] = this.title;
-        if (Array.isArray(this.errors)) {
-            data['errors'] = [];
-            for (let item of this.errors) data['errors'].push(item);
-        }
-        return data;
-    }
-}
-
-export interface IBadModel {
-    title?: string | undefined;
-    errors?: string[] | undefined;
-}
-
-export class BadRequestModelResponse implements IBadRequestModelResponse {
-    readonly errors?: BadModel[] | undefined;
-
-    constructor(data?: IBadRequestModelResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            if (Array.isArray(_data['errors'])) {
-                (<any>this).errors = [] as any;
-                for (let item of _data['errors']) (<any>this).errors!.push(BadModel.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): BadRequestModelResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new BadRequestModelResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.errors)) {
-            data['errors'] = [];
-            for (let item of this.errors) data['errors'].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IBadRequestModelResponse {
-    errors?: BadModel[] | undefined;
+    join_by_phone_from_date?: string | undefined;
 }
 
 /** Leave a private consultation */
@@ -4846,23 +4841,23 @@ export interface ILeavePrivateConsultationRequest {
     participant_id?: string;
 }
 
-export enum RoomType {
-    WaitingRoom = 'WaitingRoom',
-    HearingRoom = 'HearingRoom',
-    ConsultationRoom1 = 'ConsultationRoom1',
-    ConsultationRoom2 = 'ConsultationRoom2',
-    AdminRoom = 'AdminRoom'
+export enum ConsultationAnswer {
+    None = 'None',
+    Accepted = 'Accepted',
+    Rejected = 'Rejected',
+    Failed = 'Failed'
 }
 
-/** Request a private consultation with another participant */
-export class PrivateAdminConsultationRequest implements IPrivateAdminConsultationRequest {
+/** Raise or respond to a private consultation request */
+export class PrivateConsultationRequest implements IPrivateConsultationRequest {
     conference_id?: string;
-    participant_id?: string;
+    requested_by_id?: string;
+    requested_for_id?: string;
     /** Response to a consultation request (i.e. 'Accepted or Rejected') */
     answer?: ConsultationAnswer;
-    consultation_room?: RoomType;
+    room_label?: string | undefined;
 
-    constructor(data?: IPrivateAdminConsultationRequest) {
+    constructor(data?: IPrivateConsultationRequest) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
@@ -4873,15 +4868,16 @@ export class PrivateAdminConsultationRequest implements IPrivateAdminConsultatio
     init(_data?: any) {
         if (_data) {
             this.conference_id = _data['conference_id'];
-            this.participant_id = _data['participant_id'];
+            this.requested_by_id = _data['requested_by_id'];
+            this.requested_for_id = _data['requested_for_id'];
             this.answer = _data['answer'];
-            this.consultation_room = _data['consultation_room'];
+            this.room_label = _data['room_label'];
         }
     }
 
-    static fromJS(data: any): PrivateAdminConsultationRequest {
+    static fromJS(data: any): PrivateConsultationRequest {
         data = typeof data === 'object' ? data : {};
-        let result = new PrivateAdminConsultationRequest();
+        let result = new PrivateConsultationRequest();
         result.init(data);
         return result;
     }
@@ -4889,20 +4885,22 @@ export class PrivateAdminConsultationRequest implements IPrivateAdminConsultatio
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data['conference_id'] = this.conference_id;
-        data['participant_id'] = this.participant_id;
+        data['requested_by_id'] = this.requested_by_id;
+        data['requested_for_id'] = this.requested_for_id;
         data['answer'] = this.answer;
-        data['consultation_room'] = this.consultation_room;
+        data['room_label'] = this.room_label;
         return data;
     }
 }
 
-/** Request a private consultation with another participant */
-export interface IPrivateAdminConsultationRequest {
+/** Raise or respond to a private consultation request */
+export interface IPrivateConsultationRequest {
     conference_id?: string;
-    participant_id?: string;
+    requested_by_id?: string;
+    requested_for_id?: string;
     /** Response to a consultation request (i.e. 'Accepted or Rejected') */
     answer?: ConsultationAnswer;
-    consultation_room?: RoomType;
+    room_label?: string | undefined;
 }
 
 export class PrivateVideoEndpointConsultationRequest implements IPrivateVideoEndpointConsultationRequest {
@@ -4950,6 +4948,7 @@ export enum VirtualCourtRoomType {
 }
 
 export class StartPrivateConsultationRequest implements IStartPrivateConsultationRequest {
+    invite_participants?: string[] | undefined;
     conference_id?: string;
     requested_by?: string;
     room_type?: VirtualCourtRoomType;
@@ -4964,6 +4963,10 @@ export class StartPrivateConsultationRequest implements IStartPrivateConsultatio
 
     init(_data?: any) {
         if (_data) {
+            if (Array.isArray(_data['invite_participants'])) {
+                this.invite_participants = [] as any;
+                for (let item of _data['invite_participants']) this.invite_participants!.push(item);
+            }
             this.conference_id = _data['conference_id'];
             this.requested_by = _data['requested_by'];
             this.room_type = _data['room_type'];
@@ -4979,6 +4982,10 @@ export class StartPrivateConsultationRequest implements IStartPrivateConsultatio
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.invite_participants)) {
+            data['invite_participants'] = [];
+            for (let item of this.invite_participants) data['invite_participants'].push(item);
+        }
         data['conference_id'] = this.conference_id;
         data['requested_by'] = this.requested_by;
         data['room_type'] = this.room_type;
@@ -4987,9 +4994,98 @@ export class StartPrivateConsultationRequest implements IStartPrivateConsultatio
 }
 
 export interface IStartPrivateConsultationRequest {
+    invite_participants?: string[] | undefined;
     conference_id?: string;
     requested_by?: string;
     room_type?: VirtualCourtRoomType;
+}
+
+export class LockConsultationRoomRequest implements ILockConsultationRoomRequest {
+    conference_id?: string;
+    room_label?: string | undefined;
+    /** The desired lock state of the room */
+    lock?: boolean;
+
+    constructor(data?: ILockConsultationRoomRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.conference_id = _data['conference_id'];
+            this.room_label = _data['room_label'];
+            this.lock = _data['lock'];
+        }
+    }
+
+    static fromJS(data: any): LockConsultationRoomRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new LockConsultationRoomRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['conference_id'] = this.conference_id;
+        data['room_label'] = this.room_label;
+        data['lock'] = this.lock;
+        return data;
+    }
+}
+
+export interface ILockConsultationRoomRequest {
+    conference_id?: string;
+    room_label?: string | undefined;
+    /** The desired lock state of the room */
+    lock?: boolean;
+}
+
+export class InviteToConsultationRequest implements IInviteToConsultationRequest {
+    conference_id?: string;
+    room_label?: string | undefined;
+    participant_id?: string;
+
+    constructor(data?: IInviteToConsultationRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.conference_id = _data['conference_id'];
+            this.room_label = _data['room_label'];
+            this.participant_id = _data['participant_id'];
+        }
+    }
+
+    static fromJS(data: any): InviteToConsultationRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new InviteToConsultationRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['conference_id'] = this.conference_id;
+        data['room_label'] = this.room_label;
+        data['participant_id'] = this.participant_id;
+        return data;
+    }
+}
+
+export interface IInviteToConsultationRequest {
+    conference_id?: string;
+    room_label?: string | undefined;
+    participant_id?: string;
 }
 
 export class HealthCheck implements IHealthCheck {
@@ -5203,6 +5299,7 @@ export interface IChatResponse {
 export class UnreadAdminMessageResponse implements IUnreadAdminMessageResponse {
     participant_username?: string | undefined;
     number_of_unread_messages?: number;
+    participant_id?: string;
 
     constructor(data?: IUnreadAdminMessageResponse) {
         if (data) {
@@ -5216,6 +5313,7 @@ export class UnreadAdminMessageResponse implements IUnreadAdminMessageResponse {
         if (_data) {
             this.participant_username = _data['participant_username'];
             this.number_of_unread_messages = _data['number_of_unread_messages'];
+            this.participant_id = _data['participant_id'];
         }
     }
 
@@ -5230,6 +5328,7 @@ export class UnreadAdminMessageResponse implements IUnreadAdminMessageResponse {
         data = typeof data === 'object' ? data : {};
         data['participant_username'] = this.participant_username;
         data['number_of_unread_messages'] = this.number_of_unread_messages;
+        data['participant_id'] = this.participant_id;
         return data;
     }
 }
@@ -5237,6 +5336,7 @@ export class UnreadAdminMessageResponse implements IUnreadAdminMessageResponse {
 export interface IUnreadAdminMessageResponse {
     participant_username?: string | undefined;
     number_of_unread_messages?: number;
+    participant_id?: string;
 }
 
 export class UnreadInstantMessageConferenceCountResponse implements IUnreadInstantMessageConferenceCountResponse {
@@ -5525,13 +5625,14 @@ export interface IParticipantHeartbeatResponse {
 }
 
 export class UpdateParticipantRequest implements IUpdateParticipantRequest {
-    fullname!: string | undefined;
-    first_name!: string | undefined;
-    last_name!: string | undefined;
-    display_name!: string | undefined;
+    fullname!: string;
+    first_name?: string | undefined;
+    last_name?: string | undefined;
+    display_name?: string | undefined;
     representee?: string | undefined;
     contact_email?: string | undefined;
     contact_telephone?: string | undefined;
+    username?: string | undefined;
 
     constructor(data?: IUpdateParticipantRequest) {
         if (data) {
@@ -5550,6 +5651,7 @@ export class UpdateParticipantRequest implements IUpdateParticipantRequest {
             this.representee = _data['representee'];
             this.contact_email = _data['contact_email'];
             this.contact_telephone = _data['contact_telephone'];
+            this.username = _data['username'];
         }
     }
 
@@ -5569,18 +5671,20 @@ export class UpdateParticipantRequest implements IUpdateParticipantRequest {
         data['representee'] = this.representee;
         data['contact_email'] = this.contact_email;
         data['contact_telephone'] = this.contact_telephone;
+        data['username'] = this.username;
         return data;
     }
 }
 
 export interface IUpdateParticipantRequest {
-    fullname: string | undefined;
-    first_name: string | undefined;
-    last_name: string | undefined;
-    display_name: string | undefined;
+    fullname: string;
+    first_name?: string | undefined;
+    last_name?: string | undefined;
+    display_name?: string | undefined;
     representee?: string | undefined;
     contact_email?: string | undefined;
     contact_telephone?: string | undefined;
+    username?: string | undefined;
 }
 
 export class ParticipantContactDetailsResponseVho implements IParticipantContactDetailsResponseVho {
@@ -5692,6 +5796,53 @@ export interface IParticipantContactDetailsResponseVho {
     judge_in_another_hearing?: boolean;
     /** The participant represented by the representative */
     representee?: string | undefined;
+}
+
+export class LoggedParticipantResponse implements ILoggedParticipantResponse {
+    participant_id?: string;
+    admin_username?: string | undefined;
+    role?: Role;
+    display_name?: string | undefined;
+
+    constructor(data?: ILoggedParticipantResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.participant_id = _data['participant_id'];
+            this.admin_username = _data['admin_username'];
+            this.role = _data['role'];
+            this.display_name = _data['display_name'];
+        }
+    }
+
+    static fromJS(data: any): LoggedParticipantResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new LoggedParticipantResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['participant_id'] = this.participant_id;
+        data['admin_username'] = this.admin_username;
+        data['role'] = this.role;
+        data['display_name'] = this.display_name;
+        return data;
+    }
+}
+
+export interface ILoggedParticipantResponse {
+    participant_id?: string;
+    admin_username?: string | undefined;
+    role?: Role;
+    display_name?: string | undefined;
 }
 
 export class UserProfileResponse implements IUserProfileResponse {
@@ -5982,10 +6133,10 @@ export interface IJudgeNameListResponse {
 }
 
 export class ConferenceEventRequest implements IConferenceEventRequest {
-    event_id!: string | undefined;
+    event_id?: string | undefined;
     event_type?: EventType;
     time_stamp_utc?: Date;
-    conference_id!: string | undefined;
+    conference_id?: string | undefined;
     participant_id?: string | undefined;
     transfer_from?: string | undefined;
     transfer_to?: string | undefined;
@@ -6037,10 +6188,10 @@ export class ConferenceEventRequest implements IConferenceEventRequest {
 }
 
 export interface IConferenceEventRequest {
-    event_id: string | undefined;
+    event_id?: string | undefined;
     event_type?: EventType;
     time_stamp_utc?: Date;
-    conference_id: string | undefined;
+    conference_id?: string | undefined;
     participant_id?: string | undefined;
     transfer_from?: string | undefined;
     transfer_to?: string | undefined;

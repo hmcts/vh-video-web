@@ -2,12 +2,11 @@
   "stryker-config": {
     "reporters": [
       "Progress",
-      "ClearText",
-      "Html"
+      "ClearText"
     ],
-    "log-level": "info",
+    "log-level": "error",
     "timeout-ms": 10000,
-    "log-file": true,
+    "log-file": false,
     "project-file": "VideoWeb.csproj",
     "max-concurrent-test-runners": 4,
     "threshold-high": 95,

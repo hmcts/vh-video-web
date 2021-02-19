@@ -1,9 +1,9 @@
 import {
     ConferenceResponse,
-    ConferenceStatus,
-    Role,
     ConferenceResponseVho,
+    ConferenceStatus,
     ParticipantResponseVho,
+    Role,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { HearingBase } from './hearing-base';
@@ -80,12 +80,16 @@ export class Hearing extends HearingBase {
         return endTime;
     }
 
+    get actualCloseTime(): Date | null {
+        return this.conference.closed_date_time;
+    }
+
     isPastClosedTime(): boolean {
         return this.timeReader.isPastClosedTime(this.conference.closed_date_time, this.conference.status);
     }
 
-    getParticipantByUsername(username: string) {
-        return this.participants.find(p => p.username.toLocaleLowerCase() === username.toLocaleLowerCase());
+    getParticipantById(participantId: string) {
+        return this.participants.find(p => p.id === participantId);
     }
 
     get hearingVenueName(): string {

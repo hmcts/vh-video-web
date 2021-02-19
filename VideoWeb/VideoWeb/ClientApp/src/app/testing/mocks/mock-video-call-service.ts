@@ -55,7 +55,9 @@ videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
         'callParticipantIntoHearing',
         'dismissParticipantFromHearing',
         'retrieveVideoCallPreferences',
-        'updateVideoCallPreferences'
+        'updateVideoCallPreferences',
+        'reconnectToCallWithNewDevices',
+        'switchToAudioOnlyCall'
     ],
     {
         pexipAPI: pexipApiMock

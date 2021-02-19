@@ -40,42 +40,54 @@
 
           <!-- Participant -->
           <td class="govuk-table__cell">
-            <!-- Participant count -->
-            <span *ngIf="hearing.panelMembers.length > 0">
-              <p class="govuk-!-margin-0 govuk-!-padding-0">
-                <span id="panel-member-count-{{ hearing.id }}">
-                  {{ hearing.panelMembers.length }} Panel Member{{ hearing.panelMembers.length > 1 ? 's' : '' }}
+            <div *ngIf="!hearing.isClosed()">
+              <!-- Participant count -->
+              <span *ngIf="hearing.panelMembers.length > 0">
+                <p class="govuk-!-margin-0 govuk-!-padding-0">
+                  <span id="panel-member-count-{{ hearing.id }}">
+                    {{ hearing.panelMembers.length }} Panel Member{{ hearing.panelMembers.length > 1 ? 's' : '' }}
+                  </span>
+                </p>
+              </span>
+              <span *ngIf="hearing.wingers.length > 0">
+                <p class="govuk-!-margin-0 govuk-!-padding-0">
+                  <span id="winger-count-{{ hearing.id }}">
+                    {{ hearing.wingers.length }} Winger{{ hearing.wingers.length > 1 ? 's' : '' }}
+                  </span>
+                </p>
+              </span>
+              <span *ngIf="hearing.nonJudicialParticipantsExcludingObservers.length > 0">
+                <p class="govuk-!-margin-0 govuk-!-padding-0">
+                  <span id="participant-count-{{ hearing.id }}">
+                    {{ hearing.nonJudicialParticipantsExcludingObservers.length }} Participant{{
+                      hearing.nonJudicialParticipantsExcludingObservers.length > 1 ? 's' : ''
+                    }}
+                  </span>
+                </p>
+              </span>
+              <div *ngIf="hearing.numberOfEndpoints > 0">
+                <span id="endpoints-count-{{ hearing.id }}">
+                  {{ hearing.numberOfEndpoints }} Video access point{{ hearing.numberOfEndpoints > 1 ? 's' : '' }}
                 </span>
-              </p>
-            </span>
-            <span *ngIf="hearing.wingers.length > 0">
-              <p class="govuk-!-margin-0 govuk-!-padding-0">
-                <span id="winger-count-{{ hearing.id }}">
-                  {{ hearing.wingers.length }} Winger{{ hearing.wingers.length > 1 ? 's' : '' }}
-                </span>
-              </p>
-            </span>
-            <span *ngIf="hearing.nonJudicialParticipantsExcludingObservers.length > 0">
-              <p class="govuk-!-margin-0 govuk-!-padding-0">
-                <span id="participant-count-{{ hearing.id }}">
-                  {{ hearing.nonJudicialParticipantsExcludingObservers.length }} Participant{{
-                    hearing.nonJudicialParticipantsExcludingObservers.length > 1 ? 's' : ''
-                  }}
-                </span>
-              </p>
-            </span>
-            <div *ngIf="hearing.numberOfEndpoints > 0">
-              <span id="endpoints-count-{{ hearing.id }}">
-                {{ hearing.numberOfEndpoints }} Video access point{{ hearing.numberOfEndpoints > 1 ? 's' : '' }}
+              </div>
+              <span *ngIf="hearing.observers.length > 0">
+                <p class="govuk-!-margin-0 govuk-!-padding-0">
+                  <span id="observer-count-{{ hearing.id }}">
+                    {{ hearing.observers.length }} Observer{{ hearing.observers.length > 1 ? 's' : '' }}
+                  </span>
+                </p>
               </span>
             </div>
-            <span *ngIf="hearing.observers.length > 0">
-              <p class="govuk-!-margin-0 govuk-!-padding-0">
-                <span id="observer-count-{{ hearing.id }}">
-                  {{ hearing.observers.length }} Observer{{ hearing.observers.length > 1 ? 's' : '' }}
-                </span>
-              </p>
-            </span>
+
+            <div *ngIf="hearing.isClosed() && hearing.isExpired()">
+              <span class="govuk-caption-m">Judicial consultation room is now closed</span>
+            </div>
+
+            <div *ngIf="hearing.isClosed() && !hearing.isExpired()">
+              <a class="govuk-link" href="javascript:void(0)" (click)="signIntoConference(hearing)"
+                >Judicial consultation room open until {{ hearing.retrieveExpiryTime() | date: 'HH:mm' }}</a
+              >
+            </div>
           </td>
 
           <!-- Conference Status -->

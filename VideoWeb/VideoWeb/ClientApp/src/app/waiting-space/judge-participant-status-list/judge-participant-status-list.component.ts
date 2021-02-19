@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -11,6 +12,7 @@ import {
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingRole } from '../models/hearing-role-model';
 import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-participant-list-shared.component';
 
@@ -29,19 +31,24 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     observers: ParticipantResponse[];
     panelMembers: ParticipantResponse[];
     wingers: ParticipantResponse[];
+    isUserJudge: boolean;
+
+    hearing: Hearing;
 
     constructor(
         protected adalService: AdalService,
         protected consultationService: ConsultationService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected videoWebService: VideoWebService
+        protected videoWebService: VideoWebService,
+        protected route: ActivatedRoute
     ) {
         super(adalService, consultationService, eventService, videoWebService, logger);
     }
 
     ngOnInit() {
-        this.consultationService.resetWaitingForResponse();
+        this.hearing = new Hearing(this.conference);
+        this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.initParticipants();
         this.setupSubscribers();
     }
@@ -53,6 +60,7 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     initParticipants() {
         super.initParticipants();
         this.filterRepresentatives();
+        this.isUserJudge = this.loggedInUser.role === Role.Judge;
     }
 
     setupSubscribers(): void {
@@ -91,13 +99,6 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
 
     getEndpointStatusCss(endpoint: VideoEndpointResponse): string {
         return this.camelToSnake(endpoint.status.toString());
-    }
-
-    isUserJudge(): boolean {
-        const participant = this.conference.participants.find(
-            x => x.username.toLowerCase() === this.adalService.userInfo.userName.toLocaleLowerCase()
-        );
-        return participant.role === Role.Judge;
     }
 
     private filterRepresentatives(): void {

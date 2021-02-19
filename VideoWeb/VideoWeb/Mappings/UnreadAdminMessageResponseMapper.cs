@@ -14,7 +14,7 @@ namespace VideoWeb.Mappings
             var response = new UnreadAdminMessageResponse
             {
                 NumberOfUnreadMessages = MapMessages(conference, messageResponses),
-                ParticipantUsername = conference.GetJudge().Username
+                ParticipantId = conference.GetJudge().Id
             };
             return response;
         }

@@ -10,26 +10,27 @@ using ApiConsultationRequestAnswer =  VideoWeb.Services.Video.ConsultationAnswer
 
 namespace VideoWeb.UnitTests.Mappings.Requests
 {
-    public class PrivateAdminConsultationRequestMapperTests : BaseMockerSutTestSetup<PrivateAdminConsultationRequestMapper>
+    public class PrivateAdminConsultationRequestMapperTests : BaseMockerSutTestSetup<PrivateConsultationRequestMapper>
     {
         [TestCase(ConsultationAnswer.Accepted, ApiConsultationRequestAnswer.Accepted)]
-        [TestCase(ConsultationAnswer.Cancelled, ApiConsultationRequestAnswer.Cancelled)]
         [TestCase(ConsultationAnswer.Rejected, ApiConsultationRequestAnswer.Rejected)]
         [TestCase(ConsultationAnswer.None, ApiConsultationRequestAnswer.None)]
         public void should_map_to_admin_consultation_request(ConsultationAnswer answer, ApiConsultationRequestAnswer? expectedAnswer)
         {
-            var request = Builder<PrivateAdminConsultationRequest>.CreateNew()
+            var request = Builder<PrivateConsultationRequest>.CreateNew()
                 .With(x => x.ConferenceId = Guid.NewGuid())
-                .With(x => x.ParticipantId = Guid.NewGuid())
-                .With(x => x.ConsultationRoom = RoomType.ConsultationRoom1)
+                .With(x => x.RequestedById = Guid.NewGuid())
+                .With(x => x.RequestedForId = Guid.NewGuid())
+                .With(x => x.RoomLabel = "ConsultationRoom")
                 .With(x => x.Answer = answer)
                 .Build();
             
             var result = _sut.Map(request);
 
             result.Conference_id.Should().Be(request.ConferenceId);
-            result.Participant_id.Should().Be(request.ParticipantId);
-            result.Consultation_room.Should().Be(request.ConsultationRoom);
+            result.Requested_by.Should().Be(request.RequestedById);
+            result.Requested_for.Should().Be(request.RequestedForId);
+            result.Room_label.Should().Be(request.RoomLabel);
             result.Answer.Should().Be(answer);
         }
     }

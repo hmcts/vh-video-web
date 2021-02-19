@@ -1,6 +1,19 @@
+import { fakeAsync, tick } from '@angular/core/testing';
 import { Subscription } from 'rxjs';
-import { ConferenceResponse, ConferenceStatus, ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    ConferenceStatus,
+    LoggedParticipantResponse,
+    ParticipantResponse,
+    ParticipantStatus,
+    Role
+} from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { SelectedUserMediaDevice } from 'src/app/shared/models/selected-user-media-device';
+import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
+import { pageUrls } from 'src/app/shared/page-url.constants';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
 import {
     activatedRoute,
     adalService,
@@ -15,6 +28,7 @@ import {
     initAllWRDependencies,
     logger,
     notificationSoundsService,
+    notificationToastrService,
     router,
     userMediaService,
     userMediaStreamService,
@@ -28,6 +42,7 @@ describe('WaitingRoomComponent message and clock', () => {
 
     beforeAll(() => {
         initAllWRDependencies();
+        videoCallService.retrieveVideoCallPreferences.and.returnValue(new VideoCallPreferences());
     });
 
     beforeEach(() => {
@@ -43,10 +58,11 @@ describe('WaitingRoomComponent message and clock', () => {
             deviceTypeService,
             router,
             consultationService,
-            clockService,
             userMediaService,
             userMediaStreamService,
-            notificationSoundsService
+            notificationSoundsService,
+            notificationToastrService,
+            clockService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
@@ -58,18 +74,40 @@ describe('WaitingRoomComponent message and clock', () => {
         videoWebService.getConferenceById.calls.reset();
     });
 
-    it('should get conference', async () => {
+    it('should call consultation service to close all modals', () => {
+        // Act
+        component.closeAllPCModals();
+
+        // Assert
+        expect(consultationService.clearModals).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call consultation service to show leave consultation modal', () => {
+        // Act
+        component.showLeaveConsultationModal();
+
+        // Assert
+        expect(consultationService.displayConsultationLeaveModal).toHaveBeenCalledTimes(1);
+    });
+
+    it('should get conference', fakeAsync(async () => {
         component.hearing = undefined;
         component.conference = undefined;
         component.participant = undefined;
         component.connected = false;
 
         videoWebService.getConferenceById.and.resolveTo(globalConference);
-        await component.getConference();
+        component.loggedInUser = new LoggedParticipantResponse({
+            participant_id: globalConference.participants[0].id,
+            display_name: globalConference.participants[0].display_name,
+            role: globalConference.participants[0].role
+        });
+        component.getConference();
+        tick();
         expect(component.loadingData).toBeFalsy();
         expect(component.hearing).toBeDefined();
         expect(component.participant).toBeDefined();
-    });
+    }));
 
     it('should handle api error with error service when get conference fails', async () => {
         component.hearing = undefined;
@@ -130,6 +168,7 @@ describe('WaitingRoomComponent message and clock', () => {
     it('should clean up timeouts and subscriptions', () => {
         component.eventHubSubscription$ = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
         component.videoCallSubscription$ = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
+        component.clockSubscription$ = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
         const timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
         component.callbackTimeout = timer;
         spyOn(global, 'clearTimeout');
@@ -138,6 +177,7 @@ describe('WaitingRoomComponent message and clock', () => {
 
         expect(component.eventHubSubscription$.unsubscribe).toHaveBeenCalled();
         expect(component.videoCallSubscription$.unsubscribe).toHaveBeenCalled();
+        expect(component.clockSubscription$.unsubscribe).toHaveBeenCalled();
         expect(clearTimeout).toHaveBeenCalled();
     });
 
@@ -200,7 +240,84 @@ describe('WaitingRoomComponent message and clock', () => {
     });
 
     it('should request to leave judicial consultation room', async () => {
+        consultationService.leaveConsultation.calls.reset();
+        consultationService.leaveConsultation.and.returnValue(Promise.resolve());
         await component.leaveJudicialConsultation();
-        expect(consultationService.leaveJudicialConsultationRoom).toHaveBeenCalledWith(component.conference, component.participant);
+        expect(consultationService.leaveConsultation).toHaveBeenCalled();
+    });
+
+    it('should hide change device popup on close popup', () => {
+        component.displayDeviceChangeModal = true;
+        component.onMediaDeviceChangeCancelled();
+        expect(component.displayDeviceChangeModal).toBe(false);
+    });
+
+    it('should change device on select device', async () => {
+        const device = new SelectedUserMediaDevice(
+            new UserMediaDevice('camera1', 'id3445', 'videoinput', '1'),
+            new UserMediaDevice('microphone', 'id123', 'audioinput', '1')
+        );
+        await component.onMediaDeviceChangeAccepted(device);
+        expect(userMediaService.updatePreferredCamera).toHaveBeenCalled();
+        expect(userMediaService.updatePreferredMicrophone).toHaveBeenCalled();
+        expect(videoCallService.reconnectToCallWithNewDevices);
+    });
+
+    it('should switch to only only call when user has selected to turn camera off', async () => {
+        const device = new SelectedUserMediaDevice(
+            new UserMediaDevice('camera1', 'id3445', 'videoinput', '1'),
+            new UserMediaDevice('microphone', 'id123', 'audioinput', '1'),
+            true
+        );
+
+        await component.onMediaDeviceChangeAccepted(device);
+
+        expect(videoCallService.switchToAudioOnlyCall).toHaveBeenCalled();
+    });
+
+    it('should not announce hearing is starting when already announced', () => {
+        spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => Promise.resolve());
+        component.hearingStartingAnnounced = true;
+        component.checkIfHearingIsStarting();
+        expect(component.announceHearingIsAboutToStart).toHaveBeenCalledTimes(0);
+    });
+
+    it('should not announce hearing ready to start when hearing is not near start time', () => {
+        spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => Promise.resolve());
+        component.hearing = new Hearing(new ConferenceTestData().getConferenceDetailFuture());
+        component.hearingStartingAnnounced = false;
+        component.checkIfHearingIsStarting();
+        expect(component.announceHearingIsAboutToStart).toHaveBeenCalledTimes(0);
+    });
+
+    it('should announce hearing ready to start and not already announced', () => {
+        spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => Promise.resolve());
+        component.hearing = new Hearing(new ConferenceTestData().getConferenceDetailNow());
+        component.hearingStartingAnnounced = false;
+        component.checkIfHearingIsStarting();
+        expect(component.announceHearingIsAboutToStart).toHaveBeenCalledTimes(1);
+    });
+
+    it('should set hearing announced to true when hearing sound has played', async () => {
+        notificationSoundsService.playHearingAlertSound.calls.reset();
+        await component.announceHearingIsAboutToStart();
+        expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalled();
+        expect(component.hearingStartingAnnounced).toBeTruthy();
+    });
+
+    it('should clear subscription and go to hearing list when conference is past closed time', () => {
+        const conf = new ConferenceTestData().getConferenceDetailNow();
+        const status = ConferenceStatus.Closed;
+        const closedDateTime = new Date(new Date().toUTCString());
+        closedDateTime.setUTCMinutes(closedDateTime.getUTCMinutes() - 30);
+        conf.status = status;
+        conf.closed_date_time = closedDateTime;
+        component.hearing = new Hearing(conf);
+        component.clockSubscription$ = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
+
+        component.checkIfHearingIsClosed();
+
+        expect(component.clockSubscription$.unsubscribe).toHaveBeenCalled();
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.Home]);
     });
 });

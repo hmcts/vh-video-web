@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using FluentAssertions;
 using VideoWeb.AcceptanceTests.Builders;
@@ -16,7 +16,6 @@ namespace VideoWeb.AcceptanceTests.Strategies.ParticipantStatus
                 .WithConferenceId(context.Test.NewConferenceId)
                 .WithParticipantId(participantId)
                 .WithEventType(EventType.Transfer)
-                .ToRoomType(RoomType.ConsultationRoom1)
                 .Build();
 
             var response = context.Apis.VideoWebApi.SendCallBackEvent(request);

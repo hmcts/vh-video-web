@@ -5,7 +5,7 @@
 .incomingFeedPrivate {
   position: fixed;
   left: 0;
-  top: 0;
+  top: 70px;
   min-width: 100%;
   min-height: 80vh;
   max-width: 100%;
@@ -41,14 +41,20 @@
 }
 
 .video-background {
-  background: #090909;
+  background: #1e1e1e;
   position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
   overflow: auto;
-  z-index: 10;
+  z-index: 11;
+}
+
+.header-bar {
+  display: flex;
+  box-shadow: 0px 5px 10px 0px rgb(0 0 0 / 70%);
+  box-shadow: 0px 20px 30px 0px rgb(0 0 0 / 30%);
 }
 
 .no-mass {
@@ -133,6 +139,16 @@
 .govuk-button--bigblue:hover {
   background: govuk-colour('dark-blue');
 }
+
+.govuk-button--biggreen {
+  background: govuk-colour('green');
+  font-size: 24px;
+  font-weight: 700;
+}
+
+// .govuk-button--biggreen:hover {
+//   background: govuk-colour('dark-green');
+// }
 
 .govuk-button--bigblue .badge {
   font-family: 'GDS Transport', Arial, sans-serif;

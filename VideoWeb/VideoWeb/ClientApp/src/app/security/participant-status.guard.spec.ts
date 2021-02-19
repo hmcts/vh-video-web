@@ -5,6 +5,17 @@ import { MockLogger } from '../testing/mocks/MockLogger';
 import { ParticipantStatusGuard } from './participant-status.guard';
 import { ParticipantStatusUpdateService } from '../services/participant-status-update.service';
 
+const testCases = [
+    { role: Role.None, shouldFireJoiningEvent: false },
+    { role: Role.CaseAdmin, shouldFireJoiningEvent: false },
+    { role: Role.VideoHearingsOfficer, shouldFireJoiningEvent: false },
+    { role: Role.HearingFacilitationSupport, shouldFireJoiningEvent: false },
+    { role: Role.Judge, shouldFireJoiningEvent: false },
+    { role: Role.Individual, shouldFireJoiningEvent: true },
+    { role: Role.Representative, shouldFireJoiningEvent: true },
+    { role: Role.JudicialOfficeHolder, shouldFireJoiningEvent: true }
+];
+
 describe('ParticipantStatusGuard', () => {
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
     let guard: ParticipantStatusGuard;
@@ -24,16 +35,29 @@ describe('ParticipantStatusGuard', () => {
 
     beforeEach(() => {
         guard = new ParticipantStatusGuard(profileServiceSpy, router, new MockLogger(), participantStatusUpdateService);
+        participantStatusUpdateService.postParticipantStatus.calls.reset();
     });
 
-    it('should on refresh update status to joining', async () => {
-        const profile = new UserProfileResponse({ role: Role.Individual });
-        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
-        participantStatusUpdateService.postParticipantStatus.and.returnValue(Promise.resolve());
-        const result = await guard.canActivate(activateRoute, null);
+    it('should cover all the user roles in this test', async () => {
+        expect(testCases.length).toBe(Object.keys(Role).length);
+    });
 
-        expect(result).toBeTruthy();
-        expect(participantStatusUpdateService.postParticipantStatus).toHaveBeenCalled();
+    testCases.forEach(testCase => {
+        let shouldOrShouldNotUpdate = 'should NOT update';
+        if (testCase.shouldFireJoiningEvent) {
+            shouldOrShouldNotUpdate = 'should update';
+        }
+        it(`${shouldOrShouldNotUpdate} status when user with ${testCase.role} role navigates from /camera-working to /introduction`, async () => {
+            const profile = new UserProfileResponse({ role: testCase.role });
+            profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
+            participantStatusUpdateService.postParticipantStatus.and.returnValue(Promise.resolve());
+
+            const result = await guard.canActivate(activateRoute, null);
+
+            expect(result).toBeTruthy();
+            const expectedCalls = testCase.shouldFireJoiningEvent ? 1 : 0;
+            expect(participantStatusUpdateService.postParticipantStatus).toHaveBeenCalledTimes(expectedCalls);
+        });
     });
 });
 
@@ -56,16 +80,28 @@ describe('ParticipantStatusGuard', () => {
 
     beforeEach(() => {
         guard = new ParticipantStatusGuard(profileServiceSpy, router, new MockLogger(), participantStatusUpdateService);
+        participantStatusUpdateService.postParticipantStatus.calls.reset();
     });
 
-    it('should on introduction page update status to joining', async () => {
-        const profile = new UserProfileResponse({ role: Role.Individual });
-        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
-        participantStatusUpdateService.postParticipantStatus.and.returnValue(Promise.resolve());
+    it('should cover all the user roles in this test', async () => {
+        expect(testCases.length).toBe(Object.keys(Role).length);
+    });
 
-        const result = await guard.canActivate(activateRoute, null);
+    testCases.forEach(testCase => {
+        let shouldOrShouldNotUpdate = 'should NOT update';
+        if (testCase.shouldFireJoiningEvent) {
+            shouldOrShouldNotUpdate = 'should update';
+        }
+        it(`${shouldOrShouldNotUpdate} status when user with ${testCase.role} role navigates from /hearing-list to /introduction`, async () => {
+            const profile = new UserProfileResponse({ role: testCase.role });
+            profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
+            participantStatusUpdateService.postParticipantStatus.and.returnValue(Promise.resolve());
 
-        expect(result).toBeTruthy();
-        expect(participantStatusUpdateService.postParticipantStatus).toHaveBeenCalled();
+            const result = await guard.canActivate(activateRoute, null);
+
+            expect(result).toBeTruthy();
+            const expectedCalls = testCase.shouldFireJoiningEvent ? 1 : 0;
+            expect(participantStatusUpdateService.postParticipantStatus).toHaveBeenCalledTimes(expectedCalls);
+        });
     });
 });

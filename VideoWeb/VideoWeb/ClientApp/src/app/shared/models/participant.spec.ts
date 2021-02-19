@@ -1,4 +1,5 @@
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { Participant } from './participant';
 
 describe('Participant', () => {
@@ -22,5 +23,17 @@ describe('Participant', () => {
         const p = new ConferenceTestData().getConferenceDetailFuture().participants[2];
         const participant = new Participant(p);
         expect(participant.isJudge).toBe(true);
+    });
+
+    it('should return hearing role text', () => {
+        const p = new ConferenceTestData().getConferenceDetailFuture().participants[2];
+        const participant = new Participant(p);
+        expect(participant.hearingRoleText).toBe(HearingRole.JUDGE);
+    });
+
+    it('should return representee hearing role text', () => {
+        const p = new ConferenceTestData().getConferenceDetailFuture().participants[1];
+        const participant = new Participant(p);
+        expect(participant.hearingRoleText).toBe(`${HearingRole.REPRESENTATIVE} for ${p.representee}`);
     });
 });

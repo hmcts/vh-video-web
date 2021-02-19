@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -12,7 +12,7 @@ namespace VideoWeb.IntegrationTests.Api
     public class TokenControllerTests : ControllerTestsBase
     {
         [Test]
-        public void Should_get_token_when_requested_with_correct_participantid()
+        public void Should_get_token_when_requested_with_correct_participant_id()
         {
             var responseMessage = SendGetRequestAsync($"/participants/{Guid.NewGuid()}/selftesttoken").Result;
 
@@ -27,14 +27,14 @@ namespace VideoWeb.IntegrationTests.Api
         }
 
         [Test]
-        public void Should_return_bad_request_when_requested_with_incorrect_participantid()
+        public void Should_return_bad_request_when_requested_with_incorrect_participant_id()
         {
             var responseMessage = SendGetRequestAsync($"/participants/{Guid.Empty}/selftesttoken").Result;
             responseMessage.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         [Test]
-        public void Should_get_Jwtoken_when_requested_with_correct_participantid()
+        public void Should_get_Jwt_token_when_requested_with_correct_participant_id()
         {
             var responseMessage = SendGetRequestAsync($"/participants/{Guid.NewGuid()}/jwtoken").Result;
 
@@ -49,7 +49,7 @@ namespace VideoWeb.IntegrationTests.Api
         }
 
         [Test]
-        public void Should_return_bad_request_when_requested_with_incorrect_participantid_for_jwtoken()
+        public void Should_return_bad_request_when_requested_with_incorrect_participant_id_for_jwt_token()
         {
             var responseMessage = SendGetRequestAsync($"/participants/{Guid.Empty}/jwtoken").Result;
             responseMessage.StatusCode.Should().Be(HttpStatusCode.BadRequest);

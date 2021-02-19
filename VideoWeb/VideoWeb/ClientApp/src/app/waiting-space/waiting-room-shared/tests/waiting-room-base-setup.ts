@@ -3,7 +3,7 @@ import { AdalService } from 'adal-angular4';
 import { of } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { Role, TokenResponse } from 'src/app/services/clients/api-client';
+import { LoggedParticipantResponse, Role, TokenResponse } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
@@ -19,7 +19,8 @@ import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-servi
 import { HearingRole } from '../../models/hearing-role-model';
 import { NotificationSoundsService } from '../../services/notification-sounds.service';
 import { WRTestComponent } from './WRTestComponent';
-
+import { NotificationToastrService } from 'src/app/waiting-space/services/notification-toastr.service';
+import { ToastrService } from 'ngx-toastr';
 const conferenceTestData = new ConferenceTestData();
 
 export let component: WRTestComponent;
@@ -48,6 +49,8 @@ export let deviceTypeService: jasmine.SpyObj<DeviceTypeService>;
 export const videoCallService = videoCallServiceSpy;
 export let consultationService: jasmine.SpyObj<ConsultationService>;
 export let notificationSoundsService: jasmine.SpyObj<NotificationSoundsService>;
+export let notificationToastrService: jasmine.SpyObj<NotificationToastrService>;
+export let toastrService: jasmine.SpyObj<ToastrService>;
 export let logger: jasmine.SpyObj<Logger>;
 export let userMediaService: jasmine.SpyObj<UserMediaService>;
 export let userMediaStreamService: jasmine.SpyObj<UserMediaStreamService>;
@@ -61,13 +64,18 @@ export const jwToken = new TokenResponse({
 });
 
 export function initAllWRDependencies() {
-    videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'getObfuscatedName', 'getJwToken']);
+    videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
+        'getConferenceById',
+        'getObfuscatedName',
+        'getJwToken',
+        'getCurrentParticipant'
+    ]);
     videoWebService.getConferenceById.and.resolveTo(globalConference);
     videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
     videoWebService.getJwToken.and.resolveTo(jwToken);
-
+    videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(new LoggedParticipantResponse({})));
     adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
-        userInfo: <adal.User>{ userName: globalParticipant.username, authenticated: true }
+        userInfo: <adal.User>{ userName: 'chris.green@hearings.net', authenticated: true }
     });
     errorService = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError', 'handleApiError', 'handlePexipError']);
 
@@ -105,6 +113,11 @@ export function initAllWRDependencies() {
     notificationSoundsService = jasmine.createSpyObj<NotificationSoundsService>('NotificationSoundsService', [
         'playHearingAlertSound',
         'initHearingAlertSound',
-        'stopHearingAlertSound'
+        'stopHearingAlertSound',
+        'initConsultationRequestRingtone',
+        'playConsultationRequestRingtone',
+        'stopConsultationRequestRingtone'
     ]);
+    notificationToastrService = jasmine.createSpyObj<NotificationToastrService>('NotificationToastrService', ['showConsultationInvite']);
+    toastrService = jasmine.createSpyObj<ToastrService>('ToastrService', ['show', 'clear']);
 }

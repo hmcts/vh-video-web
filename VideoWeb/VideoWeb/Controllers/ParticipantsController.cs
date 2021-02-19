@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -67,17 +68,16 @@ namespace VideoWeb.Controllers
 
         [HttpPost("{conferenceId}/participantstatus")]
         [SwaggerOperation(OperationId = "UpdateParticipantStatus")]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int) HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> UpdateParticipantStatusAsync(Guid conferenceId,
             UpdateParticipantStatusEventRequest updateParticipantStatusEventRequest)
         {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, 
+            var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
-            
-            var username = User.Identity.Name;
-            var participantId = GetIdForParticipantByUsernameInConference(conference, username);
+
+            var participantId = GetIdForParticipantByUsernameInConference(conference);
             var eventTypeMapper = _mapperFactory.Get<EventType, string>();
             var conferenceEventRequest = new ConferenceEventRequest
             {
@@ -116,8 +116,9 @@ namespace VideoWeb.Controllers
             }
         }
 
-        private Guid GetIdForParticipantByUsernameInConference(Conference conference, string username)
+        private Guid GetIdForParticipantByUsernameInConference(Conference conference)
         {
+            var username = User.Identity.Name;
             return conference.Participants
                 .Single(x => x.Username.Equals(username, StringComparison.CurrentCultureIgnoreCase)).Id;
         }
@@ -131,7 +132,7 @@ namespace VideoWeb.Controllers
             try
             {
                 var score = await _videoApiClient.GetIndependentTestCallResultAsync(participantId);
-                
+
                 return Ok(score);
             }
             catch (VideoApiException e)
@@ -141,6 +142,7 @@ namespace VideoWeb.Controllers
             }
         }
 
+        [Authorize(AppRoles.VhOfficerRole)]
         [HttpGet("{conferenceId}/participant/{participantId}/heartbeatrecent")]
         [SwaggerOperation(OperationId = "GetHeartbeatDataForParticipant")]
         [ProducesResponseType(typeof(ParticipantHeartbeatResponse[]), (int)HttpStatusCode.OK)]
@@ -154,7 +156,8 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to get heartbeat data for participant: {participantId} in conference: {conferenceId}");
+                _logger.LogError(e,
+                    $"Unable to get heartbeat data for participant: {participantId} in conference: {conferenceId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -163,11 +166,12 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "UpdateParticipantDisplayName")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        public async Task<IActionResult> UpdateParticipantDisplayNameAsync(Guid conferenceId, Guid participantId, [FromBody] UpdateParticipantRequest participantRequest)
+        public async Task<IActionResult> UpdateParticipantDisplayNameAsync(Guid conferenceId, Guid participantId,
+            [FromBody] UpdateParticipantRequest participantRequest)
         {
             try
             {
-               await  _videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, participantRequest);
+                await _videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, participantRequest);
             }
             catch (VideoApiException ex)
             {
@@ -185,9 +189,9 @@ namespace VideoWeb.Controllers
         /// <param name="conferenceId">The unique id of the conference</param>
         /// <returns>the participant details, if permitted</returns>
         [HttpGet("{conferenceId}/vhofficer/participants")]
-        [ProducesResponseType(typeof(IEnumerable<ParticipantContactDetailsResponseVho>), (int) HttpStatusCode.OK)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(IEnumerable<ParticipantContactDetailsResponseVho>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [SwaggerOperation(OperationId = "GetParticipantsWithContactDetailsByConferenceId")]
         [Authorize(AppRoles.VhOfficerRole)]
         public async Task<IActionResult> GetParticipantsWithContactDetailsByConferenceIdAsync(Guid conferenceId)
@@ -199,19 +203,21 @@ namespace VideoWeb.Controllers
 
                 return BadRequest(ModelState);
             }
+
             try
             {
-                var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, 
+                var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
                     () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
 
                 _logger.LogTrace($"Retrieving booking participants for hearing ${conference.HearingId}");
                 var judgesInHearingsToday = await _videoApiClient.GetJudgesInHearingsTodayAsync();
 
-                var participantContactDetailsResponseVhoMapper = _mapperFactory.Get<Conference, IEnumerable<JudgeInHearingResponse>, IEnumerable<ParticipantContactDetailsResponseVho>>();
+                var participantContactDetailsResponseVhoMapper = _mapperFactory
+                    .Get<Conference, IEnumerable<JudgeInHearingResponse>,
+                        IEnumerable<ParticipantContactDetailsResponseVho>>();
                 var response = participantContactDetailsResponseVhoMapper.Map(conference, judgesInHearingsToday);
 
                 return Ok(response);
-
             }
             catch (VideoApiException ex)
             {
@@ -221,7 +227,8 @@ namespace VideoWeb.Controllers
             }
             catch (BookingsApiException ex)
             {
-                _logger.LogError(ex, $"Unable to retrieve booking participants from hearing with conferenceId: ${conferenceId}");
+                _logger.LogError(ex,
+                    $"Unable to retrieve booking participants from hearing with conferenceId: ${conferenceId}");
 
                 return StatusCode(ex.StatusCode, ex.Response);
             }
@@ -236,7 +243,8 @@ namespace VideoWeb.Controllers
             try
             {
                 var response = await _videoApiClient.GetParticipantsByConferenceIdAsync(conferenceId);
-                var participantForUserResponsesMapper = _mapperFactory.Get<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>>();
+                var participantForUserResponsesMapper = _mapperFactory
+                    .Get<IEnumerable<ParticipantSummaryResponse>, List<ParticipantForUserResponse>>();
                 var participants = participantForUserResponsesMapper.Map(response);
                 return Ok(participants);
             }
@@ -247,5 +255,59 @@ namespace VideoWeb.Controllers
             }
         }
 
+        [HttpGet("{conferenceId}/currentparticipant")]
+        [SwaggerOperation(OperationId = "GetCurrentParticipant")]
+        [ProducesResponseType(typeof(LoggedParticipantResponse), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetCurrentParticipantAsync(Guid conferenceId)
+        {
+            var participantsRoles = new List<Role>
+            {
+                Role.Judge,
+                Role.Individual,
+                Role.Representative,
+                Role.JudicialOfficeHolder
+            };
+
+            try
+            {
+                var claimsPrincipalToUserProfileResponseMapper =
+                    _mapperFactory.Get<ClaimsPrincipal, UserProfileResponse>();
+                var profile = claimsPrincipalToUserProfileResponseMapper.Map(User);
+                var response = new LoggedParticipantResponse
+                {
+                    AdminUsername = User.Identity.Name,
+                    DisplayName = "Admin",
+                    Role = Role.VideoHearingsOfficer
+                };
+
+                if (participantsRoles.Any(roleParticipant => roleParticipant == profile.Role))
+                {
+                    var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
+                        () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
+                    if (conference != null)
+                    {
+                        var participant = conference.Participants
+                            .Single(x =>
+                                x.Username.Equals(profile.Username, StringComparison.CurrentCultureIgnoreCase));
+
+                        response = new LoggedParticipantResponse
+                        {
+                            ParticipantId = participant.Id,
+                            DisplayName = participant.DisplayName,
+                            Role = participant.Role
+                        };
+                    }
+                }
+
+                return Ok(response);
+            }
+            catch (VideoApiException e)
+            {
+                _logger.LogError(e, $"Unable to get current participant Id for " +
+                                    $"conference: {conferenceId}");
+                return StatusCode(e.StatusCode, e.Response);
+            }
+        }
     }
 }

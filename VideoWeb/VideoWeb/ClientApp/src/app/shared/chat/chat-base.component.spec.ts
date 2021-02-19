@@ -3,7 +3,7 @@ import { AdalService } from 'adal-angular4';
 import { Guid } from 'guid-typescript';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, LoggedParticipantResponse, Role } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { InstantMessage } from 'src/app/services/models/instant-message';
@@ -34,9 +34,15 @@ class ChatBaseTest extends ChatBaseComponent {
     sendMessage(messageBody: string): void {
         this.messagesSent.push(messageBody);
     }
+
     get participantUsername(): string {
-        return 'participant.unit@test.com';
+        return 'participant.unit@hmcts.net';
     }
+
+    get participantId(): string {
+        return '1111-1111';
+    }
+
     handleIncomingOtherMessage(messsage: InstantMessage) {
         this.incomingMessages.push(messsage);
     }
@@ -59,7 +65,10 @@ describe('ChatBaseComponent', () => {
         });
         conference = new ConferenceTestData().getConferenceDetailFuture();
         hearing = new Hearing(conference);
-        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceChatHistory']);
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
+            'getConferenceChatHistory',
+            'getCurrentParticipant'
+        ]);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', [
             'checkCacheForProfileByUsername',
             'getProfileByUsername',
@@ -71,21 +80,30 @@ describe('ChatBaseComponent', () => {
         component = new ChatBaseTest(videoWebServiceSpy, profileServiceSpy, eventsService, new MockLogger(), adalService, new ImHelper());
         contentElement = document.createElement('div');
         component.content = new ElementRef(contentElement);
+        component.loggedInUser = new LoggedParticipantResponse({
+            participant_id: '1111-1111',
+            display_name: 'somename',
+            role: Role.Judge,
+            admin_username: 'admin@hmcts.net'
+        });
     });
 
     it('should remove message from pending list', () => {
         const instantMessage = new InstantMessage({
             conferenceId: conference.id,
             id: Guid.create().toString(),
-            from: 'admin@test.com',
-            to: component.participantUsername,
+            from: 'admin@hmcts.net',
+            to: '1111-1111',
             message: 'test message',
             timestamp: new Date()
         });
 
         component.addMessageToPending(instantMessage);
-        expect(component.pendingMessagesForConversation.length).toBe(1);
+        expect(component.pendingMessages.size).toBe(1);
+
         component.removeMessageFromPending(instantMessage);
+        expect(component.pendingMessages.size).toBe(1);
+        expect(component.pendingMessages.get(instantMessage.to).length).toBe(0);
         expect(component.pendingMessagesForConversation.length).toBe(0);
     });
 

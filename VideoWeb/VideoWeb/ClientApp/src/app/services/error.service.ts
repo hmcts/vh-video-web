@@ -7,16 +7,24 @@ import { ApiException } from './clients/api-client';
 import { Logger } from './logging/logger-base';
 import { SessionStorage } from './session-storage';
 import { ConnectionStatusService } from './connection-status.service';
+import { LocationService } from './location.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ErrorService {
-    constructor(private router: Router, private logger: Logger, private connectionStatusService: ConnectionStatusService) {
+    constructor(
+        private router: Router,
+        private logger: Logger,
+        private connectionStatusService: ConnectionStatusService,
+        private locationService: LocationService
+    ) {
         this.errorMessage = new SessionStorage<ErrorMessage>(this.ERROR_MESSAGE_KEY);
         this.errorCameraMicMessage = new SessionStorage<string>(this.ERROR_CAMERA_MIC_MESSAGE_KEY);
         this.connectionStatusService.onConnectionStatusChange().subscribe(online => {
-            if (!online) {
+            const currentPathName = this.locationService.getCurrentPathName();
+            const isWaitingRoom = currentPathName.indexOf('waiting-room') > 0;
+            if (!online && !isWaitingRoom) {
                 return this.goToServiceError(
                     `There's a problem with your connection`,
                     'Please click "Reconnect" to return to the previous page. Call us if you keep seeing this message.'
@@ -113,8 +121,8 @@ export class ErrorService {
         const isConnectionError = connectionErrors.filter(x => error.reason.toLowerCase().includes(x.toLowerCase())).length > 0;
         if (isConnectionError) {
             this.goToServiceError(
-                `Sorry, there's a problem with the service`,
-                `Your hearing cannot take place as planned. Everyone attending is affected. The court or tribunal know something is wrong. You do not need to take any action. We’ll contact you with another date. You may now close this page.`
+                `There's a problem with your connection`,
+                `Please click "Reconnect" to return to the previous page. Call us if you keep seeing this message.`
             );
             return;
         }

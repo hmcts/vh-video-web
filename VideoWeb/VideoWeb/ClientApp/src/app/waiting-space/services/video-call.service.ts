@@ -48,8 +48,9 @@ export class VideoCallService {
     private onDisconnectedPresentationSubject = new Subject<DisconnectedPresentation>();
 
     pexipAPI: PexipClient;
+    localOutgoingStream: any;
     get isAudioOnlyCall(): boolean {
-        return this.pexipAPI.call_type === this.callTypeAudioOnly;
+        return this.pexipAPI.call_type === this.callTypeAudioOnly || this.pexipAPI.video_source === false;
     }
 
     constructor(private logger: Logger, private userMediaService: UserMediaService, private apiClient: ApiClient) {
@@ -75,9 +76,6 @@ export class VideoCallService {
         this.pexipAPI.screenshare_fps = 30;
 
         this.pexipAPI.onSetup = function (stream, pinStatus, conferenceExtension) {
-            // Although a participant may connect as audio only, they should still be able to see the video hearing like anyone else
-            self.pexipAPI.call.recv_video = true;
-            self.pexipAPI.call.video_source = self.pexipAPI.video_source;
             self.onSetupSubject.next(new CallSetup(stream));
         };
 
@@ -157,10 +155,9 @@ export class VideoCallService {
      * @param participantDisplayName the tiled display name (i.e. tile position and display name for video call)
      * @param maxBandwidth the maximum bandwith
      */
-    makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number, audioOnly: boolean = false) {
+    makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
         this.initCallTag();
-        const callType = audioOnly ? this.callTypeAudioOnly : null;
-        this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, callType);
+        this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
     }
 
     disconnectFromCall() {
@@ -359,6 +356,18 @@ export class VideoCallService {
 
     updateVideoCallPreferences(updatedPreferences: VideoCallPreferences) {
         this.videoCallPreferences.set(updatedPreferences);
+    }
+
+    reconnectToCallWithNewDevices() {
+        this.pexipAPI.disconnectCall();
+        this.pexipAPI.addCall(null);
+    }
+
+    switchToAudioOnlyCall() {
+        this.pexipAPI.disconnectCall();
+        this.localOutgoingStream = this.pexipAPI.video_source;
+        this.pexipAPI.video_source = false;
+        this.pexipAPI.addCall('video');
     }
 
     async selectScreen() {
