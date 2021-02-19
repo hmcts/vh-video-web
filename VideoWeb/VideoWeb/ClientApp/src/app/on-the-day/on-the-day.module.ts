@@ -21,9 +21,10 @@ import { IndependentSelfTestComponent } from './independent-self-test/independen
 import { PluraliseTextPipe } from '../shared/pipes/pluraliseText.pipe';
 import { SelfTestActionsComponent } from './self-test-actions/self-test-actions.component';
 import { UnsupportedDeviceComponent } from '../shared/unsupported-device/unsupported-device.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
-    imports: [CommonModule, SharedModule, OnTheDayRoutingModule],
+    imports: [CommonModule, SharedModule, OnTheDayRoutingModule, TranslateModule],
     declarations: [
         DeclarationComponent,
         HearingRulesComponent,

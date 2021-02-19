@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import * as moment from 'moment';
 import { ConferenceForIndividualResponse } from 'src/app/services/clients/api-client';
 
@@ -10,6 +11,9 @@ export class HearingListTableComponent {
     @Input() conferences: ConferenceForIndividualResponse[];
     @Output() selectedConference = new EventEmitter<ConferenceForIndividualResponse>();
 
+    constructor(private translate: TranslateService) {
+    }
+    
     signIntoConference(conference: ConferenceForIndividualResponse) {
         this.selectedConference.emit(conference);
     }
@@ -19,10 +23,10 @@ export class HearingListTableComponent {
         const scheduledDate = moment(conference.scheduled_date_time).utc().dayOfYear();
 
         if (today >= scheduledDate) {
-            return 'Today';
+            return this.translate.instant('hearing-list-table.today');
         } else {
             const dateString = moment(conference.scheduled_date_time).format('Do MMM');
-            return 'on ' + dateString;
+            return this.translate.instant('hearing-list-table.on-date', {date: dateString});
         }
     }
 

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AccessibilityComponent } from './accessibility/accessibility.component';
@@ -30,6 +30,13 @@ import { ToastrModule } from 'ngx-toastr';
 import { VhToastComponent } from './toast/vh-toast.component';
 import { StartPrivateConsultationComponent } from '../waiting-space/participant-waiting-room/start-private-consultation/start-private-consultation.component';
 import { JoinPrivateConsultationComponent } from '../waiting-space/participant-waiting-room/join-private-consultation/join-private-consultation.component';
+import { TranslateModule, TranslateLoader, MissingTranslationHandler } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { DisplayMissingTranslationHandler } from './display-missing-translation-handler';
+
+export function createTranslateLoader(http: HttpClient) {
+    return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
 
 @NgModule({
     imports: [
@@ -40,6 +47,15 @@ import { JoinPrivateConsultationComponent } from '../waiting-space/participant-w
         SharedRoutingModule,
         ToastrModule.forRoot({
             toastComponent: VhToastComponent
+        }),
+        TranslateModule.forRoot({
+            defaultLanguage: 'en',
+            missingTranslationHandler: {provide: MissingTranslationHandler, useClass: DisplayMissingTranslationHandler},
+            loader: {
+                provide: TranslateLoader,
+                useFactory: (createTranslateLoader),
+                deps: [HttpClient]
+            }
         })
     ],
     declarations: [
@@ -90,7 +106,8 @@ import { JoinPrivateConsultationComponent } from '../waiting-space/participant-w
         ChatInputBoxComponent,
         ChatBodyWindowComponent,
         TooltipDirective,
-        ErrorCameraMicrophoneComponent
+        ErrorCameraMicrophoneComponent,
+        TranslateModule
     ]
 })
 export class SharedModule {}
