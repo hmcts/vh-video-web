@@ -389,7 +389,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         expect(component.screenShareStream).toBe(null);
     });
 
-    it('should set screenshare stream to null on disconnected', async () => {
+    it('should set select and start on startScreenShare', async () => {
         // Act
         await component.startScreenShare();
 

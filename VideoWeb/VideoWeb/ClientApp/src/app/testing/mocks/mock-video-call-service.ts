@@ -77,7 +77,8 @@ videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>(
         'startScreenShare',
         'stopScreenShare',
         'retrievePresentation',
-        'stopPresentation'
+        'stopPresentation',
+        'selectScreen'
     ],
     {
         pexipAPI: pexipApiMock
