@@ -13,15 +13,14 @@
   z-index: 100;
 }
 
-#incomingFeedPresentation {
+#secondIncomingFeedOld {
   position: fixed;
-  left: 0;
-  top: 0;
-  min-width: 100%;
-  min-height: 80vh;
-  max-width: 100%;
-  max-height: 90vh;
+  right: 10px;
+  top: 10px;
+  width: 300px;
+  min-height: auto;
   z-index: 101;
+  cursor: pointer;
 }
 
 .transferMessage {

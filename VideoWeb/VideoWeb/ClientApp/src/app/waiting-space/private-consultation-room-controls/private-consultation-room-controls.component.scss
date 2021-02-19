@@ -26,6 +26,7 @@
   cursor: pointer;
   opacity: 0.5;
   margin-right: 20px;
+  max-height: 25px;
   font-size: 1.5em;
   color: govuk-colour('white');
 }
@@ -58,8 +59,19 @@
   -moz-transform: rotateY(180deg); /* Firefox */
 }
 
+#outgoingFeedPresentVideo {
+  bottom: 5.5vh;
+  width: 259px;
+}
+
 .outgoing-video-container {
   bottom: 10px;
+  left: 10px;
+  position: fixed;
+}
+
+.outgoing-video-present-container {
+  top: 10px;
   left: 10px;
   position: fixed;
 }

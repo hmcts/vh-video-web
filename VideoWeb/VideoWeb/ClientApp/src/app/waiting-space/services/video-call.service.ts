@@ -104,30 +104,27 @@ export class VideoCallService {
         };
 
         this.pexipAPI.onPresentation = function (setting, presenter, uuid) {
-            console.info(`${self.loggerPrefix} Presentation status changed: ${setting}`);
+            self.logger.info(`${self.loggerPrefix} Presentation status changed: ${setting}`);
             self.onPresentationSubject.next(new Presentation(setting));
         };
 
         this.pexipAPI.onPresentationConnected = function (stream) {
-            console.info(`${self.loggerPrefix} Presentation connected`);
-            console.info(stream);
-            console.info((<MediaStream>stream).getAudioTracks().length);
+            self.logger.info(`${self.loggerPrefix} Presentation connected`);
             self.onConnectedPresentationSubject.next(new ConnectedPresentation(stream));
         };
 
         this.pexipAPI.onPresentationDisconnected = function (reason) {
-            console.info(`${self.loggerPrefix} Presentation disconnected : ${JSON.stringify(reason)}`);
+            self.logger.info(`${self.loggerPrefix} Presentation disconnected : ${JSON.stringify(reason)}`);
             self.onDisconnectedPresentationSubject.next(new DisconnectedPresentation(reason));
         };
 
         this.pexipAPI.onScreenshareConnected = function (stream) {
-            console.info(`${self.loggerPrefix} Screenshare connected`);
-            console.info(stream);
+            self.logger.info(`${self.loggerPrefix} Screenshare connected`);
             self.onConnectedScreenshareSubject.next(new ConnectedScreenshare(stream));
         };
 
         this.pexipAPI.onScreenshareStopped = function (reason) {
-            console.info(`${self.loggerPrefix} Presentation disconnected : ${JSON.stringify(reason)}`);
+            self.logger.info(`${self.loggerPrefix} Presentation disconnected : ${JSON.stringify(reason)}`);
             self.onStoppedScreenshareSubject.next(new StoppedScreenshare(reason));
         };
     }
@@ -147,14 +144,7 @@ export class VideoCallService {
             this.updateMicrophoneForCall(preferredMic);
         }
     }
-
-    /**
-     *
-     * @param pexipNode the node hosting the pexip server
-     * @param conferenceAlias the participant uri
-     * @param participantDisplayName the tiled display name (i.e. tile position and display name for video call)
-     * @param maxBandwidth the maximum bandwith
-     */
+    
     makeCall(pexipNode: string, conferenceAlias: string, participantDisplayName: string, maxBandwidth: number) {
         this.initCallTag();
         this.pexipAPI.makeCall(pexipNode, conferenceAlias, participantDisplayName, maxBandwidth, null);
@@ -376,18 +366,22 @@ export class VideoCallService {
     }
 
     startScreenShare() {
+        this.logger.info(`${this.loggerPrefix} startScreenShare`);
         this.pexipAPI.present('screen');
     }
 
     stopScreenShare() {
+        this.logger.info(`${this.loggerPrefix} stopScreenShare`);
         this.pexipAPI.present(null);
     }
 
     retrievePresentation() {
+        this.logger.info(`${this.loggerPrefix} retrievePresentation`);
         this.pexipAPI.getPresentation();
     }
 
     stopPresentation() {
+        this.logger.info(`${this.loggerPrefix} stopPresentation`);
         this.pexipAPI.stopPresentation();
     }
 }

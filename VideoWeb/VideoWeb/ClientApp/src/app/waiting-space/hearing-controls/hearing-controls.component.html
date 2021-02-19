@@ -5,7 +5,17 @@
         [ngClass]="{ 'vh-fade-in': selfViewOpen, 'vh-fade-out': !selfViewOpen }"
         id="outgoingFeedVideo"
         [muted]="true"
-        [srcObject]="screenShareStream ? screenShareStream : outgoingStream"
+        [srcObject]="outgoingStream"
+        autoplay
+        height="auto"
+      >
+        Your browser does not support Video
+      </video>
+      <video
+        [ngClass]="{ 'vh-fade-in': screenShareStream, 'vh-fade-out': !screenShareStream }"
+        id="outgoingFeedPresentVideo"
+        [muted]="true"
+        [srcObject]="screenShareStream"
         autoplay
         height="auto"
       >
@@ -98,7 +108,7 @@
         />
 
         <img
-          *ngIf="!isPrivateConsultation && isJudge && !screenShareStream"
+          *ngIf="!screenShareStream"
           appTooltip
           text="Start screenshare"
           [colour]="'grey'"
@@ -110,7 +120,7 @@
         />
 
         <img
-          *ngIf="!isPrivateConsultation && isJudge && screenShareStream"
+          *ngIf="screenShareStream"
           appTooltip
           text="Stop screenshare"
           [colour]="'red'"
