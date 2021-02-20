@@ -36,7 +36,7 @@ describe('NotificationSoundsService', () => {
     it('should start catch error when playing consulation request ringing sound', async () => {
         const audio = new Audio();
         const spy = spyOn(logger, 'error');
-        spyOn(audio, 'play').and.returnValue(Promise.reject(new Error('Permission not granted')));
+        spyOn(audio, 'play').and.rejectWith(new Error('TestError, Permission not granted'));
         service.consultationRequestSound = audio;
         await service.playHearingAlertSound();
 
@@ -106,7 +106,7 @@ describe('NotificationSoundsService', () => {
     it('should start catch error when playing hearing starting sound', async () => {
         const audio = new Audio();
         const spy = spyOn(logger, 'error');
-        spyOn(audio, 'play').and.returnValue(Promise.reject(new Error('Permission not granted')));
+        spyOn(audio, 'play').and.rejectWith(new Error('TestError, Permission not granted'));
         service.hearingAlertSound = audio;
         service.hearingAlertPlayCount = 1;
         await service.playHearingAlertSound();

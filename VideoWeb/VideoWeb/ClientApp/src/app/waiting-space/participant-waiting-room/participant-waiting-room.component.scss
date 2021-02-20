@@ -80,3 +80,13 @@
   max-height: 90vh;
   z-index: 100;
 }
+
+#secondIncomingFeed {
+  position: fixed;
+  left: 10px;
+  top: 10px;
+  width: 300px;
+  min-height: auto;
+  z-index: 101;
+  cursor: pointer;
+}

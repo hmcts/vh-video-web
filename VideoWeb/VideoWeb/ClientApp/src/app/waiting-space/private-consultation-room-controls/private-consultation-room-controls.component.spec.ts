@@ -9,9 +9,14 @@ import {
     hearingCountdownCompleteSubjectMock,
     participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
-import { onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
+import {
+    onParticipantUpdatedMock,
+    onScreenshareConnectedMock,
+    onScreenshareStoppedMock,
+    videoCallServiceSpy
+} from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { ParticipantUpdated } from '../models/video-call-models';
+import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '../models/video-call-models';
 import { PrivateConsultationRoomControlsComponent } from './private-consultation-room-controls.component';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
@@ -24,6 +29,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
     const videoCallService = videoCallServiceSpy;
     const onParticipantUpdatedSubject = onParticipantUpdatedMock;
+    const onScreenshareConnectedSubject = onScreenshareConnectedMock;
+    const onScreenshareStoppedSubject = onScreenshareStoppedMock;
 
     const logger: Logger = new MockLogger();
 
@@ -35,6 +42,10 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         component.conferenceId = gloalConference.id;
         component.setupEventhubSubscribers();
         component.setupVideoCallSubscribers();
+
+        videoCallService.startScreenShare.calls.reset();
+        videoCallService.stopScreenShare.calls.reset();
+        videoCallService.selectScreen.calls.reset();
     });
 
     afterEach(() => {
@@ -352,5 +363,46 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         spyOn(component.leaveConsultation, 'emit');
         component.leavePrivateConsultation();
         expect(component.leaveConsultation.emit).toHaveBeenCalled();
+    });
+
+    it('should set screenshare stream on connected', () => {
+        // Arrange
+        const stream = <any>{};
+        const payload = new ConnectedScreenshare(stream);
+
+        // Act
+        onScreenshareConnectedSubject.next(payload);
+
+        // Assert
+        expect(component.screenShareStream).toBe(stream);
+    });
+
+    it('should set screenshare stream to null on disconnected', () => {
+        // Arrange
+        component.screenShareStream = <any>{};
+        const payload = new StoppedScreenshare('reason');
+
+        // Act
+        onScreenshareStoppedSubject.next(payload);
+
+        // Assert
+        expect(component.screenShareStream).toBe(null);
+    });
+
+    it('should set select and start on startScreenShare', async () => {
+        // Act
+        await component.startScreenShare();
+
+        // Assert
+        expect(videoCallService.selectScreen).toHaveBeenCalledTimes(1);
+        expect(videoCallService.startScreenShare).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call stopScreenShare on stopScreenShare', async () => {
+        // Act
+        await component.stopScreenShare();
+
+        // Assert
+        expect(videoCallService.stopScreenShare).toHaveBeenCalledTimes(1);
     });
 });

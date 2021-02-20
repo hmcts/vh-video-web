@@ -4,6 +4,7 @@ import { MockLogger } from '../testing/mocks/MockLogger';
 import { SessionStorage } from './session-storage';
 import { UserMediaService } from './user-media.service';
 import { ErrorService } from '../services/error.service';
+import { component } from '../waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 
 describe('UserMediaService', () => {
     const testData = new MediaDeviceTestData();
@@ -124,6 +125,7 @@ describe('UserMediaService', () => {
         const message = 'enumerateDevices() not supported.';
         await expectAsync(service.updateAvailableDevicesList()).toBeRejectedWithError(message);
     });
+
     it('should update cache with default preferred mic and cam if it was not set', async () => {
         const sessionStorageMic = new SessionStorage<UserMediaDevice>(service.PREFERRED_MICROPHONE_KEY);
         const sessionStorageCam = new SessionStorage<UserMediaDevice>(service.PREFERRED_CAMERA_KEY);
@@ -141,6 +143,7 @@ describe('UserMediaService', () => {
         expect(sessionStorageCam.get().label).toBe(cachedCams[0].label);
         expect(sessionStorageMic.get().label).toBe(cachedMics[0].label);
     });
+
     it('should update cache with default preferred mic and cam and throw exception if no devices available', async () => {
         const sessionStorageMic = new SessionStorage<UserMediaDevice>(service.PREFERRED_MICROPHONE_KEY);
         const sessionStorageCam = new SessionStorage<UserMediaDevice>(service.PREFERRED_CAMERA_KEY);
@@ -148,7 +151,6 @@ describe('UserMediaService', () => {
         sessionStorageCam.clear();
         sessionStorageMic.clear();
         const cachedMics = testData.getListOfMicrophones();
-        const cachedCams = testData.getListOfCameras();
 
         spyOn(service, 'getListOfVideoDevices').and.throwError(new Error('Could not get access to camera/microphone'));
         spyOn(service, 'getListOfMicrophoneDevices').and.returnValue(Promise.resolve(cachedMics));
@@ -156,5 +158,34 @@ describe('UserMediaService', () => {
         await service.setDefaultDevicesInCache();
 
         expect(errrorServiceSpy.handlePexipError).toHaveBeenCalled();
+    });
+
+    it('should return stream of selected device when selecting screen to share', async () => {
+        // Arrange
+        const stream = <any>{};
+        const getDisplayMediaSpy = spyOn(navigator.mediaDevices as any, 'getDisplayMedia')
+            .withArgs({ video: true, audio: true })
+            .and.returnValue(stream);
+
+        // Act
+        const resultStream = await service.selectScreenToShare();
+
+        // Assert
+        expect(resultStream).toBe(stream);
+        expect(getDisplayMediaSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return null if exception is throw when selecting stream to share', async () => {
+        // Arrange
+        const getDisplayMediaSpy = spyOn(navigator.mediaDevices as any, 'getDisplayMedia')
+            .withArgs({ video: true, audio: true })
+            .and.throwError('testException');
+
+        // Act
+        const resultStream = await service.selectScreenToShare();
+
+        // Assert
+        expect(resultStream).toBe(null);
+        expect(getDisplayMediaSpy).toHaveBeenCalledTimes(1);
     });
 });
