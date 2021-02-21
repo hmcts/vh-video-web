@@ -15,7 +15,10 @@ export class ParticipantNetworkHealthComponent extends ParticipantNetworkHealthB
     eventSubscriptions$ = new Subscription();
     networkHealth?: HeartbeatHealth;
 
-    constructor(protected eventsService: EventsService, private modalService: ModalService) {
+    constructor(
+        protected eventsService: EventsService,
+        private modalService: ModalService
+    ) {
         super(eventsService);
     }
 

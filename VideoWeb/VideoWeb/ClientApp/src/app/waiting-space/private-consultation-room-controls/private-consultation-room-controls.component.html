@@ -80,7 +80,7 @@
 
         <div class="flexBar"></div>
           
-        <button *ngIf="isPrivateConsultation && showConsultationControls" id="lockButton" class="small-button " [class]="roomLocked ? 'greygreen' : 'greyred'" data-module="govuk-button"
+        <button *ngIf="isPrivateConsultation && showConsultationControls && !isJOHConsultation" id="lockButton" class="small-button " [class]="roomLocked ? 'greygreen' : 'greyred'" data-module="govuk-button"
           style="margin-right: 15px;"
           (click)="lockPrivateConsultation(!roomLocked)"
           type="button">
@@ -89,7 +89,7 @@
         </button>
 
         <button *ngIf="showConsultationControls" id="leaveButton" class="small-button red" data-module="govuk-button"
-          style="margin-right: 25px;" (click)="leavePrivateConsultation()" type="button"
+          style="margin-right: 25px;" (click)="displayConfirmLeaveDialog()" type="button"
           alt="Leave the private consultation">
           Leave
         </button>
@@ -99,3 +99,4 @@
 </div>
 <app-confirm-close-hearing-popup *ngIf="displayConfirmPopup" (popupAnswered)="close($event)">
 </app-confirm-close-hearing-popup>
+<app-confirm-leave-consultation-popup *ngIf="displayConfirmLeavePopup" (popupAnswered)="leaveConsultationConfirmed($event)"></app-confirm-leave-consultation-popup>

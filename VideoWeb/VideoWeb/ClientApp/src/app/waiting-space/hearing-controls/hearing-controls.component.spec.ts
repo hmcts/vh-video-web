@@ -360,4 +360,24 @@ describe('HearingControlsComponent', () => {
         component.leavePrivateConsultation();
         expect(component.leaveConsultation.emit).toHaveBeenCalled();
     });
+    it('should indicates that it is the JOH consultation and returns true if participant is JOH or Judge', () => {
+        component.participant = gloalConference.participants.find(x => x.role === Role.Judge);
+        expect(component.isJOHConsultation).toBe(true);
+    });
+    it('should display confirmation popup on the leaving the consultation', () => {
+        component.displayConfirmLeaveDialog();
+        expect(component.displayConfirmLeavePopup).toBe(true);
+    });
+    it('should leave consultation on confirm', () => {
+        spyOn(component.leaveConsultation, 'emit');
+        component.leaveConsultationConfirmed(true);
+        expect(component.displayConfirmLeavePopup).toBe(false);
+        expect(component.leaveConsultation.emit).toHaveBeenCalled();
+    });
+    it('should stay in consultation on confirm cancel', () => {
+        spyOn(component.leaveConsultation, 'emit');
+        component.leaveConsultationConfirmed(false);
+        expect(component.displayConfirmLeavePopup).toBe(false);
+        expect(component.leaveConsultation.emit).toHaveBeenCalledTimes(0);
+    });
 });

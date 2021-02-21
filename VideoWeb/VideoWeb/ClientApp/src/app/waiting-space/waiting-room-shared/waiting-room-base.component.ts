@@ -164,6 +164,10 @@ export abstract class WaitingRoomBaseComponent {
         }
     }
 
+    getCaseNameAndNumber() {
+        return `${this.conference.case_name}: ${this.conference.case_number}`;
+    }
+
     startEventHubSubscribers() {
         this.logger.debug(`${this.loggerPrefix} Subscribing to conference status changes...`);
         this.eventHubSubscription$.add(

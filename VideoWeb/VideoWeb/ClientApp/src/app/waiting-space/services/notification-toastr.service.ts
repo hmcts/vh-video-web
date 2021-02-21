@@ -99,4 +99,28 @@ export class NotificationToastrService {
         this.toastr.clear();
         this.notificationSoundService.stopConsultationRequestRingtone();
     }
+
+    reportPoorConnection() {
+        let message = `<span class="govuk-!-font-weight-bold">Alert</span>`;
+        message += `<br/>Your internet connection is poor. People may have trouble seeing and hearing you.<br/>`;
+        const toast = this.toastr.show('', '', {
+            timeOut: 120000,
+            tapToDismiss: false,
+            toastComponent: VhToastComponent
+        });
+        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
+            color: 'white',
+            htmlBody: message,
+            onNoAction: async () => {},
+            buttons: [
+                {
+                    label: 'Dismiss',
+                    hoverColour: 'green',
+                    action: async () => {
+                        this.clearAllToastNotifications();
+                    }
+                }
+            ]
+        };
+    }
 }
