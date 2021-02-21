@@ -27,7 +27,11 @@ export class NotificationSoundsService {
     }
 
     async playConsultationRequestRingtone() {
-        await this.consultationRequestSound.play();
+        await this.consultationRequestSound.play().catch(err => {
+            this.logger.error(`${this.loggerPrefix} failed to play consultation request ringtone`, err, {
+                errorMessage: this.consultationRequestSound.error
+            });
+        });
     }
 
     stopConsultationRequestRingtone() {
@@ -43,7 +47,11 @@ export class NotificationSoundsService {
             this.hearingAlertPlayCount = 1;
         }
         this.logger.debug(`${this.loggerPrefix} playing hearing starting sound`);
-        return this.hearingAlertSound.play();
+        return this.hearingAlertSound.play().catch(err => {
+            this.logger.error(`${this.loggerPrefix} failed to play hearing alert sound`, err, {
+                errorMessage: this.hearingAlertSound.error
+            });
+        });
     }
 
     stopHearingAlertSound() {
