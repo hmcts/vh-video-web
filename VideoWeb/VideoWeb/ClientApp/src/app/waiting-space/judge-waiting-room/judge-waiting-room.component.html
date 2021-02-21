@@ -11,7 +11,6 @@
     </div>
     <div [ngClass]="{ 'govuk-grid-column-three-quarters': !isAdminConsultation }">
         <div class="hearing-video">
-            <!-- hearing video-->
             <div *ngIf="isAdminConsultation || isPrivateConsultation" class="video-background">
 
                 <div class="header-bar" *ngIf="isPrivateConsultation">
@@ -40,23 +39,23 @@
                     </div>
 
                     <div class="video-wrapper">
-                        <video id="incomingFeedJudgePrivate" [srcObject]="this.stream" autoplay height="auto" class="incomingFeedPrivate">
+                           <video id="incomingFeed" [srcObject]="presentationStream && !streamInMain ? presentationStream : stream" autoplay height="auto" poster="/assets/images/empty_crest.jpg">
                             Your browser does not support Video
                         </video>
-                    </div>
-                </div>
-            </div>
-
-            <div *ngIf="!isAdminConsultation && !isPrivateConsultation">
-                <div class="video-background"></div>
+      <div id="secondIncomingFeedOld"
+        *ngIf="presentationStream"
+        (click)="switchStreamWindows()"
+        appTooltip
+        text="Switch to main screen"
+        colour="grey">
                 <video id="incomingFeedJudge"
-                       [srcObject]="this.stream"
+          [srcObject]="presentationStream && !streamInMain ? stream : presentationStream"
                        autoplay
                        height="auto"
-                       class="incomingFeed"
                        poster="/assets/images/empty_crest.jpg">
+          class="fill-container">
                     Your browser does not support Video
-                </video>
+      </video>
             </div>
         </div>
 

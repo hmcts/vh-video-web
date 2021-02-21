@@ -6,8 +6,38 @@
         Your browser does not support Video
       </video>
     </div>
+    <div class="outgoing-present-video-container">
+      <video [ngClass]="{ 'vh-fade-in': this.screenShareStream, 'vh-fade-out': !this.screenShareStream }" id="outgoingFeedPresentVideo"
+        [muted]="true" [srcObject]="this.screenShareStream" autoplay height="auto">
+        Your browser does not support Video
+      </video>
+    </div>
     <div class="controls-container govuk-grid-column-one-quarters" [ngClass]="{ 'judge-controls-padding': isJudge }">
       <div class="icons-container">
+        <img
+          *ngIf="!screenShareStream"
+          appTooltip
+          text="Start screenshare"
+          [colour]="'grey'"
+          id="start-screenshare-img"
+          class="icon-button"
+          src="/assets/images/share-screen.png"
+          alt="Start sharing screen"
+          (click)="startScreenShare()"
+        />
+        <img
+          *ngIf="screenShareStream"
+          appTooltip
+          text="Stop screenshare"
+          [colour]="'red'"
+          id="stop-screenshare-img"
+          class="icon-button"
+          src="/assets/images/stop-share.png"
+          alt="Stop sharing screen"
+          (click)="stopScreenShare()"
+        />
+
+        <div class="flexBar"></div>
         
         <div class="icon-button"
           id="toggle-self-view-img" 

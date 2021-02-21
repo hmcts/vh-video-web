@@ -13,7 +13,8 @@ export function consultationServiceSpyFactory(): jasmine.SpyObj<ConsultationServ
         'stopCallRinging',
         'initCallRingingSound',
         'inviteToConsulation',
-        'lockConsultation'
+        'lockConsultation',
+        'displayConsultationLeaveModal'
     ]);
 
     consultationServiceMock.respondToConsultationRequest.and.returnValue(Promise.resolve());
