@@ -90,8 +90,9 @@ namespace VideoWeb.Controllers
         {
             var conference = await GetConference(request.ConferenceId);
             var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedById);
-            if (participant == null)
+            if (participant == null && request.RequestedById != Guid.Empty)
             {
+                // Participants other than VHO
                 return NotFound();
             }
 
