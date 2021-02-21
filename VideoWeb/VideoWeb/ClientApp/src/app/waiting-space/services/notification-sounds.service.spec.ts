@@ -3,9 +3,11 @@ import { NotificationSoundsService } from './notification-sounds.service';
 
 describe('NotificationSoundsService', () => {
     let service: NotificationSoundsService;
+    let logger = new MockLogger();
 
     beforeEach(() => {
-        service = new NotificationSoundsService(new MockLogger());
+        logger = new MockLogger();
+        service = new NotificationSoundsService(logger);
     });
 
     it('should init consulation request sound', () => {
@@ -23,12 +25,22 @@ describe('NotificationSoundsService', () => {
 
     it('should start playing consulation request ringing sound', () => {
         const audio = new Audio();
-        spyOn(audio, 'play');
+        spyOn(audio, 'play').and.resolveTo();
         service.consultationRequestSound = audio;
 
         service.playConsultationRequestRingtone();
 
         expect(audio.play).toHaveBeenCalled();
+    });
+
+    it('should start catch error when playing consulation request ringing sound', async () => {
+        const audio = new Audio();
+        const spy = spyOn(logger, 'error');
+        spyOn(audio, 'play').and.rejectWith(new Error('TestError, Permission not granted'));
+        service.consultationRequestSound = audio;
+        await service.playHearingAlertSound();
+
+        expect(spy).toHaveBeenCalled();
     });
 
     it('should stop playing consulation request ringing sound', () => {
@@ -51,7 +63,7 @@ describe('NotificationSoundsService', () => {
 
     it('should init hearing starting sound on play if not already initialised', () => {
         const audio = new Audio();
-        spyOn(audio, 'play');
+        spyOn(audio, 'play').and.resolveTo();
 
         service.hearingAlertSound = undefined;
         spyOn(service, 'initHearingAlertSound').and.callFake(() => {
@@ -64,7 +76,7 @@ describe('NotificationSoundsService', () => {
 
     it('should reset play count on play hearing sound', () => {
         const audio = new Audio();
-        spyOn(audio, 'play');
+        spyOn(audio, 'play').and.resolveTo();
         service.hearingAlertSound = audio;
         service.hearingAlertPlayCount = 4;
         service.playHearingAlertSound();
@@ -83,7 +95,7 @@ describe('NotificationSoundsService', () => {
 
     it('should start playing hearing starting sound', () => {
         const audio = new Audio();
-        spyOn(audio, 'play');
+        spyOn(audio, 'play').and.resolveTo();
         service.hearingAlertSound = audio;
         service.hearingAlertPlayCount = 1;
         service.playHearingAlertSound();
@@ -91,14 +103,15 @@ describe('NotificationSoundsService', () => {
         expect(audio.play).toHaveBeenCalled();
     });
 
-    it('should start playing hearing starting sound', () => {
+    it('should start catch error when playing hearing starting sound', async () => {
         const audio = new Audio();
-        spyOn(audio, 'play');
+        const spy = spyOn(logger, 'error');
+        spyOn(audio, 'play').and.rejectWith(new Error('TestError, Permission not granted'));
         service.hearingAlertSound = audio;
         service.hearingAlertPlayCount = 1;
-        service.playHearingAlertSound();
+        await service.playHearingAlertSound();
 
-        expect(audio.play).toHaveBeenCalled();
+        expect(spy).toHaveBeenCalled();
     });
 
     it('should pause and reset play count when hearing starting sound is stopped', () => {

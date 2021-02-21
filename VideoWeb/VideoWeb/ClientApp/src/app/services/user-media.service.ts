@@ -148,4 +148,16 @@ export class UserMediaService {
             this.errorService.handlePexipError(new CallError(error.name), null);
         }
     }
+
+    async selectScreenToShare(): Promise<MediaStream> {
+        let captureStream = null;
+        try {
+            const displayOptions = { video: true, audio: true };
+            const mediaDevices = navigator.mediaDevices as any;
+            captureStream = await mediaDevices.getDisplayMedia(displayOptions);
+        } catch (err) {
+            this.logger.error(`${this.loggerPrefix} Failed to get a stream for display media`, err);
+        }
+        return captureStream;
+    }
 }

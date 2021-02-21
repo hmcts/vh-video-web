@@ -5,9 +5,24 @@
 <div *ngIf="showVideo && !isPrivateConsultation">
   <div class="video-background"></div>
   <div class="govuk-grid-column-one-half">
-    <video id="incomingFeed" [srcObject]="this.stream" autoplay height="auto" poster="/assets/images/empty_crest.jpg">
+    <video id="incomingFeed" [srcObject]="presentationStream && !streamInMain ? presentationStream : stream" autoplay height="auto" poster="/assets/images/empty_crest.jpg">
       Your browser does not support Video
     </video>
+    <div id="secondIncomingFeedOld"
+      *ngIf="presentationStream"
+      (click)="switchStreamWindows()"
+      appTooltip
+      text="Switch to main screen"
+      colour="grey">
+      <video
+        [srcObject]="presentationStream && !streamInMain ? stream : presentationStream"
+        autoplay
+        height="auto"
+        poster="/assets/images/empty_crest.jpg"
+        class="fill-container">
+        Your browser does not support Video
+    </video>
+    </div>
   </div>
 </div>
 
@@ -45,9 +60,24 @@
       <app-private-consultation-participants [conference]="hearing.getConference()" [roomLabel]="this.participant.current_room?.label"></app-private-consultation-participants>
     </div>
     <div class="video-wrapper">
-      <video id="incomingFeedPrivate" autoplay [srcObject]="this.stream" poster="/assets/images/empty_crest.jpg">
+      <video id="incomingFeedPrivate" autoplay [srcObject]="presentationStream && !streamInMain ? presentationStream : stream" poster="/assets/images/empty_crest.jpg">
         Your browser does not support Video
       </video>
+      <div id="secondIncomingFeed"
+        *ngIf="presentationStream"
+        (click)="switchStreamWindows()"
+        appTooltip
+        text="Switch to main screen"
+        colour="grey">
+        <video
+          [srcObject]="presentationStream && !streamInMain ? stream : presentationStream"
+          autoplay
+          height="auto"
+          poster="/assets/images/empty_crest.jpg"
+          class="fill-container">
+        Your browser does not support Video
+      </video>
+    </div>
     </div>
   </div>
 </div>

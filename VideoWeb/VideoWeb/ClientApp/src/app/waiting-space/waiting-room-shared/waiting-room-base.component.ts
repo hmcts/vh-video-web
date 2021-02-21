@@ -32,7 +32,15 @@ import { Room } from 'src/app/shared/models/room';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
 import { HearingRole } from '../models/hearing-role-model';
-import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models/video-call-models';
+import {
+    CallError,
+    CallSetup,
+    ConnectedCall,
+    ConnectedPresentation,
+    DisconnectedCall,
+    DisconnectedPresentation,
+    Presentation
+} from '../models/video-call-models';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { VideoCallService } from '../services/video-call.service';
@@ -61,6 +69,8 @@ export abstract class WaitingRoomBaseComponent {
     stream: MediaStream | URL;
     connected: boolean;
     outgoingStream: MediaStream | URL;
+    presentationStream: MediaStream | URL;
+    streamInMain = false;
 
     showVideo: boolean;
     isTransferringIn: boolean;
@@ -390,7 +400,50 @@ export abstract class WaitingRoomBaseComponent {
 
         this.videoCallSubscription$.add(this.videoCallService.onCallTransferred().subscribe(() => this.handleCallTransfer()));
 
+        this.videoCallSubscription$.add(
+            this.videoCallService.onPresentation().subscribe(presentation => this.handlePresentationStatusChange(presentation))
+        );
+
+        this.videoCallSubscription$.add(
+            this.videoCallService
+                .onPresentationConnected()
+                .subscribe(connectedPresentation => this.handlePresentationConnected(connectedPresentation))
+        );
+
+        this.videoCallSubscription$.add(
+            this.videoCallService
+                .onPresentationDisconnected()
+                .subscribe(discconnectedPresentation => this.handlePresentationDisonnected(discconnectedPresentation))
+        );
+
         await this.videoCallService.setupClient();
+    }
+
+    handlePresentationStatusChange(presentation: Presentation): void {
+        if (presentation.presentationStarted) {
+            this.videoCallService.retrievePresentation();
+        } else {
+            this.videoCallService.stopPresentation();
+        }
+    }
+
+    handlePresentationDisonnected(discconnectedPresentation: DisconnectedPresentation): void {
+        const logPayload = {
+            conference: this.conferenceId,
+            participant: this.participant.id,
+            reason: discconnectedPresentation.reason
+        };
+        this.logger.warn(`${this.loggerPrefix} Presentation disconnected`, logPayload);
+        this.presentationStream = null;
+        this.videoCallService.stopPresentation();
+    }
+    handlePresentationConnected(connectedPresentation: ConnectedPresentation): void {
+        const logPayload = {
+            conference: this.conferenceId,
+            participant: this.participant.id
+        };
+        this.logger.debug(`${this.loggerPrefix} Successfully connected to presentation`, logPayload);
+        this.presentationStream = connectedPresentation.stream;
     }
 
     call() {
@@ -468,6 +521,7 @@ export abstract class WaitingRoomBaseComponent {
         this.updateShowVideo();
         this.logger.warn(`${this.loggerPrefix} Disconnected from pexip. Reason : ${reason.reason}`);
         if (!this.hearing.isPastClosedTime()) {
+            this.logger.warn(`${this.loggerPrefix} Attempting to reconnect to pexip in ${this.CALL_TIMEOUT}ms`);
             this.callbackTimeout = setTimeout(() => {
                 this.call();
             }, this.CALL_TIMEOUT);
@@ -741,5 +795,9 @@ export abstract class WaitingRoomBaseComponent {
 
     showLeaveConsultationModal(): void {
         this.consultationService.displayConsultationLeaveModal();
+    }
+
+    switchStreamWindows(): void {
+        this.streamInMain = !this.streamInMain;
     }
 }
