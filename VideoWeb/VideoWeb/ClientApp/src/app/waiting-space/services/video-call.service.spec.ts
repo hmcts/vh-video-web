@@ -34,7 +34,8 @@ describe('VideoCallService', () => {
             'getPreferredCamera',
             'getPreferredMicrophone',
             'updatePreferredCamera',
-            'updatePreferredMicrophone'
+            'updatePreferredMicrophone',
+            'selectScreenToShare'
         ]);
 
         preferredCamera = testData.getListOfCameras()[0];
@@ -59,7 +60,10 @@ describe('VideoCallService', () => {
             'clearAllBuzz',
             'setParticipantSpotlight',
             'disconnectCall',
-            'addCall'
+            'addCall',
+            'present',
+            'getPresentation',
+            'stopPresentation'
         ]);
         service = new VideoCallService(logger, userMediaService, apiClient);
         await service.setupClient();
@@ -80,6 +84,11 @@ describe('VideoCallService', () => {
         expect(service.onParticipantUpdated()).toBeDefined();
         expect(service.onConferenceUpdated()).toBeDefined();
         expect(service.onCallTransferred()).toBeDefined();
+        expect(service.onPresentation()).toBeDefined();
+        expect(service.onPresentationConnected()).toBeDefined();
+        expect(service.onPresentationDisconnected()).toBeDefined();
+        expect(service.onScreenshareConnected()).toBeDefined();
+        expect(service.onScreenshareStopped()).toBeDefined();
     });
 
     it('should use default devices on setup if no preferred devices found', async () => {
@@ -248,5 +257,63 @@ describe('VideoCallService', () => {
 
         expect(pexipSpy.disconnectCall).toHaveBeenCalled();
         expect(pexipSpy.addCall).toHaveBeenCalledWith('video');
+    });
+
+    it('should select stream and set user_presentation_stream', async () => {
+        // Arrange
+        const stream = <any>{};
+        service.pexipAPI = pexipSpy;
+        service.pexipAPI.user_presentation_stream = null;
+        userMediaService.selectScreenToShare.and.returnValue(stream);
+
+        // Act
+        await service.selectScreen();
+
+        // Assert
+        expect(pexipSpy.user_presentation_stream).toBe(stream);
+    });
+
+    it('should call present when starting screen share', async () => {
+        // Arrange
+        service.pexipAPI = pexipSpy;
+
+        // Act
+        await service.startScreenShare();
+
+        // Assert
+        expect(pexipSpy.present).toHaveBeenCalledWith('screen');
+    });
+
+    it('should call present null when stopping screen share', async () => {
+        // Arrange
+        service.pexipAPI = pexipSpy;
+
+        // Act
+        await service.stopScreenShare();
+
+        // Assert
+        expect(pexipSpy.present).toHaveBeenCalledWith(null);
+    });
+
+    it('should call retrieve presentaion', async () => {
+        // Arrange
+        service.pexipAPI = pexipSpy;
+
+        // Act
+        await service.retrievePresentation();
+
+        // Assert
+        expect(pexipSpy.getPresentation).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call stop presentaion', async () => {
+        // Arrange
+        service.pexipAPI = pexipSpy;
+
+        // Act
+        await service.stopPresentation();
+
+        // Assert
+        expect(pexipSpy.stopPresentation).toHaveBeenCalledTimes(1);
     });
 });
