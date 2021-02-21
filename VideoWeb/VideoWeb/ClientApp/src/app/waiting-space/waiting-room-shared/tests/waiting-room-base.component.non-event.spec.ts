@@ -320,4 +320,11 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(component.clockSubscription$.unsubscribe).toHaveBeenCalled();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.Home]);
     });
+    it('should return string with case name and number', () => {
+        const caseName = component.conference.case_name;
+        const caseNumber = component.conference.case_number;
+        const result = component.getCaseNameAndNumber();
+        expect(result.indexOf(caseName)).toBeGreaterThan(-1);
+        expect(result.indexOf(caseName)).toBeGreaterThan(-1);
+    });
 });

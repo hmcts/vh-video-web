@@ -24,7 +24,7 @@ export class ParticipantNetworkPoorAlertComponent extends ParticipantNetworkHeal
         if (this.participant.id === heartbeat.participantId) {
             this.networkHealth = heartbeat.heartbeatHealth;
             if (this.isNetworkPoor && this.isInConsultation) {
-                this.notificationToastrService.reportPoorConnection();
+                this.notificationToastrService.reportPoorConnection(heartbeat);
             }
         }
     }

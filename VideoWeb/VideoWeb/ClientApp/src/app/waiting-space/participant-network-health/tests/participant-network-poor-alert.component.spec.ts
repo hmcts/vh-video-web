@@ -41,4 +41,39 @@ describe('ParticipantNetworkPoorAlertComponent', () => {
         component.handleHeartbeat(payload);
         expect(notificationToastrService.reportPoorConnection).toHaveBeenCalled();
     });
+    it('should show not alert if network connection is poor if participant is not in consultation', () => {
+        globalParticipant.status = ParticipantStatus.InHearing;
+        component.participant = globalParticipant;
+        notificationToastrService.reportPoorConnection.calls.reset();
+        const payload = new ParticipantHeartbeat(
+            globalConference.id,
+            globalParticipant.id,
+            HeartbeatHealth.Poor,
+            'Chrome',
+            '82.0.0',
+            'Mac OS X',
+            '10.15.1'
+        );
+        heartbeatSubject.next(payload);
+        component.handleHeartbeat(payload);
+        expect(notificationToastrService.reportPoorConnection).toHaveBeenCalledTimes(0);
+    });
+    it('should not handle heartbeat if participant is not user', () => {
+        globalParticipant.status = ParticipantStatus.InHearing;
+        component.participant = globalParticipant;
+        notificationToastrService.reportPoorConnection.calls.reset();
+
+        const payload = new ParticipantHeartbeat(
+            globalConference.id,
+            '1234-5678-678',
+            HeartbeatHealth.Poor,
+            'Chrome',
+            '82.0.0',
+            'Mac OS X',
+            '10.15.1'
+        );
+        heartbeatSubject.next(payload);
+        component.handleHeartbeat(payload);
+        expect(notificationToastrService.reportPoorConnection).toHaveBeenCalledTimes(0);
+    });
 });
