@@ -33,45 +33,57 @@
                         </ng-container>
                     </div>
                 </div>
+
                 <div class="govuk-grid-column-full">
                     <div *ngIf="hearing && isPrivateConsultation" class="participant-wrapper">
                         <app-private-consultation-participants [conference]="hearing.getConference()" [roomLabel]="this.participant.current_room?.label"></app-private-consultation-participants>
                     </div>
 
                     <div class="video-wrapper">
-                           <video id="incomingFeed" [srcObject]="presentationStream && !streamInMain ? presentationStream : stream" autoplay height="auto" poster="/assets/images/empty_crest.jpg">
+                        <video id="incomingFeedJudgePrivate" [srcObject]="this.stream" autoplay height="auto" class="incomingFeedPrivate">
                             Your browser does not support Video
                         </video>
-      <div id="secondIncomingFeedOld"
-        *ngIf="presentationStream"
-        (click)="switchStreamWindows()"
-        appTooltip
-        text="Switch to main screen"
-        colour="grey">
-                <video id="incomingFeedJudge"
-          [srcObject]="presentationStream && !streamInMain ? stream : presentationStream"
-                       autoplay
-                       height="auto"
-                       poster="/assets/images/empty_crest.jpg">
-          class="fill-container">
-                    Your browser does not support Video
-      </video>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <ng-container *ngIf="!isPrivateConsultation">
-            <app-hearing-controls [participant]="participant"
-                                  [isPrivateConsultation]="isPrivateConsultation"
-                                  [audioOnly]="audioOnly"
-                                  [outgoingStream]="outgoingStream"
-                                  [conferenceId]="conference.id"
-                                  [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
-                                  [showConsultationControls]="showConsultationControls"
-                                  (leaveConsulation)="leaveJudicialConsultation()"></app-hearing-controls>
-        </ng-container>
+            <div *ngIf="!isAdminConsultation && !isPrivateConsultation">
+                <div class="video-background"></div>
+
+                <video id="incomingFeed" [srcObject]="presentationStream && !streamInMain ? presentationStream : stream" autoplay height="auto" poster="/assets/images/empty_crest.jpg">
+                    Your browser does not support Video
+                </video>
+                <div id="secondIncomingFeedOld"
+                     *ngIf="presentationStream"
+                     (click)="switchStreamWindows()"
+                     appTooltip
+                     text="Switch to main screen"
+                     colour="grey">
+                    <video id="incomingFeedJudge"
+                           [srcObject]="presentationStream && !streamInMain ? stream : presentationStream"
+                           autoplay
+                           height="auto"
+                           poster="/assets/images/empty_crest.jpg">
+                        class="fill-container">
+                        Your browser does not support Video
+                    </video>
+                </div>
+            </div>
+
+
+            <ng-container *ngIf="!isPrivateConsultation">
+                <app-hearing-controls [participant]="participant"
+                                      [isPrivateConsultation]="isPrivateConsultation"
+                                      [audioOnly]="audioOnly"
+                                      [outgoingStream]="outgoingStream"
+                                      [conferenceId]="conference.id"
+                                      [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
+                                      [showConsultationControls]="showConsultationControls"
+                                      (leaveConsulation)="leaveJudicialConsultation()"></app-hearing-controls>
+            </ng-container>
+        </div>
     </div>
 </div>
-
 <div *ngIf="!loadingData && conference" [ngClass]="{ 'no-mass': showVideo }">
     <a id="back-to-hearing-list-link" href="javascript:void(0)" (click)="goToJudgeHearingList()" class="govuk-back-link">
         Return to video hearing list
