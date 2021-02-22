@@ -201,6 +201,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         });
         await this.consultationService.createParticipantConsultationRoom(this.conference, this.participant, participants);
         this.closeStartPrivateConsultationModal();
+        this.privateConsultationAccordianExpanded = false;
     }
 
     async joinPrivateConsultation(roomLabel: string) {
@@ -211,6 +212,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         });
         await this.consultationService.joinPrivateConsultationRoom(this.conference.id, this.participant.id, roomLabel);
         this.closeJoinPrivateConsultationModal();
+        this.privateConsultationAccordianExpanded = false;
     }
 
     async setRoomLock(lock: boolean) {
