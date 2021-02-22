@@ -1,8 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { Participant } from 'src/app/shared/models/participant';
-
 @Component({
     selector: 'app-start-private-consultation',
     templateUrl: './start-private-consultation.component.html',
@@ -10,17 +8,18 @@ import { Participant } from 'src/app/shared/models/participant';
 })
 export class StartPrivateConsultationComponent {
     selectedParticipants = Array<string>();
-    @Input() participants: Participant[];
+    @Input() participants: ParticipantResponse[];
     @Output() continue = new EventEmitter<string[]>();
     @Output() cancel = new EventEmitter();
-
     constructor(protected logger: Logger) {}
 
+    participantHearingRoleText(participant: ParticipantResponse): string {
+        return participant.representee ? `${participant.hearing_role} for ${participant.representee}` : participant.hearing_role;
+    }
     participantSelected(id: string): boolean {
         const index = this.selectedParticipants.indexOf(id);
         return index >= 0;
     }
-
     toggleParticipant(id: string) {
         const index = this.selectedParticipants.indexOf(id);
         if (index >= 0) {
@@ -29,46 +28,38 @@ export class StartPrivateConsultationComponent {
             this.selectedParticipants.push(id);
         }
     }
-
     onContinue() {
         this.continue.emit(this.selectedParticipants);
     }
-
     onCancel() {
         this.cancel.emit();
     }
-
-    getParticipantDisabled(participant): boolean {
+    getParticipantDisabled(participant: ParticipantResponse): boolean {
         return participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation;
     }
-    getParticipantStatusCss(participant: Participant): string {
+
+    getParticipantStatusCss(participant: ParticipantResponse): string {
         if (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) {
             return 'unavailable';
         } else if (participant.status === ParticipantStatus.InConsultation) {
             return 'in-consultation';
         }
     }
-
-    getShouldDisplayLabel(participant: Participant): boolean {
+    getShouldDisplayLabel(participant: ParticipantResponse): boolean {
         return this.getParticipantDisabled(participant) || participant.status === ParticipantStatus.InConsultation;
     }
-
-    getParticipantStatus(participant: Participant): string {
+    getParticipantStatus(participant: ParticipantResponse): string {
         if (this.getParticipantDisabled(participant)) {
             return 'Unavailable';
         }
-
-        if (participant.status === ParticipantStatus.InConsultation && participant.base.current_room != null) {
+        if (participant.status === ParticipantStatus.InConsultation && participant.current_room != null) {
             return (
                 'In ' +
-                this.camelToSpaced(
-                    participant.base.current_room.label.replace('ParticipantConsultationRoom', 'MeetingRoom')
-                ).toLowerCase() +
-                (participant.base.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
+                this.camelToSpaced(participant.current_room.label.replace('ParticipantConsultationRoom', 'MeetingRoom')).toLowerCase() +
+                (participant.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
             );
         }
     }
-
     protected camelToSpaced(word: string) {
         const splitWord = word
             .match(/[a-z]+|[^a-z]+/gi)
