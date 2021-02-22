@@ -12,7 +12,7 @@ import { ClockService } from 'src/app/services/clock.service';
 })
 export class RoomClosingToastComponent extends VhToastComponent implements OnInit, OnDestroy {
     durationStr: string;
-    private timeLeft$: Subscription;
+    timeLeft$: Subscription;
     private hearing: Hearing;
     private expiryTime: Date;
 

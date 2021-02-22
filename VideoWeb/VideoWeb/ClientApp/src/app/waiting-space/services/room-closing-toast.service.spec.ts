@@ -1,8 +1,10 @@
 import * as moment from 'moment';
-import { ToastrService } from 'ngx-toastr';
+import { ActiveToast, ToastrService } from 'ngx-toastr';
+import { Observable, of } from 'rxjs';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { RoomClosingToastComponent } from 'src/app/shared/toast/room-closing/room-closing-toast.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { RoomClosingToastrService } from './room-closing-toast.service';
@@ -20,8 +22,16 @@ export class RoomClosingToastrServiceFacade extends RoomClosingToastrService {
         return super.getGates(expiresAt);
     }
 
+    hasEarliestGateBeenPassed(gates: moment.Moment[], now: moment.Moment) {
+        return super.hasEarliestGateBeenPassed(gates, now);
+    }
+
     isGateBetweenLastShownTimeAndNowDate(gates: moment.Moment[], now: moment.Moment): boolean {
         return super.isGateBetweenLastShownTimeAndNowDate(gates, now);
+    }
+
+    showToast(hearing: Hearing, now: moment.Moment) {
+        super.showToast(hearing, now);
     }
 }
 
@@ -32,8 +42,17 @@ describe('RoomClosingToastrService', () => {
     let toastrService: jasmine.SpyObj<ToastrService>;
 
     beforeEach(() => {
+        const mockToast = {
+            toastRef: {
+                componentInstance: {
+                    setHearing(hearing: Hearing) {
+                        console.log(hearing);
+                    }
+                }
+            }
+        } as ActiveToast<RoomClosingToastComponent>;
         toastrService = jasmine.createSpyObj<ToastrService>('ToastrService', ['show', 'clear']);
-
+        toastrService.show.and.returnValue(mockToast);
         sut = new RoomClosingToastrServiceFacade(logger, toastrService);
         sut.setRoomClosingLastShown(moment(new Date(2021, 1, 1, 0, 0, 0, 0)));
     });
@@ -85,10 +104,6 @@ describe('RoomClosingToastrService', () => {
     });
 
     describe('shouldShowAlert()', () => {
-        it('should create the sut', async () => {
-            expect(sut).toBeTruthy();
-        });
-
         it('should return false when hearing is NOT closed', async () => {
             // arrange
             const hearing = getNotClosedHearing();
@@ -150,6 +165,40 @@ describe('RoomClosingToastrService', () => {
         });
     });
 
+    describe('hasEarliestGateBeenPassed()', () => {
+        it('should return false when earliest gate has NOT been passed', async () => {
+            // arrange
+            const momentNow = moment(new Date(2021, 1, 1, 10, 0, 0, 0));
+            const later = moment(new Date(2021, 1, 1, 10, 0, 1, 0));
+            const gates = [later];
+
+            console.error('momentNow ' + momentNow.toDate());
+            console.error('later     ' + later.toDate());
+
+            // act
+            const result = sut.hasEarliestGateBeenPassed(gates, momentNow);
+
+            // assert
+            expect(result).toBeFalsy();
+        });
+
+        it('should return true when earliest gate has been passed', async () => {
+            // arrange
+            const momentNow = moment(new Date(2021, 1, 1, 10, 0, 0, 0));
+            const earlier = moment(new Date(2021, 1, 1, 9, 59, 59, 0));
+            const gates = [earlier];
+
+            console.error('momentNow  ' + momentNow);
+            console.error('earlier    ' + earlier);
+
+            // act
+            const result = sut.hasEarliestGateBeenPassed(gates, momentNow);
+
+            // assert
+            expect(result).toBeTruthy();
+        });
+    });
+
     describe('isGateBetweenLastShownTimeAndNowDate()', () => {
         it('should return true when "time now" is not between gate and expiry date', async () => {
             // arrange
@@ -190,6 +239,42 @@ describe('RoomClosingToastrService', () => {
 
             // assert
             expect(result).toBeTruthy();
+        });
+    });
+
+    describe('showToast()', () => {
+        it('should show toast and set all correct properties', () => {
+            // arrange
+            const hearing = getClosedButNotExpiredHearing();
+            sut.setRoomClosingLastShown(moment(hearing.getConference().closed_date_time));
+
+            const expiresAt = hearing.retrieveExpiryTime();
+            const now = moment(expiresAt).subtract(4, 'minutes').subtract(59, 'seconds');
+
+            // act
+            sut.showToast(hearing, now);
+
+            // assert
+            expect(sut.isCurrentlyShowingToast).toBeTrue();
+            expect(toastrService.show).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    // test for public method:
+    describe('showRoomClosingAlert()', () => {
+        it('should show toast when all conditiona are met', () => {
+            // arrange
+            const hearing = getClosedButNotExpiredHearing();
+            sut.setRoomClosingLastShown(moment(hearing.getConference().closed_date_time));
+
+            const expiresAt = hearing.retrieveExpiryTime();
+            const now = moment(expiresAt).subtract(4, 'minutes').subtract(59, 'seconds');
+
+            // act
+            sut.showRoomClosingAlert(hearing, now.toDate());
+
+            // assert
+            expect(toastrService.show).toHaveBeenCalledTimes(1);
         });
     });
 });

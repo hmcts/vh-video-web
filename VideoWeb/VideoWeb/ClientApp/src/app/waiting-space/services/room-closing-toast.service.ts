@@ -35,7 +35,7 @@ export class RoomClosingToastrService {
         const expiresAt = hearing.retrieveExpiryTime();
         const gates = this.getGates(expiresAt);
 
-        if (this.hasEarliestGateBeenPassed(gates, now)) {
+        if (!this.hasEarliestGateBeenPassed(gates, now)) {
             return;
         }
 
@@ -64,15 +64,14 @@ export class RoomClosingToastrService {
 
     protected getGates(expiresAt: Date): moment.Moment[] {
         const gates: moment.Moment[] = [];
-        for (let i = 0; i < this.durations.length; i++) {
-            const duration = this.durations[i];
+        for (const duration of this.durations) {
             gates.push(moment(expiresAt).subtract(duration));
         }
         return gates;
     }
 
-    hasEarliestGateBeenPassed(gates: moment.Moment[], now: moment.Moment): boolean {
-        return now.isBefore(gates[0]);
+    protected hasEarliestGateBeenPassed(gates: moment.Moment[], now: moment.Moment): boolean {
+        return now.isAfter(gates[0]);
     }
 
     protected isGateBetweenLastShownTimeAndNowDate(gates: moment.Moment[], now: moment.Moment): boolean {

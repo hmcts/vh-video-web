@@ -1,90 +1,66 @@
 import * as moment from 'moment';
+import { BasePortalHost, OverlayRef, Toast, ToastPackage, ToastRef } from 'ngx-toastr';
+import { toastrService } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 import { RoomClosingToastComponent } from './room-closing-toast.component';
 import { Hearing } from '../../models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
-import { Injectable, NgModule, NO_ERRORS_SCHEMA } from '@angular/core';
-import { IndividualConfig, ToastPackage, ToastRef, ToastrModule, ToastrService } from 'ngx-toastr';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
 
-// --> https://github.com/scttcper/ngx-toastr/issues/339
-@Injectable()
-class MockToastPackage extends ToastPackage {
-    constructor() {
-        const toastConfig = { toastClass: 'custom-toast' };
-        super(1, <IndividualConfig>toastConfig, 'test message', 'test title', 'show', new ToastRef(null));
-    }
-}
-@NgModule({
-    providers: [{ provide: ToastPackage, useClass: MockToastPackage }],
-    imports: [ToastrModule.forRoot()],
-    exports: [ToastrModule]
-})
-export class ToastrTestingModule {}
-// <-- https://github.com/scttcper/ngx-toastr/issues/339
-
 describe('RoomClosingToastComponent', () => {
-    let fixture: ComponentFixture<RoomClosingToastComponent>;
-    let toastPackageMock: {
-        toastId: number;
-        toastType: string;
-        afterActivate: jasmine.Spy;
-        config: { toastClass: string };
-        message: string;
-        title: string;
-        toastRef: ToastRef<unknown>;
-    };
-
     const conferenceTestData = new ConferenceTestData();
+    let toastPackage: ToastPackage;
     let clockServiceMock: jasmine.SpyObj<ClockService>;
     let sut: RoomClosingToastComponent;
     const timeNow = new Date(2021, 1, 1, 10, 0, 0, 0);
 
-    beforeEach(
-        waitForAsync(() => {
-            toastPackageMock = {
-                toastId: 1,
-                toastType: 'success',
-                afterActivate: jasmine.createSpy('afterActivate'),
-                config: { toastClass: 'custom-toast' },
-                message: 'test message',
-                title: 'test title',
-                toastRef: new ToastRef(null)
-            };
+    beforeEach(() => {
+        const config = {
+            disableTimeOut: false,
+            timeOut: 1,
+            closeButton: true,
+            extendedTimeOut: 1,
+            progressBar: false,
+            progressAnimation: null,
+            enableHtml: false,
+            toastClass: 'toast',
+            positionClass: 'toast',
+            titleClass: 'toast',
+            messageClass: 'toast',
+            easing: 'ease-in',
+            easeTime: 300,
+            tapToDismiss: false,
+            toastComponent: Toast,
+            onActivateTick: false,
+            newestOnTop: false
+        };
+        const toastRef = new ToastRef(
+            new OverlayRef(
+                jasmine.createSpyObj<BasePortalHost>('BasePortalHost', ['detach'])
+            )
+        );
+        toastPackage = new ToastPackage(1, config, 'tast toast', 'test', 'test', toastRef);
 
-            clockServiceMock = jasmine.createSpyObj<ClockService>('ClockService', ['getClock']);
-            clockServiceMock.getClock.and.returnValue(of(timeNow));
+        clockServiceMock = jasmine.createSpyObj<ClockService>('ClockService', ['getClock']);
+        clockServiceMock.getClock.and.returnValue(of(timeNow));
 
-            TestBed.configureTestingModule({
-                declarations: [RoomClosingToastComponent],
-                imports: [BrowserAnimationsModule, ToastrModule.forRoot()],
-                providers: [
-                    { provide: ToastPackage, useValue: toastPackageMock },
-                    { provide: ClockService, useValue: clockServiceMock }
-                ],
-                schemas: [NO_ERRORS_SCHEMA]
-            });
+        sut = new RoomClosingToastComponent(toastrService, toastPackage, clockServiceMock);
 
-            fixture = TestBed.createComponent(RoomClosingToastComponent);
-            sut = fixture.componentInstance;
-            sut.vhToastOptions = {
-                color: 'white',
-                onNoAction: async () => {
-                    console.log('Toast Dismissed!');
-                },
-                buttons: []
-            };
-        })
-    );
+        const onNoActionSpy = jasmine.createSpy().and.callFake(function () {
+            return false;
+        });
+        sut.vhToastOptions = {
+            color: 'white',
+            onNoAction: onNoActionSpy,
+            buttons: []
+        };
+        sut.ngOnInit();
+    });
 
-    afterEach(
-        waitForAsync(() => {
-            fixture.destroy();
-        })
-    );
+    afterEach(() => {
+        sut.ngOnDestroy();
+    });
 
     function getClosedButNotExpiredHearing(closedDateTime: Date): Hearing {
         const c = conferenceTestData.getConferenceDetailFuture();
@@ -97,14 +73,14 @@ describe('RoomClosingToastComponent', () => {
         return hearing;
     }
 
-    it(
-        'should create the sut',
-        waitForAsync(() => {
-            fixture.detectChanges();
+    it('should create the sut', () => {
+        expect(sut).toBeTruthy();
+    });
 
-            expect(sut).toBeTruthy();
-        })
-    );
+    it('should unsubscribe all subcriptions on destroy component', () => {
+        sut.ngOnDestroy();
+        expect(sut.timeLeft$.closed).toBeTruthy();
+    });
 
     [
         { minsLeft: 29, secondsLeft: 59 },
@@ -125,10 +101,61 @@ describe('RoomClosingToastComponent', () => {
             // act
             sut.setHearing(hearing);
             sut.calcTimeLeft(timeNow);
-            fixture.detectChanges();
 
             // assert
             expect(sut.durationStr).toEqual(timeLeftString);
         });
+    });
+
+    it('should call onNoAction if not actioned when removed', () => {
+        sut.actioned = false;
+        sut.remove();
+        expect(sut.vhToastOptions.onNoAction).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not call onNoAction if actioned when removed', () => {
+        sut.actioned = true;
+        sut.remove();
+        expect(sut.vhToastOptions.onNoAction).toHaveBeenCalledTimes(0);
+    });
+
+    it('should call remove on base', () => {
+        spyOn(RoomClosingToastComponent.prototype, 'remove');
+        sut.remove();
+        expect(RoomClosingToastComponent.prototype.remove).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return true for get black', () => {
+        sut.vhToastOptions.color = 'black';
+        expect(sut.black).toBeTruthy();
+    });
+
+    it('should return false for get black', () => {
+        sut.vhToastOptions.color = 'white';
+        expect(sut.black).toBeFalsy();
+    });
+
+    it('should return true for get white', () => {
+        sut.vhToastOptions.color = 'white';
+        expect(sut.white).toBeTruthy();
+    });
+
+    it('should return false for get white', () => {
+        sut.vhToastOptions.color = 'black';
+        expect(sut.white).toBeFalsy();
+    });
+
+    it('should set actioned when handle action is called', () => {
+        sut.actioned = false;
+        sut.handleAction(function () {});
+        expect(sut.actioned).toBeTruthy();
+    });
+
+    it('should execute passed function when action is called', () => {
+        const functionSpy = jasmine.createSpy().and.callFake(function () {
+            return false;
+        });
+        sut.handleAction(functionSpy);
+        expect(functionSpy).toHaveBeenCalledTimes(1);
     });
 });
