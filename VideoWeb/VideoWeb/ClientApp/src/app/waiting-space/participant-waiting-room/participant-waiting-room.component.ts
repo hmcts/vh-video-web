@@ -170,6 +170,10 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         return this.participant?.hearing_role === HearingRole.WITNESS;
     }
 
+    get isObserver(): boolean {
+        return this.participant?.hearing_role === HearingRole.OBSERVER;
+    }
+
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
         super.handleConferenceStatusChange(message);
         if (!this.validateIsForConference(message.conferenceId)) {
@@ -191,7 +195,21 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     }
 
     getPrivateConsultationParticipants(): Participant[] {
-        return this.conference.participants.map(p => new Participant(p)).filter(p => !p.isJudge && p.id !== this.participant.id);
+        return this.conference.participants
+            .filter(
+                p =>
+                    p.id !== this.participant.id &&
+                    p.hearing_role !== HearingRole.WITNESS &&
+                    p.hearing_role !== HearingRole.OBSERVER &&
+                    p.hearing_role !== HearingRole.PANEL_MEMBER &&
+                    p.hearing_role !== HearingRole.WINGER &&
+                    p.hearing_role !== HearingRole.JUDGE
+            )
+            .map(p => new Participant(p));
+    }
+
+    get canStartJoinConsultation() {
+        return !this.isWitness && !this.isObserver;
     }
 
     async startPrivateConsultation(participants: string[]) {
