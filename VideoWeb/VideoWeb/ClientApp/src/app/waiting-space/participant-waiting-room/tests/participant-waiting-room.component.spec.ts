@@ -235,19 +235,31 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.openJoinConsultationModal();
         expect(component.displayJoinPrivateConsultationModal).toBeTruthy();
     });
-    it('should return non judge participants from getPrivateConsultationParticipants', () => {
+    it('should return non judge and joh participants from getPrivateConsultationParticipants', () => {
+        const joh = new ParticipantResponse();
+        joh.role = Role.JudicialOfficeHolder;
         const judge = new ParticipantResponse();
         judge.role = Role.Judge;
-        const nonJudge = new ParticipantResponse();
-        nonJudge.role = Role.Representative;
-        component.conference.participants = [judge, judge, nonJudge, nonJudge, nonJudge];
+        const representative = new ParticipantResponse();
+        representative.hearing_role = HearingRole.REPRESENTATIVE;
+        component.conference.participants = [judge, judge, representative, representative, representative, joh, joh, joh];
+        expect(component.getPrivateConsultationParticipants().length).toBe(3);
+    });
+    it('should return non observer and witness participants from getPrivateConsultationParticipants', () => {
+        const witness = new ParticipantResponse();
+        witness.hearing_role = HearingRole.WITNESS;
+        const observer = new ParticipantResponse();
+        observer.hearing_role = HearingRole.OBSERVER;
+        const representative = new ParticipantResponse();
+        representative.hearing_role = HearingRole.REPRESENTATIVE;
+        component.conference.participants = [witness, witness, observer, observer, representative, representative, representative];
         expect(component.getPrivateConsultationParticipants().length).toBe(3);
     });
     it('should not return current participant from private consultation participants', () => {
         const thisParticipant = new ParticipantResponse();
         thisParticipant.id = 'guid';
         const otherParticipant = new ParticipantResponse();
-        thisParticipant.id = 'other-guid';
+        otherParticipant.id = 'other-guid';
         component.participant = thisParticipant;
         component.conference.participants = [thisParticipant, otherParticipant];
         expect(component.getPrivateConsultationParticipants().length).toBe(1);
