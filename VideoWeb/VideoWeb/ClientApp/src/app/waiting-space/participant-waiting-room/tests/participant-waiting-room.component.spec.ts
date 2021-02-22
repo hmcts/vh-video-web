@@ -174,25 +174,53 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         });
     });
 
-    it('should return false when the participant is not a witness', () => {
-        component.participant.hearing_role = HearingRole.WINGER;
-
-        expect(component.isWitness).toBeFalsy();
+    it('should return if the participant is a witness or not - canStartJoinConsultation', () => {
+        [
+            [HearingRole.REPRESENTATIVE, true],
+            [HearingRole.WITNESS, false],
+            [HearingRole.OBSERVER, false]
+        ].forEach(([hearing_role, expected]) => {
+            component.participant.hearing_role = hearing_role as HearingRole;
+            expect(component.canStartJoinConsultation).toBe(expected as boolean);
+        });
     });
-    it('should return true when the participant is a witness', () => {
-        component.participant.hearing_role = HearingRole.WITNESS;
 
-        expect(component.isWitness).toBeTruthy();
+    it('should return if the participant is a witness or not - isWitness', () => {
+        [
+            [HearingRole.WINGER, false],
+            [HearingRole.WINGER, false],
+            [HearingRole.WITNESS, true],
+            [HearingRole.OBSERVER, false],
+            [HearingRole.JUDGE, false]
+        ].forEach(([hearing_role, expected]) => {
+            component.participant.hearing_role = hearing_role as HearingRole;
+            expect(component.isWitness).toBe(expected as boolean);
+        });
     });
-    it('should return false when the participant is not a witness', () => {
-        component.participant.hearing_role = HearingRole.JUDGE;
 
-        expect(component.isWitness).toBeFalsy();
-    });
-    it('should return false when the participant is not a witness', () => {
+    it('should return false when the participant is null - isWitness', () => {
         component.participant = null;
 
         expect(component.isWitness).toBeFalsy();
+    });
+
+    it('should return if the participant is a witness or not - isObserver', () => {
+        [
+            [HearingRole.WINGER, false],
+            [HearingRole.WINGER, false],
+            [HearingRole.WITNESS, false],
+            [HearingRole.JUDGE, false],
+            [HearingRole.OBSERVER, true]
+        ].forEach(([hearing_role, expected]) => {
+            component.participant.hearing_role = hearing_role as HearingRole;
+            expect(component.isObserver).toBe(expected as boolean);
+        });
+    });
+
+    it('should return false when the participant is null - isObserver', () => {
+        component.participant = null;
+
+        expect(component.isObserver).toBeFalsy();
     });
     it('should show extra content when not showing video and witness is not being transferred in', () => {
         component.isTransferringIn = false;
