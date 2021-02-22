@@ -179,8 +179,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             [HearingRole.REPRESENTATIVE, true],
             [HearingRole.WITNESS, false],
             [HearingRole.OBSERVER, false]
-        ].forEach(([hearing_role, expected]) => {
-            component.participant.hearing_role = hearing_role as HearingRole;
+        ].forEach(([hearingRole, expected]) => {
+            component.participant.hearing_role = hearingRole as HearingRole;
             expect(component.canStartJoinConsultation).toBe(expected as boolean);
         });
     });
@@ -192,8 +192,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             [HearingRole.WITNESS, true],
             [HearingRole.OBSERVER, false],
             [HearingRole.JUDGE, false]
-        ].forEach(([hearing_role, expected]) => {
-            component.participant.hearing_role = hearing_role as HearingRole;
+        ].forEach(([hearingRole, expected]) => {
+            component.participant.hearing_role = hearingRole as HearingRole;
             expect(component.isWitness).toBe(expected as boolean);
         });
     });
@@ -211,8 +211,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             [HearingRole.WITNESS, false],
             [HearingRole.JUDGE, false],
             [HearingRole.OBSERVER, true]
-        ].forEach(([hearing_role, expected]) => {
-            component.participant.hearing_role = hearing_role as HearingRole;
+        ].forEach(([hearingRole, expected]) => {
+            component.participant.hearing_role = hearingRole as HearingRole;
             expect(component.isObserver).toBe(expected as boolean);
         });
     });
