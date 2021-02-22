@@ -2,53 +2,49 @@
 <div id="start-private-consultation-modal" class="modal">
     <!-- Modal content -->
     <div class="modal-content">
-      <div class="govuk-width-container">
-          <h2 class="govuk-heading-l govuk-!-margin-top-6 govuk-!-margin-bottom-6">Invite others to a private meeting</h2>
-          <div class="govuk-warning-text">
-              <span aria-hidden="true" class="govuk-warning-text__icon">!</span>
-              <span class="govuk-warning-text__text">
-                <span class="govuk-warning-text__assistive">Warning</span> All meetings outside the hearing are confidential and not recorded as part of court or tribunal proceedings
-            </span>
-        </div>
-          <div *ngFor="let participant of participants" class="govuk-checkboxes--small govuk-checkboxes__item">
-            <input class="govuk-checkboxes__input"
-                id="{{participant.id}}"
-                name="{{participant.id}}"
-                type="checkbox"
-                [checked]="participantSelected(participant.id)"
-                [disabled]="getParticipantDisabled(participant)"
-                (change)="toggleParticipant(participant.id)" />
-            <label class="govuk-label govuk-checkboxes__label" for="{{participant.id}}">
-                <span class="govuk-!-font-weight-bold">{{participant.displayName}}</span> {{participant.hearingRoleText}}
-                <br/>
-                <label
-                    id="p-{{ participant.id }}-status-participant"
-                    class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}" [innerHTML]="getParticipantStatus(participant)">
-                </label>
-            </label>
-          </div>
-          <div class="buttons">
-            <button
-                id="continue-btn"
-                class="govuk-button govuk-!-margin-right-5"
-                data-module="govuk-button"
-                [disabled]="selectedParticipants.length===0"
-                (click)="onContinue()"
-                alt="Continue"
-                >
-                Continue
+        <div class="govuk-width-container">
+            <h2 class="govuk-heading-l govuk-!-margin-top-6 govuk-!-margin-bottom-6">Invite others to a private meeting</h2>
+            <div class="govuk-warning-text">
+                <span aria-hidden="true" class="govuk-warning-text__icon">!</span>
+                <span class="govuk-warning-text__text">
+                    <span class="govuk-warning-text__assistive">Warning</span> All meetings outside the hearing are confidential and not recorded as part of court or tribunal proceedings
+                </span>
+            </div>
+            <div class="vh-scroll-wrap">
+                <div *ngFor="let participant of participants" class="govuk-checkboxes--small govuk-checkboxes__item">
+                    <input class="govuk-checkboxes__input"
+                           id="{{participant.id}}"
+                           name="{{participant.id}}"
+                           type="checkbox"
+                           [checked]="participantSelected(participant.id)"
+                           [disabled]="getParticipantDisabled(participant)"
+                           (change)="toggleParticipant(participant.id)" />
+                    <label class="govuk-label govuk-checkboxes__label" for="{{participant.id}}">
+                        <span class="govuk-!-font-weight-bold">{{participant.displayName}}</span> {{participant.hearingRoleText}}
+                        <br />
+                        <label id="p-{{ participant.id }}-status-participant"
+                               class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}" [innerHTML]="getParticipantStatus(participant)">
+                        </label>
+                    </label>
+                </div>
+            </div>
+            <div class="buttons">
+                <button id="continue-btn"
+                        class="govuk-button govuk-!-margin-right-5"
+                        data-module="govuk-button"
+                        [disabled]="selectedParticipants.length===0"
+                        (click)="onContinue()"
+                        alt="Continue">
+                    Continue
                 </button>
-            <button
-                id="cancel-btn"
-                class="govuk-button govuk-button--secondary"
-                data-module="govuk-button"
-                (click)="onCancel()"
-                alt="Cancel"
-                >
-                Close
+                <button id="cancel-btn"
+                        class="govuk-button govuk-button--secondary"
+                        data-module="govuk-button"
+                        (click)="onCancel()"
+                        alt="Cancel">
+                    Close
                 </button>
             </div>
         </div>
-      </div>
     </div>
-  
+</div>
