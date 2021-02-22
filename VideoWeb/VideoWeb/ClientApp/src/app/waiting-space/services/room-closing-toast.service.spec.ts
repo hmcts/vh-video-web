@@ -32,6 +32,8 @@ describe('RoomClosingToastrService', () => {
     let toastrService: jasmine.SpyObj<ToastrService>;
 
     beforeEach(() => {
+        toastrService = jasmine.createSpyObj<ToastrService>('ToastrService', ['show', 'clear']);
+
         sut = new RoomClosingToastrServiceFacade(logger, toastrService);
         sut.setRoomClosingLastShown(moment(new Date(2021, 1, 1, 0, 0, 0, 0)));
     });

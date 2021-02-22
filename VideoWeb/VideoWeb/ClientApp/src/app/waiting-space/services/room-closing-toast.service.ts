@@ -11,7 +11,7 @@ export class RoomClosingToastrService {
 
     protected durations: moment.Duration[] = [];
     protected roomClosingLastShown: moment.Moment;
-    isCurrentlyShowingToast: boolean = false;
+    isCurrentlyShowingToast = false;
 
     constructor(private logger: Logger, private toastr: ToastrService) {
         const fiveMinsLeft = moment.duration(5, 'minutes');

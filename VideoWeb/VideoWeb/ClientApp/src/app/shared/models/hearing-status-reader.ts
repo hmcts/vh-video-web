@@ -2,7 +2,7 @@ import * as moment from 'moment';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
 
 export class HearingTimeReader {
-    public minsAllowedForPrivateConsultationsAfterClosing: number = 30;
+    public minsAllowedForPrivateConsultationsAfterClosing = 30;
 
     getDurationAsText(duration: number): string {
         const momDuration = moment.duration(duration, 'minutes');

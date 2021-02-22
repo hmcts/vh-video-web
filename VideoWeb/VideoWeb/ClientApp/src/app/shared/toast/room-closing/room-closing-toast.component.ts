@@ -56,7 +56,7 @@ export class RoomClosingToastComponent extends VhToastComponent implements OnIni
             return;
         }
 
-        var mmss = moment.utc(ms).format('mm:ss');
+        const mmss = moment.utc(ms).format('mm:ss');
         this.durationStr = mmss;
     }
 
