@@ -1,7 +1,14 @@
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, LoggedParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    LoggedParticipantResponse,
+    ParticipantStatus,
+    Role,
+    RoomSummaryResponse
+} from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { globalConference, globalParticipant } from '../../waiting-room-shared/tests/waiting-room-base-setup';
 
 import { JoinPrivateConsultationComponent } from './join-private-consultation.component';
 
@@ -43,5 +50,43 @@ describe('JoinPrivateConsultationComponent', () => {
     it('should set selected room', () => {
         component.setSelectedRoom('room-label');
         expect(component.selectedRoomLabel).toEqual('room-label');
+    });
+
+    it('should return distinct rooms', () => {
+        globalConference.participants[0].current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
+        globalConference.participants[1].current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
+        globalConference.participants[2].current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
+
+        component.participants = globalConference.participants;
+        expect(component.getRoomDetails()).toHaveSize(1);
+    });
+
+    it('should remove old rooms', () => {
+        component.roomDetails = [
+            {
+                label: 'ConferenceRoom2',
+                displayName: 'conference room 2',
+                locked: false,
+                participants: globalParticipant
+            }
+        ];
+        globalConference.participants[0].current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
+
+        component.participants = globalConference.participants;
+        expect(component.getRoomDetails()).toHaveSize(1);
+    });
+
+    it('should return participant hearing role text', () => {
+        expect(component.getParticipantHearingRoleText(globalParticipant)).toEqual('Litigant in person');
+    });
+
+    it('should return rooms available', () => {
+        component.participants = globalConference.participants;
+        expect(component.roomsAvailable()).toBeTruthy();
+    });
+
+    it('should not return rooms available', () => {
+        component.participants = [];
+        expect(component.roomsAvailable()).toBeFalsy();
     });
 });
