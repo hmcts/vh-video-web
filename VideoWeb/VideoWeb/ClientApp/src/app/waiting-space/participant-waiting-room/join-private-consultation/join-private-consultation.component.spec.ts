@@ -79,4 +79,14 @@ describe('JoinPrivateConsultationComponent', () => {
     it('should return participant hearing role text', () => {
         expect(component.getParticipantHearingRoleText(globalParticipant)).toEqual('Litigant in person');
     });
+
+    it('should return rooms available', () => {
+        component.participants = globalConference.participants;
+        expect(component.roomsAvailable()).toBeTruthy();
+    });
+
+    it('should not return rooms available', () => {
+        component.participants = [];
+        expect(component.roomsAvailable()).toBeFalsy();
+    });
 });

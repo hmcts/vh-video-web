@@ -56,6 +56,36 @@ describe('StartPrivateConsultationComponent', () => {
     });
 
     it('should return participant hearing role text', () => {
-        expect(component.participantHearingRoleText(globalParticipant)).toEqual('Litigant in person');
+        expect(component.participantHearingRoleText(conference.participants[0])).toEqual('Litigant in person');
+    });
+
+    it('should return unavailable status class for disconnected', () => {
+        const participant = conference.participants[0];
+        participant.status = ParticipantStatus.Disconnected;
+        expect(component.getParticipantStatusCss(participant)).toEqual('unavailable');
+    });
+
+    it('should return unavailable status class for in hearing', () => {
+        const participant = conference.participants[0];
+        participant.status = ParticipantStatus.InHearing;
+        expect(component.getParticipantStatusCss(participant)).toEqual('unavailable');
+    });
+
+    it('should return in-consultation status class', () => {
+        const participant = conference.participants[0];
+        participant.status = ParticipantStatus.InConsultation;
+        expect(component.getParticipantStatusCss(participant)).toEqual('in-consultation');
+    });
+
+    it('should return true from should display label', () => {
+        const participant = conference.participants[0];
+        participant.status = ParticipantStatus.InConsultation;
+        expect(component.getShouldDisplayLabel(participant)).toBeTruthy();
+    });
+
+    it('should return false from should display label', () => {
+        const participant = conference.participants[0];
+        participant.status = ParticipantStatus.Disconnected;
+        expect(component.getShouldDisplayLabel(participant)).toBeTruthy();
     });
 });
