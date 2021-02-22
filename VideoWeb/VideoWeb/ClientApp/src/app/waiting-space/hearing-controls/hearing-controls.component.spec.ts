@@ -360,4 +360,9 @@ describe('HearingControlsComponent', () => {
         component.leavePrivateConsultation();
         expect(component.leaveConsultation.emit).toHaveBeenCalled();
     });
+
+    it('should indicates that it is the JOH consultation and returns true if participant is JOH or Judge', () => {
+        component.participant = gloalConference.participants.find(x => x.role === Role.Judge);
+        expect(component.isJOHConsultation).toBe(true);
+    });
 });
