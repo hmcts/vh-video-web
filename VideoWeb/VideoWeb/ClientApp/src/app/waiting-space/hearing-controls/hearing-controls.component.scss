@@ -36,6 +36,12 @@
   -webkit-transform: rotateY(180deg); /* Safari and Chrome */
   -moz-transform: rotateY(180deg); /* Firefox */
 }
+#outgoingFeedPresentVideo {
+  width: 259px;
+  top: 10px;
+  right: 10px;
+  position: fixed;
+}
 
 .microphoneIcon {
   height: 18px;

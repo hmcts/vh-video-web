@@ -5,7 +5,17 @@
         [ngClass]="{ 'vh-fade-in': selfViewOpen, 'vh-fade-out': !selfViewOpen }"
         id="outgoingFeedVideo"
         [muted]="true"
-        [srcObject]="this.outgoingStream"
+        [srcObject]="outgoingStream"
+        autoplay
+        height="auto"
+      >
+        Your browser does not support Video
+      </video>
+      <video
+        [ngClass]="{ 'vh-fade-in': screenShareStream, 'vh-fade-out': !screenShareStream }"
+        id="outgoingFeedPresentVideo"
+        [muted]="true"
+        [srcObject]="screenShareStream"
         autoplay
         height="auto"
       >
@@ -95,6 +105,30 @@
           src="/assets/images/hearing_end.png"
           alt="Close the hearing"
           (click)="displayConfirmationDialog()"
+        />
+
+        <img
+          *ngIf="!screenShareStream"
+          appTooltip
+          text="Start screenshare"
+          [colour]="'grey'"
+          id="start-screenshare-img"
+          class="icon-btn icon-btn--end-hearing"
+          src="/assets/images/share-screen.png"
+          alt="Start sharing screen"
+          (click)="startScreenShare()"
+        />
+
+        <img
+          *ngIf="screenShareStream"
+          appTooltip
+          text="Stop screenshare"
+          [colour]="'red'"
+          id="stop-screenshare-img"
+          class="icon-btn icon-btn--end-hearing"
+          src="/assets/images/stop-share.png"
+          alt="Stop sharing screen"
+          (click)="stopScreenShare()"
         />
 
         <img
