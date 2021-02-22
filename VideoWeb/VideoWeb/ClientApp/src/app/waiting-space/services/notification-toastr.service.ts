@@ -129,9 +129,7 @@ export class NotificationToastrService {
                 {
                     label: 'Dismiss',
                     hoverColour: 'green',
-                    action: async () => {
-                        this.clearAllToastNotifications();
-                    }
+                    action: async () => {}
                 }
             ]
         };
