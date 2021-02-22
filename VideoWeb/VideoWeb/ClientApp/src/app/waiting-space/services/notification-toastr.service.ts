@@ -7,6 +7,7 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { ConsultationAnswer } from 'src/app/services/clients/api-client';
 import { NotificationSoundsService } from './notification-sounds.service';
 import { Guid } from 'guid-typescript';
+import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 
 @Injectable()
 export class NotificationToastrService {
@@ -21,6 +22,7 @@ export class NotificationToastrService {
     }
 
     activeRoomInviteRequests = [];
+    activeHeartbeatReport = [];
 
     showConsultationInvite(
         roomLabel: string,
@@ -101,5 +103,35 @@ export class NotificationToastrService {
     clearAllToastNotifications() {
         this.toastr.clear();
         this.notificationSoundService.stopConsultationRequestRingtone();
+    }
+
+    reportPoorConnection(heartbeat: ParticipantHeartbeat) {
+        const heartbeatKey = `${heartbeat.participantId}_${heartbeat.heartbeatHealth.toString()}`;
+        if (this.activeHeartbeatReport.indexOf(heartbeatKey) >= 0) {
+            return;
+        }
+
+        this.activeHeartbeatReport.push(heartbeatKey);
+        this.logger.debug(`${this.loggerPrefix} creating 'poor network connection' toastr notification`);
+
+        let message = `<span class="govuk-!-font-weight-bold">Alert</span>`;
+        message += `<br/>Your internet connection is poor. People may have trouble seeing and hearing you.<br/>`;
+        const toast = this.toastr.show('', '', {
+            timeOut: 120000,
+            tapToDismiss: false,
+            toastComponent: VhToastComponent
+        });
+        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
+            color: 'white',
+            htmlBody: message,
+            onNoAction: async () => {},
+            buttons: [
+                {
+                    label: 'Dismiss',
+                    hoverColour: 'green',
+                    action: async () => {}
+                }
+            ]
+        };
     }
 }

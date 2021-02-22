@@ -21,6 +21,10 @@ export abstract class ParticipantNetworkHealthBaseDirective implements OnInit, O
         return this.participant.status === ParticipantStatus.InHearing || this.participant.status === ParticipantStatus.InConsultation;
     }
 
+    get isInConsultation(): boolean {
+        return this.participant.status === ParticipantStatus.InConsultation;
+    }
+
     get isDisconnected(): boolean {
         return this.participant.status === ParticipantStatus.Disconnected;
     }

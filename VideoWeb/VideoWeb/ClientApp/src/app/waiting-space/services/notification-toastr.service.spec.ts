@@ -4,6 +4,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { Participant } from 'src/app/shared/models/participant';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import {
     consultationService,
     globalConference,
@@ -248,5 +249,29 @@ describe('NotificationToastrService', () => {
 
         // Assert
         expect(mockToast.toastRef.componentInstance).not.toBeNull();
+    });
+
+    it('show poor connection should only show once', async () => {
+        // Arrange
+        const mockToast = {
+            toastRef: {
+                componentInstance: {}
+            }
+        } as ActiveToast<VhToastComponent>;
+        toastrService.show.and.returnValue(mockToast);
+
+        // Act
+        service.reportPoorConnection(
+            new ParticipantHeartbeat(globalConference.id, globalParticipant.id, HeartbeatHealth.Poor, '', '', '', '')
+        );
+        service.reportPoorConnection(
+            new ParticipantHeartbeat(globalConference.id, globalParticipant.id, HeartbeatHealth.Poor, '', '', '', '')
+        );
+        service.reportPoorConnection(
+            new ParticipantHeartbeat(globalConference.id, globalParticipant.id, HeartbeatHealth.Poor, '', '', '', '')
+        );
+
+        // Assert
+        expect(service.activeHeartbeatReport.length).toBe(1);
     });
 });

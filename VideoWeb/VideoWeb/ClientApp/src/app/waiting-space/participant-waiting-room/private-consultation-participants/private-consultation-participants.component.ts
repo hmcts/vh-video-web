@@ -6,6 +6,8 @@ import { ConsultationAnswer, ParticipantResponse, ParticipantStatus, VideoEndpoi
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-participant-list-shared.component';
+import { ActivatedRoute } from '@angular/router';
+import { HearingRole } from '../../models/hearing-role-model';
 
 @Component({
     selector: 'app-private-consultation-participants',
@@ -21,13 +23,15 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         protected consultationService: ConsultationService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected videoWebService: VideoWebService
+        protected videoWebService: VideoWebService,
+        protected route: ActivatedRoute
     ) {
         super(adalService, consultationService, eventService, videoWebService, logger);
         this.loggerPrefix = '[PrivateConsultationParticipantsComponent] - ';
     }
 
     ngOnInit(): void {
+        this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.initParticipants();
         this.setupSubscribers();
         this.setupInviteStatusSubscribers();
@@ -78,6 +82,15 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         }
 
         return '';
+    }
+
+    isJohInCurrentRoom(participant: ParticipantResponse): boolean {
+        return (
+            this.participantIsInCurrentRoom(participant) &&
+            (participant.hearing_role === HearingRole.PANEL_MEMBER ||
+                participant.hearing_role === HearingRole.WINGER ||
+                participant.hearing_role === HearingRole.JUDGE)
+        );
     }
 
     getParticipantStatus(participant: ParticipantResponse): string {
