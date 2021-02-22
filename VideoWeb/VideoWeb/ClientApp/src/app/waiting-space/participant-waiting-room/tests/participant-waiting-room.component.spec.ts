@@ -311,4 +311,20 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.closeStartPrivateConsultationModal();
         expect(component.displayJoinPrivateConsultationModal).toBeFalsy();
     });
+    it('should start consultation and set accordion expand to false', async () => {
+        component.participant = globalParticipant;
+        component.conference = globalConference;
+        component.privateConsultationAccordianExpanded = true;
+        await component.startPrivateConsultation([globalParticipant.id]);
+
+        expect(component.privateConsultationAccordianExpanded).toBe(false);
+    });
+    it('should join consultation and set accordion expand to false', async () => {
+        component.participant = globalParticipant;
+        component.conference = globalConference;
+        component.privateConsultationAccordianExpanded = true;
+        await component.joinPrivateConsultation('room1');
+
+        expect(component.privateConsultationAccordianExpanded).toBe(false);
+    });
 });

@@ -38,6 +38,7 @@ describe('NotificationSoundsService', () => {
         const spy = spyOn(logger, 'error');
         spyOn(audio, 'play').and.rejectWith(new Error('TestError, Permission not granted'));
         service.consultationRequestSound = audio;
+        service.hearingAlertSound = audio;
         await service.playHearingAlertSound();
 
         expect(spy).toHaveBeenCalled();
