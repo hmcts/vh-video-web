@@ -28,7 +28,7 @@
   max-width: 20%;
 }
 
-.incomingFeed {
+.incomingFeedOld {
   position: fixed;
   top: 0;
   left: 11%;
@@ -67,17 +67,6 @@
 .video-wrapper {
   width: auto;
   overflow: hidden;
-}
-
-#incomingFeedJudgePrivate {
-  position: relative;
-  left: 0;
-  top: 0px;
-  min-width: 100%;
-  min-height: auto;
-  max-width: 100%;
-  max-height: 90vh;
-  z-index: 100;
 }
 
 .header-bar {

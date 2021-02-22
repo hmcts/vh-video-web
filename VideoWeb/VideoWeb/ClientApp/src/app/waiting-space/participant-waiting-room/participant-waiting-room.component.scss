@@ -1,7 +1,7 @@
 @import '~govuk-frontend/govuk/base';
 
 #outgoingFeedVideoTransfer {
-  bottom: 5.5vh;
+  bottom: 10px;
   width: 259px;
   transform: rotateY(180deg);
   -webkit-transform: rotateY(180deg); /* Safari and Chrome */
@@ -63,30 +63,4 @@
 .lock-badge.locked {
   background: govuk-colour('red');
   color: govuk-colour('white');
-}
-
-.video-wrapper {
-  width: auto;
-  overflow: hidden;
-}
-
-#incomingFeedPrivate {
-  position: relative;
-  left: 0;
-  top: 0px;
-  min-width: 100%;
-  min-height: auto;
-  max-width: 100%;
-  max-height: 90vh;
-  z-index: 100;
-}
-
-#secondIncomingFeed {
-  position: fixed;
-  left: 10px;
-  top: 10px;
-  width: 300px;
-  min-height: auto;
-  z-index: 101;
-  cursor: pointer;
 }

@@ -34,14 +34,12 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     remoteMuted: boolean;
     selfViewOpen: boolean;
     displayConfirmPopup: boolean;
-    displayConfirmLeavePopup: boolean;
 
     protected constructor(protected videoCallService: VideoCallService, protected eventService: EventsService, protected logger: Logger) {
         this.handRaised = false;
         this.remoteMuted = false;
         this.selfViewOpen = false;
         this.displayConfirmPopup = false;
-        this.displayConfirmLeavePopup = false;
     }
 
     get isJudge(): boolean {
@@ -249,17 +247,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     displayConfirmationDialog() {
         this.displayConfirmPopup = true;
-    }
-
-    displayConfirmLeaveDialog() {
-        this.displayConfirmLeavePopup = true;
-    }
-
-    leaveConsultationConfirmed(answer: boolean) {
-        this.displayConfirmLeavePopup = false;
-        if (answer) {
-            this.leavePrivateConsultation();
-        }
     }
 
     leavePrivateConsultation() {

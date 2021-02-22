@@ -5,9 +5,24 @@
 <div *ngIf="showVideo && !isPrivateConsultation">
     <div class="video-background"></div>
     <div class="govuk-grid-column-one-half">
-        <video id="incomingFeed" [srcObject]="this.stream" autoplay height="auto" poster="/assets/images/empty_crest.jpg">
+        <video id="incomingFeedOld" [srcObject]="presentationStream && !streamInMain ? presentationStream : stream" autoplay height="auto" poster="/assets/images/empty_crest.jpg">
             Your browser does not support Video
         </video>
+        <div id="secondIncomingFeedOld"
+                *ngIf="presentationStream"
+                (click)="switchStreamWindows()"
+                appTooltip
+                text="Switch to main screen"
+                colour="grey">
+                <video
+                    [srcObject]="presentationStream && !streamInMain ? stream : presentationStream"
+                    autoplay
+                    height="auto"
+                    poster="/assets/images/empty_crest.jpg"
+                    class="fill-container">
+                Your browser does not support Video
+                </video>
+            </div>
     </div>
 </div>
 
@@ -27,7 +42,7 @@
                                                         [outgoingStream]="outgoingStream"
                                                         [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
                                                         [showConsultationControls]="showConsultationControls"
-                                                        (leaveConsultation)="onConsultationCancelled()">
+                                                        (leaveConsultation)="showLeaveConsultationModal()">
                 </app-private-consultation-room-controls>
             </ng-container>
         </div>
@@ -39,9 +54,24 @@
         </div>
 
         <div class="video-wrapper">
-            <video id="incomingFeedPrivate" autoplay [srcObject]="this.stream" height="auto" poster="/assets/images/empty_crest.jpg">
+            <video id="incomingFeedPrivate" autoplay [srcObject]="presentationStream && !streamInMain ? presentationStream : stream" height="auto" poster="/assets/images/empty_crest.jpg">
                 Your browser does not support Video
             </video>
+            <div id="secondIncomingFeed"
+                *ngIf="presentationStream"
+                (click)="switchStreamWindows()"
+                appTooltip
+                text="Switch to main screen"
+                colour="grey">
+                <video
+                    [srcObject]="presentationStream && !streamInMain ? stream : presentationStream"
+                    autoplay
+                    height="auto"
+                    poster="/assets/images/empty_crest.jpg"
+                    class="fill-container">
+                Your browser does not support Video
+                </video>
+            </div>
         </div>
         <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-container">
             <app-participant-network-alert [participant]="participant"></app-participant-network-alert>
@@ -58,7 +88,7 @@
                           [outgoingStream]="outgoingStream"
                           [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
                           [showConsultationControls]="showConsultationControls"
-                          (leaveConsulation)="leaveJudicialConsultation()"></app-hearing-controls>
+                          (leaveConsulation)="showLeaveConsultationModal()"></app-hearing-controls>
 </ng-container>
 
 <div *ngIf="!loadingData && hearing && showExtraContent" class="govuk-grid-row">
@@ -182,3 +212,7 @@
                           (cancelMediaDeviceChange)="onMediaDeviceChangeCancelled()"
                           (acceptMediaDeviceChange)="onMediaDeviceChangeAccepted($event)"
                           #selectMediaDevices></app-select-media-devices>
+                          
+<app-modal id="pc-leave-modal" class="modal clear consultation">
+    <app-consultation-leave (leave)="onConsultationCancelled()" (closedModal)="closeAllPCModals()"></app-consultation-leave>
+</app-modal>

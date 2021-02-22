@@ -28,7 +28,6 @@ import { PrivateConsultationParticipantsComponent } from './participant-waiting-
 import { InviteParticipantComponent } from './participant-waiting-room/invite-participant/invite-participant.component';
 import { LoggedUserResolveService } from './services/logged-user-resolve.service';
 import { ConsultationLeaveComponent } from './consultation-modals/consultation-leave/consultation-leave.component';
-import { ConfirmLeaveConsultationPopupComponent } from './confirmation/confirm-leave-consultation-popup.component';
 import { ParticipantNetworkPoorAlertComponent } from './participant-network-health/participant-network-poor-alert.component';
 
 @NgModule({
@@ -57,8 +56,7 @@ import { ParticipantNetworkPoorAlertComponent } from './participant-network-heal
         JohWaitingRoomComponent,
         InviteParticipantComponent,
         PrivateConsultationParticipantsComponent,
-        ParticipantNetworkPoorAlertComponent,
-        ConfirmLeaveConsultationPopupComponent
+        ParticipantNetworkPoorAlertComponent
     ],
     providers: [VideoCallService, NotificationSoundsService, NotificationToastrService, LoggedUserResolveService]
 })
