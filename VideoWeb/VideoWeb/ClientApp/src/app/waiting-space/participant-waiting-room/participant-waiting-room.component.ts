@@ -194,15 +194,14 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     }
 
     getPrivateConsultationParticipants(): ParticipantResponse[] {
-        return this.conference.participants
-            .filter(
-                p =>
-                    p.id !== this.participant.id &&
-                    p.role !== Role.JudicialOfficeHolder &&
-                    p.role !== Role.Judge &&
-                    p.hearing_role !== HearingRole.OBSERVER &&
-                    p.hearing_role !== HearingRole.WITNESS
-            );
+        return this.conference.participants.filter(
+            p =>
+                p.id !== this.participant.id &&
+                p.role !== Role.JudicialOfficeHolder &&
+                p.role !== Role.Judge &&
+                p.hearing_role !== HearingRole.OBSERVER &&
+                p.hearing_role !== HearingRole.WITNESS
+        );
     }
 
     get canStartJoinConsultation() {
