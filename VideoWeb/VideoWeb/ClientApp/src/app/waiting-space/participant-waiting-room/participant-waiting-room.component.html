@@ -229,7 +229,7 @@
       </div>
     </div>
     
-    <div>
+    <div *ngIf="canStartJoinConsultation">
       <a href="javascript:void(0)" class="govuk-button" role="button" draggable="false" id="openStartPCButton"
         data-module="govuk-button" (click)="openStartConsultationModal()">
         Start a private meeting
@@ -241,7 +241,7 @@
       </a>
     </div>
     
-    <div>
+    <div *ngIf="canStartJoinConsultation">
       <details class="govuk-details" data-module="govuk-details">
         <summary class="govuk-details__summary" (click)="toggleAccordian()" tabindex="0" role="button" [attr.aria-expanded]="privateConsultationAccordianExpanded">
           <span class="govuk-details__summary-text" id="what-are-private-meetings">
