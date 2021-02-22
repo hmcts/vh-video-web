@@ -1,5 +1,4 @@
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { consultationService } from '../../waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 
 export function consultationServiceSpyFactory(): jasmine.SpyObj<ConsultationService> {
     const consultationServiceMock = jasmine.createSpyObj(ConsultationService, [
