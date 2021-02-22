@@ -49,26 +49,6 @@
   }
 }
 
-.room-title {
-  color: lightgray;
-  margin-left: 50px;
-  display: inline-block;
-  margin-top: 10px;
-}
-
-.participant-wrapper {
-  width: 333px;
-  padding: 12px;
-  float: right;
-  max-height: 675px;
-  overflow: overlay;
-}
-
-.video-wrapper {
-  width: auto;
-  overflow: hidden;
-}
-
 .header-bar {
   display: flex;
   box-shadow: 0px 5px 10px 0px rgb(0 0 0 / 70%);

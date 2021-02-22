@@ -325,6 +325,6 @@ describe('WaitingRoomComponent message and clock', () => {
         const caseNumber = component.conference.case_number;
         const result = component.getCaseNameAndNumber();
         expect(result.indexOf(caseName)).toBeGreaterThan(-1);
-        expect(result.indexOf(caseName)).toBeGreaterThan(-1);
+        expect(result.indexOf(caseNumber)).toBeGreaterThan(-1);
     });
 });
