@@ -53,11 +53,30 @@ describe('JoinPrivateConsultationComponent', () => {
     });
 
     it('should return distinct rooms', () => {
-        globalConference.participants[0].current_room = new RoomSummaryResponse({ label: 'ConferenceRoom1' });
-        globalConference.participants[1].current_room = new RoomSummaryResponse({ label: 'ConferenceRoom1' });
-        globalConference.participants[2].current_room = new RoomSummaryResponse({ label: 'ConferenceRoom1' });
+        globalConference.participants[0].current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
+        globalConference.participants[1].current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
+        globalConference.participants[2].current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
 
         component.participants = globalConference.participants;
         expect(component.getRoomDetails()).toHaveSize(1);
+    });
+
+    it('should remove old rooms', () => {
+        component.roomDetails = [
+            {
+                label: 'ConferenceRoom2',
+                displayName: 'conference room 2',
+                locked: false,
+                participants: globalParticipant
+            }
+        ];
+        globalConference.participants[0].current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
+
+        component.participants = globalConference.participants;
+        expect(component.getRoomDetails()).toHaveSize(1);
+    });
+
+    it('should return participant hearing role text', () => {
+        expect(component.getParticipantHearingRoleText(globalParticipant)).toEqual('Litigant in person');
     });
 });

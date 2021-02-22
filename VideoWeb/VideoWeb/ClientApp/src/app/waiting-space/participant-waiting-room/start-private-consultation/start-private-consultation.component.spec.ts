@@ -2,6 +2,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, LoggedParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { globalParticipant } from '../../waiting-room-shared/tests/waiting-room-base-setup';
 import { StartPrivateConsultationComponent } from './start-private-consultation.component';
 
 describe('StartPrivateConsultationComponent', () => {
@@ -52,5 +53,9 @@ describe('StartPrivateConsultationComponent', () => {
         component.selectedParticipants = new Array<string>();
         component.toggleParticipant('guid');
         expect(component.selectedParticipants.indexOf('guid')).toEqual(0);
+    });
+
+    it('should return participant hearing role text', () => {
+        expect(component.participantHearingRoleText(globalParticipant)).toEqual('Litigant in person');
     });
 });
