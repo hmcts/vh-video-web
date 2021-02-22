@@ -42,5 +42,33 @@ namespace VideoWeb.UnitTests.EventHandlers
                 Assert.ThrowsAsync<ArgumentException>(async () => await _eventHandler.HandleAsync(callbackEvent));
             exception.Message.Should().Be("No consultation room provided");
         }
+
+        [Test]
+        public async Task should_send_consultation_message_when_vho_call_starts()
+        {
+            _eventHandler = new VhOfficerCallEventHandler(EventHubContextMock.Object, ConferenceCache,
+                LoggerMock.Object, VideoApiClientMock.Object);
+
+            var conference = TestConference;
+            var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
+
+
+            var callbackEvent = new CallbackEvent
+            {
+                EventType = EventType.VhoCall,
+                EventId = Guid.NewGuid().ToString(),
+                ConferenceId = conference.Id,
+                ParticipantId = participantForEvent.Id,
+                TransferTo = "ConsultationRoom1",
+                TimeStampUtc = DateTime.UtcNow
+            };
+
+            await _eventHandler.HandleAsync(callbackEvent);
+
+            // Verify messages sent to event hub clients
+            EventHubClientMock.Verify(
+                x => x.RequestedConsultationMessage(conference.Id, callbackEvent.TransferTo, It.IsAny<Guid>(),
+                    _eventHandler.SourceParticipant.Id), Times.Once);
+        }
     }
 }

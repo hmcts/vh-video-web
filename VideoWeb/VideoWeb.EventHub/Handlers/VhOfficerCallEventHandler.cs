@@ -26,13 +26,12 @@ namespace VideoWeb.EventHub.Handlers
         {
             var targetRoom = ValidationConsultationRoom(callbackEvent);
             return HubContext.Clients.Group(SourceParticipant.Username.ToLowerInvariant())
-                .ConsultationRequestResponseMessage(SourceConference.Id, targetRoom,
-                    SourceParticipant.Id, Common.Models.ConsultationAnswer.None);
+                                    .RequestedConsultationMessage(SourceConference.Id, targetRoom, Guid.NewGuid(), SourceParticipant.Id);
         }
 
         private string ValidationConsultationRoom(CallbackEvent callbackEvent)
         {
-            if (string.IsNullOrWhiteSpace(callbackEvent.TransferTo) || !callbackEvent.TransferTo.Contains("consultation"))
+            if (string.IsNullOrWhiteSpace(callbackEvent.TransferTo) || !callbackEvent.TransferTo.ToLower().Contains("consultation"))
             {
                 throw new ArgumentException("No consultation room provided");
             }

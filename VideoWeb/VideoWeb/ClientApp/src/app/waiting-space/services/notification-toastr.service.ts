@@ -6,6 +6,7 @@ import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { ConsultationAnswer } from 'src/app/services/clients/api-client';
 import { NotificationSoundsService } from './notification-sounds.service';
+import { Guid } from 'guid-typescript';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 
 @Injectable()
@@ -41,9 +42,11 @@ export class NotificationToastrService {
             this.notificationSoundService.playConsultationRequestRingtone();
         }
 
-        let message = `<span class="govuk-!-font-weight-bold">Call from ${requestedBy.displayName}</span>`;
+        const requesterDisplayName = requestedBy === undefined || requestedBy === null ? `VHO` : requestedBy.displayName;
+        const requestedById = requestedBy === undefined || requestedBy === null ? Guid.EMPTY : requestedBy.id;
+        let message = `<span class="govuk-!-font-weight-bold">Call from ${requesterDisplayName}</span>`;
         const participantsList = participants
-            .filter(p => p.id !== requestedBy.id)
+            .filter(p => p.id !== requestedById)
             .map(p => p.displayName)
             .join('<br/>');
         if (participantsList) {
@@ -56,7 +59,7 @@ export class NotificationToastrService {
             const index = this.activeRoomInviteRequests.indexOf(inviteKey);
             this.activeRoomInviteRequests.splice(index, 1);
 
-            await this.consultationService.respondToConsultationRequest(conferenceId, requestedBy.id, requestedFor.id, answer, roomLabel);
+            await this.consultationService.respondToConsultationRequest(conferenceId, requestedById, requestedFor.id, answer, roomLabel);
         };
 
         const toast = this.toastr.show('', '', {

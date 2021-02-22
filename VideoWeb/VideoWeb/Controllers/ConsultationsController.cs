@@ -90,8 +90,9 @@ namespace VideoWeb.Controllers
         {
             var conference = await GetConference(request.ConferenceId);
             var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedById);
-            if (participant == null)
+            if (participant == null && request.RequestedById != Guid.Empty)
             {
+                // Participants other than VHO
                 return NotFound();
             }
 
@@ -101,12 +102,12 @@ namespace VideoWeb.Controllers
             try
             {
                 await _videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
-                await NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedById, request.RequestedForId, request.Answer);
+                await NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedForId, request.Answer);
                 return NoContent();
             }
             catch (VideoApiException e)
             {
-                await NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedById, request.RequestedForId, ConsultationAnswer.Failed);
+                await NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Failed);
                 _logger.LogError(e, "Consultation request could not be responded to");
                 return StatusCode(e.StatusCode, e.Response);
             }
@@ -275,10 +276,9 @@ namespace VideoWeb.Controllers
         /// </summary>
         /// <param name="conference">The conference</param>
         /// <param name="roomLabel">The room the participant is responding to</param>
-        /// <param name="requestedById">The participant raising the consultation request</param>
         /// <param name="requestedForId">The participant with whom the consultation is being requested with</param>
         /// /// <param name="answer">The answer to the request (i.e. Accepted or Rejected)</param>
-        private async Task NotifyConsultationResponseAsync(Conference conference, string roomLabel, Guid requestedById,
+        private async Task NotifyConsultationResponseAsync(Conference conference, string roomLabel,
             Guid requestedForId, ConsultationAnswer answer)
         {
             var tasks = conference.Participants.Select(p => 
