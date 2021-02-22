@@ -6,6 +6,8 @@ import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { ConsultationAnswer } from 'src/app/services/clients/api-client';
 import { NotificationSoundsService } from './notification-sounds.service';
+import { Guid } from 'guid-typescript';
+import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 
 @Injectable()
 export class NotificationToastrService {
@@ -20,6 +22,7 @@ export class NotificationToastrService {
     }
 
     activeRoomInviteRequests = [];
+    activeHeartbeatReport = [];
 
     showConsultationInvite(
         roomLabel: string,
@@ -39,9 +42,11 @@ export class NotificationToastrService {
             this.notificationSoundService.playConsultationRequestRingtone();
         }
 
-        let message = `<span class="govuk-!-font-weight-bold">Call from ${requestedBy.displayName}</span>`;
+        const requesterDisplayName = requestedBy === undefined || requestedBy === null ? `VHO` : requestedBy.displayName;
+        const requestedById = requestedBy === undefined || requestedBy === null ? Guid.EMPTY : requestedBy.id;
+        let message = `<span class="govuk-!-font-weight-bold">Call from ${requesterDisplayName}</span>`;
         const participantsList = participants
-            .filter(p => p.id !== requestedBy.id)
+            .filter(p => p.id !== requestedById)
             .map(p => p.displayName)
             .join('<br/>');
         if (participantsList) {
@@ -54,7 +59,7 @@ export class NotificationToastrService {
             const index = this.activeRoomInviteRequests.indexOf(inviteKey);
             this.activeRoomInviteRequests.splice(index, 1);
 
-            await this.consultationService.respondToConsultationRequest(conferenceId, requestedBy.id, requestedFor.id, answer, roomLabel);
+            await this.consultationService.respondToConsultationRequest(conferenceId, requestedById, requestedFor.id, answer, roomLabel);
         };
 
         const toast = this.toastr.show('', '', {
@@ -98,5 +103,35 @@ export class NotificationToastrService {
     clearAllToastNotifications() {
         this.toastr.clear();
         this.notificationSoundService.stopConsultationRequestRingtone();
+    }
+
+    reportPoorConnection(heartbeat: ParticipantHeartbeat) {
+        const heartbeatKey = `${heartbeat.participantId}_${heartbeat.heartbeatHealth.toString()}`;
+        if (this.activeHeartbeatReport.indexOf(heartbeatKey) >= 0) {
+            return;
+        }
+
+        this.activeHeartbeatReport.push(heartbeatKey);
+        this.logger.debug(`${this.loggerPrefix} creating 'poor network connection' toastr notification`);
+
+        let message = `<span class="govuk-!-font-weight-bold">Alert</span>`;
+        message += `<br/>Your internet connection is poor. People may have trouble seeing and hearing you.<br/>`;
+        const toast = this.toastr.show('', '', {
+            timeOut: 120000,
+            tapToDismiss: false,
+            toastComponent: VhToastComponent
+        });
+        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
+            color: 'white',
+            htmlBody: message,
+            onNoAction: async () => {},
+            buttons: [
+                {
+                    label: 'Dismiss',
+                    hoverColour: 'green',
+                    action: async () => {}
+                }
+            ]
+        };
     }
 }

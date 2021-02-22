@@ -105,4 +105,8 @@ describe('ParticipantNetworkHealthComponent', () => {
         component.participant.status = ParticipantStatus.Disconnected;
         expect(component.isDisconnected).toBeTruthy();
     });
+    it('should indicate that participant is in consultation', () => {
+        component.participant.status = ParticipantStatus.InConsultation;
+        expect(component.isInConsultation).toBeTruthy();
+    });
 });

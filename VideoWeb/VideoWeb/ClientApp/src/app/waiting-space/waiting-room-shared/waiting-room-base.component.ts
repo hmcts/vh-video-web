@@ -174,6 +174,10 @@ export abstract class WaitingRoomBaseComponent {
         }
     }
 
+    getCaseNameAndNumber() {
+        return `${this.conference.case_name}: ${this.conference.case_number}`;
+    }
+
     startEventHubSubscribers() {
         this.logger.debug(`${this.loggerPrefix} Subscribing to conference status changes...`);
         this.eventHubSubscription$.add(
@@ -215,7 +219,11 @@ export abstract class WaitingRoomBaseComponent {
                 if (requestedFor.id === this.participant.id && this.participant.status !== ParticipantStatus.InHearing) {
                     // A request for you to join a consultation room
                     this.logger.debug(`${this.loggerPrefix} Recieved RequestedConsultationMessage`);
-                    const requestedBy = new Participant(this.findParticipant(message.requestedBy));
+                    const requestedParticipant = this.findParticipant(message.requestedBy);
+                    const requestedBy =
+                        requestedParticipant === undefined || requestedParticipant === null
+                            ? null
+                            : new Participant(this.findParticipant(message.requestedBy));
                     const roomParticipants = this.findParticipantsInRoom(message.roomLabel).map(x => new Participant(x));
                     this.notificationToastrService.showConsultationInvite(
                         message.roomLabel,
