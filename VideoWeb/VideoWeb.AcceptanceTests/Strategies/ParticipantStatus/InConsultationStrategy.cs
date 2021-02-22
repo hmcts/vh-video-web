@@ -16,6 +16,8 @@ namespace VideoWeb.AcceptanceTests.Strategies.ParticipantStatus
                 .WithConferenceId(context.Test.NewConferenceId)
                 .WithParticipantId(participantId)
                 .WithEventType(EventType.Transfer)
+                .FromRoomType(RoomType.WaitingRoom)
+                .ToRoomType(RoomType.ConsultationRoom)
                 .Build();
 
             var response = context.Apis.VideoWebApi.SendCallBackEvent(request);

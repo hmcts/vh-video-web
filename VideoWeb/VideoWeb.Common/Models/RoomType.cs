@@ -4,6 +4,7 @@ namespace VideoWeb.Common.Models
     {
         WaitingRoom,
         HearingRoom,
-        AdminRoom
+        AdminRoom,
+        ConsultationRoom
     }
 }
