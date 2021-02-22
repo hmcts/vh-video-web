@@ -27,9 +27,17 @@
 .white {
   color: rgba(255, 255, 255, 0.9);
 }
+
 .outline {
   border: 2px solid rgba(255, 255, 255, 0.9);
   border-radius: 2px;
   padding: 4px;
   color: rgba(255, 255, 255, 0.9);
+}
+
+.small-crest {
+  width: 30px;
+  position: absolute;
+  right: 30px;
+  margin-top: -3px;
 }

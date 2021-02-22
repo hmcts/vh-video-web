@@ -211,4 +211,16 @@ describe('WaitingRoom ParticipantList Base', () => {
 
         expect(consultationService.clearModals).toHaveBeenCalledTimes(0);
     });
+    it('should get list of judge and JOH and participants if user is JOH', () => {
+        component.loggedInUser.role = Role.JudicialOfficeHolder;
+        component.initParticipants();
+
+        expect(component.participantsInConsultation.length).toBe(4);
+    });
+    it('should get list of participants for user participant', () => {
+        component.loggedInUser.role = Role.Individual;
+
+        component.initParticipants();
+        expect(component.participantsInConsultation.length).toBe(2);
+    });
 });

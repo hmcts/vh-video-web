@@ -52,7 +52,7 @@
 }
 
 #outgoingFeedVideo {
-  bottom: 5.5vh;
+  bottom: 10px;
   width: 259px;
   transform: rotateY(180deg);
   -webkit-transform: rotateY(180deg); /* Safari and Chrome */
@@ -60,8 +60,10 @@
 }
 
 #outgoingFeedPresentVideo {
-  bottom: 5.5vh;
   width: 259px;
+  top: 65px;
+  left: 10px;
+  position: fixed;
 }
 
 .outgoing-video-container {

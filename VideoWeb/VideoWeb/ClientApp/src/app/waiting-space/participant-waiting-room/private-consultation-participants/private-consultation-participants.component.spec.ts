@@ -38,6 +38,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
     let videoWebService: jasmine.SpyObj<VideoWebService>;
 
     let logged: LoggedParticipantResponse;
+    let activatedRoute: ActivatedRoute;
 
     beforeAll(() => {
         adalService = mockAdalService;
@@ -62,8 +63,17 @@ describe('PrivateConsultationParticipantsComponent', () => {
             display_name: judge.display_name,
             role: Role.Judge
         });
-
-        component = new PrivateConsultationParticipantsComponent(adalService, consultationService, eventsService, logger, videoWebService);
+        activatedRoute = <any>{
+            snapshot: { data: { loggedUser: logged } }
+        };
+        component = new PrivateConsultationParticipantsComponent(
+            adalService,
+            consultationService,
+            eventsService,
+            logger,
+            videoWebService,
+            activatedRoute
+        );
 
         component.conference = conference;
 

@@ -3,7 +3,7 @@
     <div class="outgoing-video-container govuk-grid-column-one-third">
       <video
         [ngClass]="{ 'vh-fade-in': selfViewOpen, 'vh-fade-out': !selfViewOpen }"
-        id="outgoingFeedVideo"
+        id="outgoingFeedVideoOld"
         [muted]="true"
         [srcObject]="outgoingStream"
         autoplay
@@ -13,7 +13,7 @@
       </video>
       <video
         [ngClass]="{ 'vh-fade-in': screenShareStream, 'vh-fade-out': !screenShareStream }"
-        id="outgoingFeedPresentVideo"
+        id="outgoingFeedPresentVideoOld"
         [muted]="true"
         [srcObject]="screenShareStream"
         autoplay
@@ -149,4 +149,3 @@
     </div>
   </div>
 </div>
-<app-confirm-close-hearing-popup *ngIf="displayConfirmPopup" (popupAnswered)="close($event)">ddd </app-confirm-close-hearing-popup>
