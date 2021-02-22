@@ -1,8 +1,13 @@
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, LoggedParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    LoggedParticipantResponse,
+    ParticipantStatus,
+    Role,
+    RoomSummaryResponse
+} from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { globalParticipant } from '../../waiting-room-shared/tests/waiting-room-base-setup';
 import { StartPrivateConsultationComponent } from './start-private-consultation.component';
 
 describe('StartPrivateConsultationComponent', () => {
@@ -59,6 +64,15 @@ describe('StartPrivateConsultationComponent', () => {
         expect(component.participantHearingRoleText(conference.participants[0])).toEqual('Litigant in person');
     });
 
+    it('should return participant representee hearing role text', () => {
+        const representive = 'Representative';
+        const representee = 'representee';
+        const participant = conference.participants[0];
+        participant.representee = representee;
+        participant.hearing_role = representive;
+        expect(component.participantHearingRoleText(participant)).toEqual(`${representive} for ${representee}`);
+    });
+
     it('should return unavailable status class for disconnected', () => {
         const participant = conference.participants[0];
         participant.status = ParticipantStatus.Disconnected;
@@ -87,5 +101,18 @@ describe('StartPrivateConsultationComponent', () => {
         const participant = conference.participants[0];
         participant.status = ParticipantStatus.Disconnected;
         expect(component.getShouldDisplayLabel(participant)).toBeTruthy();
+    });
+
+    it('should return unavailable participant status', () => {
+        const participant = conference.participants[0];
+        participant.status = ParticipantStatus.Disconnected;
+        expect(component.getParticipantStatus(participant)).toEqual('Unavailable');
+    });
+
+    it('should return in consultaion status', () => {
+        const participant = conference.participants[0];
+        participant.status = ParticipantStatus.InConsultation;
+        participant.current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
+        expect(component.getParticipantStatus(participant)).toContain('In meeting room 1');
     });
 });
