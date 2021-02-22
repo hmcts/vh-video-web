@@ -85,10 +85,12 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     isJohInCurrentRoom(participant: ParticipantResponse): boolean {
-        return this.participantIsInCurrentRoom(participant) &&
+        return (
+            this.participantIsInCurrentRoom(participant) &&
             (participant.hearing_role === HearingRole.PANEL_MEMBER ||
                 participant.hearing_role === HearingRole.WINGER ||
-                participant.hearing_role === HearingRole.JUDGE);
+                participant.hearing_role === HearingRole.JUDGE)
+        );
     }
 
     getParticipantStatus(participant: ParticipantResponse): string {
