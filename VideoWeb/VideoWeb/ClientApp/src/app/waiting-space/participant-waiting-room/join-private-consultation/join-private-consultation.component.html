@@ -25,7 +25,7 @@
                 <span class="govuk-!-font-weight-bold">{{roomDetails.displayName}} <span *ngIf="roomDetails.locked" class="fas fa-lock-alt"></span></span>
                 <ul>
                   <li *ngFor="let participant of roomDetails.participants">
-                    <span class="govuk-!-font-weight-bold">{{participant.displayName}}</span> {{participant.hearingRoleText}}
+                    <span class="govuk-!-font-weight-bold">{{participant.display_name}}</span> {{getParticipantHearingRoleText(participant)}}
                   </li>
                 </ul>
             </label>

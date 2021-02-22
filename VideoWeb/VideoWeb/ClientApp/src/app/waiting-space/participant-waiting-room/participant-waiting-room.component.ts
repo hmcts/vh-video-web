@@ -4,7 +4,7 @@ import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceStatus, Role } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, ParticipantResponse, Role } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -17,7 +17,6 @@ import { HeartbeatModelMapper } from '../../shared/mappers/heartbeat-model-mappe
 import { HearingRole } from '../models/hearing-role-model';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
-import { Participant } from 'src/app/shared/models/participant';
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
@@ -194,7 +193,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         this.displayJoinPrivateConsultationModal = true;
     }
 
-    getPrivateConsultationParticipants(): Participant[] {
+    getPrivateConsultationParticipants(): ParticipantResponse[] {
         return this.conference.participants
             .filter(
                 p =>
@@ -203,8 +202,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
                     p.role !== Role.Judge &&
                     p.hearing_role !== HearingRole.OBSERVER &&
                     p.hearing_role !== HearingRole.WITNESS
-            )
-            .map(p => new Participant(p));
+            );
     }
 
     get canStartJoinConsultation() {
