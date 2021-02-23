@@ -38,7 +38,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             Thread.Sleep(TimeSpan.FromSeconds(CountdownDuration));
             Thread.Sleep(TimeSpan.FromSeconds(ExtraTimeAfterTheCountdown));
-            new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser]).Feed(HearingRoomPage.JudgeIncomingVideo);
+            new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser]).Feed(HearingRoomPage.IncomingVideoFeed);
         }
 
         [When(@"the Judge clicks pause")]
@@ -101,20 +101,20 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the participant is back in the hearing")]
         public void ThenTheParticipantIsBackInTheHearing()
         {
-            new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser]).Feed(HearingRoomPage.ParticipantIncomingVideo);
+            new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser]).Feed(HearingRoomPage.IncomingVideoFeed);
         }
 
         [Then(@"the Judge can see the participants")]
         public void ThenTheJudgeCanSeeTheOtherParticipants()
         {
-            new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser]).Feed(HearingRoomPage.JudgeIncomingVideo);
+            new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser]).Feed(HearingRoomPage.IncomingVideoFeed);
         }
 
         [Then(@"(.*) can see the other participants")]
         public void ThenParticipantsCanSeeTheOtherParticipants(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser]).Feed(HearingRoomPage.ParticipantIncomingVideo);
+            new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser]).Feed(HearingRoomPage.IncomingVideoFeed);
         }
 
         [Then(@"an audio recording of the hearing has been created")]
