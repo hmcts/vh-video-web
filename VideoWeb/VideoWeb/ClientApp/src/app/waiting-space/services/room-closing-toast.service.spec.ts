@@ -169,11 +169,8 @@ describe('RoomClosingToastrService', () => {
         it('should return false when earliest gate has NOT been passed', async () => {
             // arrange
             const momentNow = moment(new Date(2021, 1, 1, 10, 0, 0, 0));
-            const later = moment(new Date(2021, 1, 1, 10, 0, 1, 0));
-            const gates = [later];
-
-            console.error('momentNow ' + momentNow.toDate());
-            console.error('later     ' + later.toDate());
+            const afterNow = moment(new Date(2021, 1, 1, 10, 0, 1, 0));
+            const gates = [afterNow];
 
             // act
             const result = sut.hasEarliestGateBeenPassed(gates, momentNow);
@@ -185,11 +182,8 @@ describe('RoomClosingToastrService', () => {
         it('should return true when earliest gate has been passed', async () => {
             // arrange
             const momentNow = moment(new Date(2021, 1, 1, 10, 0, 0, 0));
-            const earlier = moment(new Date(2021, 1, 1, 9, 59, 59, 0));
-            const gates = [earlier];
-
-            console.error('momentNow  ' + momentNow);
-            console.error('earlier    ' + earlier);
+            const beforeNow = moment(new Date(2021, 1, 1, 9, 59, 59, 0));
+            const gates = [beforeNow];
 
             // act
             const result = sut.hasEarliestGateBeenPassed(gates, momentNow);
