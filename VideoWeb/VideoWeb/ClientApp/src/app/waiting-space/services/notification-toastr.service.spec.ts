@@ -251,7 +251,7 @@ describe('NotificationToastrService', () => {
         expect(mockToast.toastRef.componentInstance).not.toBeNull();
     });
 
-    it('show poor connection should only show once', async () => {
+    it('show poor connection should only show once in 2 min', async () => {
         // Arrange
         const mockToast = {
             toastRef: {
@@ -261,17 +261,32 @@ describe('NotificationToastrService', () => {
         toastrService.show.and.returnValue(mockToast);
 
         // Act
-        service.reportPoorConnection(
-            new ParticipantHeartbeat(globalConference.id, globalParticipant.id, HeartbeatHealth.Poor, '', '', '', '')
-        );
-        service.reportPoorConnection(
-            new ParticipantHeartbeat(globalConference.id, globalParticipant.id, HeartbeatHealth.Poor, '', '', '', '')
-        );
-        service.reportPoorConnection(
-            new ParticipantHeartbeat(globalConference.id, globalParticipant.id, HeartbeatHealth.Poor, '', '', '', '')
-        );
+        for (let i = 0; i < 26; i++) {
+            service.reportPoorConnection(
+                new ParticipantHeartbeat(globalConference.id, globalParticipant.id, HeartbeatHealth.Poor, '', '', '', '')
+            );
+        }
 
         // Assert
         expect(service.activeHeartbeatReport.length).toBe(1);
+    });
+    it(' should collect poor connection event count until it is reached  2 min limit', async () => {
+        // Arrange
+        const mockToast = {
+            toastRef: {
+                componentInstance: {}
+            }
+        } as ActiveToast<VhToastComponent>;
+        toastrService.show.and.returnValue(mockToast);
+
+        // Act
+        for (let i = 0; i < 23; i++) {
+            service.reportPoorConnection(
+                new ParticipantHeartbeat(globalConference.id, globalParticipant.id, HeartbeatHealth.Poor, '', '', '', '')
+            );
+        }
+
+        // Assert
+        expect(service.activeHeartbeatReport.length).toBe(23);
     });
 });

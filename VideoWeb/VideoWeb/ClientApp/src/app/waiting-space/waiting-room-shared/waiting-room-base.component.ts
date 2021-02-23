@@ -52,6 +52,7 @@ export abstract class WaitingRoomBaseComponent {
     protected maxBandwidth = null;
     audioOnly: boolean;
     hearingStartingAnnounced: boolean;
+    privateConsultationAccordianExpanded = false;
 
     loadingData: boolean;
     errorCount: number;
@@ -313,6 +314,7 @@ export abstract class WaitingRoomBaseComponent {
     async onConsultationAccepted() {
         this.displayStartPrivateConsultationModal = false;
         this.displayJoinPrivateConsultationModal = false;
+        this.privateConsultationAccordianExpanded = false;
 
         if (this.displayDeviceChangeModal) {
             this.logger.debug(`${this.loggerPrefix} Participant accepted a consultation. Closing change device modal.`);

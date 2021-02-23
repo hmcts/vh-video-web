@@ -14,7 +14,8 @@ export function consultationServiceSpyFactory(): jasmine.SpyObj<ConsultationServ
         'initCallRingingSound',
         'inviteToConsulation',
         'lockConsultation',
-        'displayConsultationLeaveModal'
+        'displayConsultationLeaveModal',
+        'joinPrivateConsultationRoom'
     ]);
 
     consultationServiceMock.respondToConsultationRequest.and.returnValue(Promise.resolve());
@@ -24,5 +25,6 @@ export function consultationServiceSpyFactory(): jasmine.SpyObj<ConsultationServ
     consultationServiceMock.createParticipantConsultationRoom.and.returnValue(Promise.resolve());
     consultationServiceMock.inviteToConsulation.and.returnValue(Promise.resolve());
     consultationServiceMock.lockConsultation.and.returnValue(Promise.resolve());
+    consultationServiceMock.joinPrivateConsultationRoom.and.returnValue(Promise.resolve());
     return consultationServiceMock;
 }

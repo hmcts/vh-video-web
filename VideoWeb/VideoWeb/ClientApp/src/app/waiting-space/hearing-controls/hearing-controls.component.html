@@ -108,7 +108,7 @@
         />
 
         <img
-          *ngIf="!screenShareStream"
+          *ngIf="!screenShareStream && canShowScreenShareButton"
           appTooltip
           text="Start screenshare"
           [colour]="'grey'"

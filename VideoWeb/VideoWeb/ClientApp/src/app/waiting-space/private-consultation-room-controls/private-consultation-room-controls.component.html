@@ -15,9 +15,9 @@
     <div class="controls-container govuk-grid-column-one-quarters" [ngClass]="{ 'judge-controls-padding': isJudge }">
       <div class="icons-container">
         <img
-          *ngIf="!screenShareStream"
+          *ngIf="!screenShareStream && canShowScreenShareButton"
           appTooltip
-          text="Start screenshare"
+          text="Share my screen"
           [colour]="'grey'"
           id="start-screenshare-img"
           class="icon-button"
@@ -28,7 +28,7 @@
         <img
           *ngIf="screenShareStream"
           appTooltip
-          text="Stop screenshare"
+          text="Stop sharing my screen"
           [colour]="'red'"
           id="stop-screenshare-img"
           class="icon-button"
@@ -53,7 +53,7 @@
           id="toggle-video-mute-img" 
           appTooltip
           *ngIf="!isJudge && !audioOnly"
-          [text]="videoMuted ? 'Show camera' : 'Hide camera'"
+          [text]="videoMuted ? 'Turn on camera' : 'Turn off camera'"
           [colour]="'grey'"
           (click)="toggleVideoMute()">
           <span class="far" [class]="videoMuted ? 'fa-video-slash' : 'fa-video'"></span>
