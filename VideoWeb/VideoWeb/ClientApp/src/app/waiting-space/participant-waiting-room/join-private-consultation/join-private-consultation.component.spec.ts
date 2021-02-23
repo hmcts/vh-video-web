@@ -89,4 +89,29 @@ describe('JoinPrivateConsultationComponent', () => {
         component.participants = [];
         expect(component.roomsAvailable()).toBeFalsy();
     });
+
+    it('should disable continue for no selected room', () => {
+        component.selectedRoomLabel = null;
+        expect(component.continueDisabled()).toBeTruthy();
+    });
+
+    it('should disable continue for locked selected room', () => {
+        const label = 'locked room';
+        component.selectedRoomLabel = label;
+        const participant = globalParticipant;
+        participant.current_room = new RoomSummaryResponse({ label: label, locked: true });
+        component.participants = [participant];
+        component.getRoomDetails();
+        expect(component.continueDisabled()).toBeTruthy();
+    });
+
+    it('should enable continue for unlocked selected room', () => {
+        const label = 'unlocked room';
+        component.selectedRoomLabel = label;
+        const participant = globalParticipant;
+        participant.current_room = new RoomSummaryResponse({ label: label, locked: false });
+        component.participants = [participant];
+        component.getRoomDetails();
+        expect(component.continueDisabled()).toBeFalsy();
+    });
 });

@@ -5,6 +5,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
+import { HearingRole } from '../models/hearing-role-model';
 import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 
@@ -40,6 +41,21 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.remoteMuted = false;
         this.selfViewOpen = false;
         this.displayConfirmPopup = false;
+    }
+
+    get canShowScreenShareButton(): boolean {
+        const allowedRoles = [Role.Representative, Role.JudicialOfficeHolder, Role.Judge];
+        if (allowedRoles.includes(this.participant.role)) {
+            return true;
+        }
+
+        const allowedHearingRoles: string[] = [
+            HearingRole.LITIGANT_IN_PERSON,
+            HearingRole.REPRESENTATIVE,
+            HearingRole.WITNESS,
+            HearingRole.JUDGE
+        ];
+        return allowedHearingRoles.includes(this.participant.hearing_role);
     }
 
     get isJudge(): boolean {
