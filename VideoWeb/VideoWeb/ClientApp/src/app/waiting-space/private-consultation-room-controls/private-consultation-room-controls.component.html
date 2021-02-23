@@ -15,7 +15,7 @@
     <div class="controls-container govuk-grid-column-one-quarters" [ngClass]="{ 'judge-controls-padding': isJudge }">
       <div class="icons-container">
         <img
-          *ngIf="!screenShareStream"
+          *ngIf="!screenShareStream && canShowScreenShareButton"
           appTooltip
           text="Share my screen"
           [colour]="'grey'"
