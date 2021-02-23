@@ -36,7 +36,7 @@
                 id="continue-btn"
                 class="govuk-button govuk-!-margin-right-5"
                 data-module="govuk-button"
-                [disabled]="!selectedRoomLabel"
+                [disabled]="continueDisabled()"
                 (click)="onContinue()"
                 alt="Continue"
                 >

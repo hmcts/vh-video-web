@@ -51,7 +51,7 @@ export class JoinPrivateConsultationComponent {
                     locked: r.locked,
                     participants: roomParticipants
                 });
-                // update participants
+                // update details
             } else {
                 this.roomDetails
                     .filter(rd => rd.label === r.label)
@@ -60,11 +60,16 @@ export class JoinPrivateConsultationComponent {
                             .filter(p => p.current_room?.label === r.label)
                             .sort((a, b) => (a.display_name > b.display_name ? 1 : -1));
                         rd.participants = roomParticipants;
+                        rd.locked = r.locked;
                     });
             }
         });
 
         return this.roomDetails;
+    }
+
+    continueDisabled(): boolean {
+        return !this.selectedRoomLabel || this.roomDetails.find(r => r.label === this.selectedRoomLabel)?.locked;
     }
 
     onContinue() {
