@@ -9,9 +9,7 @@ import {
     LockConsultationRoomRequest,
     ParticipantResponse,
     PrivateConsultationRequest,
-    PrivateVideoEndpointConsultationRequest,
     StartPrivateConsultationRequest,
-    VideoEndpointResponse,
     VirtualCourtRoomType
 } from '../clients/api-client';
 import { Logger } from '../logging/logger-base';
@@ -94,33 +92,6 @@ export class ConsultationService {
         }
     }
 
-    /**
-     * Start a private consultation with video endpoint. This will only be allowed for defence advocates linked to the
-     * endpoint
-     * @param conference conference
-     * @param endpoint video endpoint to call
-     */
-    async startPrivateConsulationWithEndpoint(conference: ConferenceResponse, endpoint: VideoEndpointResponse) {
-        this.logger.info(`[ConsultationService] - Starting a private consultation with a video endpoint`, {
-            conference: conference.id,
-            endpoint: endpoint.id
-        });
-        try {
-            this.clearModals();
-            await this.apiClient
-                .callVideoEndpoint(
-                    new PrivateVideoEndpointConsultationRequest({
-                        conference_id: conference.id,
-                        endpoint_id: endpoint.id
-                    })
-                )
-                .toPromise();
-        } catch (error) {
-            this.displayConsultationErrorModal();
-            throw error;
-        }
-    }
-
     async inviteToConsulation(conferenceId: string, roomLabel: string, requestParticipantId: string) {
         this.logger.info(`[ConsultationService] - Inviting participant to this private consultation`, {
             conferenceId: conferenceId,
@@ -167,7 +138,8 @@ export class ConsultationService {
     async createParticipantConsultationRoom(
         conference: ConferenceResponse,
         participant: ParticipantResponse,
-        inviteParticipants: Array<string>
+        inviteParticipants: Array<string>,
+        inviteEndpoints: Array<string>,
     ): Promise<void> {
         this.logger.info(`[ConsultationService] - Attempting to create a private consultation`, {
             conference: conference.id,
@@ -180,7 +152,8 @@ export class ConsultationService {
                         conference_id: conference.id,
                         requested_by: participant.id,
                         room_type: VirtualCourtRoomType.Participant,
-                        invite_participants: inviteParticipants
+                        invite_participants: inviteParticipants,
+                        invite_endpoints: inviteEndpoints
                     })
                 )
                 .toPromise();

@@ -293,7 +293,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         expect(component.getPrivateConsultationParticipants().length).toBe(1);
     });
     it('should call consultation service when starting consultation', fakeAsync(() => {
-        component.startPrivateConsultation(null);
+        component.startPrivateConsultation(null, null);
         flushMicrotasks();
         expect(consultationService.createParticipantConsultationRoom).toHaveBeenCalledTimes(1);
     }));

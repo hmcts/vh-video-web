@@ -26,10 +26,19 @@
             </label>
           </label>
         </div>
+        <div *ngFor="let endpoint of endpoints" class="govuk-checkboxes--small govuk-checkboxes__item">
+          <input class="govuk-checkboxes__input" id="{{endpoint.id}}" name="{{endpoint.id}}" type="checkbox"
+            [checked]="endpointSelected(endpoint.id)" [disabled]="getEndpointDisabled(endpoint)"
+            (change)="toggleEndpoint(endpoint.id)" />
+          <label class="govuk-label govuk-checkboxes__label" for="{{endpoint.id}}">
+            <span class="govuk-!-font-weight-bold">{{endpoint.display_name}}</span>
+            Video access point
+          </label>
+        </div>
       </div>
       <div class="buttons">
         <button id="continue-btn" class="govuk-button govuk-!-margin-right-5" data-module="govuk-button"
-          [disabled]="selectedParticipants.length===0" (click)="onContinue()" alt="Continue">
+          [disabled]="(selectedParticipants.length+selectedEndpoints.length)===0" (click)="onContinue()" alt="Continue">
           Continue
         </button>
         <button id="cancel-btn" class="govuk-button govuk-button--secondary" data-module="govuk-button"

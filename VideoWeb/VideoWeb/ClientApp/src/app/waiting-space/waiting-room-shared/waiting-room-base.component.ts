@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
+    AllowedEndpointResponse,
     ConferenceResponse,
     ConferenceStatus,
     ConsultationAnswer,
@@ -57,6 +58,7 @@ export abstract class WaitingRoomBaseComponent {
     hearing: Hearing;
     participant: ParticipantResponse;
     conference: ConferenceResponse;
+    participantEndpoints: AllowedEndpointResponse[] = [];
     conferenceRooms: Room[] = [];
     token: TokenResponse;
 
@@ -137,6 +139,9 @@ export abstract class WaitingRoomBaseComponent {
                 this.loadingData = false;
                 this.hearing = new Hearing(data);
                 this.conference = this.hearing.getConference();
+                this.videoWebService.getAllowedEndpointsForConference(this.conferenceId).then((endpoints: AllowedEndpointResponse[]) => {
+                    this.participantEndpoints = endpoints;
+                })
 
                 this.participant = this.setLoggedParticipant();
                 this.logger.debug(`${this.loggerPrefix} Getting conference details`, {
