@@ -69,7 +69,11 @@ export class JoinPrivateConsultationComponent {
     }
 
     continueDisabled(): boolean {
-        return !this.selectedRoomLabel || this.roomDetails.find(r => r.label === this.selectedRoomLabel)?.locked;
+        if (this.roomDetails.find(r => r.label === this.selectedRoomLabel)?.locked) {
+            this.selectedRoomLabel = null;
+        }
+
+        return !this.selectedRoomLabel;
     }
 
     onContinue() {
