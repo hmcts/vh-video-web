@@ -108,7 +108,12 @@ export class NotificationToastrService {
     reportPoorConnection(heartbeat: ParticipantHeartbeat) {
         const heartbeatKey = `${heartbeat.participantId}_${heartbeat.heartbeatHealth.toString()}`;
         if (this.activeHeartbeatReport.indexOf(heartbeatKey) >= 0) {
-            return;
+            this.activeHeartbeatReport.push(heartbeatKey);
+            if (this.activeHeartbeatReport.filter(x => x.indexOf(heartbeatKey) >= 0).length > 25) {
+                this.activeHeartbeatReport = [];
+            } else {
+                return;
+            }
         }
 
         this.activeHeartbeatReport.push(heartbeatKey);
@@ -129,7 +134,9 @@ export class NotificationToastrService {
                 {
                     label: 'Dismiss',
                     hoverColour: 'green',
-                    action: async () => {}
+                    action: async () => {
+                        this.toastr.remove(toast.toastId);
+                    }
                 }
             ]
         };
