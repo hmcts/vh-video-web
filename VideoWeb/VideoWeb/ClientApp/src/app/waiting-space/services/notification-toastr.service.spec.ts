@@ -270,4 +270,23 @@ describe('NotificationToastrService', () => {
         // Assert
         expect(service.activeHeartbeatReport.length).toBe(1);
     });
+    it(' should collect poor connection event count until it is reached  2 min limit', async () => {
+        // Arrange
+        const mockToast = {
+            toastRef: {
+                componentInstance: {}
+            }
+        } as ActiveToast<VhToastComponent>;
+        toastrService.show.and.returnValue(mockToast);
+
+        // Act
+        for (let i = 0; i < 23; i++) {
+            service.reportPoorConnection(
+                new ParticipantHeartbeat(globalConference.id, globalParticipant.id, HeartbeatHealth.Poor, '', '', '', '')
+            );
+        }
+
+        // Assert
+        expect(service.activeHeartbeatReport.length).toBe(23);
+    });
 });
