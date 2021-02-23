@@ -1,6 +1,5 @@
 import * as moment from 'moment';
 import { ActiveToast, ToastrService } from 'ngx-toastr';
-import { Observable, of } from 'rxjs';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from 'src/app/shared/models/hearing';
