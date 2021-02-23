@@ -261,7 +261,7 @@ describe('NotificationToastrService', () => {
         toastrService.show.and.returnValue(mockToast);
 
         // Act
-        for (var i = 0; i < 26; i++) {
+        for (let i = 0; i < 26; i++) {
             service.reportPoorConnection(
                 new ParticipantHeartbeat(globalConference.id, globalParticipant.id, HeartbeatHealth.Poor, '', '', '', '')
             );
