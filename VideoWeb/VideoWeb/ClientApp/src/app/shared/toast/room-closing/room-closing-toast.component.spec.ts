@@ -1,6 +1,5 @@
 import * as moment from 'moment';
-import { BasePortalHost, OverlayRef, Toast, ToastPackage, ToastRef } from 'ngx-toastr';
-import { toastrService } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
+import { BasePortalHost, OverlayRef, ToastrService, Toast } from 'ngx-toastr';
 import { RoomClosingToastComponent } from './room-closing-toast.component';
 import { Hearing } from '../../models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -8,14 +7,43 @@ import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { of } from 'rxjs';
 
-describe('RoomClosingToastComponent', () => {
+// --> https://github.com/scttcper/ngx-toastr/issues/339#issuecomment-508750488
+import { Injectable, NgModule } from '@angular/core';
+import { IndividualConfig, ToastPackage, ToastRef, ToastrModule } from 'ngx-toastr';
+import { TestBed } from '@angular/core/testing';
+
+@Injectable()
+class MockToastPackage extends ToastPackage {
+    constructor() {
+        const toastConfig = { toastClass: 'custom-toast' };
+        super(1, <IndividualConfig>toastConfig, 'test message', 'test title', 'show', new ToastRef(null));
+    }
+}
+
+@NgModule({
+    providers: [{ provide: ToastPackage, useClass: MockToastPackage }],
+    imports: [ToastrModule.forRoot()],
+    exports: [ToastrModule]
+})
+export class ToastrTestingModule {}
+// <-- https://github.com/scttcper/ngx-toastr/issues/339#issuecomment-508750488
+fdescribe('RoomClosingToastComponent', () => {
     const conferenceTestData = new ConferenceTestData();
+    let toastrService: ToastrService;
+
     let toastPackage: ToastPackage;
     let clockServiceMock: jasmine.SpyObj<ClockService>;
     let sut: RoomClosingToastComponent;
     const timeNow = new Date(2021, 1, 1, 10, 0, 0, 0);
 
     beforeEach(() => {
+        toastrService = jasmine.createSpyObj<ToastrService>('ToastrService', ['show', 'clear', 'remove']);
+
+        TestBed.configureTestingModule({
+            imports: [ToastrTestingModule],
+            providers: [{ provider: ToastrService, useValue: toastrService }]
+        });
+
         const config = {
             disableTimeOut: false,
             timeOut: 1,

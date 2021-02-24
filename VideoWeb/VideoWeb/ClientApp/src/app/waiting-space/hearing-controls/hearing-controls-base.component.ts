@@ -262,7 +262,10 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     displayConfirmationDialog() {
+        console.warn('-->displayConfirmationDialog');
         this.displayConfirmPopup = true;
+        this.close(true);
+        console.warn('<--displayConfirmationDialog');
     }
 
     leavePrivateConsultation() {

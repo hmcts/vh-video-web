@@ -2,12 +2,12 @@ import * as moment from 'moment';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ToastrService, ToastPackage } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
-import { VhToastComponent } from '../vh-toast.component';
+import { VhToastButton, VhToastComponent } from '../vh-toast.component';
 import { ClockService } from 'src/app/services/clock.service';
 
 interface RoomClosingToastOptions {
-    onNoAction: () => void;
     expiryDate: Date;
+    buttons: VhToastButton[];
 }
 @Component({
     templateUrl: './room-closing-toast.component.html',
@@ -22,17 +22,8 @@ export class RoomClosingToastComponent extends VhToastComponent implements OnIni
         this.setExpiryDate(options.expiryDate);
         super.vhToastOptions = {
             color: 'white',
-            onNoAction: () => options.onNoAction,
-            buttons: [
-                {
-                    label: 'Dismiss',
-                    hoverColour: 'green',
-                    action: () => {
-                        super.remove();
-                        options.onNoAction();
-                    }
-                }
-            ]
+            onNoAction: async () => {},
+            buttons: options.buttons
         };
     }
 
@@ -54,10 +45,6 @@ export class RoomClosingToastComponent extends VhToastComponent implements OnIni
     }
 
     calcTimeLeft(now: Date): string {
-        if (!this.hearing) {
-            return;
-        }
-
         const momentNow = moment(now);
         const momentExpired = moment(this.expiryDate);
 
@@ -70,16 +57,7 @@ export class RoomClosingToastComponent extends VhToastComponent implements OnIni
         }
 
         const ms = duration.asMilliseconds();
-        if (ms <= 0) {
-            this.durationStr = null;
-            return;
-        }
-
         const mmss = moment.utc(ms).format('mm:ss');
         this.durationStr = mmss;
-    }
-
-    public dismiss() {
-        super.remove();
     }
 }

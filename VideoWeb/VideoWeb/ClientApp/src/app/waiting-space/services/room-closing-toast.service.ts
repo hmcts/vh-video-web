@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ToastrService } from 'ngx-toastr';
+import { ActiveToast, ToastrService } from 'ngx-toastr';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { RoomClosingToastComponent } from 'src/app/shared/toast/room-closing/room-closing-toast.component';
 import * as moment from 'moment';
@@ -8,102 +8,97 @@ import * as moment from 'moment';
 @Injectable()
 export class RoomClosingToastrService {
     private readonly loggerPrefix = '[RoomClosingToastrService] -';
+    //protected durations: moment.Duration[] = [];
 
-    protected durations: moment.Duration[] = [];
-    protected roomClosingLastShown: moment.Moment;
-    isCurrentlyShowingToast = false;
-
-    constructor(private logger: Logger, private toastr: ToastrService) {
-        const fiveMinsLeft = moment.duration(5, 'minutes');
-        const thirtySecondsLeft = moment.duration(30, 'seconds');
-        this.durations.push(fiveMinsLeft);
-        this.durations.push(thirtySecondsLeft);
-
-        this.roomClosingLastShown = moment.utc().subtract(5, 'minutes');
-    }
-
+    currentToast: ActiveToast<RoomClosingToastComponent> = null;
     expiresAt: Date;
+    gates: Date[] = [];
+    shownGates: Date[] = [];
+
+    constructor(private logger: Logger, private toastr: ToastrService) {}
+
     /**
      * If conditions are met, show the "room closing" notification
      */
     public showRoomClosingAlert(hearing: Hearing, timeNow: Date) {
-        const now = moment(timeNow);
-
-        if (!this.shouldShowAlert(hearing)) {
+        console.error('--> showRoomClosingAlert');
+        if (this.currentToast) {
             return;
         }
 
-        const expiresAt = hearing.retrieveExpiryTime();
-        const gates = this.getGates(expiresAt);
+        if (!this.gates.length) {
+            if (hearing.isClosed() && !hearing.isExpired(hearing.actualCloseTime)) {
+                this.expiresAt = hearing.retrieveExpiryTime();
+                this.gates = this.setGates(this.expiresAt);
+            } else {
+                return;
+            }
+        }
 
-        if (!this.hasEarliestGateBeenPassed(gates, now)) {
+        console.warn('gates.length: ' + this.gates.length);
+        var pastGates = this.gates.filter(gate => {
+            return timeNow.valueOf() > gate.valueOf();
+        });
+        console.warn('pastGates.length: ' + pastGates.length);
+        if (pastGates.length === 0) {
+            console.error('3x');
             return;
         }
 
-        if (!this.isGateBetweenLastShownTimeAndNowDate(gates, now)) {
-            return;
+        if (pastGates.length !== this.shownGates.length && !this.currentToast) {
+            console.error('show it');
+            this.shownGates = pastGates;
+            this.showToast(this.expiresAt);
         }
-
-        this.showToast(hearing, now);
+        console.error('<-- showRoomClosingAlert');
     }
 
-    protected shouldShowAlert(hearing: Hearing): boolean {
-        if (!hearing.isClosed()) {
-            return false;
+    setGates(expiresAt: Date): Date[] {
+        const durations: moment.Duration[] = [];
+
+        // const fiveMinsLeft = moment.duration(5, 'minutes');
+        // const thirtySecondsLeft = moment.duration(30, 'seconds');
+        // durations.push(fiveMinsLeft);
+        // durations.push(thirtySecondsLeft);
+
+        for (let i = 29; i > 0; i--) {
+            const xMinsLeft = moment.duration(1, 'minutes');
+            durations.push(xMinsLeft);
         }
 
-        if (hearing.isExpired(hearing.actualCloseTime)) {
-            return false;
-        }
-
-        if (this.isCurrentlyShowingToast) {
-            return false;
-        }
-
-        return true;
-    }
-
-    protected getGates(expiresAt: Date): moment.Moment[] {
-        const gates: moment.Moment[] = [];
-        for (const duration of this.durations) {
-            gates.push(moment(expiresAt).subtract(duration));
+        const gates: Date[] = [];
+        for (const duration of durations) {
+            gates.push(moment(expiresAt).subtract(duration).toDate());
         }
         return gates;
     }
 
-    protected hasEarliestGateBeenPassed(gates: moment.Moment[], now: moment.Moment): boolean {
-        return now.isAfter(gates[0]);
-    }
-
-    protected isGateBetweenLastShownTimeAndNowDate(gates: moment.Moment[], now: moment.Moment): boolean {
-        const found = gates.find(gate => {
-            if (gate.isBetween(this.roomClosingLastShown, now)) {
-                return gate;
-            }
-        });
-
-        return found !== undefined;
-    }
-
-    protected showToast(expiryDate: Date) {
+    showToast(expiryDate: Date) {
         this.logger.debug(`${this.loggerPrefix} creating 'showRoomClosingAlert' toastr notification`);
 
-        this.roomClosingLastShown = now;
-        this.isCurrentlyShowingToast = true;
-
-        const toast = this.toastr.show('', '', {
+        this.currentToast = this.toastr.show('', '', {
             disableTimeOut: true,
             tapToDismiss: false,
             toastComponent: RoomClosingToastComponent
         });
 
-        const roomClosingToast = toast.toastRef.componentInstance as RoomClosingToastComponent;
+        const roomClosingToast = this.currentToast.toastRef.componentInstance as RoomClosingToastComponent;
         roomClosingToast.roomClosingToastOptions = {
-            onNoAction: async () => {
-                this.roomClosingLastShown = moment.utc();
-                this.isCurrentlyShowingToast = false;
-            },
+            buttons: [
+                {
+                    label: 'Dismiss',
+                    hoverColour: 'green',
+                    action: async () => this.onToastClosed()
+                }
+            ],
             expiryDate: expiryDate
         };
+    }
+
+    onToastClosed(): void {
+        console.error('--> onToastClosed');
+        this.toastr.remove(this.currentToast.toastId);
+        this.currentToast = null;
+        console.error('<-- onToastClosed');
     }
 }

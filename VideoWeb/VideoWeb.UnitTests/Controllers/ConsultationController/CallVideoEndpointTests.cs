@@ -31,7 +31,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-           
+
 
             _testConference = ConsultationHelper.BuildConferenceForTest();
 
@@ -61,7 +61,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var cp = new ClaimsPrincipalBuilder().WithRole(AppRoles.RepresentativeRole)
                 .WithUsername("nf@hmcts.net").Build();
             _sut = SetupControllerWithClaims(cp);
-            
+
             var request = new PrivateVideoEndpointConsultationRequest
             {
                 ConferenceId = _testConference.Id,
@@ -73,7 +73,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             actionResult.Should().NotBeNull();
             actionResult.Value.Should().Be($"Defence advocate does not exist in conference {request.ConferenceId}");
         }
-        
+
         [Test]
         public async Task should_return_not_found_if_endpoint_is_not_found()
         {
@@ -87,7 +87,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             actionResult.Should().NotBeNull();
             actionResult.Value.Should().Be($"No endpoint id {request.EndpointId} exists");
         }
-        
+
         [Test]
         public async Task should_return_accepted_request_is_successful()
         {
@@ -105,9 +105,10 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [Test]
         public async Task should_return_api_exception_status_code()
         {
-            var apiException = new VideoApiException<ProblemDetails>("Defence advocate is not linked to endpoint", (int) HttpStatusCode.Unauthorized,
+            var apiException = new VideoApiException<ProblemDetails>("Defence advocate is not linked to endpoint",
+                (int)HttpStatusCode.Unauthorized,
                 "Defence advocate is not linked to endpoint", null, default, null);
-            
+
             var request = new PrivateVideoEndpointConsultationRequest
             {
                 ConferenceId = _testConference.Id,
@@ -116,19 +117,20 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             };
 
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.StartConsultationWithEndpointAsync(It.IsAny<EndpointConsultationRequest>()))
+                .Setup(x => x.JoinEndpointToConsultationAsync(It.IsAny<EndpointConsultationRequest>()))
                 .ThrowsAsync(apiException);
-            
+
             var result = await _sut.CallVideoEndpointAsync(request);
             var actionResult = result.As<ObjectResult>();
             actionResult.Should().NotBeNull();
-            actionResult.StatusCode.Should().Be((int) HttpStatusCode.Unauthorized);
+            actionResult.StatusCode.Should().Be((int)HttpStatusCode.Unauthorized);
         }
-        
+
         private ConsultationsController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)
         {
-            var cp = claimsPrincipal ?? new ClaimsPrincipalBuilder().WithRole(AppRoles.RepresentativeRole)
-                .WithUsername("rep1@hmcts.net").Build();
+            var cp = claimsPrincipal ??
+                     new ClaimsPrincipalBuilder().WithRole(AppRoles.RepresentativeRole)
+                         .WithUsername("rep1@hmcts.net").Build();
             var context = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext
