@@ -97,9 +97,10 @@ describe('RoomClosingToastComponent', () => {
             const closedDateTime = moment(timeNow).subtract(timeSinceClosed).toDate();
 
             const hearing = getClosedButNotExpiredHearing(closedDateTime);
+            var expiryDate = hearing.retrieveExpiryTime();
 
             // act
-            sut.setHearing(hearing);
+            sut.setExpiryDate(expiryDate);
             sut.calcTimeLeft(timeNow);
 
             // assert

@@ -22,6 +22,7 @@ export class RoomClosingToastrService {
         this.roomClosingLastShown = moment.utc().subtract(5, 'minutes');
     }
 
+    expiresAt: Date;
     /**
      * If conditions are met, show the "room closing" notification
      */
@@ -84,7 +85,7 @@ export class RoomClosingToastrService {
         return found !== undefined;
     }
 
-    protected showToast(hearing: Hearing, now: moment.Moment) {
+    protected showToast(expiryDate: Date) {
         this.logger.debug(`${this.loggerPrefix} creating 'showRoomClosingAlert' toastr notification`);
 
         this.roomClosingLastShown = now;
@@ -97,14 +98,12 @@ export class RoomClosingToastrService {
         });
 
         const roomClosingToast = toast.toastRef.componentInstance as RoomClosingToastComponent;
-        roomClosingToast.vhToastOptions = {
-            color: 'white',
+        roomClosingToast.roomClosingToastOptions = {
             onNoAction: async () => {
                 this.roomClosingLastShown = moment.utc();
                 this.isCurrentlyShowingToast = false;
             },
-            buttons: []
+            expiryDate: expiryDate
         };
-        roomClosingToast.setHearing(hearing);
     }
 }
