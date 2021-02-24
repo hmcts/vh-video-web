@@ -196,6 +196,10 @@
   min-height: auto;
   z-index: 200;
   cursor: pointer;
+
+  video {
+    max-width: 259px;
+  }
 }
 
 #secondIncomingFeedOld {
@@ -206,4 +210,8 @@
   min-height: auto;
   z-index: 101;
   cursor: pointer;
+
+  video {
+    max-width: 259px;
+  }
 }
