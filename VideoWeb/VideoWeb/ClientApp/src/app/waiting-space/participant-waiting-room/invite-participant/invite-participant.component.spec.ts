@@ -13,8 +13,26 @@ describe('InviteParticipantComponent', () => {
     });
 
     it('should call consultation service when a participant is invited', fakeAsync(() => {
+        // Arrange
+        component.participantId = 'ParticipantId'
+
+        // Act
         component.inviteParticipant();
         flushMicrotasks();
+
+        // Assert
         expect(consultationService.inviteToConsulation).toHaveBeenCalledTimes(1);
+    }));
+    
+    it('should call consultation service when a participant is invited', fakeAsync(() => {
+        // Arrange
+        component.endpointId = 'EndpointId'
+
+        // Act
+        component.inviteParticipant();
+        flushMicrotasks();
+
+        // Assert
+        expect(consultationService.addEndpointToConsulation).toHaveBeenCalledTimes(1);
     }));
 });

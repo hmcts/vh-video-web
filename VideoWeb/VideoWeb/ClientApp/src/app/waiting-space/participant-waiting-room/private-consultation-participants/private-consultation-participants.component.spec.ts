@@ -4,6 +4,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
     ConsultationAnswer,
+    EndpointStatus,
     LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
@@ -97,7 +98,13 @@ describe('PrivateConsultationParticipantsComponent', () => {
     it('should return participant available', () => {
         const p = conference.participants[0];
         p.status = ParticipantStatus.Available;
-        expect(component.participantAvailable(p)).toEqual(true);
+        expect(component.isParticipantAvailable(p)).toEqual(true);
+    });
+    
+    it('should return endpoint available', () => {
+        const p = conference.endpoints[0];
+        p.status = EndpointStatus.Connected;
+        expect(component.isParticipantAvailable(p)).toEqual(true);
     });
 
     it('should get row classes', () => {
@@ -333,7 +340,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
                 status: status as ParticipantStatus
             });
 
-            const result = component.participantAvailable(participant);
+            const result = component.isParticipantAvailable(participant);
 
             // Assert
             expect(result).toBe(available as boolean);
@@ -349,7 +356,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
             } as RoomSummaryResponse
         });
 
-        const result = component.participantIsInCurrentRoom(participant);
+        const result = component.isParticipantInCurrentRoom(participant);
 
         // Assert
         expect(result).toBeTrue();
@@ -364,7 +371,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
             } as RoomSummaryResponse
         });
 
-        const result = component.participantIsInCurrentRoom(participant);
+        const result = component.isParticipantInCurrentRoom(participant);
 
         // Assert
         expect(result).toBeFalse();

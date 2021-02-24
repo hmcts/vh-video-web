@@ -315,7 +315,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.participant = globalParticipant;
         component.conference = globalConference;
         component.privateConsultationAccordianExpanded = true;
-        await component.startPrivateConsultation([globalParticipant.id]);
+        await component.startPrivateConsultation([globalParticipant.id], []);
 
         expect(component.privateConsultationAccordianExpanded).toBe(false);
     });

@@ -15,7 +15,8 @@ export function consultationServiceSpyFactory(): jasmine.SpyObj<ConsultationServ
         'inviteToConsulation',
         'lockConsultation',
         'displayConsultationLeaveModal',
-        'joinPrivateConsultationRoom'
+        'joinPrivateConsultationRoom',
+        'addEndpointToConsulation'
     ]);
 
     consultationServiceMock.respondToConsultationRequest.and.returnValue(Promise.resolve());
