@@ -122,7 +122,10 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         if (this.participantCallStatuses[participant.id] === ConsultationAnswer.None) {
             return 'No Answer';
         }
-        if (this.participantCallStatuses[participant.id] === ConsultationAnswer.Transferring) {
+        if (
+            this.participantCallStatuses[participant.id] === ConsultationAnswer.Transferring ||
+            this.participantCallStatuses[participant.id] === ConsultationAnswer.Accepted
+        ) {
             return 'Transferring';
         }
         if (participant.current_room?.label) {
@@ -158,7 +161,10 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         if (this.participantCallStatuses[participant.id] === 'Calling') {
             return 'yellow';
         }
-        if (this.participantCallStatuses[participant.id] === ConsultationAnswer.Transferring) {
+        if (
+            this.participantCallStatuses[participant.id] === ConsultationAnswer.Transferring ||
+            this.participantCallStatuses[participant.id] === ConsultationAnswer.Accepted
+        ) {
             return 'yellow';
         }
         if (this.participantCallStatuses[participant.id] === ConsultationAnswer.Rejected) {

@@ -278,6 +278,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         const statuses = [
             ['Calling', 'Calling...'],
             ['Transferring', 'Transferring'],
+            ['Accepted', 'Transferring'],
             ['Rejected', 'Declined'],
             ['Failed', 'Failed'],
             ['None', 'No Answer']
@@ -385,6 +386,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         const statuses = [
             ['Calling', 'yellow'],
             ['Transferring', 'yellow'],
+            ['Accepted', 'yellow'],
             ['Rejected', 'red'],
             ['Failed', 'red'],
             ['None', 'red']
