@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -101,6 +100,11 @@ namespace VideoWeb.Controllers
 
             try
             {
+                if (request.Answer == ConsultationAnswer.Accepted)
+                {
+                    await NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Transferring);
+                }
+
                 await _videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
                 await NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedForId, request.Answer);
                 return NoContent();
@@ -113,50 +117,6 @@ namespace VideoWeb.Controllers
             }
         }
 
-        [HttpPost("video-endpoint")]
-        [SwaggerOperation(OperationId = "CallVideoEndpoint")]
-        [ProducesResponseType((int) HttpStatusCode.Accepted)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
-        [Authorize(AppRoles.RepresentativeRole)]
-        public async Task<IActionResult> CallVideoEndpointAsync(PrivateVideoEndpointConsultationRequest request)
-        {
-            _logger.LogDebug("CallVideoEndpoint");
-            var username = User.Identity.Name?.ToLower().Trim();
-            var conference = await GetConference(request.ConferenceId);
-
-            var defenceAdvocate = conference.Participants.SingleOrDefault(x =>
-                x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
-            if (defenceAdvocate == null)
-            {
-                return NotFound($"Defence advocate does not exist in conference {request.ConferenceId}");
-            }
-
-            var endpoint = conference.Endpoints.SingleOrDefault(x => x.Id == request.EndpointId);
-            if (endpoint == null)
-            {
-                return NotFound($"No endpoint id {request.EndpointId} exists");
-            }
-
-            try
-            {
-                await _videoApiClient.StartConsultationWithEndpointAsync(new EndpointConsultationRequest
-                {
-                    Conference_id = request.ConferenceId,
-                    Endpoint_id = endpoint.Id,
-                    Defence_advocate_id = defenceAdvocate.Id
-                });
-
-            }
-            catch (VideoApiException ex)
-            {
-                _logger.LogError(ex, "Unable to start endpoint private consultation");
-                return StatusCode(ex.StatusCode, ex.Response);
-            }
-
-            return Accepted();
-        }
-
         [HttpPost("start")]
         [SwaggerOperation(OperationId = "StartOrJoinConsultation")]
         [ProducesResponseType((int) HttpStatusCode.Accepted)]
@@ -166,12 +126,13 @@ namespace VideoWeb.Controllers
         {
             try
             {
+                var username = User.Identity.Name?.ToLower().Trim();
                 var conference = await GetConference(request.ConferenceId);
 
-                var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedBy);
+                var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedBy && x.Username == username);
                 if (requestedBy == null)
                 {
-                    _logger.LogWarning("The participant with Id: {requestedBy} is not found", request.RequestedBy);
+                    _logger.LogWarning("The participant with Id: {requestedBy} and username: {username} is not found", request.RequestedBy, username);
                     return NotFound();
                 }
 
@@ -182,17 +143,40 @@ namespace VideoWeb.Controllers
                 {
                     var room = await _videoApiClient.CreatePrivateConsultationAsync(mappedRequest);
                     await NotifyRoomUpdateAsync(conference, new Room { Label = room.Label, Locked = room.Locked, ConferenceId = conference.Id });
-                    foreach (var participant in request.InviteParticipants)
+                    foreach (var participantId in request.InviteParticipants.Where(participantId => conference.Participants.Any(p => p.Id == participantId)))
                     {
-                        await NotifyConsultationRequestAsync(conference, room.Label, request.RequestedBy, participant);
+                        await NotifyConsultationRequestAsync(conference, room.Label, request.RequestedBy, participantId);
+                    }
+
+                    var validSelectedEndpoints = request.InviteEndpoints
+                        .Select(endpointId => conference.Endpoints.SingleOrDefault(p => p.Id == endpointId))
+                        .Where(x => x.DefenceAdvocateUsername.Equals(username, StringComparison.OrdinalIgnoreCase));
+                    foreach (var endpoint in validSelectedEndpoints)
+                    {
+                        try
+                        {
+                            await _videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
+                            {
+                                Conference_id = request.ConferenceId,
+                                Defence_advocate_id = requestedBy.Id,
+                                Endpoint_id = endpoint.Id,
+                                Room_label = room.Label
+                            });
+                            break;
+                        }
+                        catch (VideoApiException e)
+                        {
+                            await NotifyConsultationResponseAsync(conference, room.Label, endpoint.Id, ConsultationAnswer.Failed);
+                            _logger.LogError(e, "Unable to add {endpointId} to consultation", endpoint.Id);
+                        }
                     }
                 }
                 else
                 {
                     await _videoApiClient.StartPrivateConsultationAsync(mappedRequest);
                 }
-                return Accepted();
 
+                return Accepted();
             }
             catch (VideoApiException e)
             {
@@ -249,19 +233,50 @@ namespace VideoWeb.Controllers
             return Accepted();
         }
 
-        private async Task<Conference> GetConference(Guid conferenceId)
+        [HttpPost("addendpoint")]
+        [SwaggerOperation(OperationId = "AddEndpointToConsultation")]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> AddEndpointToConsultationAsync(AddEndpointConsultationRequest request)
         {
-            return await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
+            var conference = await GetConference(request.ConferenceId);
+
+            var username = User.Identity.Name?.ToLower().Trim();
+            var requestedBy = conference.Participants.SingleOrDefault(x =>
+                x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
+            if (requestedBy == null)
+            {
+                return Unauthorized("You must be a VHO or a member of the conference");
+            }
+
+            try
+            {
+                await NotifyConsultationResponseAsync(conference, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring);
+                await _videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
+                {
+                    Conference_id = request.ConferenceId,
+                    Defence_advocate_id = requestedBy.Id,
+                    Endpoint_id = request.EndpointId,
+                    Room_label = request.RoomLabel
+                });
+            }
+            catch (VideoApiException e)
+            {
+                await NotifyConsultationResponseAsync(conference, request.RoomLabel, request.EndpointId, ConsultationAnswer.Failed);
+                _logger.LogError(e, "Join endpoint to consultation error");
+                return StatusCode(e.StatusCode);
+            }
+
+            return Accepted();
+        }
+
+        private Task<Conference> GetConference(Guid conferenceId)
+        {
+            return _conferenceCache.GetOrAddConferenceAsync(conferenceId,
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
         }
 
-        /// <summary>
-        /// This method raises a notification to the requestee informing them of an incoming consultation request
-        /// </summary>
-        /// <param name="conference">The conference</param>
-        /// <param name="requestedById">The participant raising the consultation request</param>
-        /// <param name="requestedForId">The participant with whom the consultation is being requested with</param>
-        /// <param name="roomLabel">The room you're requesting the participant joins</param>
         private async Task NotifyConsultationRequestAsync(Conference conference, string roomLabel, Guid requestedById,
             Guid requestedForId)
         {
@@ -271,13 +286,6 @@ namespace VideoWeb.Controllers
             await Task.WhenAll(tasks);
         }
 
-        /// <summary>
-        /// This method raises a notification to the requester informing them the response to their consultation request.
-        /// </summary>
-        /// <param name="conference">The conference</param>
-        /// <param name="roomLabel">The room the participant is responding to</param>
-        /// <param name="requestedForId">The participant with whom the consultation is being requested with</param>
-        /// /// <param name="answer">The answer to the request (i.e. Accepted or Rejected)</param>
         private async Task NotifyConsultationResponseAsync(Conference conference, string roomLabel,
             Guid requestedForId, ConsultationAnswer answer)
         {

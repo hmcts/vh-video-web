@@ -27,6 +27,9 @@
                   <li *ngFor="let participant of roomDetails.participants">
                     <span class="govuk-!-font-weight-bold">{{participant.display_name}}</span> {{getParticipantHearingRoleText(participant)}}
                   </li>
+                  <li *ngFor="let endpoint of roomDetails.endpoints">
+                    <span class="govuk-!-font-weight-bold">{{endpoint.display_name}}</span> Video access point
+                  </li>
                 </ul>
             </label>
           </div>

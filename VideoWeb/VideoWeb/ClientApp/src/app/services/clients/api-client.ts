@@ -1252,96 +1252,6 @@ export class ApiClient {
      * @param body (optional)
      * @return Success
      */
-    callVideoEndpoint(body: PrivateVideoEndpointConsultationRequest | undefined): Observable<void> {
-        let url_ = this.baseUrl + '/consultations/video-endpoint';
-        url_ = url_.replace(/[?&]$/, '');
-
-        const content_ = JSON.stringify(body);
-
-        let options_: any = {
-            body: content_,
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({
-                'Content-Type': 'application/json-patch+json'
-            })
-        };
-
-        return this.http
-            .request('post', url_, options_)
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processCallVideoEndpoint(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processCallVideoEndpoint(<any>response_);
-                        } catch (e) {
-                            return <Observable<void>>(<any>_observableThrow(e));
-                        }
-                    } else return <Observable<void>>(<any>_observableThrow(response_));
-                })
-            );
-    }
-
-    protected processCallVideoEndpoint(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 202) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return _observableOf<void>(<any>null);
-                })
-            );
-        } else if (status === 404) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result404: any = null;
-                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result404 = ProblemDetails.fromJS(resultData404);
-                    return throwException('Not Found', status, _responseText, _headers, result404);
-                })
-            );
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result400: any = null;
-                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = ProblemDetails.fromJS(resultData400);
-                    return throwException('Bad Request', status, _responseText, _headers, result400);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<void>(<any>null);
-    }
-
-    /**
-     * @param body (optional)
-     * @return Success
-     */
     startOrJoinConsultation(body: StartPrivateConsultationRequest | undefined): Observable<void> {
         let url_ = this.baseUrl + '/consultations/start';
         url_ = url_.replace(/[?&]$/, '');
@@ -1609,6 +1519,96 @@ export class ApiClient {
     }
 
     /**
+     * @param body (optional)
+     * @return Success
+     */
+    addEndpointToConsultation(body: AddEndpointConsultationRequest | undefined): Observable<void> {
+        let url_ = this.baseUrl + '/consultations/addendpoint';
+        url_ = url_.replace(/[?&]$/, '');
+
+        const content_ = JSON.stringify(body);
+
+        let options_: any = {
+            body: content_,
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json-patch+json'
+            })
+        };
+
+        return this.http
+            .request('post', url_, options_)
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processAddEndpointToConsultation(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processAddEndpointToConsultation(<any>response_);
+                        } catch (e) {
+                            return <Observable<void>>(<any>_observableThrow(e));
+                        }
+                    } else return <Observable<void>>(<any>_observableThrow(response_));
+                })
+            );
+    }
+
+    protected processAddEndpointToConsultation(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 202) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return _observableOf<void>(<any>null);
+                })
+            );
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result404: any = null;
+                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result404 = ProblemDetails.fromJS(resultData404);
+                    return throwException('Not Found', status, _responseText, _headers, result404);
+                })
+            );
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result400: any = null;
+                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result400 = ProblemDetails.fromJS(resultData400);
+                    return throwException('Bad Request', status, _responseText, _headers, result400);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<void>(<any>null);
+    }
+
+    /**
      * @return Success
      */
     getVideoEndpointsForConference(conferenceId: string): Observable<VideoEndpointResponse[]> {
@@ -1682,6 +1682,91 @@ export class ApiClient {
             );
         }
         return _observableOf<VideoEndpointResponse[]>(<any>null);
+    }
+
+    /**
+     * @return Success
+     */
+    allowedVideoCallEndpoints(conferenceId: string): Observable<AllowedEndpointResponse[]> {
+        let url_ = this.baseUrl + '/{conferenceId}/allowed-video-call-endpoints';
+        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({
+                Accept: 'application/json'
+            })
+        };
+
+        return this.http
+            .request('get', url_, options_)
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processAllowedVideoCallEndpoints(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processAllowedVideoCallEndpoints(<any>response_);
+                        } catch (e) {
+                            return <Observable<AllowedEndpointResponse[]>>(<any>_observableThrow(e));
+                        }
+                    } else return <Observable<AllowedEndpointResponse[]>>(<any>_observableThrow(response_));
+                })
+            );
+    }
+
+    protected processAllowedVideoCallEndpoints(response: HttpResponseBase): Observable<AllowedEndpointResponse[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result200: any = null;
+                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    if (Array.isArray(resultData200)) {
+                        result200 = [] as any;
+                        for (let item of resultData200) result200!.push(AllowedEndpointResponse.fromJS(item));
+                    }
+                    return _observableOf(result200);
+                })
+            );
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result400: any = null;
+                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result400 = ProblemDetails.fromJS(resultData400);
+                    return throwException('Bad Request', status, _responseText, _headers, result400);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<AllowedEndpointResponse[]>(<any>null);
     }
 
     /**
@@ -4568,6 +4653,7 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
     defence_advocate_username?: string | undefined;
     pexip_display_name?: string | undefined;
     is_current_user?: boolean;
+    current_room?: RoomSummaryResponse | undefined;
 
     constructor(data?: IVideoEndpointResponse) {
         if (data) {
@@ -4585,6 +4671,7 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
             this.defence_advocate_username = _data['defence_advocate_username'];
             this.pexip_display_name = _data['pexip_display_name'];
             this.is_current_user = _data['is_current_user'];
+            this.current_room = _data['current_room'] ? RoomSummaryResponse.fromJS(_data['current_room']) : <any>undefined;
         }
     }
 
@@ -4603,6 +4690,7 @@ export class VideoEndpointResponse implements IVideoEndpointResponse {
         data['defence_advocate_username'] = this.defence_advocate_username;
         data['pexip_display_name'] = this.pexip_display_name;
         data['is_current_user'] = this.is_current_user;
+        data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
         return data;
     }
 }
@@ -4616,6 +4704,7 @@ export interface IVideoEndpointResponse {
     defence_advocate_username?: string | undefined;
     pexip_display_name?: string | undefined;
     is_current_user?: boolean;
+    current_room?: RoomSummaryResponse | undefined;
 }
 
 /** Detailed information about a conference */
@@ -4845,7 +4934,8 @@ export enum ConsultationAnswer {
     None = 'None',
     Accepted = 'Accepted',
     Rejected = 'Rejected',
-    Failed = 'Failed'
+    Failed = 'Failed',
+    Transferring = 'Transferring'
 }
 
 /** Raise or respond to a private consultation request */
@@ -4903,45 +4993,6 @@ export interface IPrivateConsultationRequest {
     room_label?: string | undefined;
 }
 
-export class PrivateVideoEndpointConsultationRequest implements IPrivateVideoEndpointConsultationRequest {
-    conference_id?: string;
-    endpoint_id?: string;
-
-    constructor(data?: IPrivateVideoEndpointConsultationRequest) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.conference_id = _data['conference_id'];
-            this.endpoint_id = _data['endpoint_id'];
-        }
-    }
-
-    static fromJS(data: any): PrivateVideoEndpointConsultationRequest {
-        data = typeof data === 'object' ? data : {};
-        let result = new PrivateVideoEndpointConsultationRequest();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data['conference_id'] = this.conference_id;
-        data['endpoint_id'] = this.endpoint_id;
-        return data;
-    }
-}
-
-export interface IPrivateVideoEndpointConsultationRequest {
-    conference_id?: string;
-    endpoint_id?: string;
-}
-
 export enum VirtualCourtRoomType {
     JudgeJOH = 'JudgeJOH',
     Participant = 'Participant'
@@ -4949,6 +5000,7 @@ export enum VirtualCourtRoomType {
 
 export class StartPrivateConsultationRequest implements IStartPrivateConsultationRequest {
     invite_participants?: string[] | undefined;
+    invite_endpoints?: string[] | undefined;
     conference_id?: string;
     requested_by?: string;
     room_type?: VirtualCourtRoomType;
@@ -4966,6 +5018,10 @@ export class StartPrivateConsultationRequest implements IStartPrivateConsultatio
             if (Array.isArray(_data['invite_participants'])) {
                 this.invite_participants = [] as any;
                 for (let item of _data['invite_participants']) this.invite_participants!.push(item);
+            }
+            if (Array.isArray(_data['invite_endpoints'])) {
+                this.invite_endpoints = [] as any;
+                for (let item of _data['invite_endpoints']) this.invite_endpoints!.push(item);
             }
             this.conference_id = _data['conference_id'];
             this.requested_by = _data['requested_by'];
@@ -4986,6 +5042,10 @@ export class StartPrivateConsultationRequest implements IStartPrivateConsultatio
             data['invite_participants'] = [];
             for (let item of this.invite_participants) data['invite_participants'].push(item);
         }
+        if (Array.isArray(this.invite_endpoints)) {
+            data['invite_endpoints'] = [];
+            for (let item of this.invite_endpoints) data['invite_endpoints'].push(item);
+        }
         data['conference_id'] = this.conference_id;
         data['requested_by'] = this.requested_by;
         data['room_type'] = this.room_type;
@@ -4995,6 +5055,7 @@ export class StartPrivateConsultationRequest implements IStartPrivateConsultatio
 
 export interface IStartPrivateConsultationRequest {
     invite_participants?: string[] | undefined;
+    invite_endpoints?: string[] | undefined;
     conference_id?: string;
     requested_by?: string;
     room_type?: VirtualCourtRoomType;
@@ -5086,6 +5147,92 @@ export interface IInviteToConsultationRequest {
     conference_id?: string;
     room_label?: string | undefined;
     participant_id?: string;
+}
+
+export class AddEndpointConsultationRequest implements IAddEndpointConsultationRequest {
+    conference_id?: string;
+    room_label?: string | undefined;
+    endpoint_id?: string;
+
+    constructor(data?: IAddEndpointConsultationRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.conference_id = _data['conference_id'];
+            this.room_label = _data['room_label'];
+            this.endpoint_id = _data['endpoint_id'];
+        }
+    }
+
+    static fromJS(data: any): AddEndpointConsultationRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new AddEndpointConsultationRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['conference_id'] = this.conference_id;
+        data['room_label'] = this.room_label;
+        data['endpoint_id'] = this.endpoint_id;
+        return data;
+    }
+}
+
+export interface IAddEndpointConsultationRequest {
+    conference_id?: string;
+    room_label?: string | undefined;
+    endpoint_id?: string;
+}
+
+export class AllowedEndpointResponse implements IAllowedEndpointResponse {
+    id?: string;
+    display_name?: string | undefined;
+    defence_advocate_username?: string | undefined;
+
+    constructor(data?: IAllowedEndpointResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data['id'];
+            this.display_name = _data['display_name'];
+            this.defence_advocate_username = _data['defence_advocate_username'];
+        }
+    }
+
+    static fromJS(data: any): AllowedEndpointResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new AllowedEndpointResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['id'] = this.id;
+        data['display_name'] = this.display_name;
+        data['defence_advocate_username'] = this.defence_advocate_username;
+        return data;
+    }
+}
+
+export interface IAllowedEndpointResponse {
+    id?: string;
+    display_name?: string | undefined;
+    defence_advocate_username?: string | undefined;
 }
 
 export class HealthCheck implements IHealthCheck {
@@ -5624,6 +5771,53 @@ export interface IParticipantHeartbeatResponse {
     timestamp?: Date;
 }
 
+export enum LinkedParticipantType {
+    Interpreter = 'Interpreter'
+}
+
+export class LinkedParticipantRequest implements ILinkedParticipantRequest {
+    participant_ref_id?: string;
+    linked_ref_id?: string;
+    type?: LinkedParticipantType;
+
+    constructor(data?: ILinkedParticipantRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.participant_ref_id = _data['participant_ref_id'];
+            this.linked_ref_id = _data['linked_ref_id'];
+            this.type = _data['type'];
+        }
+    }
+
+    static fromJS(data: any): LinkedParticipantRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new LinkedParticipantRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['participant_ref_id'] = this.participant_ref_id;
+        data['linked_ref_id'] = this.linked_ref_id;
+        data['type'] = this.type;
+        return data;
+    }
+}
+
+export interface ILinkedParticipantRequest {
+    participant_ref_id?: string;
+    linked_ref_id?: string;
+    type?: LinkedParticipantType;
+}
+
 export class UpdateParticipantRequest implements IUpdateParticipantRequest {
     fullname!: string;
     first_name?: string | undefined;
@@ -5633,6 +5827,7 @@ export class UpdateParticipantRequest implements IUpdateParticipantRequest {
     contact_email?: string | undefined;
     contact_telephone?: string | undefined;
     username?: string | undefined;
+    linked_participants?: LinkedParticipantRequest[] | undefined;
 
     constructor(data?: IUpdateParticipantRequest) {
         if (data) {
@@ -5652,6 +5847,10 @@ export class UpdateParticipantRequest implements IUpdateParticipantRequest {
             this.contact_email = _data['contact_email'];
             this.contact_telephone = _data['contact_telephone'];
             this.username = _data['username'];
+            if (Array.isArray(_data['linked_participants'])) {
+                this.linked_participants = [] as any;
+                for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantRequest.fromJS(item));
+            }
         }
     }
 
@@ -5672,6 +5871,10 @@ export class UpdateParticipantRequest implements IUpdateParticipantRequest {
         data['contact_email'] = this.contact_email;
         data['contact_telephone'] = this.contact_telephone;
         data['username'] = this.username;
+        if (Array.isArray(this.linked_participants)) {
+            data['linked_participants'] = [];
+            for (let item of this.linked_participants) data['linked_participants'].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -5685,6 +5888,7 @@ export interface IUpdateParticipantRequest {
     contact_email?: string | undefined;
     contact_telephone?: string | undefined;
     username?: string | undefined;
+    linked_participants?: LinkedParticipantRequest[] | undefined;
 }
 
 export class ParticipantContactDetailsResponseVho implements IParticipantContactDetailsResponseVho {

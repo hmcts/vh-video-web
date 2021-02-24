@@ -4,7 +4,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ToastrService } from 'ngx-toastr';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { ConsultationAnswer } from 'src/app/services/clients/api-client';
+import { ConsultationAnswer, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 import { NotificationSoundsService } from './notification-sounds.service';
 import { Guid } from 'guid-typescript';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
@@ -30,6 +30,7 @@ export class NotificationToastrService {
         requestedBy: Participant,
         requestedFor: Participant,
         participants: Participant[],
+        endpoints: VideoEndpointResponse[],
         inHearing: boolean
     ) {
         const inviteKey = `${conferenceId}_${roomLabel}`;
@@ -49,8 +50,18 @@ export class NotificationToastrService {
             .filter(p => p.id !== requestedById)
             .map(p => p.displayName)
             .join('<br/>');
+        const endpointsList = endpoints
+            .filter(p => p.id !== requestedById)
+            .map(p => p.display_name)
+            .join('<br/>');
+        if (participantsList || endpointsList) {
+            message += `<br/>with`;
+        }
         if (participantsList) {
-            message += `<br/>with<br/>${participantsList}`;
+            message += `<br/>${participantsList}`;
+        }
+        if (endpointsList) {
+            message += `<br/>${endpointsList}`;
         }
 
         const respondToConsultationRequest = async (answer: ConsultationAnswer) => {
