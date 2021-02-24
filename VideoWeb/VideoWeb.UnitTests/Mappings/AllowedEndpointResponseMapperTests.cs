@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NUnit.Framework;
 using System;
 using VideoWeb.Common.Models;
@@ -21,8 +21,8 @@ namespace VideoWeb.UnitTests.Mappings
 
             // Assert
             result.Should().NotBeNull();
-            result.DisplayName.Should().Be(defenceAdvocateUsername);
-            result.DefenceAdvocateUsername.Should().Be(displayName);
+            result.DisplayName.Should().Be(displayName);
+            result.DefenceAdvocateUsername.Should().Be(defenceAdvocateUsername);
             result.Id.Should().Be(endpoint.Id);
         }
     }
