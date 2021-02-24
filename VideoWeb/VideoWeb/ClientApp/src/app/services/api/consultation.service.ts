@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { NotificationSoundsService } from 'src/app/waiting-space/services/notification-sounds.service';
 import {
+    AddEndpointConsultationRequest,
     ApiClient,
     ConferenceResponse,
     ConsultationAnswer,
@@ -104,6 +105,28 @@ export class ConsultationService {
                     new InviteToConsultationRequest({
                         conference_id: conferenceId,
                         participant_id: requestParticipantId,
+                        room_label: roomLabel
+                    })
+                )
+                .toPromise();
+        } catch (error) {
+            this.displayConsultationErrorModal();
+            throw error;
+        }
+    }
+
+    async addEndpointToConsulation(conferenceId: string, roomLabel: string, endpointId: string) {
+        this.logger.info(`[ConsultationService] - Adding endpoint to this private consultation`, {
+            conferenceId: conferenceId,
+            endpointId: endpointId,
+            roomLabel: roomLabel
+        });
+        try {
+            await this.apiClient
+                .addEndpointToConsultation(
+                    new AddEndpointConsultationRequest({
+                        conference_id: conferenceId,
+                        endpoint_id: endpointId,
                         room_label: roomLabel
                     })
                 )

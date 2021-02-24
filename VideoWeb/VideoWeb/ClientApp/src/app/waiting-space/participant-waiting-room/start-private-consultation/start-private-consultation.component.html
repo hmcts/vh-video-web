@@ -26,13 +26,18 @@
             </label>
           </label>
         </div>
-        <div *ngFor="let endpoint of endpoints" class="govuk-checkboxes--small govuk-checkboxes__item">
+        <div *ngFor="let endpoint of allowedFilter(endpoints)" class="govuk-checkboxes--small govuk-checkboxes__item">
           <input class="govuk-checkboxes__input" id="{{endpoint.id}}" name="{{endpoint.id}}" type="checkbox"
             [checked]="endpointSelected(endpoint.id)" [disabled]="getEndpointDisabled(endpoint)"
             (change)="toggleEndpoint(endpoint.id)" />
           <label class="govuk-label govuk-checkboxes__label" for="{{endpoint.id}}">
             <span class="govuk-!-font-weight-bold">{{endpoint.display_name}}</span>
             Video access point
+            <br />
+            <label id="p-{{ endpoint.id }}-status-participant"
+              class="govuk-body-s label-status label-status--{{ getEndpointStatusCss(endpoint) }}"
+              [innerHTML]="getEndpointStatus(endpoint)">
+            </label>
           </label>
         </div>
       </div>

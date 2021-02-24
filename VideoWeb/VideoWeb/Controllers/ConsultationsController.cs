@@ -1,17 +1,14 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
-using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
@@ -103,6 +100,11 @@ namespace VideoWeb.Controllers
 
             try
             {
+                if (request.Answer == ConsultationAnswer.Accepted)
+                {
+                    await NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Transferring);
+                }
+
                 await _videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
                 await NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedForId, request.Answer);
                 return NoContent();
@@ -173,7 +175,6 @@ namespace VideoWeb.Controllers
                 }
 
                 return Accepted();
-
             }
             catch (VideoApiException e)
             {
@@ -230,19 +231,50 @@ namespace VideoWeb.Controllers
             return Accepted();
         }
 
+        [HttpPost("addendpoint")]
+        [SwaggerOperation(OperationId = "AddEndpointToConsultation")]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> AddEndpointToConsultationAsync(AddEndpointConsultationRequest request)
+        {
+            var conference = await GetConference(request.ConferenceId);
+
+            var username = User.Identity.Name?.ToLower().Trim();
+            var requestedBy = conference.Participants.SingleOrDefault(x =>
+                x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
+            if (requestedBy == null)
+            {
+                return Unauthorized("You must be a VHO or a member of the conference");
+            }
+
+            try
+            {
+                await NotifyConsultationResponseAsync(conference, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring);
+                await _videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
+                {
+                    Conference_id = request.ConferenceId,
+                    Defence_advocate_id = requestedBy.Id,
+                    Endpoint_id = request.EndpointId,
+                    Room_label = request.RoomLabel
+                });
+            }
+            catch (VideoApiException e)
+            {
+                await NotifyConsultationResponseAsync(conference, request.RoomLabel, request.EndpointId, ConsultationAnswer.Failed);
+                _logger.LogError(e, "Join endpoint to consultation error");
+                return StatusCode(e.StatusCode);
+            }
+
+            return Accepted();
+        }
+
         private async Task<Conference> GetConference(Guid conferenceId)
         {
             return await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
         }
 
-        /// <summary>
-        /// This method raises a notification to the requestee informing them of an incoming consultation request
-        /// </summary>
-        /// <param name="conference">The conference</param>
-        /// <param name="requestedById">The participant raising the consultation request</param>
-        /// <param name="requestedForId">The participant with whom the consultation is being requested with</param>
-        /// <param name="roomLabel">The room you're requesting the participant joins</param>
         private async Task NotifyConsultationRequestAsync(Conference conference, string roomLabel, Guid requestedById,
             Guid requestedForId)
         {
@@ -252,13 +284,6 @@ namespace VideoWeb.Controllers
             await Task.WhenAll(tasks);
         }
 
-        /// <summary>
-        /// This method raises a notification to the requester informing them the response to their consultation request.
-        /// </summary>
-        /// <param name="conference">The conference</param>
-        /// <param name="roomLabel">The room the participant is responding to</param>
-        /// <param name="requestedForId">The participant with whom the consultation is being requested with</param>
-        /// /// <param name="answer">The answer to the request (i.e. Accepted or Rejected)</param>
         private async Task NotifyConsultationResponseAsync(Conference conference, string roomLabel,
             Guid requestedForId, ConsultationAnswer answer)
         {

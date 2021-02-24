@@ -17,6 +17,10 @@ namespace VideoWeb.Common.Models
         /// <summary>
         /// Consultation request failed
         /// </summary>
-        Failed
+        Failed,
+        /// <summary>
+        /// Transferring to the consultation
+        /// </summary>
+        Transferring
     }
 }

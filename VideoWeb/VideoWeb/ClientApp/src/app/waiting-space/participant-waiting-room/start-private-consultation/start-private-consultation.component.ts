@@ -58,15 +58,23 @@ export class StartPrivateConsultationComponent {
     }
 
     allowedFilter(endpoints: VideoEndpointResponse[]): VideoEndpointResponse[] {
-        return endpoints.filter(endpoint => this.allowedEndpoints.filter(e => e.id == endpoint.id) !== null);
+        return endpoints.filter(endpoint => this.allowedEndpoints.some(e => e.id == endpoint.id));
     }
 
     getEndpointDisabled(endpoint: VideoEndpointResponse): boolean {
-        return endpoint.status !== EndpointStatus.Connected;
+        return endpoint.status !== EndpointStatus.Connected && endpoint.status !== EndpointStatus.InConsultation;
     }
 
     getParticipantDisabled(participant: ParticipantResponse): boolean {
         return participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation;
+    }
+
+    getEndpointStatusCss(endpoint: VideoEndpointResponse): string {
+        if (endpoint.status !== EndpointStatus.Connected && endpoint.status !== EndpointStatus.InConsultation) {
+            return 'unavailable';
+        } else if (endpoint.status === EndpointStatus.InConsultation) {
+            return 'in-consultation';
+        }
     }
 
     getParticipantStatusCss(participant: ParticipantResponse): string {
@@ -90,6 +98,19 @@ export class StartPrivateConsultationComponent {
                 'In ' +
                 this.camelToSpaced(participant.current_room.label.replace('ParticipantConsultationRoom', 'MeetingRoom')).toLowerCase() +
                 (participant.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
+            );
+        }
+    }
+
+    getEndpointStatus(endpoint: VideoEndpointResponse): string {
+        if (this.getEndpointDisabled(endpoint)) {
+            return 'Unavailable';
+        }
+        if (endpoint.status === EndpointStatus.InConsultation && endpoint.current_room != null) {
+            return (
+                'In ' +
+                this.camelToSpaced(endpoint.current_room.label.replace('ParticipantConsultationRoom', 'MeetingRoom')).toLowerCase() +
+                (endpoint.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
             );
         }
     }

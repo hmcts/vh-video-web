@@ -8,6 +8,7 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 })
 export class InviteParticipantComponent {
     @Input() participantId: string;
+    @Input() endpointId: string;
     @Input() conferenceId: string;
     @Input() roomLabel: string;
 
@@ -16,6 +17,10 @@ export class InviteParticipantComponent {
     constructor(private consultationService: ConsultationService) {}
 
     async inviteParticipant() {
-        await this.consultationService.inviteToConsulation(this.conferenceId, this.roomLabel, this.participantId);
+        if (this.participantId) {
+            await this.consultationService.inviteToConsulation(this.conferenceId, this.roomLabel, this.participantId);
+        } else if (this.endpointId) {
+            await this.consultationService.addEndpointToConsulation(this.conferenceId, this.roomLabel, this.endpointId);
+        }
     }
 }

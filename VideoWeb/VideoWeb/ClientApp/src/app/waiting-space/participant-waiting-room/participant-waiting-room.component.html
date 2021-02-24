@@ -57,7 +57,11 @@
   </div>
   <div class="govuk-grid-column-full">
       <div *ngIf="hearing" class="participant-wrapper">
-          <app-private-consultation-participants [conference]="hearing.getConference()" [roomLabel]="this.participant.current_room?.label"></app-private-consultation-participants>
+          <app-private-consultation-participants
+            [conference]="hearing.getConference()"
+            [participantEndpoints]="participantEndpoints"
+            [roomLabel]="this.participant.current_room?.label">
+          </app-private-consultation-participants>
       </div>
       <div class="video-wrapper">
           <video id="incomingFeedPrivate" autoplay [srcObject]="presentationStream && !streamInMain ? presentationStream : stream" poster="/assets/images/empty_crest.jpg">
@@ -291,6 +295,7 @@
 <app-join-private-consultation
   *ngIf="displayJoinPrivateConsultationModal"
   [participants]="getPrivateConsultationParticipants()"
+  [endpoints]="conference.endpoints"
   (cancel)="closeJoinPrivateConsultationModal()"
   (continue)="joinPrivateConsultation($event)"
 ></app-join-private-consultation>
