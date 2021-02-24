@@ -81,10 +81,12 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     canCallEndpoint(endpoint: VideoEndpointResponse): boolean {
-        return !this.isParticipantInCurrentRoom(endpoint) && 
-            this.isParticipantAvailable(endpoint) && 
+        return (
+            !this.isParticipantInCurrentRoom(endpoint) &&
+            this.isParticipantAvailable(endpoint) &&
             !this.endpointInRoom &&
-            this.participantEndpoints.some(x => x.id == endpoint.id)
+            this.participantEndpoints.some(x => x.id === endpoint.id)
+        );
     }
 
     getRowClasses(participant: any): string {
@@ -129,14 +131,14 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
                 (participant.current_room?.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
             );
         }
-        
+
         if (!this.isParticipantAvailable(participant)) {
             return 'Not available';
         }
     }
 
     isParticipantAvailable(participant: any): boolean {
-        const availableStatuses = [ 'Available', 'Connected', 'InConsultation' ];
+        const availableStatuses = ['Available', 'Connected', 'InConsultation'];
         return availableStatuses.indexOf(participant.status) >= 0;
     }
 

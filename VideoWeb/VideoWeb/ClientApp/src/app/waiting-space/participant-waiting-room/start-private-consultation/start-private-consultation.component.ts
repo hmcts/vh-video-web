@@ -1,5 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { AllowedEndpointResponse, EndpointStatus, ParticipantResponse, ParticipantStatus, VideoEndpointResponse } from 'src/app/services/clients/api-client';
+import {
+    AllowedEndpointResponse,
+    EndpointStatus,
+    ParticipantResponse,
+    ParticipantStatus,
+    VideoEndpointResponse
+} from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 @Component({
     selector: 'app-start-private-consultation',
@@ -12,7 +18,7 @@ export class StartPrivateConsultationComponent {
     @Input() participants: ParticipantResponse[];
     @Input() allowedEndpoints: AllowedEndpointResponse[];
     @Input() endpoints: VideoEndpointResponse[];
-    @Output() continue = new EventEmitter<{participants: string[], endpoints: string[]}>();
+    @Output() continue = new EventEmitter<{ participants: string[]; endpoints: string[] }>();
     @Output() cancel = new EventEmitter();
     constructor(protected logger: Logger) {}
 
@@ -33,12 +39,12 @@ export class StartPrivateConsultationComponent {
             this.selectedParticipants.push(id);
         }
     }
-    
+
     endpointSelected(id: string): boolean {
         const index = this.selectedEndpoints.indexOf(id);
         return index >= 0;
     }
-    
+
     toggleEndpoint(id: string) {
         const index = this.selectedEndpoints.indexOf(id);
         if (index >= 0) {
@@ -50,7 +56,7 @@ export class StartPrivateConsultationComponent {
     }
 
     onContinue() {
-        this.continue.emit({participants: this.selectedParticipants, endpoints: this.selectedEndpoints});
+        this.continue.emit({ participants: this.selectedParticipants, endpoints: this.selectedEndpoints });
     }
 
     onCancel() {
@@ -58,7 +64,7 @@ export class StartPrivateConsultationComponent {
     }
 
     allowedFilter(endpoints: VideoEndpointResponse[]): VideoEndpointResponse[] {
-        return endpoints.filter(endpoint => this.allowedEndpoints.some(e => e.id == endpoint.id));
+        return endpoints.filter(endpoint => this.allowedEndpoints.some(e => e.id === endpoint.id));
     }
 
     getEndpointDisabled(endpoint: VideoEndpointResponse): boolean {

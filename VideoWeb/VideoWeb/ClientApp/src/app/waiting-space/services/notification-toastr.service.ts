@@ -55,7 +55,7 @@ export class NotificationToastrService {
             .map(p => p.display_name)
             .join('<br/>');
         if (participantsList || endpointsList) {
-            message += `<br/>with`
+            message += `<br/>with`;
         }
         if (participantsList) {
             message += `<br/>${participantsList}`;

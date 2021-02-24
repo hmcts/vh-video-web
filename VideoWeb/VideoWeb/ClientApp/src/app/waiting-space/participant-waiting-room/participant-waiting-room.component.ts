@@ -210,7 +210,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
     async startPrivateConsultation(participants: string[], endpoints: string[]) {
         this.logger.info(`[ParticipantWaitingRoomComponent] - attempting to start a private participant consultation`, {
             conference: this.conference?.id,
-            participant: this.participant.id,
+            participant: this.participant.id
         });
         await this.consultationService.createParticipantConsultationRoom(this.conference, this.participant, participants, endpoints);
         this.closeStartPrivateConsultationModal();

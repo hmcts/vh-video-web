@@ -162,7 +162,7 @@ export class ConsultationService {
         conference: ConferenceResponse,
         participant: ParticipantResponse,
         inviteParticipants: Array<string>,
-        inviteEndpoints: Array<string>,
+        inviteEndpoints: Array<string>
     ): Promise<void> {
         this.logger.info(`[ConsultationService] - Attempting to create a private consultation`, {
             conference: conference.id,

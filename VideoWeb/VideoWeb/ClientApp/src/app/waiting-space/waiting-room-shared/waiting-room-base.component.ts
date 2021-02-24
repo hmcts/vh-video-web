@@ -143,7 +143,7 @@ export abstract class WaitingRoomBaseComponent {
                 this.conference = this.hearing.getConference();
                 this.videoWebService.getAllowedEndpointsForConference(this.conferenceId).then((endpoints: AllowedEndpointResponse[]) => {
                     this.participantEndpoints = endpoints;
-                })
+                });
 
                 this.participant = this.setLoggedParticipant();
                 this.logger.debug(`${this.loggerPrefix} Getting conference details`, {
