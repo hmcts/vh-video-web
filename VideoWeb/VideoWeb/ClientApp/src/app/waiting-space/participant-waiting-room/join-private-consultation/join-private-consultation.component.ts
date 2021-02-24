@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { ParticipantResponse } from 'src/app/services/clients/api-client';
+import { ParticipantResponse, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 
 @Component({
@@ -11,6 +11,7 @@ export class JoinPrivateConsultationComponent {
     selectedRoomLabel: string;
     roomDetails = [];
     @Input() participants: ParticipantResponse[];
+    @Input() endpoints: VideoEndpointResponse[];
     @Output() continue = new EventEmitter<string>();
     @Output() cancel = new EventEmitter();
 
@@ -60,6 +61,11 @@ export class JoinPrivateConsultationComponent {
                             .filter(p => p.current_room?.label === r.label)
                             .sort((a, b) => (a.display_name > b.display_name ? 1 : -1));
                         rd.participants = roomParticipants;
+
+                        const roomEndpoints = this.endpoints
+                            .filter(p => p.current_room?.label === r.label)
+                            .sort((a, b) => (a.display_name > b.display_name ? 1 : -1));
+                        rd.endpoints = roomEndpoints;
                         rd.locked = r.locked;
                     });
             }

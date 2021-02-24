@@ -207,12 +207,12 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         return !this.isWitness && !this.isObserver;
     }
 
-    async startPrivateConsultation(participants: string[]) {
+    async startPrivateConsultation(participants: string[], endpoints: string[]) {
         this.logger.info(`[ParticipantWaitingRoomComponent] - attempting to start a private participant consultation`, {
             conference: this.conference?.id,
             participant: this.participant.id
         });
-        await this.consultationService.createParticipantConsultationRoom(this.conference, this.participant, participants);
+        await this.consultationService.createParticipantConsultationRoom(this.conference, this.participant, participants, endpoints);
         this.closeStartPrivateConsultationModal();
         this.privateConsultationAccordianExpanded = false;
     }

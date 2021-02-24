@@ -36,7 +36,11 @@
 
                 <div class="govuk-grid-column-full">
                     <div *ngIf="hearing && isPrivateConsultation" class="participant-wrapper">
-                        <app-private-consultation-participants [conference]="hearing.getConference()" [roomLabel]="this.participant.current_room?.label"></app-private-consultation-participants>
+                        <app-private-consultation-participants
+                            [conference]="hearing.getConference()"
+                            [participantEndpoints]="participantEndpoints"
+                            [roomLabel]="this.participant.current_room?.label">
+                        </app-private-consultation-participants>
                     </div>
 
                     <div class="video-wrapper">
