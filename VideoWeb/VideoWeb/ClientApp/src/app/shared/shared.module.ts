@@ -40,7 +40,7 @@ import { JoinPrivateConsultationComponent } from '../waiting-space/participant-w
         HttpClientModule,
         SharedRoutingModule,
         ToastrModule.forRoot({
-            toastComponent: VhToastComponent
+            toastComponent: VhToastComponent,
         }),
         ToastrModule.forRoot({
             toastComponent: RoomClosingToastComponent

@@ -65,7 +65,6 @@ export abstract class WaitingRoomBaseComponent {
     eventHubSubscription$ = new Subscription();
     videoCallSubscription$ = new Subscription();
     clockSubscription$: Subscription = new Subscription();
-    closedSubscription$: Subscription = new Subscription();
     currentTime: Date;
     heartbeat: any;
 
@@ -772,7 +771,6 @@ export abstract class WaitingRoomBaseComponent {
         this.eventHubSubscription$.unsubscribe();
         this.videoCallSubscription$.unsubscribe();
         this.clockSubscription$.unsubscribe();
-        this.closedSubscription$.unsubscribe();
     }
 
     subscribeToClock(): void {
@@ -781,11 +779,9 @@ export abstract class WaitingRoomBaseComponent {
                 this.currentTime = time;
                 this.checkIfHearingIsClosed();
                 this.checkIfHearingIsStarting();
+                this.roomClosingToastrService.showRoomClosingAlert(this.hearing, time);
             })
         );
-        this.closedSubscription$ = this.clockService.getClock().subscribe(time => {
-            this.roomClosingToastrService.showRoomClosingAlert(this.hearing, time);
-        });
     }
 
     checkIfHearingIsClosed(): void {
