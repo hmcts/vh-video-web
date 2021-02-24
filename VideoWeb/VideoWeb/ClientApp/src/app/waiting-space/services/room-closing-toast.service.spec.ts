@@ -1,59 +1,59 @@
+import { TestBed } from '@angular/core/testing';
 import * as moment from 'moment';
-import { ActiveToast, ToastrService } from 'ngx-toastr';
+import { ToastrService, ActiveToast, Toast } from 'ngx-toastr';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { RoomClosingToastComponent } from 'src/app/shared/toast/room-closing/room-closing-toast.component';
+import { ToastrTestingModule } from 'src/app/shared/toast/toastr-testing.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { RoomClosingToastrService } from './room-closing-toast.service';
 
 export class RoomClosingToastrServiceFacade extends RoomClosingToastrService {
-    setRoomClosingLastShown(value: moment.Moment) {
-        super.roomClosingLastShown = value;
+    getDurations(): moment.Duration[] {
+        return super.getDurations();
     }
 
-    shouldShowAlert(hearing: Hearing): boolean {
-        return super.shouldShowAlert(hearing);
+    getGates(durations: moment.Duration[], expiresAt: Date): Date[] {
+        return super.getGates(durations, expiresAt);
     }
 
-    getGates(expiresAt: Date): moment.Moment[] {
-        return super.getGates(expiresAt);
+    getPastGates(timeNow: Date): Date[] {
+        return super.getPastGates(timeNow);
     }
 
-    hasEarliestGateBeenPassed(gates: moment.Moment[], now: moment.Moment) {
-        return super.hasEarliestGateBeenPassed(gates, now);
+    showToast(expiryDate: Date): void {
+        super.showToast(expiryDate);
     }
 
-    isGateBetweenLastShownTimeAndNowDate(gates: moment.Moment[], now: moment.Moment): boolean {
-        return super.isGateBetweenLastShownTimeAndNowDate(gates, now);
-    }
-
-    showToast(hearing: Hearing, now: moment.Moment) {
-        super.showToast(hearing, now);
+    onToastClosed(timeNow: Date): void {
+        super.onToastClosed(timeNow);
     }
 }
 
 describe('RoomClosingToastrService', () => {
     const conferenceTestData = new ConferenceTestData();
-    let sut: RoomClosingToastrServiceFacade;
     const logger: Logger = new MockLogger();
     let toastrService: jasmine.SpyObj<ToastrService>;
+    let sut: RoomClosingToastrServiceFacade;
 
     beforeEach(() => {
+        TestBed.configureTestingModule({
+            imports: [ToastrTestingModule],
+            providers: [{ provider: ToastrService, useValue: toastrService }]
+        });
+
         const mockToast = {
             toastRef: {
-                componentInstance: {
-                    setHearing(hearing: Hearing) {
-                        console.log(hearing);
-                    }
-                }
+                componentInstance: {}
             }
         } as ActiveToast<RoomClosingToastComponent>;
-        toastrService = jasmine.createSpyObj<ToastrService>('ToastrService', ['show', 'clear']);
+        toastrService = jasmine.createSpyObj<ToastrService>('ToastrService', ['show', 'clear', 'remove']);
         toastrService.show.and.returnValue(mockToast);
+        toastrService.remove.and.returnValue(true);
+
         sut = new RoomClosingToastrServiceFacade(logger, toastrService);
-        sut.setRoomClosingLastShown(moment(new Date(2021, 1, 1, 0, 0, 0, 0)));
     });
 
     // ---------------------
@@ -102,163 +102,107 @@ describe('RoomClosingToastrService', () => {
         expect(sut).toBeTruthy();
     });
 
-    describe('shouldShowAlert()', () => {
-        it('should return false when hearing is NOT closed', async () => {
-            // arrange
-            const hearing = getNotClosedHearing();
-
-            // act
-            const result = sut.shouldShowAlert(hearing);
-
-            // assert
-            expect(result).toBeFalsy();
-        });
-
-        it('should return false when hearing is closed AND hearing is expired', async () => {
-            // arrange
-            const hearing = getExpiredHearing();
-
-            // act
-            const result = sut.shouldShowAlert(hearing);
-
-            // assert
-            expect(result).toBeFalsy();
-        });
-
-        it('should return false when hearing is closed AND NOT expired, AND there is an active "room closing" toast', async () => {
-            // arrange
-            const hearing = getClosedButNotExpiredHearing();
-            sut.isCurrentlyShowingToast = true;
-
-            // act
-            const result = sut.shouldShowAlert(hearing);
-
-            // assert
-            expect(result).toBeFalsy();
-        });
-
-        it('should return true when hearing is closed and NOT expired AND there is NO active "room closing" toast', async () => {
-            // arrange
-            const hearing = getClosedButNotExpiredHearing();
-
-            // act
-            const result = sut.shouldShowAlert(hearing);
-
-            // assert
-            expect(result).toBeTruthy();
-        });
-    });
-
     describe('getGates()', () => {
         it('should return correct times ("gates") to show notifications', async () => {
             // arrange
             const expiresAt = new Date(2021, 1, 1, 10, 0, 0, 0);
 
+            const durations: moment.Duration[] = [];
+            const fiveMinsLeft = moment.duration(5, 'minutes');
+            const thirtySecondsLeft = moment.duration(30, 'seconds');
+            durations.push(fiveMinsLeft);
+            durations.push(thirtySecondsLeft);
+
             // act
-            const result = sut.getGates(expiresAt);
+            const result = sut.getGates(durations, expiresAt);
 
             // assert
             expect(result.length).toBe(2);
-            expect(result[0]).toEqual(moment(expiresAt).subtract(5, 'minutes'));
-            expect(result[1]).toEqual(moment(expiresAt).subtract(30, 'seconds'));
+            expect(result[0]).toEqual(new Date(2021, 1, 1, 9, 55, 0, 0)); // 5m left
+            expect(result[1]).toEqual(new Date(2021, 1, 1, 9, 59, 30, 0)); // 30s left
         });
     });
 
-    describe('hasEarliestGateBeenPassed()', () => {
-        it('should return false when earliest gate has NOT been passed', async () => {
+    describe('getPastGates()', () => {
+        it('should return the gates that are in the past', async () => {
             // arrange
-            const momentNow = moment(new Date(2021, 1, 1, 10, 0, 0, 0));
-            const afterNow = moment(new Date(2021, 1, 1, 10, 0, 1, 0));
-            const gates = [afterNow];
-
-            // act
-            const result = sut.hasEarliestGateBeenPassed(gates, momentNow);
-
-            // assert
-            expect(result).toBeFalsy();
-        });
-
-        it('should return true when earliest gate has been passed', async () => {
-            // arrange
-            const momentNow = moment(new Date(2021, 1, 1, 10, 0, 0, 0));
-            const beforeNow = moment(new Date(2021, 1, 1, 9, 59, 59, 0));
-            const gates = [beforeNow];
-
-            // act
-            const result = sut.hasEarliestGateBeenPassed(gates, momentNow);
-
-            // assert
-            expect(result).toBeTruthy();
-        });
-    });
-
-    describe('isGateBetweenLastShownTimeAndNowDate()', () => {
-        it('should return true when "time now" is not between gate and expiry date', async () => {
-            // arrange
-            const momentNow = moment(new Date(2021, 1, 1, 10, 0, 0, 0));
-            const expiryDate = new Date(2021, 1, 1, 10, 6, 0, 0);
-            const gates = sut.getGates(expiryDate);
-
-            // act
-            const result = sut.isGateBetweenLastShownTimeAndNowDate(gates, momentNow);
-
-            // assert
-            expect(result).toBeFalsy();
-        });
-
-        it('should return true when "time now" is 5m between gate and expiry date', async () => {
-            // arrange
+            const dateInThePast = new Date(2021, 1, 1, 9, 59, 59, 0);
+            const dateInTheFuture = new Date(2021, 1, 1, 10, 0, 1, 0);
+            sut.gates = [dateInThePast, dateInTheFuture];
             const timeNow = new Date(2021, 1, 1, 10, 0, 0, 0);
-            const momentNow = moment(timeNow);
-            const expiryDate = momentNow.add(5, 'minutes').toDate();
-            const gates = sut.getGates(expiryDate);
 
             // act
-            const result = sut.isGateBetweenLastShownTimeAndNowDate(gates, momentNow);
+            const result = sut.getPastGates(timeNow);
 
             // assert
-            expect(result).toBeTruthy();
+            expect(result.length).toBe(1);
+            expect(result[0]).toEqual(dateInThePast);
         });
 
-        it('should return true when "time now" is 30s between gate and expiry date', async () => {
+        it('should NOT return any gates that are in the future', async () => {
             // arrange
+            const dateInTheFuture1 = new Date(2021, 1, 1, 10, 0, 1, 0);
+            const dateInTheFuture2 = new Date(2021, 1, 1, 10, 0, 2, 0);
+            sut.gates = [dateInTheFuture1, dateInTheFuture2];
             const timeNow = new Date(2021, 1, 1, 10, 0, 0, 0);
-            const momentNow = moment(timeNow);
-            const expiryDate = momentNow.add(30, 'seconds').toDate();
-            const gates = sut.getGates(expiryDate);
 
             // act
-            const result = sut.isGateBetweenLastShownTimeAndNowDate(gates, momentNow);
+            const result = sut.getPastGates(timeNow);
 
             // assert
-            expect(result).toBeTruthy();
+            expect(result.length).toBe(0);
         });
     });
 
     describe('showToast()', () => {
-        it('should show toast and set all correct properties', () => {
+        it('should show toast when there is ', () => {
             // arrange
             const hearing = getClosedButNotExpiredHearing();
-            sut.setRoomClosingLastShown(moment(hearing.getConference().closed_date_time));
-
             const expiresAt = hearing.retrieveExpiryTime();
-            const now = moment(expiresAt).subtract(4, 'minutes').subtract(59, 'seconds');
 
             // act
-            sut.showToast(hearing, now);
+            sut.showToast(expiresAt);
 
             // assert
-            expect(sut.isCurrentlyShowingToast).toBeTrue();
+            expect(sut.currentToast).toBeTruthy();
             expect(toastrService.show).toHaveBeenCalledTimes(1);
         });
     });
 
-    // test for public method:
+    describe('onToastClosed()', () => {
+        it('should show toast and set all correct properties', () => {
+            // arrange
+            sut.shownGates = [
+                new Date(2021, 1, 1, 10, 0, 0, 0),
+                new Date(2021, 1, 1, 20, 0, 0, 0),
+                new Date(2021, 1, 1, 30, 0, 0, 0),
+                new Date(2021, 1, 1, 40, 0, 0, 0)
+            ];
+
+            const mockToast = {
+                toastRef: {
+                    componentInstance: {}
+                }
+            } as ActiveToast<RoomClosingToastComponent>;
+
+            sut.currentToast = mockToast;
+
+            // act
+            sut.onToastClosed(new Date(2021, 1, 1, 15, 0, 0, 0));
+
+            // assert
+            expect(toastrService.remove).toHaveBeenCalledTimes(1);
+            const expectedShownGates = sut.getPastGates(new Date());
+            expect(sut.shownGates.length).toEqual(expectedShownGates.length);
+            expect(sut.currentToast).toBeFalsy();
+        });
+    });
+
+    // test for the big public method that ties it all together:
     describe('showRoomClosingAlert()', () => {
-        it('should show toast when all conditiona are met', () => {
+        it('should show toast when all conditions are met', () => {
             // arrange
             const hearing = getClosedButNotExpiredHearing();
-            sut.setRoomClosingLastShown(moment(hearing.getConference().closed_date_time));
 
             const expiresAt = hearing.retrieveExpiryTime();
             const now = moment(expiresAt).subtract(4, 'minutes').subtract(59, 'seconds');

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ToastrService } from 'ngx-toastr';
+import { ActiveToast, ToastrService } from 'ngx-toastr';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { RoomClosingToastComponent } from 'src/app/shared/toast/room-closing/room-closing-toast.component';
 import * as moment from 'moment';
@@ -9,101 +9,98 @@ import * as moment from 'moment';
 export class RoomClosingToastrService {
     private readonly loggerPrefix = '[RoomClosingToastrService] -';
 
-    protected durations: moment.Duration[] = [];
-    protected roomClosingLastShown: moment.Moment;
-    isCurrentlyShowingToast = false;
-
-    constructor(private logger: Logger, private toastr: ToastrService) {
-        const fiveMinsLeft = moment.duration(5, 'minutes');
-        const thirtySecondsLeft = moment.duration(30, 'seconds');
-        this.durations.push(fiveMinsLeft);
-        this.durations.push(thirtySecondsLeft);
-
-        this.roomClosingLastShown = moment.utc().subtract(5, 'minutes');
-    }
-
+    currentToast: ActiveToast<RoomClosingToastComponent> = null;
     expiresAt: Date;
+    gates: Date[] = [];
+    shownGates: Date[] = [];
+
+    constructor(private logger: Logger, private toastr: ToastrService) {}
+
     /**
      * If conditions are met, show the "room closing" notification
      */
     public showRoomClosingAlert(hearing: Hearing, timeNow: Date) {
-        const now = moment(timeNow);
-
-        if (!this.shouldShowAlert(hearing)) {
+        if (this.currentToast) {
             return;
         }
 
-        const expiresAt = hearing.retrieveExpiryTime();
-        const gates = this.getGates(expiresAt);
+        if (!this.expiresAt) {
+            if (hearing.isClosed() && !hearing.isExpired(hearing.actualCloseTime)) {
+                this.expiresAt = hearing.retrieveExpiryTime();
+                this.gates = this.getGates(this.getDurations(), this.expiresAt);
+            } else {
+                return;
+            }
+        }
 
-        if (!this.hasEarliestGateBeenPassed(gates, now)) {
+        const pastGates = this.getPastGates(timeNow);
+        if (!pastGates.length || pastGates.length === this.shownGates.length) {
             return;
         }
 
-        if (!this.isGateBetweenLastShownTimeAndNowDate(gates, now)) {
-            return;
-        }
-
-        this.showToast(hearing, now);
+        this.shownGates = pastGates;
+        this.showToast(this.expiresAt);
     }
 
-    protected shouldShowAlert(hearing: Hearing): boolean {
-        if (!hearing.isClosed()) {
-            return false;
-        }
+    protected getDurations(): moment.Duration[] {
+        const durations: moment.Duration[] = [];
 
-        if (hearing.isExpired(hearing.actualCloseTime)) {
-            return false;
-        }
+        // for (let i = 29; i > 0; i--) {
+        //     const xMinsLeft = moment.duration(i, 'minutes');
+        //     durations.push(xMinsLeft);
+        // }
 
-        if (this.isCurrentlyShowingToast) {
-            return false;
-        }
+        const fiveMinsLeft = moment.duration(5, 'minutes');
+        const thirtySecondsLeft = moment.duration(30, 'seconds');
+        durations.push(fiveMinsLeft);
+        durations.push(thirtySecondsLeft);
 
-        return true;
+        return durations;
     }
 
-    protected getGates(expiresAt: Date): moment.Moment[] {
-        const gates: moment.Moment[] = [];
-        for (const duration of this.durations) {
-            gates.push(moment(expiresAt).subtract(duration));
+    protected getGates(durations: moment.Duration[], expiresAt: Date): Date[] {
+        const gates: Date[] = [];
+        for (const duration of durations) {
+            const dateMoment = moment(expiresAt).subtract(duration);
+            const date = dateMoment.toDate();
+            gates.push(date);
         }
         return gates;
     }
 
-    protected hasEarliestGateBeenPassed(gates: moment.Moment[], now: moment.Moment): boolean {
-        return now.isAfter(gates[0]);
-    }
-
-    protected isGateBetweenLastShownTimeAndNowDate(gates: moment.Moment[], now: moment.Moment): boolean {
-        const found = gates.find(gate => {
-            if (gate.isBetween(this.roomClosingLastShown, now)) {
-                return gate;
-            }
+    protected getPastGates(timeNow: Date): Date[] {
+        return this.gates.filter(gate => {
+            return timeNow.valueOf() > gate.valueOf();
         });
-
-        return found !== undefined;
     }
 
-    protected showToast(expiryDate: Date) {
+    protected showToast(expiryDate: Date): void {
         this.logger.debug(`${this.loggerPrefix} creating 'showRoomClosingAlert' toastr notification`);
 
-        this.roomClosingLastShown = now;
-        this.isCurrentlyShowingToast = true;
-
-        const toast = this.toastr.show('', '', {
+        this.currentToast = this.toastr.show('', '', {
             disableTimeOut: true,
             tapToDismiss: false,
             toastComponent: RoomClosingToastComponent
         });
 
-        const roomClosingToast = toast.toastRef.componentInstance as RoomClosingToastComponent;
+        const roomClosingToast = this.currentToast.toastRef.componentInstance as RoomClosingToastComponent;
         roomClosingToast.roomClosingToastOptions = {
-            onNoAction: async () => {
-                this.roomClosingLastShown = moment.utc();
-                this.isCurrentlyShowingToast = false;
-            },
+            buttons: [
+                {
+                    label: 'Dismiss',
+                    hoverColour: 'green',
+                    action: async () => {
+                        this.onToastClosed(new Date());
+                    }
+                }
+            ],
             expiryDate: expiryDate
         };
+    }
+
+    protected onToastClosed(timeNow: Date): void {
+        this.toastr.remove(this.currentToast.toastId);
+        this.shownGates = this.getPastGates(timeNow);
+        this.currentToast = null;
     }
 }

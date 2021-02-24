@@ -1,21 +1,31 @@
 import * as moment from 'moment';
-import { BasePortalHost, OverlayRef, Toast, ToastPackage, ToastRef } from 'ngx-toastr';
-import { toastrService } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
+import { BasePortalHost, OverlayRef, ToastrService, ToastPackage, Toast, ToastRef } from 'ngx-toastr';
 import { RoomClosingToastComponent } from './room-closing-toast.component';
 import { Hearing } from '../../models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { of } from 'rxjs';
+import { ToastrTestingModule } from '../toastr-testing.module';
+import { TestBed } from '@angular/core/testing';
 
 describe('RoomClosingToastComponent', () => {
     const conferenceTestData = new ConferenceTestData();
+    let toastrService: ToastrService;
+
     let toastPackage: ToastPackage;
     let clockServiceMock: jasmine.SpyObj<ClockService>;
     let sut: RoomClosingToastComponent;
     const timeNow = new Date(2021, 1, 1, 10, 0, 0, 0);
 
     beforeEach(() => {
+        toastrService = jasmine.createSpyObj<ToastrService>('ToastrService', ['show', 'clear', 'remove']);
+
+        TestBed.configureTestingModule({
+            imports: [ToastrTestingModule],
+            providers: [{ provider: ToastrService, useValue: toastrService }]
+        });
+
         const config = {
             disableTimeOut: false,
             timeOut: 1,
