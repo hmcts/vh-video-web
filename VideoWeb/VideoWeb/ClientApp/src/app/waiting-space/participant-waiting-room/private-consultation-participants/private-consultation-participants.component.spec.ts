@@ -26,6 +26,8 @@ import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { PrivateConsultationParticipantsComponent } from './private-consultation-participants.component';
 import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { globalConference, globalParticipant } from '../../waiting-room-shared/tests/waiting-room-base-setup';
+import { HearingRole } from '../../models/hearing-role-model';
 
 describe('PrivateConsultationParticipantsComponent', () => {
     let component: PrivateConsultationParticipantsComponent;
@@ -434,5 +436,14 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
         // Assert
         expect(result).toBe('white');
+    });
+
+    it('should not get witnesses', () => {
+        const participants = new ConferenceTestData().getListOfParticipants();
+        const witness = participants[0];
+        witness.hearing_role = HearingRole.WITNESS;
+        const representative = participants[1];
+        component.participantsInConsultation = [witness, representative];
+        expect(component.getPrivateConsultationParticipants().length).toBe(1);
     });
 });
