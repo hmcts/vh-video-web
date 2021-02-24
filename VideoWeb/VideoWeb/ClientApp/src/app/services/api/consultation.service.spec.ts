@@ -85,7 +85,7 @@ describe('ConsultationService', () => {
 
         expect(modalService.closeAll).toHaveBeenCalled();
         expect(modalService.open).toHaveBeenCalledWith(ConsultationService.ERROR_PC_MODAL);
-    })
+    });
 
     it('should start or join a consultation as room type JOH', async () => {
         const conference = new ConferenceTestData().getConferenceDetailFuture();

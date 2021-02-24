@@ -170,7 +170,7 @@ describe('NotificationToastrService', () => {
         expect(consultationService.respondToConsultationRequest).toHaveBeenCalledTimes(1);
         expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalledTimes(1);
     });
-    
+
     it('showConsultationInvite should join participants display names - no endpoints', async () => {
         // Arrange
         const mockToast = {
@@ -187,10 +187,11 @@ describe('NotificationToastrService', () => {
         service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p, p2], [], false);
 
         // Assert
-        expect(mockToast.toastRef.componentInstance.vhToastOptions.htmlBody).toBe('<span class="govuk-!-font-weight-bold">Call from Greeno</span><br/>with<br/>Chris Witness');
+        expect(mockToast.toastRef.componentInstance.vhToastOptions.htmlBody).toBe(
+            '<span class="govuk-!-font-weight-bold">Call from Greeno</span><br/>with<br/>Chris Witness'
+        );
     });
-    
-    
+
     it('showConsultationInvite should join participants display names - participants and endpoints', async () => {
         // Arrange
         const mockToast = {
@@ -208,9 +209,11 @@ describe('NotificationToastrService', () => {
         service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p, p2], [endpoint], false);
 
         // Assert
-        expect(mockToast.toastRef.componentInstance.vhToastOptions.htmlBody).toBe('<span class="govuk-!-font-weight-bold">Call from Greeno</span><br/>with<br/>Chris Witness<br/>DispName1');
+        expect(mockToast.toastRef.componentInstance.vhToastOptions.htmlBody).toBe(
+            '<span class="govuk-!-font-weight-bold">Call from Greeno</span><br/>with<br/>Chris Witness<br/>DispName1'
+        );
     });
-    
+
     it('showConsultationInvite should join participants display names - single participant', async () => {
         // Arrange
         const mockToast = {
@@ -226,7 +229,9 @@ describe('NotificationToastrService', () => {
         service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], [], false);
 
         // Assert
-        expect(mockToast.toastRef.componentInstance.vhToastOptions.htmlBody).toBe('<span class="govuk-!-font-weight-bold">Call from Greeno</span>');
+        expect(mockToast.toastRef.componentInstance.vhToastOptions.htmlBody).toBe(
+            '<span class="govuk-!-font-weight-bold">Call from Greeno</span>'
+        );
     });
 
     it('showConsultationInvite should add accept button', async () => {

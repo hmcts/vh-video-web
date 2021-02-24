@@ -14,7 +14,7 @@ describe('InviteParticipantComponent', () => {
 
     it('should call consultation service when a participant is invited', fakeAsync(() => {
         // Arrange
-        component.participantId = 'ParticipantId'
+        component.participantId = 'ParticipantId';
 
         // Act
         component.inviteParticipant();
@@ -23,10 +23,10 @@ describe('InviteParticipantComponent', () => {
         // Assert
         expect(consultationService.inviteToConsulation).toHaveBeenCalledTimes(1);
     }));
-    
+
     it('should call consultation service when a participant is invited', fakeAsync(() => {
         // Arrange
-        component.endpointId = 'EndpointId'
+        component.endpointId = 'EndpointId';
 
         // Act
         component.inviteParticipant();

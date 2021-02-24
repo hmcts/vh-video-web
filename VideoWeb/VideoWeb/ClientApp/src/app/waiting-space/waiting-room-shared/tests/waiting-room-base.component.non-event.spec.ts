@@ -107,7 +107,7 @@ describe('WaitingRoomComponent message and clock', () => {
 
         // Act
         await component.getConference();
-        
+
         // Assert
         expect(videoWebService.getAllowedEndpointsForConference).toHaveBeenCalledTimes(1);
         expect(component.loadingData).toBeFalsy();

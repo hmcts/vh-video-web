@@ -100,7 +100,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         p.status = ParticipantStatus.Available;
         expect(component.isParticipantAvailable(p)).toEqual(true);
     });
-    
+
     it('should return endpoint available', () => {
         const p = conference.endpoints[0];
         p.status = EndpointStatus.Connected;
