@@ -18,9 +18,9 @@ export class InviteParticipantComponent {
 
     async inviteParticipant() {
         if (this.participantId) {
-            await this.consultationService.inviteToConsulation(this.conferenceId, this.roomLabel, this.participantId);
+            await this.consultationService.inviteToConsultation(this.conferenceId, this.roomLabel, this.participantId);
         } else if (this.endpointId) {
-            await this.consultationService.addEndpointToConsulation(this.conferenceId, this.roomLabel, this.endpointId);
+            await this.consultationService.addEndpointToConsultation(this.conferenceId, this.roomLabel, this.endpointId);
         }
     }
 }

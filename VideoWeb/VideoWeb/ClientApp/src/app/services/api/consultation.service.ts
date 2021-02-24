@@ -93,7 +93,7 @@ export class ConsultationService {
         }
     }
 
-    async inviteToConsulation(conferenceId: string, roomLabel: string, requestParticipantId: string) {
+    async inviteToConsultation(conferenceId: string, roomLabel: string, requestParticipantId: string) {
         this.logger.info(`[ConsultationService] - Inviting participant to this private consultation`, {
             conferenceId: conferenceId,
             requestParticipantId: requestParticipantId,
@@ -115,7 +115,7 @@ export class ConsultationService {
         }
     }
 
-    async addEndpointToConsulation(conferenceId: string, roomLabel: string, endpointId: string) {
+    async addEndpointToConsultation(conferenceId: string, roomLabel: string, endpointId: string) {
         this.logger.info(`[ConsultationService] - Adding endpoint to this private consultation`, {
             conferenceId: conferenceId,
             endpointId: endpointId,

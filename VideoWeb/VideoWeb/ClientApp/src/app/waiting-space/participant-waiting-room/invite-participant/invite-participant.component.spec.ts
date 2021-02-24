@@ -21,7 +21,7 @@ describe('InviteParticipantComponent', () => {
         flushMicrotasks();
 
         // Assert
-        expect(consultationService.inviteToConsulation).toHaveBeenCalledTimes(1);
+        expect(consultationService.inviteToConsultation).toHaveBeenCalledTimes(1);
     }));
 
     it('should call consultation service when a participant is invited', fakeAsync(() => {
@@ -33,6 +33,6 @@ describe('InviteParticipantComponent', () => {
         flushMicrotasks();
 
         // Assert
-        expect(consultationService.addEndpointToConsulation).toHaveBeenCalledTimes(1);
+        expect(consultationService.addEndpointToConsultation).toHaveBeenCalledTimes(1);
     }));
 });
