@@ -93,19 +93,25 @@ describe('WaitingRoomComponent message and clock', () => {
     });
 
     it('should get conference', fakeAsync(async () => {
+        // Arrange
         component.hearing = undefined;
         component.conference = undefined;
         component.participant = undefined;
         component.connected = false;
 
         videoWebService.getConferenceById.and.resolveTo(globalConference);
+        videoWebService.getAllowedEndpointsForConference.and.resolveTo([]);
         component.loggedInUser = new LoggedParticipantResponse({
             participant_id: globalConference.participants[0].id,
             display_name: globalConference.participants[0].display_name,
             role: globalConference.participants[0].role
         });
-        component.getConference();
-        tick();
+
+        // Act
+        await component.getConference();
+
+        // Assert
+        expect(videoWebService.getAllowedEndpointsForConference).toHaveBeenCalledTimes(1);
         expect(component.loadingData).toBeFalsy();
         expect(component.hearing).toBeDefined();
         expect(component.participant).toBeDefined();

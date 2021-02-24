@@ -70,7 +70,8 @@ export function initAllWRDependencies() {
         'getConferenceById',
         'getObfuscatedName',
         'getJwToken',
-        'getCurrentParticipant'
+        'getCurrentParticipant',
+        'getAllowedEndpointsForConference'
     ]);
     videoWebService.getConferenceById.and.resolveTo(globalConference);
     videoWebService.getObfuscatedName.and.returnValue('t***** u*****');

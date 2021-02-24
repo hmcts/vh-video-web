@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
+    AllowedEndpointResponse,
     ConferenceResponse,
     ConferenceStatus,
     ConsultationAnswer,
@@ -12,7 +13,8 @@ import {
     ParticipantStatus,
     Role,
     RoomSummaryResponse,
-    TokenResponse
+    TokenResponse,
+    VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
@@ -59,6 +61,7 @@ export abstract class WaitingRoomBaseComponent {
     hearing: Hearing;
     participant: ParticipantResponse;
     conference: ConferenceResponse;
+    participantEndpoints: AllowedEndpointResponse[] = [];
     conferenceRooms: Room[] = [];
     token: TokenResponse;
 
@@ -141,6 +144,9 @@ export abstract class WaitingRoomBaseComponent {
                 this.loadingData = false;
                 this.hearing = new Hearing(data);
                 this.conference = this.hearing.getConference();
+                this.videoWebService.getAllowedEndpointsForConference(this.conferenceId).then((endpoints: AllowedEndpointResponse[]) => {
+                    this.participantEndpoints = endpoints;
+                });
 
                 this.participant = this.setLoggedParticipant();
                 this.logger.debug(`${this.loggerPrefix} Getting conference details`, {
@@ -229,12 +235,14 @@ export abstract class WaitingRoomBaseComponent {
                             ? null
                             : new Participant(this.findParticipant(message.requestedBy));
                     const roomParticipants = this.findParticipantsInRoom(message.roomLabel).map(x => new Participant(x));
+                    const roomEndpoints = this.findEndpointsInRoom(message.roomLabel);
                     this.notificationToastrService.showConsultationInvite(
                         message.roomLabel,
                         message.conferenceId,
                         requestedBy,
                         requestedFor,
                         roomParticipants,
+                        roomEndpoints,
                         this.participant.status !== ParticipantStatus.Available
                     );
                 }
@@ -257,6 +265,9 @@ export abstract class WaitingRoomBaseComponent {
                     this.conference.participants
                         .filter(p => p.current_room?.label === existingRoom.label)
                         .forEach(p => (p.current_room.locked = existingRoom.locked));
+                    this.conference.endpoints
+                        .filter(p => p.current_room?.label === existingRoom.label)
+                        .forEach(p => (p.current_room.locked = existingRoom.locked));
                 } else {
                     this.conferenceRooms.push(room);
                 }
@@ -267,16 +278,22 @@ export abstract class WaitingRoomBaseComponent {
         this.eventHubSubscription$.add(
             this.eventService.getRoomTransfer().subscribe(async roomTransfer => {
                 const participant = this.conference.participants.find(p => p.id === roomTransfer.participant_id);
-                if (!participant) {
-                    return;
-                }
-
-                participant.current_room = null;
-                if (roomTransfer.to_room.toLowerCase().indexOf('consultation') >= 0) {
-                    const room = this.conferenceRooms.find(r => r.label === roomTransfer.to_room);
-                    participant.current_room = room
-                        ? new RoomSummaryResponse(room)
-                        : new RoomSummaryResponse({ label: roomTransfer.to_room });
+                const endpoint = this.conference.endpoints.find(p => p.id === roomTransfer.participant_id);
+                if (participant) {
+                    participant.current_room = null;
+                    if (roomTransfer.to_room.toLowerCase().indexOf('consultation') >= 0) {
+                        const room = this.conferenceRooms.find(r => r.label === roomTransfer.to_room);
+                        participant.current_room = room
+                            ? new RoomSummaryResponse(room)
+                            : new RoomSummaryResponse({ label: roomTransfer.to_room });
+                    }
+                } else if (endpoint) {
+                    if (roomTransfer.to_room.toLowerCase().indexOf('consultation') >= 0) {
+                        const room = this.conferenceRooms.find(r => r.label === roomTransfer.to_room);
+                        endpoint.current_room = room
+                            ? new RoomSummaryResponse(room)
+                            : new RoomSummaryResponse({ label: roomTransfer.to_room });
+                    }
                 }
             })
         );
@@ -307,6 +324,9 @@ export abstract class WaitingRoomBaseComponent {
 
     protected findParticipantsInRoom(roomLabel: string): ParticipantResponse[] {
         return this.conference.participants.filter(x => x.current_room?.label === roomLabel);
+    }
+    protected findEndpointsInRoom(roomLabel: string): VideoEndpointResponse[] {
+        return this.conference.endpoints.filter(x => x.current_room?.label === roomLabel);
     }
 
     async onConsultationAccepted() {

@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 
 namespace VideoWeb.Contract.Request
 {
-    public class InviteToConsultationRequest
+    public class AddEndpointConsultationRequest
     {
         /// <summary>
         /// Conference ID
@@ -15,8 +15,8 @@ namespace VideoWeb.Contract.Request
         public string RoomLabel { get; set; }
 
         /// <summary>
-        /// The id of the participant you would like to invite into the consultation
+        /// The id of the endpoint you would like to invite into the consultation
         /// </summary>
-        public Guid ParticipantId { get; set; }
+        public Guid EndpointId { get; set; }
     }
 }

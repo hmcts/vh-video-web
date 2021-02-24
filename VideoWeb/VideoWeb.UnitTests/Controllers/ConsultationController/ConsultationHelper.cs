@@ -21,7 +21,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                         .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
                         .Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
-                        .With(x => x.Id = Guid.NewGuid()).Build(),
+                        .With(x => x.Id = Guid.NewGuid()).With(x => x.Username = "john@hmcts.net").Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                         .With(x=> x.Username = "rep1@hmcts.net")
                         .With(x => x.Id = Guid.NewGuid()).Build(),
@@ -34,7 +34,10 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 {
                     Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP1")
                         .With(x=> x.DefenceAdvocateUsername = "rep1@hmcts.net").Build(),
-                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP2").Build()
+                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP2")
+                    .With(x=> x.DefenceAdvocateUsername = "john@hmcts.net").Build(),
+                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP3")
+                    .With(x=> x.DefenceAdvocateUsername = "john@hmcts.net").Build()
                 }
             };
         }
@@ -73,11 +76,12 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .With(x => x.ConferenceId = conference.Id)
                 .With(x => x.RequestedBy = conference.Participants[1].Id)
                 .With(x => x.RoomType = VirtualCourtRoomType.Participant)
-                .With(x => x.InviteParticipants = new []
+                .With(x => x.InviteParticipants = new[]
                 {
                     conference.Participants[2].Id,
                     conference.Participants[3].Id
                 })
+                .With(x => x.InviteEndpoints = new Guid[0])
                 .Build();
         }
 

@@ -31,5 +31,10 @@ namespace VideoWeb.Contract.Responses
         public string PexipDisplayName { get; set; }
 
         public bool IsCurrentUser { get; set; }
+
+        /// <summary>
+        /// Current conference room
+        /// </summary>
+        public RoomSummaryResponse CurrentRoom { get; set; }
     }
 }
