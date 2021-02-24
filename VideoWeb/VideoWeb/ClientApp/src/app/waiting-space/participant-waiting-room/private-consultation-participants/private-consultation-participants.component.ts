@@ -16,7 +16,7 @@ import { HearingRole } from '../../models/hearing-role-model';
 })
 export class PrivateConsultationParticipantsComponent extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
     @Input() roomLabel: string;
-    participantCallStatuses = [];
+    participantCallStatuses = {};
 
     constructor(
         protected adalService: AdalService,
