@@ -43,6 +43,7 @@
   border-radius: 2px;
   vertical-align: top;
   cursor: pointer;
+  pointer-events: auto;
 
   &.grey {
     color: #ffffff;
