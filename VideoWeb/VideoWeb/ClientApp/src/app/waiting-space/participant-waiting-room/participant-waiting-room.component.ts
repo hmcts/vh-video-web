@@ -30,7 +30,6 @@ import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-ba
 export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
     currentTime: Date;
     hearingStartingAnnounced: boolean;
-    privateConsultationAccordianExpanded = false;
 
     clockSubscription$: Subscription;
 

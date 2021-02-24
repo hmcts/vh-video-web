@@ -18,7 +18,7 @@
                 id="{{roomDetails.label}}"
                 name="{{roomDetails.label}}"
                 type="radio"
-                [checked]="selectedRoomLabel == roomDetails.label"
+                [checked]="selectedRoomLabel == roomDetails.label && !roomDetails.locked"
                 [disabled]="roomDetails.locked"
                 (change)="setSelectedRoom(roomDetails.label)" />
             <label class="govuk-label govuk-radios__label" for="{{roomDetails.label}}">
@@ -36,7 +36,7 @@
                 id="continue-btn"
                 class="govuk-button govuk-!-margin-right-5"
                 data-module="govuk-button"
-                [disabled]="!selectedRoomLabel"
+                [disabled]="continueDisabled()"
                 (click)="onContinue()"
                 alt="Continue"
                 >
