@@ -271,9 +271,9 @@ namespace VideoWeb.Controllers
             return Accepted();
         }
 
-        private async Task<Conference> GetConference(Guid conferenceId)
+        private Task<Conference> GetConference(Guid conferenceId)
         {
-            return await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
+            return _conferenceCache.GetOrAddConferenceAsync(conferenceId,
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
         }
 

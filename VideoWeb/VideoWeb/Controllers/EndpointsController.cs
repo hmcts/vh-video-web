@@ -68,12 +68,14 @@ namespace VideoWeb.Controllers
             var username = User.Identity.Name?.ToLower().Trim();
             var conference = await GetConference(conferenceId);
             var usersEndpoints = conference.Endpoints.Where(ep => ep.DefenceAdvocateUsername.Equals(username, StringComparison.CurrentCultureIgnoreCase)).ToList();
-            return Ok(usersEndpoints);
+            var allowedEndpointResponseMapper = _mapperFactory.Get<Endpoint, AllowedEndpointResponse>();
+            var response = usersEndpoints.Select(x => allowedEndpointResponseMapper.Map(x)).ToList();
+            return Ok(response);
         }
 
-        private async Task<Conference> GetConference(Guid conferenceId)
+        private Task<Conference> GetConference(Guid conferenceId)
         {
-            return await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
+            return _conferenceCache.GetOrAddConferenceAsync(conferenceId,
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
         }
     }
