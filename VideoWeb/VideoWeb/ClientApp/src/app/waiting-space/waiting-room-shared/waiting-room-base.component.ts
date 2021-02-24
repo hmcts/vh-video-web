@@ -275,6 +275,7 @@ export abstract class WaitingRoomBaseComponent {
         this.eventHubSubscription$.add(
             this.eventService.getRoomTransfer().subscribe(async roomTransfer => {
                 const participant = this.conference.participants.find(p => p.id === roomTransfer.participant_id);
+                const endpoint = this.conference.endpoints.find(p => p.id === roomTransfer.participant_id);
                 if (participant) {
                     participant.current_room = null;
                     if (roomTransfer.to_room.toLowerCase().indexOf('consultation') >= 0) {
@@ -283,8 +284,7 @@ export abstract class WaitingRoomBaseComponent {
                             ? new RoomSummaryResponse(room)
                             : new RoomSummaryResponse({ label: roomTransfer.to_room });
                     }
-                } else {
-                    const endpoint = this.conference.endpoints.find(p => p.id === roomTransfer.participant_id);
+                } else if (endpoint) {
                     if (roomTransfer.to_room.toLowerCase().indexOf('consultation') >= 0) {
                         const room = this.conferenceRooms.find(r => r.label === roomTransfer.to_room);
                         endpoint.current_room = room
