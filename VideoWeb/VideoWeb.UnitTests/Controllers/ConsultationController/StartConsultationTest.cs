@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.SignalR;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VideoWeb.Common.Caching;
@@ -110,6 +111,63 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _mocker.Mock<IEventHubClient>().Verify(x => x.RoomUpdate(It.Is<Room>(r => r.ConferenceId == _testConference.Id && r.Label == "Room1" && !r.Locked)), Times.Exactly(_testConference.Participants.Count));
             _mocker.Mock<IEventHubClient>().Verify(x => x.RequestedConsultationMessage(_testConference.Id, "Room1", request.RequestedBy, It.IsIn(request.InviteParticipants)),
                 Times.Exactly(request.InviteParticipants.Length * _testConference.Participants.Count));
+        }
+
+        [Test]
+        public async Task Should_only_join_first_successful_endpoint()
+        {
+            // Arrange
+            var request = ConsultationHelper.GetStartParticipantConsultationRequest(_testConference);
+            request.InviteEndpoints = new[] {
+                _testConference.Endpoints[0].Id, // Wrong defense advocate username
+                _testConference.Endpoints[1].Id, // Valid
+                _testConference.Endpoints[2].Id }; // Shouldnt try
+            _mocker.Mock<IVideoApiClient>()
+                .Setup(x => x.CreatePrivateConsultationAsync(It.IsAny<StartConsultationRequest>())).ReturnsAsync(new RoomResponse { Label = "Room1", Locked = false });
+
+            // Act
+            var result = await _controller.StartConsultationAsync(request);
+
+            // Assert
+            result.Should().BeOfType<AcceptedResult>();
+            _mocker.Mock<IVideoApiClient>()
+                .Verify(x => x.CreatePrivateConsultationAsync(It.IsAny<StartConsultationRequest>()), Times.Once);
+            _mocker.Mock<IEventHubClient>().Verify(x => x.RoomUpdate(It.Is<Room>(r => r.ConferenceId == _testConference.Id && r.Label == "Room1" && !r.Locked)), Times.Exactly(_testConference.Participants.Count));
+            _mocker.Mock<IEventHubClient>().Verify(x => x.RequestedConsultationMessage(_testConference.Id, "Room1", request.RequestedBy, It.IsIn(request.InviteParticipants)),
+                Times.Exactly(request.InviteParticipants.Length * _testConference.Participants.Count));
+            _mocker.Mock<IVideoApiClient>()
+                .Verify(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(ecr => request.InviteEndpoints.Contains(ecr.Endpoint_id) && ecr.Conference_id == _testConference.Id && ecr.Defence_advocate_id == request.RequestedBy)), Times.Once);
+        }
+
+        [Test]
+        public async Task Should_only_join_first_successful_endpoint_first_fail()
+        {
+            // Arrange
+            var request = ConsultationHelper.GetStartParticipantConsultationRequest(_testConference);
+            request.InviteEndpoints = new[] { 
+                _testConference.Endpoints[0].Id, // Wrong defense advocate username
+                _testConference.Endpoints[1].Id, // Valid but mocked to throw
+                _testConference.Endpoints[2].Id }; // Valid
+            _mocker.Mock<IVideoApiClient>()
+                .Setup(x => x.CreatePrivateConsultationAsync(It.IsAny<StartConsultationRequest>())).ReturnsAsync(new RoomResponse { Label = "Room1", Locked = false });
+            var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
+                "", null, default, null);
+            _mocker.Mock<IVideoApiClient>()
+                .Setup(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(ecr => ecr.Endpoint_id == request.InviteEndpoints[1] && ecr.Conference_id == _testConference.Id && ecr.Defence_advocate_id == request.RequestedBy)))
+                .Throws(apiException);
+
+            // Act
+            var result = await _controller.StartConsultationAsync(request);
+
+            // Assert
+            result.Should().BeOfType<AcceptedResult>();
+            _mocker.Mock<IVideoApiClient>()
+                .Verify(x => x.CreatePrivateConsultationAsync(It.IsAny<StartConsultationRequest>()), Times.Once);
+            _mocker.Mock<IEventHubClient>().Verify(x => x.RoomUpdate(It.Is<Room>(r => r.ConferenceId == _testConference.Id && r.Label == "Room1" && !r.Locked)), Times.Exactly(_testConference.Participants.Count));
+            _mocker.Mock<IEventHubClient>().Verify(x => x.RequestedConsultationMessage(_testConference.Id, "Room1", request.RequestedBy, It.IsIn(request.InviteParticipants)),
+                Times.Exactly(request.InviteParticipants.Length * _testConference.Participants.Count));
+            _mocker.Mock<IVideoApiClient>()
+                .Verify(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(ecr => request.InviteEndpoints.Contains(ecr.Endpoint_id) && ecr.Conference_id == _testConference.Id && ecr.Defence_advocate_id == request.RequestedBy)), Times.Exactly(2));
         }
 
         [Test]

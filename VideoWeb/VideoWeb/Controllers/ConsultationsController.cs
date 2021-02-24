@@ -148,7 +148,9 @@ namespace VideoWeb.Controllers
                         await NotifyConsultationRequestAsync(conference, room.Label, request.RequestedBy, participantId);
                     }
 
-                    var validSelectedEndpoints = request.InviteEndpoints.Select(endpointId => conference.Endpoints.SingleOrDefault(p => p.Id == endpointId)).Where(x => x.DefenceAdvocateUsername.Equals(username, StringComparison.OrdinalIgnoreCase));
+                    var validSelectedEndpoints = request.InviteEndpoints
+                        .Select(endpointId => conference.Endpoints.SingleOrDefault(p => p.Id == endpointId))
+                        .Where(x => x.DefenceAdvocateUsername.Equals(username, StringComparison.OrdinalIgnoreCase));
                     foreach (var endpoint in validSelectedEndpoints)
                     {
                         try
