@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
@@ -17,7 +15,6 @@ using VideoWeb.Controllers;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
 {
@@ -31,7 +28,6 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-           
 
             _testConference = ConsultationHelper.BuildConferenceForTest();
 
