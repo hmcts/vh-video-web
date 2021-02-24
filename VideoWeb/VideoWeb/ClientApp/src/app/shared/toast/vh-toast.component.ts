@@ -45,5 +45,6 @@ export class VhToastComponent extends Toast {
     handleAction(fn: () => void) {
         this.actioned = true;
         fn();
+        this.remove();
     }
 }
