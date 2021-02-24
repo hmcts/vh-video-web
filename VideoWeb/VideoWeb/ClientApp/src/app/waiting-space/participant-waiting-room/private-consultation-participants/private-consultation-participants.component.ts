@@ -94,7 +94,9 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     getPrivateConsultationParticipants(): ParticipantResponse[] {
-        return this.participantsInConsultation.filter(p => p.hearing_role !== HearingRole.WITNESS);
+        return this.participantsInConsultation.filter(
+            p => p.hearing_role !== HearingRole.WITNESS && p.hearing_role !== HearingRole.OBSERVER
+        );
     }
 
     getParticipantStatus(participant: ParticipantResponse): string {

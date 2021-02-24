@@ -446,4 +446,13 @@ describe('PrivateConsultationParticipantsComponent', () => {
         component.participantsInConsultation = [witness, representative];
         expect(component.getPrivateConsultationParticipants().length).toBe(1);
     });
+
+    it('should not get observers', () => {
+        const participants = new ConferenceTestData().getListOfParticipants();
+        const observer = participants[0];
+        observer.hearing_role = HearingRole.OBSERVER;
+        const representative = participants[1];
+        component.participantsInConsultation = [observer, representative];
+        expect(component.getPrivateConsultationParticipants().length).toBe(1);
+    });
 });
