@@ -146,6 +146,7 @@ export class ConferenceTestData {
 
     private initConferenceDetails(scheduledDateTime): ConferenceResponse {
         const participants = this.getListOfParticipantDetails();
+        const endpoints = this.getListOfEndpoints();
         return new ConferenceResponse({
             id: '612AB52C-BDA5-4F4D-95B8-3F49065219A6',
             case_name: 'WM V T',
@@ -158,7 +159,7 @@ export class ConferenceTestData {
             participant_uri: 'participant@kinly.com',
             pexip_node_uri: 'node@kinly.com',
             hearing_venue_name: 'venue name',
-            endpoints: this.getListOfEndpoints()
+            endpoints: endpoints
         });
     }
 
@@ -577,14 +578,16 @@ export class ConferenceTestData {
             display_name: 'DispName1',
             status: EndpointStatus.NotYetJoined,
             id: '1232323',
-            pexip_display_name: 'T100;DispName1;1232323'
+            pexip_display_name: 'T100;DispName1;1232323',
+            current_room: new RoomSummaryResponse()
         });
         const point2 = new VideoEndpointResponse({
             display_name: 'DispName2',
             status: EndpointStatus.Connected,
             id: '123232355',
             defence_advocate_username: 'john.doe@hearings.net',
-            pexip_display_name: 'T101;DispName2;123232355'
+            pexip_display_name: 'T101;DispName2;123232355',
+            current_room: new RoomSummaryResponse()
         });
         endpoints.push(point1);
         endpoints.push(point2);

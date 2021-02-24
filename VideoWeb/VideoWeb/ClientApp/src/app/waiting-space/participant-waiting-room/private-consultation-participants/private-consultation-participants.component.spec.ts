@@ -2,6 +2,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
+    AllowedEndpointResponse,
     ConferenceResponse,
     ConsultationAnswer,
     EndpointStatus,
@@ -77,6 +78,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         );
 
         component.conference = conference;
+        component.participantEndpoints = [];
 
         component.loggedInUser = logged;
         component.ngOnInit();
@@ -275,6 +277,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         component.roomLabel = 'Room1';
         const statuses = [
             ['Calling', 'Calling...'],
+            ['Transferring', 'Transferring'],
             ['Rejected', 'Declined'],
             ['Failed', 'Failed'],
             ['None', 'No Answer']
@@ -381,6 +384,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         component.roomLabel = 'Room1';
         const statuses = [
             ['Calling', 'yellow'],
+            ['Transferring', 'yellow'],
             ['Rejected', 'red'],
             ['Failed', 'red'],
             ['None', 'red']
@@ -441,5 +445,92 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
         // Assert
         expect(result).toBe('white');
+    });
+
+    it('should return can call endpoint', () => {
+        // Not in current room
+        component.roomLabel = 'test-room';
+        const endpoint = conference.endpoints[0];
+        endpoint.current_room.label = 'not-test-room';
+
+        // Available
+        endpoint.status = EndpointStatus.Connected;
+
+        // Room doesnt contain another endpount
+        conference.endpoints[1].current_room.label = 'not-test-room';
+
+        // Has permissions
+        component.participantEndpoints.push({ id: endpoint.id } as AllowedEndpointResponse);
+
+        expect(component.canCallEndpoint(endpoint)).toBeTrue();
+    });
+
+    it('should return can not call endpoint - same room', () => {
+        // Not in current room
+        component.roomLabel = 'test-room';
+        const endpoint = conference.endpoints[0];
+        endpoint.current_room.label = 'test-room';
+
+        // Available
+        endpoint.status = EndpointStatus.Connected;
+
+        // Room doesnt contain another endpount
+        conference.endpoints[1].current_room.label = 'not-test-room';
+
+        // Has permissions
+        component.participantEndpoints.push({ id: endpoint.id } as AllowedEndpointResponse);
+
+        expect(component.canCallEndpoint(endpoint)).toBeFalse();
+    });
+
+    it('should return can not call endpoint - not available', () => {
+        // Not in current room
+        component.roomLabel = 'test-room';
+        const endpoint = conference.endpoints[0];
+        endpoint.current_room.label = 'not-test-room';
+
+        // Available
+        endpoint.status = EndpointStatus.Disconnected;
+
+        // Room doesnt contain another endpount
+        conference.endpoints[1].current_room.label = 'not-test-room';
+
+        // Has permissions
+        component.participantEndpoints.push({ id: endpoint.id } as AllowedEndpointResponse);
+
+        expect(component.canCallEndpoint(endpoint)).toBeFalse();
+    });
+
+    it('should return can not call endpoint - room already has endpoint', () => {
+        // Not in current room
+        component.roomLabel = 'test-room';
+        const endpoint = conference.endpoints[0];
+        endpoint.current_room.label = 'not-test-room';
+
+        // Available
+        endpoint.status = EndpointStatus.Connected;
+
+        // Room contains another endpount
+        conference.endpoints[1].current_room.label = 'test-room';
+
+        // Has permissions
+        component.participantEndpoints.push({ id: endpoint.id } as AllowedEndpointResponse);
+
+        expect(component.canCallEndpoint(endpoint)).toBeFalse();
+    });
+
+    it('should return can not call endpoint - not defense advocate', () => {
+        // Not in current room
+        component.roomLabel = 'test-room';
+        const endpoint = conference.endpoints[0];
+        endpoint.current_room.label = 'not-test-room';
+
+        // Available
+        endpoint.status = EndpointStatus.Connected;
+
+        // Room contains another endpount
+        conference.endpoints[1].current_room.label = 'not-test-room';
+
+        expect(component.canCallEndpoint(endpoint)).toBeFalse();
     });
 });
