@@ -1,7 +1,7 @@
-import {MissingTranslationHandler, MissingTranslationHandlerParams} from '@ngx-translate/core';
+import { MissingTranslationHandler, MissingTranslationHandlerParams } from '@ngx-translate/core';
 
-export class DisplayMissingTranslationHandler implements MissingTranslationHandler {
+export class DisplayMissingTranslationHandler implements MissingTranslationHandler {    
     handle(params: MissingTranslationHandlerParams) {
-        return `TranslationMissing:${params.key}`;
+        return `MT:${params.key}`;
     }
 }
