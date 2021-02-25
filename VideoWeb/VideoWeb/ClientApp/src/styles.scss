@@ -207,3 +207,7 @@ video {
 .vh-new-line {
   display: block;
 }
+
+.vh-no-pointer{
+  pointer-events: none;
+}

@@ -5,7 +5,8 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
-import { ParticipantUpdated } from '../models/video-call-models';
+import { HearingRole } from '../models/hearing-role-model';
+import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
 
 @Injectable()
@@ -26,6 +27,8 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
 
+    screenShareStream: MediaStream | URL;
+
     audioMuted: boolean;
     videoMuted: boolean;
     handRaised: boolean;
@@ -40,8 +43,27 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.displayConfirmPopup = false;
     }
 
+    get canShowScreenShareButton(): boolean {
+        const allowedRoles = [Role.Representative, Role.JudicialOfficeHolder, Role.Judge];
+        if (allowedRoles.includes(this.participant.role)) {
+            return true;
+        }
+
+        const allowedHearingRoles: string[] = [
+            HearingRole.LITIGANT_IN_PERSON,
+            HearingRole.REPRESENTATIVE,
+            HearingRole.WITNESS,
+            HearingRole.JUDGE
+        ];
+        return allowedHearingRoles.includes(this.participant.hearing_role);
+    }
+
     get isJudge(): boolean {
         return this.participant.role === Role.Judge;
+    }
+
+    get isJOHConsultation(): boolean {
+        return this.participant.role === Role.JudicialOfficeHolder || this.isJudge;
     }
 
     get logPayload() {
@@ -110,6 +132,28 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
                 .onParticipantUpdated()
                 .subscribe(updatedParticipant => this.handleParticipantUpdatedInVideoCall(updatedParticipant))
         );
+
+        this.videoCallSubscription$.add(
+            this.videoCallService
+                .onScreenshareConnected()
+                .subscribe(connectedScreenShare => this.handleScreenShareConnected(connectedScreenShare))
+        );
+
+        this.videoCallSubscription$.add(
+            this.videoCallService
+                .onScreenshareStopped()
+                .subscribe(discconnectedScreenShare => this.handleScreenShareStopped(discconnectedScreenShare))
+        );
+    }
+
+    handleScreenShareConnected(connectedScreenShare: ConnectedScreenshare): void {
+        this.logger.info(`${this.loggerPrefix} Screenshare connected`, this.logPayload);
+        this.screenShareStream = connectedScreenShare.stream;
+    }
+
+    handleScreenShareStopped(disconnectedScreenShare: StoppedScreenshare): void {
+        this.logger.info(`${this.loggerPrefix} Screenshare stopped. Reason ${disconnectedScreenShare.reason}`, this.logPayload);
+        this.screenShareStream = null;
     }
 
     handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): boolean {
@@ -154,9 +198,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         }
     }
 
-    /**
-     *Unmutes participants
-     **/
     async resetMute() {
         if (this.audioMuted) {
             this.logger.debug(`${this.loggerPrefix} Resetting participant mute status`, this.logPayload);
@@ -232,5 +273,14 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     lockPrivateConsultation(lock: boolean) {
         this.logger.debug(`${this.loggerPrefix} Lock private consultation clicked`, this.logPayload);
         this.lockConsultation.emit(lock);
+    }
+
+    async startScreenShare() {
+        await this.videoCallService.selectScreen();
+        this.videoCallService.startScreenShare();
+    }
+
+    stopScreenShare() {
+        this.videoCallService.stopScreenShare();
     }
 }

@@ -29,12 +29,19 @@
   margin-left: -5%;
 }
 
-#outgoingFeedVideo {
-  bottom: 5.5vh;
+#outgoingFeedVideoOld {
+  bottom: 10px;
   width: 259px;
   transform: rotateY(180deg);
   -webkit-transform: rotateY(180deg); /* Safari and Chrome */
   -moz-transform: rotateY(180deg); /* Firefox */
+}
+
+#outgoingFeedPresentVideoOld {
+  width: 259px;
+  top: 10px;
+  right: 10px;
+  position: fixed;
 }
 
 .microphoneIcon {

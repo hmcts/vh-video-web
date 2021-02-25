@@ -11,6 +11,7 @@ import {
 } from 'src/app/testing/mocks/mock-events-service';
 import { onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { HearingRole } from '../models/hearing-role-model';
 import { ParticipantUpdated } from '../models/video-call-models';
 import { HearingControlsComponent } from './hearing-controls.component';
 
@@ -359,5 +360,62 @@ describe('HearingControlsComponent', () => {
         spyOn(component.leaveConsultation, 'emit');
         component.leavePrivateConsultation();
         expect(component.leaveConsultation.emit).toHaveBeenCalled();
+    });
+
+    it('should indicates that it is the JOH consultation and returns true if participant is JOH or Judge', () => {
+        component.participant = gloalConference.participants.find(x => x.role === Role.Judge);
+        expect(component.isJOHConsultation).toBe(true);
+    });
+
+    const allowedRoles = [Role.Representative, Role.JudicialOfficeHolder, Role.Judge];
+    allowedRoles.forEach(role => {
+        it(`should show the "share screen" button for the ${role} Role`, () => {
+            component.participant.hearing_role = nonAllowedHearingRoles[0];
+            component.participant.role = role;
+            component.ngOnInit();
+            expect(component.canShowScreenShareButton).toBeTruthy();
+        });
+    });
+
+    const allowedHearingRoles = [HearingRole.LITIGANT_IN_PERSON, HearingRole.REPRESENTATIVE, HearingRole.WITNESS, HearingRole.JUDGE];
+    allowedHearingRoles.forEach(hearingRole => {
+        it(`should show the "share screen" button for the ${hearingRole} HearingRole`, () => {
+            component.participant.role = nonAllowedRoles[0];
+            component.participant.hearing_role = hearingRole;
+            component.ngOnInit();
+            expect(component.canShowScreenShareButton).toBeTruthy();
+        });
+    });
+
+    const nonAllowedRoles = [Role.None, Role.CaseAdmin, Role.VideoHearingsOfficer, Role.HearingFacilitationSupport, Role.Individual];
+    nonAllowedRoles.forEach(role => {
+        it(`should NOT show the "share screen" button for the ${role} Role`, () => {
+            component.participant.role = role;
+            component.participant.hearing_role = nonAllowedHearingRoles[0];
+            component.ngOnInit();
+            expect(component.canShowScreenShareButton).toBeFalsy();
+        });
+    });
+
+    const nonAllowedHearingRoles = [
+        HearingRole.APPELLANT,
+        HearingRole.DEFENCE_ADVOCATE,
+        HearingRole.EXPERT,
+        HearingRole.INTERPRETER,
+        HearingRole.MACKENZIE_FRIEND,
+        HearingRole.OBSERVER,
+        HearingRole.PANEL_MEMBER,
+        HearingRole.PROSECUTION,
+        HearingRole.PROSECUTION_ADVOCATE,
+        HearingRole.WINGER
+    ];
+
+    nonAllowedHearingRoles.forEach(hearingRole => {
+        it(`should NOT show the "share screen" button for the ${hearingRole} HearingRole`, () => {
+            component.participant.role = nonAllowedRoles[0];
+            component.participant.hearing_role = hearingRole;
+            component.ngOnInit();
+            expect(component.canShowScreenShareButton).toBeFalsy();
+        });
     });
 });

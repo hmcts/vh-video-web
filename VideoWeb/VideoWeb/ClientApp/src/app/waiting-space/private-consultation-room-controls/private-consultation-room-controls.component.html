@@ -6,8 +6,38 @@
         Your browser does not support Video
       </video>
     </div>
+    <div class="outgoing-present-video-container">
+      <video [ngClass]="{ 'vh-fade-in': this.screenShareStream, 'vh-fade-out': !this.screenShareStream }" id="outgoingFeedPresentVideo"
+        [muted]="true" [srcObject]="this.screenShareStream" autoplay height="auto">
+        Your browser does not support Video
+      </video>
+    </div>
     <div class="controls-container govuk-grid-column-one-quarters" [ngClass]="{ 'judge-controls-padding': isJudge }">
       <div class="icons-container">
+        <img
+          *ngIf="!screenShareStream && canShowScreenShareButton"
+          appTooltip
+          text="Share my screen"
+          [colour]="'grey'"
+          id="start-screenshare-img"
+          class="icon-button"
+          src="/assets/images/share-screen.png"
+          alt="Start sharing screen"
+          (click)="startScreenShare()"
+        />
+        <img
+          *ngIf="screenShareStream"
+          appTooltip
+          text="Stop sharing my screen"
+          [colour]="'red'"
+          id="stop-screenshare-img"
+          class="icon-button"
+          src="/assets/images/stop-share.png"
+          alt="Stop sharing screen"
+          (click)="stopScreenShare()"
+        />
+
+        <div class="flexBar"></div>
         
         <div class="icon-button"
           id="toggle-self-view-img" 
@@ -23,7 +53,7 @@
           id="toggle-video-mute-img" 
           appTooltip
           *ngIf="!isJudge && !audioOnly"
-          [text]="videoMuted ? 'Show camera' : 'Hide camera'"
+          [text]="videoMuted ? 'Turn on camera' : 'Turn off camera'"
           [colour]="'grey'"
           (click)="toggleVideoMute()">
           <span class="far" [class]="videoMuted ? 'fa-video-slash' : 'fa-video'"></span>
@@ -80,7 +110,7 @@
 
         <div class="flexBar"></div>
           
-        <button *ngIf="isPrivateConsultation && showConsultationControls" id="lockButton" class="small-button " [class]="roomLocked ? 'greygreen' : 'greyred'" data-module="govuk-button"
+        <button *ngIf="isPrivateConsultation && showConsultationControls && !isJOHConsultation" id="lockButton" class="small-button " [class]="roomLocked ? 'greygreen' : 'greyred'" data-module="govuk-button"
           style="margin-right: 15px;"
           (click)="lockPrivateConsultation(!roomLocked)"
           type="button">
@@ -97,5 +127,3 @@
     </div>
   </div>
 </div>
-<app-confirm-close-hearing-popup *ngIf="displayConfirmPopup" (popupAnswered)="close($event)">
-</app-confirm-close-hearing-popup>

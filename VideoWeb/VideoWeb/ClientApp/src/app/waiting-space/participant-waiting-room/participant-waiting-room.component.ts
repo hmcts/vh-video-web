@@ -4,7 +4,7 @@ import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceStatus } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, ParticipantResponse, Role } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -17,7 +17,6 @@ import { HeartbeatModelMapper } from '../../shared/mappers/heartbeat-model-mappe
 import { HearingRole } from '../models/hearing-role-model';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
-import { Participant } from 'src/app/shared/models/participant';
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
@@ -30,7 +29,6 @@ import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-ba
 export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
     currentTime: Date;
     hearingStartingAnnounced: boolean;
-    privateConsultationAccordianExpanded = false;
 
     clockSubscription$: Subscription;
 
@@ -170,6 +168,10 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         return this.participant?.hearing_role === HearingRole.WITNESS;
     }
 
+    get isObserver(): boolean {
+        return this.participant?.hearing_role === HearingRole.OBSERVER;
+    }
+
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
         super.handleConferenceStatusChange(message);
         if (!this.validateIsForConference(message.conferenceId)) {
@@ -190,17 +192,29 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         this.displayJoinPrivateConsultationModal = true;
     }
 
-    getPrivateConsultationParticipants(): Participant[] {
-        return this.conference.participants.map(p => new Participant(p)).filter(p => !p.isJudge && p.id !== this.participant.id);
+    getPrivateConsultationParticipants(): ParticipantResponse[] {
+        return this.conference.participants.filter(
+            p =>
+                p.id !== this.participant.id &&
+                p.role !== Role.JudicialOfficeHolder &&
+                p.role !== Role.Judge &&
+                p.hearing_role !== HearingRole.OBSERVER &&
+                p.hearing_role !== HearingRole.WITNESS
+        );
     }
 
-    async startPrivateConsultation(participants: string[]) {
+    get canStartJoinConsultation() {
+        return !this.isWitness && !this.isObserver;
+    }
+
+    async startPrivateConsultation(participants: string[], endpoints: string[]) {
         this.logger.info(`[ParticipantWaitingRoomComponent] - attempting to start a private participant consultation`, {
             conference: this.conference?.id,
             participant: this.participant.id
         });
-        await this.consultationService.createParticipantConsultationRoom(this.conference, this.participant, participants);
+        await this.consultationService.createParticipantConsultationRoom(this.conference, this.participant, participants, endpoints);
         this.closeStartPrivateConsultationModal();
+        this.privateConsultationAccordianExpanded = false;
     }
 
     async joinPrivateConsultation(roomLabel: string) {
@@ -211,6 +225,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         });
         await this.consultationService.joinPrivateConsultationRoom(this.conference.id, this.participant.id, roomLabel);
         this.closeJoinPrivateConsultationModal();
+        this.privateConsultationAccordianExpanded = false;
     }
 
     async setRoomLock(lock: boolean) {

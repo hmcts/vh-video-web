@@ -6,9 +6,20 @@ import {
     onConnectedSubjectMock,
     onDisconnectedSubjectMock,
     onErrorSubjectMock,
-    onCallTransferredMock
+    onCallTransferredMock,
+    onPresentationConnectedMock,
+    onPresentationDisconnectedMock,
+    onPresentationMock
 } from 'src/app/testing/mocks/mock-video-call-service';
-import { CallSetup, ConnectedCall, CallError, DisconnectedCall } from '../../models/video-call-models';
+import {
+    CallSetup,
+    ConnectedCall,
+    CallError,
+    DisconnectedCall,
+    Presentation,
+    ConnectedPresentation,
+    DisconnectedPresentation
+} from '../../models/video-call-models';
 import {
     activatedRoute,
     adalService,
@@ -43,6 +54,9 @@ describe('WaitingRoomComponent Video Call', () => {
     const onDisconnectedSubject = onDisconnectedSubjectMock;
     const onErrorSubject = onErrorSubjectMock;
     const onTransferSubject = onCallTransferredMock;
+    const onPresentationConnected = onPresentationConnectedMock;
+    const onPresentationDisconnected = onPresentationDisconnectedMock;
+    const onPresentation = onPresentationMock;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -76,6 +90,8 @@ describe('WaitingRoomComponent Video Call', () => {
         component.connected = true; // assume connected to pexip
         await component.setupPexipEventSubscriptionAndClient();
         videoWebService.getConferenceById.calls.reset();
+        videoCallService.retrievePresentation.calls.reset();
+        videoCallService.stopPresentation.calls.reset();
     });
 
     afterEach(() => {
@@ -195,11 +211,71 @@ describe('WaitingRoomComponent Video Call', () => {
         onTransferSubject.next('new_room');
         expect(component.stream).toBeNull();
     });
+
     it('should setup participant heartbeat', () => {
         component.conference.pexip_node_uri = 'sip.urifortest';
         component.token = new TokenResponse({ token: 'tokenvvvvvv' });
         component.setupParticipantHeartbeat();
 
         expect(component.heartbeat).toBeDefined();
+    });
+
+    it('should retrieve presentation if started', () => {
+        // Arrange
+        const payload = new Presentation(true);
+
+        // Act
+        onPresentation.next(payload);
+
+        // Assert
+        expect(videoCallService.retrievePresentation).toHaveBeenCalledTimes(1);
+    });
+
+    it('should stop presentation if not started', () => {
+        // Arrange
+        const payload = new Presentation(false);
+
+        // Act
+        onPresentation.next(payload);
+
+        // Assert
+        expect(videoCallService.stopPresentation).toHaveBeenCalledTimes(1);
+    });
+
+    it('should set stream when connected', () => {
+        // Arrange
+        component.presentationStream = null;
+        const stream = <any>{};
+        const payload = new ConnectedPresentation(stream);
+
+        // Act
+        onPresentationConnected.next(payload);
+
+        // Assert
+        expect(component.presentationStream).toBe(stream);
+    });
+
+    it('should set stream to null when disconnected', () => {
+        // Arrange
+        component.presentationStream = <any>{};
+        const payload = new DisconnectedPresentation('reason');
+
+        // Act
+        onPresentationDisconnected.next(payload);
+
+        // Assert
+        expect(component.presentationStream).toBe(null);
+        expect(videoCallService.stopPresentation).toHaveBeenCalledTimes(1);
+    });
+
+    it('should switch stream windows', () => {
+        // ToTrue
+        component.streamInMain = false;
+        component.switchStreamWindows();
+        expect(component.streamInMain).toBeTrue();
+
+        // ToFalse
+        component.switchStreamWindows();
+        expect(component.streamInMain).toBeFalse();
     });
 });

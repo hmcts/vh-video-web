@@ -26,6 +26,7 @@
   cursor: pointer;
   opacity: 0.5;
   margin-right: 20px;
+  max-height: 25px;
   font-size: 1.5em;
   color: govuk-colour('white');
 }
@@ -51,15 +52,28 @@
 }
 
 #outgoingFeedVideo {
-  bottom: 5.5vh;
+  bottom: 10px;
   width: 259px;
   transform: rotateY(180deg);
   -webkit-transform: rotateY(180deg); /* Safari and Chrome */
   -moz-transform: rotateY(180deg); /* Firefox */
 }
 
+#outgoingFeedPresentVideo {
+  width: 259px;
+  top: 65px;
+  left: 10px;
+  position: fixed;
+}
+
 .outgoing-video-container {
   bottom: 10px;
+  left: 10px;
+  position: fixed;
+}
+
+.outgoing-video-present-container {
+  top: 10px;
   left: 10px;
   position: fixed;
 }

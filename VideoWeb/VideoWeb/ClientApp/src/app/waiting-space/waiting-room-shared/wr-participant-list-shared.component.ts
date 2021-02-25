@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
+    AllowedEndpointResponse,
     ConferenceResponse,
     EndpointStatus,
     LoggedParticipantResponse,
@@ -20,6 +21,7 @@ import { HearingRole } from '../models/hearing-role-model';
 @Directive()
 export abstract class WRParticipantStatusListDirective {
     @Input() conference: ConferenceResponse;
+    @Input() participantEndpoints: AllowedEndpointResponse[];
 
     nonJudgeParticipants: ParticipantResponse[];
     judge: ParticipantResponse;
@@ -27,6 +29,8 @@ export abstract class WRParticipantStatusListDirective {
     observers: ParticipantResponse[];
     panelMembers: ParticipantResponse[];
     wingers: ParticipantResponse[];
+
+    participantsInConsultation: ParticipantResponse[];
 
     eventHubSubscriptions$ = new Subscription();
     loggedInUser: LoggedParticipantResponse;
@@ -46,6 +50,7 @@ export abstract class WRParticipantStatusListDirective {
         this.filterPanelMembers();
         this.filterObservers();
         this.filterWingers();
+        this.filterParticipantInConsultation();
         this.endpoints = this.conference.endpoints;
     }
 
@@ -118,6 +123,14 @@ export abstract class WRParticipantStatusListDirective {
 
     protected filterJudge(): void {
         this.judge = this.conference.participants.find(x => x.role === Role.Judge);
+    }
+
+    protected filterParticipantInConsultation(): void {
+        if (this.loggedInUser.role === Role.Judge || this.loggedInUser.role === Role.JudicialOfficeHolder) {
+            this.participantsInConsultation = [this.judge, ...this.panelMembers, ...this.wingers, ...this.nonJudgeParticipants];
+        } else {
+            this.participantsInConsultation = [...this.nonJudgeParticipants];
+        }
     }
 
     protected camelToSpaced(word: string) {

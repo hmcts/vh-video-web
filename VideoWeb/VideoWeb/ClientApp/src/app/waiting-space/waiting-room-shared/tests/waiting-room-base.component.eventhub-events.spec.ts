@@ -109,6 +109,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         component.connected = true; // assume connected to pexip
         await component.startEventHubSubscribers();
         videoWebService.getConferenceById.calls.reset();
+        videoWebService.getAllowedEndpointsForConference.calls.reset();
     });
 
     afterEach(() => {
@@ -294,6 +295,8 @@ describe('WaitingRoomComponent EventHub Call', () => {
         component.loggedInUser = logged;
 
         videoWebService.getConferenceById.and.resolveTo(newConference);
+        videoWebService.getAllowedEndpointsForConference.and.resolveTo([]);
+
         eventHubDisconnectSubject.next(1);
         eventHubDisconnectSubject.next(2);
         eventHubDisconnectSubject.next(3);
@@ -303,6 +306,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
         flushMicrotasks();
         expect(videoWebService.getConferenceById).toHaveBeenCalledTimes(6);
+        expect(videoWebService.getAllowedEndpointsForConference).toHaveBeenCalledTimes(6);
         expect(component.participant.status).toBe(newParticipantStatus);
         expect(component.conference.status).toBe(newConferenceStatus);
         expect(component.conference).toEqual(newConference);
@@ -354,7 +358,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         expect(endpoints.length).toBe(0);
     }));
 
-    it('should updates endpoint in conference', fakeAsync(() => {
+    it('should update endpoint in conference', fakeAsync(() => {
         const status = EndpointStatus.Disconnected;
         const message = new EndpointStatusMessage(globalEndpoint.id, globalConference.id, status);
 
@@ -363,6 +367,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         const endpoint = component.hearing.getEndpoints().find(x => x.id === message.endpointId);
         expect(endpoint.status === message.status).toBeTruthy();
     }));
+
     it('should receive requested consultation message', fakeAsync(() => {
         const requestedby = globalConference.participants.find(x => x.id !== globalParticipant.id);
         const payload = new RequestedConsultationMessage(globalConference.id, 'ConsultationRoom', requestedby.id, globalParticipant.id);
@@ -371,6 +376,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
         expect(notificationToastrService.showConsultationInvite).toHaveBeenCalled();
     }));
+
     it('should update existing conference room to be locked', fakeAsync(() => {
         const payload = new Room('ConsultationRoom', false);
         component.conferenceRooms.push(payload);
@@ -382,6 +388,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         expect(component.conferenceRooms.length).toBe(countRoom);
         expect(component.conferenceRooms.find(x => x.label === 'ConsultationRoom').locked).toBe(true);
     }));
+
     it('should update by adding conference room', fakeAsync(() => {
         const payload = new Room('HearingRoom', false);
         const countRoom = component.conferenceRooms.length;
@@ -391,11 +398,36 @@ describe('WaitingRoomComponent EventHub Call', () => {
         expect(component.conferenceRooms.length).toBeGreaterThan(countRoom);
         expect(component.conferenceRooms.find(x => x.label === 'HearingRoom').locked).toBe(false);
     }));
-    it('should transfere existing participant to conference room', fakeAsync(() => {
+
+    it('should transfer existing participant to conference room', fakeAsync(() => {
         const payload = new RoomTransfer(globalParticipant.id, 'ConsultationRoom_to', 'ConsultationRoom_from');
         roomTransferSubjectMock.next(payload);
         flushMicrotasks();
 
         expect(globalParticipant.current_room.label).toBe('ConsultationRoom_to');
+    }));
+
+    it('should set null room for waiting room transfer', fakeAsync(() => {
+        const payload = new RoomTransfer(globalParticipant.id, 'WaitingRoom', 'ConsultationRoom_from');
+        roomTransferSubjectMock.next(payload);
+        flushMicrotasks();
+
+        expect(globalParticipant.current_room).toBeNull();
+    }));
+
+    it('should set room label for consultation room transfer', fakeAsync(() => {
+        const payload = new RoomTransfer(globalParticipant.id, 'ConsultationRoom_to', 'ConsultationRoom_from');
+        roomTransferSubjectMock.next(payload);
+        flushMicrotasks();
+
+        expect(globalParticipant.current_room?.label).toEqual('ConsultationRoom_to');
+    }));
+
+    it('should set null room for hearing transfer', fakeAsync(() => {
+        const payload = new RoomTransfer(globalParticipant.id, 'HearingRoom_to', 'HearingRoom_from');
+        roomTransferSubjectMock.next(payload);
+        flushMicrotasks();
+
+        expect(globalParticipant.current_room).toBeNull();
     }));
 });

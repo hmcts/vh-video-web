@@ -18,14 +18,17 @@
                 id="{{roomDetails.label}}"
                 name="{{roomDetails.label}}"
                 type="radio"
-                [checked]="selectedRoomLabel == roomDetails.label"
+                [checked]="selectedRoomLabel == roomDetails.label && !roomDetails.locked"
                 [disabled]="roomDetails.locked"
                 (change)="setSelectedRoom(roomDetails.label)" />
             <label class="govuk-label govuk-radios__label" for="{{roomDetails.label}}">
                 <span class="govuk-!-font-weight-bold">{{roomDetails.displayName}} <span *ngIf="roomDetails.locked" class="fas fa-lock-alt"></span></span>
                 <ul>
                   <li *ngFor="let participant of roomDetails.participants">
-                    <span class="govuk-!-font-weight-bold">{{participant.displayName}}</span> {{participant.hearingRoleText}}
+                    <span class="govuk-!-font-weight-bold">{{participant.display_name}}</span> {{getParticipantHearingRoleText(participant)}}
+                  </li>
+                  <li *ngFor="let endpoint of roomDetails.endpoints">
+                    <span class="govuk-!-font-weight-bold">{{endpoint.display_name}}</span> Video access point
                   </li>
                 </ul>
             </label>
@@ -36,7 +39,7 @@
                 id="continue-btn"
                 class="govuk-button govuk-!-margin-right-5"
                 data-module="govuk-button"
-                [disabled]="!selectedRoomLabel"
+                [disabled]="continueDisabled()"
                 (click)="onContinue()"
                 alt="Continue"
                 >

@@ -4,10 +4,13 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { Participant } from 'src/app/shared/models/participant';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import {
     consultationService,
     globalConference,
     globalParticipant,
+    globalWitness,
+    globalEndpoint,
     notificationSoundsService,
     toastrService
 } from '../waiting-room-shared/tests/waiting-room-base-setup';
@@ -43,9 +46,9 @@ describe('NotificationToastrService', () => {
         const p = new Participant(globalParticipant);
 
         // Act
-        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], false);
-        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], false);
-        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], false);
+        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], [], false);
+        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], [], false);
+        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], [], false);
 
         // Assert
         expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalledTimes(1);
@@ -63,11 +66,11 @@ describe('NotificationToastrService', () => {
         const p = new Participant(globalParticipant);
 
         // Act
-        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], false);
+        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], [], false);
         await mockToast.toastRef.componentInstance.vhToastOptions.onNoAction();
-        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], false);
+        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], [], false);
         await mockToast.toastRef.componentInstance.vhToastOptions.onNoAction();
-        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], false);
+        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], [], false);
 
         // Assert
         expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalledTimes(3);
@@ -84,7 +87,7 @@ describe('NotificationToastrService', () => {
         const p = new Participant(globalParticipant);
 
         // Act
-        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], false);
+        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], [], false);
 
         // Assert
         expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalledTimes(1);
@@ -101,7 +104,7 @@ describe('NotificationToastrService', () => {
         const p = new Participant(globalParticipant);
 
         // Act
-        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], true);
+        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], [], true);
 
         // Assert
         expect(notificationSoundsService.playConsultationRequestRingtone).toHaveBeenCalledTimes(0);
@@ -118,7 +121,7 @@ describe('NotificationToastrService', () => {
         const p = new Participant(globalParticipant);
 
         // Act
-        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], true);
+        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], [], true);
 
         // Assert
         expect(mockToast.toastRef.componentInstance.vhToastOptions.color).toBe('white');
@@ -135,7 +138,7 @@ describe('NotificationToastrService', () => {
         const p = new Participant(globalParticipant);
 
         // Act
-        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], false);
+        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], [], false);
 
         // Assert
         expect(mockToast.toastRef.componentInstance.vhToastOptions.color).toBe('black');
@@ -153,7 +156,7 @@ describe('NotificationToastrService', () => {
         const p = new Participant(globalParticipant);
 
         // Act
-        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], false);
+        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], [], false);
         await mockToast.toastRef.componentInstance.vhToastOptions.onNoAction();
 
         // Assert
@@ -168,6 +171,69 @@ describe('NotificationToastrService', () => {
         expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalledTimes(1);
     });
 
+    it('showConsultationInvite should join participants display names - no endpoints', async () => {
+        // Arrange
+        const mockToast = {
+            toastRef: {
+                componentInstance: {}
+            }
+        } as ActiveToast<VhToastComponent>;
+        toastrService.show.and.returnValue(mockToast);
+        toastrService.toasts = [mockToast];
+        const p = new Participant(globalParticipant);
+        const p2 = new Participant(globalWitness);
+
+        // Act
+        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p, p2], [], false);
+
+        // Assert
+        expect(mockToast.toastRef.componentInstance.vhToastOptions.htmlBody).toBe(
+            '<span class="govuk-!-font-weight-bold">Call from Greeno</span><br/>with<br/>Chris Witness'
+        );
+    });
+
+    it('showConsultationInvite should join participants display names - participants and endpoints', async () => {
+        // Arrange
+        const mockToast = {
+            toastRef: {
+                componentInstance: {}
+            }
+        } as ActiveToast<VhToastComponent>;
+        toastrService.show.and.returnValue(mockToast);
+        toastrService.toasts = [mockToast];
+        const p = new Participant(globalParticipant);
+        const p2 = new Participant(globalWitness);
+        const endpoint = globalEndpoint;
+
+        // Act
+        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p, p2], [endpoint], false);
+
+        // Assert
+        expect(mockToast.toastRef.componentInstance.vhToastOptions.htmlBody).toBe(
+            '<span class="govuk-!-font-weight-bold">Call from Greeno</span><br/>with<br/>Chris Witness<br/>DispName1'
+        );
+    });
+
+    it('showConsultationInvite should join participants display names - single participant', async () => {
+        // Arrange
+        const mockToast = {
+            toastRef: {
+                componentInstance: {}
+            }
+        } as ActiveToast<VhToastComponent>;
+        toastrService.show.and.returnValue(mockToast);
+        toastrService.toasts = [mockToast];
+        const p = new Participant(globalParticipant);
+
+        // Act
+        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], [], false);
+
+        // Assert
+        expect(mockToast.toastRef.componentInstance.vhToastOptions.htmlBody).toBe(
+            '<span class="govuk-!-font-weight-bold">Call from Greeno</span>'
+        );
+    });
+
     it('showConsultationInvite should add accept button', async () => {
         // Arrange
         const mockToast = {
@@ -180,7 +246,7 @@ describe('NotificationToastrService', () => {
         const p = new Participant(globalParticipant);
 
         // Act
-        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], false);
+        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], [], false);
         await mockToast.toastRef.componentInstance.vhToastOptions.buttons[0].action();
 
         // Assert
@@ -210,7 +276,7 @@ describe('NotificationToastrService', () => {
         const p = new Participant(globalParticipant);
 
         // Act
-        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], false);
+        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], [], false);
         await mockToast.toastRef.componentInstance.vhToastOptions.buttons[1].action();
 
         // Assert
@@ -244,9 +310,48 @@ describe('NotificationToastrService', () => {
         const p = new Participant(globalParticipant);
 
         // Act
-        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], false);
+        service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], [], false);
 
         // Assert
         expect(mockToast.toastRef.componentInstance).not.toBeNull();
+    });
+
+    it('show poor connection should only show once in 2 min', async () => {
+        // Arrange
+        const mockToast = {
+            toastRef: {
+                componentInstance: {}
+            }
+        } as ActiveToast<VhToastComponent>;
+        toastrService.show.and.returnValue(mockToast);
+
+        // Act
+        for (let i = 0; i < 26; i++) {
+            service.reportPoorConnection(
+                new ParticipantHeartbeat(globalConference.id, globalParticipant.id, HeartbeatHealth.Poor, '', '', '', '')
+            );
+        }
+
+        // Assert
+        expect(service.activeHeartbeatReport.length).toBe(1);
+    });
+    it(' should collect poor connection event count until it is reached  2 min limit', async () => {
+        // Arrange
+        const mockToast = {
+            toastRef: {
+                componentInstance: {}
+            }
+        } as ActiveToast<VhToastComponent>;
+        toastrService.show.and.returnValue(mockToast);
+
+        // Act
+        for (let i = 0; i < 23; i++) {
+            service.reportPoorConnection(
+                new ParticipantHeartbeat(globalConference.id, globalParticipant.id, HeartbeatHealth.Poor, '', '', '', '')
+            );
+        }
+
+        // Assert
+        expect(service.activeHeartbeatReport.length).toBe(23);
     });
 });

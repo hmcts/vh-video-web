@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
+    AllowedEndpointResponse,
     ConferenceResponse,
     ConferenceStatus,
     ConsultationAnswer,
@@ -12,7 +13,8 @@ import {
     ParticipantStatus,
     Role,
     RoomSummaryResponse,
-    TokenResponse
+    TokenResponse,
+    VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
@@ -32,7 +34,15 @@ import { Room } from 'src/app/shared/models/room';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SelectedUserMediaDevice } from '../../shared/models/selected-user-media-device';
 import { HearingRole } from '../models/hearing-role-model';
-import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from '../models/video-call-models';
+import {
+    CallError,
+    CallSetup,
+    ConnectedCall,
+    ConnectedPresentation,
+    DisconnectedCall,
+    DisconnectedPresentation,
+    Presentation
+} from '../models/video-call-models';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { VideoCallService } from '../services/video-call.service';
@@ -43,12 +53,14 @@ export abstract class WaitingRoomBaseComponent {
     protected maxBandwidth = null;
     audioOnly: boolean;
     hearingStartingAnnounced: boolean;
+    privateConsultationAccordianExpanded = false;
 
     loadingData: boolean;
     errorCount: number;
     hearing: Hearing;
     participant: ParticipantResponse;
     conference: ConferenceResponse;
+    participantEndpoints: AllowedEndpointResponse[] = [];
     conferenceRooms: Room[] = [];
     token: TokenResponse;
 
@@ -61,6 +73,8 @@ export abstract class WaitingRoomBaseComponent {
     stream: MediaStream | URL;
     connected: boolean;
     outgoingStream: MediaStream | URL;
+    presentationStream: MediaStream | URL;
+    streamInMain = false;
 
     showVideo: boolean;
     isTransferringIn: boolean;
@@ -127,6 +141,9 @@ export abstract class WaitingRoomBaseComponent {
                 this.loadingData = false;
                 this.hearing = new Hearing(data);
                 this.conference = this.hearing.getConference();
+                this.videoWebService.getAllowedEndpointsForConference(this.conferenceId).then((endpoints: AllowedEndpointResponse[]) => {
+                    this.participantEndpoints = endpoints;
+                });
 
                 this.participant = this.setLoggedParticipant();
                 this.logger.debug(`${this.loggerPrefix} Getting conference details`, {
@@ -162,6 +179,10 @@ export abstract class WaitingRoomBaseComponent {
                 participant: this.participant.id
             });
         }
+    }
+
+    getCaseNameAndNumber() {
+        return `${this.conference.case_name}: ${this.conference.case_number}`;
     }
 
     startEventHubSubscribers() {
@@ -205,14 +226,20 @@ export abstract class WaitingRoomBaseComponent {
                 if (requestedFor.id === this.participant.id && this.participant.status !== ParticipantStatus.InHearing) {
                     // A request for you to join a consultation room
                     this.logger.debug(`${this.loggerPrefix} Recieved RequestedConsultationMessage`);
-                    const requestedBy = new Participant(this.findParticipant(message.requestedBy));
+                    const requestedParticipant = this.findParticipant(message.requestedBy);
+                    const requestedBy =
+                        requestedParticipant === undefined || requestedParticipant === null
+                            ? null
+                            : new Participant(this.findParticipant(message.requestedBy));
                     const roomParticipants = this.findParticipantsInRoom(message.roomLabel).map(x => new Participant(x));
+                    const roomEndpoints = this.findEndpointsInRoom(message.roomLabel);
                     this.notificationToastrService.showConsultationInvite(
                         message.roomLabel,
                         message.conferenceId,
                         requestedBy,
                         requestedFor,
                         roomParticipants,
+                        roomEndpoints,
                         this.participant.status !== ParticipantStatus.Available
                     );
                 }
@@ -235,6 +262,9 @@ export abstract class WaitingRoomBaseComponent {
                     this.conference.participants
                         .filter(p => p.current_room?.label === existingRoom.label)
                         .forEach(p => (p.current_room.locked = existingRoom.locked));
+                    this.conference.endpoints
+                        .filter(p => p.current_room?.label === existingRoom.label)
+                        .forEach(p => (p.current_room.locked = existingRoom.locked));
                 } else {
                     this.conferenceRooms.push(room);
                 }
@@ -245,14 +275,22 @@ export abstract class WaitingRoomBaseComponent {
         this.eventHubSubscription$.add(
             this.eventService.getRoomTransfer().subscribe(async roomTransfer => {
                 const participant = this.conference.participants.find(p => p.id === roomTransfer.participant_id);
-                if (!participant) {
-                    return;
-                }
-
-                participant.current_room = null;
-                if (roomTransfer.to_room.toLowerCase().indexOf('consultation') >= 0) {
-                    const room = this.conferenceRooms.find(r => r.label === roomTransfer.to_room);
-                    participant.current_room = room ? new RoomSummaryResponse(room) : new RoomSummaryResponse({ label: roomTransfer.to_room });
+                const endpoint = this.conference.endpoints.find(p => p.id === roomTransfer.participant_id);
+                if (participant) {
+                    participant.current_room = null;
+                    if (roomTransfer.to_room.toLowerCase().indexOf('consultation') >= 0) {
+                        const room = this.conferenceRooms.find(r => r.label === roomTransfer.to_room);
+                        participant.current_room = room
+                            ? new RoomSummaryResponse(room)
+                            : new RoomSummaryResponse({ label: roomTransfer.to_room });
+                    }
+                } else if (endpoint) {
+                    if (roomTransfer.to_room.toLowerCase().indexOf('consultation') >= 0) {
+                        const room = this.conferenceRooms.find(r => r.label === roomTransfer.to_room);
+                        endpoint.current_room = room
+                            ? new RoomSummaryResponse(room)
+                            : new RoomSummaryResponse({ label: roomTransfer.to_room });
+                    }
                 }
             })
         );
@@ -284,10 +322,14 @@ export abstract class WaitingRoomBaseComponent {
     protected findParticipantsInRoom(roomLabel: string): ParticipantResponse[] {
         return this.conference.participants.filter(x => x.current_room?.label === roomLabel);
     }
+    protected findEndpointsInRoom(roomLabel: string): VideoEndpointResponse[] {
+        return this.conference.endpoints.filter(x => x.current_room?.label === roomLabel);
+    }
 
     async onConsultationAccepted() {
         this.displayStartPrivateConsultationModal = false;
         this.displayJoinPrivateConsultationModal = false;
+        this.privateConsultationAccordianExpanded = false;
 
         if (this.displayDeviceChangeModal) {
             this.logger.debug(`${this.loggerPrefix} Participant accepted a consultation. Closing change device modal.`);
@@ -388,7 +430,50 @@ export abstract class WaitingRoomBaseComponent {
 
         this.videoCallSubscription$.add(this.videoCallService.onCallTransferred().subscribe(() => this.handleCallTransfer()));
 
+        this.videoCallSubscription$.add(
+            this.videoCallService.onPresentation().subscribe(presentation => this.handlePresentationStatusChange(presentation))
+        );
+
+        this.videoCallSubscription$.add(
+            this.videoCallService
+                .onPresentationConnected()
+                .subscribe(connectedPresentation => this.handlePresentationConnected(connectedPresentation))
+        );
+
+        this.videoCallSubscription$.add(
+            this.videoCallService
+                .onPresentationDisconnected()
+                .subscribe(discconnectedPresentation => this.handlePresentationDisonnected(discconnectedPresentation))
+        );
+
         await this.videoCallService.setupClient();
+    }
+
+    handlePresentationStatusChange(presentation: Presentation): void {
+        if (presentation.presentationStarted) {
+            this.videoCallService.retrievePresentation();
+        } else {
+            this.videoCallService.stopPresentation();
+        }
+    }
+
+    handlePresentationDisonnected(discconnectedPresentation: DisconnectedPresentation): void {
+        const logPayload = {
+            conference: this.conferenceId,
+            participant: this.participant.id,
+            reason: discconnectedPresentation.reason
+        };
+        this.logger.warn(`${this.loggerPrefix} Presentation disconnected`, logPayload);
+        this.presentationStream = null;
+        this.videoCallService.stopPresentation();
+    }
+    handlePresentationConnected(connectedPresentation: ConnectedPresentation): void {
+        const logPayload = {
+            conference: this.conferenceId,
+            participant: this.participant.id
+        };
+        this.logger.debug(`${this.loggerPrefix} Successfully connected to presentation`, logPayload);
+        this.presentationStream = connectedPresentation.stream;
     }
 
     call() {
@@ -466,6 +551,7 @@ export abstract class WaitingRoomBaseComponent {
         this.updateShowVideo();
         this.logger.warn(`${this.loggerPrefix} Disconnected from pexip. Reason : ${reason.reason}`);
         if (!this.hearing.isPastClosedTime()) {
+            this.logger.warn(`${this.loggerPrefix} Attempting to reconnect to pexip in ${this.CALL_TIMEOUT}ms`);
             this.callbackTimeout = setTimeout(() => {
                 this.call();
             }, this.CALL_TIMEOUT);
@@ -739,5 +825,9 @@ export abstract class WaitingRoomBaseComponent {
 
     showLeaveConsultationModal(): void {
         this.consultationService.displayConsultationLeaveModal();
+    }
+
+    switchStreamWindows(): void {
+        this.streamInMain = !this.streamInMain;
     }
 }
