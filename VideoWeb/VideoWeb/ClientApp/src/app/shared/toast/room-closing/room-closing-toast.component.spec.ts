@@ -80,11 +80,11 @@ describe('RoomClosingToastComponent', () => {
     ].forEach(testCase => {
         it('should return duration left in conference if "now" is past the closing time but before the expiry time', () => {
             // arrange
-            const timeNow = new Date(`2021-01-01T10:${testCase.nowMmSs}.000Z`);
+            const dateNow = new Date(`2021-01-01T10:${testCase.nowMmSs}.000Z`);
             sut.expiryDate = new Date('2021-01-01T10:30:00.000Z');
 
             // act
-            const duration = sut.calcTimeLeft(timeNow);
+            const duration = sut.calcTimeLeft(dateNow);
 
             // assert
             const alertMessage = `This room will close in ${testCase.timeLeftMmSs}`;
@@ -95,11 +95,11 @@ describe('RoomClosingToastComponent', () => {
     [{ nowMmSs: '30:00' }, { nowMmSs: '30:01' }].forEach(testCase => {
         it('should return "this room is closed" message if "now" is greater than or equal to the expiry time', () => {
             // arrange
-            const timeNow = new Date(`2021-01-01T10:${testCase.nowMmSs}.000Z`);
+            const dateNow = new Date(`2021-01-01T10:${testCase.nowMmSs}.000Z`);
             sut.expiryDate = new Date('2021-01-01T10:30:00.000Z');
 
             // act
-            const duration = sut.calcTimeLeft(timeNow);
+            const duration = sut.calcTimeLeft(dateNow);
 
             // assert
             expect(duration).toEqual('This room is closed');
