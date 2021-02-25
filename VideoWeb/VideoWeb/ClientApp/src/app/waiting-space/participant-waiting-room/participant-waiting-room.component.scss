@@ -29,24 +29,46 @@
   color: lightgray;
   font-size: 16px;
   margin-left: 10px;
-  display: inline-block;
+  display: inline;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+@media only screen and (max-width: 1064px) {
+  .room-status-desc {
+    color: lightgray;
+    font-size: 16px;
+    margin-left: 10px;
+    display: inline-block;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 150px;
+    margin-top: 10px;
+  }
+  .room-title {
+    color: lightgray;
+    margin-left: 10px;
+    display: inline-block;
+    margin-top: 10px;
+    vertical-align: top;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100px;
+  }
+  .room-status {
+    margin-left: 5px;
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 10px;
+  }
 }
 
 .lock-badge {
   padding: 3px 8px 3px 8px;
   border: 0px solid lightgray;
   border-radius: 2px;
-  text-transform: uppercase;
   font-weight: 400;
-  font-size: 14px;
-}
-
-.lock-badge.unlocked {
-  background: lightgray;
-  color: #0b0c0d;
-}
-
-.lock-badge.locked {
-  background: govuk-colour('red');
-  color: govuk-colour('white');
+  font-size: 16px;
+  background: #b1b4b6;
+  color: #000;
 }
