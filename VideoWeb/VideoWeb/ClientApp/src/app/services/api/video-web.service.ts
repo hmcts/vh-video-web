@@ -14,7 +14,7 @@ import {
     TestCallScoreResponse,
     TokenResponse,
     UnreadAdminMessageResponse,
-    UpdateParticipantRequest,
+    UpdateParticipantDisplayNameRequest,
     UpdateParticipantStatusEventRequest,
     UnreadInstantMessageConferenceCountResponse,
     JudgeNameListResponse,
@@ -137,7 +137,7 @@ export class VideoWebService implements IVideoWebApiService {
     updateParticipantDetails(
         conferenceId: string,
         participantId: string,
-        updateParticipantRequest: UpdateParticipantRequest
+        updateParticipantRequest: UpdateParticipantDisplayNameRequest
     ): Promise<void> {
         return this.apiClient.updateParticipantDisplayName(conferenceId, participantId, updateParticipantRequest).toPromise();
     }

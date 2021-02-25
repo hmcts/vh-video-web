@@ -8,6 +8,7 @@ import {
     ConferenceResponse,
     ConferenceStatus,
     ConsultationAnswer,
+    LinkType,
     LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
@@ -487,6 +488,14 @@ export abstract class WaitingRoomBaseComponent {
         };
         this.logger.debug(`${this.loggerPrefix} Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`, logPayload);
         this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth);
+    }
+
+    needsInterpreterRoom(): boolean {
+        if (!this.participant.linked_participants) {
+            return false;
+        }
+
+        return this.participant.linked_participants.filter(x => x.link_type === LinkType.Interpreter).length > 0;
     }
 
     disconnect() {
