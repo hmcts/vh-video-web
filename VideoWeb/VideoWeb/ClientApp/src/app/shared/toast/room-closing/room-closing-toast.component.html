@@ -1,7 +1,7 @@
 <div class="content">
     <ng-container>
         <div class="govuk-body">
-            <strong>Alert</strong><br><span id="room-closing-alert-message">This room will close in {{ duration$ | async }}</span>
+            <strong>Alert</strong><br><span id="room-closing-alert-message">{{ alertMessage$ | async }}</span>
         </div>
     </ng-container>
 </div>

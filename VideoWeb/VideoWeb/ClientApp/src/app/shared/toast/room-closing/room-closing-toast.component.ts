@@ -1,5 +1,5 @@
 import * as moment from 'moment';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ToastrService, ToastPackage } from 'ngx-toastr';
 import { Observable } from 'rxjs';
 import { VhToastButton, VhToastComponent } from '../vh-toast.component';
@@ -15,11 +15,12 @@ interface RoomClosingToastOptions {
     styleUrls: ['../vh-toast.component.scss']
 })
 export class RoomClosingToastComponent extends VhToastComponent implements OnInit {
-    duration$: Observable<string>;
+    alertMessage$: Observable<string>;
+    msAllowedForPrivateConsultationsAfterClosing: number;
     expiryDate: Date;
 
     set roomClosingToastOptions(options: RoomClosingToastOptions) {
-        this.setExpiryDate(options.expiryDate);
+        this.expiryDate = options.expiryDate;
         super.vhToastOptions = {
             color: 'white',
             onNoAction: async () => {},
@@ -32,7 +33,7 @@ export class RoomClosingToastComponent extends VhToastComponent implements OnIni
     }
 
     ngOnInit(): void {
-        this.duration$ = this.clockService.getClock().pipe(
+        this.alertMessage$ = this.clockService.getClock().pipe(
             startWith(new Date()),
             map(date => {
                 return this.calcTimeLeft(date);
@@ -40,24 +41,13 @@ export class RoomClosingToastComponent extends VhToastComponent implements OnIni
         );
     }
 
-    setExpiryDate(expiryDate: Date) {
-        this.expiryDate = expiryDate;
-        this.calcTimeLeft(new Date());
-    }
-
     calcTimeLeft(now: Date): string {
-        const momentNow = moment(now);
-        const momentExpired = moment(this.expiryDate);
-
-        const secondsUntilExpired = moment(momentExpired).diff(momentNow, 's');
-        const duration = moment.duration(secondsUntilExpired, 's');
-
-        if (!duration) {
-            return '';
+        const milliSecondsUntilExpired = this.expiryDate.valueOf() - now.valueOf();
+        if (milliSecondsUntilExpired <= 0) {
+            return 'This room is closed';
         }
 
-        const ms = duration.asMilliseconds();
-        const mmss = moment.utc(ms).format('mm:ss');
-        return mmss;
+        const mmss = moment.utc(milliSecondsUntilExpired).format('mm:ss');
+        return `This room will close in ${mmss}`;
     }
 }

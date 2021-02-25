@@ -1,31 +1,26 @@
-import * as moment from 'moment';
 import { BasePortalHost, OverlayRef, ToastrService, ToastPackage, Toast, ToastRef } from 'ngx-toastr';
 import { RoomClosingToastComponent } from './room-closing-toast.component';
-import { Hearing } from '../../models/hearing';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { of } from 'rxjs';
 import { ToastrTestingModule } from '../toastr-testing.module';
 import { TestBed } from '@angular/core/testing';
 
 describe('RoomClosingToastComponent', () => {
-    const conferenceTestData = new ConferenceTestData();
     let toastrService: ToastrService;
-
     let toastPackage: ToastPackage;
     let clockServiceMock: jasmine.SpyObj<ClockService>;
     let sut: RoomClosingToastComponent;
     const timeNow = new Date(2021, 1, 1, 10, 0, 0, 0);
 
     beforeEach(() => {
+        // create ToastrService
         toastrService = jasmine.createSpyObj<ToastrService>('ToastrService', ['show', 'clear', 'remove']);
-
         TestBed.configureTestingModule({
             imports: [ToastrTestingModule],
             providers: [{ provider: ToastrService, useValue: toastrService }]
         });
 
+        // create ToastPackage
         const config = {
             disableTimeOut: false,
             timeOut: 1,
@@ -52,6 +47,7 @@ describe('RoomClosingToastComponent', () => {
         );
         toastPackage = new ToastPackage(1, config, 'tast toast', 'test', 'test', toastRef);
 
+        // create ClockService
         clockServiceMock = jasmine.createSpyObj<ClockService>('ClockService', ['getClock']);
         clockServiceMock.getClock.and.returnValue(of(timeNow));
 
@@ -72,44 +68,41 @@ describe('RoomClosingToastComponent', () => {
         sut.ngOnDestroy();
     });
 
-    function getClosedButNotExpiredHearing(closedDateTime: Date): Hearing {
-        const c = conferenceTestData.getConferenceDetailFuture();
-        c.status = ConferenceStatus.Closed;
-        c.closed_date_time = closedDateTime;
-
-        const hearing = new Hearing(c);
-        expect(hearing.isClosed()).toBeTruthy();
-        expect(hearing.status).toEqual(ConferenceStatus.Closed);
-        return hearing;
-    }
-
     it('should create the sut', () => {
         expect(sut).toBeTruthy();
     });
 
     [
-        { minsLeft: 29, secondsLeft: 59 },
-        { minsLeft: 29, secondsLeft: 0 },
-        { minsLeft: 1, secondsLeft: 0 },
-        { minsLeft: 0, secondsLeft: 1 }
+        { nowMmSs: '00:01', timeLeftMmSs: '29:59' },
+        { nowMmSs: '01:00', timeLeftMmSs: '29:00' },
+        { nowMmSs: '29:00', timeLeftMmSs: '01:00' },
+        { nowMmSs: '29:59', timeLeftMmSs: '00:01' }
     ].forEach(testCase => {
-        it('should return duration left in conference if "now" is past closing time but before the expiry time', () => {
+        it('should return duration left in conference if "now" is past the closing time but before the expiry time', () => {
             // arrange
-            const timeLeft = moment.duration(testCase.minsLeft, 'minutes').add(testCase.secondsLeft, 'seconds');
-            const timeLeftString = moment.utc(timeLeft.asMilliseconds()).format('mm:ss');
-
-            const timeSinceClosed = moment.duration(30, 'minutes').subtract(timeLeft);
-            const closedDateTime = moment(timeNow).subtract(timeSinceClosed).toDate();
-
-            const hearing = getClosedButNotExpiredHearing(closedDateTime);
-            var expiryDate = hearing.retrieveExpiryTime();
+            const timeNow = new Date(`2021-01-01T10:${testCase.nowMmSs}.000Z`);
+            sut.expiryDate = new Date('2021-01-01T10:30:00.000Z');
 
             // act
-            sut.setExpiryDate(expiryDate);
             const duration = sut.calcTimeLeft(timeNow);
 
             // assert
-            expect(duration).toEqual(timeLeftString);
+            const alertMessage = `This room will close in ${testCase.timeLeftMmSs}`;
+            expect(duration).toEqual(alertMessage);
+        });
+    });
+
+    [{ nowMmSs: '30:00' }, { nowMmSs: '30:01' }].forEach(testCase => {
+        it('should return "this room is closed" message if "now" is greater than or equal to the expiry time', () => {
+            // arrange
+            const timeNow = new Date(`2021-01-01T10:${testCase.nowMmSs}.000Z`);
+            sut.expiryDate = new Date('2021-01-01T10:30:00.000Z');
+
+            // act
+            const duration = sut.calcTimeLeft(timeNow);
+
+            // assert
+            expect(duration).toEqual('This room is closed');
         });
     });
 
