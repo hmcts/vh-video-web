@@ -134,6 +134,7 @@
           <!-- if hearing has litigant in person -->
           <div *ngIf="litigantInPerson">
             <p id="p-{{ participant.id }}-name-participant" class="govuk-heading-s govuk-!-margin-bottom-3">
+              <img *ngIf="participant.hasInterpreterLink" class="vh-interpreter-icon" src="/assets/images/interpreter.png" alt="Interpreter" />
               {{ participant.name }}
             </p>
             <p id="p-{{ participant.id }}-hearing-role-participant" class="govuk-body-m govuk-!-margin-bottom-3">
@@ -168,6 +169,7 @@
           <!-- represented by solicitor -->
           <div *ngIf="!litigantInPerson">
             <p id="p-{{ participant.id }}-name-participant" class="govuk-heading-s govuk-!-margin-bottom-3">
+              <img *ngIf="participant.hasInterpreterLink"  class="vh-interpreter-icon" src="/assets/images/interpreter.png" alt="Interpreter" />
               {{ participant.name }}
             </p>
             <p id="p-{{ participant.id }}-representee" *ngIf="participant.representee" class="govuk-body-m govuk-!-margin-bottom-3">

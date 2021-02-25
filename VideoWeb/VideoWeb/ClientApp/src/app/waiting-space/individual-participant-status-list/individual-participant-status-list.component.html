@@ -59,7 +59,10 @@
     <div class="vh-border">
       <div *ngFor="let participant of nonJudgeParticipants; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
         <div id="p-row-{{ participant.id }}-participant" class="govuk-grid-column-full">
-          <p id="p-{{ participant.id }}-name" class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
+          <p id="p-{{ participant.id }}-name" class="govuk-heading-s govuk-!-margin-bottom-0">
+            <img *ngIf="participant.hasInterpreterLink" class="vh-interpreter-icon" src="/assets/images/interpreter.png" alt="Interpreter" />
+            {{ participant.name }}
+          </p>
 
           <p id="p-{{ participant.id }}-representee" *ngIf="participant.representee" class="govuk-body-s govuk-!-margin-bottom-1">
             {{ !isCaseTypeNone(participant) ? 'Representative' : participant.hearing_role }} for {{ participant.representee }}
