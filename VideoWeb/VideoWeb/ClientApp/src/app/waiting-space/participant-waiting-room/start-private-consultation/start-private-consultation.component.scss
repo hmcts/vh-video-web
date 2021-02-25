@@ -66,4 +66,26 @@
 .vh-scroll-wrap {
   max-height: 350px;
   overflow-y: auto;
+  overflow-x: hidden;
+}
+
+@media only screen and (max-height: 736px) {
+  .vh-scroll-wrap {
+    max-height: 250px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 10px;
+  overflow-x: hidden;
+  background-color: darkgrey;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background-color: govuk-colour('dark-grey');
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
 }
