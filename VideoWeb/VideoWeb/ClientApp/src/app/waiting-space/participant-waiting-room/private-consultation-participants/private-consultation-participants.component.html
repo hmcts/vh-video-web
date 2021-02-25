@@ -1,19 +1,33 @@
 <div class="participant-wrapper">
     <h4 class="govuk-heading-s white">Participants</h4>
     <div class="participant-grid">
-        <ng-container *ngFor="let participant of participantsInConsultation">
+        <ng-container *ngFor="let participant of getPrivateConsultationParticipants()">
             <div [class]="getRowClasses(participant)">
-                <app-invite-participant *ngIf="!participantIsInCurrentRoom(participant) && participantAvailable(participant)"
+                <app-invite-participant *ngIf="!isParticipantInCurrentRoom(participant) && isParticipantAvailable(participant)"
                                         [participantId]="participant.id"
                                         [conferenceId]="conference.id"
                                         [roomLabel]="roomLabel">
                 </app-invite-participant>
-                <span *ngIf="participantIsInCurrentRoom(participant)" class="fas fa-check" aria-hidden="true"></span>
+                <span *ngIf="isParticipantInCurrentRoom(participant)" class="fas fa-check" aria-hidden="true"></span>
             </div>
             <div [class]="getRowClasses(participant)"><span [class]="participantNameClass(participant)">{{participant.display_name}}</span></div>
             <div [class]="getRowClasses(participant)" class="text-right">
                 <span [class]="getParticipantStatusClasses(participant)" [innerHTML]="getParticipantStatus(participant)"></span>
                 <img *ngIf="isJohInCurrentRoom(participant)" class="small-crest" src="/assets/images/UkGovCrestWhite.png" alt="Crest" />
+            </div>
+        </ng-container>
+        <ng-container *ngFor="let endpoint of endpoints">
+            <div [class]="getRowClasses(endpoint)">
+                <app-invite-participant *ngIf="canCallEndpoint(endpoint)"
+                                        [endpointId]="endpoint.id"
+                                        [conferenceId]="conference.id"
+                                        [roomLabel]="roomLabel">
+                </app-invite-participant>
+                <span *ngIf="isParticipantInCurrentRoom(endpoint)" class="fas fa-check" aria-hidden="true"></span>
+            </div>
+            <div [class]="getRowClasses(endpoint)"><span [class]="participantNameClass(endpoint)">{{endpoint.display_name}}</span></div>
+            <div [class]="getRowClasses(endpoint)" class="text-right">
+                <span [class]="getParticipantStatusClasses(endpoint)" [innerHTML]="getParticipantStatus(endpoint)"></span>
             </div>
         </ng-container>
     </div>

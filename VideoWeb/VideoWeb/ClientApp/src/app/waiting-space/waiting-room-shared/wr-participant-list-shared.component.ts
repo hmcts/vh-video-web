@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
+    AllowedEndpointResponse,
     ConferenceResponse,
     EndpointStatus,
     LoggedParticipantResponse,
@@ -20,6 +21,7 @@ import { HearingRole } from '../models/hearing-role-model';
 @Directive()
 export abstract class WRParticipantStatusListDirective {
     @Input() conference: ConferenceResponse;
+    @Input() participantEndpoints: AllowedEndpointResponse[];
 
     nonJudgeParticipants: ParticipantResponse[];
     judge: ParticipantResponse;
