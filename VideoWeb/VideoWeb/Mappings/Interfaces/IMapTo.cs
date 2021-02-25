@@ -1,4 +1,4 @@
-namespace VideoWeb.Mappings
+namespace VideoWeb.Mappings.Interfaces
 {
     public interface IMapTo<in TIn1, out TOut>
     {

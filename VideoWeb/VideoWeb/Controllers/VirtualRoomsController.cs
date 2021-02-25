@@ -30,13 +30,19 @@ namespace VideoWeb.Controllers
 
         [HttpGet("{conferenceId}/rooms/interpreter/{participantId}")]
         [SwaggerOperation(OperationId = "GetInterpreterRoomForParticipant")]
-        [ProducesResponseType((int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(InterpreterRoom), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.NotFound)]
         public async Task<IActionResult> GetInterpreterRoomForParticipant(Guid conferenceId, Guid participantId)
         {
             try
             {
-                var room = await _videoApiClient.GetInterpreterRoomForParticipantAsync(conferenceId, participantId);
+                // var room = await _videoApiClient.GetInterpreterRoomForParticipantAsync(conferenceId, participantId);
+                var room = await Task.FromResult(new InterpreterRoomResponse
+                {
+                    Label = "Interpreter1",
+                    Participant_join_uri = "hmctstest1-0__855617b6-a1b7-49eb-88e5-df9005344c26__INTERPRETER_VMR",
+                    Pexip_node = "https://sip.test.hearings.hmcts.net"
+                });
                 var mapper = _mapperFactory.Get<InterpreterRoomResponse, InterpreterRoom>();
                 var response = mapper.Map(room);
                 return Ok(response);

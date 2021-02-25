@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using System;
+using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
 {

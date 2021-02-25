@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
+using VideoWeb.Mappings.Interfaces;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings

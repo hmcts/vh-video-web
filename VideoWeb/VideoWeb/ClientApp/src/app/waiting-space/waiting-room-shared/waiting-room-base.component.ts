@@ -410,7 +410,7 @@ export abstract class WaitingRoomBaseComponent {
             this.token = await this.videoWebService.getJwToken(this.participant.id);
             this.logger.debug(`${this.loggerPrefix} Retrieved jwtoken for heartbeat`, logPayload);
             await this.setupPexipEventSubscriptionAndClient();
-            this.call();
+            await this.call();
         } catch (error) {
             this.logger.error(`${this.loggerPrefix} There was an error getting a jwtoken for heartbeat`, error, logPayload);
             this.errorService.handleApiError(error);
@@ -477,15 +477,22 @@ export abstract class WaitingRoomBaseComponent {
         this.presentationStream = connectedPresentation.stream;
     }
 
-    call() {
-        this.logger.info(`${this.loggerPrefix} calling pexip`);
-        const pexipNode = this.hearing.getConference().pexip_node_uri;
-        const conferenceAlias = this.hearing.getConference().participant_uri;
-        const displayName = this.participant.tiled_display_name;
+    async call() {
         const logPayload = {
             conference: this.conferenceId,
             participant: this.participant.id
         };
+        this.logger.info(`${this.loggerPrefix} calling pexip`, logPayload);
+        let pexipNode = this.hearing.getConference().pexip_node_uri;
+        let conferenceAlias = this.hearing.getConference().participant_uri;
+        const displayName = this.participant.tiled_display_name;
+        if (this.needsInterpreterRoom()) {
+            this.logger.debug(`${this.loggerPrefix} calling interpreter room`, logPayload);
+            const interpreterRoom = await this.videoCallService.retrieveInterpreterRoom(this.conference.id, this.participant.id);
+            pexipNode = interpreterRoom.pexip_node;
+            conferenceAlias = interpreterRoom.participant_join_uri;
+        }
+
         this.logger.debug(`${this.loggerPrefix} Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`, logPayload);
         this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth);
     }
@@ -561,8 +568,8 @@ export abstract class WaitingRoomBaseComponent {
         this.logger.warn(`${this.loggerPrefix} Disconnected from pexip. Reason : ${reason.reason}`);
         if (!this.hearing.isPastClosedTime()) {
             this.logger.warn(`${this.loggerPrefix} Attempting to reconnect to pexip in ${this.CALL_TIMEOUT}ms`);
-            this.callbackTimeout = setTimeout(() => {
-                this.call();
+            this.callbackTimeout = setTimeout(async () => {
+                await this.call();
             }, this.CALL_TIMEOUT);
         }
     }

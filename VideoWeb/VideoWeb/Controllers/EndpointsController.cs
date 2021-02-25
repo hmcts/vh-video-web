@@ -53,7 +53,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Endpoints could not be fetched for ConferenceId: {conferenceId}");
+                _logger.LogError(e, "Endpoints could not be fetched for ConferenceId: {ConferenceId}", conferenceId);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
@@ -67,7 +67,9 @@ namespace VideoWeb.Controllers
         {
             var username = User.Identity.Name?.ToLower().Trim();
             var conference = await GetConference(conferenceId);
-            var usersEndpoints = conference.Endpoints.Where(ep => ep.DefenceAdvocateUsername.Equals(username, StringComparison.CurrentCultureIgnoreCase)).ToList();
+            var usersEndpoints = conference.Endpoints.Where(ep =>
+                ep.DefenceAdvocateUsername != null &&
+                ep.DefenceAdvocateUsername.Equals(username, StringComparison.CurrentCultureIgnoreCase)).ToList();
             var allowedEndpointResponseMapper = _mapperFactory.Get<Endpoint, AllowedEndpointResponse>();
             var response = usersEndpoints.Select(x => allowedEndpointResponseMapper.Map(x)).ToList();
             return Ok(response);

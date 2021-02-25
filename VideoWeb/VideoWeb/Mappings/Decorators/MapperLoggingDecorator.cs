@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Diagnostics;
+using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings.Decorators
 {

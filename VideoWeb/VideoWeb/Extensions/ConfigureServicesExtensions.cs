@@ -29,6 +29,7 @@ using VideoWeb.EventHub.Mappers;
 using VideoWeb.Helpers;
 using VideoWeb.Mappings;
 using VideoWeb.Mappings.Decorators;
+using VideoWeb.Mappings.Interfaces;
 using VideoWeb.Middleware;
 using VideoWeb.Services.Bookings;
 using VideoWeb.Services.User;

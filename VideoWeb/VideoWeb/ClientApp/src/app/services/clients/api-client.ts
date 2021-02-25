@@ -3804,7 +3804,7 @@ export class ApiClient {
     /**
      * @return Success
      */
-    getInterpreterRoomForParticipant(conferenceId: string, participantId: string): Observable<void> {
+    getInterpreterRoomForParticipant(conferenceId: string, participantId: string): Observable<InterpreterRoom> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/rooms/interpreter/{participantId}';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
@@ -3815,7 +3815,9 @@ export class ApiClient {
         let options_: any = {
             observe: 'response',
             responseType: 'blob',
-            headers: new HttpHeaders({})
+            headers: new HttpHeaders({
+                Accept: 'application/json'
+            })
         };
 
         return this.http
@@ -3831,14 +3833,14 @@ export class ApiClient {
                         try {
                             return this.processGetInterpreterRoomForParticipant(<any>response_);
                         } catch (e) {
-                            return <Observable<void>>(<any>_observableThrow(e));
+                            return <Observable<InterpreterRoom>>(<any>_observableThrow(e));
                         }
-                    } else return <Observable<void>>(<any>_observableThrow(response_));
+                    } else return <Observable<InterpreterRoom>>(<any>_observableThrow(response_));
                 })
             );
     }
 
-    protected processGetInterpreterRoomForParticipant(response: HttpResponseBase): Observable<void> {
+    protected processGetInterpreterRoomForParticipant(response: HttpResponseBase): Observable<InterpreterRoom> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
@@ -3852,7 +3854,10 @@ export class ApiClient {
         if (status === 200) {
             return blobToText(responseBlob).pipe(
                 _observableMergeMap(_responseText => {
-                    return _observableOf<void>(<any>null);
+                    let result200: any = null;
+                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result200 = InterpreterRoom.fromJS(resultData200);
+                    return _observableOf(result200);
                 })
             );
         } else if (status === 404) {
@@ -3877,7 +3882,7 @@ export class ApiClient {
                 })
             );
         }
-        return _observableOf<void>(<any>null);
+        return _observableOf<InterpreterRoom>(<any>null);
     }
 }
 
@@ -6478,6 +6483,45 @@ export interface IConferenceEventRequest {
     transfer_to?: string | undefined;
     reason?: string | undefined;
     phone?: string | undefined;
+}
+
+export class InterpreterRoom implements IInterpreterRoom {
+    pexip_node?: string | undefined;
+    participant_join_uri?: string | undefined;
+
+    constructor(data?: IInterpreterRoom) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.pexip_node = _data['pexip_node'];
+            this.participant_join_uri = _data['participant_join_uri'];
+        }
+    }
+
+    static fromJS(data: any): InterpreterRoom {
+        data = typeof data === 'object' ? data : {};
+        let result = new InterpreterRoom();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['pexip_node'] = this.pexip_node;
+        data['participant_join_uri'] = this.participant_join_uri;
+        return data;
+    }
+}
+
+export interface IInterpreterRoom {
+    pexip_node?: string | undefined;
+    participant_join_uri?: string | undefined;
 }
 
 export class ApiException extends Error {

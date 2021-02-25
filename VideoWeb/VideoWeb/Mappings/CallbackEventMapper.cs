@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Models;
+using VideoWeb.Mappings.Interfaces;
 using VideoWeb.Services.Video;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 
