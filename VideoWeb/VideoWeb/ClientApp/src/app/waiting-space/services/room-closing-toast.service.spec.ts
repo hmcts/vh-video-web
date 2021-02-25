@@ -27,8 +27,8 @@ export class RoomClosingToastrServiceFacade extends RoomClosingToastrService {
         super.showToast(expiryDate);
     }
 
-    onToastClosed(timeNow: Date): void {
-        super.onToastClosed(timeNow);
+    closeOpenToast(timeNow: Date): void {
+        super.closeOpenToast(timeNow);
     }
 }
 
@@ -169,8 +169,8 @@ describe('RoomClosingToastrService', () => {
         });
     });
 
-    describe('onToastClosed()', () => {
-        it('should show toast and set all correct properties', () => {
+    describe('closeOpenToast()', () => {
+        it('should close open toast', () => {
             // arrange
             sut.shownGates = [
                 new Date(2021, 1, 1, 10, 0, 0, 0),
@@ -188,7 +188,7 @@ describe('RoomClosingToastrService', () => {
             sut.currentToast = mockToast;
 
             // act
-            sut.onToastClosed(new Date(2021, 1, 1, 15, 0, 0, 0));
+            sut.closeOpenToast(new Date(2021, 1, 1, 15, 0, 0, 0));
 
             // assert
             expect(toastrService.remove).toHaveBeenCalledTimes(1);
@@ -198,7 +198,8 @@ describe('RoomClosingToastrService', () => {
         });
     });
 
-    // test for the big public method that ties it all together:
+    // test for public methods, below
+
     describe('showRoomClosingAlert()', () => {
         it('should show toast when all conditions are met', () => {
             // arrange

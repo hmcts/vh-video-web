@@ -103,7 +103,11 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
             this.checkIfHearingIsStarting();
         });
         this.closedSubscription$ = this.clockService.getClock().subscribe(time => {
-            this.roomClosingToastrService.showRoomClosingAlert(this.hearing, time);
+            if (this.isPrivateConsultation) {
+                this.roomClosingToastrService.showRoomClosingAlert(this.hearing, time);
+            } else {
+                this.roomClosingToastrService.clearToasts();
+            }
         });
     }
 

@@ -792,6 +792,8 @@ export abstract class WaitingRoomBaseComponent {
         this.eventHubSubscription$.unsubscribe();
         this.videoCallSubscription$.unsubscribe();
         this.clockSubscription$.unsubscribe();
+
+        this.roomClosingToastrService.clearToasts();
         this.closedSubscription$.unsubscribe();
     }
 
@@ -804,7 +806,11 @@ export abstract class WaitingRoomBaseComponent {
             })
         );
         this.closedSubscription$ = this.clockService.getClock().subscribe(time => {
-            this.roomClosingToastrService.showRoomClosingAlert(this.hearing, time);
+            if (this.isPrivateConsultation) {
+                this.roomClosingToastrService.showRoomClosingAlert(this.hearing, time);
+            } else {
+                this.roomClosingToastrService.clearToasts();
+            }
         });
     }
 

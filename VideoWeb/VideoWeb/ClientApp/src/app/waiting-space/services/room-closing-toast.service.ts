@@ -45,10 +45,6 @@ export class RoomClosingToastrService {
     protected getDurations(): moment.Duration[] {
         const durations: moment.Duration[] = [];
 
-        // for (let i = 29; i > 0; i--) {
-        //     const xMinsLeft = moment.duration(i, 'minutes');
-        //     durations.push(xMinsLeft);
-        // }
 
         const fiveMinsLeft = moment.duration(5, 'minutes');
         const thirtySecondsLeft = moment.duration(30, 'seconds');
@@ -90,7 +86,7 @@ export class RoomClosingToastrService {
                     label: 'Dismiss',
                     hoverColour: 'green',
                     action: async () => {
-                        this.onToastClosed(new Date());
+                        this.closeOpenToast(new Date());
                     }
                 }
             ],
@@ -98,9 +94,18 @@ export class RoomClosingToastrService {
         };
     }
 
-    protected onToastClosed(timeNow: Date): void {
-        this.toastr.remove(this.currentToast.toastId);
-        this.shownGates = this.getPastGates(timeNow);
-        this.currentToast = null;
+    protected closeOpenToast(timeNow: Date): void {
+        if (this.currentToast) {
+            this.toastr.remove(this.currentToast.toastId);
+            this.shownGates = this.getPastGates(timeNow);
+            this.currentToast = null;
+        }
+    }
+
+    /**
+     * Close any/all open toasts (i.e. when user exits consultation room)
+     */
+    clearToasts() {
+        this.closeOpenToast(new Date());
     }
 }
