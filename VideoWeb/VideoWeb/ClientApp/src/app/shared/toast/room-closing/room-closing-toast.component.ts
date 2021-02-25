@@ -1,9 +1,10 @@
 import * as moment from 'moment';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ToastrService, ToastPackage } from 'ngx-toastr';
-import { Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { VhToastButton, VhToastComponent } from '../vh-toast.component';
 import { ClockService } from 'src/app/services/clock.service';
+import { map, startWith } from 'rxjs/operators';
 
 interface RoomClosingToastOptions {
     expiryDate: Date;
@@ -13,9 +14,8 @@ interface RoomClosingToastOptions {
     templateUrl: './room-closing-toast.component.html',
     styleUrls: ['../vh-toast.component.scss']
 })
-export class RoomClosingToastComponent extends VhToastComponent implements OnInit, OnDestroy {
-    durationStr: string;
-    timeLeft$: Subscription;
+export class RoomClosingToastComponent extends VhToastComponent implements OnInit {
+    duration$: Observable<string>;
     expiryDate: Date;
 
     set roomClosingToastOptions(options: RoomClosingToastOptions) {
@@ -32,11 +32,12 @@ export class RoomClosingToastComponent extends VhToastComponent implements OnIni
     }
 
     ngOnInit(): void {
-        this.timeLeft$ = this.clockService.getClock().subscribe(time => this.calcTimeLeft(time));
-    }
-
-    ngOnDestroy(): void {
-        this.timeLeft$?.unsubscribe();
+        this.duration$ = this.clockService.getClock().pipe(
+            startWith(new Date()),
+            map(date => {
+                return this.calcTimeLeft(date);
+            })
+        );
     }
 
     setExpiryDate(expiryDate: Date) {
@@ -52,12 +53,11 @@ export class RoomClosingToastComponent extends VhToastComponent implements OnIni
         const duration = moment.duration(secondsUntilExpired, 's');
 
         if (!duration) {
-            this.durationStr = null;
-            return;
+            return '';
         }
 
         const ms = duration.asMilliseconds();
         const mmss = moment.utc(ms).format('mm:ss');
-        this.durationStr = mmss;
+        return mmss;
     }
 }

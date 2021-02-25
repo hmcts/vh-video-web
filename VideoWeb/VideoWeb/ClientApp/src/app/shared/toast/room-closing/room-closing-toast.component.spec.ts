@@ -87,11 +87,6 @@ describe('RoomClosingToastComponent', () => {
         expect(sut).toBeTruthy();
     });
 
-    it('should unsubscribe all subcriptions on destroy component', () => {
-        sut.ngOnDestroy();
-        expect(sut.timeLeft$.closed).toBeTruthy();
-    });
-
     [
         { minsLeft: 29, secondsLeft: 59 },
         { minsLeft: 29, secondsLeft: 0 },
@@ -111,10 +106,10 @@ describe('RoomClosingToastComponent', () => {
 
             // act
             sut.setExpiryDate(expiryDate);
-            sut.calcTimeLeft(timeNow);
+            const duration = sut.calcTimeLeft(timeNow);
 
             // assert
-            expect(sut.durationStr).toEqual(timeLeftString);
+            expect(duration).toEqual(timeLeftString);
         });
     });
 
