@@ -1,4 +1,4 @@
-import { HttpClient, HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClient, HttpClientModule, HttpXhrBackend, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule, Title } from '@angular/platform-browser';
@@ -23,12 +23,15 @@ import { GlobalErrorHandler } from './shared/providers/global-error-handler';
 import { SharedModule } from './shared/shared.module';
 import { WaitingSpaceModule } from './waiting-space/waiting-space.module';
 import { ConfigSettingsResolveService } from 'src/app/services/config-settings-resolve.service';
-import { TranslateModule, MissingTranslationHandler, TranslateLoader } from '@ngx-translate/core';
-import { DisplayMissingTranslationHandler } from './shared/display-missing-translation-handler';
+import { TranslateModule, TranslateLoader, MissingTranslationHandler } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { DisplayMissingTranslationHandler } from './shared/display-missing-translation-handler';
 
-export function createTranslateLoader(http: HttpClient) {
-    return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+export function createTranslateLoader() {
+    // We cant inject a loader because it has a race condition with adal
+    // resulting in a null context when trying to load the translatons
+    const httpClient = new HttpClient(new HttpXhrBackend({ build: () => new XMLHttpRequest() }));
+    return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
 }
 
 export function getSettings(configService: ConfigService) {
@@ -48,12 +51,10 @@ export function getSettings(configService: ConfigService) {
         AppRoutingModule,
         BrowserAnimationsModule,
         TranslateModule.forRoot({
-            defaultLanguage: 'en',
-            missingTranslationHandler: {provide: MissingTranslationHandler, useClass: DisplayMissingTranslationHandler},
+            missingTranslationHandler: { provide: MissingTranslationHandler, useClass: DisplayMissingTranslationHandler },
             loader: {
                 provide: TranslateLoader,
-                useFactory: createTranslateLoader,
-                deps: [HttpClient]
+                useFactory: createTranslateLoader
             }
         })
     ],

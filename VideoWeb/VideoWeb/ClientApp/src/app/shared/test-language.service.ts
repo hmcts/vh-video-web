@@ -6,50 +6,56 @@ import { switchMap, tap } from 'rxjs/operators';
 @Injectable()
 export class TestLanguageService {
     translationLanguageLoaded = false;
+    loggerPrefix = '[TestLanguageService] -';
 
-    constructor(private translateService: TranslateService) {
-    }
+    constructor(private translateService: TranslateService) {}
 
     setupSubscriptions() {
-        console.log(`[TestLanguageService] - Subscribing to onLanguageChange - ${this.translateService.currentLang}`);
-        this.translateService.onLangChange.toPromise().then(_ => {
-            console.log('lang change')
-        });
-        
-        this.translateService.onLangChange.pipe(
-            tap(() => console.log('TAP')),
-            switchMap((langChangeEvent: LangChangeEvent) => {
-                if (langChangeEvent.lang == 'tl' && !this.translationLanguageLoaded) {
-                    this.translationLanguageLoaded = true;
-                    return this.translateService.getTranslation('en')
-                } else {
-                    return NEVER;
-                }
-            }),
-            tap(en => {
-                const tl = this.recursiveReplace(en);
-                this.translateService.setTranslation('tl', tl);
-            })
-        ).subscribe();
+        console.info(`${this.loggerPrefix} Subscribing to onLanguageChange`);
+        this.translateService.onLangChange
+            .pipe(
+                switchMap((langChangeEvent: LangChangeEvent) => {
+                    if (langChangeEvent.lang === 'tl' && !this.translationLanguageLoaded) {
+                        this.translationLanguageLoaded = true;
+                        return this.translateService.getTranslation('en');
+                    } else {
+                        return NEVER;
+                    }
+                }),
+                tap(en => {
+                    console.info(`${this.loggerPrefix} Generating TranslationLanguage Translations`);
+                    const tl = JSON.parse(JSON.stringify(en));
+                    this.recursiveReplace(tl);
+                    this.translateService.setTranslation('tl', tl);
+                })
+            )
+            .subscribe();
     }
 
     recursiveReplace(obj: any): any {
         Object.keys(obj).forEach(k => {
-            if(typeof obj[k] === 'string') {
+            if (typeof obj[k] === 'string') {
                 obj[k] = this.convertToTestLanguage(obj[k]);
             } else {
                 this.recursiveReplace(obj[k]);
             }
         });
-        return obj;
     }
 
     convertToTestLanguage(input: string) {
-        input = input.replace(/\a/gi, 'á');
-        input = input.replace(/\e/gi, 'é');
-        input = input.replace(/\i/gi, 'í');
-        input = input.replace(/\o/gi, 'ó');
-        input = input.replace(/\u/gi, 'ú');
-        return input;
+        const inputSections = input.split('{{').map(section => {
+            const varSections = section.split('}}');
+            const last = varSections
+                .pop()
+                .replace(/\a/gi, 'á')
+                .replace(/\e/gi, 'é')
+                .replace(/\i/gi, 'í')
+                .replace(/\o/gi, 'ó')
+                .replace(/\u/gi, 'ú');
+            varSections.push(last);
+            return varSections.join('}}');
+        });
+        const output = inputSections.join('{{');
+        return output;
     }
 }

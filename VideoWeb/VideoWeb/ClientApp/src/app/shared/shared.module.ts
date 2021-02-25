@@ -42,7 +42,8 @@ import { TestLanguageService } from './test-language.service';
         SharedRoutingModule,
         ToastrModule.forRoot({
             toastComponent: VhToastComponent
-        })
+        }),
+        TranslateModule
     ],
     declarations: [
         HeaderComponent,

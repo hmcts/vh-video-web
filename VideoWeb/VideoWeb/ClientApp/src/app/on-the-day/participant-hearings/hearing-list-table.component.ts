@@ -11,9 +11,8 @@ export class HearingListTableComponent {
     @Input() conferences: ConferenceForIndividualResponse[];
     @Output() selectedConference = new EventEmitter<ConferenceForIndividualResponse>();
 
-    constructor(private translate: TranslateService) {
-    }
-    
+    constructor(private translate: TranslateService) {}
+
     signIntoConference(conference: ConferenceForIndividualResponse) {
         this.selectedConference.emit(conference);
     }
@@ -26,7 +25,7 @@ export class HearingListTableComponent {
             return this.translate.instant('hearing-list-table.today');
         } else {
             const dateString = moment(conference.scheduled_date_time).format('Do MMM');
-            return this.translate.instant('hearing-list-table.on-date', {date: dateString});
+            return this.translate.instant('hearing-list-table.on-date', { date: dateString });
         }
     }
 
