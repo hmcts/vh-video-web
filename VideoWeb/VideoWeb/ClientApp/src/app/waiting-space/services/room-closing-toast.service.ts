@@ -45,7 +45,6 @@ export class RoomClosingToastrService {
     protected getDurations(): moment.Duration[] {
         const durations: moment.Duration[] = [];
 
-
         const fiveMinsLeft = moment.duration(5, 'minutes');
         const thirtySecondsLeft = moment.duration(30, 'seconds');
         durations.push(fiveMinsLeft);
