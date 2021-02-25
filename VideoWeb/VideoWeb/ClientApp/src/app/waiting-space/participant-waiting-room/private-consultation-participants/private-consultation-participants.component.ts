@@ -16,7 +16,7 @@ import { HearingRole } from '../../models/hearing-role-model';
 })
 export class PrivateConsultationParticipantsComponent extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
     @Input() roomLabel: string;
-    participantCallStatuses = [];
+    participantCallStatuses = {};
 
     constructor(
         protected adalService: AdalService,
@@ -103,6 +103,12 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
             (participant.hearing_role === HearingRole.PANEL_MEMBER ||
                 participant.hearing_role === HearingRole.WINGER ||
                 participant.hearing_role === HearingRole.JUDGE)
+        );
+    }
+
+    getPrivateConsultationParticipants(): ParticipantResponse[] {
+        return this.participantsInConsultation.filter(
+            p => p.hearing_role !== HearingRole.WITNESS && p.hearing_role !== HearingRole.OBSERVER
         );
     }
 

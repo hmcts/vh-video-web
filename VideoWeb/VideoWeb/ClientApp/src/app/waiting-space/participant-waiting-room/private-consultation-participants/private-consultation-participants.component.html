@@ -1,7 +1,7 @@
 <div class="participant-wrapper">
     <h4 class="govuk-heading-s white">Participants</h4>
     <div class="participant-grid">
-        <ng-container *ngFor="let participant of participantsInConsultation">
+        <ng-container *ngFor="let participant of getPrivateConsultationParticipants()">
             <div [class]="getRowClasses(participant)">
                 <app-invite-participant *ngIf="!isParticipantInCurrentRoom(participant) && isParticipantAvailable(participant)"
                                         [participantId]="participant.id"
