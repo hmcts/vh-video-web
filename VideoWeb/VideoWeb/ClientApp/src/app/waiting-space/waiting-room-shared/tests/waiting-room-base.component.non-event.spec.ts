@@ -335,4 +335,22 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(result.indexOf(caseName)).toBeGreaterThan(-1);
         expect(result.indexOf(caseNumber)).toBeGreaterThan(-1);
     });
+
+    it('showRoomClosingToast() should clear all toasts when not in the consultation room', async () => {
+        component.isPrivateConsultation = false;
+
+        await component.showRoomClosingToast(new Date());
+
+        expect(roomClosingToastrService.showRoomClosingAlert).toHaveBeenCalledTimes(0);
+        expect(roomClosingToastrService.clearToasts).toHaveBeenCalledTimes(1);
+    });
+
+    it('showRoomClosingToast() should show "room closing" toast when in the consultation room', async () => {
+        component.isPrivateConsultation = true;
+
+        await component.showRoomClosingToast(new Date());
+
+        expect(roomClosingToastrService.showRoomClosingAlert).toHaveBeenCalledTimes(1);
+        expect(roomClosingToastrService.clearToasts).toHaveBeenCalledTimes(0);
+    });
 });

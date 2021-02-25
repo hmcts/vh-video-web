@@ -78,7 +78,7 @@ export class RoomClosingToastrService {
             toastComponent: RoomClosingToastComponent
         });
 
-        const roomClosingToast = this.currentToast.toastRef.componentInstance as RoomClosingToastComponent;
+        const roomClosingToast = this.currentToast.toastRef.componentInstance;
         roomClosingToast.roomClosingToastOptions = {
             buttons: [
                 {

@@ -329,4 +329,26 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
         expect(component.privateConsultationAccordianExpanded).toBe(false);
     });
+
+    it('showRoomClosingToast() should clear all toasts when not in the consultation room', async () => {
+        component.isPrivateConsultation = false;
+        roomClosingToastrService.showRoomClosingAlert.calls.reset();
+        roomClosingToastrService.clearToasts.calls.reset();
+
+        await component.showRoomClosingToast(new Date());
+
+        expect(roomClosingToastrService.showRoomClosingAlert).toHaveBeenCalledTimes(0);
+        expect(roomClosingToastrService.clearToasts).toHaveBeenCalledTimes(1);
+    });
+
+    it('showRoomClosingToast() should show "room closing" toast when in the consultation room', async () => {
+        component.isPrivateConsultation = true;
+        roomClosingToastrService.showRoomClosingAlert.calls.reset();
+        roomClosingToastrService.clearToasts.calls.reset();
+
+        await component.showRoomClosingToast(new Date());
+
+        expect(roomClosingToastrService.showRoomClosingAlert).toHaveBeenCalledTimes(1);
+        expect(roomClosingToastrService.clearToasts).toHaveBeenCalledTimes(0);
+    });
 });

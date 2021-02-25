@@ -23,7 +23,9 @@ export class RoomClosingToastComponent extends VhToastComponent implements OnIni
         this.expiryDate = options.expiryDate;
         super.vhToastOptions = {
             color: 'white',
-            onNoAction: async () => {},
+            onNoAction: async () => {
+                // this intentionally does nothing
+            },
             buttons: options.buttons
         };
     }
