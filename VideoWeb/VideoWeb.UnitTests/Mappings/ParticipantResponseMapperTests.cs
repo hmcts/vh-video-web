@@ -29,6 +29,7 @@ namespace VideoWeb.UnitTests.Mappings
             response.FirstName.Should().Be(participant.First_name);
             response.LastName.Should().Be(participant.Last_name);
             response.HearingRole.Should().Be(participant.Hearing_role);
+            response.LinkedParticipants.Should().BeEquivalentTo(participant.Linked_participants);
         }
     }
 }

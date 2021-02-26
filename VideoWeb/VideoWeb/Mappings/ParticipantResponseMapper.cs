@@ -24,6 +24,8 @@ namespace VideoWeb.Mappings
         {
             var status = Enum.Parse<ParticipantStatus>(participant.Current_status.ToString());
             var role = Enum.Parse<Role>(participant.User_role.ToString());
+            var linkedParticipants = participant?.Linked_participants
+                ?.Select(x => _linkedParticipantResponseMapper.Map(x)).ToList();
 
             var response = new ParticipantResponse
             {
@@ -38,10 +40,8 @@ namespace VideoWeb.Mappings
                 LastName = participant.Last_name,
                 HearingRole = participant.Hearing_role,
                 CurrentRoom = _roomResponseMapper.Map(participant.Current_room),
-                LinkedParticipants = participant.Linked_participants
-                    .Select(x => _linkedParticipantResponseMapper.Map(x)).ToList()
+                LinkedParticipants = linkedParticipants
             };
-
             if (role == Role.Judge)
             {
                 response.TiledDisplayName = $"T{0};{participant.Display_name};{participant.Id}";
