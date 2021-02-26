@@ -3,7 +3,12 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { TranslateService } from '@ngx-translate/core';
 import { configureTestSuite } from 'ng-bullet';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ContactUsStubComponent } from 'src/app/testing/stubs/contact-us-stub';
 import { DashboardStubComponent } from 'src/app/testing/stubs/dashboard-stub';
 import { UnsupportedBrowserStubComponent } from 'src/app/testing/stubs/unsupported-browser-stub';
@@ -18,7 +23,13 @@ describe('FooterComponent', () => {
 
     configureTestSuite(() => {
         TestBed.configureTestingModule({
-            declarations: [FooterComponent, DashboardStubComponent, ContactUsStubComponent, UnsupportedBrowserStubComponent],
+            declarations: [
+                FooterComponent,
+                DashboardStubComponent,
+                ContactUsStubComponent,
+                UnsupportedBrowserStubComponent,
+                TranslatePipeMock
+            ],
             imports: [
                 RouterTestingModule.withRoutes([
                     { path: 'dashboard', component: DashboardStubComponent },
@@ -26,11 +37,18 @@ describe('FooterComponent', () => {
                     { path: 'unsupported-browser', component: UnsupportedBrowserStubComponent }
                 ])
             ],
+            providers: [
+                { provide: TranslateService, useValue: translateServiceSpy },
+                { provide: Logger, useClass: MockLogger }
+            ],
             schemas: [NO_ERRORS_SCHEMA]
         });
     });
 
     beforeEach(() => {
+        translateServiceSpy.setDefaultLang.calls.reset();
+        translateServiceSpy.use.calls.reset();
+
         router = TestBed.inject(Router);
         location = TestBed.inject(Location);
         fixture = TestBed.createComponent(FooterComponent);
@@ -69,4 +87,40 @@ describe('FooterComponent', () => {
         expect(location.path()).toBe('/unsupported-browser');
         expect(component.hideLinksForUnsupportedBrowser).toBeTruthy();
     }));
+
+    it('should switch language when clicking button, english to welsh', () => {
+        // Arrange
+        translateServiceSpy.currentLang = 'en';
+
+        // Act
+        component.switchLaguage();
+
+        // Assert
+        expect(translateServiceSpy.setDefaultLang).toHaveBeenCalledOnceWith('cy');
+        expect(translateServiceSpy.use).toHaveBeenCalledOnceWith('cy');
+    });
+
+    it('should switch language when clicking button, english to welsh', () => {
+        // Arrange
+        translateServiceSpy.currentLang = 'cy';
+
+        // Act
+        component.switchLaguage();
+
+        // Assert
+        expect(translateServiceSpy.setDefaultLang).toHaveBeenCalledOnceWith('en');
+        expect(translateServiceSpy.use).toHaveBeenCalledOnceWith('en');
+    });
+
+    it('should switch to test language when clicking button', () => {
+        // Arrange
+        translateServiceSpy.currentLang = 'en';
+
+        // Act
+        component.setLanguage('tl');
+
+        // Assert
+        expect(translateServiceSpy.setDefaultLang).toHaveBeenCalledOnceWith('tl');
+        expect(translateServiceSpy.use).toHaveBeenCalledOnceWith('tl');
+    });
 });
