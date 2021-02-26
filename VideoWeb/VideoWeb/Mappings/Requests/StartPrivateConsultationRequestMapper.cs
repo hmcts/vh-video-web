@@ -17,5 +17,4 @@ namespace VideoWeb.Mappings.Requests
             };
         }
     }
-   
 }

@@ -28,6 +28,7 @@ import {
     initAllWRDependencies,
     logger,
     notificationSoundsService,
+    notificationToastrService,
     router,
     userMediaService,
     userMediaStreamService,
@@ -60,6 +61,7 @@ describe('WaitingRoomComponent message and clock', () => {
             userMediaService,
             userMediaStreamService,
             notificationSoundsService,
+            notificationToastrService,
             clockService
         );
 
@@ -72,20 +74,42 @@ describe('WaitingRoomComponent message and clock', () => {
         videoWebService.getConferenceById.calls.reset();
     });
 
+    it('should call consultation service to close all modals', () => {
+        // Act
+        component.closeAllPCModals();
+
+        // Assert
+        expect(consultationService.clearModals).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call consultation service to show leave consultation modal', () => {
+        // Act
+        component.showLeaveConsultationModal();
+
+        // Assert
+        expect(consultationService.displayConsultationLeaveModal).toHaveBeenCalledTimes(1);
+    });
+
     it('should get conference', fakeAsync(async () => {
+        // Arrange
         component.hearing = undefined;
         component.conference = undefined;
         component.participant = undefined;
         component.connected = false;
 
         videoWebService.getConferenceById.and.resolveTo(globalConference);
+        videoWebService.getAllowedEndpointsForConference.and.resolveTo([]);
         component.loggedInUser = new LoggedParticipantResponse({
             participant_id: globalConference.participants[0].id,
             display_name: globalConference.participants[0].display_name,
             role: globalConference.participants[0].role
         });
-        component.getConference();
-        tick();
+
+        // Act
+        await component.getConference();
+
+        // Assert
+        expect(videoWebService.getAllowedEndpointsForConference).toHaveBeenCalledTimes(1);
         expect(component.loadingData).toBeFalsy();
         expect(component.hearing).toBeDefined();
         expect(component.participant).toBeDefined();
@@ -222,8 +246,10 @@ describe('WaitingRoomComponent message and clock', () => {
     });
 
     it('should request to leave judicial consultation room', async () => {
+        consultationService.leaveConsultation.calls.reset();
+        consultationService.leaveConsultation.and.returnValue(Promise.resolve());
         await component.leaveJudicialConsultation();
-        expect(consultationService.leaveJudicialConsultationRoom).toHaveBeenCalledWith(component.conference, component.participant);
+        expect(consultationService.leaveConsultation).toHaveBeenCalled();
     });
 
     it('should hide change device popup on close popup', () => {
@@ -299,5 +325,12 @@ describe('WaitingRoomComponent message and clock', () => {
 
         expect(component.clockSubscription$.unsubscribe).toHaveBeenCalled();
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.Home]);
+    });
+    it('should return string with case name and number', () => {
+        const caseName = component.conference.case_name;
+        const caseNumber = component.conference.case_number;
+        const result = component.getCaseNameAndNumber();
+        expect(result.indexOf(caseName)).toBeGreaterThan(-1);
+        expect(result.indexOf(caseNumber)).toBeGreaterThan(-1);
     });
 });

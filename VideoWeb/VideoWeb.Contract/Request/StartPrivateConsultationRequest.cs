@@ -6,7 +6,12 @@ namespace VideoWeb.Contract.Request
 {
     public class StartPrivateConsultationRequest
     {
+        public Guid[] InviteParticipants { get; set; }
+
+        public Guid[] InviteEndpoints { get; set; }
+
         public Guid ConferenceId { get; set; }
+
         public Guid RequestedBy { get; set; }
 
         [EnumDataType(typeof(VirtualCourtRoomType))]

@@ -12,7 +12,6 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { eventsServiceSpy, messageSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { adminTestProfile, judgeTestProfile } from '../../testing/data/test-profiles';
-import { videoWebService } from '../../waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 import { VhoChatComponent } from './vho-chat.component';
 
 describe('VhoChatComponent', () => {
@@ -53,7 +52,7 @@ describe('VhoChatComponent', () => {
         const chatHistory = new ConferenceTestData().getChatHistory(adminProfile.username, conference.id);
         const loggedParticipant = new LoggedParticipantResponse({
             participant_id: null,
-            admin_username: 'admin@test.com',
+            admin_username: 'admin@hmcts.net',
             role: Role.VideoHearingsOfficer
         });
         adalService.userInfo.userName = adminProfile.username;
@@ -81,7 +80,7 @@ describe('VhoChatComponent', () => {
         component.loggedInUser = new LoggedParticipantResponse({
             display_name: 'somename',
             role: Role.VideoHearingsOfficer,
-            admin_username: 'admin@test.com'
+            admin_username: 'admin@hmcts.net'
         });
     });
 
@@ -106,7 +105,7 @@ describe('VhoChatComponent', () => {
         chatSub$ = await component.setupChatSubscription();
         spyOn(component, 'handleIncomingMessage');
         const judgeId = hearing.judge.id;
-        const adminUsername = 'admin@test.com';
+        const adminUsername = 'admin@hmcts.net';
         component.loggedInUser = null;
         component.ngOnInit();
         const instantMessageTest = new InstantMessage({
@@ -130,7 +129,7 @@ describe('VhoChatComponent', () => {
     it('should set from to "You" when admin send a message to participant', fakeAsync(async () => {
         chatSub$ = await component.setupChatSubscription();
         const judgeUsername = hearing.judge.id;
-        const adminUsername = 'admin@test.com';
+        const adminUsername = 'admin@hmcts.net';
         const instantMessage = new InstantMessage({
             conferenceId: conference.id,
             id: Guid.create().toString(),
@@ -143,7 +142,7 @@ describe('VhoChatComponent', () => {
             participant_id: null,
             display_name: 'somename',
             role: Role.VideoHearingsOfficer,
-            admin_username: 'admin@test.com'
+            admin_username: 'admin@hmcts.net'
         });
         videoWebServiceSpy.getCurrentParticipant.and.returnValue(Promise.resolve(loggedInUser));
 
@@ -159,7 +158,7 @@ describe('VhoChatComponent', () => {
     it('should not add message participant B send message to admin when chat for participant A is open', fakeAsync(async () => {
         chatSub$ = await component.setupChatSubscription();
         const otherUsername = '12345-1234';
-        const adminUsername = 'admin@test.com';
+        const adminUsername = 'admin@hmcts.net';
 
         const im = new InstantMessage({
             conferenceId: conference.id,
@@ -173,7 +172,7 @@ describe('VhoChatComponent', () => {
             participant_id: null,
             display_name: 'somename',
             role: Role.VideoHearingsOfficer,
-            admin_username: 'admin@test.com'
+            admin_username: 'admin@hmcts.net'
         });
         videoWebServiceSpy.getCurrentParticipant.and.returnValue(Promise.resolve(loggedInUser));
 
@@ -199,7 +198,7 @@ describe('VhoChatComponent', () => {
 
     it('should use participant name when message is not from admin', async () => {
         const judgeUsername = hearing.judge.id;
-        const adminUsername = 'admin@test.com';
+        const adminUsername = 'admin@hmcts.net';
         adalService.userInfo.userName = judgeUsername;
         const instantMessage = new InstantMessage({
             conferenceId: conference.id,
@@ -235,7 +234,7 @@ describe('VhoChatComponent', () => {
 
     it('should update failed property if im has not sent after 3 seconds', () => {
         const judgeUsername = hearing.judge.id;
-        const adminUsername = 'admin@test.com';
+        const adminUsername = 'admin@hmcts.net';
         adalService.userInfo.userName = adminUsername;
         const instantMessage = new InstantMessage({
             conferenceId: conference.id,
@@ -258,7 +257,7 @@ describe('VhoChatComponent', () => {
     });
     it('should not update failed property if im could not be found', () => {
         const judgeUsername = hearing.judge.id;
-        const adminUsername = 'admin@test.com';
+        const adminUsername = 'admin@hmcts.net';
         adalService.userInfo.userName = adminUsername;
         const instantMessage = new InstantMessage({
             conferenceId: conference.id,
@@ -291,7 +290,7 @@ describe('VhoChatComponent', () => {
 
     it('should handle pending IMs already processed', () => {
         const judgeUsername = hearing.judge.id;
-        const adminUsername = 'admin@test.com';
+        const adminUsername = 'admin@hmcts.net';
         adalService.userInfo.userName = adminUsername;
         const im = new InstantMessage({
             conferenceId: conference.id,

@@ -26,9 +26,25 @@ import { SharedRoutingModule } from './shared-routing.module';
 import { UnsupportedBrowserComponent } from './unsupported-browser/unsupported-browser.component';
 import { TooltipDirective } from './directives/tooltip.directive';
 import { ErrorCameraMicrophoneComponent } from './error-camera-microphone/error-camera-microphone.component';
+import { ToastrModule } from 'ngx-toastr';
+import { VhToastComponent } from './toast/vh-toast.component';
+import { StartPrivateConsultationComponent } from '../waiting-space/participant-waiting-room/start-private-consultation/start-private-consultation.component';
+import { JoinPrivateConsultationComponent } from '../waiting-space/participant-waiting-room/join-private-consultation/join-private-consultation.component';
+import { TranslateModule } from '@ngx-translate/core';
+import { TestLanguageService } from './test-language.service';
 
 @NgModule({
-    imports: [CommonModule, FormsModule, ReactiveFormsModule, HttpClientModule, SharedRoutingModule],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        HttpClientModule,
+        SharedRoutingModule,
+        ToastrModule.forRoot({
+            toastComponent: VhToastComponent
+        }),
+        TranslateModule
+    ],
     declarations: [
         HeaderComponent,
         FooterComponent,
@@ -37,6 +53,8 @@ import { ErrorCameraMicrophoneComponent } from './error-camera-microphone/error-
         ErrorComponent,
         NotFoundComponent,
         SelectMediaDevicesComponent,
+        StartPrivateConsultationComponent,
+        JoinPrivateConsultationComponent,
         MicVisualiserComponent,
         EquipmentProblemComponent,
         SelfTestComponent,
@@ -50,15 +68,18 @@ import { ErrorCameraMicrophoneComponent } from './error-camera-microphone/error-
         ChatInputBoxComponent,
         ChatBodyWindowComponent,
         TooltipDirective,
-        ErrorCameraMicrophoneComponent
+        ErrorCameraMicrophoneComponent,
+        VhToastComponent
     ],
-    providers: [WindowScrolling, ScreenHelper],
+    providers: [WindowScrolling, ScreenHelper, TestLanguageService],
     exports: [
         HeaderComponent,
         FooterComponent,
         ContactUsComponent,
         ContactUsFoldingComponent,
         SelectMediaDevicesComponent,
+        StartPrivateConsultationComponent,
+        JoinPrivateConsultationComponent,
         MicVisualiserComponent,
         SelfTestComponent,
         ModalComponent,
@@ -72,7 +93,8 @@ import { ErrorCameraMicrophoneComponent } from './error-camera-microphone/error-
         ChatInputBoxComponent,
         ChatBodyWindowComponent,
         TooltipDirective,
-        ErrorCameraMicrophoneComponent
+        ErrorCameraMicrophoneComponent,
+        TranslateModule
     ]
 })
 export class SharedModule {}

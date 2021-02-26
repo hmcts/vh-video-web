@@ -237,7 +237,7 @@ describe('ParticipantChatComponent', () => {
         const message1 = new InstantMessage({
             conferenceId: conference.id,
             id: Guid.create().toString(),
-            from: 'admin@test.com',
+            from: 'admin@hmcts.net',
             to: judgeUsername,
             from_display_name: 'Admin',
             message: 'test message from vho',
@@ -257,7 +257,7 @@ describe('ParticipantChatComponent', () => {
             conferenceId: conference.id,
             id: Guid.create().toString(),
             from: judgeUsername,
-            to: 'admin@test.com',
+            to: 'admin@hmcts.net',
             from_display_name: judgeTestProfile.display_name,
             message: 'test message from vho',
             timestamp: new Date(),

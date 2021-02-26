@@ -5,12 +5,22 @@
         <ul class="govuk-footer__inline-list" *ngIf="!hideLinksForUnsupportedBrowser">
           <li class="govuk-footer__inline-list-item">
             <a class="govuk-footer__link" [routerLink]="[privacyPolicyUri]">
-              Privacy policy
+              {{ 'footer.privacy-policy' | translate }}
             </a>
           </li>
           <li class="govuk-footer__inline-list-item">
             <a class="govuk-footer__link" [routerLink]="[accessibilityUri]">
-              Accessibility
+              {{ 'footer.accessibility' | translate }}
+            </a>
+          </li>
+          <li class="govuk-footer__inline-list-item">
+            <a class="govuk-footer__link" id="translateSwitch" (click)="switchLaguage();">
+              {{ 'footer.translate-to' | translate }}
+            </a>
+          </li>
+          <li class="govuk-footer__inline-list-item">
+            <a class="govuk-footer__link" id="translateToTl" (click)="setLanguage('tl');">
+              {{ 'footer.translate-to-test' | translate }}
             </a>
           </li>
         </ul>
@@ -30,23 +40,21 @@
           ></path>
         </svg>
         <span class="govuk-footer__licence-description">
-          <span i18n="@@footer_p_1"> All content is available under the </span>
+          <span i18n="@@footer_p_1">{{ 'footer.all-content-availabe-under' | translate }} </span>
           <a
             class="govuk-footer__link"
             i18n="@@footer_a_3"
             href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
             rel="license"
-          >
-            Open Government Licence v3.0
-          </a>
-          <span i18n="@@footer_p_2">, except where otherwise stated</span>
+          >{{ 'footer.open-government-license' | translate }}</a>
+          <span i18n="@@footer_p_2">{{ 'footer.except' | translate }}</span>
         </span>
       </div>
       <div class="govuk-footer__meta-item">
         <a
           class="govuk-footer__link govuk-footer__copyright-logo"
           href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/uk-government-licensing-framework/crown-copyright/"
-          >© Crown copyright</a
+          >{{ 'footer.copyright' | translate }}</a
         >
       </div>
     </div>

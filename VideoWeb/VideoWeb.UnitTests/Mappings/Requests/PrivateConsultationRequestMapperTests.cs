@@ -10,12 +10,10 @@ namespace VideoWeb.UnitTests.Mappings.Requests
 {
     public class PrivateConsultationRequestMapperTests : BaseMockerSutTestSetup<PrivateConsultationRequestMapper>
     {
-        [TestCase(null, null)]
         [TestCase(ConsultationAnswer.Accepted, Services.Video.ConsultationAnswer.Accepted)]
-        [TestCase(ConsultationAnswer.Cancelled, Services.Video.ConsultationAnswer.Cancelled)]
         [TestCase(ConsultationAnswer.Rejected, Services.Video.ConsultationAnswer.Rejected)]
         [TestCase(ConsultationAnswer.None, Services.Video.ConsultationAnswer.None)]
-        public void should_map_to_private_consultation_request(ConsultationAnswer? answer, Services.Video.ConsultationAnswer? expectedAnswer)
+        public void should_map_to_private_consultation_request(ConsultationAnswer answer, Services.Video.ConsultationAnswer expectedAnswer)
         {
             var request = Builder<PrivateConsultationRequest>.CreateNew()
                 .With(x => x.ConferenceId = Guid.NewGuid())

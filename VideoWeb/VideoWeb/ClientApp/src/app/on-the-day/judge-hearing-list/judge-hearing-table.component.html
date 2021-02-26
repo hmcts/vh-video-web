@@ -80,12 +80,12 @@
             </div>
 
             <div *ngIf="hearing.isClosed() && hearing.isExpired()">
-              <span class="govuk-caption-m">Juducial consultation room is now closed</span>
+              <span class="govuk-caption-m">Judicial consultation room is now closed</span>
             </div>
 
             <div *ngIf="hearing.isClosed() && !hearing.isExpired()">
               <a class="govuk-link" href="javascript:void(0)" (click)="signIntoConference(hearing)"
-                >Juducial consultation room open until {{ hearing.retrieveExpiryTime() | date: 'HH:mm' }}</a
+                >Judicial consultation room open until {{ hearing.retrieveExpiryTime() | date: 'HH:mm' }}</a
               >
             </div>
           </td>

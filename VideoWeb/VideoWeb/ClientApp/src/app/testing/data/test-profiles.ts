@@ -13,7 +13,7 @@ export const adminTestProfile: UserProfileResponse = new UserProfileResponse({
     first_name: 'Test',
     last_name: 'Admin',
     role: Role.VideoHearingsOfficer,
-    username: 'admin@test.com'
+    username: 'admin@hmcts.net'
 });
 
 export const individualTestProfile: UserProfileResponse = new UserProfileResponse({

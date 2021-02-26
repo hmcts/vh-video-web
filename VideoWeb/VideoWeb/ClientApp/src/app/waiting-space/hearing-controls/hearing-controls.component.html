@@ -3,9 +3,19 @@
     <div class="outgoing-video-container govuk-grid-column-one-third">
       <video
         [ngClass]="{ 'vh-fade-in': selfViewOpen, 'vh-fade-out': !selfViewOpen }"
-        id="outgoingFeedVideo"
+        id="outgoingFeedVideoOld"
         [muted]="true"
-        [srcObject]="this.outgoingStream"
+        [srcObject]="outgoingStream"
+        autoplay
+        height="auto"
+      >
+        Your browser does not support Video
+      </video>
+      <video
+        [ngClass]="{ 'vh-fade-in': screenShareStream, 'vh-fade-out': !screenShareStream }"
+        id="outgoingFeedPresentVideoOld"
+        [muted]="true"
+        [srcObject]="screenShareStream"
         autoplay
         height="auto"
       >
@@ -98,6 +108,30 @@
         />
 
         <img
+          *ngIf="!screenShareStream && canShowScreenShareButton"
+          appTooltip
+          text="Start screenshare"
+          [colour]="'grey'"
+          id="start-screenshare-img"
+          class="icon-btn icon-btn--end-hearing"
+          src="/assets/images/share-screen.png"
+          alt="Start sharing screen"
+          (click)="startScreenShare()"
+        />
+
+        <img
+          *ngIf="screenShareStream"
+          appTooltip
+          text="Stop screenshare"
+          [colour]="'red'"
+          id="stop-screenshare-img"
+          class="icon-btn icon-btn--end-hearing"
+          src="/assets/images/stop-share.png"
+          alt="Stop sharing screen"
+          (click)="stopScreenShare()"
+        />
+
+        <img
           *ngIf="showConsultationControls"
           appTooltip
           text="Leave"
@@ -115,4 +149,4 @@
     </div>
   </div>
 </div>
-<app-confirm-close-hearing-popup *ngIf="displayConfirmPopup" (popupAnswered)="close($event)">ddd </app-confirm-close-hearing-popup>
+<app-confirm-close-hearing-popup *ngIf="displayConfirmPopup" (popupAnswered)="close($event)"> </app-confirm-close-hearing-popup>

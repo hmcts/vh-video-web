@@ -1,0 +1,61 @@
+<!-- The Modal -->
+<div id="start-private-consultation-modal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+      <div class="govuk-width-container">
+          <h2 class="govuk-heading-l govuk-!-margin-top-6 govuk-!-margin-bottom-6">Join a private meeting</h2>
+          <div class="govuk-warning-text">
+              <span aria-hidden="true" class="govuk-warning-text__icon">!</span>
+              <span class="govuk-warning-text__text">
+                <span class="govuk-warning-text__assistive">Warning</span> All meetings outside the hearing are confidential and not recorded as part of court or tribunal proceedings
+            </span>
+        </div>
+        <ng-container *ngIf="!roomsAvailable()">
+          <p>There are no meetings to join</p>
+        </ng-container>
+          <div *ngFor="let roomDetails of getRoomDetails()" class="govuk-radios--small govuk-radios__item">
+            <input class="govuk-radios__input"
+                id="{{roomDetails.label}}"
+                name="{{roomDetails.label}}"
+                type="radio"
+                [checked]="selectedRoomLabel == roomDetails.label && !roomDetails.locked"
+                [disabled]="roomDetails.locked"
+                (change)="setSelectedRoom(roomDetails.label)" />
+            <label class="govuk-label govuk-radios__label" for="{{roomDetails.label}}">
+                <span class="govuk-!-font-weight-bold">{{roomDetails.displayName}} <span *ngIf="roomDetails.locked" class="fas fa-lock-alt"></span></span>
+                <ul>
+                  <li *ngFor="let participant of roomDetails.participants">
+                    <span class="govuk-!-font-weight-bold">{{participant.display_name}}</span> {{getParticipantHearingRoleText(participant)}}
+                  </li>
+                  <li *ngFor="let endpoint of roomDetails.endpoints">
+                    <span class="govuk-!-font-weight-bold">{{endpoint.display_name}}</span> Video access point
+                  </li>
+                </ul>
+            </label>
+          </div>
+          <div class="buttons">
+            <button
+                *ngIf="roomsAvailable()"
+                id="continue-btn"
+                class="govuk-button govuk-!-margin-right-5"
+                data-module="govuk-button"
+                [disabled]="continueDisabled()"
+                (click)="onContinue()"
+                alt="Continue"
+                >
+                Continue
+                </button>
+            <button
+                id="cancel-btn"
+                class="govuk-button govuk-button--secondary"
+                data-module="govuk-button"
+                (click)="onCancel()"
+                alt="Cancel"
+                >
+                Close
+                </button>
+            </div>
+        </div>
+      </div>
+    </div>
+  

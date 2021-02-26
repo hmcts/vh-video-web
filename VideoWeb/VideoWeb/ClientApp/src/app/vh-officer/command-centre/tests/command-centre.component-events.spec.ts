@@ -37,7 +37,7 @@ describe('CommandCentreComponent - Events', () => {
 
     const logger: Logger = new MockLogger();
 
-    const conferences = new ConferenceTestData().getVhoTestData();
+    const conferences = new ConferenceTestData().getTestData();
     const hearings = conferences.map(c => new HearingSummary(c));
     const conference = new ConferenceTestData().getConferenceDetailNow();
     const hearing = new Hearing(conference);
@@ -72,7 +72,7 @@ describe('CommandCentreComponent - Events', () => {
         };
     });
 
-    afterAll(() => {
+    afterEach(() => {
         component.ngOnDestroy();
         TestFixtureHelper.clearVenues();
     });
@@ -203,6 +203,7 @@ describe('CommandCentreComponent - Events', () => {
             'Mac OS X',
             '10.15.1'
         );
+        component.setupEventHubSubscribers();
         heartbeatSubjectMock.next(heartBeat);
         expect(component.hearings[0].getParticipants()[0].participantHertBeatHealth).toBe(heartBeat);
     });

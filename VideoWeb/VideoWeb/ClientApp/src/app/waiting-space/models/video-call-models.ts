@@ -56,3 +56,23 @@ export class ParticipantUpdated {
 export class ConferenceUpdated {
     constructor(public guestedMuted: boolean) {}
 }
+
+export class Presentation {
+    constructor(public presentationStarted: boolean) {}
+}
+
+export class ConnectedPresentation {
+    constructor(public stream: MediaStream | URL) {}
+}
+
+export class DisconnectedPresentation {
+    constructor(public reason: string) {}
+}
+
+export class ConnectedScreenshare {
+    constructor(public stream: MediaStream | URL) {}
+}
+
+export class StoppedScreenshare {
+    constructor(public reason: string) {}
+}

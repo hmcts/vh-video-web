@@ -1,7 +1,7 @@
 @import '~govuk-frontend/govuk/base';
 
 #outgoingFeedVideoTransfer {
-  bottom: 5.5vh;
+  bottom: 10px;
   width: 259px;
   transform: rotateY(180deg);
   -webkit-transform: rotateY(180deg); /* Safari and Chrome */
@@ -11,4 +11,42 @@
 .transferFeedImage {
   height: 123.5px;
   width: 150px;
+}
+
+.govuk-button-blue {
+  background: govuk-colour('blue');
+}
+.govuk-button-blue:hover {
+  background: govuk-colour('dark-blue');
+}
+
+.room-status {
+  margin-left: 10px;
+  display: inline-block;
+}
+
+.room-status-desc {
+  color: lightgray;
+  font-size: 16px;
+  margin-left: 10px;
+  display: inline-block;
+}
+
+.lock-badge {
+  padding: 3px 8px 3px 8px;
+  border: 0px solid lightgray;
+  border-radius: 2px;
+  text-transform: uppercase;
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.lock-badge.unlocked {
+  background: lightgray;
+  color: #0b0c0d;
+}
+
+.lock-badge.locked {
+  background: govuk-colour('red');
+  color: govuk-colour('white');
 }

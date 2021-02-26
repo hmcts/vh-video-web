@@ -1,7 +1,16 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { ConferenceResponse, ConferenceStatus, LoggedParticipantResponse, ParticipantResponse } from 'src/app/services/clients/api-client';
+import { Subscription } from 'rxjs';
+import {
+    ConferenceResponse,
+    ConferenceStatus,
+    LoggedParticipantResponse,
+    ParticipantResponse,
+    Role,
+    RoomSummaryResponse
+} from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { HearingRole } from '../../models/hearing-role-model';
 import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
@@ -18,6 +27,7 @@ import {
     initAllWRDependencies,
     logger,
     notificationSoundsService,
+    notificationToastrService,
     router,
     userMediaService,
     userMediaStreamService,
@@ -64,6 +74,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             userMediaService,
             userMediaStreamService,
             notificationSoundsService,
+            notificationToastrService,
             clockService
         );
 
@@ -91,6 +102,60 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         expect(notificationSoundsService.initHearingAlertSound).toHaveBeenCalled();
     }));
 
+    it('should start with "What is a private meeting?" accordian collapsed', fakeAsync(() => {
+        expect(component.privateConsultationAccordianExpanded).toBeFalsy();
+    }));
+
+    it('should expand "What is a private meeting?" accordian', fakeAsync(() => {
+        component.toggleAccordian();
+        expect(component.privateConsultationAccordianExpanded).toBeTruthy();
+    }));
+
+    it('should collapse "What is a private meeting?" accordian', fakeAsync(() => {
+        component.privateConsultationAccordianExpanded = true;
+        component.toggleAccordian();
+        expect(component.privateConsultationAccordianExpanded).toBeFalsy();
+    }));
+
+    it('should not announce hearing is starting when already announced', () => {
+        spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => Promise.resolve());
+        component.hearingStartingAnnounced = true;
+        component.checkIfHearingIsStarting();
+        expect(component.announceHearingIsAboutToStart).toHaveBeenCalledTimes(0);
+    });
+
+    it('should not announce hearing ready to start when hearing is not near start time', () => {
+        spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => Promise.resolve());
+        component.hearing = new Hearing(new ConferenceTestData().getConferenceDetailFuture());
+        component.hearingStartingAnnounced = false;
+        component.checkIfHearingIsStarting();
+        expect(component.announceHearingIsAboutToStart).toHaveBeenCalledTimes(0);
+    });
+
+    it('should announce hearing ready to start and not already announced', () => {
+        spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => Promise.resolve());
+        component.hearing = new Hearing(new ConferenceTestData().getConferenceDetailNow());
+        component.hearingStartingAnnounced = false;
+        component.checkIfHearingIsStarting();
+        expect(component.announceHearingIsAboutToStart).toHaveBeenCalledTimes(1);
+    });
+
+    it('should clear subscription and go to hearing list when conference is past closed time', () => {
+        const conf = new ConferenceTestData().getConferenceDetailNow();
+        const status = ConferenceStatus.Closed;
+        const closedDateTime = new Date(new Date().toUTCString());
+        closedDateTime.setUTCMinutes(closedDateTime.getUTCMinutes() - 30);
+        conf.status = status;
+        conf.closed_date_time = closedDateTime;
+        component.hearing = new Hearing(conf);
+        component.clockSubscription$ = jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']);
+
+        component.checkIfHearingIsClosed();
+
+        expect(component.clockSubscription$.unsubscribe).toHaveBeenCalled();
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.ParticipantHearingList]);
+    });
+
     const getConferenceStatusTextTestCases = [
         { conference: conferenceTestData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: '' },
         { conference: conferenceTestData.getConferenceDetailNow(), status: ConferenceStatus.NotStarted, expected: 'is about to begin' },
@@ -109,20 +174,53 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         });
     });
 
-    it('should return false when the participant is not a witness', () => {
-        component.participant.hearing_role = HearingRole.WINGER;
+    it('should return if the participant is a witness or not - canStartJoinConsultation', () => {
+        [
+            [HearingRole.REPRESENTATIVE, true],
+            [HearingRole.WITNESS, false],
+            [HearingRole.OBSERVER, false]
+        ].forEach(([hearingRole, expected]) => {
+            component.participant.hearing_role = hearingRole as HearingRole;
+            expect(component.canStartJoinConsultation).toBe(expected as boolean);
+        });
+    });
+
+    it('should return if the participant is a witness or not - isWitness', () => {
+        [
+            [HearingRole.WINGER, false],
+            [HearingRole.WINGER, false],
+            [HearingRole.WITNESS, true],
+            [HearingRole.OBSERVER, false],
+            [HearingRole.JUDGE, false]
+        ].forEach(([hearingRole, expected]) => {
+            component.participant.hearing_role = hearingRole as HearingRole;
+            expect(component.isWitness).toBe(expected as boolean);
+        });
+    });
+
+    it('should return false when the participant is null - isWitness', () => {
+        component.participant = null;
 
         expect(component.isWitness).toBeFalsy();
     });
-    it('should return true when the participant is a witness', () => {
-        component.participant.hearing_role = HearingRole.WITNESS;
 
-        expect(component.isWitness).toBeTruthy();
+    it('should return if the participant is a witness or not - isObserver', () => {
+        [
+            [HearingRole.WINGER, false],
+            [HearingRole.WINGER, false],
+            [HearingRole.WITNESS, false],
+            [HearingRole.JUDGE, false],
+            [HearingRole.OBSERVER, true]
+        ].forEach(([hearingRole, expected]) => {
+            component.participant.hearing_role = hearingRole as HearingRole;
+            expect(component.isObserver).toBe(expected as boolean);
+        });
     });
-    it('should return false when the participant is not a witness', () => {
-        component.participant.hearing_role = HearingRole.JUDGE;
 
-        expect(component.isWitness).toBeFalsy();
+    it('should return false when the participant is null - isObserver', () => {
+        component.participant = null;
+
+        expect(component.isObserver).toBeFalsy();
     });
     it('should show extra content when not showing video and witness is not being transferred in', () => {
         component.isTransferringIn = false;
@@ -147,5 +245,86 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.showVideo = true;
 
         expect(component.showExtraContent).toBeFalsy();
+    });
+    it('should set hearing start announce  when hearing is about to start', fakeAsync(() => {
+        component.announceHearingIsAboutToStart();
+        flushMicrotasks();
+        expect(component.hearingStartingAnnounced).toBeTruthy();
+    }));
+    it('should return "Meeting room" from getRoomName when room label is null', () => {
+        component.participant = null;
+        expect(component.getRoomName()).toEqual('Meeting room');
+    });
+    it('should set consultation modal when start is called', () => {
+        component.openStartConsultationModal();
+        expect(component.displayStartPrivateConsultationModal).toBeTruthy();
+    });
+    it('should set consultation modal visibility when join is called', () => {
+        component.openJoinConsultationModal();
+        expect(component.displayJoinPrivateConsultationModal).toBeTruthy();
+    });
+    it('should return non judge and joh participants from getPrivateConsultationParticipants', () => {
+        const joh = new ParticipantResponse();
+        joh.role = Role.JudicialOfficeHolder;
+        const judge = new ParticipantResponse();
+        judge.role = Role.Judge;
+        const representative = new ParticipantResponse();
+        representative.hearing_role = HearingRole.REPRESENTATIVE;
+        component.conference.participants = [judge, judge, representative, representative, representative, joh, joh, joh];
+        expect(component.getPrivateConsultationParticipants().length).toBe(3);
+    });
+    it('should return non observer and witness participants from getPrivateConsultationParticipants', () => {
+        const witness = new ParticipantResponse();
+        witness.hearing_role = HearingRole.WITNESS;
+        const observer = new ParticipantResponse();
+        observer.hearing_role = HearingRole.OBSERVER;
+        const representative = new ParticipantResponse();
+        representative.hearing_role = HearingRole.REPRESENTATIVE;
+        component.conference.participants = [witness, witness, observer, observer, representative, representative, representative];
+        expect(component.getPrivateConsultationParticipants().length).toBe(3);
+    });
+    it('should not return current participant from private consultation participants', () => {
+        const thisParticipant = new ParticipantResponse();
+        thisParticipant.id = 'guid';
+        const otherParticipant = new ParticipantResponse();
+        otherParticipant.id = 'other-guid';
+        component.participant = thisParticipant;
+        component.conference.participants = [thisParticipant, otherParticipant];
+        expect(component.getPrivateConsultationParticipants().length).toBe(1);
+    });
+    it('should call consultation service when starting consultation', fakeAsync(() => {
+        component.startPrivateConsultation(null, null);
+        flushMicrotasks();
+        expect(consultationService.createParticipantConsultationRoom).toHaveBeenCalledTimes(1);
+    }));
+    it('should call consultation service when locking room', fakeAsync(() => {
+        component.participant.current_room.label = 'label';
+        component.setRoomLock(true);
+        flushMicrotasks();
+        expect(consultationService.lockConsultation).toHaveBeenCalledTimes(1);
+    }));
+    it('should close start consultation modal when close is called', () => {
+        component.closeStartPrivateConsultationModal();
+        expect(component.displayStartPrivateConsultationModal).toBeFalsy();
+    });
+    it('should close join consultation modal when close is called', () => {
+        component.closeStartPrivateConsultationModal();
+        expect(component.displayJoinPrivateConsultationModal).toBeFalsy();
+    });
+    it('should start consultation and set accordion expand to false', async () => {
+        component.participant = globalParticipant;
+        component.conference = globalConference;
+        component.privateConsultationAccordianExpanded = true;
+        await component.startPrivateConsultation([globalParticipant.id], []);
+
+        expect(component.privateConsultationAccordianExpanded).toBe(false);
+    });
+    it('should join consultation and set accordion expand to false', async () => {
+        component.participant = globalParticipant;
+        component.conference = globalConference;
+        component.privateConsultationAccordianExpanded = true;
+        await component.joinPrivateConsultation('room1');
+
+        expect(component.privateConsultationAccordianExpanded).toBe(false);
     });
 });

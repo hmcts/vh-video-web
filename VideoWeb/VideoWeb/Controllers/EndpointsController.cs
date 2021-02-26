@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
+using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
@@ -22,15 +23,18 @@ namespace VideoWeb.Controllers
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<EndpointsController> _logger;
         private readonly IMapperFactory _mapperFactory;
+        private readonly IConferenceCache _conferenceCache;
 
         public EndpointsController(
             IVideoApiClient videoApiClient,
             ILogger<EndpointsController> logger,
-            IMapperFactory mapperFactory)
+            IMapperFactory mapperFactory,
+            IConferenceCache conferenceCache)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
             _mapperFactory = mapperFactory;
+            _conferenceCache = conferenceCache;
         }
 
         [HttpGet("{conferenceId}/participants")]
@@ -52,6 +56,27 @@ namespace VideoWeb.Controllers
                 _logger.LogError(e, $"Endpoints could not be fetched for ConferenceId: {conferenceId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
+        }
+
+
+        [HttpGet("{conferenceId}/allowed-video-call-endpoints")]
+        [SwaggerOperation(OperationId = "AllowedVideoCallEndpoints")]
+        [ProducesResponseType(typeof(IList<AllowedEndpointResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> GetEndpointsLinkedToUser(Guid conferenceId)
+        {
+            var username = User.Identity.Name?.ToLower().Trim();
+            var conference = await GetConference(conferenceId);
+            var usersEndpoints = conference.Endpoints.Where(ep => ep.DefenceAdvocateUsername.Equals(username, StringComparison.CurrentCultureIgnoreCase)).ToList();
+            var allowedEndpointResponseMapper = _mapperFactory.Get<Endpoint, AllowedEndpointResponse>();
+            var response = usersEndpoints.Select(x => allowedEndpointResponseMapper.Map(x)).ToList();
+            return Ok(response);
+        }
+
+        private Task<Conference> GetConference(Guid conferenceId)
+        {
+            return _conferenceCache.GetOrAddConferenceAsync(conferenceId,
+                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
         }
     }
 }

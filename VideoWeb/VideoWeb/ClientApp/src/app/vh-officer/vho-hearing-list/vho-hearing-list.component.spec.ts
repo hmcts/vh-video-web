@@ -7,7 +7,7 @@ describe('VhoHearingListComponent', () => {
 
     beforeEach(() => {
         component = new VhoHearingListComponent();
-        component.conferences = new ConferenceTestData().getVhoTestData().map(c => new HearingSummary(c));
+        component.conferences = new ConferenceTestData().getTestData().map(c => new HearingSummary(c));
     });
 
     it('should return true if current conference is the same one selected', () => {

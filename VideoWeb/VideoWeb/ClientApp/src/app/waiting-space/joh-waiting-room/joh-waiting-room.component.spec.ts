@@ -16,6 +16,7 @@ import {
     initAllWRDependencies,
     logger,
     notificationSoundsService,
+    notificationToastrService,
     router,
     userMediaService,
     userMediaStreamService,
@@ -56,6 +57,7 @@ describe('JohWaitingRoomComponent', () => {
             userMediaService,
             userMediaStreamService,
             notificationSoundsService,
+            notificationToastrService,
             clockService
         );
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

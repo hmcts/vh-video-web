@@ -1,0 +1,127 @@
+@import '~govuk-frontend/govuk/base';
+
+@mixin all-main-container {
+  position: fixed;
+  z-index: 200;
+}
+
+.main-container {
+  @include all-main-container;
+  left: 0;
+  width: 100vw;
+  height: 10px;
+}
+
+.controls-container {
+  margin-top: 1vh !important;
+}
+
+.main-container-judge {
+  @include all-main-container;
+  left: 19%;
+  width: 80%;
+}
+
+.icon-button {
+  cursor: pointer;
+  opacity: 0.5;
+  margin-right: 20px;
+  max-height: 25px;
+  font-size: 1.5em;
+  color: govuk-colour('white');
+}
+
+.icon-button:hover {
+  opacity: 1;
+}
+
+.flexBar {
+  flex-basis: auto;
+  margin-right: 22px;
+  border-right: solid 1px rgba(255, 255, 255, 0.3);
+  height: 32px;
+}
+
+.judge-controls-container {
+  float: left;
+}
+
+.judge-controls-padding {
+  padding-left: 0px;
+  margin-left: -5%;
+}
+
+#outgoingFeedVideo {
+  bottom: 10px;
+  width: 259px;
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg); /* Safari and Chrome */
+  -moz-transform: rotateY(180deg); /* Firefox */
+}
+
+#outgoingFeedPresentVideo {
+  width: 259px;
+  top: 65px;
+  left: 10px;
+  position: fixed;
+}
+
+.outgoing-video-container {
+  bottom: 10px;
+  left: 10px;
+  position: fixed;
+}
+
+.outgoing-video-present-container {
+  top: 10px;
+  left: 10px;
+  position: fixed;
+}
+
+#toggle-hand-button .govuk-button:focus {
+  background-color: govuk-colour('green');
+  color: govuk-colour('white');
+}
+
+#toggle-handup-button .govuk-button--warning:focus {
+  background-color: govuk-colour('red');
+  color: govuk-colour('white');
+}
+
+.icons-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.small-button {
+  padding: 6px 10px;
+  border: transparent 1px;
+  border-radius: 2px;
+  vertical-align: top;
+  cursor: pointer;
+}
+
+.small-button.red {
+  color: #ffffff;
+  background: rgba(212, 53, 28, 0.7);
+  &:hover {
+    background: rgba(212, 53, 28, 1);
+  }
+}
+
+.small-button.greyred {
+  color: #ffffff;
+  background: #505a5f;
+  &:hover {
+    background: rgba(212, 53, 28, 1);
+  }
+}
+
+.small-button.greygreen {
+  color: #ffffff;
+  background: #505a5f;
+  &:hover {
+    background: #00703c;
+  }
+}
