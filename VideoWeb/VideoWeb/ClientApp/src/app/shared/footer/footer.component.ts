@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router, RouterEvent } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { filter } from 'rxjs/operators';
+import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from '../page-url.constants';
 
 @Component({
@@ -14,7 +16,7 @@ export class FooterComponent implements OnInit {
     accessibilityUri = pageUrls.Accessibility;
     hideLinksForUnsupportedBrowser = false;
 
-    constructor(private router: Router) {
+    constructor(private router: Router, private translate: TranslateService, private logger: Logger) {
         this.router.events.pipe(filter((event: RouterEvent) => event instanceof NavigationEnd)).subscribe(x => {
             this.hideContactUs();
             this.hideLinks();
@@ -31,5 +33,16 @@ export class FooterComponent implements OnInit {
 
     hideLinks() {
         this.hideLinksForUnsupportedBrowser = this.router.url === `/${pageUrls.UnsupportedBrowser}`;
+    }
+
+    switchLaguage() {
+        this.setLanguage(this.translate.currentLang === 'en' ? 'cy' : 'en');
+    }
+
+    setLanguage(language: string) {
+        this.logger.info(`[FooterComponent] - Switching translation language from ${this.translate.currentLang} to ${language}`);
+        localStorage.setItem('language', language);
+        this.translate.setDefaultLang(language);
+        this.translate.use(language);
     }
 }
