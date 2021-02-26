@@ -51,7 +51,7 @@ import { VideoCallService } from '../services/video-call.service';
 declare var HeartbeatFactory: any;
 
 export abstract class WaitingRoomBaseComponent {
-    protected maxBandwidth = null;
+    maxBandwidth = null;
     audioOnly: boolean;
     hearingStartingAnnounced: boolean;
     privateConsultationAccordianExpanded = false;
@@ -485,12 +485,13 @@ export abstract class WaitingRoomBaseComponent {
         this.logger.info(`${this.loggerPrefix} calling pexip`, logPayload);
         let pexipNode = this.hearing.getConference().pexip_node_uri;
         let conferenceAlias = this.hearing.getConference().participant_uri;
-        const displayName = this.participant.tiled_display_name;
+        let displayName = this.participant.tiled_display_name;
         if (this.needsInterpreterRoom()) {
             this.logger.debug(`${this.loggerPrefix} calling interpreter room`, logPayload);
             const interpreterRoom = await this.videoCallService.retrieveInterpreterRoom(this.conference.id, this.participant.id);
             pexipNode = interpreterRoom.pexip_node;
             conferenceAlias = interpreterRoom.participant_join_uri;
+            displayName = interpreterRoom.display_name;
         }
 
         this.logger.debug(`${this.loggerPrefix} Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`, logPayload);

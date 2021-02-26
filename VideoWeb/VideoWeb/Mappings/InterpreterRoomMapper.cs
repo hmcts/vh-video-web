@@ -12,7 +12,8 @@ namespace VideoWeb.Mappings
             return new InterpreterRoom
             {
                 PexipNode = node,
-                ParticipantJoinUri = input.Participant_join_uri
+                ParticipantJoinUri = input.Participant_join_uri,
+                DisplayName = input.Label
             };
         }
     }

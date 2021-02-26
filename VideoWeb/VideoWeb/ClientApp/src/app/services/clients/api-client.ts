@@ -6492,6 +6492,7 @@ export interface IConferenceEventRequest {
 export class InterpreterRoom implements IInterpreterRoom {
     pexip_node?: string | undefined;
     participant_join_uri?: string | undefined;
+    display_name?: string | undefined;
 
     constructor(data?: IInterpreterRoom) {
         if (data) {
@@ -6505,6 +6506,7 @@ export class InterpreterRoom implements IInterpreterRoom {
         if (_data) {
             this.pexip_node = _data['pexip_node'];
             this.participant_join_uri = _data['participant_join_uri'];
+            this.display_name = _data['display_name'];
         }
     }
 
@@ -6519,6 +6521,7 @@ export class InterpreterRoom implements IInterpreterRoom {
         data = typeof data === 'object' ? data : {};
         data['pexip_node'] = this.pexip_node;
         data['participant_join_uri'] = this.participant_join_uri;
+        data['display_name'] = this.display_name;
         return data;
     }
 }
@@ -6526,6 +6529,7 @@ export class InterpreterRoom implements IInterpreterRoom {
 export interface IInterpreterRoom {
     pexip_node?: string | undefined;
     participant_join_uri?: string | undefined;
+    display_name?: string | undefined;
 }
 
 export class ApiException extends Error {

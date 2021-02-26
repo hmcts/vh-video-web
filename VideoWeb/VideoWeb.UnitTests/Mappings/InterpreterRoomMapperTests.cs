@@ -20,6 +20,7 @@ namespace VideoWeb.UnitTests.Mappings
             var result = _sut.Map(testVmr);
             result.PexipNode.Should().Be(testVmr.Pexip_node);
             result.ParticipantJoinUri.Should().Be(testVmr.Participant_join_uri);
+            result.DisplayName.Should().Be(testVmr.Label);
         }
     }
 }

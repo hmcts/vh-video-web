@@ -4,5 +4,6 @@ namespace VideoWeb.Contract.Responses
     {
         public string PexipNode { get; set; }
         public string ParticipantJoinUri { get; set; }
+        public string DisplayName { get; set; }
     }
 }
