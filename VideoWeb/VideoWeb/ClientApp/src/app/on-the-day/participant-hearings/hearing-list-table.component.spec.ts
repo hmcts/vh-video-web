@@ -1,13 +1,16 @@
 import * as moment from 'moment';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 import { HearingListTableComponent } from './hearing-list-table.component';
 
 describe('HearingListTableComponent', () => {
     let component: HearingListTableComponent;
+    const translateService = translateServiceSpy;
     const testData = new ConferenceTestData();
 
     beforeEach(() => {
-        component = new HearingListTableComponent();
+        translateService.instant.calls.reset();
+        component = new HearingListTableComponent(translateService);
         component.conferences = testData.getTestData();
     });
 
@@ -31,20 +34,23 @@ describe('HearingListTableComponent', () => {
     it('should show sign in date as "Today" when conference is in the past', () => {
         const conference = new ConferenceTestData().getConferencePast();
         const result = component.getSignInDate(conference);
-        expect(result).toBe('Today');
+        expect(result).toBe('hearing-list-table.today');
     });
 
     it('should show sign in date as "Today" when conference is same date', () => {
         const conference = new ConferenceTestData().getConferenceNow();
         const result = component.getSignInDate(conference);
-        expect(result).toBe('Today');
+        expect(result).toBe('hearing-list-table.today');
     });
 
     it('should show sign in date when conference is in the future date', () => {
         const conference = new ConferenceTestData().getConferenceFuture();
         const result = component.getSignInDate(conference);
-        const expectedDateString = 'on ' + moment(conference.scheduled_date_time).format('Do MMM');
-        expect(result).toBe(expectedDateString);
+
+        // Assert
+        const expectedDateString = moment(conference.scheduled_date_time).format('Do MMM');
+        expect(translateService.instant).toHaveBeenCalledOnceWith('hearing-list-table.on-date', { date: expectedDateString });
+        expect(result).toBe('hearing-list-table.on-date');
     });
 
     it('should emit conference selected', () => {
