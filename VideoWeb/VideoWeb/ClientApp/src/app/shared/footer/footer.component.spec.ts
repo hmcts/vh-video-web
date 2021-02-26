@@ -3,7 +3,10 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { TranslateService } from '@ngx-translate/core';
 import { configureTestSuite } from 'ng-bullet';
+import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 import { ContactUsStubComponent } from 'src/app/testing/stubs/contact-us-stub';
 import { DashboardStubComponent } from 'src/app/testing/stubs/dashboard-stub';
 import { UnsupportedBrowserStubComponent } from 'src/app/testing/stubs/unsupported-browser-stub';
@@ -18,7 +21,13 @@ describe('FooterComponent', () => {
 
     configureTestSuite(() => {
         TestBed.configureTestingModule({
-            declarations: [FooterComponent, DashboardStubComponent, ContactUsStubComponent, UnsupportedBrowserStubComponent],
+            declarations: [
+                FooterComponent,
+                DashboardStubComponent,
+                ContactUsStubComponent,
+                UnsupportedBrowserStubComponent,
+                TranslatePipeMock
+            ],
             imports: [
                 RouterTestingModule.withRoutes([
                     { path: 'dashboard', component: DashboardStubComponent },
@@ -26,6 +35,7 @@ describe('FooterComponent', () => {
                     { path: 'unsupported-browser', component: UnsupportedBrowserStubComponent }
                 ])
             ],
+            providers: [{ provide: TranslateService, useValue: translateServiceSpy }],
             schemas: [NO_ERRORS_SCHEMA]
         });
     });
