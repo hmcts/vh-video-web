@@ -1,5 +1,6 @@
 import { Guid } from 'guid-typescript';
 import { ConferenceResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -26,12 +27,20 @@ describe('HearingControlsComponent', () => {
     const videoCallService = videoCallServiceSpy;
     const onParticipantUpdatedSubject = onParticipantUpdatedMock;
 
+    const deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', [
+        'getBrowserName',
+        'getBrowserVersion',
+        'isSupportedBrowser',
+        'isIpad',
+        'isTablet'
+    ]);
+
     const logger: Logger = new MockLogger();
 
     const testData = new VideoCallTestData();
 
     beforeEach(() => {
-        component = new HearingControlsComponent(videoCallService, eventsService, logger);
+        component = new HearingControlsComponent(videoCallService, eventsService, deviceTypeService, logger);
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
         component.isPrivateConsultation = false;
@@ -367,52 +376,46 @@ describe('HearingControlsComponent', () => {
         expect(component.isJOHConsultation).toBe(true);
     });
 
-    const allowedRoles = [Role.Representative, Role.JudicialOfficeHolder, Role.Judge];
-    allowedRoles.forEach(role => {
-        it(`should show the "share screen" button for the ${role} Role`, () => {
-            component.participant.hearing_role = nonAllowedHearingRoles[0];
-            component.participant.role = role;
-            component.ngOnInit();
-            expect(component.canShowScreenShareButton).toBeTruthy();
-        });
+    it(`canShowScreenShareButton() should return "false" when device is a tablet`, () => {
+        deviceTypeService.isTablet.and.returnValue(true);
+        component.ngOnInit();
+        expect(component.canShowScreenShareButton).toBeFalsy();
     });
 
-    const allowedHearingRoles = [HearingRole.LITIGANT_IN_PERSON, HearingRole.REPRESENTATIVE, HearingRole.WITNESS, HearingRole.JUDGE];
+    it(`canShowScreenShareButton() should cover all HearingRole's when showing/hiding the "share screen" button`, () => {
+        const enumCount = Object.keys(HearingRole).length;
+        const numberBeingTested = allowedHearingRoles.length + nonAllowedHearingRoles.length;
+        expect(numberBeingTested).toBe(enumCount);
+    });
+
+    const allowedHearingRoles = [
+        HearingRole.APPELLANT,
+        HearingRole.DEFENCE_ADVOCATE,
+        HearingRole.EXPERT,
+        HearingRole.INTERPRETER,
+        HearingRole.JUDGE,
+        HearingRole.MACKENZIE_FRIEND,
+        HearingRole.OBSERVER,
+        HearingRole.PANEL_MEMBER,
+        HearingRole.PROSECUTION,
+        HearingRole.PROSECUTION_ADVOCATE,
+        HearingRole.REPRESENTATIVE,
+        HearingRole.WINGER,
+        HearingRole.LITIGANT_IN_PERSON
+    ];
     allowedHearingRoles.forEach(hearingRole => {
-        it(`should show the "share screen" button for the ${hearingRole} HearingRole`, () => {
-            component.participant.role = nonAllowedRoles[0];
+        it(`canShowScreenShareButton() should return "true" when device is not a tablet and user has the '${hearingRole}' HearingRole`, () => {
+            deviceTypeService.isTablet.and.returnValue(false);
             component.participant.hearing_role = hearingRole;
             component.ngOnInit();
             expect(component.canShowScreenShareButton).toBeTruthy();
         });
     });
 
-    const nonAllowedRoles = [Role.None, Role.CaseAdmin, Role.VideoHearingsOfficer, Role.HearingFacilitationSupport, Role.Individual];
-    nonAllowedRoles.forEach(role => {
-        it(`should NOT show the "share screen" button for the ${role} Role`, () => {
-            component.participant.role = role;
-            component.participant.hearing_role = nonAllowedHearingRoles[0];
-            component.ngOnInit();
-            expect(component.canShowScreenShareButton).toBeFalsy();
-        });
-    });
-
-    const nonAllowedHearingRoles = [
-        HearingRole.APPELLANT,
-        HearingRole.DEFENCE_ADVOCATE,
-        HearingRole.EXPERT,
-        HearingRole.INTERPRETER,
-        HearingRole.MACKENZIE_FRIEND,
-        HearingRole.OBSERVER,
-        HearingRole.PANEL_MEMBER,
-        HearingRole.PROSECUTION,
-        HearingRole.PROSECUTION_ADVOCATE,
-        HearingRole.WINGER
-    ];
-
+    const nonAllowedHearingRoles = [HearingRole.WITNESS];
     nonAllowedHearingRoles.forEach(hearingRole => {
-        it(`should NOT show the "share screen" button for the ${hearingRole} HearingRole`, () => {
-            component.participant.role = nonAllowedRoles[0];
+        it(`canShowScreenShareButton() should return "false" when device is not a tablet and user has the '${hearingRole}' HearingRole`, () => {
+            deviceTypeService.isTablet.and.returnValue(false);
             component.participant.hearing_role = hearingRole;
             component.ngOnInit();
             expect(component.canShowScreenShareButton).toBeFalsy();

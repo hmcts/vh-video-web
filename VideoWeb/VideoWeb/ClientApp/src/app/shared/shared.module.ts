@@ -31,6 +31,8 @@ import { VhToastComponent } from './toast/vh-toast.component';
 import { RoomClosingToastComponent } from './toast/room-closing/room-closing-toast.component';
 import { StartPrivateConsultationComponent } from '../waiting-space/participant-waiting-room/start-private-consultation/start-private-consultation.component';
 import { JoinPrivateConsultationComponent } from '../waiting-space/participant-waiting-room/join-private-consultation/join-private-consultation.component';
+import { TranslateModule } from '@ngx-translate/core';
+import { TestLanguageService } from './test-language.service';
 
 @NgModule({
     imports: [
@@ -44,7 +46,8 @@ import { JoinPrivateConsultationComponent } from '../waiting-space/participant-w
         }),
         ToastrModule.forRoot({
             toastComponent: RoomClosingToastComponent
-        })
+        }),
+        TranslateModule
     ],
     declarations: [
         HeaderComponent,
@@ -73,7 +76,7 @@ import { JoinPrivateConsultationComponent } from '../waiting-space/participant-w
         VhToastComponent,
         RoomClosingToastComponent
     ],
-    providers: [WindowScrolling, ScreenHelper],
+    providers: [WindowScrolling, ScreenHelper, TestLanguageService],
     exports: [
         HeaderComponent,
         FooterComponent,
@@ -95,7 +98,8 @@ import { JoinPrivateConsultationComponent } from '../waiting-space/participant-w
         ChatInputBoxComponent,
         ChatBodyWindowComponent,
         TooltipDirective,
-        ErrorCameraMicrophoneComponent
+        ErrorCameraMicrophoneComponent,
+        TranslateModule
     ]
 })
 export class SharedModule {}

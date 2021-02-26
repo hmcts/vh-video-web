@@ -90,7 +90,8 @@ export function initAllWRDependencies() {
         'getBrowserName',
         'getBrowserVersion',
         'isSupportedBrowser',
-        'isIpad'
+        'isIpad',
+        'isTablet'
     ]);
 
     consultationService = consultationServiceSpyFactory();

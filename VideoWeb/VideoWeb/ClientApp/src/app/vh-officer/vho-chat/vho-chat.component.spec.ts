@@ -12,7 +12,6 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { eventsServiceSpy, messageSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { adminTestProfile, judgeTestProfile } from '../../testing/data/test-profiles';
-import { videoWebService } from '../../waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 import { VhoChatComponent } from './vho-chat.component';
 
 describe('VhoChatComponent', () => {
