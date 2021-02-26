@@ -87,12 +87,12 @@ describe('JoinPrivateConsultationComponent', () => {
     });
 
     it('should return rooms available', () => {
-        component.participants = globalConference.participants;
+        component.roomDetails = [new RoomSummaryResponse()];
         expect(component.roomsAvailable()).toBeTruthy();
     });
 
     it('should not return rooms available', () => {
-        component.participants = [];
+        component.roomDetails = [];
         expect(component.roomsAvailable()).toBeFalsy();
     });
 
