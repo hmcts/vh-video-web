@@ -1,8 +1,12 @@
 import { fakeAsync, tick } from '@angular/core/testing';
+import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
 import {
     ConferenceResponse,
     ConferenceStatus,
+    InterpreterRoom,
+    LinkedParticipantResponse,
+    LinkType,
     LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
@@ -332,5 +336,22 @@ describe('WaitingRoomComponent message and clock', () => {
         const result = component.getCaseNameAndNumber();
         expect(result.indexOf(caseName)).toBeGreaterThan(-1);
         expect(result.indexOf(caseNumber)).toBeGreaterThan(-1);
+    });
+
+    it('should use interpreter room when participant has links', async () => {
+        component.participant.linked_participants = [
+            new LinkedParticipantResponse({ linked_id: Guid.create().toString(), link_type: LinkType.Interpreter })
+        ];
+        const room = new InterpreterRoom({ participant_join_uri: 'patjoinuri', pexip_node: 'sip.test.node', display_name: 'foo' });
+        videoCallService.retrieveInterpreterRoom.and.resolveTo(room);
+
+        await component.call();
+
+        expect(videoCallService.makeCall).toHaveBeenCalledWith(
+            room.pexip_node,
+            room.participant_join_uri,
+            room.display_name,
+            component.maxBandwidth
+        );
     });
 });

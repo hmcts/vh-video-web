@@ -1,5 +1,6 @@
 using System;
 using VideoWeb.Common.Models;
+using VideoWeb.Mappings.Interfaces;
 using Conference = VideoWeb.Services.Video.ConferenceForIndividualResponse;
 using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
 

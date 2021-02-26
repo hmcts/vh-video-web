@@ -1,8 +1,10 @@
 using Microsoft.Extensions.Logging;
 using System;
+using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
 {
+#pragma warning disable S2436 // Types and methods should not have too many generic parameters
     public interface IMapperFactory
     {
         IMapTo<TIn1, TIn2, TIn3, TIn4, TIn5, TOut> Get<TIn1, TIn2, TIn3, TIn4, TIn5, TOut>();

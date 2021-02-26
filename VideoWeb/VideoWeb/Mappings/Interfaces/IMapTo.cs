@@ -1,5 +1,6 @@
-namespace VideoWeb.Mappings
+namespace VideoWeb.Mappings.Interfaces
 {
+#pragma warning disable S2436 // Types and methods should not have too many generic parameters
     public interface IMapTo<in TIn1, out TOut>
     {
         TOut Map(TIn1 input);
