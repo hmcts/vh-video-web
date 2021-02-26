@@ -16,12 +16,15 @@ java:
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
       usePodIdentity: true
       secrets:
-        - applicationInsights--instrumentationkey
+        - applicationinsights--instrumentationkey
         - connectionstrings--signalr
         - azuread--vhvideowebclientid
         - connectionstrings--rediscache
         - wowzaconfiguration--storageaccountkey
         - testing--testuserpassword
+        - kinlyconfiguration--apisecret
+        - kinlyconfiguration--callbacksecret
+        - kinlyconfiguration--selftestapisecret
     vh-video-web:
       excludeEnvironmentSuffix: false
       resourceGroup: vh-infra-core-{{ .Values.global.environment }}
@@ -29,9 +32,6 @@ java:
       secrets:
         - azuread--clientsecret
         - azuread--clientid       
-        - kinlyconfiguration--apisecret
-        - kinlyconfiguration--callbacksecret
-        - kinlyconfiguration--selftestapisecret
   environment:
     ASPNETCORE_URLS: http://+:8080
     AZUREAD__POSTLOGOUTREDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.hearings.reform.hmcts.net/logout
