@@ -5,8 +5,10 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TranslateService } from '@ngx-translate/core';
 import { configureTestSuite } from 'ng-bullet';
+import { Logger } from 'src/app/services/logging/logger-base';
 import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ContactUsStubComponent } from 'src/app/testing/stubs/contact-us-stub';
 import { DashboardStubComponent } from 'src/app/testing/stubs/dashboard-stub';
 import { UnsupportedBrowserStubComponent } from 'src/app/testing/stubs/unsupported-browser-stub';
@@ -35,7 +37,10 @@ describe('FooterComponent', () => {
                     { path: 'unsupported-browser', component: UnsupportedBrowserStubComponent }
                 ])
             ],
-            providers: [{ provide: TranslateService, useValue: translateServiceSpy }],
+            providers: [
+                { provide: TranslateService, useValue: translateServiceSpy },
+                { provide: Logger, useClass: MockLogger }
+            ],
             schemas: [NO_ERRORS_SCHEMA]
         });
     });
