@@ -1,5 +1,6 @@
 using System;
 using VideoWeb.Contract.Request;
+using VideoWeb.Mappings.Interfaces;
 using VideoWeb.Services.Video;
 
 namespace VideoWeb.Mappings.Requests

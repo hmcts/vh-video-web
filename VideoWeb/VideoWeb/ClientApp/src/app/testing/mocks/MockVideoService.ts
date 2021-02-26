@@ -14,7 +14,7 @@ import {
     SelfTestPexipResponse,
     ParticipantHeartbeatResponse,
     ConferenceForJudgeResponse,
-    UpdateParticipantRequest,
+    UpdateParticipantDisplayNameRequest,
     ConferenceResponseVho,
     JudgeNameListResponse,
     VideoEndpointResponse,
@@ -120,7 +120,7 @@ export class MockVideoWebService implements IVideoWebApiService {
         throw new Error('Method not implemented.');
     }
 
-    updateParticipantDetails(conferenceId: string, participantId: string, updateParticipantRequest: UpdateParticipantRequest) {
+    updateParticipantDetails(conferenceId: string, participantId: string, updateParticipantRequest: UpdateParticipantDisplayNameRequest) {
         return Promise.resolve();
     }
 }

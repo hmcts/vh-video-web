@@ -12,24 +12,7 @@ namespace VideoWeb.Common.Caching
         {
             var participants = conferenceResponse
                 .Participants
-                .Select(participant => new Participant
-                {
-                    Id = participant.Id,
-                    RefId = participant.Ref_id,
-                    Name = participant.Name,
-                    FirstName = participant.First_name,
-                    LastName = participant.Last_name,
-                    ContactEmail = participant.Contact_email,
-                    ContactTelephone = participant.Contact_telephone,
-                    DisplayName = participant.Display_name,
-                    Role = (Role) Enum.Parse(typeof(Role), participant.User_role.ToString()),
-                    HearingRole = participant.Hearing_role,
-                    ParticipantStatus = (ParticipantStatus) Enum.Parse(typeof(ParticipantStatus),
-                        participant.Current_status.ToString()),
-                    Username = participant.Username,
-                    CaseTypeGroup = participant.Case_type_group,
-                    Representee = participant.Representee
-                })
+                .Select(MapParticipantToCacheModel)
                 .ToList();
 
             var endpoints = conferenceResponse.Endpoints == null ? new List<Endpoint>() : conferenceResponse.Endpoints.Select(EndpointCacheMapper.MapEndpointToCacheModel).ToList();
@@ -42,6 +25,40 @@ namespace VideoWeb.Common.Caching
                 Endpoints = endpoints
             };
             return conference;
+        }
+
+        private static Participant MapParticipantToCacheModel(ParticipantDetailsResponse participant)
+        {
+            var links = (participant.Linked_participants ?? new List<LinkedParticipantResponse>())
+                .Select(MapLinkedParticipantToCacheModel).ToList();
+            return new Participant
+            {
+                Id = participant.Id,
+                RefId = participant.Ref_id,
+                Name = participant.Name,
+                FirstName = participant.First_name,
+                LastName = participant.Last_name,
+                ContactEmail = participant.Contact_email,
+                ContactTelephone = participant.Contact_telephone,
+                DisplayName = participant.Display_name,
+                Role = Enum.Parse<Role>(participant.User_role.ToString(), true),
+                HearingRole = participant.Hearing_role,
+                ParticipantStatus = Enum.Parse<ParticipantStatus>(participant.Current_status.ToString(), true),
+                Username = participant.Username,
+                CaseTypeGroup = participant.Case_type_group,
+                Representee = participant.Representee,
+                LinkedParticipants = links
+            };
+        }
+
+        private static LinkedParticipant MapLinkedParticipantToCacheModel(
+            LinkedParticipantResponse linkedParticipant)
+        {
+            return new LinkedParticipant
+            {
+                LinkedId = linkedParticipant.Linked_id,
+                LinkType = Enum.Parse<LinkType>(linkedParticipant.Type.ToString(), true)
+            };
         }
     }
 }

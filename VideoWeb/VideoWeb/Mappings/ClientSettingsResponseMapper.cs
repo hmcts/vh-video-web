@@ -1,6 +1,7 @@
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
 {
