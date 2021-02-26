@@ -101,8 +101,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
             this.currentTime = time;
             this.checkIfHearingIsClosed();
             this.checkIfHearingIsStarting();
-        });
-        this.closedSubscription$ = this.clockService.getClock().subscribe(time => {
             this.showRoomClosingToast(time);
         });
     }
