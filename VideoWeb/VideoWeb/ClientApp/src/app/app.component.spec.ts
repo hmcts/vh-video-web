@@ -15,6 +15,8 @@ import { ConnectionStatusService } from './services/connection-status.service';
 import { pageUrls } from './shared/page-url.constants';
 import { MockAdalService } from './testing/mocks/MockAdalService';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
+import { TestLanguageService } from './shared/test-language.service';
+import { translateServiceSpy } from './testing/mocks/mock-translation-service';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -26,6 +28,7 @@ describe('AppComponent', () => {
     let titleServiceSpy: jasmine.SpyObj<Title>;
     let connectionStatusServiceSpy: jasmine.SpyObj<ConnectionStatusService>;
     let pageTrackerServiceSpy: jasmine.SpyObj<PageTrackerService>;
+    let testLanguageServiceSpy: jasmine.SpyObj<TestLanguageService>;
     const mockAdalService = new MockAdalService();
     let adalService;
     const clientSettings = new ClientSettingsResponse({
@@ -62,6 +65,7 @@ describe('AppComponent', () => {
         titleServiceSpy = jasmine.createSpyObj<Title>('Title', ['getTitle', 'setTitle']);
         connectionStatusServiceSpy = jasmine.createSpyObj('ConnectionStatusService', ['start']);
         pageTrackerServiceSpy = jasmine.createSpyObj('PageTrackerService', ['trackNavigation', 'trackPreviousPage']);
+        testLanguageServiceSpy = jasmine.createSpyObj('TestLanguageService', ['setupSubscriptions']);
     });
 
     beforeEach(() => {
@@ -77,7 +81,9 @@ describe('AppComponent', () => {
             locationServiceSpy,
             eventsServiceSpy,
             connectionStatusServiceSpy,
-            pageTrackerServiceSpy
+            pageTrackerServiceSpy,
+            testLanguageServiceSpy,
+            translateServiceSpy
         );
 
         document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(dummyElement);

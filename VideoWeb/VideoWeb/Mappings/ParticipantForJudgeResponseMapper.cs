@@ -1,5 +1,6 @@
 using System;
 using VideoWeb.Common.Models;
+using VideoWeb.Mappings.Interfaces;
 using Participant = VideoWeb.Services.Video.ParticipantForJudgeResponse;
 using ParticipantForJudgeResponse = VideoWeb.Contract.Responses.ParticipantForJudgeResponse;
 

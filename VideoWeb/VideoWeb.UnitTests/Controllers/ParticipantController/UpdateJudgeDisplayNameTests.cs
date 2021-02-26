@@ -15,10 +15,12 @@ using EventHubEventType = VideoWeb.EventHub.Enums.EventType;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 using UpdateParticipantRequest = VideoWeb.Services.Video.UpdateParticipantRequest;
 using Autofac.Extras.Moq;
+using VideoWeb.Contract.Request;
+using VideoWeb.Mappings;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {
-    public class UpdateJudgeDisplatNameTests
+    public class UpdateJudgeDisplayNameTests
     {
         private AutoMock _mocker;
         private ParticipantsController _sut;
@@ -28,7 +30,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<UpdateParticipantDisplayNameRequest, UpdateParticipantRequest>()).Returns(_mocker.Create<UpdateParticipantRequestMapper>());
             var eventHandlerMock = _mocker.Mock<IEventHandler>();
             _mocker.Mock<IEventHandlerFactory>().Setup(x => x.Get(It.IsAny<EventHubEventType>())).Returns(eventHandlerMock.Object);
 
@@ -56,14 +58,17 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var conferenceId = _testConference.Id;
             var participantId = Guid.NewGuid();
 
-            var request = new UpdateParticipantRequest
+            var request = new UpdateParticipantDisplayNameRequest
             {
                 Fullname = "Judge Stive Adams",
-                Display_name ="Sir Steve",
+                DisplayName = "Sir Steve",
                 Representee=""
             };
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.UpdateParticipantDetailsAsync(It.IsAny<Guid>(),It.IsAny<Guid>(), request ))
+                .Setup(x => x.UpdateParticipantDetailsAsync(It.IsAny<Guid>(), It.IsAny<Guid>(),
+                    It.Is<UpdateParticipantRequest>(participantRequest =>
+                        request.Fullname == participantRequest.Fullname &&
+                        request.DisplayName == participantRequest.Display_name)))
                 .Returns(Task.FromResult(default(object)));
 
             var result = await _sut.UpdateParticipantDisplayNameAsync(conferenceId, participantId, request);
@@ -76,16 +81,16 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         {
 
             var conferenceId = _testConference.Id;
-            var request = new UpdateParticipantRequest
+            var request = new UpdateParticipantDisplayNameRequest
             {
                 Fullname = "Judge Stive Adams",
-                Display_name = "Sir Steve",
+                DisplayName = "Sir Steve",
                 Representee = ""
             };
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id and participant Id", null, default, null);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.UpdateParticipantDetailsAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), request))
+                .Setup(x => x.UpdateParticipantDetailsAsync(It.IsAny<Guid>(), It.IsAny<Guid>(), It.IsAny<UpdateParticipantRequest>()))
                 .ThrowsAsync(apiException);
 
             var result = await _sut.UpdateParticipantDisplayNameAsync(conferenceId, Guid.NewGuid(), request);

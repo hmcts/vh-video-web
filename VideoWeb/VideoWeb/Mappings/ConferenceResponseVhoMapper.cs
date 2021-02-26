@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
+using VideoWeb.Mappings.Interfaces;
 using VideoWeb.Services.Video;
 using UserRole = VideoWeb.Services.Video.UserRole;
 

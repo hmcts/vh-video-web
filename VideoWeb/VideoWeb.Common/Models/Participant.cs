@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace VideoWeb.Common.Models
 {
@@ -18,6 +19,8 @@ namespace VideoWeb.Common.Models
         public string CaseTypeGroup { get; set; }
         public Guid RefId { get; set; }
         public string Representee { get; set; }
+        
+        public List<LinkedParticipant> LinkedParticipants { get; set; }
 
         public bool IsJudge()
         {

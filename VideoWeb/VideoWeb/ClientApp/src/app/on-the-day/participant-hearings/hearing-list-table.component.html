@@ -1,8 +1,8 @@
 <table class="govuk-table">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
-      <th class="govuk-table__header" scope="col">Date & time</th>
-      <th class="govuk-table__header" scope="col">Hearing details</th>
+      <th class="govuk-table__header" scope="col">{{ 'hearing-list-table.date-and-time' | translate }}</th>
+      <th class="govuk-table__header" scope="col">{{ 'hearing-list-table.hearing-details' | translate }}</th>
       <th class="govuk-table__header" scope="col"></th>
     </tr>
   </thead>
@@ -19,7 +19,7 @@
       <td class="govuk-table__cell">
         <p id="participant-case-name-{{ conference.id }}" class="govuk-!-margin-0 govuk-!-padding-0">{{ conference.case_name }}</p>
         <p id="participant-case-number-{{ conference.id }}" class="govuk-!-margin-0 govuk-!-padding-0">
-          Case number: <strong>{{ conference.case_number }}</strong>
+          {{ 'hearing-list-table.case-number' | translate }}: <strong>{{ conference.case_number }}</strong>
         </p>
       </td>
       <td class="govuk-table__cell">
@@ -30,16 +30,16 @@
           type="button"
           *ngIf="canStartHearing(conference)"
           (click)="signIntoConference(conference)"
-          aria-label="Sign into hearing"
+          attr.aria-label="{{ 'hearing-list-table.button.sign-into-hearing' | translate }}"
         >
-          Sign into hearing
+        {{ 'hearing-list-table.button.sign-into-hearing' | translate }}
         </button>
         <span *ngIf="!canStartHearing(conference)">
           <p id="participant-sign-in-date-{{ conference.id }}" class="govuk-!-margin-0 govuk-!-padding-0">
-            Sign in {{ getSignInDate(conference) }}
+            {{ 'hearing-list-table.sign-in' | translate:{ date: getSignInDate(conference)} }}
           </p>
           <p id="participant-sign-in-time-{{ conference.id }}" class="govuk-!-margin-0 govuk-!-padding-0">
-            from {{ getSignInTime(conference) | date: 'HH:mm' }}
+            {{ 'hearing-list-table.from' | translate:{ time: getSignInTime(conference) | date: 'HH:mm' } }}
           </p>
         </span>
       </td>
