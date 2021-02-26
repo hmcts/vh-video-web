@@ -14,6 +14,8 @@ import { PageTrackerService } from './services/page-tracker.service';
 import { EventsService } from './services/events.service';
 import { ConnectionStatusService } from './services/connection-status.service';
 import { pageUrls } from './shared/page-url.constants';
+import { TestLanguageService } from './shared/test-language.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-root',
@@ -44,12 +46,19 @@ export class AppComponent implements OnInit, OnDestroy {
         private locationService: LocationService,
         private eventsService: EventsService,
         private connectionStatusService: ConnectionStatusService,
-        pageTracker: PageTrackerService
+        pageTracker: PageTrackerService,
+        testLanguageService: TestLanguageService,
+        translate: TranslateService
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
         this.initAuthentication();
 
+        const language = localStorage.getItem('language') ?? 'en';
+        translate.setDefaultLang(language);
+        translate.use(language);
+
+        testLanguageService.setupSubscriptions();
         pageTracker.trackPreviousPage(router);
     }
 

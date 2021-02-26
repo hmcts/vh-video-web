@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { HearingControlsBaseComponent } from '../hearing-controls/hearing-controls-base.component';
@@ -20,7 +21,12 @@ import { VideoCallService } from '../services/video-call.service';
     outputs: ['leaveConsultation', 'lockConsultation']
 })
 export class HearingControlsComponent extends HearingControlsBaseComponent {
-    constructor(protected videoCallService: VideoCallService, protected eventService: EventsService, protected logger: Logger) {
-        super(videoCallService, eventService, logger);
+    constructor(
+        protected videoCallService: VideoCallService,
+        protected eventService: EventsService,
+        protected deviceTypeService: DeviceTypeService,
+        protected logger: Logger
+    ) {
+        super(videoCallService, eventService, deviceTypeService, logger);
     }
 }
