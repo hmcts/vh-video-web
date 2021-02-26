@@ -54,16 +54,8 @@ export class RoomClosingToastrService {
         });
 
         const roomClosingToast = this.currentToast.toastRef.componentInstance;
-        roomClosingToast.roomClosingToastOptions = {
-            buttons: [
-                {
-                    label: 'Dismiss',
-                    hoverColour: 'green',
-                    action: async () => this.onToastClosed()
-                }
-            ],
-            expiryDate: expiryDate
-        };
+        roomClosingToast.expiryDate = expiryDate;
+        roomClosingToast.dismiss.subscribe(() => this.onToastClosed());
     }
 
     onToastClosed(): void {

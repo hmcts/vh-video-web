@@ -52,15 +52,6 @@ describe('RoomClosingToastComponent', () => {
         clockServiceMock.getClock.and.returnValue(of(timeNow));
 
         sut = new RoomClosingToastComponent(toastrService, toastPackage, clockServiceMock);
-
-        const onNoActionSpy = jasmine.createSpy().and.callFake(function () {
-            return false;
-        });
-        sut.vhToastOptions = {
-            color: 'white',
-            onNoAction: onNoActionSpy,
-            buttons: []
-        };
         sut.ngOnInit();
     });
 
@@ -106,55 +97,9 @@ describe('RoomClosingToastComponent', () => {
         });
     });
 
-    it('should call onNoAction if not actioned when removed', () => {
-        sut.actioned = false;
-        sut.remove();
-        expect(sut.vhToastOptions.onNoAction).toHaveBeenCalledTimes(1);
-    });
-
-    it('should not call onNoAction if actioned when removed', () => {
-        sut.actioned = true;
-        sut.remove();
-        expect(sut.vhToastOptions.onNoAction).toHaveBeenCalledTimes(0);
-    });
-
     it('should call remove on base', () => {
         spyOn(RoomClosingToastComponent.prototype, 'remove');
         sut.remove();
         expect(RoomClosingToastComponent.prototype.remove).toHaveBeenCalledTimes(1);
-    });
-
-    it('should return true for get black', () => {
-        sut.vhToastOptions.color = 'black';
-        expect(sut.black).toBeTruthy();
-    });
-
-    it('should return false for get black', () => {
-        sut.vhToastOptions.color = 'white';
-        expect(sut.black).toBeFalsy();
-    });
-
-    it('should return true for get white', () => {
-        sut.vhToastOptions.color = 'white';
-        expect(sut.white).toBeTruthy();
-    });
-
-    it('should return false for get white', () => {
-        sut.vhToastOptions.color = 'black';
-        expect(sut.white).toBeFalsy();
-    });
-
-    it('should set actioned when handle action is called', () => {
-        sut.actioned = false;
-        sut.handleAction(function () {});
-        expect(sut.actioned).toBeTruthy();
-    });
-
-    it('should execute passed function when action is called', () => {
-        const functionSpy = jasmine.createSpy().and.callFake(function () {
-            return false;
-        });
-        sut.handleAction(functionSpy);
-        expect(functionSpy).toHaveBeenCalledTimes(1);
     });
 });

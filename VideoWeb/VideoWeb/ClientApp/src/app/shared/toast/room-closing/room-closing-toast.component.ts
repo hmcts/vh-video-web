@@ -1,34 +1,20 @@
 import * as moment from 'moment';
 import { Component, OnInit } from '@angular/core';
-import { ToastrService, ToastPackage } from 'ngx-toastr';
-import { Observable } from 'rxjs';
-import { VhToastButton, VhToastComponent } from '../vh-toast.component';
+import { ToastrService, ToastPackage, Toast } from 'ngx-toastr';
+import { Observable, Subject } from 'rxjs';
 import { ClockService } from 'src/app/services/clock.service';
 import { map, startWith } from 'rxjs/operators';
 
-interface RoomClosingToastOptions {
-    expiryDate: Date;
-    buttons: VhToastButton[];
-}
 @Component({
     templateUrl: './room-closing-toast.component.html',
-    styleUrls: ['../vh-toast.component.scss']
+    styleUrls: ['./room-closing-toast.component.scss']
 })
-export class RoomClosingToastComponent extends VhToastComponent implements OnInit {
+export class RoomClosingToastComponent extends Toast implements OnInit {
     alertMessage$: Observable<string>;
     msAllowedForPrivateConsultationsAfterClosing: number;
     expiryDate: Date;
 
-    set roomClosingToastOptions(options: RoomClosingToastOptions) {
-        this.expiryDate = options.expiryDate;
-        super.vhToastOptions = {
-            color: 'white',
-            onNoAction: async () => {
-                // this intentionally does nothing
-            },
-            buttons: options.buttons
-        };
-    }
+    dismiss = new Subject<any>();
 
     constructor(protected toastrService: ToastrService, public toastPackage: ToastPackage, private clockService: ClockService) {
         super(toastrService, toastPackage);

@@ -6,13 +6,10 @@
     </ng-container>
 </div>
 
-<div class="actions" *ngIf="vhToastOptions.buttons">
-    <div class="action" *ngFor="let btn of vhToastOptions.buttons">
+<div class="actions">
+    <div class="action">
         <button
-        class="small-button grey"
-        [class.green]="btn.hoverColour === 'green'"
-        [class.red]="btn.hoverColour === 'red'"
         data-module="govuk-button"
-        (click)="handleAction(btn.action)">{{btn.label}}</button>
+        (click)="dismiss.next()">Dismiss</button>
     </div>
 </div>
