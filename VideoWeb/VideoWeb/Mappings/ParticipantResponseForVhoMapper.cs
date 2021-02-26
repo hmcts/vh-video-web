@@ -1,6 +1,7 @@
 using System;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Mappings.Interfaces;
 using VideoWeb.Services.Video;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
 

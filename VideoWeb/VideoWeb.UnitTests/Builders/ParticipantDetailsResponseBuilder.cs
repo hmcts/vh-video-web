@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using FizzWare.NBuilder;
 using VideoWeb.Services.Video;
 
@@ -14,7 +15,8 @@ namespace VideoWeb.UnitTests.Builders
                 .With(x => x.Id = Guid.NewGuid())
                 .With(x => x.Current_status = ParticipantState.Available)
                 .With(x => x.Case_type_group = caseTypeGroup)
-                .With(x => x.User_role = role);
+                .With(x => x.User_role = role)
+                .With(x=> x.Linked_participants = new List<LinkedParticipantResponse>());
         }
 
         public ParticipantDetailsResponseBuilder WithStatus(ParticipantState state)

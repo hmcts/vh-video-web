@@ -1,23 +1,24 @@
 {
-    "hearing-list-table": {
-        "date-and-time": "Date & time",
-        "case-number": "Case number",
-        "sign-in": "Sign in {{date}}",
-        "from": "from {{time}}",
-        "today": "Today",
-        "on-date": "on {{date}}",
-        "button": {
-            "sign-into-hearing": "Sign into hearing"
-        }
-    },
-    "footer": {
-        "privacy-policy": "Privacy policy",
-        "accessibility": "Accessibility",
-        "translate-to": "",
-        "translate-to-test": "",
-        "all-content-availabe-under": "All content is available under the ",
-        "open-government-license": "Open Government Licence v3.0",
-        "except": ", except where otherwise stated",
-        "copyright": "© Crown copyright"
+  "hearing-list-table": {
+    "date-and-time": "Date & time",
+    "hearing-details": "Hearing details",
+    "case-number": "Case number",
+    "sign-in": "Sign in {{date}}",
+    "from": "from {{time}}",
+    "today": "Today",
+    "on-date": "on {{date}}",
+    "button": {
+      "sign-into-hearing": "Sign into hearing"
     }
+  },
+  "footer": {
+    "privacy-policy": "Privacy policy",
+    "accessibility": "Accessibility",
+    "translate-to": "",
+    "translate-to-test": "",
+    "all-content-availabe-under": "All content is available under the ",
+    "open-government-license": "Open Government Licence v3.0",
+    "except": ", except where otherwise stated",
+    "copyright": "© Crown copyright"
+  }
 }

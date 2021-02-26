@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Mappings.Interfaces;
 using Conference = VideoWeb.Services.Video.ConferenceForJudgeResponse;
 using ConferenceForJudgeResponse = VideoWeb.Contract.Responses.ConferenceForJudgeResponse;
 using Participant = VideoWeb.Services.Video.ParticipantForJudgeResponse;
