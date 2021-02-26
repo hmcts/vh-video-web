@@ -3,16 +3,13 @@ import { EventEmitter } from '@angular/core';
 import { from } from 'rxjs';
 
 export let translateServiceSpy: jasmine.SpyObj<TranslateService>;
-
 export let onLangChangeSpy = new EventEmitter<LangChangeEvent>();
-export let currentLangSpy = 'en';
 
 translateServiceSpy = jasmine.createSpyObj<TranslateService>(
     'TranslateService',
     ['instant', 'get', 'use', 'setDefaultLang', 'getTranslation', 'setTranslation', 'getBrowserLang'],
     {
-        onLangChange: onLangChangeSpy,
-        currentLang: currentLangSpy
+        onLangChange: onLangChangeSpy
     }
 );
 

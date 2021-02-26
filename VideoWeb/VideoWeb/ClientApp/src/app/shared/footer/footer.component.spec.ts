@@ -46,6 +46,9 @@ describe('FooterComponent', () => {
     });
 
     beforeEach(() => {
+        translateServiceSpy.setDefaultLang.calls.reset();
+        translateServiceSpy.use.calls.reset();
+
         router = TestBed.inject(Router);
         location = TestBed.inject(Location);
         fixture = TestBed.createComponent(FooterComponent);
@@ -84,4 +87,40 @@ describe('FooterComponent', () => {
         expect(location.path()).toBe('/unsupported-browser');
         expect(component.hideLinksForUnsupportedBrowser).toBeTruthy();
     }));
+
+    it('should switch language when clicking button, english to welsh', () => {
+        // Arrange
+        translateServiceSpy.currentLang = 'en';
+
+        // Act
+        component.switchLaguage();
+
+        // Assert
+        expect(translateServiceSpy.setDefaultLang).toHaveBeenCalledOnceWith('cy');
+        expect(translateServiceSpy.use).toHaveBeenCalledOnceWith('cy');
+    });
+
+    it('should switch language when clicking button, english to welsh', () => {
+        // Arrange
+        translateServiceSpy.currentLang = 'cy';
+
+        // Act
+        component.switchLaguage();
+
+        // Assert
+        expect(translateServiceSpy.setDefaultLang).toHaveBeenCalledOnceWith('en');
+        expect(translateServiceSpy.use).toHaveBeenCalledOnceWith('en');
+    });
+
+    it('should switch to test language when clicking button', () => {
+        // Arrange
+        translateServiceSpy.currentLang = 'en';
+
+        // Act
+        component.setLanguage('tl');
+
+        // Assert
+        expect(translateServiceSpy.setDefaultLang).toHaveBeenCalledOnceWith('tl');
+        expect(translateServiceSpy.use).toHaveBeenCalledOnceWith('tl');
+    });
 });

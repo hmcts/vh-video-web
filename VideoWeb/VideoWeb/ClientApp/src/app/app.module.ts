@@ -28,7 +28,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { DisplayMissingTranslationHandler } from './shared/display-missing-translation-handler';
 
 export function createTranslateLoader() {
-    // We cant inject a loader because it has a race condition with adal
+    // We cant inject a httpClient because it has a race condition with adal
     // resulting in a null context when trying to load the translatons
     const httpClient = new HttpClient(new HttpXhrBackend({ build: () => new XMLHttpRequest() }));
     return new TranslateHttpLoader(httpClient, './assets/i18n/', '.json');
