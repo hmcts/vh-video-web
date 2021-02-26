@@ -102,7 +102,7 @@ describe('JoinPrivateConsultationComponent', () => {
     });
 
     it('should disable continue for locked selected room', () => {
-        const label = 'locked room';
+        const label = 'ParticipantConsultationRoom1';
         component.selectedRoomLabel = label;
         const participant = globalParticipant;
         participant.current_room = new RoomSummaryResponse({ label: label, locked: true });
