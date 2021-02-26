@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import * as moment from 'moment';
 import { ToastrService, ActiveToast, Toast } from 'ngx-toastr';
+import { Subject } from 'rxjs';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from 'src/app/shared/models/hearing';
@@ -72,7 +73,9 @@ describe('RoomClosingToastrService', () => {
         const mockToast = {
             toastId: 123,
             toastRef: {
-                componentInstance: {}
+                componentInstance: {
+                    dismiss: new Subject<any>()
+                }
             }
         } as ActiveToast<RoomClosingToastComponent>;
         return mockToast;
