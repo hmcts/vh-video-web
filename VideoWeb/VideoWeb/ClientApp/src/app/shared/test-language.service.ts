@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { filter } from 'rxjs/operators';
+import { filter, tap } from 'rxjs/operators';
 
 @Injectable()
 export class TestLanguageService {
@@ -11,7 +11,12 @@ export class TestLanguageService {
 
     setupSubscriptions() {
         console.info(`${this.loggerPrefix} Subscribing to onLanguageChange`);
-        this.translateService.onLangChange.pipe(filter(e => e.lang === 'tl')).subscribe(() => this.setupTestLanguageTranslations());
+        this.translateService.onLangChange
+            .pipe(
+                filter(e => e.lang === 'tl'),
+                tap(() => this.setupTestLanguageTranslations())
+            )
+            .subscribe();
     }
 
     setupTestLanguageTranslations() {
@@ -19,13 +24,15 @@ export class TestLanguageService {
             this.translationLanguageLoaded = true;
             this.translateService
                 .getTranslation('en')
-                .toPromise()
-                .then(en => {
-                    console.info(`${this.loggerPrefix} Generating TranslationLanguage Translations`);
-                    const tl = JSON.parse(JSON.stringify(en));
-                    this.recursiveReplace(tl);
-                    this.translateService.setTranslation('tl', tl);
-                });
+                .pipe(
+                    tap(en => {
+                        console.info(`${this.loggerPrefix} Generating TranslationLanguage Translations`);
+                        const tl = JSON.parse(JSON.stringify(en));
+                        this.recursiveReplace(tl);
+                        this.translateService.setTranslation('tl', tl);
+                    })
+                )
+                .subscribe();
         }
     }
 
