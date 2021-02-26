@@ -7,9 +7,11 @@ import {
     ConferenceResponseVho,
     ConferenceStatus,
     EndpointStatus,
+    LinkedParticipantResponse,
     ParticipantContactDetailsResponseVho,
     ParticipantForUserResponse,
     ParticipantHeartbeatResponse,
+    ParticipantResponse,
     ParticipantResponseVho,
     ParticipantStatus,
     Role,
@@ -21,6 +23,7 @@ import {
 } from 'src/app/services/clients/api-client';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
+import { hasJSDocParameterTags } from 'typescript';
 import { AlertFilter, AlertsStatus, HearingsFilter, StatusFilter } from '../../../shared/models/hearings-filter';
 
 export class ConferenceTestData {
@@ -270,9 +273,115 @@ export class ConferenceTestData {
         return participants;
     }
 
-    getListOfParticipantDetails(): ParticipantResponseVho[] {
+    getListOfParticipantsInConference(): ParticipantResponseVho[] {
         const participants: ParticipantResponseVho[] = [];
+
         const participant1 = new ParticipantResponseVho({
+            id: '1111-1111-1111-1111',
+            status: ParticipantStatus.Available,
+            display_name: 'C Green',
+            role: Role.Representative,
+            representee: 'James Green',
+            case_type_group: 'applicant',
+            tiled_display_name: 'T4;Mr Chris Green;1111-1111-1111-1111',
+            hearing_role: 'Litigant in person'
+        });
+
+        const participant2 = new ParticipantResponseVho({
+            id: '2222-2222-2222-2222',
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'J Green',
+            role: Role.Individual,
+            case_type_group: 'applicant',
+            tiled_display_name: 'T2;J Green;2222-2222-2222-2222',
+            hearing_role: 'Litigant in person'
+        });
+
+        const participant3 = new ParticipantResponseVho({
+            id: '3333-3333-3333-3333',
+            status: ParticipantStatus.Available,
+            display_name: 'Judge Fudge',
+            role: Role.Judge,
+            case_type_group: 'judge',
+            tiled_display_name: 'T1;Judge Fudge;3333-3333-3333-3333',
+            hearing_role: 'Judge'
+        });
+
+        const participant4 = new ParticipantResponseVho({
+            id: '4444-4444-4444-4444',
+            status: ParticipantStatus.Available,
+            display_name: 'J Doe',
+            role: Role.Representative,
+            representee: 'J Doe',
+            case_type_group: 'respondent',
+            tiled_display_name: 'T4;J Doe;4444-4444-4444-4444',
+            hearing_role: 'Litigant in person'
+        });
+
+        const participant5 = new ParticipantResponseVho({
+            id: '5555-5555-5555-5555',
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'J Doe',
+            role: Role.Individual,
+            case_type_group: 'respondent',
+            tiled_display_name: 'T5;Ms J Doe;5555-5555-5555-5555',
+            hearing_role: 'Litigant in person'
+        });
+
+        const participant6 = new ParticipantResponseVho({
+            id: '6666-6666-6666-6666',
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'Observer Doe O',
+            role: Role.Individual,
+            case_type_group: 'observer',
+            tiled_display_name: 'T6;Observer Doe O;6666-6666-6666-6666',
+            hearing_role: 'Observer'
+        });
+
+        const participant7 = new ParticipantResponseVho({
+            id: '7777-7777-7777-7777',
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'Panel Mem Doe PM',
+            role: Role.JudicialOfficeHolder,
+            case_type_group: 'panelmember',
+            hearing_role: 'Panel Member',
+            tiled_display_name: 'T7;Panel Mem Doe PM;7777-7777-7777-7777'
+        });
+
+        const participant8 = new ParticipantResponseVho({
+            id: '4545-4545-4545-4545',
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'J Doe WINGER',
+            role: Role.JudicialOfficeHolder,
+            case_type_group: 'None',
+            hearing_role: 'Winger'
+        });
+
+        const participant9 = new ParticipantResponseVho({
+            id: '7878-7878-7878-7878',
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'J Doe WITNESS',
+            role: Role.Individual,
+            case_type_group: 'None',
+            hearing_role: 'Witness'
+        });
+
+        participants.push(participant1);
+        participants.push(participant2);
+        participants.push(participant3);
+        participants.push(participant4);
+        participants.push(participant5);
+        participants.push(participant6);
+        participants.push(participant7);
+        participants.push(participant8);
+        participants.push(participant9);
+        return participants;
+    }
+
+    getListOfParticipantDetails(): ParticipantResponse[] {
+        const participants: ParticipantResponse[] = [];
+        const participant1 = new ParticipantResponse();
+        participant1.init({
             id: '9F681318-4955-49AF-A887-DED64554429D',
             name: 'Mr Chris Green',
             status: ParticipantStatus.Available,
@@ -281,10 +390,17 @@ export class ConferenceTestData {
             display_name: 'Greeno',
             tiled_display_name: 'T1;Greeno;9F681318-4955-49AF-A887-DED64554429D',
             hearing_role: HearingRole.LITIGANT_IN_PERSON,
-            current_room: new RoomSummaryResponse()
+            current_room: new RoomSummaryResponse(),
+            linked_participants: [
+                new LinkedParticipantResponse({
+                    participant_id: '9F681318-4955-49AF-A887-DED64554429D',
+                    linked_participant_id: '9F681318-4955-49AF-A887-DED64554429K',
+                    type: 'Interpreter'
+                })
+            ]
         });
 
-        const participant2 = new ParticipantResponseVho({
+        const participant2 = new ParticipantResponse({
             id: '9F681318-4955-49AF-A887-DED64554429J',
             name: 'Mr James Green',
             representee: 'Chris Green',
@@ -297,7 +413,7 @@ export class ConferenceTestData {
             current_room: new RoomSummaryResponse()
         });
 
-        const participant3 = new ParticipantResponseVho({
+        const participant3 = new ParticipantResponse({
             id: '9F681318-4955-49AF-A887-DED64554429T',
             name: 'Judge Fudge',
             status: ParticipantStatus.Available,
@@ -309,9 +425,30 @@ export class ConferenceTestData {
             current_room: new RoomSummaryResponse()
         });
 
+        const participant4 = new ParticipantResponse();
+        participant4.init({
+            id: '9F681318-4955-49AF-A887-DED64554429K',
+            name: 'Mr James Blue',
+            status: ParticipantStatus.NotSignedIn,
+            role: Role.Individual,
+            display_name: 'James Blue',
+            case_type_group: 'Defendent',
+            tiled_display_name: 'T3;James Blue;9F681318-4955-49AF-A887-DED64554429K',
+            hearing_role: HearingRole.INTERPRETER,
+            current_room: new RoomSummaryResponse(),
+            linked_participants: [
+                new LinkedParticipantResponse({
+                    participant_id: '9F681318-4955-49AF-A887-DED64554429K',
+                    linked_participant_id: '9F681318-4955-49AF-A887-DED64554429D',
+                    type: 'Interpreter'
+                })
+            ]
+        });
+
         participants.push(participant1);
         participants.push(participant2);
         participants.push(participant3);
+        participants.push(participant4);
         return participants;
     }
 

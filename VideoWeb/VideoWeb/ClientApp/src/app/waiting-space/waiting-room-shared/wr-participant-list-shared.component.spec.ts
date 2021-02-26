@@ -106,7 +106,7 @@ describe('WaitingRoom ParticipantList Base', () => {
     it('should group type of participants', () => {
         expect(component.judge).toBeDefined();
         expect(component.nonJudgeParticipants).toBeDefined();
-        expect(component.nonJudgeParticipants.length).toBe(2);
+        expect(component.nonJudgeParticipants.length).toBe(3);
 
         expect(component.observers).toBeDefined();
         expect(component.observers.length).toBe(2);
@@ -114,7 +114,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         expect(component.panelMembers).toBeDefined();
         expect(component.panelMembers.length).toBe(1);
 
-        expect(component.participantCount).toBe(5);
+        expect(component.participantCount).toBe(6);
 
         expect(component.endpoints).toBeDefined();
         expect(component.endpoints.length).toBe(2);
@@ -215,12 +215,12 @@ describe('WaitingRoom ParticipantList Base', () => {
         component.loggedInUser.role = Role.JudicialOfficeHolder;
         component.initParticipants();
 
-        expect(component.participantsInConsultation.length).toBe(4);
+        expect(component.participantsInConsultation.length).toBe(5);
     });
     it('should get list of participants for user participant', () => {
         component.loggedInUser.role = Role.Individual;
 
         component.initParticipants();
-        expect(component.participantsInConsultation.length).toBe(2);
+        expect(component.participantsInConsultation.length).toBe(3);
     });
 });

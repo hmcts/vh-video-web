@@ -11,6 +11,7 @@ import { mergeMap as _observableMergeMap, catchError as _observableCatch } from 
 import { Observable, throwError as _observableThrow, of as _observableOf } from 'rxjs';
 import { Injectable, Inject, Optional, InjectionToken } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
+import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
@@ -4383,7 +4384,6 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
     representee?: string | undefined;
     hearing_role?: string | undefined;
     current_room?: RoomSummaryResponse | undefined;
-    hasInterpreterLink: boolean;
 
     constructor(data?: IParticipantResponseVho) {
         if (data) {
@@ -4405,7 +4405,6 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
             this.representee = _data['representee'];
             this.hearing_role = _data['hearing_role'];
             this.current_room = _data['current_room'] ? RoomSummaryResponse.fromJS(_data['current_room']) : <any>undefined;
-            this.hasInterpreterLink = false;
         }
     }
 
@@ -4449,7 +4448,6 @@ export interface IParticipantResponseVho {
     representee?: string | undefined;
     hearing_role?: string | undefined;
     current_room?: RoomSummaryResponse | undefined;
-    hasInterpreterLink: boolean;
 }
 
 /** Detailed information about a conference for VHO officer */
@@ -4569,13 +4567,14 @@ export class ParticipantResponse implements IParticipantResponse {
     hearing_role?: string | undefined;
     current_room?: RoomSummaryResponse | undefined;
     linked_participants?: LinkedParticipantResponse[] | undefined;
-    hasInterpreterLink: boolean;
+    hasInterpreterLink?: boolean | undefined;
 
     constructor(data?: IParticipantResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
             }
+            console.log(this);
         }
     }
 
@@ -4596,7 +4595,8 @@ export class ParticipantResponse implements IParticipantResponse {
             if (Array.isArray(_data['linked_participants'])) {
                 this.linked_participants = [] as any;
                 for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantResponse.fromJS(item));
-                this.hasInterpreterLink = this.linked_participants.some(lnk => lnk.linkedParticipantType === 'Interpreter') ? true : false;
+                this.hasInterpreterLink = this.linked_participants.some(lnk => lnk.type === HearingRole.INTERPRETER) ? true : false;
+                console.log(this.hasInterpreterLink);
             }
         }
     }
@@ -4647,6 +4647,7 @@ export interface IParticipantResponse {
     hearing_role?: string | undefined;
     current_room?: RoomSummaryResponse | undefined;
     linked_participants?: LinkedParticipantResponse[] | undefined;
+    hasInterpreterLink?: boolean | undefined;
 }
 
 export enum EndpointStatus {
@@ -6417,11 +6418,11 @@ export interface IConferenceEventRequest {
 
 export class LinkedParticipantResponse implements ILinkedParticipantResponse {
     /** Participant Id */
-    participantId?: string | undefined;
+    participant_id?: string | undefined;
     //** Linked Participant Id */
-    linkedParticipantId?: string | undefined;
+    linked_participant_id?: string | undefined;
     /** Is the room locked */
-    linkedParticipantType?: string;
+    type?: string;
 
     constructor(data?: ILinkedParticipantResponse) {
         if (data) {
@@ -6433,9 +6434,10 @@ export class LinkedParticipantResponse implements ILinkedParticipantResponse {
 
     init(_data?: any) {
         if (_data) {
-            this.participantId = _data['participant_id'];
-            this.linkedParticipantId = _data['linked_participant_id'];
-            this.linkedParticipantType = _data['type'];
+            console.log(_data['participant_id']);
+            this.participant_id = _data['participant_id'];
+            this.linked_participant_id = _data['linked_participant_id'];
+            this.type = _data['type'];
         }
     }
 
@@ -6448,20 +6450,20 @@ export class LinkedParticipantResponse implements ILinkedParticipantResponse {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data['participant_id'] = this.participantId;
-        data['linked_participant_id'] = this.linkedParticipantId;
-        data['type'] = this.linkedParticipantType;
+        data['participant_id'] = this.participant_id;
+        data['linked_participant_id'] = this.linked_participant_id;
+        data['type'] = this.type;
         return data;
     }
 }
 
 export interface ILinkedParticipantResponse {
     /** Participant Id */
-    participantId?: string | undefined;
+    participant_id?: string | undefined;
     /** Participant Id */
-    linkedparticipantId?: string | undefined;
+    linked_participant_id?: string | undefined;
     /** Is the room locked */
-    linkedparticipanttype?: string;
+    type?: string;
 }
 
 export class ApiException extends Error {

@@ -161,7 +161,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         component.ngOnInit();
 
         // Assert
-        expect(component.nonJudgeParticipants.length).toBe(2);
+        expect(component.nonJudgeParticipants.length).toBe(3);
         expect(component.judge).not.toBeNull();
         expect(component.endpoints.length).toBe(2);
         expect(component.observers.length).toBe(0);

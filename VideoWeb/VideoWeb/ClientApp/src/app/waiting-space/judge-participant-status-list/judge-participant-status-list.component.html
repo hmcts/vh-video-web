@@ -172,12 +172,17 @@
               <img *ngIf="participant.hasInterpreterLink"  class="vh-interpreter-icon" src="/assets/images/interpreter.png" alt="Interpreter" />
               {{ participant.name }}
             </p>
-            <p id="p-{{ participant.id }}-representee" *ngIf="participant.representee" class="govuk-body-m govuk-!-margin-bottom-3">
-              {{ !isCaseTypeNone(participant) ? 'Representative' : participant.hearing_role }} for {{ participant.representee }}
+
+            <p id="p-{{ participant.id }}-interpreter-role" *ngIf="!participant.representee && participant.hearing_role === 'Interpreter'" class="govuk-body-m govuk-!-margin-bottom-3">
+                {{ participant.hearing_role }} for <br><strong>{{ getInterpreteeName(participant.id) }}</strong>
+            </p>
+
+            <p id="p-{{ participant.id }}-representee" *ngIf="participant.representee && participant.hearing_role !== 'Interpreter'" class="govuk-body-m govuk-!-margin-bottom-3">
+              {{ !isCaseTypeNone(participant) ? 'Representative' : participant.hearing_role }} for <br><strong>{{ participant.representee }}</strong>
             </p>
             <p
               id="p-{{ participant.id }}-hearing-role-participant"
-              *ngIf="!participant.representee"
+              *ngIf="!participant.representee && participant.hearing_role !== 'Interpreter'"
               class="govuk-body-m govuk-!-margin-bottom-3"
             >
               {{ participant.hearing_role }}

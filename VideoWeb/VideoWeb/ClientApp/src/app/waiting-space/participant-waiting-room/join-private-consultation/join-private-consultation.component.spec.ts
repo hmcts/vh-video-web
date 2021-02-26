@@ -61,7 +61,7 @@ describe('JoinPrivateConsultationComponent', () => {
 
         component.participants = globalConference.participants;
         component.endpoints = globalConference.endpoints;
-        expect(component.getRoomDetails()).toHaveSize(1);
+        expect(component.getRoomDetails()).toHaveSize(2);
     });
 
     it('should remove old rooms', () => {
@@ -79,7 +79,7 @@ describe('JoinPrivateConsultationComponent', () => {
 
         component.participants = globalConference.participants;
         component.endpoints = globalConference.endpoints;
-        expect(component.getRoomDetails()).toHaveSize(1);
+        expect(component.getRoomDetails()).toHaveSize(2);
     });
 
     it('should return participant hearing role text', () => {
