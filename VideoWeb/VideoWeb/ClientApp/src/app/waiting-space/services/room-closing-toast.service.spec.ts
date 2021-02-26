@@ -60,27 +60,6 @@ describe('RoomClosingToastrService', () => {
     // --> private functions
     // ---------------------
 
-    function getNotClosedHearing(): Hearing {
-        const c = conferenceTestData.getConferenceDetailNow();
-        c.status = ConferenceStatus.InSession;
-
-        const hearing = new Hearing(c);
-        expect(hearing.isClosed()).toBeFalsy();
-        return hearing;
-    }
-
-    function getExpiredHearing(): Hearing {
-        const c = conferenceTestData.getConferenceDetailFuture();
-        c.status = ConferenceStatus.Closed;
-        c.closed_date_time = new Date(2000, 1, 1, 10, 0, 0, 0);
-
-        const hearing = new Hearing(c);
-        expect(hearing.isClosed()).toBeTruthy();
-        expect(hearing.isExpired(c.closed_date_time)).toBeTruthy();
-        expect(hearing.status).toEqual(ConferenceStatus.Closed);
-        return hearing;
-    }
-
     function getClosedButNotExpiredHearing(): Hearing {
         const closedDateTime = moment.utc().subtract(20, 'minutes').toDate();
 

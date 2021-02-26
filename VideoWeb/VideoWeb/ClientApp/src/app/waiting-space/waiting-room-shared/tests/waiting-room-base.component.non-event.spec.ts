@@ -1,4 +1,5 @@
-import { fakeAsync, tick } from '@angular/core/testing';
+import { fakeAsync } from '@angular/core/testing';
+import { ActiveToast } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import {
     ConferenceResponse,
@@ -12,6 +13,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { SelectedUserMediaDevice } from 'src/app/shared/models/selected-user-media-device';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { pageUrls } from 'src/app/shared/page-url.constants';
+import { RoomClosingToastComponent } from 'src/app/shared/toast/room-closing/room-closing-toast.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
 import {
@@ -43,6 +45,19 @@ describe('WaitingRoomComponent message and clock', () => {
 
     beforeAll(() => {
         initAllWRDependencies();
+
+        const mockToast = {
+            toastRef: {
+                componentInstance: {}
+            }
+        } as ActiveToast<RoomClosingToastComponent>;
+        roomClosingToastrService.showRoomClosingAlert.and.callFake((hearing, date) => {
+            roomClosingToastrService.currentToast = mockToast;
+        });
+        roomClosingToastrService.clearToasts.and.callFake(() => {
+            roomClosingToastrService.currentToast = null;
+        });
+
         videoCallService.retrieveVideoCallPreferences.and.returnValue(new VideoCallPreferences());
     });
 
@@ -338,19 +353,21 @@ describe('WaitingRoomComponent message and clock', () => {
 
     it('showRoomClosingToast() should clear all toasts when not in the consultation room', async () => {
         component.isPrivateConsultation = false;
+        const date = new Date();
 
-        await component.showRoomClosingToast(new Date());
+        await component.showRoomClosingToast(date);
 
-        expect(roomClosingToastrService.showRoomClosingAlert).toHaveBeenCalledTimes(0);
-        expect(roomClosingToastrService.clearToasts).toHaveBeenCalledTimes(1);
+        expect(roomClosingToastrService.clearToasts).toHaveBeenCalled();
+        expect(roomClosingToastrService.currentToast).toBeFalsy();
     });
 
     it('showRoomClosingToast() should show "room closing" toast when in the consultation room', async () => {
         component.isPrivateConsultation = true;
+        const date = new Date();
 
-        await component.showRoomClosingToast(new Date());
+        await component.showRoomClosingToast(date);
 
-        expect(roomClosingToastrService.showRoomClosingAlert).toHaveBeenCalledTimes(1);
-        expect(roomClosingToastrService.clearToasts).toHaveBeenCalledTimes(0);
+        expect(roomClosingToastrService.showRoomClosingAlert).toHaveBeenCalledWith(component.hearing, date);
+        expect(roomClosingToastrService.currentToast).toBeTruthy();
     });
 });
