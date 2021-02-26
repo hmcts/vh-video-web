@@ -374,7 +374,7 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(roomClosingToastrService.showRoomClosingAlert).toHaveBeenCalledWith(component.hearing, date);
         expect(roomClosingToastrService.currentToast).toBeTruthy();
     });
-    
+
     it('should use interpreter room when participant has links', async () => {
         component.participant.linked_participants = [
             new LinkedParticipantResponse({ linked_id: Guid.create().toString(), link_type: LinkType.Interpreter })
