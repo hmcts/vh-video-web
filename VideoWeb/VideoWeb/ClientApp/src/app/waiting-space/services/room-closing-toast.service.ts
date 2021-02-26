@@ -3,7 +3,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ActiveToast, ToastrService } from 'ngx-toastr';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { RoomClosingToastComponent } from 'src/app/shared/toast/room-closing/room-closing-toast.component';
-import * as moment from 'moment';
 
 @Injectable()
 export class RoomClosingToastrService {
@@ -11,65 +10,41 @@ export class RoomClosingToastrService {
 
     currentToast: ActiveToast<RoomClosingToastComponent> = null;
     expiresAt: Date;
-    gates: Date[] = [];
-    shownGates: Date[] = [];
+
+    toastsDismissed = 0;
+
+    showFirstToastAtMins = 25;
+    showSecondToastAtMins = 25.5;
 
     constructor(private logger: Logger, private toastr: ToastrService) {}
 
     /**
      * If conditions are met, show the "room closing" notification
      */
-    public showRoomClosingAlert(hearing: Hearing, timeNow: Date) {
-        if (this.currentToast) {
-            return;
-        }
-
-        if (!this.expiresAt) {
-            if (hearing.isClosed() && !hearing.isExpired(hearing.actualCloseTime)) {
-                this.expiresAt = hearing.retrieveExpiryTime();
-                this.gates = this.getGates(this.getDurations(), this.expiresAt);
-            } else {
+    showRoomClosingAlert(hearing: Hearing, timeNow: Date) {
+        if (hearing.isClosed() && !hearing.isExpired(hearing.actualCloseTime) && !this.currentToast && this.toastsDismissed < 2) {
+            const expiryTime = hearing.retrieveExpiryTime();
+            if (!expiryTime) {
                 return;
             }
+
+            const msToExpiry = expiryTime.valueOf() - timeNow.valueOf();
+            if (msToExpiry <= this.minsToMs(this.showFirstToastAtMins)) {
+                if (this.toastsDismissed === 0) {
+                    // this is the first toast
+                    this.showToast(expiryTime);
+                    return;
+                }
+
+                if (msToExpiry <= this.minsToMs(this.showSecondToastAtMins)) {
+                    // show the second toast
+                    this.showToast(expiryTime);
+                }
+            }
         }
-
-        const pastGates = this.getPastGates(timeNow);
-        if (!pastGates.length || pastGates.length === this.shownGates.length) {
-            return;
-        }
-
-        this.shownGates = pastGates;
-        this.showToast(this.expiresAt);
     }
 
-    protected getDurations(): moment.Duration[] {
-        const durations: moment.Duration[] = [];
-
-        const fiveMinsLeft = moment.duration(5, 'minutes');
-        const thirtySecondsLeft = moment.duration(30, 'seconds');
-        durations.push(fiveMinsLeft);
-        durations.push(thirtySecondsLeft);
-
-        return durations;
-    }
-
-    protected getGates(durations: moment.Duration[], expiresAt: Date): Date[] {
-        const gates: Date[] = [];
-        for (const duration of durations) {
-            const dateMoment = moment(expiresAt).subtract(duration);
-            const date = dateMoment.toDate();
-            gates.push(date);
-        }
-        return gates;
-    }
-
-    protected getPastGates(timeNow: Date): Date[] {
-        return this.gates.filter(gate => {
-            return timeNow.valueOf() > gate.valueOf();
-        });
-    }
-
-    protected showToast(expiryDate: Date): void {
+    protected showToast(expiryDate: Date) {
         this.logger.debug(`${this.loggerPrefix} creating 'showRoomClosingAlert' toastr notification`);
 
         this.currentToast = this.toastr.show('', '', {
@@ -84,27 +59,30 @@ export class RoomClosingToastrService {
                 {
                     label: 'Dismiss',
                     hoverColour: 'green',
-                    action: async () => {
-                        this.closeOpenToast(new Date());
-                    }
+                    action: async () => this.onToastClosed()
                 }
             ],
             expiryDate: expiryDate
         };
     }
 
-    protected closeOpenToast(timeNow: Date): void {
+    onToastClosed(): void {
         if (this.currentToast) {
             this.toastr.remove(this.currentToast.toastId);
-            this.shownGates = this.getPastGates(timeNow);
             this.currentToast = null;
+            this.toastsDismissed++;
         }
+    }
+
+    // just for convenience
+    private minsToMs(minutes: number) {
+        return minutes * 60 * 1000;
     }
 
     /**
      * Close any/all open toasts (i.e. when user exits consultation room)
      */
     clearToasts() {
-        this.closeOpenToast(new Date());
+        this.onToastClosed();
     }
 }
