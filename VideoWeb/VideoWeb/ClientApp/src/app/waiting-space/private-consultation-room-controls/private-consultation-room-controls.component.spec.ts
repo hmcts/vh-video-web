@@ -17,6 +17,7 @@ import {
 } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '../models/video-call-models';
+import { deviceTypeService } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { PrivateConsultationRoomControlsComponent } from './private-consultation-room-controls.component';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
@@ -37,7 +38,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     const testData = new VideoCallTestData();
 
     beforeEach(() => {
-        component = new PrivateConsultationRoomControlsComponent(videoCallService, eventsService, logger);
+        component = new PrivateConsultationRoomControlsComponent(videoCallService, eventsService, deviceTypeService, logger);
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
         component.setupEventhubSubscribers();
