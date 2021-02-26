@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Helpers;
@@ -12,7 +13,7 @@ namespace VideoWeb.AcceptanceTests.Api
         private readonly TestApiManager _api;
         private Guid _conferenceId;
         private string _username;
-        private ParticipantState _expectedState;
+        private List<ParticipantState> _expectedStates;
         private int _maxRetries = 5;
 
         public PollForParticipantStatus(TestApiManager api)
@@ -32,9 +33,9 @@ namespace VideoWeb.AcceptanceTests.Api
             return this;
         }
 
-        public PollForParticipantStatus WithExpectedState(ParticipantState expectedState)
+        public PollForParticipantStatus WithExpectedState(params ParticipantState [] expectedStates)
         {
-            _expectedState = expectedState;
+            _expectedStates = new List<ParticipantState>(expectedStates);
             return this;
         }
 
@@ -54,13 +55,13 @@ namespace VideoWeb.AcceptanceTests.Api
                 conference.Should().NotBeNull();
                 var participant = conference.Participants.Find(x => x.Username.ToLower().Equals(_username.ToLower()));
                 actualState = participant.Current_status;
-                if (actualState.Equals(_expectedState))
+                if (_expectedStates.Contains(actualState))
                 {
                     return actualState;
                 }
                 Thread.Sleep(TimeSpan.FromSeconds(1));
             }
-            throw new DataMisalignedException($"Expected participant state to be updated to {_expectedState} but was {actualState}");
+            throw new DataMisalignedException($"Expected participant state to be updated to {_expectedStates} but was {actualState}");
         }
     }
 }
