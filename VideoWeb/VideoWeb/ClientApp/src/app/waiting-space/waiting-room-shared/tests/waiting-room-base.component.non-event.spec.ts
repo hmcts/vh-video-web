@@ -1,9 +1,13 @@
-import { fakeAsync } from '@angular/core/testing';
+import { fakeAsync, tick } from '@angular/core/testing';
 import { ActiveToast } from 'ngx-toastr';
+import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
 import {
     ConferenceResponse,
     ConferenceStatus,
+    InterpreterRoom,
+    LinkedParticipantResponse,
+    LinkType,
     LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
@@ -369,5 +373,22 @@ describe('WaitingRoomComponent message and clock', () => {
 
         expect(roomClosingToastrService.showRoomClosingAlert).toHaveBeenCalledWith(component.hearing, date);
         expect(roomClosingToastrService.currentToast).toBeTruthy();
+    });
+    
+    it('should use interpreter room when participant has links', async () => {
+        component.participant.linked_participants = [
+            new LinkedParticipantResponse({ linked_id: Guid.create().toString(), link_type: LinkType.Interpreter })
+        ];
+        const room = new InterpreterRoom({ participant_join_uri: 'patjoinuri', pexip_node: 'sip.test.node', display_name: 'foo' });
+        videoCallService.retrieveInterpreterRoom.and.resolveTo(room);
+
+        await component.call();
+
+        expect(videoCallService.makeCall).toHaveBeenCalledWith(
+            room.pexip_node,
+            room.participant_join_uri,
+            room.display_name,
+            component.maxBandwidth
+        );
     });
 });

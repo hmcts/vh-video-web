@@ -7,7 +7,7 @@ import {
     ParticipantResponse,
     ParticipantStatus,
     Role,
-    UpdateParticipantRequest,
+    UpdateParticipantDisplayNameRequest,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
@@ -131,7 +131,7 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     }
 
     private async updateParticipant() {
-        const updateParticipantRequest = new UpdateParticipantRequest({
+        const updateParticipantRequest = new UpdateParticipantDisplayNameRequest({
             fullname: this.judge.name,
             display_name: this.judge.display_name,
             representee: this.judge.representee,

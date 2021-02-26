@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
 {
