@@ -6424,6 +6424,7 @@ export class ConferenceEventRequest implements IConferenceEventRequest {
     time_stamp_utc?: Date;
     conference_id?: string | undefined;
     participant_id?: string | undefined;
+    participant_room_id?: string | undefined;
     transfer_from?: string | undefined;
     transfer_to?: string | undefined;
     reason?: string | undefined;
@@ -6444,6 +6445,7 @@ export class ConferenceEventRequest implements IConferenceEventRequest {
             this.time_stamp_utc = _data['time_stamp_utc'] ? new Date(_data['time_stamp_utc'].toString()) : <any>undefined;
             this.conference_id = _data['conference_id'];
             this.participant_id = _data['participant_id'];
+            this.participant_room_id = _data['participant_room_id'];
             this.transfer_from = _data['transfer_from'];
             this.transfer_to = _data['transfer_to'];
             this.reason = _data['reason'];
@@ -6465,6 +6467,7 @@ export class ConferenceEventRequest implements IConferenceEventRequest {
         data['time_stamp_utc'] = this.time_stamp_utc ? this.time_stamp_utc.toISOString() : <any>undefined;
         data['conference_id'] = this.conference_id;
         data['participant_id'] = this.participant_id;
+        data['participant_room_id'] = this.participant_room_id;
         data['transfer_from'] = this.transfer_from;
         data['transfer_to'] = this.transfer_to;
         data['reason'] = this.reason;
@@ -6479,6 +6482,7 @@ export interface IConferenceEventRequest {
     time_stamp_utc?: Date;
     conference_id?: string | undefined;
     participant_id?: string | undefined;
+    participant_room_id?: string | undefined;
     transfer_from?: string | undefined;
     transfer_to?: string | undefined;
     reason?: string | undefined;

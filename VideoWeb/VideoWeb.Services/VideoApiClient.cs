@@ -7787,6 +7787,10 @@ namespace VideoWeb.Services.Video
         [Newtonsoft.Json.JsonProperty("participant_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Participant_id { get; set; }
     
+        /// <summary>Id of participant room (uuid). This only applies to VMR events</summary>
+        [Newtonsoft.Json.JsonProperty("participant_room_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Participant_room_id { get; set; }
+    
         /// <summary>Room from where the participant is transferred from.</summary>
         [Newtonsoft.Json.JsonProperty("transfer_from", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Transfer_from { get; set; }

@@ -8,9 +8,10 @@ namespace VideoWeb.Mappings
     {
         public InterpreterRoom Map(InterpreterRoomResponse input)
         {
+            var node = input.Pexip_node.Replace("https://", string.Empty);
             return new InterpreterRoom
             {
-                PexipNode = input.Pexip_node,
+                PexipNode = node,
                 ParticipantJoinUri = input.Participant_join_uri
             };
         }
