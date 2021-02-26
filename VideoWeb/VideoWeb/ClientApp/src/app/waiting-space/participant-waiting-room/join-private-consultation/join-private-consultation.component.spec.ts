@@ -120,4 +120,13 @@ describe('JoinPrivateConsultationComponent', () => {
         component.getRoomDetails();
         expect(component.continueDisabled()).toBeFalsy();
     });
+
+    it('should not display JOH rooms', () => {
+        const label = 'JudgeJOH';
+        const participant = globalParticipant;
+        participant.current_room = new RoomSummaryResponse({ label: label, locked: false });
+        component.participants = [participant];
+        component.getRoomDetails();
+        expect(component.roomDetails.length).toEqual(0);
+    });
 });

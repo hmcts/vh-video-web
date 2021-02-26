@@ -38,6 +38,9 @@ export class JoinPrivateConsultationComponent {
         });
 
         currentRooms.forEach(r => {
+            if (r.label.toLowerCase().includes('judgejoh')) {
+                return;
+            }
             // add any new rooms
             if (this.roomDetails.filter(rd => r.label === rd.label).length === 0) {
                 const displayName = !r.label
