@@ -28,13 +28,13 @@
           class="govuk-button"
           data-module="govuk-button"
           type="button"
-          *ngIf="!canStartHearing(conference)"
+          *ngIf="canStartHearing(conference)"
           (click)="signIntoConference(conference)"
           attr.aria-label="{{ 'hearing-list-table.button.sign-into-hearing' | translate }}"
         >
         {{ 'hearing-list-table.button.sign-into-hearing' | translate }}
         </button>
-        <span *ngIf="canStartHearing(conference)">
+        <span *ngIf="!canStartHearing(conference)">
           <p id="participant-sign-in-date-{{ conference.id }}" class="govuk-!-margin-0 govuk-!-padding-0">
             {{ 'hearing-list-table.sign-in' | translate:{ date: getSignInDate(conference)} }}
           </p>
