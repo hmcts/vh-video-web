@@ -331,12 +331,12 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.participant = globalParticipant;
         component.participant.current_room.label = 'JudgeJOHConsutationRoom';
 
-        expect(component.isJohRoom()).toBe(true);
+        expect(component.isJohRoom).toBe(true);
     });
     it('should confirm that participant not in the judge and joh consultation room', () => {
         component.participant = globalParticipant;
         component.participant.current_room.label = 'ParticipantConsutationRoom';
 
-        expect(component.isJohRoom()).toBe(false);
+        expect(component.isJohRoom).toBe(false);
     });
 });
