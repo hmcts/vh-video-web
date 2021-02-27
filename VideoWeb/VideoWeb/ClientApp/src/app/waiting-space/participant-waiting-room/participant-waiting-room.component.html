@@ -32,13 +32,13 @@
       <span class="room-title">
         {{getRoomName()}} 
       </span>
-      <span class="room-status">
+      <span class="room-status" *ngIf="!isJohRoom">
         <span class="lock-badge" [class]="this.participant?.current_room?.locked ? 'locked' : 'unlocked'">{{this.participant?.current_room?.locked ? 'locked' : 'unlocked'}}</span>
       </span>
-      <span *ngIf="!this.participant?.current_room?.locked" class="room-status-desc">
+      <span *ngIf="!this.participant?.current_room?.locked && !isJohRoom" class="room-status-desc">
           Other participants can enter the room. You can lock the room if you want to prevent anyone else entering.
       </span>
-      <span *ngIf="this.participant?.current_room?.locked" class="room-status-desc">
+      <span *ngIf="this.participant?.current_room?.locked && !isJohRoom" class="room-status-desc">
         Other participants cannot enter. You can invite others into the room by calling them <i class="fas fa-phone-alt" aria-hidden="true"></i>, or you can unlock the room to allow others to join.    </span>
     </div>
     <div class="govuk-grid-column-one-quarter">

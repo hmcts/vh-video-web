@@ -327,4 +327,16 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
         expect(component.privateConsultationAccordianExpanded).toBe(false);
     });
+    it('should confirm that participant in the judge and joh consultation room', () => {
+        component.participant = globalParticipant;
+        component.participant.current_room.label = 'JudgeJOHConsutationRoom';
+
+        expect(component.isJohRoom()).toBe(true);
+    });
+    it('should confirm that participant not in the judge and joh consultation room', () => {
+        component.participant = globalParticipant;
+        component.participant.current_room.label = 'ParticipantConsutationRoom';
+
+        expect(component.isJohRoom()).toBe(false);
+    });
 });
