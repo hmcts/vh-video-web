@@ -17,9 +17,12 @@
     "prettify-fix": "run-script-os",
     "prettify-fix:nix": "npx prettier --write 'src/app/**/*.*'",
     "prettify-fix:default": "npx prettier --write \"src\\app\\**\\*.*\"",
+    "prettify-api-client": "run-script-os",
+    "prettify-api-client:nix": "npx prettier --write 'src/app/services/clients/api-client.ts'",
+    "prettify-api-client:default": "npx prettier --write \"src\\app\\services\\clients\\api-client.ts\"",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect",
-    "update-api-client": "nswag run"
+    "update-api-client": "nswag run && npm run prettify-api-client"
   },
   "private": true,
   "dependencies": {

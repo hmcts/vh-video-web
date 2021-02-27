@@ -1,9 +1,13 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings.Decorators
 {
+#pragma warning disable S2436 // Types and methods should not have too many generic parameters
+    [SuppressMessage("ReSharper", "ContextualLoggerProblem")]
     public class MapperLoggingDecorator<TIn1, TOut> : IMapTo<TIn1, TOut>
     {
         private readonly IMapTo<TIn1, TOut> _underlyingMapper;
@@ -33,6 +37,7 @@ namespace VideoWeb.Mappings.Decorators
         }
     }
 
+    [SuppressMessage("ReSharper", "ContextualLoggerProblem")]
     public class MapperLoggingDecorator<TIn1, TIn2, TOut> : IMapTo<TIn1, TIn2, TOut>
     {
         private readonly IMapTo<TIn1, TIn2, TOut> _underlyingMapper;
@@ -62,7 +67,8 @@ namespace VideoWeb.Mappings.Decorators
             return result;
         }
     }
-
+    
+    [SuppressMessage("ReSharper", "ContextualLoggerProblem")]
     public class MapperLoggingDecorator<TIn1, TIn2, TIn3, TOut> : IMapTo<TIn1, TIn2, TIn3, TOut>
     {
         private readonly IMapTo<TIn1, TIn2, TIn3, TOut> _underlyingMapper;
@@ -94,6 +100,7 @@ namespace VideoWeb.Mappings.Decorators
         }
     }
 
+    [SuppressMessage("ReSharper", "ContextualLoggerProblem")]
     public class MapperLoggingDecorator<TIn1, TIn2, TIn3, TIn4, TOut> : IMapTo<TIn1, TIn2, TIn3, TIn4, TOut>
     {
         private readonly IMapTo<TIn1, TIn2, TIn3, TIn4, TOut> _underlyingMapper;
@@ -126,6 +133,7 @@ namespace VideoWeb.Mappings.Decorators
         }
     }
 
+    [SuppressMessage("ReSharper", "ContextualLoggerProblem")]
     public class MapperLoggingDecorator<TIn1, TIn2, TIn3, TIn4, TIn5, TOut> : IMapTo<TIn1, TIn2, TIn3, TIn4, TIn5, TOut>
     {
         private readonly IMapTo<TIn1, TIn2, TIn3, TIn4, TIn5, TOut> _underlyingMapper;

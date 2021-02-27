@@ -85,7 +85,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.HearingTitle).Displayed.Should().BeTrue();
             WaitForUserStatusToBe(ParticipantState.Available);
             _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.EnterPrivateConsultationButton);
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.LeavePrivateConsultationButton).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateConsultationRoomPage.LeavePrivateConsultationButton).Displayed.Should().BeTrue();
             WaitForUserStatusToBe(ParticipantState.InConsultation);
         }
 
@@ -93,35 +93,35 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenTheyLeaveTheConsultationRoom(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.LeavePrivateConsultationButton);
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.ConfirmLeavePrivateConsultationButton).Click();
+            _browsers[_c.CurrentUser].Click(PrivateConsultationRoomPage.LeavePrivateConsultationButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateConsultationRoomPage.ConfirmLeavePrivateConsultationButton).Click();
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.HearingTitle).Displayed.Should().BeTrue();
         }
         
         [When(@"(?:he|she|they) (?:mute|mutes|unmute) their microphone")]
         public void WhenTheyToggleTheMuteIcon()
         {
-            _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.ToggleMute);
+            _browsers[_c.CurrentUser].Click(PrivateConsultationRoomPage.ToggleMute);
         }
 
         [When(@"(?:he|she|they) (?:hide|hides|show) their self view")]
         public void WhenTheyToggleTheSelfViewIcon()
         {
-            _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.ToggleSelfView);
+            _browsers[_c.CurrentUser].Click(PrivateConsultationRoomPage.ToggleSelfViewButton);
         }
         
         [Then(@"(?:he|she|they) will be transferred to the private consultation room")]
         public void ThenTheyWillBeInThePrivateConsultationRoom()
         {
             new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser])
-                .Feed(JudgeWaitingRoomPage.IncomingFeed);
+                .Feed(PrivateConsultationRoomPage.IncomingFeed);
         }
 
         [Then(@"(?:he|she|they) can leave the private consultation room")]
         public void ThenTheyCanLeaveThePrivateConsultation()
         {
-            _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.LeavePrivateConsultationButton);
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.ConfirmLeavePrivateConsultationButton).Click();
+            _browsers[_c.CurrentUser].Click(PrivateConsultationRoomPage.LeavePrivateConsultationButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateConsultationRoomPage.ConfirmLeavePrivateConsultationButton).Click();
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.HearingTitle).Displayed.Should().BeTrue();
         }
 
@@ -135,15 +135,15 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"their microphone will be muted")]
         public void ThenTheirMicrophoneWillBeMuted()
         {
-            _browsers[_c.CurrentUser].Driver.FindElement(JudgeWaitingRoomPage.ToggleMute).GetAttribute("class")
-                .Should().EndWith(JudgeWaitingRoomPage.ToggleMuteMicOff);
+            _browsers[_c.CurrentUser].Driver.FindElement(PrivateConsultationRoomPage.ToggleMute).GetAttribute("class")
+                .Should().EndWith(PrivateConsultationRoomPage.ToggleMuteMicOff);
         }
 
         [Then(@"their microphone will not be muted")]
         public void ThenTheirMicrophoneWillNotBeMuted()
         {
-            _browsers[_c.CurrentUser].Driver.FindElement(JudgeWaitingRoomPage.ToggleMute).GetAttribute("class")
-                .Should().EndWith(JudgeWaitingRoomPage.ToggleMuteMicOn);
+            _browsers[_c.CurrentUser].Driver.FindElement(PrivateConsultationRoomPage.ToggleMute).GetAttribute("class")
+                .Should().EndWith(PrivateConsultationRoomPage.ToggleMuteMicOn);
         }
 
         [Then(@"(?:he|she|they) can unmute their microphone")]
@@ -163,39 +163,39 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"their self view will be hidden")]
         public void ThenTheirSelfViewWillBeHidden()
         {
-            _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(JudgeWaitingRoomPage.SelfViewVideo);
-            _browsers[_c.CurrentUser].Driver.FindElement(JudgeWaitingRoomPage.ToggleSelfView).GetAttribute("class")
-                .Should().EndWith(JudgeWaitingRoomPage.ToggleSelfViewHide);
-            _browsers[_c.CurrentUser].IsDisplayed(JudgeWaitingRoomPage.SelfViewVideo).Should().BeFalse();
+            _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(PrivateConsultationRoomPage.SelfViewVideo);
+            _browsers[_c.CurrentUser].Driver.FindElement(PrivateConsultationRoomPage.ToggleSelfViewButton).GetAttribute("class")
+                .Should().EndWith(PrivateConsultationRoomPage.ToggleSelfViewHide);
+            _browsers[_c.CurrentUser].IsDisplayed(PrivateConsultationRoomPage.SelfViewVideo).Should().BeFalse();
         }
 
         [Then(@"their self view will be displayed")]
         public void ThenTheirSelfViewWillBeShown()
         {
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.SelfViewVideo);
-            _browsers[_c.CurrentUser].Driver.FindElement(JudgeWaitingRoomPage.ToggleSelfView).GetAttribute("class")
-                .Should().EndWith(JudgeWaitingRoomPage.ToggleSelfViewShow);
-            _browsers[_c.CurrentUser].IsDisplayed(JudgeWaitingRoomPage.SelfViewVideo).Should().BeTrue();
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateConsultationRoomPage.SelfViewVideo);
+            _browsers[_c.CurrentUser].Driver.FindElement(PrivateConsultationRoomPage.ToggleSelfViewButton).GetAttribute("class")
+                .Should().EndWith(PrivateConsultationRoomPage.ToggleSelfViewShow);
+            _browsers[_c.CurrentUser].IsDisplayed(PrivateConsultationRoomPage.SelfViewVideo).Should().BeTrue();
         }
 
         [Then(@"(?:he|she|they) can view their self view")]
         public void ThenTheyCanViewTheirSelfView()
         {
             WhenTheyToggleTheSelfViewIcon();
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.SelfViewVideo);
-            _browsers[_c.CurrentUser].Driver.FindElement(JudgeWaitingRoomPage.ToggleSelfView).GetAttribute("class")
-                .Should().EndWith(JudgeWaitingRoomPage.ToggleSelfViewShow);
-            _browsers[_c.CurrentUser].IsDisplayed(JudgeWaitingRoomPage.SelfViewVideo).Should().BeTrue();
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateConsultationRoomPage.SelfViewVideo);
+            _browsers[_c.CurrentUser].Driver.FindElement(PrivateConsultationRoomPage.ToggleSelfViewButton).GetAttribute("class")
+                .Should().EndWith(PrivateConsultationRoomPage.ToggleSelfViewShow);
+            _browsers[_c.CurrentUser].IsDisplayed(PrivateConsultationRoomPage.SelfViewVideo).Should().BeTrue();
         }
 
         [Then(@"(?:he|she|they) can hide their self view")]
         public void ThenTheyCanHideTheirSelfView()
         {
             WhenTheyToggleTheSelfViewIcon();
-            _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(JudgeWaitingRoomPage.SelfViewVideo);
-            _browsers[_c.CurrentUser].Driver.FindElement(JudgeWaitingRoomPage.ToggleSelfView).GetAttribute("class")
-                .Should().EndWith(JudgeWaitingRoomPage.ToggleSelfViewHide);
-            _browsers[_c.CurrentUser].IsDisplayed(JudgeWaitingRoomPage.SelfViewVideo).Should().BeFalse();
+            _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(PrivateConsultationRoomPage.SelfViewVideo);
+            _browsers[_c.CurrentUser].Driver.FindElement(PrivateConsultationRoomPage.ToggleSelfViewButton).GetAttribute("class")
+                .Should().EndWith(PrivateConsultationRoomPage.ToggleSelfViewHide);
+            _browsers[_c.CurrentUser].IsDisplayed(PrivateConsultationRoomPage.SelfViewVideo).Should().BeFalse();
         }
 
         [Then(@"the (.*) user remains in the private consultation room")]

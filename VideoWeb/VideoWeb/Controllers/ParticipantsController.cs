@@ -167,16 +167,18 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         public async Task<IActionResult> UpdateParticipantDisplayNameAsync(Guid conferenceId, Guid participantId,
-            [FromBody] UpdateParticipantRequest participantRequest)
+            [FromBody] UpdateParticipantDisplayNameRequest participantRequest)
         {
             try
             {
-                await _videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, participantRequest);
+                var apiRequest = _mapperFactory.Get<UpdateParticipantDisplayNameRequest, UpdateParticipantRequest>().Map(participantRequest);
+                await _videoApiClient.UpdateParticipantDetailsAsync(conferenceId, participantId, apiRequest);
             }
             catch (VideoApiException ex)
             {
-                _logger.LogError(ex, $"Unable to update participant details " +
-                                     $"for participant: {participantId} in conference: {conferenceId}");
+                _logger.LogError(ex,
+                    "Unable to update participant details for participant: {ParticipantId} in conference: {ConferenceId}",
+                    participantId, conferenceId);
                 return StatusCode(ex.StatusCode, ex.Response);
             }
 
