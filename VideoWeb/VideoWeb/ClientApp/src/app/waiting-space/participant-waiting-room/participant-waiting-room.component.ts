@@ -164,7 +164,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         );
     }
 
-    isJohRoom(): boolean {
+    get isJohRoom(): boolean {
         return this.participant?.current_room?.label.startsWith('JudgeJOH');
     }
 
