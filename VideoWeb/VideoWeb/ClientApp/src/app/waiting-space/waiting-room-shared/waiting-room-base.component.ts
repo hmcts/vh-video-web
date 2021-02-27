@@ -491,7 +491,7 @@ export abstract class WaitingRoomBaseComponent {
             const interpreterRoom = await this.videoCallService.retrieveInterpreterRoom(this.conference.id, this.participant.id);
             pexipNode = interpreterRoom.pexip_node;
             conferenceAlias = interpreterRoom.participant_join_uri;
-            displayName = interpreterRoom.display_name;
+            displayName = interpreterRoom.tile_display_name;
         }
 
         this.logger.debug(`${this.loggerPrefix} Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`, logPayload);

@@ -37,8 +37,8 @@ namespace VideoWeb.Controllers
             try
             {
                 var room = await _videoApiClient.GetInterpreterRoomForParticipantAsync(conferenceId, participantId);
-                var mapper = _mapperFactory.Get<InterpreterRoomResponse, InterpreterRoom>();
-                var response = mapper.Map(room);
+                var mapper = _mapperFactory.Get<InterpreterRoomResponse, Guid, InterpreterRoom>();
+                var response = mapper.Map(room, participantId);
                 return Ok(response);
             }
             catch (VideoApiException e)
