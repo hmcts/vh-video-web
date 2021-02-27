@@ -65,7 +65,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     get isJOHRoom(): boolean {
-        return this.participant.current_room.label.startsWith('JudgeJOH');
+        return this.participant?.current_room?.label.startsWith('JudgeJOH');
     }
 
     get logPayload() {
