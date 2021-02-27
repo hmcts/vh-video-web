@@ -1,5 +1,5 @@
 import { Guid } from 'guid-typescript';
-import { ConferenceResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ParticipantStatus, Role, RoomSummaryResponse } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -405,5 +405,17 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
         // Assert
         expect(videoCallService.stopScreenShare).toHaveBeenCalledTimes(1);
+    });
+    it('should confirm that the consultation room is a judge and JOH court room', async () => {
+        component.participant = globalParticipant;
+        component.participant.current_room = new RoomSummaryResponse({ label: 'JudgeJOHCourtRoom' });
+
+        expect(component.isJOHRoom).toBe(true);
+    });
+    it('should confirm that the consultation room is not a judge and JOH court room', async () => {
+        component.participant = globalParticipant;
+        component.participant.current_room = new RoomSummaryResponse({ label: 'ParticipantCourtRoom' });
+
+        expect(component.isJOHRoom).toBe(false);
     });
 });
