@@ -115,7 +115,6 @@
           (click)="lockPrivateConsultation(!roomLocked)"
           type="button">
           {{ roomLocked ? 'Unlock the room ' : 'Lock the room ' }}
-          <span class="fas" [class]="roomLocked ? 'fa-lock-alt' : 'fa-lock-open-alt'"></span>
         </button>
 
         <button *ngIf="showConsultationControls" id="leaveButton" class="small-button red" data-module="govuk-button"
