@@ -18,12 +18,12 @@ export class JoinPrivateConsultationComponent {
     constructor(protected logger: Logger) {}
 
     roomsAvailable(): boolean {
-        return this.participants.some(p => p.current_room != null);
+        return this.roomDetails.length > 0;
     }
 
     getRoomDetails(): Array<any> {
         const currentRooms = this.participants
-            .filter(p => p.current_room != null)
+            .filter(p => p.current_room != null && p.current_room.label.toLowerCase().startsWith('participant'))
             .map(p => p.current_room)
             .sort((a, b) => (a.label > b.label ? 1 : -1));
 

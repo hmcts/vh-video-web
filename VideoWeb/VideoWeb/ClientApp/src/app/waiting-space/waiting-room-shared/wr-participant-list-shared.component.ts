@@ -133,6 +133,16 @@ export abstract class WRParticipantStatusListDirective {
         }
     }
 
+    get canInvite(): boolean {
+        const loggedParticipant = this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
+
+        if (this.loggedInUser.role !== Role.Judge && this.loggedInUser.role !== Role.JudicialOfficeHolder) {
+            return !loggedParticipant.current_room.label.startsWith('JudgeJOH');
+        } else {
+            return true;
+        }
+    }
+
     protected camelToSpaced(word: string) {
         const splitWord = word
             .match(/[a-z]+|[^a-z]+/gi)
