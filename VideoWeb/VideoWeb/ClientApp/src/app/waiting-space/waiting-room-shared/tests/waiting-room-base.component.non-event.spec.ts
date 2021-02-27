@@ -342,7 +342,12 @@ describe('WaitingRoomComponent message and clock', () => {
         component.participant.linked_participants = [
             new LinkedParticipantResponse({ linked_id: Guid.create().toString(), link_type: LinkType.Interpreter })
         ];
-        const room = new InterpreterRoom({ participant_join_uri: 'patjoinuri', pexip_node: 'sip.test.node', display_name: 'foo' });
+        const room = new InterpreterRoom({
+            participant_join_uri: 'patjoinuri',
+            pexip_node: 'sip.test.node',
+            display_name: 'foo',
+            tile_display_name: `I1;Interpreter1;${component.participant.id}`
+        });
         videoCallService.retrieveInterpreterRoom.and.resolveTo(room);
 
         await component.call();
@@ -350,7 +355,7 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(videoCallService.makeCall).toHaveBeenCalledWith(
             room.pexip_node,
             room.participant_join_uri,
-            room.display_name,
+            room.tile_display_name,
             component.maxBandwidth
         );
     });
