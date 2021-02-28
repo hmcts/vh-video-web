@@ -91,7 +91,7 @@ export abstract class WaitingRoomBaseComponent {
     private readonly loggerPrefix = '[WR] -';
     loggedInUser: LoggedParticipantResponse;
 
-    // tslint-disable-next-statement
+    // tslint:disable-next-statement
     // NOSONAR
     protected constructor(
         protected route: ActivatedRoute,
