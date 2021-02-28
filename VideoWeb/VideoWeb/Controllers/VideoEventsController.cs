@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -61,9 +62,17 @@ namespace VideoWeb.Controllers
                 var callbackEventMapper = _mapperFactory.Get<ConferenceEventRequest, Conference, CallbackEvent>();
                 var callbackEvent = callbackEventMapper.Map(request, conference);
                 request.Event_type = Enum.Parse<VAEventType>(callbackEvent.EventType.ToString());
+
+                if (IsRoomEvent(request, conference, out var roomId))
+                {
+                    request.Participant_room_id = roomId.ToString();
+                    request.Participant_id = null;
+                }
+                
                 if (callbackEvent.EventType != EventType.VhoCall)
                 {
-                    _logger.LogTrace($"Raising video event: ConferenceId: {request.Conference_id}, EventType: {request.Event_type}");
+                    _logger.LogTrace("Raising video event: ConferenceId: {ConferenceId}, EventType: {EventType}",
+                        request.Conference_id, request.Event_type);
                     await _videoApiClient.RaiseVideoEventAsync(request);
                 }
 
@@ -81,6 +90,13 @@ namespace VideoWeb.Controllers
                 _logger.LogError(e, $"ConferenceId: {request.Conference_id}, ErrorCode: {e.StatusCode}");
                 return StatusCode(e.StatusCode, e.Response);
             }
+        }
+        
+        private bool IsRoomEvent(ConferenceEventRequest request, Conference conference, out long roomId)
+        {
+            if (!long.TryParse(request.Participant_id, out roomId)) return false;
+            var id = roomId;
+            return conference.CivilianRooms.Any(x => x.Id == id);
         }
     }
 }
