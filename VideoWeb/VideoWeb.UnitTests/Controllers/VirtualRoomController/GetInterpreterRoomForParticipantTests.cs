@@ -29,7 +29,7 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
                 .AddTypedParameters<InterpreterRoomMapper>()
                 .Build();
 
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<InterpreterRoomResponse, InterpreterRoom>())
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<InterpreterRoomResponse, Guid, InterpreterRoom>())
                 .Returns(_mocker.Create<InterpreterRoomMapper>(parameters));
             
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
