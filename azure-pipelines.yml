@@ -165,7 +165,7 @@ parameters:
             value: $(SelfTestApiKey)
           - name: KinlyConfiguration:JoinByPhoneFromDate
             value: $(JoinByPhoneFromDate)
-            
+
           # VhServices
           - name: VhServices:BookingsApiResourceId
             value: vh-bookings-api-identifieruris
@@ -269,6 +269,9 @@ extends:
                 sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)/Coverage/coverage.opencover.xml
                 sonar.typescript.lcov.reportPaths=$(System.DefaultWorkingDirectory)/VideoWeb/VideoWeb/ClientApp/coverage/lcov.info
                 sonar.cpd.exclusions=**/tests/WRTestComponent.ts,**/joh-waiting-room/**
+                sonar.issue.ignore.multicriteria=e1
+                sonar.issue.ignore.multicriteria.e1.ruleKey=typescript:S107
+                sonar.issue.ignore.multicriteria.e1.resourceKey=**/*.ts
             StrykerBreak: 75
         ACTest: ${{ parameters.RunACTests }}
         releaseParameters:
