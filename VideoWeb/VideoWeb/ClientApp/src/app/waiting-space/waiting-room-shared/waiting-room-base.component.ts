@@ -92,7 +92,6 @@ export abstract class WaitingRoomBaseComponent {
     loggedInUser: LoggedParticipantResponse;
 
     // tslint:disable-next-line
-    //NOSONAR
     protected constructor(
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,
