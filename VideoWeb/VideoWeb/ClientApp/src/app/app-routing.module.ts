@@ -14,7 +14,6 @@ export const routes: Routes = [
         loadChildren: () => import('./vh-officer/vh-officer.module').then(m => m.VhOfficerModule)
     },
     { path: `${pageUrls.Home}`, component: HomeComponent, canActivate: [AuthGuard] },
-    { path: '**', redirectTo: `${pageUrls.NotFound}`, pathMatch: 'full', canActivate: [AuthGuard] }
 ];
 
 @NgModule({
