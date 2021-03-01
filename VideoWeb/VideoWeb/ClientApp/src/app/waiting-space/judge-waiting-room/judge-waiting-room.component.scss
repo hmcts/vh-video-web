@@ -19,6 +19,12 @@
   margin-bottom: 25px;
 }
 
+.header-content-grid {
+  display: grid;
+  grid-template-columns: auto 600px;
+  width: 100%;
+}
+
 .panel-wrap {
   top: 0;
   left: 0;

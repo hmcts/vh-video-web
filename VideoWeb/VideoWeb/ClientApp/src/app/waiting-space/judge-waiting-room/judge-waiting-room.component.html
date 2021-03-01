@@ -4,43 +4,40 @@
 
 <!-- contains the in-hearing participant list and incoming video -->
 <div id="video-container" class="govuk-grid-row" *ngIf="showVideo">
-    <div *ngIf="!isPrivateConsultation" class="govuk-grid-column-one-quarter">
-        <div class="panel-wrap">
-            <app-participants-panel></app-participants-panel>
-        </div>
-    </div>
-    <div [ngClass]="{ 'govuk-grid-column-three-quarters': !isAdminConsultation }">
+    <div>
         <div class="hearing-video">
-            <div *ngIf="isAdminConsultation || isPrivateConsultation" class="video-background">
+            <div class="video-background">
 
-                <div class="header-bar" *ngIf="isPrivateConsultation">
-                    <div class="govuk-grid-column-three-quarters govuk-body" style='float: left;'>
-                        <span class="room-title">
+                <div class="header-bar">
+                    <div class="header-content-grid govuk-body">
+                        <div class="room-title">
                             {{getCaseNameAndNumber()}}
-                        </span>
-                    </div>
-                    <div class="govuk-grid-column-one-quarter">
-                        <ng-container>
-                            <app-private-consultation-room-controls [conferenceId]="conference.id"
-                                                                    [participant]="participant"
-                                                                    [audioOnly]="audioOnly"
-                                                                    [isPrivateConsultation]="isPrivateConsultation"
-                                                                    [outgoingStream]="outgoingStream"
-                                                                    [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
-                                                                    [showConsultationControls]="showConsultationControls"
-                                                                    (leaveConsultation)="showLeaveConsultationModal()">
-                            </app-private-consultation-room-controls>
-                        </ng-container>
+                        </div>
+                        <app-private-consultation-room-controls [conferenceId]="conference.id"
+                                                                [participant]="participant"
+                                                                [audioOnly]="audioOnly"
+                                                                [isPrivateConsultation]="isPrivateConsultation"
+                                                                [outgoingStream]="outgoingStream"
+                                                                [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
+                                                                [showConsultationControls]="showConsultationControls"
+                                                                (leaveConsultation)="isPrivateConsultation 
+                                                                    ? showLeaveConsultationModal()
+                                                                    : leaveJudicialConsultation()">
+                        </app-private-consultation-room-controls>
                     </div>
                 </div>
 
                 <div class="govuk-grid-column-full">
-                    <div *ngIf="hearing && isPrivateConsultation" class="participant-wrapper">
+                    <div *ngIf="hearing" class="participant-wrapper">
                         <app-private-consultation-participants
+                            *ngIf="isPrivateConsultation"
                             [conference]="hearing.getConference()"
                             [participantEndpoints]="participantEndpoints"
                             [roomLabel]="this.participant.current_room?.label">
                         </app-private-consultation-participants>
+                        <app-participants-panel
+                            *ngIf="!isPrivateConsultation">
+                        </app-participants-panel>
                     </div>
 
                     <div class="video-wrapper">
@@ -67,40 +64,6 @@
                     </div>
                 </div>
             </div>
-
-            <div *ngIf="!isAdminConsultation && !isPrivateConsultation">
-                <div class="video-background"></div>
-
-                <video id="incomingFeedOld" [srcObject]="presentationStream && !streamInMain ? presentationStream : stream" autoplay height="auto" poster="/assets/images/empty_crest.jpg">
-                    Your browser does not support Video
-                </video>
-                <div id="secondIncomingFeedOld"
-                     *ngIf="presentationStream"
-                     (click)="switchStreamWindows()"
-                     appTooltip
-                     text="Switch to main screen"
-                     colour="grey">
-                    <video id="incomingFeedJudge"
-                           [srcObject]="presentationStream && !streamInMain ? stream : presentationStream"
-                           autoplay
-                           height="auto"
-                           poster="/assets/images/empty_crest.jpg">
-                        class="fill-container">
-                        Your browser does not support Video
-                    </video>
-                </div>
-            </div>
-            
-            <ng-container *ngIf="!isPrivateConsultation">
-                <app-hearing-controls [participant]="participant"
-                                      [isPrivateConsultation]="isPrivateConsultation"
-                                      [audioOnly]="audioOnly"
-                                      [outgoingStream]="outgoingStream"
-                                      [conferenceId]="conference.id"
-                                      [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
-                                      [showConsultationControls]="showConsultationControls"
-                                      (leaveConsulation)="leaveJudicialConsultation()"></app-hearing-controls>
-            </ng-container>
         </div>
     </div>
 </div>

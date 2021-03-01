@@ -27,15 +27,12 @@
 </div>
 
 <div *ngIf="showVideo && isPrivateConsultation" class="video-background">
-    <div class="header-bar">
-        <div class="govuk-grid-column-three-quarters govuk-body" style='float: left;'>
-            <span class="room-title">
+    <div class="header-bar" *ngIf="isPrivateConsultation">
+        <div class="header-content-grid govuk-body">
+            <div class="room-title">
                 {{getCaseNameAndNumber()}}
-            </span>
-        </div>
-        <div class="govuk-grid-column-one-quarter">
-            <ng-container *ngIf="connected">
-                <app-private-consultation-room-controls [conferenceId]="conference.id"
+            </div>
+            <app-private-consultation-room-controls [conferenceId]="conference.id"
                                                         [participant]="participant"
                                                         [audioOnly]="audioOnly"
                                                         [isPrivateConsultation]="isPrivateConsultation"
@@ -44,7 +41,6 @@
                                                         [showConsultationControls]="showConsultationControls"
                                                         (leaveConsultation)="showLeaveConsultationModal()">
                 </app-private-consultation-room-controls>
-            </ng-container>
         </div>
     </div>
 
