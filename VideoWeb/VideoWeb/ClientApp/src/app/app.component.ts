@@ -4,7 +4,7 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { ConfigService } from './services/api/config.service';
+// import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
 import { Role } from './services/clients/api-client';
 import { DeviceTypeService } from './services/device-type.service';
@@ -16,6 +16,7 @@ import { ConnectionStatusService } from './services/connection-status.service';
 import { pageUrls } from './shared/page-url.constants';
 import { TestLanguageService } from './shared/test-language.service';
 import { TranslateService } from '@ngx-translate/core';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
     selector: 'app-root',
@@ -36,7 +37,7 @@ export class AppComponent implements OnInit, OnDestroy {
     subscriptions = new Subscription();
     constructor(
         private adalService: AdalService,
-        private configService: ConfigService,
+        // private configService: ConfigService,
         private router: Router,
         private deviceTypeService: DeviceTypeService,
         private profileService: ProfileService,
@@ -48,11 +49,12 @@ export class AppComponent implements OnInit, OnDestroy {
         private connectionStatusService: ConnectionStatusService,
         pageTracker: PageTrackerService,
         testLanguageService: TestLanguageService,
-        translate: TranslateService
+        translate: TranslateService,
+        public oidcSecurityService: OidcSecurityService
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
-        this.initAuthentication();
+        // this.initAuthentication();
 
         const language = localStorage.getItem('language') ?? 'en';
         translate.setDefaultLang(language);
@@ -62,17 +64,17 @@ export class AppComponent implements OnInit, OnDestroy {
         pageTracker.trackPreviousPage(router);
     }
 
-    private initAuthentication() {
-        const clientSettings = this.configService.getClientSettings();
-        const config = {
-            tenant: clientSettings.tenant_id,
-            clientId: clientSettings.client_id,
-            postLogoutRedirectUri: clientSettings.post_logout_redirect_uri,
-            redirectUri: clientSettings.redirect_uri,
-            cacheLocation: 'sessionStorage'
-        };
-        this.adalService.init(config);
-    }
+    // private initAuthentication() {
+    //     const clientSettings = this.configService.getClientSettings();
+    //     const config = {
+    //         tenant: clientSettings.tenant_id,
+    //         clientId: clientSettings.client_id,
+    //         postLogoutRedirectUri: clientSettings.post_logout_redirect_uri,
+    //         redirectUri: clientSettings.redirect_uri,
+    //         cacheLocation: 'sessionStorage'
+    //     };
+    //     this.adalService.init(config);
+    // }
 
     ngOnInit() {
         this.checkAuth().then(() => {
@@ -109,6 +111,11 @@ export class AppComponent implements OnInit, OnDestroy {
     async checkAuth(): Promise<void> {
         const currentUrl = this.locationService.getCurrentUrl();
         if (this.locationService.getCurrentPathName() !== `/${pageUrls.Logout}`) {
+
+            // console.log('***** checkAuth');
+            // this.oidcSecurityService.checkAuth().subscribe((auth) => console.log('is authenticated', auth));
+            //
+
             this.adalService.handleWindowCallback();
             this.loggedIn = this.adalService.userInfo.authenticated;
             if (!this.loggedIn) {
