@@ -50,7 +50,7 @@ export class AppComponent implements OnInit, OnDestroy {
         pageTracker: PageTrackerService,
         testLanguageService: TestLanguageService,
         translate: TranslateService,
-        public oidcSecurityService: OidcSecurityService
+        private oidcSecurityService: OidcSecurityService
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
@@ -112,12 +112,13 @@ export class AppComponent implements OnInit, OnDestroy {
         const currentUrl = this.locationService.getCurrentUrl();
         if (this.locationService.getCurrentPathName() !== `/${pageUrls.Logout}`) {
 
-            // console.log('***** checkAuth');
-            // this.oidcSecurityService.checkAuth().subscribe((auth) => console.log('is authenticated', auth));
-            //
+            console.log('***** checkAuth');
 
-            this.adalService.handleWindowCallback();
-            this.loggedIn = this.adalService.userInfo.authenticated;
+            this.loggedIn = await this.oidcSecurityService.checkAuth().toPromise();
+            console.log('***** is authenticated', this.loggedIn);
+
+            // this.adalService.handleWindowCallback();
+            // this.loggedIn = this.adalService.userInfo.authenticated;
             if (!this.loggedIn) {
                 this.router.navigate([`/${pageUrls.Login}`], { queryParams: { returnUrl: currentUrl } });
                 return;

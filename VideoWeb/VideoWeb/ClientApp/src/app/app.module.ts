@@ -1,10 +1,10 @@
-import { HttpClient, HttpClientModule, HttpXhrBackend, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClient, HttpClientModule, HttpXhrBackend } from '@angular/common/http';
 import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
-import { AdalGuard, AdalInterceptor, AdalService } from 'adal-angular4';
+import { AdalGuard, AdalService } from 'adal-angular4';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
@@ -68,7 +68,7 @@ export function getSettings(configService: ConfigService) {
         { provide: API_BASE_URL, useFactory: () => '.' },
         AdalService,
         AdalGuard,
-        { provide: HTTP_INTERCEPTORS, useClass: AdalInterceptor, multi: true },
+        // { provide: HTTP_INTERCEPTORS, useClass: AdalInterceptor, multi: true },
         { provide: ErrorHandler, useClass: GlobalErrorHandler },
         ConfigService,
         AuthGuard,
