@@ -52,9 +52,9 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
 
     get muteAllToggleText() {
         if (this.isMuteAll) {
-            return 'Unmute all';
+            return 'Unmute & unlock';
         } else {
-            return 'Mute all';
+            return 'Mute & lock';
         }
     }
 
@@ -263,13 +263,17 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         return participant.isInHearing();
     }
 
-    toggleMuteAll() {
+    muteAndLockAll() {
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to toggle mute all status`, {
             conference: this.conferenceId,
             current: this.isMuteAll,
             new: !this.isMuteAll
         });
         this.videoCallService.muteAllParticipants(!this.isMuteAll, this.conferenceId);
+    }
+
+    unlockAll() {
+        
     }
 
     toggleSpotlightParticipant(participant: PanelModel) {
