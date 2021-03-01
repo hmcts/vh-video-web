@@ -34,10 +34,10 @@ java:
         - azuread--clientid       
   environment:
     ASPNETCORE_URLS: http://+:8080
-    AZUREAD__POSTLOGOUTREDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.hearings.reform.hmcts.net/logout
-    AZUREAD__REDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.hearings.reform.hmcts.net/home
+    AZUREAD__POSTLOGOUTREDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/logout
+    AZUREAD__REDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/home
     AZUREAD__TENANTID: "fb6e0e22-0da3-4c35-972a-9d61eb256508"
-    AZUREAD__VHVIDEOWEBRESOURCEID: https://vh-video-web.{{ .Values.global.environment }}.hearings.reform.hmcts.net
+    AZUREAD__VHVIDEOWEBRESOURCEID: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net
     DISABLEHTTPSREDIRECTION: true
     MSDEPLOY_RENAME_LOCKED_FILES: 1
     TESTING__TESTUSERNAMESTEM: "@hearings.reform.hmcts.net"
