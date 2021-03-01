@@ -29,7 +29,7 @@
 <div *ngIf="showVideo && isPrivateConsultation" class="video-background">
   <div class="header-bar">
       <div class="header-content-grid govuk-body" style='float: left'>
-          <ng-container *ngIf="!isJohRoom; else judgeAndJohRoom">
+          <ng-container *ngIf="!isJohRoom">
             <div class="room-title">
               {{getRoomName()}} 
             </div>
@@ -43,7 +43,7 @@
               Invite others by calling them or unlock the room for others to join
             </div>
           </ng-container>
-          <ng-container #judgeAndJohRoom>
+          <ng-container *ngIf="isJohRoom">
             <div class="room-title">
                 {{getCaseNameAndNumber()}}
             </div>
