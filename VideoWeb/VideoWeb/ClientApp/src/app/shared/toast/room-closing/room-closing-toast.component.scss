@@ -1,0 +1,46 @@
+@import '~govuk-frontend/govuk/base';
+
+:host {
+  font-size: 0.9em;
+  position: relative;
+  overflow: hidden;
+  padding: 20px !important;
+  width: 180px !important;
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  font-family: 'GDS Transport', arial, sans-serif;
+
+  background: govuk-colour('white');
+  color: govuk-colour('black');
+}
+
+.content {
+  margin-bottom: 5px;
+}
+
+.actions {
+  margin-top: 1em;
+  display: flex;
+  justify-content: space-around;
+
+  .action {
+    flex: 0 0 auto;
+    padding: 5px;
+    button {
+      padding: 6px 10px;
+      border: transparent 1px;
+      border-radius: 2px;
+      vertical-align: top;
+      cursor: pointer;
+      pointer-events: auto;
+
+      color: #ffffff;
+      background: rgba(80, 90, 95, 1);
+
+      &:hover {
+        background: govuk-colour('green');
+      }
+    }
+  }
+}
