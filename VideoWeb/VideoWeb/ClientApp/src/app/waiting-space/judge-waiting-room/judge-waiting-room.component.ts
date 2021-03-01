@@ -36,7 +36,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     conferenceRecordingInSessionForSeconds = 0;
     expanedPanel = true;
     displayConfirmStartHearingPopup: boolean;
-    isIMEnabled: boolean;
 
     constructor(
         protected route: ActivatedRoute,
@@ -101,7 +100,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
                     if (this.conference.audio_recording_required) {
                         this.initAudioRecordingInterval();
                     }
-                    this.isIMEnabled = this.defineIsIMEnabled();
+                    this.defineIsIMEnabled();
                 });
             })
             .catch((error: Error | MediaStreamError) => {
