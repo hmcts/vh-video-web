@@ -15,7 +15,6 @@ namespace VideoWeb.UnitTests.Mappings
             var linkedParticipant = new VHLinkedParticipantResponse
             {
                 Linked_id = Guid.NewGuid(),
-                Participant_id = Guid.NewGuid(),
                 Type = LinkedParticipantType.Interpreter
             };
             

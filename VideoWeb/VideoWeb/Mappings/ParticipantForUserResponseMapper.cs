@@ -31,8 +31,14 @@ namespace VideoWeb.Mappings
                     FirstName = participant.First_name,
                     LastName = participant.Last_name,
                     HearingRole = participant.Hearing_role,
-                    CurrentRoom = _roomResponseMapper.Map(participant.Current_room)
-            })
+                    CurrentRoom = _roomResponseMapper.Map(participant.Current_room),
+                    LinkedParticipants = participant.Linked_participants.Select(x =>
+                        new Contract.Responses.LinkedParticipantResponse
+                        {
+                            LinkedId = x.Linked_id,
+                            LinkType = Enum.Parse<LinkType>(x.Type.ToString(), true)
+                        }).ToList()
+                })
                 .ToList();
 
             ParticipantTilePositionHelper.AssignTilePositions(mappedParticipants);
