@@ -113,17 +113,18 @@ export class AppComponent implements OnInit, OnDestroy {
         if (this.locationService.getCurrentPathName() !== `/${pageUrls.Logout}`) {
 
             console.log('***** checkAuth');
+            this.oidcSecurityService.checkAuth().subscribe(async (auth) => {
+                this.loggedIn = auth;
+                console.log('***** is authenticated', this.loggedIn);
 
-            this.loggedIn = await this.oidcSecurityService.checkAuth().toPromise();
-            console.log('***** is authenticated', this.loggedIn);
-
-            // this.adalService.handleWindowCallback();
-            // this.loggedIn = this.adalService.userInfo.authenticated;
-            if (!this.loggedIn) {
-                this.router.navigate([`/${pageUrls.Login}`], { queryParams: { returnUrl: currentUrl } });
-                return;
-            }
-            await this.retrieveProfileRole();
+                // this.adalService.handleWindowCallback();
+                // this.loggedIn = this.adalService.userInfo.authenticated;
+                if (!this.loggedIn) {
+                    this.router.navigate([`/${pageUrls.Login}`], { queryParams: { returnUrl: currentUrl } });
+                    return;
+                }
+                await this.retrieveProfileRole();
+            });
         }
     }
 

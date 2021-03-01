@@ -1,6 +1,5 @@
 import { Router, ActivatedRoute } from '@angular/router';
 import { OnInit, Component, Injectable } from '@angular/core';
-import { AdalService } from 'adal-angular4';
 import { ReturnUrlService } from '../../services/return-url.service';
 import { Logger } from '../../services/logging/logger-base';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
@@ -12,7 +11,6 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 @Injectable()
 export class LoginComponent implements OnInit {
     constructor(
-        private adalSvc: AdalService,
         private route: ActivatedRoute,
         private router: Router,
         private returnUrlService: ReturnUrlService,
@@ -26,21 +24,25 @@ export class LoginComponent implements OnInit {
 
     private async checkAuthAndRedirect() {
         console.log('***** login');
-        this.oidcSecurityService.authorize();
-        // if (this.adalSvc.userInfo.authenticated) {
-        //     const returnUrl = this.returnUrlService.popUrl() || '/';
-        //     try {
-        //         this.logger.debug(`[Login] - User is authenticated. Returning to ${returnUrl}`);
-        //         await this.router.navigateByUrl(returnUrl);
-        //     } catch (e) {
-        //         this.logger.error('[Login] - Failed to log in', e);
-        //         this.router.navigate(['/']);
-        //     }
-        // } else {
-        //     const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-        //     this.returnUrlService.setUrl(returnUrl);
-        //     this.logger.debug('[Login] - User not authenticated. Logging in', { returnUrl });
-        //     this.adalSvc.login();
-        // }
+        const isLoggedIn = await this.oidcSecurityService.checkAuth().toPromise();
+
+        if (isLoggedIn) {
+            const returnUrl = this.returnUrlService.popUrl() || '/';
+            try {
+                this.logger.debug(`[Login] - User is authenticated. Returning to ${returnUrl}`);
+                console.log(`[Login] - User is authenticated. Returning to ${returnUrl}`);
+                await this.router.navigateByUrl(returnUrl);
+            } catch (e) {
+                this.logger.error('[Login] - Failed to log in', e);
+                this.router.navigate(['/']);
+            }
+        } else {
+            const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+            this.returnUrlService.setUrl(returnUrl);
+            this.logger.debug('[Login] - User not authenticated. Logging in', { returnUrl });
+            console.log('[Login] - User not authenticated. Logging in', { returnUrl });
+            this.oidcSecurityService.authorize();
+            console.log('***** TOKEN: ' + this.oidcSecurityService.getToken());
+        }
     }
 }
