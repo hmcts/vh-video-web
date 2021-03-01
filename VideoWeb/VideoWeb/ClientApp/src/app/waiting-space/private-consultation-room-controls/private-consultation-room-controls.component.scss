@@ -103,3 +103,11 @@
     background: #00703c;
   }
 }
+
+.small-button.blue {
+  color: #ffffff;
+  background: rgba(29, 112, 184, 0.7);
+  &:hover {
+    background: rgba(29, 112, 184, 1);
+  }
+}

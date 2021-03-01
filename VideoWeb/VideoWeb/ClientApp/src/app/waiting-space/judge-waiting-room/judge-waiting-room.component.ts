@@ -37,6 +37,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     expanedPanel = true;
     displayConfirmStartHearingPopup: boolean;
     isIMEnabled: boolean;
+    panelTypes = ['Participants', 'Chat'];
+    panelStates = {};
 
     constructor(
         protected route: ActivatedRoute,
@@ -265,5 +267,16 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
             return !this.showVideo;
         }
         return true;
+    }
+
+    togglePanel(panelName: string) {
+        const newState = !this.panelStates[panelName]
+        if (newState) {
+            this.panelTypes.forEach(pt => {
+                this.panelStates[pt] = false;
+            });
+        }
+
+        this.panelStates[panelName] = newState;
     }
 }

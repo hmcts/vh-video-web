@@ -1,35 +1,5 @@
 @import '~govuk-frontend/govuk/all';
 
-.message-container {
-  width: inherit;
-  margin: 0px 2px !important;
-}
-
-.own-message {
-  text-align: left;
-}
-
-.other-message {
-  text-align: right;
-}
-
-.other-message-body {
-  text-align: justify;
-  float: right;
-}
-
-.other-message > p {
-  color: govuk-colour('blue');
-}
-
-.chat-message {
-  white-space: pre-wrap;
-}
-
-.chat-message.failed {
-  margin-bottom: 0 !important;
-}
-
 .failed-message {
   @include govuk-font($size: 16, $weight: 'bold');
   display: block;
@@ -41,4 +11,84 @@
 .alert-image {
   width: 14px;
   height: 14px;
+}
+
+.bottom-spacer {
+  height: 10px;
+  padding: 0px !important;
+  float: left;
+}
+
+.messages-container {
+  font-family: 'GDS Transport', arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 400;
+  font-size: 16px;
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.message-item-received {
+  background-color: #f3f2f1;
+  float: left;
+  margin-left: 10px;
+  padding-left: 25px;
+}
+
+.message-item-received::after {
+  content: '';
+  position: absolute;
+  left: -1.5em;
+  bottom: 0;
+  width: 1.5em;
+  height: 1.5em;
+  border-right: 1em solid #f3f2f1;
+  border-bottom-right-radius: 1.75em 1.5em;
+}
+
+.message-item-sent {
+  color: #ffffff;
+  background-color: #1d70b8;
+  margin-right: 10px;
+  padding-right: 25px;
+  text-align: right;
+  float: right;
+}
+
+.message-item-sent::after {
+  content: '';
+  position: absolute;
+  right: -1.5em;
+  bottom: 0;
+  width: 1.5em;
+  height: 1.5em;
+  border-left: 1em solid #1d70b8;
+  border-bottom-left-radius: 1.75em 1.5em;
+}
+
+.message-item {
+  border-radius: 0.5em 0.5em 0.75em 0.5em;
+  margin-bottom: 5px;
+  padding: 15px;
+  position: relative;
+  width: 50%;
+}
+
+.message-meta {
+  margin-top: 10px;
+}
+
+.message-meta-sender {
+  font-weight: 700;
+  font-size: 14px;
+  font-size: 0.875rem;
+  line-height: 1.14286;
+}
+
+.message-meta-timestamp {
+  font-weight: 700;
+  font-size: 14px;
+  font-size: 0.875rem;
+  line-height: 1.14286;
 }

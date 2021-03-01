@@ -6,18 +6,18 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ImHelper } from 'src/app/shared/im-helper';
-import { ChatWindowBaseComponent } from './chat-window-base';
+import { ChatWindowBaseComponent } from '../participant-chat/chat-window-base';
 
 @Component({
-    selector: 'app-participant-chat',
-    templateUrl: './participant-chat.component.html',
-    styleUrls: ['./participant-chat.component.scss'],
+    selector: 'app-chat-panel',
+    templateUrl: './chat-panel.component.html',
+    styleUrls: ['./chat-panel.component.scss'],
     inputs: [
         'alwaysOn',
         'hearing'
     ]
 })
-export class ParticipantChatComponent extends ChatWindowBaseComponent {
+export class ChatPanelComponent extends ChatWindowBaseComponent {
     constructor(
         protected videoWebService: VideoWebService,
         protected profileService: ProfileService,

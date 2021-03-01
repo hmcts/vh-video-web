@@ -1,10 +1,31 @@
 <div class="controls-container">
   <div class="icons-container">
+    
+    <div class="icon-button"
+      id="toggle-participants-panel" 
+      appTooltip
+      *ngIf="isJudge && !isPrivateConsultation"
+      text="Participants Panel"
+      [colour]="'grey'"
+      (click)="togglePanelStatus('Participants')">
+      <span class="far fa-users"></span>
+    </div>
+
+    <div class="icon-button"
+      id="toggle-chat-panel" 
+      appTooltip
+      *ngIf="isJudge && !isPrivateConsultation"
+      text="Chat Panel"
+      [colour]="'grey'"
+      (click)="togglePanelStatus('Chat')">
+      <span class="far fa-comment"></span>
+    </div>
+
     <img
       *ngIf="!screenShareStream && canShowScreenShareButton"
       appTooltip
       text="Share my screen"
-      [colour]="'grey'"
+      colour="grey"
       id="start-screenshare-img"
       class="icon-button"
       src="/assets/images/share-screen.png"
@@ -15,7 +36,7 @@
       *ngIf="screenShareStream"
       appTooltip
       text="Stop sharing my screen"
-      [colour]="'red'"
+      colour="red"
       id="stop-screenshare-img"
       class="icon-button"
       src="/assets/images/stop-share.png"
@@ -30,7 +51,7 @@
       appTooltip
       *ngIf="!audioOnly"
       [text]="selfViewOpen ? 'Hide my self-view' : 'Show my self-view'"
-      [colour]="'grey'"
+      colour="grey"
       (click)="toggleView()">
       <span class="far" [class]="selfViewOpen ? 'fa-eye' : 'fa-eye-slash'"></span>
     </div>
@@ -40,7 +61,7 @@
       appTooltip
       *ngIf="!isJudge && !audioOnly"
       [text]="videoMuted ? 'Turn on camera' : 'Turn off camera'"
-      [colour]="'grey'"
+      colour="grey"
       (click)="toggleVideoMute()">
       <span class="far" [class]="videoMuted ? 'fa-video-slash' : 'fa-video'"></span>
     </div>
@@ -50,7 +71,7 @@
       appTooltip
       *ngIf="!remoteMuted || isJudge"
       [text]="audioMuted ? 'Unmute microphone' : 'Mute microphone'"
-      [colour]="'grey'"
+      colour="grey"
       (click)="toggleMute()">
       <span class="far" [class]="audioMuted ? 'fa-microphone-slash' : 'fa-microphone'"></span>
     </div>
@@ -60,7 +81,7 @@
       appTooltip
       *ngIf="remoteMuted && !isJudge"
       text="You have been been remote muted"
-      [colour]="'grey'">
+      colour="grey">
       <span class="far fa-microphone-slash" style="color: red"></span>
     </div>
     
@@ -69,30 +90,22 @@
       appTooltip
       *ngIf="!isPrivateConsultation && !isJudge"
       [text]="handRaised ? 'Lower hand' : 'Raise hand'"
-      [colour]="'grey'"
+      colour="grey"
       (click)="toggleHandRaised()">
       <span class="far" [class]="handRaised ? 'fa-hand' : 'fa-hand-slash'"></span>
     </div>
+
+    <button *ngIf="!isPrivateConsultation && isJudge" id="pause-hearing" class="small-button blue" data-module="govuk-button"
+      style="margin-right: 25px;" (click)="pause()" type="button"
+      alt="Pause the hearing">
+      Pause
+    </button>
     
-    <div class="icon-button"
-      id="pause-hearing-img" 
-      appTooltip
-      *ngIf="!isPrivateConsultation && isJudge"
-      text="Pause the hearing"
-      [colour]="'grey'"
-      (click)="pause()">
-      <span class="far fa-pause"></span>
-    </div>
-    
-    <div class="icon-button"
-      id="end-hearing-img" 
-      appTooltip
-      *ngIf="!isPrivateConsultation && isJudge"
-      text="Close the hearing"
-      [colour]="'grey'"
-      (click)="displayConfirmationDialog()">
-      <span class="far fa-stop"></span>
-    </div>
+    <button *ngIf="!isPrivateConsultation && isJudge" id="end-hearing" class="small-button red" data-module="govuk-button"
+      style="margin-right: 25px;" (click)="displayConfirmationDialog()" type="button"
+      alt="Close the hearing">
+      Close
+    </button>
 
     <div class="flexBar" *ngIf="isPrivateConsultation && showConsultationControls"></div>
       

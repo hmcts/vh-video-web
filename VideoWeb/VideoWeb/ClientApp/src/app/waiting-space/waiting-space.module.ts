@@ -30,6 +30,7 @@ import { InviteParticipantComponent } from './participant-waiting-room/invite-pa
 import { LoggedUserResolveService } from './services/logged-user-resolve.service';
 import { ConsultationLeaveComponent } from './consultation-modals/consultation-leave/consultation-leave.component';
 import { ParticipantNetworkPoorAlertComponent } from './participant-network-health/participant-network-poor-alert.component';
+import { ChatPanelComponent } from './chat-panel/chat-panel.component';
 
 @NgModule({
     imports: [SharedModule, WaitingSpaceRoutingModule],
@@ -40,6 +41,7 @@ import { ParticipantNetworkPoorAlertComponent } from './participant-network-heal
         JudgeWaitingRoomComponent,
         AnalogueClockComponent,
         ParticipantChatComponent,
+        ChatPanelComponent,
         AudioAlertComponent,
         ConsultationErrorComponent,
         ConsultationLeaveComponent,
