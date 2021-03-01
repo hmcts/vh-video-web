@@ -237,7 +237,7 @@
     </div>
 </div>
 
-<app-participant-chat *ngIf="isIMEnabled && !isAdminConsultation" [hearing]="hearing" [alwaysOn]="hearing.isInSession()"></app-participant-chat>
+<app-participant-chat *ngIf="defineIsIMEnabled() && !isAdminConsultation" [hearing]="hearing" [alwaysOn]="hearing.isInSession()"></app-participant-chat>
 
 <app-select-media-devices *ngIf="displayDeviceChangeModal"
                           [waitingRoomMode]="true"
