@@ -65,6 +65,16 @@ namespace VideoWeb.AcceptanceTests.Steps
             _hearingRoomSteps = hearingRoomSteps;
         }
 
+        [Given(@"(?:a|an) (.*) and (?:a|an|their) (.*) are in the waiting room (.*) minutes before a hearing")]
+        public void GivenTwoUsersAreInTheWaitingRoomForHearingInMinutesTime(string user1, string user2, int minutes)
+        {
+            _dataSetupSteps.GivenIHaveAHearingAndAConferenceInMinutesTime(minutes);
+            _browserSteps.GivenANewBrowserIsOpenFor(user1);
+            Progression(FromString(user1), "Waiting Room");
+            _browserSteps.GivenANewBrowserIsOpenFor(user2);
+            Progression(FromString(user2), "Waiting Room");
+        }
+
         [Given(@"the (.*) user has progressed to the (.*) page")]
         public void GivenIHaveProgressedToThePage(string user, string page)
         {
@@ -80,8 +90,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserSteps.ThenTheUserIsOnThePage(page);
         }
         
-        [Given(@"the (.*) user has progressed to the (.*) page with a hearing in (.*) minute time")]
-        [Given(@"the (.*) user has progressed to the (.*) page with a hearing in (.*) minutes time")]
+        [Given(@"(?:an|a|the) (.*) user has progressed to the (.*) page with a hearing in (.*) minute time")]
+        [Given(@"(?:an|a|the) (.*) user has progressed to the (.*) page with a hearing in (.*) minutes time")]
         public void GivenIAmOnThePageWithAHearingInMinuteTime(string user, string page, int minutes)
         {
             _dataSetupSteps.GivenIHaveAHearingAndAConferenceInMinutesTime(minutes);

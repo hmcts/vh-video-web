@@ -20,16 +20,5 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly By CancelStartHearingButton = By.Id("btnCancelStart");
         public static readonly By EnterPrivateConsultationButton = By.Id("joinPCButton");
         public static readonly By NumberOfJohsInConsultaionRoom = By.Id("numberOfJohsInConsultationBadge");
-        public static readonly By IncomingFeed = By.CssSelector("video[id^='incomingFeed']");
-        public static readonly By LeavePrivateConsultationButton = By.Id("leaveButton");
-        public static readonly By ConfirmLeavePrivateConsultationButton = By.CssSelector("#pc-leave-modal button[alt='Leave']");
-        public static readonly By ToggleMute = By.CssSelector("#toggle-audio-mute-img span");
-        public const string ToggleMuteMicOn = "fa-microphone";
-        public const string ToggleMuteMicOff = "fa-microphone-slash";
-        public static readonly By ToggleSelfView = By.CssSelector("#toggle-self-view-img span");
-        public const string ToggleSelfViewHide = "fa-eye-slash";
-        public const string ToggleSelfViewShow = "fa-eye";
-        public static readonly By SelfViewVideo = By.Id("outgoingFeedVideo");
-        
     }
 }

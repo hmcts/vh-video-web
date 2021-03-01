@@ -176,6 +176,10 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         );
     }
 
+    get isJohRoom(): boolean {
+        return this.participant?.current_room?.label.startsWith('JudgeJOH');
+    }
+
     get isWitness(): boolean {
         return this.participant?.hearing_role === HearingRole.WITNESS;
     }

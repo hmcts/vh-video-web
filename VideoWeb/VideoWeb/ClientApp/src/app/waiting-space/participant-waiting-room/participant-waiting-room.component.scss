@@ -21,15 +21,17 @@
 }
 
 .room-status {
+  margin-top: 7px;
   margin-left: 10px;
-  display: inline-block;
 }
 
 .room-status-desc {
   color: lightgray;
+  margin-top: 10px;
   font-size: 16px;
   margin-left: 10px;
-  display: inline-block;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .lock-badge {
@@ -41,12 +43,14 @@
   font-size: 14px;
 }
 
+.lock-badge.locked,
 .lock-badge.unlocked {
   background: lightgray;
   color: #0b0c0d;
 }
 
-.lock-badge.locked {
-  background: govuk-colour('red');
-  color: govuk-colour('white');
+.header-content-grid {
+  display: grid;
+  grid-template-columns: auto auto auto 425px;
+  align-items: flex-start;
 }
