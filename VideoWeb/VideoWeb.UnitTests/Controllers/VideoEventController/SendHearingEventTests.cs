@@ -76,6 +76,23 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         }
 
         [Test]
+        public async Task should_return_no_content_when_event_is_for_room()
+        {
+            // Arrange
+            var request = CreateRequest();
+            request.Participant_id = _testConference.CivilianRooms.First().Id.ToString();
+
+            // Act
+            var result = await _sut.SendHearingEventAsync(request);
+
+            // Assert
+            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
+            result.Should().BeOfType<NoContentResult>();
+            var typedResult = (NoContentResult) result;
+            typedResult.Should().NotBeNull();
+        }
+        
+        [Test]
         public async Task should_return_no_content_when_transfer_to_new_consultation_room()
         {
             // Arrange
@@ -278,8 +295,15 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 },
                 Endpoints = new List<Endpoint>
                 {
-                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP1").Build(),
-                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP2").Build()
+                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP1")
+                        .Build(),
+                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP2")
+                        .Build()
+                },
+                HearingVenueName = "Hearing Venue Test",
+                CivilianRooms = new List<CivilianRoom>
+                {
+                    new CivilianRoom {Id = 1, RoomLabel = "Interpreter1", Participants = new List<Guid>()}
                 }
             };
         }
@@ -297,7 +321,6 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
                 .Build();
             return conference;
         }
-
-
+        
     }
 }

@@ -15,14 +15,23 @@ namespace VideoWeb.Common.Caching
                 .Select(MapParticipantToCacheModel)
                 .ToList();
 
-            var endpoints = conferenceResponse.Endpoints == null ? new List<Endpoint>() : conferenceResponse.Endpoints.Select(EndpointCacheMapper.MapEndpointToCacheModel).ToList();
+            var endpoints = conferenceResponse.Endpoints == null
+                ? new List<Endpoint>()
+                : conferenceResponse.Endpoints.Select(EndpointCacheMapper.MapEndpointToCacheModel).ToList();
+
+            var civilianRooms = conferenceResponse.Civilian_rooms == null
+                ? new List<CivilianRoom>()
+                : conferenceResponse.Civilian_rooms.Select(CivilianRoomCacheMapper.MapCivilianRoomToCacheModel)
+                    .ToList();
+            
             var conference = new Conference
             {
                 Id = conferenceResponse.Id,
                 HearingId = conferenceResponse.Hearing_id,
                 Participants = participants,
                 HearingVenueName = conferenceResponse.Hearing_venue_name,
-                Endpoints = endpoints
+                Endpoints = endpoints,
+                CivilianRooms = civilianRooms
             };
             return conference;
         }
