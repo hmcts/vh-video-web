@@ -245,6 +245,9 @@
   background: #626a6e;
   border: transparent 1px;
   border-radius: 2px;
+  &:hover{
+    background-color: #00703c;
+  }
 }
 .btn-mute {
   cursor: pointer;
