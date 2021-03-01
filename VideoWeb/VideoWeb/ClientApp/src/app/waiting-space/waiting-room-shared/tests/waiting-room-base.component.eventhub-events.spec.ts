@@ -44,6 +44,7 @@ import {
     logger,
     notificationSoundsService,
     notificationToastrService,
+    roomClosingToastrService,
     router,
     userMediaService,
     userMediaStreamService,
@@ -98,6 +99,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             userMediaStreamService,
             notificationSoundsService,
             notificationToastrService,
+            roomClosingToastrService,
             clockService
         );
 

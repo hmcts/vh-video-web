@@ -1,0 +1,15 @@
+<div class="content">
+    <ng-container>
+        <div class="govuk-body">
+            <strong>Alert</strong><br><span id="room-closing-alert-message">{{ alertMessage$ | async }}</span>
+        </div>
+    </ng-container>
+</div>
+
+<div class="actions">
+    <div class="action">
+        <button
+        data-module="govuk-button"
+        (click)="dismiss.next()">Dismiss</button>
+    </div>
+</div>

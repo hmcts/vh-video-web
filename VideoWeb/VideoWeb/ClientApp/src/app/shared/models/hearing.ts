@@ -59,8 +59,7 @@ export class Hearing extends HearingBase {
     getEndpoints(): VideoEndpointResponse[] {
         if (this.conference instanceof ConferenceResponse) {
             const conf = this.conference as ConferenceResponse;
-            const ep = conf.endpoints ? conf.endpoints : new Array<VideoEndpointResponse>();
-            return ep;
+            return conf.endpoints || new Array<VideoEndpointResponse>();
         } else {
             return new Array<VideoEndpointResponse>();
         }
@@ -82,6 +81,10 @@ export class Hearing extends HearingBase {
 
     get actualCloseTime(): Date | null {
         return this.conference.closed_date_time;
+    }
+
+    retrieveHearingExpiryTime(): moment.Moment {
+        return this.timeReader.retrieveHearingExpiryTime(this.conference.closed_date_time, this.conference.status);
     }
 
     isPastClosedTime(): boolean {
