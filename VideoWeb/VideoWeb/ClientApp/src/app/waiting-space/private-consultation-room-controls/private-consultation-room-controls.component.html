@@ -110,12 +110,11 @@
 
         <div class="flexBar"></div>
           
-        <button *ngIf="isPrivateConsultation && showConsultationControls && !isJOHConsultation" id="lockButton" class="small-button " [class]="roomLocked ? 'greygreen' : 'greyred'" data-module="govuk-button"
+        <button *ngIf="isPrivateConsultation && showConsultationControls && !isJOHConsultation && !isJOHRoom" id="lockButton" class="small-button " [class]="roomLocked ? 'greygreen' : 'greyred'" data-module="govuk-button"
           style="margin-right: 15px;"
           (click)="lockPrivateConsultation(!roomLocked)"
           type="button">
           {{ roomLocked ? 'Unlock the room ' : 'Lock the room ' }}
-          <span class="fas" [class]="roomLocked ? 'fa-lock-alt' : 'fa-lock-open-alt'"></span>
         </button>
 
         <button *ngIf="showConsultationControls" id="leaveButton" class="small-button red" data-module="govuk-button"

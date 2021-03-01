@@ -18,6 +18,7 @@ import { HearingRole } from '../models/hearing-role-model';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { NotificationToastrService } from '../services/notification-toastr.service';
+import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
 
@@ -48,6 +49,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         protected userMediaStreamService: UserMediaStreamService,
         protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
+        protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService
     ) {
         super(
@@ -66,6 +68,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
             userMediaStreamService,
             notificationSoundsService,
             notificationToastrService,
+            roomClosingToastrService,
             clockService
         );
     }
@@ -98,7 +101,16 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
             this.currentTime = time;
             this.checkIfHearingIsClosed();
             this.checkIfHearingIsStarting();
+            this.showRoomClosingToast(time);
         });
+    }
+
+    showRoomClosingToast(dateNow: Date) {
+        if (this.isPrivateConsultation) {
+            this.roomClosingToastrService.showRoomClosingAlert(this.hearing, dateNow);
+        } else {
+            this.roomClosingToastrService.clearToasts();
+        }
     }
 
     checkIfHearingIsStarting(): void {
@@ -162,6 +174,10 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent im
         return this.camelToSpaced(
             this.participant?.current_room?.label?.replace('ParticipantConsultationRoom', 'MeetingRoom') ?? 'MeetingRoom'
         );
+    }
+
+    get isJohRoom(): boolean {
+        return this.participant?.current_room?.label.startsWith('JudgeJOH');
     }
 
     get isWitness(): boolean {

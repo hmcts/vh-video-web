@@ -13,6 +13,7 @@ import { WaitingRoomMonitorComponent } from './participant-network-health/waitin
 import { ParticipantWaitingRoomComponent } from './participant-waiting-room/participant-waiting-room.component';
 import { NotificationSoundsService } from './services/notification-sounds.service';
 import { NotificationToastrService } from './services/notification-toastr.service';
+import { RoomClosingToastrService } from './services/room-closing-toast.service';
 import { VideoCallService } from './services/video-call.service';
 import { WaitingSpaceRoutingModule } from './waiting-space-routing.module';
 import { ParticipantsPanelComponent } from './participants-panel/participants-panel.component';
@@ -58,6 +59,6 @@ import { ParticipantNetworkPoorAlertComponent } from './participant-network-heal
         PrivateConsultationParticipantsComponent,
         ParticipantNetworkPoorAlertComponent
     ],
-    providers: [VideoCallService, NotificationSoundsService, NotificationToastrService, LoggedUserResolveService]
+    providers: [VideoCallService, NotificationSoundsService, NotificationToastrService, RoomClosingToastrService, LoggedUserResolveService]
 })
 export class WaitingSpaceModule {}

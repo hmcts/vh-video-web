@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using VideoWeb.Common.Models;
 
 namespace VideoWeb.Contract.Responses
@@ -67,5 +68,10 @@ namespace VideoWeb.Contract.Responses
         /// Current conference room
         /// </summary>
         public RoomSummaryResponse CurrentRoom { get; set; }
+        
+        /// <summary>
+        /// List of participants linked this participant
+        /// </summary>
+        public List<LinkedParticipantResponse> LinkedParticipants { get; set; }
     }
 }

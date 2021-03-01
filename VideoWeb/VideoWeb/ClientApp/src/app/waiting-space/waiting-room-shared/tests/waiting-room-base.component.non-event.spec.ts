@@ -1,8 +1,13 @@
 import { fakeAsync, tick } from '@angular/core/testing';
+import { ActiveToast } from 'ngx-toastr';
+import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
 import {
     ConferenceResponse,
     ConferenceStatus,
+    InterpreterRoom,
+    LinkedParticipantResponse,
+    LinkType,
     LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
@@ -12,6 +17,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { SelectedUserMediaDevice } from 'src/app/shared/models/selected-user-media-device';
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { pageUrls } from 'src/app/shared/page-url.constants';
+import { RoomClosingToastComponent } from 'src/app/shared/toast/room-closing/room-closing-toast.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
 import {
@@ -29,6 +35,7 @@ import {
     logger,
     notificationSoundsService,
     notificationToastrService,
+    roomClosingToastrService,
     router,
     userMediaService,
     userMediaStreamService,
@@ -42,6 +49,19 @@ describe('WaitingRoomComponent message and clock', () => {
 
     beforeAll(() => {
         initAllWRDependencies();
+
+        const mockToast = {
+            toastRef: {
+                componentInstance: {}
+            }
+        } as ActiveToast<RoomClosingToastComponent>;
+        roomClosingToastrService.showRoomClosingAlert.and.callFake((hearing, date) => {
+            roomClosingToastrService.currentToast = mockToast;
+        });
+        roomClosingToastrService.clearToasts.and.callFake(() => {
+            roomClosingToastrService.currentToast = null;
+        });
+
         videoCallService.retrieveVideoCallPreferences.and.returnValue(new VideoCallPreferences());
     });
 
@@ -62,6 +82,7 @@ describe('WaitingRoomComponent message and clock', () => {
             userMediaStreamService,
             notificationSoundsService,
             notificationToastrService,
+            roomClosingToastrService,
             clockService
         );
 
@@ -332,5 +353,47 @@ describe('WaitingRoomComponent message and clock', () => {
         const result = component.getCaseNameAndNumber();
         expect(result.indexOf(caseName)).toBeGreaterThan(-1);
         expect(result.indexOf(caseNumber)).toBeGreaterThan(-1);
+    });
+
+    it('showRoomClosingToast() should clear all toasts when not in the consultation room', async () => {
+        component.isPrivateConsultation = false;
+        const date = new Date();
+
+        await component.showRoomClosingToast(date);
+
+        expect(roomClosingToastrService.clearToasts).toHaveBeenCalled();
+        expect(roomClosingToastrService.currentToast).toBeFalsy();
+    });
+
+    it('showRoomClosingToast() should show "room closing" toast when in the consultation room', async () => {
+        component.isPrivateConsultation = true;
+        const date = new Date();
+
+        await component.showRoomClosingToast(date);
+
+        expect(roomClosingToastrService.showRoomClosingAlert).toHaveBeenCalledWith(component.hearing, date);
+        expect(roomClosingToastrService.currentToast).toBeTruthy();
+    });
+
+    it('should use interpreter room when participant has links', async () => {
+        component.participant.linked_participants = [
+            new LinkedParticipantResponse({ linked_id: Guid.create().toString(), link_type: LinkType.Interpreter })
+        ];
+        const room = new InterpreterRoom({
+            participant_join_uri: 'patjoinuri',
+            pexip_node: 'sip.test.node',
+            display_name: 'foo',
+            tile_display_name: `I1;Interpreter1;${component.participant.id}`
+        });
+        videoCallService.retrieveInterpreterRoom.and.resolveTo(room);
+
+        await component.call();
+
+        expect(videoCallService.makeCall).toHaveBeenCalledWith(
+            room.pexip_node,
+            room.participant_join_uri,
+            room.tile_display_name,
+            component.maxBandwidth
+        );
     });
 });

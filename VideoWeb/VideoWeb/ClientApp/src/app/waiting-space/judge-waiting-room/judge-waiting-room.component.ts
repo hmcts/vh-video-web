@@ -17,6 +17,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { CallError } from '../models/video-call-models';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
+import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
 
@@ -54,6 +55,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         protected userMediaStreamService: UserMediaStreamService,
         protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
+        protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService
     ) {
         super(
@@ -72,6 +74,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
             userMediaStreamService,
             notificationSoundsService,
             notificationToastrService,
+            roomClosingToastrService,
             clockService
         );
         this.displayConfirmStartHearingPopup = false;

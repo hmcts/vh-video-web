@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
 {

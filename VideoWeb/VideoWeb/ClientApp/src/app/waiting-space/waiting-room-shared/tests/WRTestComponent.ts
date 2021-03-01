@@ -14,6 +14,7 @@ import { NotificationSoundsService } from '../../services/notification-sounds.se
 import { VideoCallService } from '../../services/video-call.service';
 import { WaitingRoomBaseComponent } from '../waiting-room-base.component';
 import { NotificationToastrService } from 'src/app/waiting-space/services/notification-toastr.service';
+import { RoomClosingToastrService } from 'src/app/waiting-space/services/room-closing-toast.service';
 
 export class WRTestComponent extends WaitingRoomBaseComponent {
     constructor(
@@ -32,6 +33,7 @@ export class WRTestComponent extends WaitingRoomBaseComponent {
         protected userMediaStreamService: UserMediaStreamService,
         protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
+        protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService
     ) {
         super(
@@ -50,6 +52,7 @@ export class WRTestComponent extends WaitingRoomBaseComponent {
             userMediaStreamService,
             notificationSoundsService,
             notificationToastrService,
+            roomClosingToastrService,
             clockService
         );
     }

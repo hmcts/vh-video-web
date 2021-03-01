@@ -36,6 +36,11 @@ namespace VideoWeb.UnitTests.Mappings
             resultParticipant.ContactEmail.Should().Be(participant.Contact_email);
             resultParticipant.ContactTelephone.Should().Be(participant.Contact_telephone);
             resultParticipant.Representee.Should().Be(participant.Representee);
+            resultParticipant.LinkedParticipants.Count.Should().Be(participant.Linked_participants.Count);
+            resultParticipant.LinkedParticipants[0].LinkType.ToString().Should()
+                .Be(participant.Linked_participants[0].Type.ToString());
+            resultParticipant.LinkedParticipants[0].LinkedId.Should()
+                .Be(participant.Linked_participants[0].Linked_id);
 
             var judge = response.Participants.First(x => x.HearingRole == "Judge");
             judge.IsJudge().Should().BeTrue();
@@ -61,6 +66,19 @@ namespace VideoWeb.UnitTests.Mappings
                 new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant").WithHearingRole("Witness")
                     .Build()
             };
+            var participantA = participants[0];
+            var participantB = participants[1];
+            participantA.Linked_participants.Add(new LinkedParticipantResponse
+            {
+                Linked_id = participantB.Id,
+                Type = LinkedParticipantType.Interpreter
+            });
+            
+            participantB.Linked_participants.Add(new LinkedParticipantResponse
+            {
+                Linked_id = participantA.Id,
+                Type = LinkedParticipantType.Interpreter
+            });
             var endpoints = Builder<EndpointResponse>.CreateListOfSize(2).Build().ToList();
 
             var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();

@@ -15,6 +15,7 @@ using VideoWeb.Controllers;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
+using LinkedParticipantResponse = VideoWeb.Services.Video.LinkedParticipantResponse;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
@@ -74,7 +75,8 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
 
         private List<ParticipantSummaryResponse> CreateValidParticipantsSummaryResponse()
         {
-            return Builder<ParticipantSummaryResponse>.CreateListOfSize(3).Build().ToList();
+            return Builder<ParticipantSummaryResponse>.CreateListOfSize(3).All()
+                .With(x => x.Linked_participants = new List<LinkedParticipantResponse>()).Build().ToList();
         }
     }
 }
