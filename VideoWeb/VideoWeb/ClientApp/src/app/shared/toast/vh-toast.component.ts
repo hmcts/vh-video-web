@@ -1,15 +1,15 @@
 import { Component, HostBinding } from '@angular/core';
 import { ToastrService, Toast, ToastPackage } from 'ngx-toastr';
 
-interface VhToastOptions {
+export interface VhToastOptions {
     color: 'white' | 'black';
     body?: string;
     htmlBody?: string;
     buttons: VhToastButton[];
-    onNoAction: () => void;
+    onNoAction?: () => void;
 }
 
-interface VhToastButton {
+export interface VhToastButton {
     label: string;
     hoverColour?: 'red' | 'green';
     action: () => void;

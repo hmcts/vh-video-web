@@ -46,6 +46,7 @@ import {
 } from '../models/video-call-models';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
+import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 
 declare var HeartbeatFactory: any;
@@ -107,6 +108,7 @@ export abstract class WaitingRoomBaseComponent {
         protected userMediaStreamService: UserMediaStreamService,
         protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
+        protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService
     ) {
         this.isAdminConsultation = false;
@@ -806,6 +808,8 @@ export abstract class WaitingRoomBaseComponent {
         this.eventHubSubscription$.unsubscribe();
         this.videoCallSubscription$.unsubscribe();
         this.clockSubscription$.unsubscribe();
+
+        this.roomClosingToastrService.clearToasts();
     }
 
     subscribeToClock(): void {
@@ -814,8 +818,17 @@ export abstract class WaitingRoomBaseComponent {
                 this.currentTime = time;
                 this.checkIfHearingIsClosed();
                 this.checkIfHearingIsStarting();
+                this.showRoomClosingToast(time);
             })
         );
+    }
+
+    showRoomClosingToast(dateNow: Date) {
+        if (this.isPrivateConsultation) {
+            this.roomClosingToastrService.showRoomClosingAlert(this.hearing, dateNow);
+        } else {
+            this.roomClosingToastrService.clearToasts();
+        }
     }
 
     checkIfHearingIsClosed(): void {

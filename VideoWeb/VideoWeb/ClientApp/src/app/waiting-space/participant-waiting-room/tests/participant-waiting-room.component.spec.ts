@@ -1,16 +1,17 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { ActiveToast } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import {
     ConferenceResponse,
     ConferenceStatus,
     LoggedParticipantResponse,
     ParticipantResponse,
-    Role,
-    RoomSummaryResponse
+    Role
 } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
+import { RoomClosingToastComponent } from 'src/app/shared/toast/room-closing/room-closing-toast.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { HearingRole } from '../../models/hearing-role-model';
 import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
@@ -28,6 +29,7 @@ import {
     logger,
     notificationSoundsService,
     notificationToastrService,
+    roomClosingToastrService,
     router,
     userMediaService,
     userMediaStreamService,
@@ -43,6 +45,18 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let activatedRoute: ActivatedRoute;
     beforeAll(() => {
         initAllWRDependencies();
+
+        const mockToast = {
+            toastRef: {
+                componentInstance: {}
+            }
+        } as ActiveToast<RoomClosingToastComponent>;
+        roomClosingToastrService.showRoomClosingAlert.and.callFake((h, d) => {
+            roomClosingToastrService.currentToast = mockToast;
+        });
+        roomClosingToastrService.clearToasts.and.callFake(() => {
+            roomClosingToastrService.currentToast = null;
+        });
 
         const preferences = new VideoCallPreferences();
         preferences.audioOnly = false;
@@ -75,6 +89,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             userMediaStreamService,
             notificationSoundsService,
             notificationToastrService,
+            roomClosingToastrService,
             clockService
         );
 
@@ -338,5 +353,29 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         component.participant.current_room.label = 'ParticipantConsutationRoom';
 
         expect(component.isJohRoom).toBe(false);
+    });
+
+    it('showRoomClosingToast() should clear all toasts when not in the consultation room', async () => {
+        component.isPrivateConsultation = false;
+        roomClosingToastrService.showRoomClosingAlert.calls.reset();
+        roomClosingToastrService.clearToasts.calls.reset();
+        const date = new Date();
+
+        await component.showRoomClosingToast(date);
+
+        expect(roomClosingToastrService.clearToasts).toHaveBeenCalled();
+        expect(roomClosingToastrService.currentToast).toBeFalsy();
+    });
+
+    it('showRoomClosingToast() should show "room closing" toast when in the consultation room', async () => {
+        component.isPrivateConsultation = true;
+        roomClosingToastrService.showRoomClosingAlert.calls.reset();
+        roomClosingToastrService.clearToasts.calls.reset();
+        const date = new Date();
+
+        await component.showRoomClosingToast(date);
+
+        expect(roomClosingToastrService.showRoomClosingAlert).toHaveBeenCalledWith(component.hearing, date);
+        expect(roomClosingToastrService.currentToast).toBeTruthy();
     });
 });

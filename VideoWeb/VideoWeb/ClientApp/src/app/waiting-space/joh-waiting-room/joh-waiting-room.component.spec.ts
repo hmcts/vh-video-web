@@ -17,6 +17,7 @@ import {
     logger,
     notificationSoundsService,
     notificationToastrService,
+    roomClosingToastrService,
     router,
     userMediaService,
     userMediaStreamService,
@@ -58,6 +59,7 @@ describe('JohWaitingRoomComponent', () => {
             userMediaStreamService,
             notificationSoundsService,
             notificationToastrService,
+            roomClosingToastrService,
             clockService
         );
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
