@@ -4285,14 +4285,16 @@ namespace VideoWeb.Services.TestApi
     
         [Newtonsoft.Json.JsonProperty("locked", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public bool Locked { get; set; }
-    }
     
+    
+    }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
     public enum LinkedParticipantType
     {
         [System.Runtime.Serialization.EnumMember(Value = @"Interpreter")]
         Interpreter = 0,
+    
     }
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.1.4.0 (Newtonsoft.Json v12.0.0.0)")]
