@@ -122,7 +122,7 @@ export abstract class WRParticipantStatusListDirective {
 
     getInterpreteeName(interpreterId: string) {
         let interpreter = this.nonJudgeParticipants.find(x => x.id === interpreterId);
-        return this.nonJudgeParticipants.find(x => x.id === interpreter.linked_participants[0].linked_participant_id).name;
+        return this.nonJudgeParticipants.find(x => x.id === interpreter.linked_participants[0].linked_id).name;
     }
 
     private orderForInterpreter(
@@ -135,7 +135,7 @@ export abstract class WRParticipantStatusListDirective {
         sortedNonJudgeParts.push(nonJudgeParticipants[individualWithInterpreterIndex]);
         nonJudgeParticipants.splice(individualWithInterpreterIndex, 1);
         // Find Interpreter and add as second participant
-        const interpreterIndex = nonJudgeParticipants.findIndex(x => x.id === linkDetails.linked_participant_id);
+        const interpreterIndex = nonJudgeParticipants.findIndex(x => x.id === linkDetails.linked_id);
         sortedNonJudgeParts.push(nonJudgeParticipants[interpreterIndex]);
         nonJudgeParticipants.splice(interpreterIndex, 1);
         // Add all other participants
