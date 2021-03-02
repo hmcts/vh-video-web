@@ -6,21 +6,25 @@ import { ParticipantResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
+import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { ParticipantPanelModelMapper } from 'src/app/shared/mappers/participant-panel-model-mapper';
+import {
+    CallWitnessIntoHearingEvent,
+    DismissWitnessFromHearingEvent,
+    LowerParticipantHandEvent,
+    ToggleMuteParticipantEvent,
+    ToggleSpotlightParticipantEvent
+} from 'src/app/shared/models/participant-event';
+import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 import { CaseTypeGroup } from '../models/case-type-group';
 import { HearingRole } from '../models/hearing-role-model';
-import { PanelModel, ParticipantPanelModel, VideoEndpointPanelModel } from '../models/participant-panel-model';
+import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-model';
+import { PanelModel } from '../models/panel-model-base';
+import { ParticipantPanelModel } from '../models/participant-panel-model';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
+import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
 import { VideoCallService } from '../services/video-call.service';
-import {
-    ToggleMuteParticipantEvent,
-    ToggleSpotlightParticipantEvent,
-    LowerParticipantHandEvent,
-    CallWitnessIntoHearingEvent,
-    DismissWitnessFromHearingEvent
-} from 'src/app/shared/models/participant-event';
-import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
-import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 
 @Component({
     selector: 'app-participants-panel',
@@ -167,15 +171,13 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.isMuteAll = updatedConference.guestedMuted;
     }
 
-    handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): boolean {
+    handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): void {
         const participant = this.participants.find(x => updatedParticipant.pexipDisplayName.includes(x.id));
         if (!participant) {
             return;
         }
-        participant.pexipId = updatedParticipant.uuid;
-        participant.isRemoteMuted = updatedParticipant.isRemoteMuted;
-        participant.handRaised = updatedParticipant.handRaised;
-        participant.isSpotlighted = updatedParticipant.isSpotlighted;
+
+        participant.updateParticipant(updatedParticipant);
         this.logger.debug(`${this.loggerPrefix} Participant has been updated in video call`, {
             conference: this.conferenceId,
             participant: participant.id,
@@ -215,15 +217,12 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     async getParticipantsList() {
         try {
-            const pats = this.videoWebService.getParticipantsByConferenceId(this.conferenceId);
+            const pats = await this.videoWebService.getParticipantsByConferenceId(this.conferenceId);
             const eps = this.videoWebService.getEndpointsForConference(this.conferenceId);
 
-            (await pats).forEach(x => {
-                const participant = new ParticipantPanelModel(x);
-                this.participants.push(participant);
-            });
-            this.logger.debug(`${this.loggerPrefix} Retrieved participants in conference`, { conference: this.conferenceId });
+            this.participants = this.participants.concat(new ParticipantPanelModelMapper().mapFromParticipantUserResponse(pats));
 
+            this.logger.debug(`${this.loggerPrefix} Retrieved participants in conference`, { conference: this.conferenceId });
             (await eps).forEach(x => {
                 const endpoint = new VideoEndpointPanelModel(x);
                 this.participants.push(endpoint);
@@ -375,6 +374,10 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     isEndpoint(participant: PanelModel) {
         return participant instanceof VideoEndpointPanelModel;
+    }
+
+    isLinkedParticipant(participant: PanelModel) {
+        return participant instanceof LinkedParticipantPanelModel;
     }
 
     mapParticipantToParticipantResponse(participant: ParticipantPanelModel): ParticipantResponse {

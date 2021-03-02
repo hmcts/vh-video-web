@@ -1,6 +1,7 @@
 import { EndpointStatus, ParticipantForUserResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { ParticipantPanelModel, VideoEndpointPanelModel } from './participant-panel-model';
+import { ParticipantPanelModel } from './participant-panel-model';
+import { VideoEndpointPanelModel } from './video-endpoint-panel-model';
 
 describe('ParticipantPanelModel', () => {
     let model: ParticipantPanelModel;

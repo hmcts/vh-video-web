@@ -1,40 +1,43 @@
+import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
+import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import {
+    CallWitnessIntoHearingEvent,
+    DismissWitnessFromHearingEvent,
+    LowerParticipantHandEvent,
+    ToggleMuteParticipantEvent,
+    ToggleSpotlightParticipantEvent
+} from 'src/app/shared/models/participant-event';
+import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
+import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { VideoCallTestData } from 'src/app/testing/mocks/data/video-call-test-data';
 import {
     endpointStatusSubjectMock,
     eventsServiceSpy,
-    participantStatusSubjectMock,
     hearingTransferSubjectMock,
-    participantMediaStatusSubjectMock
+    participantMediaStatusSubjectMock,
+    participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
-import { videoCallServiceSpy, onConferenceUpdatedMock, onParticipantUpdatedMock } from 'src/app/testing/mocks/mock-video-call-service';
+import { onConferenceUpdatedMock, onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { EndpointStatus, ParticipantStatus, Role } from '../../services/clients/api-client';
-import { ParticipantPanelModel, VideoEndpointPanelModel } from '../models/participant-panel-model';
-import { ParticipantsPanelComponent } from './participants-panel.component';
-import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
-import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
-import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { HearingRole } from '../models/hearing-role-model';
-import {
-    ToggleMuteParticipantEvent,
-    ToggleSpotlightParticipantEvent,
-    LowerParticipantHandEvent,
-    CallWitnessIntoHearingEvent,
-    DismissWitnessFromHearingEvent
-} from 'src/app/shared/models/participant-event';
-import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
-import { VideoCallTestData } from 'src/app/testing/mocks/data/video-call-test-data';
-import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
-import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
+import { ParticipantPanelModel } from '../models/participant-panel-model';
+import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
+import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
+import { ParticipantsPanelComponent } from './participants-panel.component';
 
 describe('ParticipantsPanelComponent', () => {
+    const testData = new ConferenceTestData();
     const conferenceId = '1111-1111-1111';
-    const participants = new ConferenceTestData().getListOfParticipants();
-    const endpoints = new ConferenceTestData().getListOfEndpoints();
+    let participants = testData.getListOfParticipants();
+    participants = participants.concat(testData.getListOfLinkedParticipants());
+    const endpoints = testData.getListOfEndpoints();
     const videoCallTestData = new VideoCallTestData();
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     videoWebServiceSpy = jasmine.createSpyObj('VideoWebService', ['getParticipantsByConferenceId', 'getEndpointsForConference']);
@@ -63,11 +66,13 @@ describe('ParticipantsPanelComponent', () => {
         component.ngOnDestroy();
     });
 
-    it('should get participant sorted list, the judge is first, then panel members and finally observers are the last one', fakeAsync(() => {
+    fit('should get participant sorted list, the judge is first, then panel members and finally observers are the last one', fakeAsync(() => {
+        const expectedCount = endpoints.length + participants.length - 1; // take away 1 for linked participants
+
         component.participants = [];
         component.ngOnInit();
         flushMicrotasks();
-        expect(component.participants.length).toBeGreaterThan(0);
+        expect(component.participants.length).toBe(expectedCount);
         expect(component.participants[0].caseTypeGroup).toBe('judge');
         expect(component.participants[1].caseTypeGroup).toBe('panelmember');
         expect(component.participants[component.participants.length - 1].caseTypeGroup).toBe('observer');

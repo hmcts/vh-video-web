@@ -4220,6 +4220,8 @@ export enum ParticipantStatus {
 }
 
 export class RoomSummaryResponse implements IRoomSummaryResponse {
+    /** Room Id */
+    id?: string | undefined;
     /** Room label */
     label?: string | undefined;
     /** Is the room locked */
@@ -4235,6 +4237,7 @@ export class RoomSummaryResponse implements IRoomSummaryResponse {
 
     init(_data?: any) {
         if (_data) {
+            this.id = _data['id'];
             this.label = _data['label'];
             this.locked = _data['locked'];
         }
@@ -4249,6 +4252,7 @@ export class RoomSummaryResponse implements IRoomSummaryResponse {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data['id'] = this.id;
         data['label'] = this.label;
         data['locked'] = this.locked;
         return data;
@@ -4256,6 +4260,8 @@ export class RoomSummaryResponse implements IRoomSummaryResponse {
 }
 
 export interface IRoomSummaryResponse {
+    /** Room Id */
+    id?: string | undefined;
     /** Room label */
     label?: string | undefined;
     /** Is the room locked */

@@ -1,4 +1,4 @@
-import { PanelModel } from 'src/app/waiting-space/models/participant-panel-model';
+import { PanelModel } from 'src/app/waiting-space/models/panel-model-base';
 
 export class ToggleMuteParticipantEvent {
     constructor(public participant: PanelModel) {}
