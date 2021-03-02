@@ -53,7 +53,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browserSteps.GivenInTheUsersBrowser(user);
             Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitToCallAndAnswer));
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateCallPopupPage.VhoIncomingCallMessage).Text.Should().Contain("Video Hearings Team");
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateCallPopupPage.IncomingCallMessage).Text.Should().Contain("VHO");
             _browsers[_c.CurrentUser].Click(PrivateCallPopupPage.AcceptPrivateCall);
         }
 
