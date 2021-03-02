@@ -101,7 +101,11 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         if (participant.status === ParticipantStatus.InConsultation && participant.current_room != null) {
             return (
                 'In ' +
-                this.camelToSpaced(participant.current_room.label.replace('ParticipantConsultationRoom', 'MeetingRoom')).toLowerCase() +
+                this.camelToSpaced(
+                    participant.current_room.label
+                        .replace('ParticipantConsultationRoom', 'MeetingRoom')
+                        .replace('JudgeJOHConsultationRoom', 'JudgeRoom')
+                ).toLowerCase() +
                 (participant.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
             );
         }

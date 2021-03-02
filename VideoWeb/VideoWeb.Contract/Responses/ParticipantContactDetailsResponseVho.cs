@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using VideoWeb.Common.Models;
 
 namespace VideoWeb.Contract.Responses
@@ -88,6 +89,11 @@ namespace VideoWeb.Contract.Responses
         /// <summary>
         /// The participant represented by the representative
         /// </summary>
-        public string Representee { get; set; }        
+        public string Representee { get; set; }    
+        
+        /// <summary>
+        /// List of participants linked this participant
+        /// </summary>
+        public List<LinkedParticipantResponse> LinkedParticipants { get; set; }
     }
 }

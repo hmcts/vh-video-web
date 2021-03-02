@@ -39,10 +39,14 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
 
             var judge = CreateParticipant("Judge", "Judge");
             var individual = CreateParticipant("Individual", "Claimant");
+            var interpreter = CreateParticipant("Interpreter", "Claimant");
             var representative = CreateParticipant("Representative", "Defendant");
+            individual.LinkedParticipants.Add(new LinkedParticipant{LinkedId = interpreter.Id, LinkType = LinkType.Interpreter});
+            interpreter.LinkedParticipants.Add(new LinkedParticipant{LinkedId = individual.Id, LinkType = LinkType.Interpreter});
+            
             _participants = new List<Participant>
             {
-                judge, individual, representative
+                judge, individual, representative, interpreter
             };
 
             var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole(AppRoles.VhOfficerRole).Build();
@@ -57,10 +61,11 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
 
             var judge3DifferentHearing = CreateParticipant("judge3", "Judge");
             conference.Participants = _participants;
+            var judgeInHearing = conference.Participants.First(x => x.Username == "Judge");
 
             var judgesInHearings = new List<JudgeInHearingResponse>
             {
-                new JudgeInHearingResponse{ Id = judge3DifferentHearing.Id, Username = _participants[2].Username, Status = ParticipantState.InHearing }
+                new JudgeInHearingResponse{ Id = judge3DifferentHearing.Id, Username = judgeInHearing.Username, Status = ParticipantState.InHearing }
             };
 
             _mocker.Mock<IConferenceCache>().Setup(x => x.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
@@ -77,11 +82,16 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             typedResult.Value.Should().BeAssignableTo<IEnumerable<ParticipantContactDetailsResponseVho>>();
             var results = ((IEnumerable<ParticipantContactDetailsResponseVho>)typedResult.Value).ToList();
             results.Should().NotBeNullOrEmpty();
-            results.Count.Should().Be(3);
+            results.Count.Should().Be(_participants.Count);
 
+            // Individual
             AssertResponseItem(results.ElementAt(0), conference.Participants[1], conferenceId, false);
-            AssertResponseItem(results.ElementAt(1), conference.Participants[2], conferenceId, true);
-            AssertResponseItem(results.ElementAt(2), conference.Participants[0], conferenceId, false);
+            // Interpreter
+            AssertResponseItem(results.ElementAt(1), conference.Participants[3], conferenceId, false);
+            // Representative
+            AssertResponseItem(results.ElementAt(2), conference.Participants[2], conferenceId, false);
+            // Judge
+            AssertResponseItem(results.ElementAt(3), conference.Participants[0], conferenceId, true);
         }
 
         [Test]
@@ -140,6 +150,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .With(x => x.Username = username)
                 .With(x => x.CaseTypeGroup = caseTypeGroup)
                 .With(x => x.RefId = Guid.NewGuid())
+                .With(x => x.LinkedParticipants = new List<LinkedParticipant>())
                 .With(x => x.DisplayName = $"{username} {username}")
                 .Build();
         }
