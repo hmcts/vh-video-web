@@ -1,14 +1,18 @@
 using System;
-using VideoWeb.Services.Video;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.Contract.Responses
 {
     public class LinkedParticipantResponse
     {
-        public Guid ParticipantId { get; set; }
-
-        public Guid LinkedParticipantId { get; set; }
-
-        public LinkedParticipantType Type { get; set; }
+        /// <summary>
+        /// The id of the participant linked to
+        /// </summary>
+        public Guid LinkedId { get; set; }
+        
+        /// <summary>
+        /// The type of link to participant
+        /// </summary>
+        public LinkType LinkType { get; set; }
     }
 }

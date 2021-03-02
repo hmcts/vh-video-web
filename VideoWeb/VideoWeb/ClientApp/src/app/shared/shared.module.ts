@@ -28,8 +28,11 @@ import { TooltipDirective } from './directives/tooltip.directive';
 import { ErrorCameraMicrophoneComponent } from './error-camera-microphone/error-camera-microphone.component';
 import { ToastrModule } from 'ngx-toastr';
 import { VhToastComponent } from './toast/vh-toast.component';
+import { RoomClosingToastComponent } from './toast/room-closing/room-closing-toast.component';
 import { StartPrivateConsultationComponent } from '../waiting-space/participant-waiting-room/start-private-consultation/start-private-consultation.component';
 import { JoinPrivateConsultationComponent } from '../waiting-space/participant-waiting-room/join-private-consultation/join-private-consultation.component';
+import { TranslateModule } from '@ngx-translate/core';
+import { TestLanguageService } from './test-language.service';
 
 @NgModule({
     imports: [
@@ -40,7 +43,11 @@ import { JoinPrivateConsultationComponent } from '../waiting-space/participant-w
         SharedRoutingModule,
         ToastrModule.forRoot({
             toastComponent: VhToastComponent
-        })
+        }),
+        ToastrModule.forRoot({
+            toastComponent: RoomClosingToastComponent
+        }),
+        TranslateModule
     ],
     declarations: [
         HeaderComponent,
@@ -66,9 +73,10 @@ import { JoinPrivateConsultationComponent } from '../waiting-space/participant-w
         ChatBodyWindowComponent,
         TooltipDirective,
         ErrorCameraMicrophoneComponent,
-        VhToastComponent
+        VhToastComponent,
+        RoomClosingToastComponent
     ],
-    providers: [WindowScrolling, ScreenHelper],
+    providers: [WindowScrolling, ScreenHelper, TestLanguageService],
     exports: [
         HeaderComponent,
         FooterComponent,
@@ -90,7 +98,8 @@ import { JoinPrivateConsultationComponent } from '../waiting-space/participant-w
         ChatInputBoxComponent,
         ChatBodyWindowComponent,
         TooltipDirective,
-        ErrorCameraMicrophoneComponent
+        ErrorCameraMicrophoneComponent,
+        TranslateModule
     ]
 })
 export class SharedModule {}

@@ -11,7 +11,7 @@
     <PackageReference Include="NSwag.MSBuild" Version="13.2.2" />
   </ItemGroup>
 
-  <Target Name="NSwag" AfterTargets="Build" Condition=" '$(Configuration)' == 'Debug' ">
+  <Target Name="NSwag" AfterTargets="Build" Condition="'$(TF_BUILD)'!='True' AND '$(Configuration)'=='Debug'">
     <Copy SourceFiles="@(ReferencePath)" DestinationFolder="$(OutDir)References" />
     <Exec Command="$(NSwagExe_Core31) run /runtime:NetCore31 /variables:Configuration=$(Configuration)" />
     <RemoveDir Directories="$(OutDir)References" />

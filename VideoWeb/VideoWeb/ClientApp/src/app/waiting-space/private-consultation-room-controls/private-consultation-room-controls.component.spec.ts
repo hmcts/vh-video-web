@@ -1,5 +1,5 @@
 import { Guid } from 'guid-typescript';
-import { ConferenceResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ParticipantStatus, Role, RoomSummaryResponse } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -17,6 +17,7 @@ import {
 } from 'src/app/testing/mocks/mock-video-call-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '../models/video-call-models';
+import { deviceTypeService } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { PrivateConsultationRoomControlsComponent } from './private-consultation-room-controls.component';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
@@ -37,7 +38,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     const testData = new VideoCallTestData();
 
     beforeEach(() => {
-        component = new PrivateConsultationRoomControlsComponent(videoCallService, eventsService, logger);
+        component = new PrivateConsultationRoomControlsComponent(videoCallService, eventsService, deviceTypeService, logger);
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
         component.setupEventhubSubscribers();
@@ -404,5 +405,17 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
         // Assert
         expect(videoCallService.stopScreenShare).toHaveBeenCalledTimes(1);
+    });
+    it('should confirm that the consultation room is a judge and JOH court room', async () => {
+        component.participant = globalParticipant;
+        component.participant.current_room = new RoomSummaryResponse({ label: 'JudgeJOHCourtRoom' });
+
+        expect(component.isJOHRoom).toBe(true);
+    });
+    it('should confirm that the consultation room is not a judge and JOH court room', async () => {
+        component.participant = globalParticipant;
+        component.participant.current_room = new RoomSummaryResponse({ label: 'ParticipantCourtRoom' });
+
+        expect(component.isJOHRoom).toBe(false);
     });
 });

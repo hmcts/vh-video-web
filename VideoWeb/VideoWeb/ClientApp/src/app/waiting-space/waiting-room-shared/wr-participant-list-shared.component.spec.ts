@@ -12,7 +12,8 @@ import {
     ParticipantResponse,
     ParticipantStatus,
     VideoEndpointResponse,
-    Role
+    Role,
+    RoomSummaryResponse
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -222,5 +223,35 @@ describe('WaitingRoom ParticipantList Base', () => {
 
         component.initParticipants();
         expect(component.participantsInConsultation.length).toBe(3);
+    });
+    it('should be allowed to invite in consultation if the participant is in the participants room', () => {
+        const indivUser = conference.participants.find(x => x.role === Role.Individual);
+        indivUser.current_room = new RoomSummaryResponse({ label: 'ParticipantCourtRoom' });
+        component.loggedInUser.participant_id = indivUser.id;
+        component.loggedInUser.role = Role.Individual;
+
+        component.conference = conference;
+
+        expect(component.canInvite).toBe(true);
+    });
+    it('should not be allowed to invite in consultation if the participant is in the JOH room', () => {
+        const indivUser = conference.participants.find(x => x.role === Role.Individual);
+        indivUser.current_room = new RoomSummaryResponse({ label: 'JudgeJOHCourtRoom' });
+        component.loggedInUser.participant_id = indivUser.id;
+        component.loggedInUser.role = Role.Individual;
+
+        component.conference = conference;
+
+        expect(component.canInvite).toBe(false);
+    });
+    it('should be allowed to invite in consultation if the participant is in a Judge or JOH ', () => {
+        const indivUser = conference.participants.find(x => x.role === Role.JudicialOfficeHolder);
+        indivUser.current_room = new RoomSummaryResponse({ label: 'JudgeJOHCourtRoom' });
+        component.loggedInUser.participant_id = indivUser.id;
+        component.loggedInUser.role = Role.JudicialOfficeHolder;
+
+        component.conference = conference;
+
+        expect(component.canInvite).toBe(true);
     });
 });

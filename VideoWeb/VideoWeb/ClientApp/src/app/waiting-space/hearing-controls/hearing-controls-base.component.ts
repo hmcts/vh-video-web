@@ -1,6 +1,7 @@
 import { EventEmitter, Injectable, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
@@ -36,7 +37,12 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     selfViewOpen: boolean;
     displayConfirmPopup: boolean;
 
-    protected constructor(protected videoCallService: VideoCallService, protected eventService: EventsService, protected logger: Logger) {
+    protected constructor(
+        protected videoCallService: VideoCallService,
+        protected eventService: EventsService,
+        protected deviceTypeService: DeviceTypeService,
+        protected logger: Logger
+    ) {
         this.handRaised = false;
         this.remoteMuted = false;
         this.selfViewOpen = false;
@@ -44,18 +50,10 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     get canShowScreenShareButton(): boolean {
-        const allowedRoles = [Role.Representative, Role.JudicialOfficeHolder, Role.Judge];
-        if (allowedRoles.includes(this.participant.role)) {
-            return true;
-        }
+        const isNotTablet = !this.deviceTypeService.isTablet();
+        const isAllowedRole = this.participant?.hearing_role !== HearingRole.WITNESS;
 
-        const allowedHearingRoles: string[] = [
-            HearingRole.LITIGANT_IN_PERSON,
-            HearingRole.REPRESENTATIVE,
-            HearingRole.WITNESS,
-            HearingRole.JUDGE
-        ];
-        return allowedHearingRoles.includes(this.participant.hearing_role);
+        return isNotTablet && isAllowedRole;
     }
 
     get isJudge(): boolean {
@@ -64,6 +62,10 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     get isJOHConsultation(): boolean {
         return this.participant.role === Role.JudicialOfficeHolder || this.isJudge;
+    }
+
+    get isJOHRoom(): boolean {
+        return this.participant?.current_room?.label.startsWith('JudgeJOH');
     }
 
     get logPayload() {

@@ -10,7 +10,7 @@ import {
     SelfTestPexipResponse,
     TestCallScoreResponse,
     TokenResponse,
-    UpdateParticipantRequest,
+    UpdateParticipantDisplayNameRequest,
     UpdateParticipantStatusEventRequest,
     JudgeNameListResponse,
     ParticipantForUserResponse,
@@ -31,7 +31,7 @@ export interface IVideoWebApiService {
     getPexipConfig(): Promise<SelfTestPexipResponse>;
     getObfuscatedName(displayName: string): string;
     getConferenceChatHistory(conferenceId: string, participantId: string): Promise<ChatResponse[]>;
-    updateParticipantDetails(conferenceId: string, participantId: string, updateParticipantRequest: UpdateParticipantRequest);
+    updateParticipantDetails(conferenceId: string, participantId: string, updateParticipantRequest: UpdateParticipantDisplayNameRequest);
     getDistinctJudgeNames(): Promise<JudgeNameListResponse>;
     getParticipantsByConferenceId(conferenceId: string): Promise<ParticipantForUserResponse[]>;
     getEndpointsForConference(conferenceId: string): Promise<VideoEndpointResponse[]>;

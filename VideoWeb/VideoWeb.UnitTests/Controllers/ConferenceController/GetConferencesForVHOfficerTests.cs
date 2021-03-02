@@ -19,6 +19,7 @@ using VideoWeb.Controllers;
 using VideoWeb.Mappings;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
+using LinkedParticipantResponse = VideoWeb.Services.Video.LinkedParticipantResponse;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 using UserRole = VideoWeb.Services.Video.UserRole;
 
@@ -61,6 +62,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(4)
                 .All()
                 .With(x => x.Username = Internet.Email())
+                .With(x => x.Linked_participants = new List<LinkedParticipantResponse>())
                 .TheFirst(1).With(x => x.User_role = UserRole.Judge)
                 .TheRest().With(x => x.User_role = UserRole.Individual).Build().ToList();
 

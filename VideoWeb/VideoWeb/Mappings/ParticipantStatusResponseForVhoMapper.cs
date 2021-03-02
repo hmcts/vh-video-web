@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Mappings.Interfaces;
 using VideoWeb.Services.Video;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
 
@@ -23,7 +24,12 @@ namespace VideoWeb.Mappings
                 {
                     var status = Enum.Parse<ParticipantStatus>(x.ParticipantStatus.ToString());
                     var judgeInHearing = judgesInHearings.Where(j => j.Username == x.Username && j.Id != x.Id);
-
+                    var links = x.LinkedParticipants.Select(x =>
+                        new Contract.Responses.LinkedParticipantResponse
+                        {
+                            LinkedId = x.LinkedId,
+                            LinkType = x.LinkType
+                        }).ToList();
                     return new ParticipantContactDetailsResponseVho
                     {
                         Id = x.Id,
@@ -42,7 +48,8 @@ namespace VideoWeb.Mappings
                         ContactTelephone = x.ContactTelephone,
                         HearingVenueName = hearingVenueName,
                         JudgeInAnotherHearing = judgeInHearing.Any(),
-                        Representee = x.Representee
+                        Representee = x.Representee,
+                        LinkedParticipants = links
                     };
                 });
             return pats.ToList();

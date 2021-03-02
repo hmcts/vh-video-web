@@ -1,16 +1,19 @@
-using LinkedParticipantResponse = VideoWeb.Services.Video.LinkedParticipantResponse;
+using System;
+using VideoWeb.Common.Models;
+using VideoWeb.Mappings.Interfaces;
+using LinkedParticipantResponse = VideoWeb.Contract.Responses.LinkedParticipantResponse;
+using VHLinkedParticipantResponse = VideoWeb.Services.Video.LinkedParticipantResponse;
 
 namespace VideoWeb.Mappings
 {
-    public class LinkedParticipantResponseMapper: IMapTo<LinkedParticipantResponse, VideoWeb.Contract.Responses.LinkedParticipantResponse>
+    public class LinkedParticipantResponseMapper : IMapTo<VHLinkedParticipantResponse, LinkedParticipantResponse>
     {
-        public VideoWeb.Contract.Responses.LinkedParticipantResponse Map(LinkedParticipantResponse participant)
+        public LinkedParticipantResponse Map(VHLinkedParticipantResponse input)
         {
-            return new VideoWeb.Contract.Responses.LinkedParticipantResponse
+            return new LinkedParticipantResponse
             {
-                ParticipantId = participant.Participant_id,
-                LinkedParticipantId = participant.Linked_id,
-                Type = participant.Type
+                LinkedId = input.Linked_id,
+                LinkType = Enum.Parse<LinkType>(input.Type.ToString())
             };
         }
     }

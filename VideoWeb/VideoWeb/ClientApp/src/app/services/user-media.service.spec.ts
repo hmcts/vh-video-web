@@ -4,7 +4,6 @@ import { MockLogger } from '../testing/mocks/MockLogger';
 import { SessionStorage } from './session-storage';
 import { UserMediaService } from './user-media.service';
 import { ErrorService } from '../services/error.service';
-import { component } from '../waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 
 describe('UserMediaService', () => {
     const testData = new MediaDeviceTestData();

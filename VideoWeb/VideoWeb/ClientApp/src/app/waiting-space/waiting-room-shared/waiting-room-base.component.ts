@@ -8,6 +8,7 @@ import {
     ConferenceResponse,
     ConferenceStatus,
     ConsultationAnswer,
+    LinkType,
     LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
@@ -45,12 +46,13 @@ import {
 } from '../models/video-call-models';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
+import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 
 declare var HeartbeatFactory: any;
 
 export abstract class WaitingRoomBaseComponent {
-    protected maxBandwidth = null;
+    maxBandwidth = null;
     audioOnly: boolean;
     hearingStartingAnnounced: boolean;
     privateConsultationAccordianExpanded = false;
@@ -106,6 +108,7 @@ export abstract class WaitingRoomBaseComponent {
         protected userMediaStreamService: UserMediaStreamService,
         protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
+        protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService
     ) {
         this.isAdminConsultation = false;
@@ -409,7 +412,7 @@ export abstract class WaitingRoomBaseComponent {
             this.token = await this.videoWebService.getJwToken(this.participant.id);
             this.logger.debug(`${this.loggerPrefix} Retrieved jwtoken for heartbeat`, logPayload);
             await this.setupPexipEventSubscriptionAndClient();
-            this.call();
+            await this.call();
         } catch (error) {
             this.logger.error(`${this.loggerPrefix} There was an error getting a jwtoken for heartbeat`, error, logPayload);
             this.errorService.handleApiError(error);
@@ -476,17 +479,33 @@ export abstract class WaitingRoomBaseComponent {
         this.presentationStream = connectedPresentation.stream;
     }
 
-    call() {
-        this.logger.info(`${this.loggerPrefix} calling pexip`);
-        const pexipNode = this.hearing.getConference().pexip_node_uri;
-        const conferenceAlias = this.hearing.getConference().participant_uri;
-        const displayName = this.participant.tiled_display_name;
+    async call() {
         const logPayload = {
             conference: this.conferenceId,
             participant: this.participant.id
         };
+        this.logger.info(`${this.loggerPrefix} calling pexip`, logPayload);
+        let pexipNode = this.hearing.getConference().pexip_node_uri;
+        let conferenceAlias = this.hearing.getConference().participant_uri;
+        let displayName = this.participant.tiled_display_name;
+        if (this.needsInterpreterRoom()) {
+            this.logger.debug(`${this.loggerPrefix} calling interpreter room`, logPayload);
+            const interpreterRoom = await this.videoCallService.retrieveInterpreterRoom(this.conference.id, this.participant.id);
+            pexipNode = interpreterRoom.pexip_node;
+            conferenceAlias = interpreterRoom.participant_join_uri;
+            displayName = interpreterRoom.tile_display_name;
+        }
+
         this.logger.debug(`${this.loggerPrefix} Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`, logPayload);
         this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth);
+    }
+
+    needsInterpreterRoom(): boolean {
+        if (!this.participant.linked_participants) {
+            return false;
+        }
+
+        return this.participant.linked_participants.filter(x => x.link_type === LinkType.Interpreter).length > 0;
     }
 
     disconnect() {
@@ -552,8 +571,8 @@ export abstract class WaitingRoomBaseComponent {
         this.logger.warn(`${this.loggerPrefix} Disconnected from pexip. Reason : ${reason.reason}`);
         if (!this.hearing.isPastClosedTime()) {
             this.logger.warn(`${this.loggerPrefix} Attempting to reconnect to pexip in ${this.CALL_TIMEOUT}ms`);
-            this.callbackTimeout = setTimeout(() => {
-                this.call();
+            this.callbackTimeout = setTimeout(async () => {
+                await this.call();
             }, this.CALL_TIMEOUT);
         }
     }
@@ -789,6 +808,8 @@ export abstract class WaitingRoomBaseComponent {
         this.eventHubSubscription$.unsubscribe();
         this.videoCallSubscription$.unsubscribe();
         this.clockSubscription$.unsubscribe();
+
+        this.roomClosingToastrService.clearToasts();
     }
 
     subscribeToClock(): void {
@@ -797,8 +818,17 @@ export abstract class WaitingRoomBaseComponent {
                 this.currentTime = time;
                 this.checkIfHearingIsClosed();
                 this.checkIfHearingIsStarting();
+                this.showRoomClosingToast(time);
             })
         );
+    }
+
+    showRoomClosingToast(dateNow: Date) {
+        if (this.isPrivateConsultation) {
+            this.roomClosingToastrService.showRoomClosingAlert(this.hearing, dateNow);
+        } else {
+            this.roomClosingToastrService.clearToasts();
+        }
     }
 
     checkIfHearingIsClosed(): void {

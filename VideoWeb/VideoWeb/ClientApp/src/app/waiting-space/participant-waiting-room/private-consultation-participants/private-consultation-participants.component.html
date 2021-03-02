@@ -3,7 +3,7 @@
     <div class="participant-grid">
         <ng-container *ngFor="let participant of getPrivateConsultationParticipants()">
             <div [class]="getRowClasses(participant)">
-                <app-invite-participant *ngIf="!isParticipantInCurrentRoom(participant) && isParticipantAvailable(participant)"
+                <app-invite-participant *ngIf="!isParticipantInCurrentRoom(participant) && isParticipantAvailable(participant) && canInvite"
                                         [participantId]="participant.id"
                                         [conferenceId]="conference.id"
                                         [roomLabel]="roomLabel">

@@ -1,8 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Mappings.Interfaces;
 using VideoWeb.Services.Video;
+using LinkedParticipantResponse = VideoWeb.Contract.Responses.LinkedParticipantResponse;
+using VHLinkedParticipantResponse = VideoWeb.Services.Video.LinkedParticipantResponse;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
 
 namespace VideoWeb.Mappings
@@ -10,11 +14,11 @@ namespace VideoWeb.Mappings
     public class ParticipantResponseMapper : IMapTo<ParticipantDetailsResponse, ParticipantResponse>
     {
         private readonly IMapTo<RoomResponse, RoomSummaryResponse> _roomResponseMapper;
-        private readonly IMapTo<Services.Video.LinkedParticipantResponse, Contract.Responses.LinkedParticipantResponse> _linkedParticipantResponseMapper;
 
-        public ParticipantResponseMapper(
-            IMapTo<RoomResponse, RoomSummaryResponse> roomResponseMapper,
-            IMapTo<Services.Video.LinkedParticipantResponse, Contract.Responses.LinkedParticipantResponse> linkedParticipantResponseMapper)
+        private readonly IMapTo<VHLinkedParticipantResponse, LinkedParticipantResponse>
+            _linkedParticipantResponseMapper;
+
+        public ParticipantResponseMapper(IMapTo<RoomResponse, RoomSummaryResponse> roomResponseMapper, IMapTo<VHLinkedParticipantResponse, LinkedParticipantResponse> linkedParticipantResponseMapper)
         {
             _roomResponseMapper = roomResponseMapper;
             _linkedParticipantResponseMapper = linkedParticipantResponseMapper;
@@ -24,9 +28,8 @@ namespace VideoWeb.Mappings
         {
             var status = Enum.Parse<ParticipantStatus>(participant.Current_status.ToString());
             var role = Enum.Parse<Role>(participant.User_role.ToString());
-            var linkedParticipants = participant?.Linked_participants
-                ?.Select(x => _linkedParticipantResponseMapper.Map(x)).ToList();
-
+            var links = (participant.Linked_participants ?? new List<VHLinkedParticipantResponse>())
+                .Select(_linkedParticipantResponseMapper.Map).ToList();
             var response = new ParticipantResponse
             {
                 Id = participant.Id,
@@ -40,12 +43,14 @@ namespace VideoWeb.Mappings
                 LastName = participant.Last_name,
                 HearingRole = participant.Hearing_role,
                 CurrentRoom = _roomResponseMapper.Map(participant.Current_room),
-                LinkedParticipants = linkedParticipants
+                LinkedParticipants = links
             };
+
             if (role == Role.Judge)
             {
                 response.TiledDisplayName = $"T{0};{participant.Display_name};{participant.Id}";
             }
+
             return response;
         }
     }

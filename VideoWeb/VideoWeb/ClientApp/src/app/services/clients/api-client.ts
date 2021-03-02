@@ -11,7 +11,6 @@ import { mergeMap as _observableMergeMap, catchError as _observableCatch } from 
 import { Observable, throwError as _observableThrow, of as _observableOf } from 'rxjs';
 import { Injectable, Inject, Optional, InjectionToken } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
-import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
@@ -2638,7 +2637,7 @@ export class ApiClient {
     updateParticipantDisplayName(
         conferenceId: string,
         participantId: string,
-        body: UpdateParticipantRequest | undefined
+        body: UpdateParticipantDisplayNameRequest | undefined
     ): Observable<void> {
         let url_ = this.baseUrl + '/conferences/{conferenceId}/participants/{participantId}/participantDisplayName';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
@@ -3801,6 +3800,90 @@ export class ApiClient {
         }
         return _observableOf<void>(<any>null);
     }
+
+    /**
+     * @return Success
+     */
+    getInterpreterRoomForParticipant(conferenceId: string, participantId: string): Observable<InterpreterRoom> {
+        let url_ = this.baseUrl + '/conferences/{conferenceId}/rooms/interpreter/{participantId}';
+        if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
+        url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
+        if (participantId === undefined || participantId === null) throw new Error("The parameter 'participantId' must be defined.");
+        url_ = url_.replace('{participantId}', encodeURIComponent('' + participantId));
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({
+                Accept: 'application/json'
+            })
+        };
+
+        return this.http
+            .request('get', url_, options_)
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processGetInterpreterRoomForParticipant(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processGetInterpreterRoomForParticipant(<any>response_);
+                        } catch (e) {
+                            return <Observable<InterpreterRoom>>(<any>_observableThrow(e));
+                        }
+                    } else return <Observable<InterpreterRoom>>(<any>_observableThrow(response_));
+                })
+            );
+    }
+
+    protected processGetInterpreterRoomForParticipant(response: HttpResponseBase): Observable<InterpreterRoom> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result200: any = null;
+                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result200 = InterpreterRoom.fromJS(resultData200);
+                    return _observableOf(result200);
+                })
+            );
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result404: any = null;
+                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result404 = resultData404 !== undefined ? resultData404 : <any>null;
+                    return throwException('Not Found', status, _responseText, _headers, result404);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<InterpreterRoom>(<any>null);
+    }
 }
 
 export class ProblemDetails implements IProblemDetails {
@@ -4179,6 +4262,49 @@ export interface IRoomSummaryResponse {
     locked?: boolean;
 }
 
+export enum LinkType {
+    Interpreter = 'Interpreter'
+}
+
+export class LinkedParticipantResponse implements ILinkedParticipantResponse {
+    linked_id?: string;
+    link_type?: LinkType;
+
+    constructor(data?: ILinkedParticipantResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.linked_id = _data['linked_id'];
+            this.link_type = _data['link_type'];
+        }
+    }
+
+    static fromJS(data: any): LinkedParticipantResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new LinkedParticipantResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['linked_id'] = this.linked_id;
+        data['link_type'] = this.link_type;
+        return data;
+    }
+}
+
+export interface ILinkedParticipantResponse {
+    linked_id?: string;
+    link_type?: LinkType;
+}
+
 export class ParticipantForUserResponse implements IParticipantForUserResponse {
     /** The participant id in a conference */
     id?: string;
@@ -4197,6 +4323,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     last_name?: string | undefined;
     hearing_role?: string | undefined;
     current_room?: RoomSummaryResponse | undefined;
+    linked_participants?: LinkedParticipantResponse[] | undefined;
 
     constructor(data?: IParticipantForUserResponse) {
         if (data) {
@@ -4220,6 +4347,10 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
             this.last_name = _data['last_name'];
             this.hearing_role = _data['hearing_role'];
             this.current_room = _data['current_room'] ? RoomSummaryResponse.fromJS(_data['current_room']) : <any>undefined;
+            if (Array.isArray(_data['linked_participants'])) {
+                this.linked_participants = [] as any;
+                for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantResponse.fromJS(item));
+            }
         }
     }
 
@@ -4244,6 +4375,10 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
         data['last_name'] = this.last_name;
         data['hearing_role'] = this.hearing_role;
         data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
+        if (Array.isArray(this.linked_participants)) {
+            data['linked_participants'] = [];
+            for (let item of this.linked_participants) data['linked_participants'].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -4266,6 +4401,7 @@ export interface IParticipantForUserResponse {
     last_name?: string | undefined;
     hearing_role?: string | undefined;
     current_room?: RoomSummaryResponse | undefined;
+    linked_participants?: LinkedParticipantResponse[] | undefined;
 }
 
 export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerResponse {
@@ -4567,14 +4703,12 @@ export class ParticipantResponse implements IParticipantResponse {
     hearing_role?: string | undefined;
     current_room?: RoomSummaryResponse | undefined;
     linked_participants?: LinkedParticipantResponse[] | undefined;
-    hasInterpreterLink?: boolean | undefined;
 
     constructor(data?: IParticipantResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
             }
-            console.log(this);
         }
     }
 
@@ -4595,8 +4729,6 @@ export class ParticipantResponse implements IParticipantResponse {
             if (Array.isArray(_data['linked_participants'])) {
                 this.linked_participants = [] as any;
                 for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantResponse.fromJS(item));
-                this.hasInterpreterLink = this.linked_participants.some(lnk => lnk.type === HearingRole.INTERPRETER) ? true : false;
-                console.log(this.hasInterpreterLink);
             }
         }
     }
@@ -4622,7 +4754,10 @@ export class ParticipantResponse implements IParticipantResponse {
         data['last_name'] = this.last_name;
         data['hearing_role'] = this.hearing_role;
         data['current_room'] = this.current_room ? this.current_room.toJSON() : <any>undefined;
-        data['linked_participants'] = this.linked_participants ? JSON.stringify(this.linked_participants) : <any>undefined;
+        if (Array.isArray(this.linked_participants)) {
+            data['linked_participants'] = [];
+            for (let item of this.linked_participants) data['linked_participants'].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -4647,7 +4782,6 @@ export interface IParticipantResponse {
     hearing_role?: string | undefined;
     current_room?: RoomSummaryResponse | undefined;
     linked_participants?: LinkedParticipantResponse[] | undefined;
-    hasInterpreterLink?: boolean | undefined;
 }
 
 export enum EndpointStatus {
@@ -5784,65 +5918,16 @@ export interface IParticipantHeartbeatResponse {
     timestamp?: Date;
 }
 
-export enum LinkedParticipantType {
-    Interpreter = 'Interpreter'
-}
-
-export class LinkedParticipantRequest implements ILinkedParticipantRequest {
-    participant_ref_id?: string;
-    linked_ref_id?: string;
-    type?: LinkedParticipantType;
-
-    constructor(data?: ILinkedParticipantRequest) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.participant_ref_id = _data['participant_ref_id'];
-            this.linked_ref_id = _data['linked_ref_id'];
-            this.type = _data['type'];
-        }
-    }
-
-    static fromJS(data: any): LinkedParticipantRequest {
-        data = typeof data === 'object' ? data : {};
-        let result = new LinkedParticipantRequest();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data['participant_ref_id'] = this.participant_ref_id;
-        data['linked_ref_id'] = this.linked_ref_id;
-        data['type'] = this.type;
-        return data;
-    }
-}
-
-export interface ILinkedParticipantRequest {
-    participant_ref_id?: string;
-    linked_ref_id?: string;
-    type?: LinkedParticipantType;
-}
-
-export class UpdateParticipantRequest implements IUpdateParticipantRequest {
-    fullname!: string;
+export class UpdateParticipantDisplayNameRequest implements IUpdateParticipantDisplayNameRequest {
+    /** Participant Fullname */
+    fullname?: string | undefined;
     first_name?: string | undefined;
     last_name?: string | undefined;
     display_name?: string | undefined;
+    /** Representee */
     representee?: string | undefined;
-    contact_email?: string | undefined;
-    contact_telephone?: string | undefined;
-    username?: string | undefined;
-    linked_participants?: LinkedParticipantRequest[] | undefined;
 
-    constructor(data?: IUpdateParticipantRequest) {
+    constructor(data?: IUpdateParticipantDisplayNameRequest) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
@@ -5857,19 +5942,12 @@ export class UpdateParticipantRequest implements IUpdateParticipantRequest {
             this.last_name = _data['last_name'];
             this.display_name = _data['display_name'];
             this.representee = _data['representee'];
-            this.contact_email = _data['contact_email'];
-            this.contact_telephone = _data['contact_telephone'];
-            this.username = _data['username'];
-            if (Array.isArray(_data['linked_participants'])) {
-                this.linked_participants = [] as any;
-                for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantRequest.fromJS(item));
-            }
         }
     }
 
-    static fromJS(data: any): UpdateParticipantRequest {
+    static fromJS(data: any): UpdateParticipantDisplayNameRequest {
         data = typeof data === 'object' ? data : {};
-        let result = new UpdateParticipantRequest();
+        let result = new UpdateParticipantDisplayNameRequest();
         result.init(data);
         return result;
     }
@@ -5881,27 +5959,18 @@ export class UpdateParticipantRequest implements IUpdateParticipantRequest {
         data['last_name'] = this.last_name;
         data['display_name'] = this.display_name;
         data['representee'] = this.representee;
-        data['contact_email'] = this.contact_email;
-        data['contact_telephone'] = this.contact_telephone;
-        data['username'] = this.username;
-        if (Array.isArray(this.linked_participants)) {
-            data['linked_participants'] = [];
-            for (let item of this.linked_participants) data['linked_participants'].push(item.toJSON());
-        }
         return data;
     }
 }
 
-export interface IUpdateParticipantRequest {
-    fullname: string;
+export interface IUpdateParticipantDisplayNameRequest {
+    /** Participant Fullname */
+    fullname?: string | undefined;
     first_name?: string | undefined;
     last_name?: string | undefined;
     display_name?: string | undefined;
+    /** Representee */
     representee?: string | undefined;
-    contact_email?: string | undefined;
-    contact_telephone?: string | undefined;
-    username?: string | undefined;
-    linked_participants?: LinkedParticipantRequest[] | undefined;
 }
 
 export class ParticipantContactDetailsResponseVho implements IParticipantContactDetailsResponseVho {
@@ -5928,6 +5997,7 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
     judge_in_another_hearing?: boolean;
     /** The participant represented by the representative */
     representee?: string | undefined;
+    linked_participants?: LinkedParticipantResponse[] | undefined;
 
     constructor(data?: IParticipantContactDetailsResponseVho) {
         if (data) {
@@ -5956,6 +6026,10 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
             this.hearing_venue_name = _data['hearing_venue_name'];
             this.judge_in_another_hearing = _data['judge_in_another_hearing'];
             this.representee = _data['representee'];
+            if (Array.isArray(_data['linked_participants'])) {
+                this.linked_participants = [] as any;
+                for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantResponse.fromJS(item));
+            }
         }
     }
 
@@ -5985,6 +6059,10 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
         data['hearing_venue_name'] = this.hearing_venue_name;
         data['judge_in_another_hearing'] = this.judge_in_another_hearing;
         data['representee'] = this.representee;
+        if (Array.isArray(this.linked_participants)) {
+            data['linked_participants'] = [];
+            for (let item of this.linked_participants) data['linked_participants'].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -6013,6 +6091,7 @@ export interface IParticipantContactDetailsResponseVho {
     judge_in_another_hearing?: boolean;
     /** The participant represented by the representative */
     representee?: string | undefined;
+    linked_participants?: LinkedParticipantResponse[] | undefined;
 }
 
 export class LoggedParticipantResponse implements ILoggedParticipantResponse {
@@ -6355,6 +6434,7 @@ export class ConferenceEventRequest implements IConferenceEventRequest {
     time_stamp_utc?: Date;
     conference_id?: string | undefined;
     participant_id?: string | undefined;
+    participant_room_id?: string | undefined;
     transfer_from?: string | undefined;
     transfer_to?: string | undefined;
     reason?: string | undefined;
@@ -6375,6 +6455,7 @@ export class ConferenceEventRequest implements IConferenceEventRequest {
             this.time_stamp_utc = _data['time_stamp_utc'] ? new Date(_data['time_stamp_utc'].toString()) : <any>undefined;
             this.conference_id = _data['conference_id'];
             this.participant_id = _data['participant_id'];
+            this.participant_room_id = _data['participant_room_id'];
             this.transfer_from = _data['transfer_from'];
             this.transfer_to = _data['transfer_to'];
             this.reason = _data['reason'];
@@ -6396,6 +6477,7 @@ export class ConferenceEventRequest implements IConferenceEventRequest {
         data['time_stamp_utc'] = this.time_stamp_utc ? this.time_stamp_utc.toISOString() : <any>undefined;
         data['conference_id'] = this.conference_id;
         data['participant_id'] = this.participant_id;
+        data['participant_room_id'] = this.participant_room_id;
         data['transfer_from'] = this.transfer_from;
         data['transfer_to'] = this.transfer_to;
         data['reason'] = this.reason;
@@ -6410,21 +6492,20 @@ export interface IConferenceEventRequest {
     time_stamp_utc?: Date;
     conference_id?: string | undefined;
     participant_id?: string | undefined;
+    participant_room_id?: string | undefined;
     transfer_from?: string | undefined;
     transfer_to?: string | undefined;
     reason?: string | undefined;
     phone?: string | undefined;
 }
 
-export class LinkedParticipantResponse implements ILinkedParticipantResponse {
-    /** Participant Id */
-    participant_id?: string | undefined;
-    //** Linked Participant Id */
-    linked_participant_id?: string | undefined;
-    /** Is the room locked */
-    type?: string;
+export class InterpreterRoom implements IInterpreterRoom {
+    pexip_node?: string | undefined;
+    participant_join_uri?: string | undefined;
+    display_name?: string | undefined;
+    tile_display_name?: string | undefined;
 
-    constructor(data?: ILinkedParticipantResponse) {
+    constructor(data?: IInterpreterRoom) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
@@ -6434,36 +6515,35 @@ export class LinkedParticipantResponse implements ILinkedParticipantResponse {
 
     init(_data?: any) {
         if (_data) {
-            console.log(_data['participant_id']);
-            this.participant_id = _data['participant_id'];
-            this.linked_participant_id = _data['linked_participant_id'];
-            this.type = _data['type'];
+            this.pexip_node = _data['pexip_node'];
+            this.participant_join_uri = _data['participant_join_uri'];
+            this.display_name = _data['display_name'];
+            this.tile_display_name = _data['tile_display_name'];
         }
     }
 
-    static fromJS(data: any): LinkedParticipantResponse {
+    static fromJS(data: any): InterpreterRoom {
         data = typeof data === 'object' ? data : {};
-        let result = new LinkedParticipantResponse();
+        let result = new InterpreterRoom();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data['participant_id'] = this.participant_id;
-        data['linked_participant_id'] = this.linked_participant_id;
-        data['type'] = this.type;
+        data['pexip_node'] = this.pexip_node;
+        data['participant_join_uri'] = this.participant_join_uri;
+        data['display_name'] = this.display_name;
+        data['tile_display_name'] = this.tile_display_name;
         return data;
     }
 }
 
-export interface ILinkedParticipantResponse {
-    /** Participant Id */
-    participant_id?: string | undefined;
-    /** Participant Id */
-    linked_participant_id?: string | undefined;
-    /** Is the room locked */
-    type?: string;
+export interface IInterpreterRoom {
+    pexip_node?: string | undefined;
+    participant_join_uri?: string | undefined;
+    display_name?: string | undefined;
+    tile_display_name?: string | undefined;
 }
 
 export class ApiException extends Error {

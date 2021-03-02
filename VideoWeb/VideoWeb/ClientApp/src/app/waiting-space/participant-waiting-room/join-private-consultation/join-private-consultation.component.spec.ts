@@ -87,12 +87,12 @@ describe('JoinPrivateConsultationComponent', () => {
     });
 
     it('should return rooms available', () => {
-        component.participants = globalConference.participants;
+        component.roomDetails = [new RoomSummaryResponse()];
         expect(component.roomsAvailable()).toBeTruthy();
     });
 
     it('should not return rooms available', () => {
-        component.participants = [];
+        component.roomDetails = [];
         expect(component.roomsAvailable()).toBeFalsy();
     });
 
@@ -102,7 +102,7 @@ describe('JoinPrivateConsultationComponent', () => {
     });
 
     it('should disable continue for locked selected room', () => {
-        const label = 'locked room';
+        const label = 'ParticipantConsultationRoom1';
         component.selectedRoomLabel = label;
         const participant = globalParticipant;
         participant.current_room = new RoomSummaryResponse({ label: label, locked: true });
@@ -119,5 +119,14 @@ describe('JoinPrivateConsultationComponent', () => {
         component.participants = [participant];
         component.getRoomDetails();
         expect(component.continueDisabled()).toBeFalsy();
+    });
+
+    it('should not display JOH rooms', () => {
+        const label = 'JudgeJOH';
+        const participant = globalParticipant;
+        participant.current_room = new RoomSummaryResponse({ label: label, locked: false });
+        component.participants = [participant];
+        component.getRoomDetails();
+        expect(component.roomDetails.length).toEqual(0);
     });
 });

@@ -22,29 +22,51 @@ namespace VideoWeb.UnitTests.Mappings
                     .With(x => x.Case_group = "Judge")
                     .With(x => x.Status = ParticipantState.Available)
                     .With(x => x.Id = Guid.NewGuid())
+                    .With(x => x.Linked_participants = new List<LinkedParticipantResponse>())
                     .Build(),
                 Builder<ParticipantSummaryResponse>.CreateNew()
                     .With(x => x.User_role = UserRole.Individual)
                     .With(x => x.Case_group = "Applicant")
                     .With(x => x.Status = ParticipantState.Joining)
-                    .With(x => x.Id = Guid.NewGuid()).Build(),
+                    .With(x => x.Id = Guid.NewGuid())
+                    .With(x => x.Linked_participants = new List<LinkedParticipantResponse>())
+                    .Build(),
                 Builder<ParticipantSummaryResponse>.CreateNew()
                     .With(x => x.User_role = UserRole.Representative)
                     .With(x => x.Case_group = "Applicant")
                     .With(x => x.Status = ParticipantState.Available)
-                    .With(x => x.Id = Guid.NewGuid()).Build(),
+                    .With(x => x.Id = Guid.NewGuid())
+                    .With(x => x.Linked_participants = new List<LinkedParticipantResponse>())
+                    .Build(),
                 Builder<ParticipantSummaryResponse>.CreateNew()
                     .With(x => x.User_role = UserRole.Individual)
                     .With(x => x.Case_group = "Defendant")
                     .With(x => x.Status = ParticipantState.Available)
-                    .With(x => x.Id = Guid.NewGuid()).Build(),
-                Builder<ParticipantSummaryResponse>.CreateNew().
-                    With(x => x.User_role = UserRole.Representative)
+                    .With(x => x.Id = Guid.NewGuid())
+                    .With(x => x.Linked_participants = new List<LinkedParticipantResponse>())
+                    .Build(),
+                Builder<ParticipantSummaryResponse>.CreateNew().With(x => x.User_role = UserRole.Representative)
                     .With(x => x.Case_group = "Defendant")
                     .With(x => x.Status = ParticipantState.InConsultation)
-                    .With(x => x.Id = Guid.NewGuid()).Build()
+                    .With(x => x.Id = Guid.NewGuid())
+                    .With(x => x.Linked_participants = new List<LinkedParticipantResponse>())
+                    .Build(),
+                Builder<ParticipantSummaryResponse>.CreateNew().With(x => x.User_role = UserRole.Individual)
+                    .With(x => x.Case_group = "Defendant")
+                    .With(x => x.Hearing_role = "Interpreter")
+                    .With(x => x.Status = ParticipantState.Available)
+                    .With(x => x.Id = Guid.NewGuid())
+                    .With(x => x.Linked_participants = new List<LinkedParticipantResponse>())
+                    .Build()
             };
 
+            var interpreter = participants.First(p => p.Hearing_role == "Interpreter");
+            var interpretee = participants.First(p =>
+                p.Case_group == "Defendant" && p.User_role == UserRole.Individual && p.Id != interpreter.Id);
+
+            interpretee.Linked_participants.Add(new LinkedParticipantResponse{Linked_id = interpreter.Id, Type = LinkedParticipantType.Interpreter});
+            interpreter.Linked_participants.Add(new LinkedParticipantResponse{Linked_id = interpretee.Id, Type = LinkedParticipantType.Interpreter});
+            
             var response = _sut.Map(participants);
 
             for (var index = 0; index < participants.Count; index++)

@@ -89,7 +89,7 @@ export class AppInsightsLoggerService implements LogAdapter {
     }
 
     private trackPage(pageName: string, url: string) {
-        this.appInsights.trackPageView({ name, uri: url });
+        this.appInsights.trackPageView({ name: pageName, uri: url });
     }
 
     private getActivatedComponent(snapshot: ActivatedRouteSnapshot): any {
