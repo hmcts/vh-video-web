@@ -21,6 +21,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     @Input() public conferenceId: string;
     @Input() public isSupportedBrowserForNetworkHealth: boolean;
     @Input() public showConsultationControls: boolean;
+    @Input() public unreadMessageCount: number;
 
     @Output() public leaveConsultation = new EventEmitter();
     @Output() public lockConsultation = new EventEmitter<boolean>();

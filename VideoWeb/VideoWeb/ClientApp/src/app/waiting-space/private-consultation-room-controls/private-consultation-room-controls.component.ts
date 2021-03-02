@@ -16,7 +16,8 @@ import { VideoCallService } from '../services/video-call.service';
         'isPrivateConsultation',
         'outgoingStream',
         'isSupportedBrowserForNetworkHealth',
-        'showConsultationControls'
+        'showConsultationControls',
+        'unreadMessageCount'
     ],
     outputs: ['leaveConsultation', 'lockConsultation', 'togglePanel']
 })

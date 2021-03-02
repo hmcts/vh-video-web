@@ -1,4 +1,4 @@
-import { AfterViewChecked, ElementRef, HostListener, Injectable, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewChecked, ElementRef, EventEmitter, HostListener, Injectable, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { Guid } from 'guid-typescript';
@@ -17,12 +17,14 @@ import { Hearing } from 'src/app/shared/models/hearing';
 export abstract class ChatWindowBaseComponent extends ChatBaseComponent implements OnInit, OnDestroy, AfterViewChecked {
     private chatHubSubscription: Subscription;
 
-    public showChat: boolean;
     public unreadMessageCount: number;
     public loading: boolean;
+    abstract autoShowChat: boolean;
 
     @Input() public alwaysOn = false;
+    @Input() public showChat = false;
     @Input() public hearing: Hearing;
+    @Output() public unreadCount = new EventEmitter<number>();
 
     @ViewChild('content', { static: false }) content: ElementRef;
 
@@ -49,8 +51,7 @@ export abstract class ChatWindowBaseComponent extends ChatBaseComponent implemen
 
     ngOnInit() {
         this.logger.debug(`[ChatHub Participant] starting chat for ${this.hearing.id}`);
-        this.showChat = false;
-        this.unreadMessageCount = 0;
+        this.setUnreadMessageCount(0);
         this.loading = true;
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.logger.debug(`[ChatHub Participant] get logged participant id: ${this.loggedInUser.participant_id}`);
@@ -62,16 +63,21 @@ export abstract class ChatWindowBaseComponent extends ChatBaseComponent implemen
 
     ngAfterViewChecked(): void {
         if (this.showChat) {
-            this.resetUnreadMessageCount();
+            this.setUnreadMessageCount(0);
             this.scrollToBottom();
         }
     }
 
+    setUnreadMessageCount(quantity: number) {
+        this.unreadMessageCount = quantity;
+        this.unreadCount?.emit(quantity);
+    }
+
     handleChatHistoryResponse(messages: InstantMessage[]) {
-        this.unreadMessageCount = this.getCountSinceUsersLastMessage(messages);
+        this.setUnreadMessageCount(this.getCountSinceUsersLastMessage(messages));
         this.loading = false;
         this.messages = messages;
-        if (this.unreadMessageCount > 0) {
+        if (this.unreadMessageCount > 0 && this.autoShowChat) {
             this.toggleChatDisplay();
         }
     }
@@ -99,22 +105,20 @@ export abstract class ChatWindowBaseComponent extends ChatBaseComponent implemen
         }
     }
 
-    toggleChatDisplay() {
-        this.showChat = !this.showChat;
-    }
-
     handleIncomingOtherMessage(message: InstantMessage) {
         if (!this.showChat && !message.is_user) {
-            this.unreadMessageCount++;
+            this.setUnreadMessageCount(this.unreadMessageCount + 1);
         }
 
-        if (!this.showChat) {
+        if (!this.showChat && this.autoShowChat) {
             this.toggleChatDisplay();
         }
+        this.disableScrollDown = false;
+        this.scrollToBottom();
     }
 
-    resetUnreadMessageCount() {
-        this.unreadMessageCount = 0;
+    toggleChatDisplay() {
+        this.showChat = !this.showChat;
     }
 
     getCountSinceUsersLastMessage(messages: ChatResponse[]) {
