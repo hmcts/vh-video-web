@@ -5,6 +5,14 @@
   z-index: 200;
 }
 
+.yellow {
+  color: govuk-colour('yellow');
+}
+
+.red {
+  color: govuk-colour('red');
+}
+
 .badge {
   font-weight: 700;
   font-size: 13px;
@@ -13,7 +21,7 @@
   right: 5px;
   padding: 3px 4px;
   border-radius: 50%;
-  background-color: #d4351c;
+  background-color: govuk-colour('red');
   color: white;
 }
 
@@ -88,35 +96,36 @@
   border: transparent 1px;
   border-radius: 2px;
   vertical-align: top;
+  margin-right: 15px;
   cursor: pointer;
 }
 
 .small-button.red {
-  color: #ffffff;
+  color: govuk-colour('white');
   background: rgba(212, 53, 28, 0.7);
   &:hover {
-    background: rgba(212, 53, 28, 1);
+    background: govuk-colour('red');
   }
 }
 
 .small-button.greyred {
-  color: #ffffff;
+  color: govuk-colour('white');
   background: #505a5f;
   &:hover {
-    background: rgba(212, 53, 28, 1);
+    background: govuk-colour('red');
   }
 }
 
 .small-button.greygreen {
-  color: #ffffff;
+  color: govuk-colour('white');
   background: #505a5f;
   &:hover {
-    background: #00703c;
+    background: govuk-colour('green');
   }
 }
 
 .small-button.blue {
-  color: #ffffff;
+  color: govuk-colour('white');
   background: rgba(29, 112, 184, 0.7);
   &:hover {
     background: rgba(29, 112, 184, 1);
