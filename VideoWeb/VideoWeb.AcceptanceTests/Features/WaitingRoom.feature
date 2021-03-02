@@ -14,6 +14,16 @@ Scenario: Participant waiting room
 	And the Participant can see a list of participants and their representatives
 	And the user can see a black box and an about to begin message
 
+@VIH-7149
+Scenario: Participant waiting room with Interpreter
+	Given the Participant user with an Interpreter has progressed to the Waiting Room page
+	Then the user is on the Waiting Room page
+	And a phone number for help is provided
+	And the users status has updated to Available
+	And the participant can see information about their case
+	And the Participant can see a list of participants and their representatives
+  And the Interpreter below their own entry in the participant list
+
 @VIH-4610 @Smoketest @Smoketest-Extended
 Scenario: Judge waiting room
 	Given the Judge user has progressed to the Waiting Room page

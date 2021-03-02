@@ -173,7 +173,7 @@
               {{ participant.name }}
             </p>
 
-            <p id="p-{{ participant.id }}-interpreter-role" *ngIf="!participant.representee && participant.hearing_role === 'Interpreter'" class="govuk-body-m govuk-!-margin-bottom-3">
+            <p id="p-{{ participant.id }}-hearing-role" *ngIf="!participant.representee && participant.hearing_role === 'Interpreter'" class="govuk-body-m govuk-!-margin-bottom-3">
                 {{ participant.hearing_role }} for <br><strong>{{ getInterpreteeName(participant.id) }}</strong>
             </p>
 

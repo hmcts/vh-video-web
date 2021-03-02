@@ -7,7 +7,7 @@ namespace VideoWeb.AcceptanceTests.Pages
     {
         public static By PanelMemberRow(Guid participantId) => By.Id($"p-row-{participantId:D}-panel-member");
         public static By PanelMemberName(Guid participantId) => By.Id($"p-{participantId:D}-name-panel-member");
-        public static By IndividualRow(Guid participantId) => By.Id($"p-row-{participantId:D}-participant");
+        public static By ParticipantRow(Guid participantId) => By.Id($"p-row-{participantId:D}-participant");
         public static By ParticipantName(Guid participantId) => By.Id($"p-{participantId:D}-name-participant");
         public static By ParticipantCaseType(Guid participantId) => By.Id($"p-{participantId:D}-case-type-group-participant");
         public static By ParticipantStatus(Guid participantId) => By.Id($"p-{participantId:D}-status-participant");
@@ -15,5 +15,11 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By ObserverRow(Guid participantId) => By.Id($"p-row-{participantId:D}-observer");
         public static By ObserverName(Guid participantId) => By.Id($"p-{participantId:D}-name-observer");
         public static By ParticipantHearingRole(Guid participantId) => By.Id($"p-{participantId:D}-hearing-role-participant");
+        
+        public static By ParticipantWithInterpreter(Guid interpreteeId)
+        {
+            var interpeteeXPath = $"//div[@id='p-row-{interpreteeId}-participant']/../following-sibling::div//div[starts-with(@id,'p-row')]";
+            return By.XPath(interpeteeXPath);
+        }
     }
 }

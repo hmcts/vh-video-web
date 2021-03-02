@@ -132,9 +132,8 @@ export abstract class WRParticipantStatusListDirective {
         const linkDetails = nonJudgeParticipants[individualWithInterpreterIndex].linked_participants[0];
         let sortedNonJudgeParts: ParticipantResponse[] = [];
         // Find Interpretee and add as first participant
-        const interpreteeIndex = nonJudgeParticipants.findIndex(x => x.id === linkDetails.participant_id);
-        sortedNonJudgeParts.push(nonJudgeParticipants[interpreteeIndex]);
-        nonJudgeParticipants.splice(interpreteeIndex, 1);
+        sortedNonJudgeParts.push(nonJudgeParticipants[individualWithInterpreterIndex]);
+        nonJudgeParticipants.splice(individualWithInterpreterIndex, 1);
         // Find Interpreter and add as second participant
         const interpreterIndex = nonJudgeParticipants.findIndex(x => x.id === linkDetails.linked_participant_id);
         sortedNonJudgeParts.push(nonJudgeParticipants[interpreterIndex]);
