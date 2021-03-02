@@ -69,7 +69,7 @@ export class TooltipDirective implements OnDestroy {
         const y = $event.clientY;
         const scrollPos = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
         this.tooltip.style.top = y + scrollPos + 'px';
-        if (x < (window.outerWidth / 2)) {
+        if (x < window.outerWidth / 2) {
             this.tooltip.style.left = x + 15 + 'px';
         } else {
             this.tooltip.style.left = x - 15 - this.tooltip.clientWidth + 'px';

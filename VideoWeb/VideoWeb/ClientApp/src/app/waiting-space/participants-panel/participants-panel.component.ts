@@ -35,7 +35,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
-    
+
     witnessTransferTimeout: { [id: string]: NodeJS.Timeout } = {};
 
     constructor(

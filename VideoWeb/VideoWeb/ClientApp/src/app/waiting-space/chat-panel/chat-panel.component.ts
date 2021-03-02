@@ -12,20 +12,13 @@ import { ChatWindowBaseComponent } from '../participant-chat/chat-window-base';
     selector: 'app-chat-panel',
     templateUrl: './chat-panel.component.html',
     styleUrls: ['./chat-panel.component.scss'],
-    inputs: [
-        'alwaysOn',
-        'hearing',
-        'showChat'
-    ],
-    outputs: [
-        'unreadCount'
-    ]
+    inputs: ['alwaysOn', 'hearing', 'showChat'],
+    outputs: ['unreadCount']
 })
 export class ChatPanelComponent extends ChatWindowBaseComponent {
-
     @ViewChild('content', { static: false }) content: ElementRef;
     autoShowChat = false;
-    
+
     constructor(
         protected videoWebService: VideoWebService,
         protected profileService: ProfileService,

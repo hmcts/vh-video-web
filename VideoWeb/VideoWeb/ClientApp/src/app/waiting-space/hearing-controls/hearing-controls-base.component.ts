@@ -288,7 +288,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.videoCallService.stopScreenShare();
     }
 
-    togglePanelStatus(panelName: string){
+    togglePanelStatus(panelName: string) {
         this.togglePanel.emit(panelName);
     }
 }

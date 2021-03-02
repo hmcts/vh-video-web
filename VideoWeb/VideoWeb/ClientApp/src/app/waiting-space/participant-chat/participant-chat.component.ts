@@ -12,13 +12,8 @@ import { ChatWindowBaseComponent } from './chat-window-base';
     selector: 'app-participant-chat',
     templateUrl: './participant-chat.component.html',
     styleUrls: ['./participant-chat.component.scss'],
-    inputs: [
-        'alwaysOn',
-        'hearing'
-    ],
-    outputs: [
-        'unreadCount'
-    ]
+    inputs: ['alwaysOn', 'hearing'],
+    outputs: ['unreadCount']
 })
 export class ParticipantChatComponent extends ChatWindowBaseComponent {
     autoShowChat = true;

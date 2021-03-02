@@ -274,7 +274,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     }
 
     togglePanel(panelName: string) {
-        const newState = !this.panelStates[panelName]
+        const newState = !this.panelStates[panelName];
         if (newState) {
             this.panelTypes.forEach(pt => {
                 this.panelStates[pt] = false;

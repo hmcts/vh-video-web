@@ -1,4 +1,15 @@
-import { AfterViewChecked, ElementRef, EventEmitter, HostListener, Injectable, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import {
+    AfterViewChecked,
+    ElementRef,
+    EventEmitter,
+    HostListener,
+    Injectable,
+    Input,
+    OnDestroy,
+    OnInit,
+    Output,
+    ViewChild
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { Guid } from 'guid-typescript';
@@ -27,7 +38,6 @@ export abstract class ChatWindowBaseComponent extends ChatBaseComponent implemen
     @Output() public unreadCount = new EventEmitter<number>();
 
     @ViewChild('content', { static: false }) content: ElementRef;
-
 
     constructor(
         protected videoWebService: VideoWebService,
