@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -27,7 +27,7 @@ import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant
     templateUrl: './participants-panel.component.html',
     styleUrls: ['./participants-panel.component.scss']
 })
-export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     private readonly loggerPrefix = '[ParticipantsPanel] -';
     participants: PanelModel[] = [];
     isMuteAll = false;
@@ -36,10 +36,6 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
 
-    firstElement: HTMLElement;
-    lastElement: HTMLElement;
-
-    isScrolling = 0;
     witnessTransferTimeout: { [id: string]: NodeJS.Timeout } = {};
 
     constructor(
@@ -50,24 +46,12 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         private logger: Logger
     ) {}
 
-    get muteAllToggleText() {
-        if (this.isMuteAll) {
-            return 'Unmute all';
-        } else {
-            return 'Mute all';
-        }
-    }
-
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         this.getParticipantsList().then(() => {
             this.setupVideoCallSubscribers();
             this.setupEventhubSubscribers();
         });
-    }
-
-    ngAfterViewInit() {
-        setTimeout(() => this.initializeScrolling(), 1000);
     }
 
     toggleMuteParticipantEventHandler(e: ToggleMuteParticipantEvent) {
@@ -88,12 +72,6 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
 
     dismissWitnessFromHearingEventHandler(e: DismissWitnessFromHearingEvent) {
         this.dismissWitnessFromHearing(e.participant);
-    }
-
-    initializeScrolling() {
-        this.firstElement = document.querySelector('#panel_participant_0');
-        this.lastElement = document.querySelector('#panel_participant_' + (this.participants.length - 1));
-        this.setScrollingIndicator();
     }
 
     ngOnDestroy(): void {
@@ -263,13 +241,22 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         return participant.isInHearing();
     }
 
-    toggleMuteAll() {
-        this.logger.debug(`${this.loggerPrefix} Judge is attempting to toggle mute all status`, {
+    muteAndLockAll() {
+        this.logger.debug(`${this.loggerPrefix} Judge is attempting to mute all`, {
             conference: this.conferenceId,
             current: this.isMuteAll,
-            new: !this.isMuteAll
+            new: true
         });
-        this.videoCallService.muteAllParticipants(!this.isMuteAll, this.conferenceId);
+        this.videoCallService.muteAllParticipants(true, this.conferenceId);
+    }
+
+    unlockAll() {
+        this.logger.debug(`${this.loggerPrefix} Judge is attempting to unmute all`, {
+            conference: this.conferenceId,
+            current: this.isMuteAll,
+            new: false
+        });
+        this.videoCallService.muteAllParticipants(false, this.conferenceId);
     }
 
     toggleSpotlightParticipant(participant: PanelModel) {
@@ -383,39 +370,6 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
                 witness: participant.id,
                 conference: this.conferenceId
             });
-        }
-    }
-
-    onScroll() {
-        this.setScrollingIndicator();
-    }
-
-    scrollUp() {
-        this.firstElement.scrollIntoView();
-    }
-
-    scrollDown() {
-        this.lastElement.scrollIntoView();
-    }
-
-    isItemOfListVisible(element: HTMLElement) {
-        if (element) {
-            const position = element.getBoundingClientRect();
-
-            // return true if element is fully visiable in screen
-            return position.top >= 0 && position.bottom <= window.innerHeight;
-        }
-
-        return false;
-    }
-
-    setScrollingIndicator() {
-        if (this.isItemOfListVisible(this.lastElement) && this.isItemOfListVisible(this.firstElement)) {
-            this.isScrolling = 0; // no scrolling
-        } else if (this.isItemOfListVisible(this.firstElement)) {
-            this.isScrolling = 1; // scrolling to bottom
-        } else {
-            this.isScrolling = 2; // scrolling to top
         }
     }
 

@@ -145,9 +145,24 @@
 .video-wrapper {
   width: auto;
   overflow: hidden;
+  height: calc(100% - 80px);
 }
 
-.participant-wrapper {
+.hide-panel {
+  display: none;
+}
+
+.panel-wrapper {
+  width: 333px;
+  float: right;
+  overflow: overlay;
+  height: calc(100% - 55px);
+
+  box-shadow: 0px 5px 10px 0px rgb(0 0 0 / 70%);
+  box-shadow: 0px 20px 30px 0px rgb(0 0 0 / 30%);
+}
+
+.chat-wrapper {
   width: 333px;
   padding: 12px;
   float: right;
@@ -170,9 +185,9 @@
   left: 0;
   top: 70px;
   min-width: 100%;
-  min-height: 80vh;
+  min-height: 100%;
   max-width: 100%;
-  max-height: 90vh;
+  max-height: 100%;
   z-index: 100;
 }
 
@@ -183,9 +198,9 @@
   left: 0;
   top: 0px;
   min-width: 100%;
-  min-height: auto;
+  min-height: 100%;
   max-width: 100%;
-  max-height: 90vh;
+  max-height: 100%;
   z-index: 100;
 }
 

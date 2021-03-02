@@ -5,21 +5,16 @@
   z-index: 200;
 }
 
-.main-container {
-  @include all-main-container;
-  left: 0;
-  width: 100vw;
-  height: 10px;
-}
-
-.controls-container {
-  margin-top: 1vh !important;
-}
-
-.main-container-judge {
-  @include all-main-container;
-  left: 19%;
-  width: 80%;
+.badge {
+  font-weight: 700;
+  font-size: 13px;
+  position: relative;
+  top: -8px;
+  right: 5px;
+  padding: 3px 4px;
+  border-radius: 50%;
+  background-color: #d4351c;
+  color: white;
 }
 
 .icon-button {
@@ -42,15 +37,6 @@
   height: 32px;
 }
 
-.judge-controls-container {
-  float: left;
-}
-
-.judge-controls-padding {
-  padding-left: 0px;
-  margin-left: -5%;
-}
-
 #outgoingFeedVideo {
   bottom: 10px;
   width: 259px;
@@ -61,20 +47,19 @@
 
 #outgoingFeedPresentVideo {
   width: 259px;
-  top: 65px;
-  left: 10px;
-  position: fixed;
 }
 
 .outgoing-video-container {
   bottom: 10px;
   left: 10px;
+  z-index: 101;
   position: fixed;
 }
 
-.outgoing-video-present-container {
-  top: 10px;
+.outgoing-present-video-container {
+  top: 65px;
   left: 10px;
+  z-index: 101;
   position: fixed;
 }
 
@@ -92,6 +77,10 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
+
+  margin-top: 10px;
+  margin-bottom: -10px;
+  line-height: 30px;
 }
 
 .small-button {
@@ -123,5 +112,13 @@
   background: #505a5f;
   &:hover {
     background: #00703c;
+  }
+}
+
+.small-button.blue {
+  color: #ffffff;
+  background: rgba(29, 112, 184, 0.7);
+  &:hover {
+    background: rgba(29, 112, 184, 1);
   }
 }
