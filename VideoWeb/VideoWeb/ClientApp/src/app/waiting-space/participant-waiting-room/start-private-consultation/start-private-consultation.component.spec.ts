@@ -159,6 +159,13 @@ describe('StartPrivateConsultationComponent', () => {
         expect(component.getParticipantStatus(participant)).toContain('In meeting room 1');
     });
 
+    it('should return in judge consultaion participant status', () => {
+        const participant = conference.participants[0];
+        participant.status = ParticipantStatus.InConsultation;
+        participant.current_room = new RoomSummaryResponse({ label: 'JudgeJOHConsultationRoom1' });
+        expect(component.getParticipantStatus(participant)).toContain('In judge room 1');
+    });
+
     it('should return unavailable endpoint status', () => {
         const endpoint = conference.endpoints[0];
         endpoint.status = EndpointStatus.Disconnected;

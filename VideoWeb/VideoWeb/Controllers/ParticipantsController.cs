@@ -252,7 +252,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"Unable to retrieve participants for conference: {conferenceId}");
+                _logger.LogError(e, "Unable to retrieve participants for conference: {ConferenceId}", conferenceId);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
