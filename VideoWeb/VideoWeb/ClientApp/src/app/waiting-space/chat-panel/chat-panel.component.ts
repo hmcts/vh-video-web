@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { ProfileService } from 'src/app/services/api/profile.service';
@@ -18,6 +18,9 @@ import { ChatWindowBaseComponent } from '../participant-chat/chat-window-base';
     ]
 })
 export class ChatPanelComponent extends ChatWindowBaseComponent {
+
+    @ViewChild('content', { static: false }) content: ElementRef;
+
     constructor(
         protected videoWebService: VideoWebService,
         protected profileService: ProfileService,
