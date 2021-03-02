@@ -45,14 +45,14 @@
               <span *ngIf="hearing.panelMembers.length > 0">
                 <p class="govuk-!-margin-0 govuk-!-padding-0">
                   <span id="panel-member-count-{{ hearing.id }}">
-                    {{ hearing.panelMembers.length }} {{ hearing.panelMembers.length > 1 ? 'Panel Members' : 'Panel Member' }}
+                    {{ hearing.panelMembers.length }} {{ hearing.panelMembers.length > 1 ? getTranslation('panel-members') : getTranslation('panel-member') }}
                   </span>
                 </p>
               </span>
               <span *ngIf="hearing.wingers.length > 0">
                 <p class="govuk-!-margin-0 govuk-!-padding-0">
                   <span id="winger-count-{{ hearing.id }}">
-                    {{ hearing.wingers.length }} {{ hearing.wingers.length > 1 ? 'Wingers' : 'Winger' }}
+                    {{ hearing.wingers.length }} {{ hearing.wingers.length > 1 ? getTranslation('wingers') : getTranslation('winger') }}
                   </span>
                 </p>
               </span>
@@ -60,20 +60,20 @@
                 <p class="govuk-!-margin-0 govuk-!-padding-0">
                   <span id="participant-count-{{ hearing.id }}">
                     {{ hearing.nonJudicialParticipantsExcludingObservers.length }} {{
-                      hearing.nonJudicialParticipantsExcludingObservers.length > 1 ? 'Participants' : 'Participant'
+                      hearing.nonJudicialParticipantsExcludingObservers.length > 1 ?  getTranslation('participants') : getTranslation('participant')
                     }}
                   </span>
                 </p>
               </span>
               <div *ngIf="hearing.numberOfEndpoints > 0">
                 <span id="endpoints-count-{{ hearing.id }}">
-                  {{ hearing.numberOfEndpoints }} {{ hearing.numberOfEndpoints > 1 ? 'Video access points' : 'Video access point' }}
+                  {{ hearing.numberOfEndpoints }} {{ hearing.numberOfEndpoints > 1 ? getTranslation('video-access-points') : getTranslation('video-access-point') }}
                 </span>
               </div>
               <span *ngIf="hearing.observers.length > 0">
                 <p class="govuk-!-margin-0 govuk-!-padding-0">
                   <span id="observer-count-{{ hearing.id }}">
-                    {{ hearing.observers.length }} {{ hearing.observers.length > 1 ? 'Observers' : 'Observer' }}
+                    {{ hearing.observers.length }} {{ hearing.observers.length > 1 ? getTranslation('observers') : getTranslation('observer') }}
                   </span>
                 </p>
               </span>
@@ -99,7 +99,6 @@
                 data-module="govuk-button"
                 type="button"
                 (click)="signIntoConference(hearing)"
-                alt="{{ 'judge-hearing-table.sign-into-the-conference' | translate }}"
               >
               {{ 'judge-hearing-table.select' | translate }}
               </button>

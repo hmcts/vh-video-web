@@ -4,7 +4,7 @@
 
 <div id="hearing-list" *ngIf="!loadingData && hasHearings()">
   <div class="govuk-!-margin-top-5">
-    <h1 class="govuk-heading-xl">{{ 'judge-hearing-list.video-hearings-for-court-name' | translate }}</h1>
+    <h1 class="govuk-heading-xl">{{ 'judge-hearing-list.video-hearings-for-court-name' | translate:{ courtName: courtName } }}</h1>
   </div>
   <div class="govuk-!-margin-top-4">
     <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button" (click)="goToEquipmentCheck()" alt="{{ 'judge-hearing-list.check-equipment' | translate }}">
@@ -18,7 +18,7 @@
 </div>
 
 <div *ngIf="!loadingData && !hasHearings()">
-  <h1 class="govuk-heading-xl govuk-!-padding-top-5">{{ 'judge-hearing-list.video-hearings-for-court-name' | translate }}</h1>
+  <h1 class="govuk-heading-xl govuk-!-padding-top-5">{{ 'judge-hearing-list.video-hearings-for-court-name' | translate:{ courtName: courtName } }}</h1>
   <div class="govuk-!-margin-top-1">
     <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button" (click)="goToEquipmentCheck()" alt="{{ 'judge-hearing-list.check-equipment' | translate }}">
       {{ 'judge-hearing-list.check-equipment' | translate }}
