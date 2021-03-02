@@ -287,4 +287,12 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     unreadMessageCounterUpdate(count: number) {
         this.unreadMessageCount = count;
     }
+
+    leaveConsultation() {
+        if (this.isPrivateConsultation) {
+            this.showLeaveConsultationModal();
+        } else {
+            this.leaveJudicialConsultation();
+        }
+    }
 }

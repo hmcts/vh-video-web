@@ -20,17 +20,16 @@
 }
 
 .messages-container {
-  font-family: 'GDS Transport', arial, sans-serif;
+  @include govuk-font($size: 16);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-weight: 400;
-  font-size: 16px;
   font-size: 1rem;
   line-height: 1.25;
 }
 
 .message-item-received {
-  background-color: #f3f2f1;
+  background-color: govuk-colour('light-grey');
   float: left;
   margin-left: 10px;
   padding-left: 25px;
@@ -43,13 +42,13 @@
   bottom: 0;
   width: 1.5em;
   height: 1.5em;
-  border-right: 1em solid #f3f2f1;
+  border-right: 1em solid govuk-colour('light-grey');
   border-bottom-right-radius: 1.75em 1.5em;
 }
 
 .message-item-sent {
   color: #ffffff;
-  background-color: #1d70b8;
+  background-color: govuk-colour('blue');
   margin-right: 10px;
   padding-right: 25px;
   text-align: right;
@@ -63,7 +62,7 @@
   bottom: 0;
   width: 1.5em;
   height: 1.5em;
-  border-left: 1em solid #1d70b8;
+  border-left: 1em solid govuk-colour('blue');
   border-bottom-left-radius: 1.75em 1.5em;
 }
 

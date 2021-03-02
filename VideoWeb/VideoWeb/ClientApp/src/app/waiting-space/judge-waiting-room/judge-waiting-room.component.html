@@ -21,9 +21,7 @@
                                                                 [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
                                                                 [showConsultationControls]="showConsultationControls"
                                                                 [unreadMessageCount]="unreadMessageCount"
-                                                                (leaveConsultation)="isPrivateConsultation
-                                                                    ? showLeaveConsultationModal()
-                                                                    : leaveJudicialConsultation()"
+                                                                (leaveConsultation)="leaveConsultation()"
                                                                 (togglePanel)="togglePanel($event)">
                         </app-private-consultation-room-controls>
                     </div>
