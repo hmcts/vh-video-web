@@ -98,6 +98,7 @@ namespace VideoWeb.UnitTests.Mappings
                 .With(x => x.Username = username)
                 .With(x => x.CaseTypeGroup == ParticipantStatus.Available.ToString())
                 .With(x => x.RefId = Guid.NewGuid())
+                .With(x=> x.LinkedParticipants = new List<LinkedParticipant>())
                 .With(x => x.DisplayName = $"{username} {username}")
                 .Build();
         }
