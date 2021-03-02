@@ -4324,6 +4324,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     hearing_role?: string | undefined;
     current_room?: RoomSummaryResponse | undefined;
     linked_participants?: LinkedParticipantResponse[] | undefined;
+    hasInterpreterLink?: boolean | undefined;
 
     constructor(data?: IParticipantForUserResponse) {
         if (data) {
@@ -4350,6 +4351,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
             if (Array.isArray(_data['linked_participants'])) {
                 this.linked_participants = [] as any;
                 for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantResponse.fromJS(item));
+                this.hasInterpreterLink = this.linked_participants.some(x => x.link_type === LinkType.Interpreter);
             }
         }
     }
@@ -4402,6 +4404,7 @@ export interface IParticipantForUserResponse {
     hearing_role?: string | undefined;
     current_room?: RoomSummaryResponse | undefined;
     linked_participants?: LinkedParticipantResponse[] | undefined;
+    hasInterpreterLink?: boolean | undefined;
 }
 
 export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerResponse {
@@ -4520,6 +4523,7 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
     representee?: string | undefined;
     hearing_role?: string | undefined;
     current_room?: RoomSummaryResponse | undefined;
+    hasInterpreterLink?: boolean | undefined;
 
     constructor(data?: IParticipantResponseVho) {
         if (data) {
@@ -4541,6 +4545,7 @@ export class ParticipantResponseVho implements IParticipantResponseVho {
             this.representee = _data['representee'];
             this.hearing_role = _data['hearing_role'];
             this.current_room = _data['current_room'] ? RoomSummaryResponse.fromJS(_data['current_room']) : <any>undefined;
+            this.hasInterpreterLink = false;
         }
     }
 
@@ -4584,6 +4589,7 @@ export interface IParticipantResponseVho {
     representee?: string | undefined;
     hearing_role?: string | undefined;
     current_room?: RoomSummaryResponse | undefined;
+    hasInterpreterLink?: boolean | undefined;
 }
 
 /** Detailed information about a conference for VHO officer */
@@ -4703,6 +4709,7 @@ export class ParticipantResponse implements IParticipantResponse {
     hearing_role?: string | undefined;
     current_room?: RoomSummaryResponse | undefined;
     linked_participants?: LinkedParticipantResponse[] | undefined;
+    hasInterpreterLink?: boolean | undefined;
 
     constructor(data?: IParticipantResponse) {
         if (data) {
@@ -4729,6 +4736,7 @@ export class ParticipantResponse implements IParticipantResponse {
             if (Array.isArray(_data['linked_participants'])) {
                 this.linked_participants = [] as any;
                 for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantResponse.fromJS(item));
+                this.hasInterpreterLink = this.linked_participants.some(x => x.link_type == LinkType.Interpreter);
             }
         }
     }
@@ -4782,6 +4790,7 @@ export interface IParticipantResponse {
     hearing_role?: string | undefined;
     current_room?: RoomSummaryResponse | undefined;
     linked_participants?: LinkedParticipantResponse[] | undefined;
+    hasInterpreterLink?: boolean | undefined;
 }
 
 export enum EndpointStatus {
