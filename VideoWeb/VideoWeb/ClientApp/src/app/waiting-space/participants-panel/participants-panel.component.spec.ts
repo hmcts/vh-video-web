@@ -82,16 +82,6 @@ describe('ParticipantsPanelComponent', () => {
         expect(logger.error).toHaveBeenCalled();
     });
 
-    it('should mute on toggle and change text to mute all ', () => {
-        component.isMuteAll = false;
-        expect(component.muteAllToggleText).toBe('Mute all');
-    });
-
-    it('should unmute on toggle add set text to Unmute all', () => {
-        component.isMuteAll = true;
-        expect(component.muteAllToggleText).toBe('Unmute all');
-    });
-
     it('should process eventhub participant updates', () => {
         component.setupEventhubSubscribers();
         const status = ParticipantStatus.InConsultation;
@@ -365,15 +355,15 @@ describe('ParticipantsPanelComponent', () => {
         expect(result.isSpotlighted).toBeFalsy();
     });
 
-    it('should unmute all participants', () => {
+    it('should unlock all participants', () => {
         component.isMuteAll = true;
-        component.toggleMuteAll();
+        component.unlockAll();
         expect(videocallService.muteAllParticipants).toHaveBeenCalledWith(false, component.conferenceId);
     });
 
     it('should mute all participants', () => {
         component.isMuteAll = false;
-        component.toggleMuteAll();
+        component.muteAndLockAll();
         expect(videocallService.muteAllParticipants).toHaveBeenCalledWith(true, component.conferenceId);
     });
 
@@ -482,72 +472,7 @@ describe('ParticipantsPanelComponent', () => {
         component.lowerParticipantHand(pat);
         expect(videocallService.lowerHandById).toHaveBeenCalledWith(pat.pexipId, component.conferenceId, pat.id);
     });
-    it('should scroll up to first participant', () => {
-        const dummyElement = document.createElement('div');
-        spyOn(dummyElement, 'scrollIntoView').and.callThrough();
-        component.firstElement = dummyElement;
-        component.scrollUp();
-        expect(dummyElement.scrollIntoView).toHaveBeenCalled();
-    });
-    it('should scroll down to last participant', () => {
-        const dummyElement = document.createElement('div');
-        spyOn(dummyElement, 'scrollIntoView').and.callThrough();
-        component.lastElement = dummyElement;
-        component.scrollDown();
-        expect(dummyElement.scrollIntoView).toHaveBeenCalled();
-    });
-    it('should indicate the participant is not visible on screen', () => {
-        const dummyElement = document.createElement('div');
-        spyOn(dummyElement, 'getBoundingClientRect').and.returnValue(new DOMRect(-15, -15, 0, 0));
-        component.lastElement = dummyElement;
-        expect(component.isItemOfListVisible(component.lastElement)).toBeFalsy();
-    });
-    it('should indicate the participant is visible on screen', () => {
-        const dummyElement = document.createElement('div');
-        spyOn(dummyElement, 'getBoundingClientRect').and.returnValue(new DOMRect(0, 10, 0, 0));
-        component.lastElement = dummyElement;
-        expect(component.isItemOfListVisible(component.lastElement)).toBeTruthy();
-    });
 
-    it('should indicate the scroll down is avaliable', () => {
-        const dummyElementUp = document.createElement('div');
-        spyOn(dummyElementUp, 'getBoundingClientRect').and.returnValue(new DOMRect(0, 10, 0, 0));
-        component.firstElement = dummyElementUp;
-        const dummyElementDown = document.createElement('div');
-        spyOn(dummyElementDown, 'getBoundingClientRect').and.returnValue(new DOMRect(-15, -15, 0, 0));
-        component.lastElement = dummyElementDown;
-        component.onScroll();
-        expect(component.isScrolling).toBe(1);
-    });
-    it('should indicate the scroll up is avaliable', () => {
-        const dummyElementUp = document.createElement('div');
-        spyOn(dummyElementUp, 'getBoundingClientRect').and.returnValue(new DOMRect(-15, -10, 0, 0));
-        component.firstElement = dummyElementUp;
-        const dummyElementDown = document.createElement('div');
-        spyOn(dummyElementDown, 'getBoundingClientRect').and.returnValue(new DOMRect(10, 10, 0, 0));
-        component.lastElement = dummyElementDown;
-        component.onScroll();
-        expect(component.isScrolling).toBe(2);
-    });
-    it('should indicate the scrolling is down', () => {
-        component.initializeScrolling();
-        expect(component.isScrolling).toBe(2);
-    });
-    it('should indicate the scrolling is not need', () => {
-        const dummyElementUp = document.createElement('div');
-        spyOn(dummyElementUp, 'getBoundingClientRect').and.returnValue(new DOMRect(10, 10, 0, 0));
-        component.firstElement = dummyElementUp;
-        const dummyElementDown = document.createElement('div');
-        spyOn(dummyElementDown, 'getBoundingClientRect').and.returnValue(new DOMRect(10, 10, 0, 0));
-        component.lastElement = dummyElementDown;
-        component.setScrollingIndicator();
-        expect(component.isScrolling).toBe(0);
-    });
-
-    it('should set not visible if element of the participant list is  not defined', () => {
-        const result = component.isItemOfListVisible(null);
-        expect(result).toBe(false);
-    });
     it('should return true when participant is disconnected', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Disconnected;
