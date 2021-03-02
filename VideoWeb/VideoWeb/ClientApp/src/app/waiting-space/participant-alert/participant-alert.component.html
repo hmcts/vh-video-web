@@ -1,16 +1,16 @@
-<div class="alert-container">
-  <div *ngIf="networkHealth">
-    <img
-      *ngIf="isNetworkPoor"
-      appTooltip
-      [text]="'Your network connection is poor'"
-      [colour]="'yellow'"
-      src="/assets/images/alert-1.png"
-      class="panel-icon-alert"
-      alt="Poor connection icon"
-    />
-  </div>
-  <div *ngIf="isDisconnected">
-    <img src="/assets/images/alert-full.png" class="panel-icon" alt="Disconnected icon" />
-  </div>
+<div *ngIf="isNetworkPoor">
+  <span 
+    appTooltip
+    text="Network connection is poor"
+    colour="yellow"
+    class="far fa-exclamation-triangle yellow panel-icon">
+  </span>
+</div>
+<div *ngIf="isDisconnected">
+  <span 
+    appTooltip
+    text="Disconnected"
+    colour="red"
+    class="far fa-exclamation-circle red panel-icon">
+  </span>
 </div>

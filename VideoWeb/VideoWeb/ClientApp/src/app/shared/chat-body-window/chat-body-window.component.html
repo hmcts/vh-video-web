@@ -1,4 +1,5 @@
 <div class="messages-container">
+  <div class="message-item bottom-spacer"></div>
   <div *ngFor="let message of allMessages" class="message-item" [class]="message.is_user ? 'message-item-sent' : 'message-item-received'">
     <ng-container *ngIf="hasMessageFailed(message)">
       <span id="message-send-error" class="failed-message">

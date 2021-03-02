@@ -35,20 +35,19 @@
 
 #outgoingFeedPresentVideo {
   width: 259px;
-  top: 65px;
-  left: 10px;
-  position: fixed;
 }
 
 .outgoing-video-container {
   bottom: 10px;
   left: 10px;
+  z-index: 101;
   position: fixed;
 }
 
-.outgoing-video-present-container {
-  top: 10px;
+.outgoing-present-video-container {
+  top: 65px;
   left: 10px;
+  z-index: 101;
   position: fixed;
 }
 

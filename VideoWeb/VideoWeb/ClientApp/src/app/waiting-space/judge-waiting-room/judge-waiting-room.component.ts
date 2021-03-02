@@ -38,7 +38,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     displayConfirmStartHearingPopup: boolean;
     isIMEnabled: boolean;
     panelTypes = ['Participants', 'Chat'];
-    panelStates = {};
+    panelStates = {
+        Participants: true
+    };
 
     constructor(
         protected route: ActivatedRoute,
