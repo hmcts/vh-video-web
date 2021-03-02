@@ -9,6 +9,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VideoWebService } from '../../services/api/video-web.service';
 import { EquipmentCheckBaseComponentDirective } from '../abstract/equipment-check-base.component';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-camera-check',
@@ -23,7 +24,8 @@ export class CameraCheckComponent extends EquipmentCheckBaseComponentDirective i
         protected adalService: AdalService,
         protected errorService: ErrorService,
         protected logger: Logger,
-        protected participantStatusUpdateService: ParticipantStatusUpdateService
+        protected participantStatusUpdateService: ParticipantStatusUpdateService,
+        private translate: TranslateService
     ) {
         super(router, route, fb, videoWebService, adalService, errorService, logger, participantStatusUpdateService);
     }
@@ -34,7 +36,7 @@ export class CameraCheckComponent extends EquipmentCheckBaseComponentDirective i
     }
 
     getEquipmentCheck(): string {
-        return 'Camera';
+        return this.translate.instant('camera-check.camera');
     }
 
     getFailureReason(): SelfTestFailureReason {

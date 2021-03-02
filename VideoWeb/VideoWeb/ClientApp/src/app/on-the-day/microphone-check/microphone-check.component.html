@@ -5,19 +5,19 @@
 </div>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <h1 class="govuk-heading-xl">Was your microphone working?</h1>
+    <h1 class="govuk-heading-xl">{{ 'microphone-check.was-your-microphone-working' | translate }}</h1>
 
     <form [formGroup]="form" class="govuk-form-group" (ngSubmit)="onSubmit()">
       <div [ngClass]="showError() ? 'govuk-form-group--error' : 'govuk-form-group'">
         <div *ngIf="showError()" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span>
-          Select if you could see the bar moving when you spoke
+          <span class="govuk-visually-hidden">{{ 'microphone-check.error' | translate }}</span>
+          {{ 'microphone-check.select-if-you-could-see-the-bar-moving-when-you-spoke' | translate }}
         </div>
 
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
             <label class="govuk-body" for="equipmentCheck">
-              Could you see the bar moving when you spoke?
+              {{ 'microphone-check.could-you-see-the-bar-moving-when-you-spoke' | translate }}
             </label>
           </legend>
           <div class="govuk-radios govuk-!-margin-top-5">
@@ -28,10 +28,10 @@
                 formControlName="equipmentCheck"
                 name="equipmentCheck"
                 type="radio"
-                value="Yes"
+                value="{{ 'microphone-check.yes' | translate }}"
               />
               <label class="govuk-label govuk-radios__label" for="microphone-yes">
-                Yes
+                {{ 'microphone-check.yes' | translate }}
               </label>
             </div>
             <div class="govuk-radios__item">
@@ -41,10 +41,10 @@
                 formControlName="equipmentCheck"
                 name="equipmentCheck"
                 type="radio"
-                value="No"
+                value="{{ 'microphone-check.no' | translate }}"
               />
               <label class="govuk-label govuk-radios__label" for="microphone-no">
-                No
+                {{ 'microphone-check.no' | translate }}
               </label>
             </div>
           </div>
@@ -57,9 +57,9 @@
           data-module="govuk-button"
           type="button"
           (click)="onSubmit()"
-          alt="Microphone Check"
+          alt="{{ 'microphone-check.continue' | translate }}"
         >
-          Continue
+        {{ 'microphone-check.continue' | translate }}
         </button>
 
         <button
@@ -68,9 +68,9 @@
           data-module="govuk-button"
           type="button"
           (click)="checkEquipmentAgain()"
-          alt="Microphone Check"
+          alt="{{ 'microphone-check.check-my-equipment-again' | translate }}"
         >
-          Check my equipment again
+        {{ 'microphone-check.check-my-equipment-again' | translate }}
         </button>
       </div>
     </form>

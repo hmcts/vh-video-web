@@ -20,5 +20,119 @@
     "open-government-license": "Open Government Licence v3.0",
     "except": ", except where otherwise stated",
     "copyright": "© Crown copyright"
+  },
+  "camera-and-microphone": {
+    "continue": "Continue",
+    "sign-into-the-conference": "Sign into the conference"
+  },
+  "camera-check": {
+    "was-your-camera-working": "Was your camera working?",
+    "error": "Error:",
+    "select-if-you-could-see-yourself-in-the-camera-window": "Select if you could see yourself in the camera window",
+    "could-you-see-yourself-on-the-screen-in-the-camera-window": "Could you see yourself on the screen in the camera window?",
+    "yes": "Yes",
+    "no": "No",
+    "continue": "Continue",
+    "check-my-equipment-again": "Check my equipment again",
+    "camera": "Camera"
+  },
+  "declaration": {
+    "declaration": "Declaration",
+    "error": "Error:",
+    "please-tick-the-box-to-confirm-that-you-will-not-record-the-hearing-in-any-way": "Please tick the box to confirm that you will not record the hearing in any way",
+    "warning": "Warning",
+    "it-is-a-criminal-offence": "It is a criminal offence to record this hearing (by audio or video), to publish any such recording, or to take any images (by photo or screenshot)",
+    "i-confirm-that-i-will-not-record-or-take-any-images-of-this-hearing": "I confirm that I will not record or take any images of this hearing",
+    "continue": "Continue"
+  },
+  "equipment-check": {
+    "lets-confirm-your-equipment-is-working": "Let's confirm your equipment is working",
+    "this-short-video": "This short video will help you check that your camera and microphone are working.",
+    "equipment-check": "Equipment Check",
+    "continue": "Continue"
+  },
+  "hearing-rules": {
+    "court-rules": "Court rules",
+    "you-must-follow-courtroom-rules": "You must follow the same rules as you would in a courtroom.",
+    "this-means-you": "This means you:",
+    "can-only-drink-water": "can only drink water",
+    "must-not-eat": "must not eat",
+    "must-only-use-your-phone-for-contact-with-the-video-hearings-team": "must only use your phone for contact with the video hearings team",
+    "must-follow-the-judges-instructions": "must follow the judge’s instructions",
+    "are-not-allowed-to-smoke-including-e-cigarettes": "are not allowed to smoke (including e-cigarettes)",
+    "must-be-alone-unless-you-have-the-judges-permission-to-have-someone-with-you": "must be alone unless you have the judge’s permission to have someone with you",
+    "must-ask-the-judges-permission-if-you-need-to-move-away-from-your-screen": "must ask the judge's permission if you need to move away from your screen",
+    "hm-courts-and-tribunals-service-crest": "HM Courts &amp; Tribunals Service crest",
+    "continue": "Continue"
+  },
+  "independent-self-test": {
+    "please-wait-to-be-connected": "Please wait to be connected...",
+    "problems-with-your-equipment": "Problems with your equipment?",
+    "please-call-beforenumber": "Please call the video hearings team on ",
+    "please-call-afternumber": " to let us know.",
+    "continue": "Continue",
+    "re-play-the-video-message": "Re-play the video message",
+    "check-equipment-again": "Check equipment again"
+  },
+  "introduction": {
+    "hm-courts-and-tribunals-service-crest": "HM Courts &amp; Tribunals Service crest",
+    "get-ready-for-the-hearing": "Get ready for the hearing",
+    "next-we-are-going-to": "Next, we're going to:",
+    "check-that-your-equipment-is-working": "check that your equipment is working",
+    "tell-you-about-the-rules-of-the-court": "tell you about the rules of the court",
+    "next": "Next"
+  },
+  "judge-hearing-list": {
+    "loading-please-wait": "Loading please wait...",
+    "video-hearings-for-court-name": "Video hearings for {{ courtName }}",
+    "check-equipment": "Check equipment",
+    "you-have-no-video-hearings": "You have no video hearings",
+    "if-no-details-shown-please-contact-us": "If you are expecting to see details of your hearing listed here, please contact us using the options below.",
+    "do-you-need-help": "Do you need help?",
+    "call-the-video-hearings-team-on": "Call the video hearings team on "
+  },
+  "judge-hearing-table": {
+    "time": "Time",
+    "judge": "Judge",
+    "hearing": "Hearing",
+    "attendees": "Attendees",
+    "case-number": "Case number: ",
+    "panel-member": "Panel Member",
+    "panel-members": "Panel Members",
+    "winger": "Winger",
+    "wingers": "Wingers",
+    "participant": "Participant",
+    "participants": "Participants",
+    "video-access-point": "Video access point",
+    "video-access-points": "Video access points",
+    "observer": "Observer",
+    "observers": "Observers",
+    "winger-single": "Winger",
+    "winger-plural": "Wingers",
+    "judicial-consultation-room-is-now-closed": "Judicial consultation room is now closed",
+    "judicial-consultation-room-open-until": "Judicial consultation room open until ",
+    "sign-into-the-conference": "Sign into the conference",
+    "select": "Select",
+    "not-ready-to-start": "Not ready to start"
+  },
+  "judge-self-test": {
+    "please-wait-to-be-connected": "Please wait to be connected...",
+    "problems-with-your-equipment": "Problems with your equipment?",
+    "please-call-beforenumber": "Please call the video hearings team on ",
+    "please-call-afternumber": " to let us know.",
+    "we-will-tell-the-participants-their-hearing-may-be-delayed": "We'll tell the participants their hearing may be delayed.",
+    "continue": "Continue",
+    "re-play-the-video-message": "Re-play the video message",
+    "check-equipment-again": "Check equipment again"
+  },
+  "microphone-check": {
+    "was-your-microphone-working": "Was your microphone working?",
+    "error": "Error:",
+    "select-if-you-could-see-the-bar-moving-when-you-spoke": "Select if you could see the bar moving when you spoke",
+    "could-you-see-the-bar-moving-when-you-spoke": "Could you see the bar moving when you spoke?",
+    "yes": "Yes",
+    "no": "No",
+    "continue": "Continue",
+    "check-my-equipment-again": "Check my equipment again"
   }
 }
