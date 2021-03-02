@@ -20,6 +20,7 @@
                                                                 [outgoingStream]="outgoingStream"
                                                                 [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
                                                                 [showConsultationControls]="showConsultationControls"
+                                                                [unreadMessageCount]="unreadMessageCount"
                                                                 (leaveConsultation)="isPrivateConsultation
                                                                     ? showLeaveConsultationModal()
                                                                     : leaveJudicialConsultation()"
@@ -43,7 +44,8 @@
                     <app-chat-panel
                         *ngIf="isIMEnabled"
                         [hearing]="hearing"
-                        [alwaysOn]="hearing.isInSession()">
+                        (unreadCount)="unreadMessageCounterUpdate($event)"
+                        [showChat]="panelStates['Chat']">
                     </app-chat-panel>
                 </div>
 

@@ -39,8 +39,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     isIMEnabled: boolean;
     panelTypes = ['Participants', 'Chat'];
     panelStates = {
-        Participants: true
+        Participants: true,
+        Chat: false
     };
+    unreadMessageCount = 0;
 
     constructor(
         protected route: ActivatedRoute,
@@ -280,5 +282,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         }
 
         this.panelStates[panelName] = newState;
+    }
+
+    unreadMessageCounterUpdate(count: number) {
+        this.unreadMessageCount = count;
     }
 }

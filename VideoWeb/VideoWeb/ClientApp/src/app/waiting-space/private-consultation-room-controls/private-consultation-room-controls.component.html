@@ -19,6 +19,7 @@
       [colour]="'grey'"
       (click)="togglePanelStatus('Chat')">
       <span class="far fa-comment"></span>
+      <span class="badge"*ngIf="unreadMessageCount > 0">{{unreadMessageCount > 9 ? '9+' : unreadMessageCount }}</span>
     </div>
 
     <img

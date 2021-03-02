@@ -14,10 +14,16 @@ import { ChatWindowBaseComponent } from '../participant-chat/chat-window-base';
     styleUrls: ['./chat-panel.component.scss'],
     inputs: [
         'alwaysOn',
-        'hearing'
+        'hearing',
+        'showChat'
+    ],
+    outputs: [
+        'unreadCount'
     ]
 })
 export class ChatPanelComponent extends ChatWindowBaseComponent {
+    autoShowChat = false;
+    
     constructor(
         protected videoWebService: VideoWebService,
         protected profileService: ProfileService,

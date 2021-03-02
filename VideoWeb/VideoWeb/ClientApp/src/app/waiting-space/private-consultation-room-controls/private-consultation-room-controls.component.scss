@@ -5,6 +5,18 @@
   z-index: 200;
 }
 
+.badge {
+  font-weight: 700;
+  font-size: 13px;
+  position: relative;
+  top: -8px;
+  right: 5px;
+  padding: 3px 4px;
+  border-radius: 50%;
+  background-color: #d4351c;
+  color: white;
+}
+
 .icon-button {
   cursor: pointer;
   opacity: 0.5;

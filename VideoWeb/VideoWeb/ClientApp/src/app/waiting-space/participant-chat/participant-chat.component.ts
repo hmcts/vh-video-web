@@ -15,9 +15,14 @@ import { ChatWindowBaseComponent } from './chat-window-base';
     inputs: [
         'alwaysOn',
         'hearing'
+    ],
+    outputs: [
+        'unreadCount'
     ]
 })
 export class ParticipantChatComponent extends ChatWindowBaseComponent {
+    autoShowChat = true;
+
     constructor(
         protected videoWebService: VideoWebService,
         protected profileService: ProfileService,
