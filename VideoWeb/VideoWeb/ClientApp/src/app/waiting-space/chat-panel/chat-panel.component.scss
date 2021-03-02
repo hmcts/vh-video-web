@@ -3,6 +3,14 @@
 #chat-list {
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: calc(100% - 110px);
-  height: calc(100% - 110px);
+  max-height: calc(100% - 167px);
+  height: calc(100% - 167px);
+}
+
+.white {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.header-container {
+  padding: 12px 12px 0 12px;
 }
