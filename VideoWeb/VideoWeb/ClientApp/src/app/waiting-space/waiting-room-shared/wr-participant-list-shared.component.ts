@@ -121,7 +121,7 @@ export abstract class WRParticipantStatusListDirective {
     }
 
     getInterpreteeName(interpreterId: string) {
-        let interpreter = this.nonJudgeParticipants.find(x => x.id === interpreterId);
+        const interpreter = this.nonJudgeParticipants.find(x => x.id === interpreterId);
         return this.nonJudgeParticipants.find(x => x.id === interpreter.linked_participants[0].linked_id).name;
     }
 
