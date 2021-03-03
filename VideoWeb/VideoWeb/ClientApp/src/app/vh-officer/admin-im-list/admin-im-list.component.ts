@@ -16,7 +16,6 @@ export class AdminImListComponent implements OnInit {
 
     roles = Role;
     participantStatus = ParticipantStatus;
-    constructor() {}
 
     ngOnInit() {
         this.initImParticipants(false);
