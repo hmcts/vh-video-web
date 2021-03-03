@@ -11,14 +11,44 @@
       "sign-into-hearing": "Sign into hearing"
     }
   },
-  "footer": {
-    "privacy-policy": "Privacy policy",
-    "accessibility": "Accessibility",
-    "translate-to": "",
-    "translate-to-test": "",
-    "all-content-availabe-under": "All content is available under the ",
-    "open-government-license": "Open Government Licence v3.0",
-    "except": ", except where otherwise stated",
-    "copyright": "© Crown copyright"
-  }
+    "footer": {
+        "privacy-policy": "Privacy policy",
+        "accessibility": "Accessibility",
+        "translate-to": "",
+        "translate-to-test": "",
+        "all-content-availabe-under": "All content is available under the ",
+        "open-government-license": "Open Government Licence v3.0",
+        "except": ", except where otherwise stated",
+        "copyright": "© Crown copyright"
+    },
+    "contact-us": {
+        "contact-video-hearings": "Contact the video hearings service",
+        "speak-to-admin": "To speak to a hearings administrator:",
+        "call": "call",
+        "email": "email"
+    },
+    "contact-us-folding": {
+        "contact-for-help": "Contact us for help",
+        "call-vh-team": "Call the video hearings team on",
+        "quote-case-number": "and quote your case number",
+        "available-time": "(available between 9am and 5pm, Monday to Friday)",
+        "email-us": "Email us at",
+        "quoting-case-number": "quoting your case number"
+
+    },
+    "equipment-problem": {
+        "problem-with-equipment": "Problems with your equipment?",
+        "not-woking-call-us": "something's not working, please call us now.",
+        "call": "Call",
+        "for-vh-team": "for the video hearings team"
+    },
+    "error": {
+        "problem-with-service": "Sorry, there is a problem with the service",
+        "try-later": "Please try again later.",
+        "need-to-speak": "If you need to speak to someone please contact us using the options below.",
+        "problem-with-connection": "There's a problem with your connection",
+        "default-body-message": "Please reconnect. Call us if you keep seeing this message.",
+        "default-title": "There's a problem with your connection",
+        "": "You are not connected to the internet. You will not be able to join your video hearing until you are reconnected. Please call the Video Hearings Team to let them know you cannot connect to our service."
+    }
 }

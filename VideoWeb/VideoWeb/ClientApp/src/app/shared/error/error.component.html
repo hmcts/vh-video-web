@@ -1,15 +1,15 @@
 <div class="govuk-grid-row govuk-!-padding-top-4" *ngIf="!connectionError">
     <div class="govuk-grid-column-full">
-        <h1 class="govuk-heading-xl">Sorry, there is a problem with the service</h1>
-        <p class="govuk-body">Please try again later.</p>
-        <p class="govuk-body">If you need to speak to someone please contact us using the options below.</p>
+        <h1 class="govuk-heading-xl">{{'error.problem-with-service' | translate}}</h1>
+        <p class="govuk-body">{{'error.try-later' | translate}}</p>
+        <p class="govuk-body">{{'error.need-to-speak' | translate}}</p>
     </div>
 </div>
 <div class="govuk-grid-row govuk-!-padding-top-4" *ngIf="connectionError">
     <div class="govuk-grid-column-full">
         <div *ngIf="!isExtensionOrFirewallIssue; else firewallError">
             <h1 *ngIf="hasInternetConnection" class="govuk-heading-xl">{{ errorMessageTitle }}</h1>
-            <h1 *ngIf="!hasInternetConnection" class="govuk-heading-xl">There's a problem with your connection</h1>
+            <h1 *ngIf="!hasInternetConnection" class="govuk-heading-xl">{{'error.problem-with-connection' | translate}}</h1>
             <p *ngIf="hasInternetConnection" class="govuk-body">{{ errorMessageBody }}</p>
             <p *ngIf="!hasInternetConnection" class="govuk-body">
                 You are not connected to the internet. You will not be able to join your video hearing until you are reconnected. Please call the

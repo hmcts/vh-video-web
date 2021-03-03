@@ -7,6 +7,7 @@ import { PageTrackerService } from 'src/app/services/page-tracker.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { ConnectionStatusService } from 'src/app/services/connection-status.service';
 import { ErrorMessage } from '../models/error-message';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-error',
@@ -32,7 +33,8 @@ export class ErrorComponent implements OnInit, OnDestroy {
         private eventsService: EventsService,
         private logger: Logger,
         private errorService: ErrorService,
-        private connectionStatusService: ConnectionStatusService
+        private connectionStatusService: ConnectionStatusService,
+        private translateService: TranslateService
     ) {
         this.browserRefresh = false;
         this.checkForRefresh();
@@ -73,8 +75,8 @@ export class ErrorComponent implements OnInit, OnDestroy {
     }
 
     private getErrorMessage(): void {
-        const defaultBodyMessage = 'Please reconnect. Call us if you keep seeing this message.';
-        const defaultTitle = `There's a problem with your connection`;
+        const defaultBodyMessage = this.translateService.instant('error.default-body-message');
+        const defaultTitle = this.translateService.instant('error.default-title');
         const dto = this.hasInternetConnection
             ? this.errorService.getErrorMessageFromStorage()
             : new ErrorMessage(defaultTitle, defaultBodyMessage, true);
