@@ -1,5 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceForIndividualResponse, LoggedParticipantResponse, Role } from 'src/app/services/clients/api-client';
@@ -23,9 +24,14 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
         private videoWebService: VideoWebService,
         private errorService: ErrorService,
         private router: Router,
-        private logger: Logger
+        private logger: Logger,
+        private translate: TranslateService
     ) {
         this.loadingData = true;
+    }
+
+    getTranslation(key: string) {
+        return this.translate.instant(`participant-hearings.${key}`);
     }
 
     ngOnInit() {

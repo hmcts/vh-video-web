@@ -1,29 +1,29 @@
 <div *ngIf="loadingData" class="govuk-!-padding-top-2">
-  <p class="govuk-body">Loading please wait...</p>
+  <p class="govuk-body">{{ 'participant-hearings.loading-please-wait' | translate }}</p>
 </div>
 
 <div *ngIf="!loadingData && hasHearings()">
   <div class="govuk-!-margin-top-5">
     <h1 class="govuk-heading-xl govuk-!-padding-top-5">
-      {{ this.conferences.length | pluraliseTextPipe: 'Your video hearing':'Your video hearings' }}
+      {{ this.conferences.length | pluraliseTextPipe: getTranslation('your-video-hearing') : getTranslation('your-video-hearings') }}
     </h1>
   </div>
   <div class="govuk-!-margin-top-1">
     <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button" (click)="goToEquipmentCheck()">
-      Check equipment
+      {{ 'participant-hearings.check-equipment' | translate }}
     </button>
   </div>
   <app-hearing-list-table [conferences]="conferences" (selectedConference)="onConferenceSelected($event)"> </app-hearing-list-table>
 </div>
 <div *ngIf="!loadingData && !hasHearings()">
-  <h1 class="govuk-heading-xl govuk-!-padding-top-2">You do not have a video hearing today</h1>
+  <h1 class="govuk-heading-xl govuk-!-padding-top-2">{{ 'participant-hearings.you-do-not-have-a-video-hearing-today' | translate }}</h1>
   <div class="govuk-!-margin-top-1">
     <button id="check-equipment-btn" class="govuk-button" data-module="govuk-button" (click)="goToEquipmentCheck()">
-      Check equipment
+      {{ 'participant-hearings.check-equipment' | translate }}
     </button>
   </div>
   <p class="govuk-body">
-    If you were expecting to see the details of a hearing here, please contact the video hearings team.
+    {{ 'participant-hearings.if-no-details-shown-please-contact-us' | translate }}
   </p>
 </div>
 

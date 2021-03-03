@@ -134,5 +134,15 @@
     "no": "No",
     "continue": "Continue",
     "check-my-equipment-again": "Check my equipment again"
+  },
+  "participant-hearings": {
+    "loading-please-wait": "Loading please wait...",
+    "check-equipment": "Check equipment",
+    "you-do-not-have-a-video-hearing-today": "You do not have a video hearing today",
+    "if-no-details-shown-please-contact-us": "If you were expecting to see the details of a hearing here, please contact the video hearings team."
+  },
+  "participant-self-test": {
+    "please-wait-to-be-connected": "Please wait to be connected...",
+    "when-the-video-has-ended-answer-3-questions": "When the video has ended, answer 3 questions to confirm your microphone and camera are working."
   }
 }

@@ -1,5 +1,5 @@
 <div *ngIf="!conference && !participant" class="govuk-grid-column-full">
-  <p class="govuk-body-l">Please wait to be connected...</p>
+  <p class="govuk-body-l">{{ 'participant-self-test.please-wait-to-be-connected' | translate }}</p>
 </div>
 <app-self-test
   *ngIf="conference && participant && !hideSelfTest"
@@ -10,7 +10,7 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <p class="govuk-body">When the video has ended, answer 3 questions to confirm your microphone and camera are working.</p>
+    <p class="govuk-body">{{ 'participant-self-test.when-the-video-has-ended-answer-3-questions' | translate }}</p>
   </div>
 </div>
 
