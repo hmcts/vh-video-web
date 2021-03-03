@@ -30,8 +30,7 @@ export abstract class EquipmentCheckBaseComponentDirective extends ParticipantSt
         protected adalService: AdalService,
         protected errorService: ErrorService,
         protected logger: Logger,
-        protected participantStatusUpdateService: ParticipantStatusUpdateService,
-        protected translateService: TranslateService
+        protected participantStatusUpdateService: ParticipantStatusUpdateService
     ) {
         super(participantStatusUpdateService, logger);
     }
@@ -41,10 +40,8 @@ export abstract class EquipmentCheckBaseComponentDirective extends ParticipantSt
     abstract navigateToNextPage(): void;
 
     initForm() {
-        const yes = this.translateService.instant('equipment-check-base.yes');
-
         this.form = this.fb.group({
-            equipmentCheck: [false, Validators.pattern(yes)]
+            equipmentCheck: [false, Validators.pattern('Yes')]
         });
     }
 

@@ -27,7 +27,7 @@ export class MicrophoneCheckComponent extends EquipmentCheckBaseComponentDirecti
         protected participantStatusUpdateService: ParticipantStatusUpdateService,
         protected translateService: TranslateService
     ) {
-        super(router, route, fb, videoWebService, adalService, errorService, logger, participantStatusUpdateService, translateService);
+        super(router, route, fb, videoWebService, adalService, errorService, logger, participantStatusUpdateService);
     }
 
     ngOnInit() {
