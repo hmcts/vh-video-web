@@ -9,6 +9,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ImHelper } from '../im-helper';
+import { TranslateService } from '@ngx-translate/core';
 
 export abstract class ChatBaseComponent {
     protected hearing: Hearing;
@@ -18,6 +19,7 @@ export abstract class ChatBaseComponent {
     disableScrollDown = false;
     loggedInUser: LoggedParticipantResponse;
     emptyGuid = '00000000-0000-0000-0000-000000000000';
+    name_you: string;
 
     DEFAULT_ADMIN_USERNAME = 'Admin';
     protected constructor(
@@ -26,8 +28,11 @@ export abstract class ChatBaseComponent {
         protected eventService: EventsService,
         protected logger: Logger,
         protected adalService: AdalService,
-        protected imHelper: ImHelper
-    ) {}
+        protected imHelper: ImHelper,
+        protected translateService: TranslateService
+    ) {
+        this.name_you = this.translateService.instant('chat-base.you');
+    }
 
     abstract content: ElementRef<HTMLElement>;
     abstract sendMessage(messageBody: string): void;
@@ -63,7 +68,7 @@ export abstract class ChatBaseComponent {
                 ? this.loggedInUser.participant_id
                 : this.adalService.userInfo.userName.toUpperCase();
         if (from === username.toUpperCase()) {
-            message.from_display_name = 'You';
+            message.from_display_name = this.name_you;
             message.is_user = true;
         } else {
             message = await this.verifySender(message);
