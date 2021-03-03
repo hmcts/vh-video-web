@@ -5,6 +5,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { ParticipantPanelModelMapper } from 'src/app/shared/mappers/participant-panel-model-mapper';
 import {
     CallWitnessIntoHearingEvent,
     DismissWitnessFromHearingEvent,
@@ -27,6 +28,7 @@ import { onConferenceUpdatedMock, onParticipantUpdatedMock, videoCallServiceSpy 
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { EndpointStatus, ParticipantStatus, Role } from '../../services/clients/api-client';
 import { HearingRole } from '../models/hearing-role-model';
+import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-model';
 import { ParticipantPanelModel } from '../models/participant-panel-model';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
 import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
@@ -52,7 +54,7 @@ describe('ParticipantsPanelComponent', () => {
 
     beforeEach(() => {
         component = new ParticipantsPanelComponent(videoWebServiceSpy, activatedRoute, videocallService, eventService, logger);
-        component.participants = participants.map(x => new ParticipantPanelModel(x));
+        component.participants = new ParticipantPanelModelMapper().mapFromParticipantUserResponse(participants);
         component.conferenceId = conferenceId;
         component.witnessTransferTimeout = {};
 
@@ -98,6 +100,22 @@ describe('ParticipantsPanelComponent', () => {
         const updatedPat = component.participants.find(x => x.id === message.participantId);
         expect(updatedPat).toBeInstanceOf(ParticipantPanelModel);
         expect((<ParticipantPanelModel>updatedPat).status).toBe(status);
+    });
+
+    it('should process eventhub participant updates for linked participant', () => {
+        component.setupEventhubSubscribers();
+        const status = ParticipantStatus.InConsultation;
+        const linkedParticipant = participants.filter(
+            x => x.role === Role.Individual && x.linked_participants.length > 0 && x.current_room
+        )[0];
+        const message = new ParticipantStatusMessage(linkedParticipant.id, '', conferenceId, status);
+
+        participantStatusSubjectMock.next(message);
+
+        const updatedPat = component.participants.find(x => x.id === linkedParticipant.current_room.id);
+        expect(updatedPat).toBeInstanceOf(LinkedParticipantPanelModel);
+        const updatedLinked = updatedPat as LinkedParticipantPanelModel;
+        expect(updatedLinked.isInConsultation()).toBe(true);
     });
 
     it('should not process eventhub participant updates not in list', () => {
@@ -257,9 +275,9 @@ describe('ParticipantsPanelComponent', () => {
         p.hearing_role = HearingRole.WITNESS;
         p.status = ParticipantStatus.InHearing;
         const pat = new ParticipantPanelModel(p);
-        pat.handRaised = true;
+        pat.updateParticipant(false, true, false);
         await component.dismissWitnessFromHearing(pat);
-        expect(pat.handRaised).toBeFalse();
+        expect(pat.hasHandRaised()).toBeFalse();
         expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, p.id);
     });
 
@@ -269,9 +287,9 @@ describe('ParticipantsPanelComponent', () => {
         p.hearing_role = HearingRole.WITNESS;
         p.status = ParticipantStatus.InHearing;
         const pat = new ParticipantPanelModel(p);
-        pat.isSpotlighted = true;
+        pat.updateParticipant(false, false, true);
         await component.dismissWitnessFromHearing(pat);
-        expect(pat.isSpotlighted).toBeFalse();
+        expect(pat.hasSpotlight()).toBeFalse();
         expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, p.id);
     });
 
@@ -338,9 +356,9 @@ describe('ParticipantsPanelComponent', () => {
         onParticipantUpdatedMock.next(payload);
         const result = component.participants.find(x => x.id === pat.id);
         expect(result.pexipId).toBe(payload.uuid);
-        expect(result.isRemoteMuted).toBeTruthy();
-        expect(result.handRaised).toBeTruthy();
-        expect(result.isSpotlighted).toBeTruthy();
+        expect(result.isMicRemoteMuted()).toBeTruthy();
+        expect(result.hasHandRaised()).toBeTruthy();
+        expect(result.hasSpotlight()).toBeTruthy();
     });
 
     it('should not process video call participant updates not in list', () => {
@@ -355,9 +373,9 @@ describe('ParticipantsPanelComponent', () => {
         onParticipantUpdatedMock.next(payload);
         const result = component.participants.find(x => x.id === pat.id);
         expect(result.pexipId).toBeUndefined();
-        expect(result.isRemoteMuted).toBeFalsy();
-        expect(result.handRaised).toBeFalsy();
-        expect(result.isSpotlighted).toBeFalsy();
+        expect(result.isMicRemoteMuted()).toBeFalsy();
+        expect(result.hasHandRaised()).toBeFalsy();
+        expect(result.hasSpotlight()).toBeFalsy();
     });
 
     it('should unlock all participants', () => {
@@ -374,14 +392,14 @@ describe('ParticipantsPanelComponent', () => {
 
     it('should mute participant', () => {
         const pat = component.participants[0];
-        pat.isRemoteMuted = true;
+        pat.updateParticipant(true, false, false);
         component.toggleMuteParticipant(pat);
         expect(videocallService.muteParticipant).toHaveBeenCalledWith(pat.pexipId, false, component.conferenceId, pat.id);
     });
 
     it('should spotlight participant', () => {
         const pat = component.participants[1];
-        pat.isSpotlighted = false;
+        pat.updateParticipant(false, false, true);
         component.toggleSpotlightParticipant(pat);
         expect(videocallService.spotlightParticipant).toHaveBeenCalledWith(pat.pexipId, true, component.conferenceId, pat.id);
     });
@@ -391,12 +409,12 @@ describe('ParticipantsPanelComponent', () => {
         component.isMuteAll = true;
         // Mute all the participants except for one participant
         for (let index = 0; index < component.participants.length - 1; index++) {
-            component.participants[index].isRemoteMuted = true;
+            component.participants[index].updateParticipant(true, false, false);
             (<ParticipantPanelModel>component.participants[index]).status = ParticipantStatus.InHearing;
         }
 
         // Get any muted participant
-        const mutedParticipant = component.participants.filter(x => x.isRemoteMuted)[0];
+        const mutedParticipant = component.participants.filter(x => x.isMicRemoteMuted())[0];
         // Unmute the participant
         component.toggleMuteParticipant(mutedParticipant);
 
@@ -408,12 +426,12 @@ describe('ParticipantsPanelComponent', () => {
         component.isMuteAll = true;
         // Unmute all participants except for one participant
         for (let index = 0; index < component.participants.length - 1; index++) {
-            component.participants[index].isRemoteMuted = false;
+            component.participants[index].updateParticipant(false, false, false);
             (<ParticipantPanelModel>component.participants[index]).status = ParticipantStatus.InHearing;
         }
 
         // Get any unmuted participant
-        const unmutedParticipant = component.participants.filter(x => x.isRemoteMuted === false)[0];
+        const unmutedParticipant = component.participants.filter(x => x.isMicRemoteMuted() === false)[0];
         // Mute the participant
         component.toggleMuteParticipant(unmutedParticipant);
 
@@ -422,7 +440,7 @@ describe('ParticipantsPanelComponent', () => {
 
     it('should unmute participant', () => {
         const pat = component.participants[0];
-        pat.isRemoteMuted = false;
+        pat.updateParticipant(false, false, false);
         component.toggleMuteParticipant(pat);
         expect(videocallService.muteParticipant).toHaveBeenCalledWith(pat.pexipId, true, component.conferenceId, pat.id);
     });
@@ -431,7 +449,7 @@ describe('ParticipantsPanelComponent', () => {
         videocallService.muteAllParticipants.calls.reset();
         component.isMuteAll = true;
         const pat = component.participants.filter(x => x instanceof ParticipantPanelModel)[0] as ParticipantPanelModel;
-        pat.isRemoteMuted = true;
+        pat.updateParticipant(true, false, false);
         pat.status = ParticipantStatus.InHearing;
 
         component.toggleMuteParticipant(pat);
@@ -442,12 +460,12 @@ describe('ParticipantsPanelComponent', () => {
     it('should mute conference when last participant is muted manually', () => {
         const lastParticipant = component.participants[component.participants.length - 1];
         for (let index = 0; index < component.participants.length - 1; index++) {
-            component.participants[index].isRemoteMuted = true;
+            component.participants[index].updateParticipant(true, false, false);
         }
 
         videocallService.muteAllParticipants.calls.reset();
         component.isMuteAll = true;
-        lastParticipant.isRemoteMuted = false;
+        lastParticipant.updateParticipant(false, false, false);
 
         component.toggleMuteParticipant(lastParticipant);
 
@@ -457,10 +475,10 @@ describe('ParticipantsPanelComponent', () => {
     it('should not unmute conference when second last participant is unmuted after a conference mute', () => {
         videocallService.muteAllParticipants.calls.reset();
         component.isMuteAll = true;
-        component.participants.forEach(x => (x.isRemoteMuted = true));
+        component.participants.forEach(x => x.updateParticipant(true, false, false));
         const pat = component.participants[0];
         (<ParticipantPanelModel>pat).status = ParticipantStatus.InHearing;
-        component.participants[1].isRemoteMuted = true;
+        component.participants[1].updateParticipant(true, false, false);
         (<ParticipantPanelModel>component.participants[1]).status = ParticipantStatus.InHearing;
         component.toggleMuteParticipant(pat);
 
@@ -473,7 +491,7 @@ describe('ParticipantsPanelComponent', () => {
     });
     it('should lower hand of participant', () => {
         const pat = component.participants[0];
-        pat.handRaised = true;
+        pat.updateParticipant(false, true, false);
         component.lowerParticipantHand(pat);
         expect(videocallService.lowerHandById).toHaveBeenCalledWith(pat.pexipId, component.conferenceId, pat.id);
     });
@@ -667,8 +685,8 @@ describe('ParticipantsPanelComponent', () => {
         participantMediaStatusSubjectMock.next(message);
 
         const updatedPat = component.participants.find(x => x.id === message.participantId);
-        expect(updatedPat.isLocalAudioMuted).toBe(mediaStatus.is_local_audio_muted);
-        expect(updatedPat.isLocalVideoMuted).toBe(mediaStatus.is_local_video_muted);
+        expect(updatedPat.isLocalMicMuted()).toBe(mediaStatus.is_local_audio_muted);
+        expect(updatedPat.isLocalCameraOff()).toBe(mediaStatus.is_local_video_muted);
     });
 
     it('should not process eventhub device status message for participant not in list', () => {
@@ -678,8 +696,8 @@ describe('ParticipantsPanelComponent', () => {
 
         participantMediaStatusSubjectMock.next(message);
 
-        const updatedAudioCount = component.participants.filter(x => x.isLocalAudioMuted).length;
-        const updatedVideoCount = component.participants.filter(x => x.isLocalVideoMuted).length;
+        const updatedAudioCount = component.participants.filter(x => x.isLocalMicMuted()).length;
+        const updatedVideoCount = component.participants.filter(x => x.isLocalCameraOff()).length;
         expect(updatedAudioCount).toBe(0);
         expect(updatedVideoCount).toBe(0);
     });
