@@ -34,7 +34,7 @@ export class ParticipantPanelModelMapper {
             return false;
         }
         const linkedPanels = filtered as LinkedParticipantPanelModel[];
-        return linkedPanels.filter(x => x.participants.filter(p => p.id === participant.id)).length > 0;
+        return linkedPanels.some(x => x.participants.filter(p => p.id === participant.id));
     }
 
     private mapLinkedParticipant(participant: ParticipantForUserResponse, pats: ParticipantForUserResponse[]): ParticipantPanelModel[] {
