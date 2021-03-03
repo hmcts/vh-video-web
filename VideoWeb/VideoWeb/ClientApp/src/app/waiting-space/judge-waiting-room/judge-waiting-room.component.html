@@ -40,7 +40,7 @@
                 </div>
                 <div *ngIf="hearing && !isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': !panelStates['Chat'] }">
                     <app-chat-panel
-                        *ngIf="isIMEnabled"
+                        *ngIf="defineIsIMEnabled()"
                         [hearing]="hearing"
                         (unreadCount)="unreadMessageCounterUpdate($event)"
                         [showChat]="panelStates['Chat']">
