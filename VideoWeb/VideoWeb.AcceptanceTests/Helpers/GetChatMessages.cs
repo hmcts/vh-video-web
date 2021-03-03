@@ -59,16 +59,11 @@ namespace VideoWeb.AcceptanceTests.Helpers
                     Message = _browser.Driver.WaitUntilElementsVisible(InstantMessagePage.ChatMessage)[i].Text.Trim()
                 };
                 var senderAndTime = _browser.Driver.WaitUntilElementsVisible(InstantMessagePage.ChatSenderAndTime)[i].Text.Trim();
-                var text = SeparateAndRemoveBrackets(senderAndTime);
+                var text = senderAndTime.Split(" at ");
                 message.Sender = text[0];
                 message.Time = text[1];
                 _chatMessages.Add(message);
             }
-        }
-
-        private static string[] SeparateAndRemoveBrackets(string text)
-        {
-            return text.Replace(")", "").Trim().Split("(");
         }
     }
 }
