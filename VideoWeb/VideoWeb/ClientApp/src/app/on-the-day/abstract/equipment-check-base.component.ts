@@ -10,6 +10,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { Directive } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 @Directive()
 export abstract class EquipmentCheckBaseComponentDirective extends ParticipantStatusBaseDirective {
@@ -29,7 +30,8 @@ export abstract class EquipmentCheckBaseComponentDirective extends ParticipantSt
         protected adalService: AdalService,
         protected errorService: ErrorService,
         protected logger: Logger,
-        protected participantStatusUpdateService: ParticipantStatusUpdateService
+        protected participantStatusUpdateService: ParticipantStatusUpdateService,
+        protected translateService: TranslateService
     ) {
         super(participantStatusUpdateService, logger);
     }
@@ -39,8 +41,10 @@ export abstract class EquipmentCheckBaseComponentDirective extends ParticipantSt
     abstract navigateToNextPage(): void;
 
     initForm() {
+        const yes = this.translateService.instant('equipment-check-base.yes');
+
         this.form = this.fb.group({
-            equipmentCheck: [false, Validators.pattern('Yes')]
+            equipmentCheck: [false, Validators.pattern(yes)]
         });
     }
 

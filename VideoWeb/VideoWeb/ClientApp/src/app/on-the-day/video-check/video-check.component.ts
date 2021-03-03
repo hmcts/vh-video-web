@@ -24,10 +24,9 @@ export class VideoCheckComponent extends EquipmentCheckBaseComponentDirective im
         protected adalService: AdalService,
         protected errorService: ErrorService,
         protected logger: Logger,
-        protected participantStatusUpdateService: ParticipantStatusUpdateService,
-        private translate: TranslateService
+        protected participantStatusUpdateService: ParticipantStatusUpdateService
     ) {
-        super(router, route, fb, videoWebService, adalService, errorService, logger, participantStatusUpdateService);
+        super(router, route, fb, videoWebService, adalService, errorService, logger, participantStatusUpdateService, translateService);
     }
 
     ngOnInit() {
@@ -36,7 +35,7 @@ export class VideoCheckComponent extends EquipmentCheckBaseComponentDirective im
     }
 
     getEquipmentCheck(): string {
-        return this.translate.instant('video-check.video');
+        return this.translateService.instant('video-check.video');
     }
 
     getFailureReason(): SelfTestFailureReason {

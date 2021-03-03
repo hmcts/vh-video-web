@@ -21,6 +21,9 @@
     "except": ", except where otherwise stated",
     "copyright": "© Crown copyright"
   },
+  "equipment-check-base": {
+    "yes": "Yes"
+  },
   "camera-and-microphone": {
     "continue": "Continue",
     "sign-into-the-conference": "Sign into the conference"
@@ -133,7 +136,8 @@
     "yes": "Yes",
     "no": "No",
     "continue": "Continue",
-    "check-my-equipment-again": "Check my equipment again"
+    "check-my-equipment-again": "Check my equipment again",
+    "microphone": "Microphone"
   },
   "participant-hearings": {
     "loading-please-wait": "Loading please wait...",
