@@ -1,4 +1,5 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
 WORKDIR /app
 EXPOSE 80
@@ -7,16 +8,16 @@ EXPOSE 443
 FROM node:14.15-alpine AS client 
 ARG skip_client_build=false 
 WORKDIR /app 
-COPY VideoWeb/ClientApp . 
+COPY VideoWeb/VideoWeb/ClientApp . 
 RUN [[ ${skip_client_build} = true ]] && echo "Skipping npm install" || npm install
 RUN [[ ${skip_client_build} = true ]] && mkdir dist || npm run-script build-prod
+
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
 COPY . .
-RUN dotnet restore --configfile nuget.config "VideoWeb/VideoWeb.csproj"
-COPY . .
-WORKDIR "/src/VideoWeb"
+RUN dotnet restore --configfile VideoWeb/nuget.config "VideoWeb/VideoWeb/VideoWeb.csproj"
+WORKDIR "/src/VideoWeb/VideoWeb"
 RUN dotnet build "VideoWeb.csproj" -c Release -o /app/build
 
 FROM build AS publish

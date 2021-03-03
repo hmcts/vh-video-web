@@ -23,6 +23,8 @@ namespace VideoWeb
 
         public IConfiguration Configuration { get; }
 
+        private Settings Settings { get; set; }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -42,6 +44,9 @@ namespace VideoWeb
 
         private void RegisterSettings(IServiceCollection services)
         {
+            Settings = Configuration.Get<Settings>();
+            services.AddSingleton(Settings);
+
             services.Configure<AzureAdConfiguration>(options =>
             {
                 Configuration.Bind("AzureAd", options);
@@ -73,9 +78,13 @@ namespace VideoWeb
             else
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-                app.UseHttpsRedirection();
+
+                if (!Settings.DisableHttpsRedirection)
+                {
+                    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                    app.UseHsts();
+                    app.UseHttpsRedirection();
+                }
             }
 
             var zapScan = Configuration.GetValue<bool>("ZapScan");
