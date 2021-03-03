@@ -119,6 +119,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var panelMembers = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("panelmember"));
             var individuals = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("individual"));
+            var interpreters = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("interpreter"));
             var representatives = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("representative"));
             var observers = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("observer"));
 
@@ -138,6 +139,16 @@ namespace VideoWeb.AcceptanceTests.Steps
                     _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantCaseType(user, individual.Id)).Text.Trim().Should().Be(individual.Case_type_group);
                 }
             }
+            
+            foreach (var interpreter in interpreters)
+            {
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantName(user, interpreter.Id)).Text.Trim().Should().Be(interpreter.Name);
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantHearingRole(user, interpreter.Id)).Text.Trim().Should().Contain(interpreter.Hearing_role);
+                if (!interpreter.Case_type_group.ToLower().Equals("none"))
+                {
+                    _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantCaseType(user, interpreter.Id)).Text.Trim().Should().Be(interpreter.Case_type_group);
+                }
+            }
 
             foreach (var representative in representatives)
             {
@@ -151,6 +162,27 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetObserverName(user, observer.Id)).Text.Trim().Should().Be(observer.Name);
             }
+        }
+        
+        [Then(@"the (.*) below their own entry in the participant list")]
+        public void ThenTheUserBelowTheirOwnEntryInTheParticipantList(string user)
+        {
+            var interpretee = _c.Test.ConferenceParticipants.SingleOrDefault(x => 
+                x.User_role==UserRole.Individual && x.Hearing_role != "Interpreter" && x.Linked_participants.Any());
+            var interpreter = _c.Test.ConferenceParticipants.SingleOrDefault(x =>
+                x.User_role == UserRole.Individual && x.Hearing_role == "Interpreter" && x.Linked_participants.Any());
+
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantWithInterpreter(user, interpretee.Id))
+                .Text.Trim().Should().Contain(interpreter.Hearing_role);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantWithInterpreter(user, interpretee.Id))
+                .Text.Trim().Should().Contain(interpretee.Name);
+        }
+
+        private By GetParticipantWithInterpreter(string user, Guid interpreteeId)
+        {
+            return user == "Participant" 
+                ? ParticipantListPanel.ParticipantWithInterpreter(interpreteeId) 
+                : JudgeParticipantPanel.ParticipantWithInterpreter(interpreteeId);
         }
 
         private By GetPanelMemberName(string user,Guid id)

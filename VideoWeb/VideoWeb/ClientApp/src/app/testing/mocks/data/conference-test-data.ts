@@ -13,6 +13,7 @@ import {
     ParticipantForUserResponse,
     ParticipantHeartbeatResponse,
     ParticipantResponseVho,
+    ParticipantResponse,
     ParticipantStatus,
     Role,
     RoomSummaryResponse,
@@ -322,9 +323,10 @@ export class ConferenceTestData {
         return participants;
     }
 
-    getListOfParticipantDetails(): ParticipantResponseVho[] {
-        const participants: ParticipantResponseVho[] = [];
-        const participant1 = new ParticipantResponseVho({
+    getListOfParticipantDetails(): ParticipantResponse[] {
+        const participants: ParticipantResponse[] = [];
+        const participant1 = new ParticipantResponse();
+        participant1.init({
             id: '9F681318-4955-49AF-A887-DED64554429D',
             name: 'Mr Chris Green',
             status: ParticipantStatus.Available,
@@ -333,10 +335,16 @@ export class ConferenceTestData {
             display_name: 'Greeno',
             tiled_display_name: 'T1;Greeno;9F681318-4955-49AF-A887-DED64554429D',
             hearing_role: HearingRole.LITIGANT_IN_PERSON,
-            current_room: new RoomSummaryResponse()
+            current_room: new RoomSummaryResponse(),
+            linked_participants: [
+                new LinkedParticipantResponse({
+                    linked_id: '9F681318-4955-49AF-A887-DED64554429Z',
+                    link_type: LinkType.Interpreter
+                })
+            ]
         });
 
-        const participant2 = new ParticipantResponseVho({
+        const participant2 = new ParticipantResponse({
             id: '9F681318-4955-49AF-A887-DED64554429J',
             name: 'Mr James Green',
             representee: 'Chris Green',
@@ -349,7 +357,7 @@ export class ConferenceTestData {
             current_room: new RoomSummaryResponse()
         });
 
-        const participant3 = new ParticipantResponseVho({
+        const participant3 = new ParticipantResponse({
             id: '9F681318-4955-49AF-A887-DED64554429T',
             name: 'Judge Fudge',
             status: ParticipantStatus.Available,
@@ -361,9 +369,29 @@ export class ConferenceTestData {
             current_room: new RoomSummaryResponse()
         });
 
+        const participant4 = new ParticipantResponse();
+        participant4.init({
+            id: '9F681318-4955-49AF-A887-DED64554429Z',
+            name: 'Mr James Blunt',
+            status: ParticipantStatus.Available,
+            role: Role.Individual,
+            display_name: 'James Blunt',
+            case_type_group: 'Defendant',
+            tiled_display_name: 'T4;James Blunt;9F681318-4955-49AF-A887-DED64554429Z',
+            hearing_role: HearingRole.INTERPRETER,
+            current_room: new RoomSummaryResponse(),
+            linked_participants: [
+                new LinkedParticipantResponse({
+                    linked_id: '9F681318-4955-49AF-A887-DED64554429D',
+                    link_type: LinkType.Interpreter
+                })
+            ]
+        });
+
         participants.push(participant1);
         participants.push(participant2);
         participants.push(participant3);
+        participants.push(participant4);
         return participants;
     }
 

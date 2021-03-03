@@ -4330,6 +4330,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
     hearing_role?: string | undefined;
     current_room?: RoomSummaryResponse | undefined;
     linked_participants?: LinkedParticipantResponse[] | undefined;
+    hasInterpreterLink?: boolean | undefined;
 
     constructor(data?: IParticipantForUserResponse) {
         if (data) {
@@ -4356,6 +4357,7 @@ export class ParticipantForUserResponse implements IParticipantForUserResponse {
             if (Array.isArray(_data['linked_participants'])) {
                 this.linked_participants = [] as any;
                 for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantResponse.fromJS(item));
+                this.hasInterpreterLink = this.linked_participants.some(x => x.link_type === LinkType.Interpreter);
             }
         }
     }
@@ -4408,6 +4410,7 @@ export interface IParticipantForUserResponse {
     hearing_role?: string | undefined;
     current_room?: RoomSummaryResponse | undefined;
     linked_participants?: LinkedParticipantResponse[] | undefined;
+    hasInterpreterLink?: boolean | undefined;
 }
 
 export class ConferenceForVhOfficerResponse implements IConferenceForVhOfficerResponse {
@@ -4709,6 +4712,7 @@ export class ParticipantResponse implements IParticipantResponse {
     hearing_role?: string | undefined;
     current_room?: RoomSummaryResponse | undefined;
     linked_participants?: LinkedParticipantResponse[] | undefined;
+    hasInterpreterLink?: boolean | undefined;
 
     constructor(data?: IParticipantResponse) {
         if (data) {
@@ -4735,6 +4739,7 @@ export class ParticipantResponse implements IParticipantResponse {
             if (Array.isArray(_data['linked_participants'])) {
                 this.linked_participants = [] as any;
                 for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantResponse.fromJS(item));
+                this.hasInterpreterLink = this.linked_participants.some(x => x.link_type === LinkType.Interpreter);
             }
         }
     }
@@ -6004,6 +6009,7 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
     /** The participant represented by the representative */
     representee?: string | undefined;
     linked_participants?: LinkedParticipantResponse[] | undefined;
+    hasInterpreterLink?: boolean | undefined;
 
     constructor(data?: IParticipantContactDetailsResponseVho) {
         if (data) {
@@ -6035,6 +6041,7 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
             if (Array.isArray(_data['linked_participants'])) {
                 this.linked_participants = [] as any;
                 for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantResponse.fromJS(item));
+                this.hasInterpreterLink = this.linked_participants.some(x => x.link_type === LinkType.Interpreter);
             }
         }
     }
@@ -6098,6 +6105,7 @@ export interface IParticipantContactDetailsResponseVho {
     /** The participant represented by the representative */
     representee?: string | undefined;
     linked_participants?: LinkedParticipantResponse[] | undefined;
+    hasInterpreterLink?: boolean | undefined;
 }
 
 export class LoggedParticipantResponse implements ILoggedParticipantResponse {

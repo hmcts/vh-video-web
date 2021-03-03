@@ -104,9 +104,41 @@ export abstract class WRParticipantStatusListDirective {
     }
 
     protected filterNonJudgeParticipants(): void {
-        this.nonJudgeParticipants = this.conference.participants.filter(
+        const nonJudgeParts = this.conference.participants.filter(
             x => x.role !== Role.Judge && x.role !== Role.JudicialOfficeHolder && x.hearing_role !== HearingRole.OBSERVER
         );
+
+        const individualWithInterpreterIndex = nonJudgeParts.findIndex(
+            x => x.role === Role.Individual && x.hearing_role !== HearingRole.INTERPRETER && x.linked_participants
+        );
+        if (individualWithInterpreterIndex === -1) {
+            this.nonJudgeParticipants = nonJudgeParts;
+        } else {
+            this.nonJudgeParticipants = this.orderForInterpreter(nonJudgeParts, individualWithInterpreterIndex);
+        }
+    }
+
+    getInterpreteeName(interpreterId: string) {
+        const interpreter = this.nonJudgeParticipants.find(x => x.id === interpreterId);
+        return this.nonJudgeParticipants.find(x => x.id === interpreter.linked_participants[0].linked_id).name;
+    }
+
+    private orderForInterpreter(
+        nonJudgeParticipants: ParticipantResponse[],
+        individualWithInterpreterIndex: number
+    ): ParticipantResponse[] {
+        const linkDetails = nonJudgeParticipants[individualWithInterpreterIndex].linked_participants[0];
+        let sortedNonJudgeParts: ParticipantResponse[] = [];
+        // Find Interpretee and add as first participant
+        sortedNonJudgeParts.push(nonJudgeParticipants[individualWithInterpreterIndex]);
+        nonJudgeParticipants.splice(individualWithInterpreterIndex, 1);
+        // Find Interpreter and add as second participant
+        const interpreterIndex = nonJudgeParticipants.findIndex(x => x.id === linkDetails.linked_id);
+        sortedNonJudgeParts.push(nonJudgeParticipants[interpreterIndex]);
+        nonJudgeParticipants.splice(interpreterIndex, 1);
+        // Add all other participants
+        sortedNonJudgeParts = sortedNonJudgeParts.concat(nonJudgeParticipants);
+        return sortedNonJudgeParts;
     }
 
     protected filterObservers(): void {

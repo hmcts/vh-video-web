@@ -15,6 +15,12 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By ObserverName(Guid participantId) => By.Id($"p-{participantId:D}-name-observer");
         public static By PrivateConsultationLink(Guid participantId) => By.Id($"p-call-{participantId:D}-btn");
         public static By ParticipantHearingRole(Guid participantId) => By.Id($"p-{participantId:D}-hearing-role");
+        
+        public static By ParticipantWithInterpreter(Guid interpreteeId)
+        {
+            var interpeteeXPath = $"//div[@id='p-row-{interpreteeId}-participant']/../following-sibling::div//div[starts-with(@id,'p-row')]";
+            return By.XPath(interpeteeXPath);
+        }
 
     }
 }
