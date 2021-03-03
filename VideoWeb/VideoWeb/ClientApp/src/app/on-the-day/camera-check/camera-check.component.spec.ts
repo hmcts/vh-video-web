@@ -10,6 +10,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { CameraCheckComponent } from './camera-check.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('CameraCheckComponent', () => {
     let component: CameraCheckComponent;
@@ -25,6 +26,7 @@ describe('CameraCheckComponent', () => {
     let errorService: jasmine.SpyObj<ErrorService>;
     const logger: Logger = new MockLogger();
     let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
+    const translateService = translateServiceSpy;
 
     beforeAll(() => {
         adalService = mockAdalService;
@@ -46,6 +48,8 @@ describe('CameraCheckComponent', () => {
     });
 
     beforeEach(() => {
+        translateService.instant.calls.reset();
+
         component = new CameraCheckComponent(
             router,
             activatedRoute,
@@ -54,7 +58,8 @@ describe('CameraCheckComponent', () => {
             adalService,
             errorService,
             logger,
-            participantStatusUpdateService
+            participantStatusUpdateService,
+            translateService
         );
         router.navigate.calls.reset();
         component.ngOnInit();

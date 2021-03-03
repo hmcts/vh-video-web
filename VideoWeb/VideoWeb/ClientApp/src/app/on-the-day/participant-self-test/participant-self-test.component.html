@@ -24,7 +24,7 @@
     (click)="continueParticipantJourney()"
     data-prevent-double-click="true"
   >
-    Continue
+  {{ 'participant-self-test.continue' | translate }}
   </button>
 
   <button
@@ -33,7 +33,7 @@
     data-module="govuk-button"
     (click)="restartTest()"
   >
-    Watch the video again
+  {{ 'participant-self-test.watch-the-video-again' | translate }}
   </button>
 </div>
 

@@ -5,19 +5,19 @@
 </div>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <h1 class="govuk-heading-xl">Could you see and hear the video clearly?</h1>
+    <h1 class="govuk-heading-xl">{{ 'video-check.could-you-see-and-hear-the-video-clearly' | translate }}</h1>
 
     <form [formGroup]="form" class="govuk-form-group" (ngSubmit)="onSubmit()">
       <div [ngClass]="showError() ? 'govuk-form-group--error' : 'govuk-form-group'">
         <div *ngIf="showError()" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span>
-          Select if the image and sound were clear
+          <span class="govuk-visually-hidden">{{ 'video-check.error' | translate }}</span>
+          {{ 'video-check.select-if-the-image-and-sound-were-clear' | translate }}
         </div>
 
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
             <label class="govuk-body" for="equipmentCheck">
-              Were the image and sound clear?
+              {{ 'video-check.were-the-image-and-sound-clear' | translate }}
             </label>
           </legend>
           <div class="govuk-radios govuk-!-margin-top-5">
@@ -28,10 +28,10 @@
                 formControlName="equipmentCheck"
                 name="equipmentCheck"
                 type="radio"
-                value="Yes"
+                value="{{ 'video-check.yes' | translate }}"
               />
               <label class="govuk-label govuk-radios__label" for="video-yes">
-                Yes
+                {{ 'video-check.yes' | translate }}
               </label>
             </div>
             <div class="govuk-radios__item">
@@ -41,10 +41,10 @@
                 formControlName="equipmentCheck"
                 name="equipmentCheck"
                 type="radio"
-                value="No"
+                value="{{ 'video-check.no' | translate }}"
               />
               <label class="govuk-label govuk-radios__label" for="video-no">
-                No
+                {{ 'video-check.no' | translate }}
               </label>
             </div>
           </div>
@@ -58,7 +58,7 @@
           type="button"
           (click)="onSubmit()"
         >
-          Continue
+        {{ 'video-check.continue' | translate }}
         </button>
 
         <button
@@ -68,7 +68,7 @@
           type="button"
           (click)="checkEquipmentAgain()"
         >
-          Check my equipment again
+        {{ 'video-check.check-my-equipment-again' | translate }}
         </button>
       </div>
     </form>

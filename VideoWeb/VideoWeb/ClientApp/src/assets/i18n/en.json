@@ -143,6 +143,37 @@
   },
   "participant-self-test": {
     "please-wait-to-be-connected": "Please wait to be connected...",
-    "when-the-video-has-ended-answer-3-questions": "When the video has ended, answer 3 questions to confirm your microphone and camera are working."
+    "when-the-video-has-ended-answer-3-questions": "When the video has ended, answer 3 questions to confirm your microphone and camera are working.",
+    "continue": "Continue",
+    "watch-the-video-again": "Watch the video again"
+  },
+  "self-test-actions": {
+    "equipment-is-working": "Equipment is working",
+    "equipment-is-faulty": "Equipment is faulty"
+  },
+  "switch-on-camera-microphone": {
+    "use-your-camera-and-microphone": "Use your camera and microphone",
+    "switch-on-your-camera-and-microphone-to-watch-the-video": "Switch on your camera and microphone to watch the video.",
+    "your-camera-and-microphone-are-switched-on": "Your camera and microphone are switched on",
+    "your-camera-and-microphone-are-switched-on-you-can-now-continue-to-the-video": "Your camera and microphone are switched on. You can now continue to the video.",
+    "your-camera-and-microphone-are-blocked": "Your camera and microphone are blocked",
+    "we-are-sorry-you-can-not-take-part-in-the-hearing-without-using-your-camera-and-microphone": "We're sorry, you can't take part in the hearing without using your camera and microphone.",
+    "stay-close-to-your-phone-and-we-will-call-you-within-5-minutes": "Stay close to your phone and we'll call you within 5 minutes.",
+    "we-are-sorry-the-hearing-can-not-go-ahead-if-your-camera-and-microphone-are-blocked": "We're sorry, the hearing can't go ahead if your camera and microphone are blocked.",
+    "please-unblock-the-camera-and-microphone-or-call-us-if-there-is-a-problem": "Please unblock the camera and microphone or call us if there is a problem.",
+    "helpline-contact-phone": "Helpline: {{ contactPhone }}",
+    "switch-on": "Switch on",
+    "watch-the-video": "Watch the video"
+  },
+  "video-check": {
+    "could-you-see-and-hear-the-video-clearly": "Could you see and hear the video clearly?",
+    "error": "Error:",
+    "select-if-the-image-and-sound-were-clear": "Select if the image and sound were clear",
+    "were-the-image-and-sound-clear": "Were the image and sound clear?",
+    "yes": "Yes",
+    "no": "No",
+    "continue": "Continue",
+    "check-my-equipment-again": "Check my equipment again",
+    "video": "Video"
   }
 }

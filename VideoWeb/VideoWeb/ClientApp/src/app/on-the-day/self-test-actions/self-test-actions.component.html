@@ -4,7 +4,7 @@
   data-module="govuk-button"
   (click)="equipmentWorksClicked()"
 >
-  Equipment is working
+  {{ 'self-test-actions.equipment-is-working' | translate }}
 </button>
 
 <button
@@ -13,5 +13,5 @@
   data-module="govuk-button"
   (click)="equipmenBrokenClicked()"
 >
-  Equipment is faulty
+{{ 'self-test-actions.equipment-is-faulty' | translate }}
 </button>

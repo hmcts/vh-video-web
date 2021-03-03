@@ -9,6 +9,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { LoggedParticipantResponse, Role } from '../../services/clients/api-client';
 import { ParticipantHearingsComponent } from './participant-hearings.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('ParticipantHearingList', () => {
     let component: ParticipantHearingsComponent;
@@ -40,6 +41,7 @@ describe('ParticipantHearingList', () => {
     let errorService: jasmine.SpyObj<ErrorService>;
     let router: jasmine.SpyObj<Router>;
     const logger: Logger = new MockLogger();
+    const translateService = translateServiceSpy;
 
     beforeAll(() => {
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
@@ -60,7 +62,9 @@ describe('ParticipantHearingList', () => {
     });
 
     beforeEach(() => {
-        component = new ParticipantHearingsComponent(videoWebService, errorService, router, logger);
+        translateService.instant.calls.reset();
+
+        component = new ParticipantHearingsComponent(videoWebService, errorService, router, logger, translateService);
         component.conferences = conferences;
         videoWebService.getConferencesForIndividual.and.returnValue(of(conferences));
     });
