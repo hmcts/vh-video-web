@@ -12,7 +12,7 @@ import { VideoCallService } from '../services/video-call.service';
 
 @Injectable()
 export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy {
-    protected readonly loggerPrefix = '[HearingControls] -';
+    protected readonly loggerPrefix = '[HearingControlsBase] -';
 
     @Input() public participant: ParticipantResponse;
     @Input() public isPrivateConsultation: boolean;
@@ -21,9 +21,11 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     @Input() public conferenceId: string;
     @Input() public isSupportedBrowserForNetworkHealth: boolean;
     @Input() public showConsultationControls: boolean;
+    @Input() public unreadMessageCount: number;
 
     @Output() public leaveConsultation = new EventEmitter();
     @Output() public lockConsultation = new EventEmitter<boolean>();
+    @Output() public togglePanel = new EventEmitter<string>();
 
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
@@ -284,5 +286,9 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     stopScreenShare() {
         this.videoCallService.stopScreenShare();
+    }
+
+    togglePanelStatus(panelName: string) {
+        this.togglePanel.emit(panelName);
     }
 }

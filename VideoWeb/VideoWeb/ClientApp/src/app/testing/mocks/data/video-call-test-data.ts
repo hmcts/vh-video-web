@@ -16,7 +16,8 @@ export class VideoCallTestData {
             start_time: new Date().getTime(),
             uuid: Guid.create().toString(),
             spotlight: 0,
-            external_node_uuid: null
+            external_node_uuid: null,
+            protocol: 'webrtc'
         };
         if (displayName) {
             pexipParticipant.display_name = displayName;

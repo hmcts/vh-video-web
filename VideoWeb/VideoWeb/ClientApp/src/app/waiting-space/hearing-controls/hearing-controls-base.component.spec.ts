@@ -14,10 +14,11 @@ import { onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/m
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { HearingRole } from '../models/hearing-role-model';
 import { ParticipantUpdated } from '../models/video-call-models';
-import { HearingControlsComponent } from './hearing-controls.component';
+import { PrivateConsultationRoomControlsComponent } from '../private-consultation-room-controls/private-consultation-room-controls.component';
+import { HearingControlsBaseComponent } from './hearing-controls-base.component';
 
-describe('HearingControlsComponent', () => {
-    let component: HearingControlsComponent;
+describe('HearingControlsBaseComponent', () => {
+    let component: HearingControlsBaseComponent;
     const gloalConference = new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse;
     const globalParticipant = gloalConference.participants.filter(x => x.role === Role.Individual)[0];
 
@@ -40,7 +41,7 @@ describe('HearingControlsComponent', () => {
     const testData = new VideoCallTestData();
 
     beforeEach(() => {
-        component = new HearingControlsComponent(videoCallService, eventsService, deviceTypeService, logger);
+        component = new PrivateConsultationRoomControlsComponent(videoCallService, eventsService, deviceTypeService, logger);
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
         component.isPrivateConsultation = false;

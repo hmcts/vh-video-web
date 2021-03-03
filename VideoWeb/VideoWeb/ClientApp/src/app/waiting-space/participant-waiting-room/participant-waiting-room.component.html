@@ -2,34 +2,10 @@
   <p class="govuk-body">Loading please wait...</p>
 </div>
 
-<div *ngIf="showVideo && !isPrivateConsultation">
-  <div class="video-background"></div>
-  <div class="govuk-grid-column-one-half">
-    <video id="incomingFeedOld" [srcObject]="presentationStream && !streamInMain ? presentationStream : stream" autoplay height="auto" poster="/assets/images/empty_crest.jpg">
-      Your browser does not support Video
-    </video>
-    <div id="secondIncomingFeedOld"
-      *ngIf="presentationStream"
-      (click)="switchStreamWindows()"
-      appTooltip
-      text="Switch to main screen"
-      colour="grey">
-      <video
-        [srcObject]="presentationStream && !streamInMain ? stream : presentationStream"
-        autoplay
-        height="auto"
-        poster="/assets/images/empty_crest.jpg"
-        class="fill-container">
-        Your browser does not support Video
-    </video>
-    </div>
-  </div>
-</div>
-
-<div *ngIf="showVideo && isPrivateConsultation" class="video-background">
+<div *ngIf="showVideo" class="video-background">
   <div class="header-bar">
-      <div class="header-content-grid govuk-body" style='float: left'>
-          <ng-container *ngIf="!isJohRoom">
+      <div class="govuk-body" [class]="(!isJohRoom && isPrivateConsultation) ? 'header-content-grid-with-lock': 'header-content-grid'">
+          <ng-container *ngIf="!isJohRoom && isPrivateConsultation">
             <div class="room-title">
               {{getRoomName()}} 
             </div>
@@ -43,56 +19,54 @@
               Invite others by calling them or unlock the room for others to join
             </div>
           </ng-container>
-          <ng-container *ngIf="isJohRoom">
+          <ng-container *ngIf="isJohRoom || !isPrivateConsultation">
             <div class="room-title">
                 {{getCaseNameAndNumber()}}
             </div>
         </ng-container>
+        <ng-container *ngIf="connected">
+          <app-private-consultation-room-controls
+            [conferenceId]="conference.id"
+            [participant]="participant"
+            [audioOnly]="audioOnly"
+            [isPrivateConsultation]="isPrivateConsultation"
+            [outgoingStream]="outgoingStream"
+            [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
+            [showConsultationControls]="showConsultationControls"
+            (leaveConsultation)="showLeaveConsultationModal()"
+            (lockConsultation)="setRoomLock($event)">
+          </app-private-consultation-room-controls>
+        </ng-container>
       </div>
-      <ng-container *ngIf="connected && showVideo">
-        <app-private-consultation-room-controls
-          [conferenceId]="conference.id"
-          [participant]="participant"
-          [audioOnly]="audioOnly"
-          [isPrivateConsultation]="isPrivateConsultation"
-          [outgoingStream]="outgoingStream"
-          [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
-          [showConsultationControls]="showConsultationControls"
-          (leaveConsultation)="showLeaveConsultationModal()"
-          (lockConsultation)="setRoomLock($event)">
-        </app-private-consultation-room-controls>
-      </ng-container>
   </div>
-  <div class="govuk-grid-column-full">
-      <div *ngIf="hearing" class="participant-wrapper">
-          <app-private-consultation-participants
-            [conference]="hearing.getConference()"
-            [participantEndpoints]="participantEndpoints"
-            [roomLabel]="this.participant.current_room?.label">
-          </app-private-consultation-participants>
-      </div>
-      <div class="video-wrapper">
-          <video id="incomingFeedPrivate" autoplay [srcObject]="presentationStream && !streamInMain ? presentationStream : stream" poster="/assets/images/empty_crest.jpg">
+  <div *ngIf="hearing && isPrivateConsultation" class="panel-wrapper">
+      <app-private-consultation-participants
+        [conference]="hearing.getConference()"
+        [participantEndpoints]="participantEndpoints"
+        [roomLabel]="this.participant.current_room?.label">
+      </app-private-consultation-participants>
+  </div>
+  <div class="video-wrapper">
+      <video id="incomingFeedPrivate" autoplay [srcObject]="presentationStream && !streamInMain ? presentationStream : stream" poster="/assets/images/empty_crest.jpg">
+          Your browser does not support Video
+      </video>
+      <div id="secondIncomingFeed"
+            *ngIf="presentationStream"
+            (click)="switchStreamWindows()"
+            appTooltip
+            text="Switch to main screen"
+            colour="grey">
+          <video [srcObject]="presentationStream && !streamInMain ? stream : presentationStream"
+                  autoplay
+                  height="auto"
+                  poster="/assets/images/empty_crest.jpg"
+                  class="fill-container">
               Your browser does not support Video
           </video>
-          <div id="secondIncomingFeed"
-               *ngIf="presentationStream"
-               (click)="switchStreamWindows()"
-               appTooltip
-               text="Switch to main screen"
-               colour="grey">
-              <video [srcObject]="presentationStream && !streamInMain ? stream : presentationStream"
-                     autoplay
-                     height="auto"
-                     poster="/assets/images/empty_crest.jpg"
-                     class="fill-container">
-                  Your browser does not support Video
-              </video>
-          </div>
       </div>
-      <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-container">
-          <app-participant-network-alert [participant]="participant"></app-participant-network-alert>
-      </div>
+  </div>
+  <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-container">
+      <app-participant-network-alert [participant]="participant"></app-participant-network-alert>
   </div>
 </div>
 
@@ -111,20 +85,6 @@
     </div>
   </div>
 </div>
-
-<ng-container *ngIf="connected && showVideo && !isPrivateConsultation">
-  <app-hearing-controls
-    [conferenceId]="conference.id"
-    [participant]="participant"
-    [audioOnly]="audioOnly"
-    [isPrivateConsultation]="isPrivateConsultation"
-    [outgoingStream]="outgoingStream"
-    [isSupportedBrowserForNetworkHealth]="isSupportedBrowserForNetworkHealth"
-    [showConsultationControls]="showConsultationControls"
-    (leaveConsultation)="onConsultationCancelled()"
-    (lockConsultation)="setRoomLock($event)"
-  ></app-hearing-controls>
-</ng-container>
 
 <div *ngIf="!loadingData && hearing && showExtraContent" class="govuk-grid-row">
   <div class="govuk-grid-column-full">

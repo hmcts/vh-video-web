@@ -36,6 +36,12 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     conferenceRecordingInSessionForSeconds = 0;
     expanedPanel = true;
     displayConfirmStartHearingPopup: boolean;
+    panelTypes = ['Participants', 'Chat'];
+    panelStates = {
+        Participants: true,
+        Chat: false
+    };
+    unreadMessageCount = 0;
 
     constructor(
         protected route: ActivatedRoute,
@@ -100,7 +106,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
                     if (this.conference.audio_recording_required) {
                         this.initAudioRecordingInterval();
                     }
-                    this.defineIsIMEnabled();
                 });
             })
             .catch((error: Error | MediaStreamError) => {
@@ -264,5 +269,28 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
             return !this.showVideo;
         }
         return true;
+    }
+
+    togglePanel(panelName: string) {
+        const newState = !this.panelStates[panelName];
+        if (newState) {
+            this.panelTypes.forEach(pt => {
+                this.panelStates[pt] = false;
+            });
+        }
+
+        this.panelStates[panelName] = newState;
+    }
+
+    unreadMessageCounterUpdate(count: number) {
+        this.unreadMessageCount = count;
+    }
+
+    leaveConsultation() {
+        if (this.isPrivateConsultation) {
+            this.showLeaveConsultationModal();
+        } else {
+            this.leaveJudicialConsultation();
+        }
     }
 }

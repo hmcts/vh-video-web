@@ -3,10 +3,6 @@
 .panel-icon {
   width: 24px;
   cursor: pointer;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin-top: 10px;
-  z-index: 130;
 }
 
 .dropdown-content {
@@ -16,6 +12,7 @@
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
   border-radius: 3px;
+  right: 10px;
 }
 
 .dropdown-content .dropdown-header {

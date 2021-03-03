@@ -1,0 +1,11 @@
+<div class="header-container">
+  <h4 class="govuk-heading-s white">VH Officer messages</h4>
+</div>
+<div #content id="chat-list" (scroll)="onScroll()">
+  <div *ngIf="loading" class="govuk-body">Loading...</div>
+  <app-chat-body-window
+    [messagesReceived]="messages"
+    [pendingMessages]="pendingMessagesForConversation">
+  </app-chat-body-window>
+</div>
+<app-chat-input-box (submittedMessage)="sendMessage($event)"></app-chat-input-box>

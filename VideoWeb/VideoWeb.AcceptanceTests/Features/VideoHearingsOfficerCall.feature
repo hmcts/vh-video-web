@@ -27,8 +27,8 @@ Scenario: No Answer on a Video Hearings Officer Call
 Scenario: Video Hearings Officer cannot call users in private consultation
 	Given the the first Individual user has progressed to the Waiting Room page with a hearing in 10 minutes time
 	And the the first Representative user has progressed to the Waiting Room page for the existing hearing
-	When the user starts a private consultation with the first Individual's 
-	And the first Individual's accepts the private consultation from Mrs Automation01 the first Representative's
+	When the first Representative starts a private consultation with the first Individual 
+	And the first Individual accepts the private consultation from the first Representative
 	Then the first Representative can see the other participant
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
 	Then the option to call the first Individual's is not visible

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -6,28 +6,32 @@ import { ParticipantResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
+import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { ParticipantPanelModelMapper } from 'src/app/shared/mappers/participant-panel-model-mapper';
+import {
+    CallWitnessIntoHearingEvent,
+    DismissWitnessFromHearingEvent,
+    LowerParticipantHandEvent,
+    ToggleMuteParticipantEvent,
+    ToggleSpotlightParticipantEvent
+} from 'src/app/shared/models/participant-event';
+import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 import { CaseTypeGroup } from '../models/case-type-group';
 import { HearingRole } from '../models/hearing-role-model';
-import { PanelModel, ParticipantPanelModel, VideoEndpointPanelModel } from '../models/participant-panel-model';
+import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-model';
+import { PanelModel } from '../models/panel-model-base';
+import { ParticipantPanelModel } from '../models/participant-panel-model';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
+import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
 import { VideoCallService } from '../services/video-call.service';
-import {
-    ToggleMuteParticipantEvent,
-    ToggleSpotlightParticipantEvent,
-    LowerParticipantHandEvent,
-    CallWitnessIntoHearingEvent,
-    DismissWitnessFromHearingEvent
-} from 'src/app/shared/models/participant-event';
-import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
-import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 
 @Component({
     selector: 'app-participants-panel',
     templateUrl: './participants-panel.component.html',
     styleUrls: ['./participants-panel.component.scss']
 })
-export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     private readonly loggerPrefix = '[ParticipantsPanel] -';
     participants: PanelModel[] = [];
     isMuteAll = false;
@@ -36,10 +40,6 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
 
-    firstElement: HTMLElement;
-    lastElement: HTMLElement;
-
-    isScrolling = 0;
     witnessTransferTimeout: { [id: string]: NodeJS.Timeout } = {};
 
     constructor(
@@ -50,24 +50,12 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         private logger: Logger
     ) {}
 
-    get muteAllToggleText() {
-        if (this.isMuteAll) {
-            return 'Unmute all';
-        } else {
-            return 'Mute all';
-        }
-    }
-
     ngOnInit() {
         this.conferenceId = this.route.snapshot.paramMap.get('conferenceId');
         this.getParticipantsList().then(() => {
             this.setupVideoCallSubscribers();
             this.setupEventhubSubscribers();
         });
-    }
-
-    ngAfterViewInit() {
-        setTimeout(() => this.initializeScrolling(), 1000);
     }
 
     toggleMuteParticipantEventHandler(e: ToggleMuteParticipantEvent) {
@@ -88,12 +76,6 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
 
     dismissWitnessFromHearingEventHandler(e: DismissWitnessFromHearingEvent) {
         this.dismissWitnessFromHearing(e.participant);
-    }
-
-    initializeScrolling() {
-        this.firstElement = document.querySelector('#panel_participant_0');
-        this.lastElement = document.querySelector('#panel_participant_' + (this.participants.length - 1));
-        this.setScrollingIndicator();
     }
 
     ngOnDestroy(): void {
@@ -189,15 +171,13 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         this.isMuteAll = updatedConference.guestedMuted;
     }
 
-    handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): boolean {
+    handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): void {
         const participant = this.participants.find(x => updatedParticipant.pexipDisplayName.includes(x.id));
         if (!participant) {
             return;
         }
-        participant.pexipId = updatedParticipant.uuid;
-        participant.isRemoteMuted = updatedParticipant.isRemoteMuted;
-        participant.handRaised = updatedParticipant.handRaised;
-        participant.isSpotlighted = updatedParticipant.isSpotlighted;
+
+        participant.updateParticipant(updatedParticipant);
         this.logger.debug(`${this.loggerPrefix} Participant has been updated in video call`, {
             conference: this.conferenceId,
             participant: participant.id,
@@ -237,15 +217,12 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
 
     async getParticipantsList() {
         try {
-            const pats = this.videoWebService.getParticipantsByConferenceId(this.conferenceId);
+            const pats = await this.videoWebService.getParticipantsByConferenceId(this.conferenceId);
             const eps = this.videoWebService.getEndpointsForConference(this.conferenceId);
 
-            (await pats).forEach(x => {
-                const participant = new ParticipantPanelModel(x);
-                this.participants.push(participant);
-            });
-            this.logger.debug(`${this.loggerPrefix} Retrieved participants in conference`, { conference: this.conferenceId });
+            this.participants = this.participants.concat(new ParticipantPanelModelMapper().mapFromParticipantUserResponse(pats));
 
+            this.logger.debug(`${this.loggerPrefix} Retrieved participants in conference`, { conference: this.conferenceId });
             (await eps).forEach(x => {
                 const endpoint = new VideoEndpointPanelModel(x);
                 this.participants.push(endpoint);
@@ -263,13 +240,22 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         return participant.isInHearing();
     }
 
-    toggleMuteAll() {
-        this.logger.debug(`${this.loggerPrefix} Judge is attempting to toggle mute all status`, {
+    muteAndLockAll() {
+        this.logger.debug(`${this.loggerPrefix} Judge is attempting to mute all`, {
             conference: this.conferenceId,
             current: this.isMuteAll,
-            new: !this.isMuteAll
+            new: true
         });
-        this.videoCallService.muteAllParticipants(!this.isMuteAll, this.conferenceId);
+        this.videoCallService.muteAllParticipants(true, this.conferenceId);
+    }
+
+    unlockAll() {
+        this.logger.debug(`${this.loggerPrefix} Judge is attempting to unmute all`, {
+            conference: this.conferenceId,
+            current: this.isMuteAll,
+            new: false
+        });
+        this.videoCallService.muteAllParticipants(false, this.conferenceId);
     }
 
     toggleSpotlightParticipant(participant: PanelModel) {
@@ -386,41 +372,12 @@ export class ParticipantsPanelComponent implements OnInit, AfterViewInit, OnDest
         }
     }
 
-    onScroll() {
-        this.setScrollingIndicator();
-    }
-
-    scrollUp() {
-        this.firstElement.scrollIntoView();
-    }
-
-    scrollDown() {
-        this.lastElement.scrollIntoView();
-    }
-
-    isItemOfListVisible(element: HTMLElement) {
-        if (element) {
-            const position = element.getBoundingClientRect();
-
-            // return true if element is fully visiable in screen
-            return position.top >= 0 && position.bottom <= window.innerHeight;
-        }
-
-        return false;
-    }
-
-    setScrollingIndicator() {
-        if (this.isItemOfListVisible(this.lastElement) && this.isItemOfListVisible(this.firstElement)) {
-            this.isScrolling = 0; // no scrolling
-        } else if (this.isItemOfListVisible(this.firstElement)) {
-            this.isScrolling = 1; // scrolling to bottom
-        } else {
-            this.isScrolling = 2; // scrolling to top
-        }
-    }
-
     isEndpoint(participant: PanelModel) {
         return participant instanceof VideoEndpointPanelModel;
+    }
+
+    isLinkedParticipant(participant: PanelModel) {
+        return participant instanceof LinkedParticipantPanelModel;
     }
 
     mapParticipantToParticipantResponse(participant: ParticipantPanelModel): ParticipantResponse {

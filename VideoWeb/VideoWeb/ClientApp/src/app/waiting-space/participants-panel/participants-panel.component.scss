@@ -1,276 +1,87 @@
 @import '~govuk-frontend/govuk/base';
 
-.panel-container {
-  background: govuk-colour('black');
-  color: govuk-colour('white') !important;
-  max-width: 320px;
-  min-width: 180px;
-  min-height: 100px;
-  max-height: 90vh;
-  padding-right: 3px;
-  position: relative;
-  z-index: 120;
-  -webkit-box-shadow: -3px 0px 5px 0px rgba(0, 0, 0, 0.2);
-  box-shadow: -3px 0px 5px 0px rgba(0, 0, 0, 0.2);
-  opacity: 0.8;
-  overflow: visible;
-  resize: vertical;
-  bottom: 10px;
+.container {
+  padding: 12px;
+}
+
+.yellow {
+  color: govuk-colour('yellow') !important;
+}
+.red {
+  color: govuk-colour('red') !important;
+}
+.white {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .panel-container-list {
   overflow-x: hidden;
-  overflow: scroll;
-  max-height: 80vh;
-}
-
-::-webkit-scrollbar {
-  width: 0px; /* Remove scrollbar space */
-  background: transparent; /* Optional: just make scrollbar invisible */
-}
-
-.table-br {
-  border-color: govuk-colour('dark-grey') !important;
-}
-
-.scroll-icon {
-  height: 20px;
-  width: 30px;
-  cursor: pointer;
-  opacity: 0.8;
-}
-
-.scroll-shevrons {
-  margin-left: 110px;
-  top: 0;
+  overflow: auto;
 }
 
 .panel-icon {
   width: 24px;
   cursor: pointer;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin-top: 10px;
-  z-index: 130;
 }
 
 .panel-icon-crest {
   width: 27px;
 }
 
-.cell-icon {
-  width: 35px;
-  display: inline-block;
-  align-content: center;
-  margin-right: 3px;
-  margin-top: 3px;
+.status-disconnected {
+  grid-column-start: 2;
+  grid-column-end: 6;
 }
 
-.row-pad {
-  padding: 10px 0px 10px 5px;
+.type-icon {
+  font-size: 20px;
 }
 
-.vh-name {
-  display: inline-block;
-  width: 50%;
-  overflow-wrap: break-word;
-  float: left;
-  margin: 10px 0px 10px 3px;
-  text-align: left !important;
-  padding-left: 10px;
-}
-
-.grey-btn {
-  background: govuk-colour('dark-grey');
-  color: govuk-color('white');
-  white-space: normal;
-}
-
-.muted {
-  background: govuk-colour('red') !important;
-  border-color: govuk-colour('red') !important;
-  color: govuk-color('white') !important;
-}
-
-.grey-btn:hover {
-  background: govuk-colour('red') !important;
-  border-color: govuk-colour('red') !important;
-  color: govuk-color('white') !important;
-}
-
-.muted:focus {
-  background: govuk-colour('red') !important;
-  color: #ffffff !important;
-  border-color: govuk-colour('red') !important;
-}
-
-.grey-btn:focus {
-  background: govuk-colour('red') !important;
-  color: #ffffff !important;
-  border-color: govuk-colour('red') !important;
-}
-
-.vh-mr {
-  margin-right: 5px;
-  margin-left: 5px;
-}
-
-.tooltip {
-  display: block;
-  position: relative;
-  text-align: left;
-}
-
-.top {
-  padding: 5px;
+.participants-grid {
+  font-family: 'GDS Transport', arial, sans-serif;
   color: govuk-colour('white');
-  position: absolute;
-  z-index: 121;
-  display: none;
-  font-family: sans-serif;
-  opacity: 0.88;
-  border-radius: 2px;
-  box-shadow: 0 7px 11px 0px rgba(0, 0, 0, 0.3);
-  font-size: 85%;
-}
-
-.top-name-icon {
-  background-color: #333;
-  border: 1px solid #333;
-  font-size: 85%;
-}
-
-/*tool-tip for expanded panel and raise hand*/
-.tooltip-hand {
-  margin-left: -220%;
-  margin-top: 2%;
-}
-
-/*tool-tip mute*/
-.tooltip-mute {
-  margin-left: -110%;
-  margin-top: 2%;
-}
-
-/*tool-tip unmute*/
-.tooltip-unmute {
-  margin-left: -170%;
-  margin-top: 2%;
-}
-
-.tooltip:hover .top {
-  display: inline-block;
-}
-.disconnected {
-  @include govuk-font(16, $weight: 'bold', $tabular: false, $line-height: false);
-  color: govuk-colour('red');
-  margin: 0px 0px 3px 0px;
-}
-
-.participantList {
-  grid-column: 1/1;
-  grid-row: 1/1;
-  justify-self: start;
-  align-self: start;
-  overflow: scroll;
-  background: #222;
-  padding: 12px 4px 4px 4px;
-}
-.pGridOpen {
-  @include govuk-font(16, $weight: 'regular', $tabular: false, $line-height: false);
-  color: govuk-colour('white');
-  padding-left: 12px;
   display: grid;
-  grid-template-columns: auto 40px 40px 40px 40px;
-  grid-template-rows: auto auto;
-}
-.pName {
-  grid-column: 1/1;
-  grid-row: 1/1;
-  justify-self: start;
-  align-self: end;
-}
-.pRole {
-  grid-column: 1/1;
-  grid-row: 2/2;
-  justify-self: start;
-  align-self: end;
-  font-size: 14px;
-}
-.pmute {
-  grid-column: 2/2;
-  grid-row: 1;
-  justify-self: end;
-  align-self: end;
-  max-height: 39px;
-}
-.phand {
-  grid-column: 3/3;
-  grid-row: 1;
-  justify-self: end;
-  align-self: center;
+  grid-template-columns: auto 35px 35px 35px 35px;
+  > div {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.2);
+  }
 }
 
-.pPin {
-  grid-column: 4/4;
-  grid-row: 1;
-  justify-self: end;
-  align-self: center;
+.icon-button {
+  cursor: pointer;
+  opacity: 0.9;
+  font-size: 20px;
+  color: govuk-colour('white');
 }
 
-.pntwk {
-  grid-column: 5/5;
-  grid-row: 1;
-  justify-self: end;
-  align-self: start;
+.icon-button:hover {
+  opacity: 1;
 }
 
-.pCrest {
-  grid-column: 5/5;
-  grid-row: 1/1;
-  justify-self: start;
-  align-self: end;
+.no-click {
+  cursor: default !important;
+  opacity: 1 !important;
 }
 
-.buttonRow {
-  display: flex;
-  flex-direction: row;
-  justify-items: center;
-  margin-left: 8px;
+.button-row {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-column-gap: 5px;
+  width: 100%;
 }
+
 .small-button {
   @include govuk-font(14, $weight: 'regular', $tabular: false, $line-height: false);
   color: #ffffff;
+  cursor: pointer;
   padding: 6px 10px;
   background: #626a6e;
   border: transparent 1px;
   border-radius: 2px;
-}
-.btn-mute {
-  cursor: pointer;
   font-size: 12px;
-  margin-right: 4px;
-}
-.btn-lowerhand {
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.spotlighted {
-  background: govuk-colour('red');
-}
-
-.panelRowBorder {
-  border: 0;
-  height: 0;
-  border-bottom: 0.5px solid rgba(255, 255, 255, 0.2);
-}
-
-.panel-witness-joining {
-  width: 24px;
-  color: govuk-colour('yellow');
-  padding-left: 5px;
-  padding-right: 5px;
-  margin-top: 10px;
-  z-index: 130;
+  &:hover {
+    background-color: #00703c;
+  }
 }

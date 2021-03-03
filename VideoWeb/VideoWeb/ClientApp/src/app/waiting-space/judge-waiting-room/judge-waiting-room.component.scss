@@ -19,6 +19,12 @@
   margin-bottom: 25px;
 }
 
+.header-content-grid {
+  display: grid;
+  grid-template-columns: auto 600px;
+  width: 100%;
+}
+
 .panel-wrap {
   top: 0;
   left: 0;
@@ -26,17 +32,6 @@
   vertical-align: top;
   z-index: 999;
   max-width: 20%;
-}
-
-.incomingFeedOld {
-  position: fixed;
-  top: 0;
-  left: 11%;
-  min-width: 94%;
-  min-height: 70vh;
-  max-width: 96%;
-  max-height: 85vh;
-  z-index: 100;
 }
 
 .vh-btn-text {

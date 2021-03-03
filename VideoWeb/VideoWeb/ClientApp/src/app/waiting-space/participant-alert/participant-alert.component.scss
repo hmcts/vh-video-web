@@ -1,18 +1,14 @@
-.panel-icon-alert {
-  width: 24px;
+@import '~govuk-frontend/govuk/base';
+
+.panel-icon {
+  font-size: 20px;
   cursor: pointer;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin-top: 10px;
 }
 
-.panel-icon-alert-disc {
-  width: 20px;
-  cursor: pointer;
-  padding-left: 5px;
-  padding-right: 5px;
+.yellow {
+  color: govuk-colour('yellow');
 }
 
-.alert-container {
-  z-index: 140;
+.red {
+  color: govuk-colour('red');
 }

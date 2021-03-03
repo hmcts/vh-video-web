@@ -71,14 +71,12 @@ namespace VideoWeb.UnitTests.Mappings
             participantA.Linked_participants.Add(new LinkedParticipantResponse
             {
                 Linked_id = participantB.Id,
-                Participant_id = participantA.Id,
                 Type = LinkedParticipantType.Interpreter
             });
             
             participantB.Linked_participants.Add(new LinkedParticipantResponse
             {
                 Linked_id = participantA.Id,
-                Participant_id = participantB.Id,
                 Type = LinkedParticipantType.Interpreter
             });
             var endpoints = Builder<EndpointResponse>.CreateListOfSize(2).Build().ToList();
