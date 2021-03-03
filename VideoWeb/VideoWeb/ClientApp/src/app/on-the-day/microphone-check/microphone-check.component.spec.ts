@@ -134,7 +134,7 @@ describe('MicrophoneCheckComponent', () => {
     });
 
     it('should return "Microphone" for equipment check', () => {
-        expect(component.getEquipmentCheck()).toBe('Microphone');
+        expect(component.getEquipmentCheck()).toBe('microphone-check.microphone');
     });
 
     it('should return "Microphone" for self test reason', () => {
