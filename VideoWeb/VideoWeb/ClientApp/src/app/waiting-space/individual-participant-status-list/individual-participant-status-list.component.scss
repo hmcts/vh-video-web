@@ -7,25 +7,21 @@
   font-size: 0.9rem;
   letter-spacing: 1px;
 }
-
 .label-status--unavailable {
   background-color: govuk-colour('dark-grey');
 }
-
 .label-status--in-consultation {
   background-color: govuk-colour('white');
   border: 2px solid govuk-colour('blue');
   border-radius: 2px;
   color: govuk-colour('blue');
 }
-
 .vh-mb5 {
   margin-bottom: 5px;
 }
 .vh-ml5 {
   margin-left: 5px;
 }
-
 .vh-interpreter-icon {
   height: 40px;
   width: 40px;
