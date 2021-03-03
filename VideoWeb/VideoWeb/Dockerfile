@@ -1,5 +1,10 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
+FROM gittools/gitversion:5.3.5-linux-alpine.3.10-x64-netcoreapp3.1 AS gitversion
+WORKDIR /version 
+COPY . .
+RUN /tools/dotnet-gitversion /ensureassemblyinfo /updateassemblyinfo AssemblyInfo.cs
+
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1-buster-slim AS base
 WORKDIR /app
 EXPOSE 80
@@ -18,6 +23,7 @@ WORKDIR /src
 COPY . .
 RUN dotnet restore --configfile VideoWeb/nuget.config "VideoWeb/VideoWeb/VideoWeb.csproj"
 WORKDIR "/src/VideoWeb/VideoWeb"
+COPY --from=gitversion /version/AssemblyInfo.cs .
 RUN dotnet build "VideoWeb.csproj" -c Release -o /app/build
 
 FROM build AS publish
