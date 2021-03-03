@@ -29,8 +29,7 @@ export abstract class ChatBaseComponent {
         protected adalService: AdalService,
         protected imHelper: ImHelper,
         protected translateService: TranslateService
-    ) {
-    }
+    ) {}
 
     abstract content: ElementRef<HTMLElement>;
     abstract sendMessage(messageBody: string): void;
