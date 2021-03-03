@@ -23,6 +23,7 @@ import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
 import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
+import { TranslateService } from '@ngx-translate/core'
 
 @Injectable()
 export abstract class ChatWindowBaseComponent extends ChatBaseComponent implements OnInit, OnDestroy, AfterViewChecked {
@@ -46,9 +47,10 @@ export abstract class ChatWindowBaseComponent extends ChatBaseComponent implemen
         protected logger: Logger,
         protected adalService: AdalService,
         protected imHelper: ImHelper,
-        protected route: ActivatedRoute
+        protected route: ActivatedRoute,
+        protected translateService: TranslateService
     ) {
-        super(videoWebService, profileService, eventService, logger, adalService, imHelper);
+        super(videoWebService, profileService, eventService, logger, adalService, imHelper, translateService);
     }
 
     get participantUsername() {
