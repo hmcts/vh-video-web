@@ -1,6 +1,6 @@
 import { EndpointStatus, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { VideoEndpointPanelModel } from './participant-panel-model';
+import { VideoEndpointPanelModel } from './video-endpoint-panel-model';
 
 describe('VideoEndpointPanelModel', () => {
     let model: VideoEndpointPanelModel;

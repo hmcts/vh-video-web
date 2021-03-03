@@ -3,7 +3,6 @@ import { SharedModule } from '../shared/shared.module';
 import { AnalogueClockComponent } from './analogue-clock/analogue-clock.component';
 import { AudioAlertComponent } from './audio-alert/audio-alert.component';
 import { ConsultationErrorComponent } from './consultation-modals/consultation-error/consultation-error.component';
-import { HearingControlsComponent } from './hearing-controls/hearing-controls.component';
 import { IndividualParticipantStatusListComponent } from './individual-participant-status-list/individual-participant-status-list.component';
 import { JudgeParticipantStatusListComponent } from './judge-participant-status-list/judge-participant-status-list.component';
 import { JudgeWaitingRoomComponent } from './judge-waiting-room/judge-waiting-room.component';
@@ -47,7 +46,6 @@ import { ChatPanelComponent } from './chat-panel/chat-panel.component';
         ConsultationLeaveComponent,
         ParticipantNetworkHealthComponent,
         WaitingRoomMonitorComponent,
-        HearingControlsComponent,
         PrivateConsultationRoomControlsComponent,
         ParticipantsPanelComponent,
         ParticipantAlertComponent,

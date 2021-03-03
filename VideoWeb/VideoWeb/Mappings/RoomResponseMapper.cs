@@ -15,6 +15,7 @@ namespace VideoWeb.Mappings
 
             return new RoomSummaryResponse
             {
+                Id = input.Id.ToString(),
                 Label = input.Label,
                 Locked = input.Locked
             };

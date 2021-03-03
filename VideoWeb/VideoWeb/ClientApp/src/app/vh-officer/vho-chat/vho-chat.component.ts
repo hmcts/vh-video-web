@@ -123,6 +123,8 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
 
     handleIncomingOtherMessage(messsage: InstantMessage) {
         // no special changes here
+        this.disableScrollDown = false;
+        this.scrollToBottom();
     }
 
     @HostListener('window:beforeunload')

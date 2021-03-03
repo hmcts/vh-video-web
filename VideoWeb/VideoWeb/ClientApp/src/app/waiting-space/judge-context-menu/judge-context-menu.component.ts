@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output, HostListener, ElementRef } from '@angular/core';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { PanelModel } from '../models/participant-panel-model';
+import { PanelModel } from '../models/panel-model-base';
 import {
     ToggleMuteParticipantEvent,
     ToggleSpotlightParticipantEvent,

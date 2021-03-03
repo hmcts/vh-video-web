@@ -6,7 +6,6 @@ namespace VideoWeb.AcceptanceTests.Pages
     {
         public static By OutgoingCallMessage = By.Id($"receiver");
         public static By IncomingCallMessage = By.CssSelector($"#toast-container .content span");
-        public static By VhoIncomingCallMessage = By.Id($"vho-caller");
         public static By CallRejectedMessage = By.Id("receiver-not-accepted");
         public static By CallRejectedCloseButton = By.Id("close-pc-rejection-btn");
         public static By AcceptPrivateCall = By.XPath("//button[text()='Accept']");
