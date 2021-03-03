@@ -1,42 +1,34 @@
 <div class="chat-input-group">
-  <div
-    [ngClass]="isInputInvalid ? '' : 'govuk-form-group  govuk-!-margin-bottom-2'"
-    class="chat-input-text-button-group govuk-!-margin-left-2"
-  >
-    <textarea
-      class="govuk-textarea chat-input"
-      [ngClass]="{ 'govuk-textarea--error': isInputInvalid }"
-      required
-      rows="2"
-      autocomplete="off"
-      [formControl]="newMessageBody"
-      id="new-message-box"
-      name="new-message-box"
-      #newMessageBox
-      type="text"
-      (keydown.enter)="$event.preventDefault()"
-      (keydown)="onKeydown($event)"
-    ></textarea>
-    <button
-      [disabled]="isSendingBlocked"
-      (click)="sendMessage()"
-      id="send-new-message-btn"
-      class="govuk-button chat-btn"
-      data-module="govuk-button"
-    >
-      Send
-    </button>
-  </div>
-  <div *ngIf="newMessageBody.pristine || !isInputInvalid" class="govuk-hint govuk-!-margin-left-2 length-hint govuk-!-margin-padding-2">
-    Character count {{ currentInputLength }} (maximum allowed {{ maxInputLength }}).
-  </div>
-  <div
-    id="input-errors"
-    *ngIf="isInputInvalid"
-    class="govuk-hint length-hint govuk-!-padding-top-2 govuk-!-padding-left-2 govuk-!-margin-padding-2"
-  >
-    <span class="govuk-error-message length-hint govuk-!-margin-bottom-0"
-      >Character count {{ currentInputLength }} (maximum allowed {{ maxInputLength }}). Unable to send message.</span
-    >
-  </div>
+    <div [ngClass]="isInputInvalid ? '' : 'govuk-form-group  govuk-!-margin-bottom-2'"
+         class="chat-input-text-button-group govuk-!-margin-left-2">
+        <textarea class="govuk-textarea chat-input"
+                  [ngClass]="{ 'govuk-textarea--error': isInputInvalid }"
+                  required
+                  rows="2"
+                  autocomplete="off"
+                  [formControl]="newMessageBody"
+                  id="new-message-box"
+                  name="new-message-box"
+                  #newMessageBox
+                  type="text"
+                  (keydown.enter)="$event.preventDefault()"
+                  (keydown)="onKeydown($event)"></textarea>
+        <button [disabled]="isSendingBlocked"
+                (click)="sendMessage()"
+                id="send-new-message-btn"
+                class="govuk-button chat-btn"
+                data-module="govuk-button">
+            {{'chat-input-box.send' | translate}}
+        </button>
+    </div>
+    <div *ngIf="newMessageBody.pristine || !isInputInvalid" class="govuk-hint govuk-!-margin-left-2 length-hint govuk-!-margin-padding-2">
+        {{'chat-input-box.char-count' | translate}} {{ currentInputLength }} ({{'chat-input-box.maximum' | translate}} {{ maxInputLength }}).
+    </div>
+    <div id="input-errors"
+         *ngIf="isInputInvalid"
+         class="govuk-hint length-hint govuk-!-padding-top-2 govuk-!-padding-left-2 govuk-!-margin-padding-2">
+        <span class="govuk-error-message length-hint govuk-!-margin-bottom-0">
+            {{'chat-input-box.char-count' | translate}} {{ currentInputLength }} ({{'chat-input-box.maximum' | translate}} {{ maxInputLength }}). {{'chat-input-box.unable-send' | translate}}
+        </span>
+    </div>
 </div>

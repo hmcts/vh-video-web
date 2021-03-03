@@ -21,6 +21,43 @@
     "except": ", except where otherwise stated",
     "copyright": "© Crown copyright"
   },
+  "login": {
+    "redirect": "Please wait while we redirect"
+  },
+  "logout": {
+    "signing-out": "Signing out",
+    "signed-out-successfully": "Signed out successfully. Click",
+    "here": "here",
+    "log-back-in": "to log back in."
+  },
+  "unauthorised": {
+    "not-authorised": "You are not authorised to use this service",
+    "not-registered": "It looks like you are not registered for this service.",
+    "contact-us": "If you think this is a mistake and you need to speak to someone, please contact us using the options below."
+  },
+  "back-navigation": {
+    "back": "Back"
+  },
+  "beta-banner": {
+    "beta": "beta",
+    "this-new-service": " This is a new service – your",
+    "feedback": "feedback",
+    "help-improve": "will help us to improve it."
+  },
+  "chat-base": {
+    "you": "You"
+  },
+  "chat-body-window": {
+    "error": "Error:",
+    "failed": "message failed to send",
+    "try-again": "try again"
+  },
+  "chat-input-box": {
+    "send": "Send",
+    "char-count": "Character count",
+    "maximum": "maximum allowed",
+    "unable-send": "Unable to send message."
+  },
   "equipment-check-base": {
     "yes": "Yes"
   },
