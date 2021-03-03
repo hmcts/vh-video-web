@@ -66,7 +66,7 @@ describe('ParticipantsPanelComponent', () => {
         component.ngOnDestroy();
     });
 
-    fit('should get participant sorted list, the judge is first, then panel members and finally observers are the last one', fakeAsync(() => {
+    it('should get participant sorted list, the judge is first, then panel members and finally observers are the last one', fakeAsync(() => {
         const expectedCount = endpoints.length + participants.length - 1; // take away 1 for linked participants
 
         component.participants = [];
