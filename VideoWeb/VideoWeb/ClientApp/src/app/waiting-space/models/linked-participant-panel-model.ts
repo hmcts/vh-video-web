@@ -45,10 +45,6 @@ export class LinkedParticipantPanelModel extends PanelModel {
         }
     }
 
-    isMicRemoteMuted(): boolean {
-        return this.participants.some(p => p.isMicRemoteMuted());
-    }
-
     isLocalMicMuted(): boolean {
         return this.participants.some(p => p.isLocalMicMuted());
     }

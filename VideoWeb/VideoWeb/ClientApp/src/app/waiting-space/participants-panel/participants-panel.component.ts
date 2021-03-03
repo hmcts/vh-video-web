@@ -264,14 +264,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     toggleSpotlightParticipant(participant: PanelModel) {
         const p = this.participants.find(x => x.id === participant.id);
-        console.log(p);
-        console.log({
-            conference: this.conferenceId,
-            participant: p.id,
-            pexipParticipant: p.pexipId,
-            current: p.hasSpotlight(),
-            new: !p.hasSpotlight()
-        });
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to toggle spotlight for participant`, {
             conference: this.conferenceId,
             participant: p.id,
@@ -287,17 +279,21 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         const mutedParticipants = hearingParticipants.filter(x => x.isMicRemoteMuted());
         const p = this.participants.find(x => x.id === participant.id);
 
+        const newMuteStatus = !p.isMicRemoteMuted();
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to toggle mute for participant`, {
             conference: this.conferenceId,
             participant: p.id,
             pexipParticipant: p.pexipId,
             current: p.isMicRemoteMuted(),
-            new: !p.isMicRemoteMuted()
+            new: newMuteStatus
         });
-        this.videoCallService.muteParticipant(p.pexipId, !p.isMicRemoteMuted(), this.conferenceId, p.id);
-
-        // check if last person to be unmuted manually
+        this.videoCallService.muteParticipant(p.pexipId, newMuteStatus, this.conferenceId, p.id);
+        if (p instanceof LinkedParticipantPanelModel) {
+            // Participants in a VMR can be muted but they do not return a callback like other participants. Must update manually
+            p.updateParticipant(newMuteStatus, participant.hasHandRaised(), participant.hasSpotlight());
+        }
         if (mutedParticipants.length === 1 && this.isMuteAll) {
+            // check if last person to be unmuted manually
             this.logger.debug(`${this.loggerPrefix} Judge has manually unmuted the last muted participant. Unmuting conference`, {
                 conference: this.conferenceId
             });
