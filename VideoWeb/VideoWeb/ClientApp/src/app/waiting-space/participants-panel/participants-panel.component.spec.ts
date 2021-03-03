@@ -399,7 +399,7 @@ describe('ParticipantsPanelComponent', () => {
 
     it('should spotlight participant', () => {
         const pat = component.participants[1];
-        pat.updateParticipant(false, false, true);
+        pat.updateParticipant(false, false, false);
         component.toggleSpotlightParticipant(pat);
         expect(videocallService.spotlightParticipant).toHaveBeenCalledWith(pat.pexipId, true, component.conferenceId, pat.id);
     });

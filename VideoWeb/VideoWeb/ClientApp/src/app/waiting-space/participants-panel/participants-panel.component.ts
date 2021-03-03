@@ -264,6 +264,14 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     toggleSpotlightParticipant(participant: PanelModel) {
         const p = this.participants.find(x => x.id === participant.id);
+        console.log(p);
+        console.log({
+            conference: this.conferenceId,
+            participant: p.id,
+            pexipParticipant: p.pexipId,
+            current: p.hasSpotlight(),
+            new: !p.hasSpotlight()
+        });
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to toggle spotlight for participant`, {
             conference: this.conferenceId,
             participant: p.id,

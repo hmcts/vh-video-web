@@ -8,7 +8,7 @@ export class LinkedParticipantPanelModel extends PanelModel {
     static fromListOfPanelModels(participants: PanelModel[], pexipDisplayName: string, roomid: string): LinkedParticipantPanelModel {
         const lip = participants.find(x => x.hearingRole === HearingRole.LITIGANT_IN_PERSON);
         const pexipName = pexipDisplayName;
-        const displayName = participants.map(x => x.displayName).join(' ');
+        const displayName = participants.map(x => x.displayName).join(', ');
         const role = lip.role;
         const caseTypeGroup = lip.caseTypeGroup;
         const hearingRole = lip.hearingRole;

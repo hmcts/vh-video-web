@@ -46,7 +46,7 @@
           <span class="fas fa-language type-icon"> </span>
           <br />
         </span>
-        {{ participant.displayName }}
+        <span innerHtml="{{ participant.displayName | MultiLinePipe }}"></span>
       </div>
 
       <ng-container *ngIf="!isParticipantDisconnected(participant); else participantDisconnected">

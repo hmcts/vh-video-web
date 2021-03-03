@@ -33,6 +33,7 @@ import { StartPrivateConsultationComponent } from '../waiting-space/participant-
 import { JoinPrivateConsultationComponent } from '../waiting-space/participant-waiting-room/join-private-consultation/join-private-consultation.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { TestLanguageService } from './test-language.service';
+import { MultilinePipe } from './pipes/multiline.pipe';
 
 @NgModule({
     imports: [
@@ -74,7 +75,8 @@ import { TestLanguageService } from './test-language.service';
         TooltipDirective,
         ErrorCameraMicrophoneComponent,
         VhToastComponent,
-        RoomClosingToastComponent
+        RoomClosingToastComponent,
+        MultilinePipe
     ],
     providers: [WindowScrolling, ScreenHelper, TestLanguageService],
     exports: [
@@ -99,7 +101,8 @@ import { TestLanguageService } from './test-language.service';
         ChatBodyWindowComponent,
         TooltipDirective,
         ErrorCameraMicrophoneComponent,
-        TranslateModule
+        TranslateModule,
+        MultilinePipe
     ]
 })
 export class SharedModule {}
