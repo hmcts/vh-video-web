@@ -9,6 +9,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ImHelper } from '../im-helper';
+import { TranslateService } from '@ngx-translate/core';
 
 export abstract class ChatBaseComponent {
     protected hearing: Hearing;
@@ -26,7 +27,8 @@ export abstract class ChatBaseComponent {
         protected eventService: EventsService,
         protected logger: Logger,
         protected adalService: AdalService,
-        protected imHelper: ImHelper
+        protected imHelper: ImHelper,
+        protected translateService: TranslateService
     ) {}
 
     abstract content: ElementRef<HTMLElement>;
@@ -63,7 +65,7 @@ export abstract class ChatBaseComponent {
                 ? this.loggedInUser.participant_id
                 : this.adalService.userInfo.userName.toUpperCase();
         if (from === username.toUpperCase()) {
-            message.from_display_name = 'You';
+            message.from_display_name = this.translateService.instant('chat-base.you');
             message.is_user = true;
         } else {
             message = await this.verifySender(message);
