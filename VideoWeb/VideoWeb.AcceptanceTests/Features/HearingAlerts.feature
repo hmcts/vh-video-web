@@ -35,7 +35,7 @@ Scenario Outline: VHO receives disconnected alert
 	| Judge       | HearingRoom		    |
 	| Participant | WaitingRoom       |
 	| Participant | HearingRoom       |
-	| Participant | ConsultationRoom1 |
+	| Participant | ConsultationRoom  |
 
 @VIH-1630 @VIH-4416
 Scenario Outline: VHO receives failed self test alert

@@ -51,6 +51,12 @@
 
 .header-content-grid {
   display: grid;
-  grid-template-columns: auto auto auto 425px;
-  align-items: flex-start;
+  grid-template-columns: auto 475px;
+  width: 100%;
+}
+
+.header-content-grid-with-lock {
+  display: grid;
+  grid-template-columns: 200px 100px auto 475px;
+  width: 100%;
 }

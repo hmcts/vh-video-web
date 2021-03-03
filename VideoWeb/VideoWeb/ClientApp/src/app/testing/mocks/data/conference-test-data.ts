@@ -8,6 +8,7 @@ import {
     ConferenceStatus,
     EndpointStatus,
     LinkedParticipantResponse,
+    LinkType,
     ParticipantContactDetailsResponseVho,
     ParticipantForUserResponse,
     ParticipantHeartbeatResponse,
@@ -166,6 +167,47 @@ export class ConferenceTestData {
         });
     }
 
+    getListOfLinkedParticipants(): ParticipantForUserResponse[] {
+        const participants: ParticipantForUserResponse[] = [];
+
+        const id1 = Guid.create().toString();
+        const id2 = Guid.create().toString();
+        const room = new RoomSummaryResponse({ id: '123', label: 'Interpreter1', locked: false });
+
+        const participant1 = new ParticipantForUserResponse({
+            id: id1,
+            status: ParticipantStatus.Available,
+            display_name: 'Interpreter',
+            role: Role.Individual,
+            representee: null,
+            case_type_group: 'applicant',
+            tiled_display_name: `T2;Inpreter;${id1}`,
+            hearing_role: 'Interpreter',
+            first_name: 'Interpreter',
+            last_name: 'Doe',
+            linked_participants: [new LinkedParticipantResponse({ link_type: LinkType.Interpreter, linked_id: id2 })]
+        });
+
+        const participant2 = new ParticipantForUserResponse({
+            id: id2,
+            status: ParticipantStatus.Available,
+            display_name: 'Interpretee',
+            role: Role.Individual,
+            representee: null,
+            case_type_group: 'applicant',
+            tiled_display_name: `T2;Inpretee;${id2}`,
+            hearing_role: 'Litigant in person',
+            first_name: 'Interpretee',
+            last_name: 'Doe',
+            linked_participants: [new LinkedParticipantResponse({ link_type: LinkType.Interpreter, linked_id: id1 })],
+            current_room: room
+        });
+
+        participants.push(participant1);
+        participants.push(participant2);
+        return participants;
+    }
+
     getListOfParticipants(): ParticipantForUserResponse[] {
         const participants: ParticipantForUserResponse[] = [];
 
@@ -177,7 +219,8 @@ export class ConferenceTestData {
             representee: 'James Green',
             case_type_group: 'applicant',
             tiled_display_name: 'T4;Mr Chris Green;1111-1111-1111-1111',
-            hearing_role: 'Litigant in person'
+            hearing_role: 'Litigant in person',
+            linked_participants: []
         });
 
         const participant2 = new ParticipantForUserResponse({
@@ -187,7 +230,8 @@ export class ConferenceTestData {
             role: Role.Individual,
             case_type_group: 'applicant',
             tiled_display_name: 'T2;J Green;2222-2222-2222-2222',
-            hearing_role: 'Litigant in person'
+            hearing_role: 'Litigant in person',
+            linked_participants: []
         });
 
         const participant3 = new ParticipantForUserResponse({
@@ -199,7 +243,8 @@ export class ConferenceTestData {
             first_name: 'judge',
             last_name: 'fudge',
             tiled_display_name: 'T1;Judge Fudge;3333-3333-3333-3333',
-            hearing_role: 'Judge'
+            hearing_role: 'Judge',
+            linked_participants: []
         });
 
         const participant4 = new ParticipantForUserResponse({
@@ -210,7 +255,8 @@ export class ConferenceTestData {
             representee: 'J Doe',
             case_type_group: 'respondent',
             tiled_display_name: 'T4;J Doe;4444-4444-4444-4444',
-            hearing_role: 'Litigant in person'
+            hearing_role: 'Litigant in person',
+            linked_participants: []
         });
 
         const participant5 = new ParticipantForUserResponse({
@@ -220,7 +266,8 @@ export class ConferenceTestData {
             role: Role.Individual,
             case_type_group: 'respondent',
             tiled_display_name: 'T5;Ms J Doe;5555-5555-5555-5555',
-            hearing_role: 'Litigant in person'
+            hearing_role: 'Litigant in person',
+            linked_participants: []
         });
 
         const participant6 = new ParticipantForUserResponse({
@@ -230,7 +277,8 @@ export class ConferenceTestData {
             role: Role.Individual,
             case_type_group: 'observer',
             tiled_display_name: 'T6;Observer Doe O;6666-6666-6666-6666',
-            hearing_role: 'Observer'
+            hearing_role: 'Observer',
+            linked_participants: []
         });
 
         const participant7 = new ParticipantForUserResponse({
@@ -240,7 +288,8 @@ export class ConferenceTestData {
             role: Role.JudicialOfficeHolder,
             case_type_group: 'panelmember',
             hearing_role: 'Panel Member',
-            tiled_display_name: 'T7;Panel Mem Doe PM;7777-7777-7777-7777'
+            tiled_display_name: 'T7;Panel Mem Doe PM;7777-7777-7777-7777',
+            linked_participants: []
         });
 
         const participant8 = new ParticipantForUserResponse({
@@ -249,7 +298,8 @@ export class ConferenceTestData {
             display_name: 'J Doe WINGER',
             role: Role.JudicialOfficeHolder,
             case_type_group: 'None',
-            hearing_role: 'Winger'
+            hearing_role: 'Winger',
+            linked_participants: []
         });
 
         const participant9 = new ParticipantForUserResponse({
@@ -258,7 +308,8 @@ export class ConferenceTestData {
             display_name: 'J Doe WITNESS',
             role: Role.Individual,
             case_type_group: 'None',
-            hearing_role: 'Witness'
+            hearing_role: 'Witness',
+            linked_participants: []
         });
 
         participants.push(participant1);
@@ -273,7 +324,7 @@ export class ConferenceTestData {
         return participants;
     }
 
-    getListOfParticipantsInConference(): ParticipantResponseVho[] {
+    getListOfParticipantDetails(): ParticipantResponseVho[] {
         const participants: ParticipantResponseVho[] = [];
 
         const participant1 = new ParticipantResponseVho({
@@ -378,9 +429,9 @@ export class ConferenceTestData {
         return participants;
     }
 
-    getListOfParticipantDetails(): ParticipantResponse[] {
-        const participants: ParticipantResponse[] = [];
-        const participant1 = new ParticipantResponse();
+    getListOfParticipantDetails(): ParticipantResponseVho[] {
+        const participants: ParticipantResponseVho[] = [];
+        const participant1 = new ParticipantResponseVho();
         participant1.init({
             id: '9F681318-4955-49AF-A887-DED64554429D',
             name: 'Mr Chris Green',
@@ -400,7 +451,7 @@ export class ConferenceTestData {
             ]
         });
 
-        const participant2 = new ParticipantResponse({
+        const participant2 = new ParticipantResponseVho({
             id: '9F681318-4955-49AF-A887-DED64554429J',
             name: 'Mr James Green',
             representee: 'Chris Green',
@@ -413,7 +464,7 @@ export class ConferenceTestData {
             current_room: new RoomSummaryResponse()
         });
 
-        const participant3 = new ParticipantResponse({
+        const participant3 = new ParticipantResponseVho({
             id: '9F681318-4955-49AF-A887-DED64554429T',
             name: 'Judge Fudge',
             status: ParticipantStatus.Available,
@@ -425,7 +476,7 @@ export class ConferenceTestData {
             current_room: new RoomSummaryResponse()
         });
 
-        const participant4 = new ParticipantResponse();
+        const participant4 = new ParticipantResponseVho();
         participant4.init({
             id: '9F681318-4955-49AF-A887-DED64554429K',
             name: 'Mr James Blue',
@@ -469,7 +520,8 @@ export class ConferenceTestData {
             first_name: 'Chris',
             last_name: 'Green',
             ref_id: 'B505FA9D-8072-4F96-8CA6-4F0489DD6E08',
-            hearing_role: HearingRole.LITIGANT_IN_PERSON
+            hearing_role: HearingRole.LITIGANT_IN_PERSON,
+            linked_participants: []
         });
 
         const participant2 = new ParticipantContactDetailsResponseVho({
@@ -487,7 +539,8 @@ export class ConferenceTestData {
             first_name: 'James',
             last_name: 'Green',
             ref_id: '072D80ED-6816-42AF-A0C0-2FAE0F65E17A',
-            hearing_role: HearingRole.REPRESENTATIVE
+            hearing_role: HearingRole.REPRESENTATIVE,
+            linked_participants: []
         });
 
         const participant3 = new ParticipantContactDetailsResponseVho({
@@ -506,7 +559,8 @@ export class ConferenceTestData {
             last_name: 'Fudge',
             ref_id: '9B4737C9-5D8A-4B67-8569-EF8185FFE6E3',
             judge_in_another_hearing: true,
-            hearing_role: HearingRole.JUDGE
+            hearing_role: HearingRole.JUDGE,
+            linked_participants: []
         });
 
         const participant4 = new ParticipantContactDetailsResponseVho({
@@ -524,7 +578,8 @@ export class ConferenceTestData {
             first_name: 'Judge',
             last_name: 'Fudge',
             ref_id: '9B4737C9-5D8A-4B67-8569-EF8185FFE6E3',
-            hearing_role: HearingRole.JUDGE
+            hearing_role: HearingRole.JUDGE,
+            linked_participants: []
         });
 
         participants.push(participant1);
