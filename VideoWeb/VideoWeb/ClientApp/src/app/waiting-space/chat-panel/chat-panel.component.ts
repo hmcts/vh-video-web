@@ -7,6 +7,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ImHelper } from 'src/app/shared/im-helper';
 import { ChatWindowBaseComponent } from '../participant-chat/chat-window-base';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-chat-panel',
@@ -26,8 +27,9 @@ export class ChatPanelComponent extends ChatWindowBaseComponent {
         protected logger: Logger,
         protected adalService: AdalService,
         protected imHelper: ImHelper,
-        protected route: ActivatedRoute
+        protected route: ActivatedRoute,
+        protected translateService: TranslateService
     ) {
-        super(videoWebService, profileService, eventService, logger, adalService, imHelper, route);
+        super(videoWebService, profileService, eventService, logger, adalService, imHelper, route, translateService);
     }
 }
