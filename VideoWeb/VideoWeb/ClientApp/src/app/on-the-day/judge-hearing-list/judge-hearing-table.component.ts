@@ -14,10 +14,6 @@ export class JudgeHearingTableComponent implements OnInit {
     private conferenceForJudgeResponse: ConferenceForJudgeResponse[];
     hearings: JudgeHearingSummary[];
 
-    getTranslation(key: string) {
-        return this.translate.instant(`judge-hearing-table.${key}`);
-    }
-
     @Input() set conferences(conferences: ConferenceForJudgeResponse[]) {
         this.conferenceForJudgeResponse = conferences;
         this.hearings = conferences.map(c => new JudgeHearingSummary(c));
@@ -26,6 +22,10 @@ export class JudgeHearingTableComponent implements OnInit {
     @Output() selectedConference = new EventEmitter<ConferenceForJudgeResponse>();
 
     constructor(private logger: Logger, private translate: TranslateService) {}
+
+    getTranslation(key: string) {
+        return this.translate.instant(`judge-hearing-table.${key}`);
+    }
 
     ngOnInit() {
         this.hearings = this.conferenceForJudgeResponse.map(c => new JudgeHearingSummary(c));
