@@ -24,7 +24,8 @@ export class VideoCheckComponent extends EquipmentCheckBaseComponentDirective im
         protected adalService: AdalService,
         protected errorService: ErrorService,
         protected logger: Logger,
-        protected participantStatusUpdateService: ParticipantStatusUpdateService
+        protected participantStatusUpdateService: ParticipantStatusUpdateService,
+        protected translateService: TranslateService
     ) {
         super(router, route, fb, videoWebService, adalService, errorService, logger, participantStatusUpdateService, translateService);
     }
