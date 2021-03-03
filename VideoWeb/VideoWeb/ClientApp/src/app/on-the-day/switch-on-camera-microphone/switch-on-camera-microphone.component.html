@@ -8,34 +8,34 @@
     <div *ngIf="!userPrompted">
       <h1 class="govuk-heading-xl">{{ 'switch-on-camera-microphone.use-your-camera-and-microphone' | translate }}</h1>
       <p class="govuk-body govuk-!-margin-top-9 govuk-!-margin-bottom-9">
-        {{ 'switch-on-camera-microphone.switch-on-your-camera-and-microphone-to-watch-the-video' | translate }}
+        {{ 'switch-on-camera-microphone.switch-on-camera-and-mic-to-watch-the-video' | translate }}
       </p>
     </div>
 
     <div *ngIf="userPrompted && mediaAccepted">
       <h1 class="govuk-heading-xl">{{ 'switch-on-camera-microphone.your-camera-and-microphone-are-switched-on' | translate }}</h1>
       <p class="govuk-body govuk-!-margin-top-9 govuk-!-margin-bottom-9">
-        {{ 'switch-on-camera-microphone.your-camera-and-microphone-are-switched-on-you-can-continue-to-the-video' | translate }}
+        {{ 'switch-on-camera-microphone.camera-and-mic-are-switched-on-you-can-continue-to-video' | translate }}
       </p>
     </div>
 
     <div *ngIf="userPrompted && !mediaAccepted && !isJudge">
       <h1 class="govuk-heading-xl">{{ 'switch-on-camera-microphone.your-camera-and-microphone-are-blocked' | translate }}</h1>
       <p class="govuk-body govuk-!-margin-top-9">
-        {{ 'switch-on-camera-microphone.we-are-sorry-you-can-not-take-part-without-using-camera-and-microphone' | translate }}
+        {{ 'switch-on-camera-microphone.sorry-you-must-use-camera-and-mic' | translate }}
       </p>
       <p class="govuk-body govuk-!-margin-bottom-9">
-        {{ 'switch-on-camera-microphone.stay-close-to-your-phone-and-we-will-call-you-within-5-minutes' | translate }}
+        {{ 'switch-on-camera-microphone.stay-close-to-your-phone-we-will-call-in-5-mins' | translate }}
       </p>
     </div>
 
     <div *ngIf="userPrompted && !mediaAccepted && isJudge">
       <h1 class="govuk-heading-xl">{{ 'switch-on-camera-microphone.your-camera-and-microphone-are-blocked' | translate }}</h1>
       <p class="govuk-body govuk-!-margin-top-9">
-        {{ 'switch-on-camera-microphone.we-are-sorry-hearing-can-not-go-ahead-if-camera-and-microphone-are-blocked' | translate }}
+        {{ 'switch-on-camera-microphone.sorry-hearing-can-not-go-ahead-if-camera-and-mic-are-blocked' | translate }}
       </p>
       <p class="govuk-body govuk-!-margin-bottom-5">
-        {{ 'switch-on-camera-microphone.please-unblock-the-camera-and-microphone-or-call-us-if-there-is-a-problem' | translate }}
+        {{ 'switch-on-camera-microphone.please-unblock-camera-and-mic-or-call-us-if-any-problems' | translate }}
       </p>
 
       <h3 class="govuk-heading-m govuk-!-margin-bottom-7">{{ 'switch-on-camera-microphone.helpline-contact-phone' | translate: { contactPhone: contact.phone } }}</h3>
