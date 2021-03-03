@@ -25,6 +25,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
 import { LoggedParticipantResponse, Role } from '../../services/clients/api-client';
 import { ConferenceUnreadMessageCount } from './vho-conference-unread_message-count.model';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-vho-chat',
@@ -61,9 +62,10 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         protected eventService: EventsService,
         protected logger: Logger,
         protected adalService: AdalService,
-        protected imHelper: ImHelper
+        protected imHelper: ImHelper,
+        protected translateService: TranslateService
     ) {
-        super(videoWebService, profileService, eventService, logger, adalService, imHelper);
+        super(videoWebService, profileService, eventService, logger, adalService, imHelper, translateService);
     }
 
     get participantUsername() {
