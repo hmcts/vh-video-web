@@ -19,7 +19,6 @@ export abstract class ChatBaseComponent {
     disableScrollDown = false;
     loggedInUser: LoggedParticipantResponse;
     emptyGuid = '00000000-0000-0000-0000-000000000000';
-    name_you: string;
 
     DEFAULT_ADMIN_USERNAME = 'Admin';
     protected constructor(
@@ -31,7 +30,6 @@ export abstract class ChatBaseComponent {
         protected imHelper: ImHelper,
         protected translateService: TranslateService
     ) {
-        this.name_you = this.translateService.instant('chat-base.you');
     }
 
     abstract content: ElementRef<HTMLElement>;
@@ -68,7 +66,7 @@ export abstract class ChatBaseComponent {
                 ? this.loggedInUser.participant_id
                 : this.adalService.userInfo.userName.toUpperCase();
         if (from === username.toUpperCase()) {
-            message.from_display_name = this.name_you;
+            message.from_display_name = this.translateService.instant('chat-base.you');
             message.is_user = true;
         } else {
             message = await this.verifySender(message);
