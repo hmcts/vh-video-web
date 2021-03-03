@@ -21,6 +21,7 @@ declare interface PexipClient {
     call_uuid: string;
     call_tag: string;
     call: PexRTCCall;
+    protocol: string;
 
     onSetup: (stream: any, pinStatus: any, conferenceExtension: any) => void;
     onConnect: (stream: MediaStream | URL) => void;
@@ -148,6 +149,9 @@ declare interface PexipParticipant {
 
     /** Set to "YES" if the call has video capability. */
     is_video_call: string;
+
+    /** The call protocol. Values: "api", "webrtc", "sip", "rtmp", "h323" or "mssip" */
+    protocol: string;
 }
 
 declare interface PexipConference {

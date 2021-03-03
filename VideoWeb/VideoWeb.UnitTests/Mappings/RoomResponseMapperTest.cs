@@ -18,8 +18,10 @@ namespace VideoWeb.UnitTests.Mappings
         [TestCase(null)]
         public void Should_set_label(string labelText)
         {
-            var input = new RoomResponse { Label = labelText };
-            _sut.Map(input).Label.Should().Be(labelText);
+            var input = new RoomResponse {Id = 1,Label = labelText };
+            var result = _sut.Map(input);
+            result.Label.Should().Be(labelText);
+            result.Id.Should().Be("1");
         }
 
         [TestCase(true)]

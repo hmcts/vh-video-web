@@ -751,7 +751,7 @@ PexRTCCall.prototype.getMedia = function (sourceId) {
     } else if (self.is_screenshare && self.parent && self.parent.user_presentation_stream) {
         self.gumSuccess(self.parent.user_presentation_stream);
     } else if (!self.localStream && !(self.audio_source === false && self.video_source === false)) {
-        var audioConstraints = true;
+        var audioConstraints = self.audio_source !== false;
         var videoConstraints = {};
         if (self.is_screenshare) {
             if (self.video_source) {

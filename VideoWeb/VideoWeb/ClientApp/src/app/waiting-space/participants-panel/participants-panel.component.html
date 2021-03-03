@@ -1,22 +1,58 @@
-<div class="participantList">
-  <div class="panel-container-list" (scroll)="onScroll()" id="panelList">
-    <div *ngFor="let participant of participants; let i = index">
-      <div class="pGridOpen">
-        <div
-          class="pName"
-          [ngClass]="participant.isDisconnected() ? 'disconnected' : ''"
-          id="panel_participant_{{ i }}"
-          appTooltip
-          [text]="getPanelRowTooltipText(participant)"
-          [colour]="getPanelRowTooltipColour(participant)"
-          [ngClass]="participant.isSpotlighted ? 'spotlighted' : ''"
-        >
-          {{ participant.displayName }}
-        </div>
+<div class="container" *ngIf="participants.length > 0">
+  <h4 class="govuk-heading-s white">Participants ({{ participants.length }})</h4>
 
-        <ng-container *ngIf="!isParticipantDisconnected(participant); else participantDisconnected">
-          <div class="pRole" id="panel_participant_role_{{ i }}"></div>
-          <div class="pmute" *ngIf="isParticipantInHearing(participant)">
+  <div class="button-row">
+    <div
+      class="small-button"
+      data-prevent-double-click="true"
+      (click)="muteAndLockAll()"
+      appTooltip
+      text="Mute all participants and prevent them from unmuting"
+      colour="grey"
+    >
+      Mute & lock
+    </div>
+    <div
+      class="small-button"
+      data-prevent-double-click="true"
+      (click)="unlockAll()"
+      appTooltip
+      text="Allow all participants to unmute"
+      colour="grey"
+    >
+      Unlock mute
+    </div>
+    <div class="small-button" (click)="lowerAllHands()" appTooltip text="Lower all raised hands" colour="grey">Lower hands</div>
+  </div>
+
+  <div class="panel-container-list participants-grid" id="panelList">
+    <ng-container *ngFor="let participant of participants">
+      <!-- Column 1 -->
+      <div
+        [class]="{ yellow: participant.isSpotlighted, red: participant.isDisconnected() }"
+        appTooltip
+        [text]="getPanelRowTooltipText(participant)"
+        [colour]="getPanelRowTooltipColour(participant)"
+      >
+        <span *ngIf="participant.isJudge">
+          <img src="/assets/images/UkGovCrestWhite.png" class="panel-icon panel-icon-crest" alt="HMCTS Crest" />
+          <br />
+        </span>
+        <span *ngIf="isEndpoint(participant)">
+          <span class="far fa-webcam type-icon"> </span>
+          <br />
+        </span>
+        <span *ngIf="isLinkedParticipant(participant)">
+          <span class="fas fa-language type-icon"> </span>
+          <br />
+        </span>
+        {{ participant.displayName }}
+      </div>
+
+      <ng-container *ngIf="!isParticipantDisconnected(participant); else participantDisconnected">
+        <!-- Column 2 -->
+        <div>
+          <div *ngIf="isParticipantInHearing(participant)">
             <app-participant-alert
               *ngIf="!isEndpoint(participant)"
               [participant]="mapParticipantToParticipantResponse(participant)"
@@ -26,82 +62,82 @@
                 *ngIf="participant.isRemoteMuted"
                 appTooltip
                 [text]="participant.isRemoteMuted ? 'Unlock mute' : 'Mute participant'"
-                [colour]="'grey'"
+                colour="grey"
                 [src]="participant.isRemoteMuted ? '/assets/images/mic_remote_mute.png' : '/assets/images/mic.png'"
                 class="panel-icon"
                 [alt]="participant.isRemoteMuted ? 'Microphone muted icon' : 'Microphone on icon'"
                 (click)="toggleMuteParticipant(participant); $event.stopPropagation()"
               />
-              <img
+              <span
                 *ngIf="!participant.isRemoteMuted"
                 appTooltip
                 [text]="participant.isLocalAudioMuted ? 'Participant muted' : 'Mute participant'"
-                [colour]="'grey'"
-                [src]="participant.isLocalAudioMuted ? '/assets/images/mute-mic-red.png' : '/assets/images/mic.png'"
-                class="panel-icon"
-                [alt]="participant.isLocalAudioMuted ? 'Participant microphone muted icon' : 'Participant microphone on icon'"
+                colour="grey"
+                class="fas fa-microphone icon-button"
+                [class]="{ red: participant.isLocalAudioMuted }"
                 (click)="toggleMuteParticipant(participant); $event.stopPropagation()"
-              />
+              >
+              </span>
             </ng-container>
           </div>
-          <div class="pmute" *ngIf="participant.isWitness && !participant.isInHearing()">
-            <img
+          <div *ngIf="participant.isWitness && !participant.isInHearing()">
+            <span
               *ngIf="!participant.transferringIn"
               appTooltip
               [text]="participant.isAvailable() ? 'Call witness' : 'Witness unavailable'"
               [colour]="participant.isAvailable() ? 'green' : 'grey'"
-              [src]="participant.isAvailable() ? '/assets/images/call.png' : '/assets/images/witness-not-joined.png'"
-              class="panel-icon"
-              [alt]="participant.isAvailable() ? 'Call witness icon' : 'Witness unavilable icon'"
+              class="fas icon-button"
+              [class]="{
+                'fa-megaphone': participant.isAvailable(),
+                'fa-question-circle': !participant.isAvailable(),
+                'no-click': !participant.isAvailable()
+              }"
               (click)="callWitnessIntoHearing(participant); $event.stopPropagation()"
-            />
-            <div *ngIf="participant.transferringIn" class="panel-witness-joining">Joining...</div>
+            >
+            </span>
+            <div *ngIf="participant.transferringIn" class="yellow">Joining...</div>
           </div>
-          <div class="phand" *ngIf="!participant.isJudge && participant.handRaised">
-            <img
-              appTooltip
-              [text]="'Lower hand'"
-              [colour]="'grey'"
-              src="/assets/images/hand-yellow.png"
-              class="panel-icon"
-              alt="Hand on icon"
-              (click)="lowerParticipantHand(participant); $event.stopPropagation()"
-            />
+        </div>
+
+        <!-- Column 3 -->
+        <div>
+          <div
+            *ngIf="!participant.isJudge && participant.handRaised"
+            class="icon-button"
+            appTooltip
+            text="Lower hand"
+            colour="grey"
+            (click)="lowerParticipantHand(participant); $event.stopPropagation()"
+          >
+            <span class="far fa-hand-paper yellow"></span>
           </div>
-          <div class="pCrest" *ngIf="participant.isJudge">
-            <img src="/assets/images/UkGovCrestWhite.png" class="panel-icon panel-icon-crest" alt="HMCTS Crest" />
+        </div>
+
+        <!-- Column 4 -->
+        <div>
+          <div
+            *ngIf="isParticipantInHearing(participant) && !participant.isLocalVideoMuted"
+            class="icon-button"
+            appTooltip
+            [text]="
+              participant.isSpotlighted
+                ? participant.displayName + ' (remove spotlight)'
+                : participant.displayName + ' (click to spotlight)'
+            "
+            colour="blue"
+            (click)="toggleSpotlightParticipant(participant); $event.stopPropagation()"
+          >
+            <span class="far fa-thumbtack" [class]="{ yellow: participant.isSpotlighted }"></span>
           </div>
-          <div class="pCrest" *ngIf="isEndpoint(participant)">
-            <img src="/assets/images/jvs.png" class="panel-icon panel-icon-crest" alt="JVS endpoint icon" />
+          <div *ngIf="isParticipantInHearing(participant) && participant.isLocalVideoMuted" class="icon-button no-click">
+            <span appTooltip text="Camera off" colour="red" class="far fa-video-slash red"> </span>
           </div>
-          <div class="pPin" *ngIf="isParticipantInHearing(participant) && !participant.isLocalVideoMuted">
-            <img
-              appTooltip
-              [text]="
-                participant.isSpotlighted
-                  ? participant.displayName + ' (remove spotlight)'
-                  : participant.displayName + ' (click to spotlight)'
-              "
-              [colour]="'blue'"
-              [src]="participant.isSpotlighted ? '/assets/images/pin.png' : '/assets/images/unpin.png'"
-              class="panel-icon"
-              [alt]="participant.isSpotlighted ? 'Spotlight enabled icon' : 'Spotlight disabled icon'"
-              (click)="toggleSpotlightParticipant(participant); $event.stopPropagation()"
-            />
-          </div>
-          <div class="pPin" *ngIf="isParticipantInHearing(participant) && participant.isLocalVideoMuted">
-            <img
-              appTooltip
-              [text]="'Camera off'"
-              [colour]="'red'"
-              src="/assets/images/participant_video_muted.png"
-              class="panel-icon"
-              alt="Participant camera off icon"
-            />
-          </div>
+        </div>
+
+        <!-- Column 5 -->
+        <div>
           <app-judge-context-menu
             [participantInput]="participant"
-            class="pntwk"
             *ngIf="!participant.isJudge"
             [hidden]="!isParticipantInHearing(participant) && !participant.isAvailable()"
             (toggleMuteParticipantEvent)="toggleMuteParticipantEventHandler($event)"
@@ -111,34 +147,19 @@
             (dismissWitnessFromHearingEvent)="dismissWitnessFromHearingEventHandler($event)"
           >
           </app-judge-context-menu>
-        </ng-container>
-        <ng-template #participantDisconnected>
-          <div class="pmute">
-            <app-participant-alert
-              *ngIf="!isEndpoint(participant)"
-              [participant]="mapParticipantToParticipantResponse(participant)"
-              appTooltip
-              [text]="'Disconnected'"
-              [colour]="'red'"
-            ></app-participant-alert>
-          </div>
-        </ng-template>
-      </div>
-      <div class="panelRowBorder"></div>
-    </div>
+        </div>
+      </ng-container>
+      <ng-template #participantDisconnected>
+        <div class="status-disconnected">
+          <app-participant-alert
+            *ngIf="!isEndpoint(participant)"
+            [participant]="mapParticipantToParticipantResponse(participant)"
+          ></app-participant-alert>
+        </div>
+      </ng-template>
+    </ng-container>
   </div>
-  <div class="govuk-grid-row scroll-shevrons">
-    <span *ngIf="isScrolling === 1">
-      <img src="/assets/images/IM-close-arrow.png" class="scroll-icon" alt="chevron scroll down" (click)="scrollDown()" />
-    </span>
-    <span *ngIf="isScrolling === 2">
-      <img src="/assets/images/IM-open-arrow.png" class="scroll-icon" alt="chevron scroll up" (click)="scrollUp()" />
-    </span>
-  </div>
-  <div class="buttonRow">
-    <div class="small-button btn-mute" [ngClass]="{ muted: isMuteAll }" data-prevent-double-click="true" (click)="toggleMuteAll()">
-      {{ muteAllToggleText }}
-    </div>
-    <div class="small-button btn-lowerhand" (click)="lowerAllHands()">Lower all hands</div>
-  </div>
+</div>
+<div class="container" *ngIf="participants.length == 0">
+  <h4 class="govuk-heading-s white">Loading Participants</h4>
 </div>

@@ -313,6 +313,21 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(result).toBe('Room 10');
     });
 
+    it('should get participant status Judge Room', () => {
+        component.roomLabel = 'Room1';
+        const participant = new ParticipantResponse({
+            current_room: {
+                label: 'JudgeJOHConsultationRoom10'
+            } as RoomSummaryResponse,
+            id: 'Participant1'
+        });
+
+        const result = component.getParticipantStatus(participant);
+
+        // Assert
+        expect(result).toBe('Judge room 10');
+    });
+
     it('should get participant status disconnected', () => {
         component.roomLabel = 'Room1';
         const participant = new ParticipantResponse({

@@ -16,9 +16,10 @@ import { VideoCallService } from '../services/video-call.service';
         'isPrivateConsultation',
         'outgoingStream',
         'isSupportedBrowserForNetworkHealth',
-        'showConsultationControls'
+        'showConsultationControls',
+        'unreadMessageCount'
     ],
-    outputs: ['leaveConsultation', 'lockConsultation']
+    outputs: ['leaveConsultation', 'lockConsultation', 'togglePanel']
 })
 export class PrivateConsultationRoomControlsComponent extends HearingControlsBaseComponent {
     constructor(

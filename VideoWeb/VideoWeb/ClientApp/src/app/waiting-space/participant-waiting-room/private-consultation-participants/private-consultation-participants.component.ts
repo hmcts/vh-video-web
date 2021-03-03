@@ -136,8 +136,9 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         }
         if (participant.current_room?.label) {
             return (
-                this.camelToSpaced(participant.current_room?.label.replace('ParticipantConsultation', '')) +
-                (participant.current_room?.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
+                this.camelToSpaced(
+                    participant.current_room?.label.replace('ParticipantConsultation', '').replace('JudgeJOHConsultationRoom', 'JudgeRoom')
+                ) + (participant.current_room?.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
             );
         }
 

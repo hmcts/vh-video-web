@@ -4220,6 +4220,8 @@ export enum ParticipantStatus {
 }
 
 export class RoomSummaryResponse implements IRoomSummaryResponse {
+    /** Room Id */
+    id?: string | undefined;
     /** Room label */
     label?: string | undefined;
     /** Is the room locked */
@@ -4235,6 +4237,7 @@ export class RoomSummaryResponse implements IRoomSummaryResponse {
 
     init(_data?: any) {
         if (_data) {
+            this.id = _data['id'];
             this.label = _data['label'];
             this.locked = _data['locked'];
         }
@@ -4249,6 +4252,7 @@ export class RoomSummaryResponse implements IRoomSummaryResponse {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data['id'] = this.id;
         data['label'] = this.label;
         data['locked'] = this.locked;
         return data;
@@ -4256,6 +4260,8 @@ export class RoomSummaryResponse implements IRoomSummaryResponse {
 }
 
 export interface IRoomSummaryResponse {
+    /** Room Id */
+    id?: string | undefined;
     /** Room label */
     label?: string | undefined;
     /** Is the room locked */
@@ -5997,6 +6003,7 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
     judge_in_another_hearing?: boolean;
     /** The participant represented by the representative */
     representee?: string | undefined;
+    linked_participants?: LinkedParticipantResponse[] | undefined;
 
     constructor(data?: IParticipantContactDetailsResponseVho) {
         if (data) {
@@ -6025,6 +6032,10 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
             this.hearing_venue_name = _data['hearing_venue_name'];
             this.judge_in_another_hearing = _data['judge_in_another_hearing'];
             this.representee = _data['representee'];
+            if (Array.isArray(_data['linked_participants'])) {
+                this.linked_participants = [] as any;
+                for (let item of _data['linked_participants']) this.linked_participants!.push(LinkedParticipantResponse.fromJS(item));
+            }
         }
     }
 
@@ -6054,6 +6065,10 @@ export class ParticipantContactDetailsResponseVho implements IParticipantContact
         data['hearing_venue_name'] = this.hearing_venue_name;
         data['judge_in_another_hearing'] = this.judge_in_another_hearing;
         data['representee'] = this.representee;
+        if (Array.isArray(this.linked_participants)) {
+            data['linked_participants'] = [];
+            for (let item of this.linked_participants) data['linked_participants'].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -6082,6 +6097,7 @@ export interface IParticipantContactDetailsResponseVho {
     judge_in_another_hearing?: boolean;
     /** The participant represented by the representative */
     representee?: string | undefined;
+    linked_participants?: LinkedParticipantResponse[] | undefined;
 }
 
 export class LoggedParticipantResponse implements ILoggedParticipantResponse {
