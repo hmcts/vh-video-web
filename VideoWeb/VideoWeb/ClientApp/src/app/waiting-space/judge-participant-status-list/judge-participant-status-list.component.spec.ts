@@ -313,23 +313,23 @@ describe('JudgeParticipantStatusListComponentWithInterpreter', () => {
     });
 
     it('interpreter and interpretee should have hasInterpreterLink set to true', () => {
-        let interpreter = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.INTERPRETER);
-        let interpretee = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON);
+        const interpreter = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.INTERPRETER);
+        const interpretee = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON);
         expect(interpreter.hasInterpreterLink).toBeTrue();
         expect(interpretee.hasInterpreterLink).toBeTrue();
     });
 
     it('non judge participants should have Litigant first and then Interpreter', () => {
-        let interpreter = component.nonJudgeParticipants.findIndex(x => x.hearing_role === HearingRole.INTERPRETER);
-        let interpretee = component.nonJudgeParticipants.findIndex(x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON);
+        const interpreter = component.nonJudgeParticipants.findIndex(x => x.hearing_role === HearingRole.INTERPRETER);
+        const interpretee = component.nonJudgeParticipants.findIndex(x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON);
         expect(interpreter).toEqual(1);
         expect(interpretee).toEqual(0);
     });
 
     it('getInterpreteeName should return the name of the interpretee given the interpreterId', () => {
-        let interpreter = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.INTERPRETER);
-        let interpretee = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON);
-        let interpreteeName = component.getInterpreteeName(interpreter.id);
+        const interpreter = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.INTERPRETER);
+        const interpretee = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON);
+        const interpreteeName = component.getInterpreteeName(interpreter.id);
 
         expect(interpreteeName).toEqual(interpretee.name);
     });

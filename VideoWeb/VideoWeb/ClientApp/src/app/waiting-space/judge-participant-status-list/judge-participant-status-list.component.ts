@@ -21,17 +21,9 @@ import { WRParticipantStatusListDirective } from '../waiting-room-shared/wr-part
     styleUrls: ['./judge-participant-status-list.component.scss']
 })
 export class JudgeParticipantStatusListComponent extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
-    representativeParticipants: ParticipantResponse[];
-    litigantInPerson: boolean;
-    individualParticipants: ParticipantResponse[];
     showChangeJudgeDisplayName = false;
     newJudgeDisplayName: string;
-
-    observers: ParticipantResponse[];
-    panelMembers: ParticipantResponse[];
-    wingers: ParticipantResponse[];
     isUserJudge: boolean;
-
     hearing: Hearing;
 
     constructor(
