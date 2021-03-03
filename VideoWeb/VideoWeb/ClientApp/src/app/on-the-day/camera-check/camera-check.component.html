@@ -11,13 +11,13 @@
       <div [ngClass]="showError() ? 'govuk-form-group--error' : 'govuk-form-group'">
         <div *ngIf="showError()" class="govuk-error-message">
           <span class="govuk-visually-hidden">{{ 'camera-check.error' | translate }}</span>
-          {{ 'camera-check.select-if-you-could-see-yourself-in-the-camera-window' | translate }}
+          {{ 'camera-check.select-if-you-could-see-yourself' | translate }}
         </div>
 
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
             <label class="govuk-body" for="equipmentCheck">
-              {{ 'camera-check.could-you-see-yourself-on-the-screen-in-the-camera-window' | translate }}
+              {{ 'camera-check.could-you-see-yourself-on-the-screen' | translate }}
             </label>
           </legend>
           <div class="govuk-radios govuk-!-margin-top-5">

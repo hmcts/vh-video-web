@@ -11,7 +11,7 @@
 <form [formGroup]="declarationForm" class="govuk-form-group" (ngSubmit)="onSubmit()">
   <div [ngClass]="declarationForm.invalid && submitted ? 'govuk-form-group--error' : 'govuk-form-group'">
     <div *ngIf="declarationForm.invalid && submitted" class="govuk-error-message">
-      <span class="govuk-visually-hidden">{{ 'declaration.error' | translate }}</span> {{ 'declaration.please-tick-the-box-to-confirm-that-you-will-not-record-the-hearing-in-any-way' | translate }}
+      <span class="govuk-visually-hidden">{{ 'declaration.error' | translate }}</span> {{ 'declaration.please-tick-the-box-to-confirm-no-recording' | translate }}
     </div>
     <div class="govuk-warning-text">
       <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
@@ -33,7 +33,7 @@
             required
           />
           <label class="govuk-label govuk-checkboxes__label" for="declare">
-            {{ 'declaration.i-confirm-that-i-will-not-record-or-take-any-images-of-this-hearing' | translate }}
+            {{ 'declaration.i-confirm-that-i-will-not-record-or-take-any-images' | translate }}
           </label>
         </div>
       </div>

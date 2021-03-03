@@ -15,14 +15,14 @@
     <div *ngIf="userPrompted && mediaAccepted">
       <h1 class="govuk-heading-xl">{{ 'switch-on-camera-microphone.your-camera-and-microphone-are-switched-on' | translate }}</h1>
       <p class="govuk-body govuk-!-margin-top-9 govuk-!-margin-bottom-9">
-        {{ 'switch-on-camera-microphone.your-camera-and-microphone-are-switched-on-you-can-now-continue-to-the-video' | translate }}
+        {{ 'switch-on-camera-microphone.your-camera-and-microphone-are-switched-on-you-can-continue-to-the-video' | translate }}
       </p>
     </div>
 
     <div *ngIf="userPrompted && !mediaAccepted && !isJudge">
       <h1 class="govuk-heading-xl">{{ 'switch-on-camera-microphone.your-camera-and-microphone-are-blocked' | translate }}</h1>
       <p class="govuk-body govuk-!-margin-top-9">
-        {{ 'switch-on-camera-microphone.we-are-sorry-you-can-not-take-part-in-the-hearing-without-using-your-camera-and-microphone' | translate }}
+        {{ 'switch-on-camera-microphone.we-are-sorry-you-can-not-take-part-without-using-camera-and-microphone' | translate }}
       </p>
       <p class="govuk-body govuk-!-margin-bottom-9">
         {{ 'switch-on-camera-microphone.stay-close-to-your-phone-and-we-will-call-you-within-5-minutes' | translate }}
@@ -32,7 +32,7 @@
     <div *ngIf="userPrompted && !mediaAccepted && isJudge">
       <h1 class="govuk-heading-xl">{{ 'switch-on-camera-microphone.your-camera-and-microphone-are-blocked' | translate }}</h1>
       <p class="govuk-body govuk-!-margin-top-9">
-        {{ 'switch-on-camera-microphone.we-are-sorry-the-hearing-can-not-go-ahead-if-your-camera-and-microphone-are-blocked' | translate }}
+        {{ 'switch-on-camera-microphone.we-are-sorry-hearing-can-not-go-ahead-if-camera-and-microphone-are-blocked' | translate }}
       </p>
       <p class="govuk-body govuk-!-margin-bottom-5">
         {{ 'switch-on-camera-microphone.please-unblock-the-camera-and-microphone-or-call-us-if-there-is-a-problem' | translate }}
