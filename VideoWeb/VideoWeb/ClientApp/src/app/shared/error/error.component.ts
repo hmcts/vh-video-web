@@ -76,7 +76,7 @@ export class ErrorComponent implements OnInit, OnDestroy {
 
     private getErrorMessage(): void {
         const defaultBodyMessage = this.translateService.instant('error.default-body-message');
-        const defaultTitle = this.translateService.instant('error.default-title');
+        const defaultTitle = this.translateService.instant('error.problem-with-connection');
         const dto = this.hasInternetConnection
             ? this.errorService.getErrorMessageFromStorage()
             : new ErrorMessage(defaultTitle, defaultBodyMessage, true);

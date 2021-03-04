@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
+import { Component, Pipe, PipeTransform } from '@angular/core';
+import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync, getTestBed } from '@angular/core/testing';
 import { NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { PageTrackerService } from 'src/app/services/page-tracker.service';
@@ -14,6 +14,9 @@ import { ErrorComponent } from './error.component';
 import { ErrorService } from 'src/app/services/error.service';
 import { ConnectionStatusService } from 'src/app/services/connection-status.service';
 import { connectionStatusServiceSpyFactory } from 'src/app/testing/mocks/mock-connection-status.service';
+import { TranslateService } from '@ngx-translate/core';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
 
 class MockRouter {
     public ne = new NavigationEnd(0, '/testUrl-test-error1', null);
@@ -44,7 +47,6 @@ describe('ErrorComponent', () => {
     let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
     let errorServiceSpy: jasmine.SpyObj<ErrorService>;
     let connectionStatusServiceSpy: jasmine.SpyObj<ConnectionStatusService>;
-
     beforeEach(
         waitForAsync(() => {
             eventsService = eventsServiceSpy;
@@ -54,7 +56,7 @@ describe('ErrorComponent', () => {
             connectionStatusServiceSpy = connectionStatusServiceSpyFactory();
 
             TestBed.configureTestingModule({
-                declarations: [ErrorComponent, ContactUsFoldingComponent, Mock1Component, Mock2Component],
+                declarations: [ErrorComponent, ContactUsFoldingComponent, Mock1Component, Mock2Component, TranslatePipeMock],
                 imports: [
                     RouterTestingModule.withRoutes([
                         { path: 'testUrl-test-error1', component: Mock1Component },
@@ -66,7 +68,8 @@ describe('ErrorComponent', () => {
                     { provide: EventsService, useValue: eventsService },
                     { provide: Logger, useClass: MockLogger },
                     { provide: ErrorService, useValue: errorServiceSpy },
-                    { provide: ConnectionStatusService, useValue: connectionStatusServiceSpy }
+                    { provide: ConnectionStatusService, useValue: connectionStatusServiceSpy },
+                    { provide: TranslateService, useValue: translateServiceSpy }
                 ]
             }).compileComponents();
         })
@@ -89,20 +92,27 @@ describe('ErrorComponent', () => {
 
     it('should show default error message if session storage is empty', () => {
         errorServiceSpy.getErrorMessageFromStorage.and.returnValue(null);
+        translateServiceSpy.instant.calls.reset();
+        const text1 = 'Please reconnect. Call us if you keep seeing this message.';
+        translateServiceSpy.instant.and.returnValue(text1);
 
         component.ngOnInit();
         expect(component.errorMessageTitle).toBeUndefined();
-        expect(component.errorMessageBody).toBe('Please reconnect. Call us if you keep seeing this message.');
+        expect(component.errorMessageBody).toBe(text1);
         expect(component.connectionError).toBeFalsy();
         expect(component.isExtensionOrFirewallIssue).toBeFalsy();
     });
 
     it('should show default error message if internet connection is down', () => {
         spyPropertyGetter(connectionStatusServiceSpy, 'status').and.returnValue(false);
+        translateServiceSpy.instant.calls.reset();
+        const text1 = 'Please reconnect. Call us if you keep seeing this message.';
+        const text2 = `There's a problem with your connection`;
+        translateServiceSpy.instant.and.returnValues(text1, text2);
 
         component.ngOnInit();
-        expect(component.errorMessageTitle).toBe(`There's a problem with your connection`);
-        expect(component.errorMessageBody).toBe('Please reconnect. Call us if you keep seeing this message.');
+        expect(component.errorMessageTitle).toBe(text2);
+        expect(component.errorMessageBody).toBe(text1);
         expect(component.connectionError).toBeTruthy();
         expect(component.isExtensionOrFirewallIssue).toBeFalsy();
     });
@@ -110,10 +120,14 @@ describe('ErrorComponent', () => {
     it('should show default error message if internet connection has been down in the past', () => {
         spyPropertyGetter(connectionStatusServiceSpy, 'status').and.returnValue(true);
         component.hasLostInternet = true;
+        translateServiceSpy.instant.calls.reset();
+        const text1 = 'Please reconnect. Call us if you keep seeing this message.';
+        const text2 = `There's a problem with your connection`;
+        translateServiceSpy.instant.and.returnValues(text1, text2);
 
         component.ngOnInit();
-        expect(component.errorMessageTitle).toBe(`There's a problem with your connection`);
-        expect(component.errorMessageBody).toBe('Please reconnect. Call us if you keep seeing this message.');
+        expect(component.errorMessageTitle).toBe(text2);
+        expect(component.errorMessageBody).toBe(text1);
         expect(component.connectionError).toBeTruthy();
         expect(component.isExtensionOrFirewallIssue).toBeFalsy();
     });
@@ -227,7 +241,7 @@ describe('ErrorComponent Refresh', () => {
         connectionStatusServiceSpy = jasmine.createSpyObj<ConnectionStatusService>('ConnectionStatusService', ['status']);
 
         TestBed.configureTestingModule({
-            declarations: [ErrorComponent, ContactUsFoldingComponent],
+            declarations: [ErrorComponent, ContactUsFoldingComponent, TranslatePipeMock],
             imports: [RouterTestingModule],
             providers: [
                 { provide: PageTrackerService, useValue: pageTrackerSpy },
@@ -235,7 +249,8 @@ describe('ErrorComponent Refresh', () => {
                 { provide: EventsService, useValue: eventsService },
                 { provide: Logger, useClass: MockLogger },
                 { provide: ErrorService, useValue: errorServiceSpy },
-                { provide: ConnectionStatusService, useValue: connectionStatusServiceSpy }
+                { provide: ConnectionStatusService, useValue: connectionStatusServiceSpy },
+                { provide: TranslateService, useValue: translateServiceSpy }
             ]
         }).compileComponents();
         router = TestBed.inject(Router);

@@ -8,6 +8,7 @@ import { Logger } from './logging/logger-base';
 import { SessionStorage } from './session-storage';
 import { ConnectionStatusService } from './connection-status.service';
 import { LocationService } from './location.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
     providedIn: 'root'
@@ -17,7 +18,8 @@ export class ErrorService {
         private router: Router,
         private logger: Logger,
         private connectionStatusService: ConnectionStatusService,
-        private locationService: LocationService
+        private locationService: LocationService,
+        private translateService: TranslateService
     ) {
         this.errorMessage = new SessionStorage<ErrorMessage>(this.ERROR_MESSAGE_KEY);
         this.errorCameraMicMessage = new SessionStorage<string>(this.ERROR_CAMERA_MIC_MESSAGE_KEY);
@@ -26,8 +28,8 @@ export class ErrorService {
             const isWaitingRoom = currentPathName.indexOf('waiting-room') > 0;
             if (!online && !isWaitingRoom) {
                 return this.goToServiceError(
-                    `There's a problem with your connection`,
-                    'Please click "Reconnect" to return to the previous page. Call us if you keep seeing this message.'
+                    this.translateService.instant('error.problem-with-connection'),
+                    this.translateService.instant('error.click-reconnect')
                 );
             }
         });
@@ -54,8 +56,8 @@ export class ErrorService {
                 return this.goToNotFound();
             default:
                 return this.goToServiceError(
-                    'An unexpected error occurred',
-                    'Please click "Reconnect" to return to the previous page. Call us if you keep seeing this message.'
+                    this.translateService.instant('error-service.unexpected-error'),
+                    this.translateService.instant('error-service.click-reconnect')
                 );
         }
     }
@@ -121,8 +123,8 @@ export class ErrorService {
         const isConnectionError = connectionErrors.filter(x => error.reason.toLowerCase().includes(x.toLowerCase())).length > 0;
         if (isConnectionError) {
             this.goToServiceError(
-                `There's a problem with your connection`,
-                `Please click "Reconnect" to return to the previous page. Call us if you keep seeing this message.`
+                this.translateService.instant('error-service.problem-with-connection'),
+                this.translateService.instant('error-service.click-reconnect')
             );
             return;
         }
@@ -158,8 +160,8 @@ export class ErrorService {
         const isMediaBlockingIssue = mediaBlockingIssues.filter(x => error.reason.toLowerCase().includes(x.toLowerCase())).length > 0;
         if (isMediaBlockingIssue) {
             this.goToServiceError(
-                'Your camera and microphone are blocked',
-                'Please unblock the camera and microphone or call us if there is a problem.',
+                this.translateService.instant('error-service.camera-mic-blocked'),
+                this.translateService.instant('error-service.please-unblock'),
                 false
             );
             return;
@@ -178,8 +180,8 @@ export class ErrorService {
         }
 
         return this.goToServiceError(
-            'An unexpected error occurred',
-            'Please click "Reconnect" to return to the previous page. Call us if you keep seeing this message.'
+            this.translateService.instant('error-service.unexpected-error'),
+            this.translateService.instant('error-service.click-reconnect')
         );
     }
 
