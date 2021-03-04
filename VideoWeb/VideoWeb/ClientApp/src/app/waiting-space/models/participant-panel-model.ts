@@ -28,4 +28,16 @@ export class ParticipantPanelModel extends PanelModel {
     isAvailable(): boolean {
         return this.status === ParticipantStatus.Available;
     }
+
+    isInConsultation(): boolean {
+        return this.status === ParticipantStatus.InConsultation;
+    }
+
+    hasParticipant(participantId: string): boolean {
+        return this.id === participantId;
+    }
+
+    updateStatus(status: ParticipantStatus, participantId?: string) {
+        this.status = status;
+    }
 }

@@ -174,7 +174,7 @@ export class ConferenceTestData {
 
         const participant1 = new ParticipantForUserResponse({
             id: id1,
-            status: ParticipantStatus.Available,
+            status: ParticipantStatus.NotSignedIn,
             display_name: 'Interpreter',
             role: Role.Individual,
             representee: null,
@@ -188,7 +188,7 @@ export class ConferenceTestData {
 
         const participant2 = new ParticipantForUserResponse({
             id: id2,
-            status: ParticipantStatus.Available,
+            status: ParticipantStatus.NotSignedIn,
             display_name: 'Interpretee',
             role: Role.Individual,
             representee: null,
