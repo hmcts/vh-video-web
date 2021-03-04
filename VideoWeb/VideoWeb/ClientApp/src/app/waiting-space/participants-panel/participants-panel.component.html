@@ -29,7 +29,7 @@
     <ng-container *ngFor="let participant of participants">
       <!-- Column 1 -->
       <div
-        [class]="{ yellow: participant.isSpotlighted, red: participant.isDisconnected() }"
+        [class]="{ yellow: participant.hasSpotlight(), red: participant.isDisconnected() }"
         appTooltip
         [text]="getPanelRowTooltipText(participant)"
         [colour]="getPanelRowTooltipColour(participant)"
@@ -46,7 +46,7 @@
           <span class="fas fa-language type-icon"> </span>
           <br />
         </span>
-        {{ participant.displayName }}
+        <span innerHtml="{{ participant.displayName | MultiLinePipe }}"></span>
       </div>
 
       <ng-container *ngIf="!isParticipantDisconnected(participant); else participantDisconnected">
@@ -59,22 +59,22 @@
             ></app-participant-alert>
             <ng-container *ngIf="!participant.isJudge">
               <img
-                *ngIf="participant.isRemoteMuted"
+                *ngIf="participant.isMicRemoteMuted()"
                 appTooltip
-                [text]="participant.isRemoteMuted ? 'Unlock mute' : 'Mute participant'"
+                [text]="participant.isMicRemoteMuted() ? 'Unlock mute' : 'Mute participant'"
                 colour="grey"
-                [src]="participant.isRemoteMuted ? '/assets/images/mic_remote_mute.png' : '/assets/images/mic.png'"
+                [src]="participant.isMicRemoteMuted() ? '/assets/images/mic_remote_mute.png' : '/assets/images/mic.png'"
                 class="panel-icon"
-                [alt]="participant.isRemoteMuted ? 'Microphone muted icon' : 'Microphone on icon'"
+                [alt]="participant.isMicRemoteMuted() ? 'Microphone muted icon' : 'Microphone on icon'"
                 (click)="toggleMuteParticipant(participant); $event.stopPropagation()"
               />
               <span
-                *ngIf="!participant.isRemoteMuted"
+                *ngIf="!participant.isMicRemoteMuted()"
                 appTooltip
-                [text]="participant.isLocalAudioMuted ? 'Participant muted' : 'Mute participant'"
+                [text]="participant.isLocalMicMuted() ? 'Participant muted' : 'Mute participant'"
                 colour="grey"
                 class="fas fa-microphone icon-button"
-                [class]="{ red: participant.isLocalAudioMuted }"
+                [class]="{ red: participant.isLocalMicMuted() }"
                 (click)="toggleMuteParticipant(participant); $event.stopPropagation()"
               >
               </span>
@@ -102,7 +102,7 @@
         <!-- Column 3 -->
         <div>
           <div
-            *ngIf="!participant.isJudge && participant.handRaised"
+            *ngIf="!participant.isJudge && participant.hasHandRaised()"
             class="icon-button"
             appTooltip
             text="Lower hand"
@@ -116,20 +116,20 @@
         <!-- Column 4 -->
         <div>
           <div
-            *ngIf="isParticipantInHearing(participant) && !participant.isLocalVideoMuted"
+            *ngIf="isParticipantInHearing(participant) && !participant.isLocalCameraOff()"
             class="icon-button"
             appTooltip
             [text]="
-              participant.isSpotlighted
+              participant.hasSpotlight()
                 ? participant.displayName + ' (remove spotlight)'
                 : participant.displayName + ' (click to spotlight)'
             "
             colour="blue"
             (click)="toggleSpotlightParticipant(participant); $event.stopPropagation()"
           >
-            <span class="far fa-thumbtack" [class]="{ yellow: participant.isSpotlighted }"></span>
+            <span class="far fa-thumbtack" [class]="{ yellow: participant.hasSpotlight() }"></span>
           </div>
-          <div *ngIf="isParticipantInHearing(participant) && participant.isLocalVideoMuted" class="icon-button no-click">
+          <div *ngIf="isParticipantInHearing(participant) && participant.isLocalCameraOff()" class="icon-button no-click">
             <span appTooltip text="Camera off" colour="red" class="far fa-video-slash red"> </span>
           </div>
         </div>

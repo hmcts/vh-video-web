@@ -14,6 +14,7 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ImHelper } from '../im-helper';
 import { Hearing } from '../models/hearing';
 import { ChatBaseComponent } from './chat-base.component';
+import { TranslateService } from '@ngx-translate/core';
 
 class ChatBaseTest extends ChatBaseComponent {
     content: ElementRef<HTMLElement>;
@@ -26,9 +27,10 @@ class ChatBaseTest extends ChatBaseComponent {
         protected eventService: EventsService,
         protected logger: Logger,
         protected adalService: AdalService,
-        protected imHelper: ImHelper
+        protected imHelper: ImHelper,
+        protected translateService: TranslateService
     ) {
-        super(videoWebService, profileService, eventService, logger, adalService, imHelper);
+        super(videoWebService, profileService, eventService, logger, adalService, imHelper, translateService);
     }
 
     sendMessage(messageBody: string): void {
@@ -58,6 +60,7 @@ describe('ChatBaseComponent', () => {
     let hearing: Hearing;
     const adminProfile = adminTestProfile;
     let contentElement: HTMLDivElement;
+    let translateServiceSpy: jasmine.SpyObj<TranslateService>;
 
     beforeAll(() => {
         adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
@@ -74,10 +77,19 @@ describe('ChatBaseComponent', () => {
             'getProfileByUsername',
             'getUserProfile'
         ]);
+        translateServiceSpy = jasmine.createSpyObj<TranslateService>('TranslateService', ['instant']);
     });
 
     beforeEach(() => {
-        component = new ChatBaseTest(videoWebServiceSpy, profileServiceSpy, eventsService, new MockLogger(), adalService, new ImHelper());
+        component = new ChatBaseTest(
+            videoWebServiceSpy,
+            profileServiceSpy,
+            eventsService,
+            new MockLogger(),
+            adalService,
+            new ImHelper(),
+            translateServiceSpy
+        );
         contentElement = document.createElement('div');
         component.content = new ElementRef(contentElement);
         component.loggedInUser = new LoggedParticipantResponse({
