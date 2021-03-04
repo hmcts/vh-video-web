@@ -57,7 +57,9 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'sendMediaStatus',
         'getRoomUpdate',
         'getRoomTransfer',
-        'getAdminAnsweredChat'
+        'getAdminAnsweredChat',
+        'getParticipantRemoteMuteStatusMessage',
+        'getParticipantHandRaisedMessage'
     ],
     {
         isConnectedToHub: isConnectedSpy
