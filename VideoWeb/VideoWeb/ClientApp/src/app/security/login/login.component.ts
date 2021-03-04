@@ -18,13 +18,18 @@ export class LoginComponent implements OnInit {
         private oidcSecurityService: OidcSecurityService
     ) {}
 
-    ngOnInit() {
-        this.checkAuthAndRedirect();
+    async ngOnInit() {
+        await this.checkAuthAndRedirect();
     }
 
     private async checkAuthAndRedirect() {
         console.log('***** login');
+        this.oidcSecurityService.checkAuth().subscribe(async (auth) => {
+            console.log('***** checkAuthAndRedirect: AUTH', auth);
+        });
         const isLoggedIn = await this.oidcSecurityService.checkAuth().toPromise();
+        console.log('***** LoginComponent: isLoggedIn', isLoggedIn);
+        console.log('***** TOKEN: ' + this.oidcSecurityService.getToken());
 
         if (isLoggedIn) {
             const returnUrl = this.returnUrlService.popUrl() || '/';
@@ -42,7 +47,6 @@ export class LoginComponent implements OnInit {
             this.logger.debug('[Login] - User not authenticated. Logging in', { returnUrl });
             console.log('[Login] - User not authenticated. Logging in', { returnUrl });
             this.oidcSecurityService.authorize();
-            console.log('***** TOKEN: ' + this.oidcSecurityService.getToken());
         }
     }
 }

@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from './security/auth.guard';
 import { HomeComponent } from './home/home.component';
 import { pageUrls } from './shared/page-url.constants';
 import { environment } from 'src/environments/environment';
@@ -13,7 +12,7 @@ export const routes: Routes = [
         path: 'admin',
         loadChildren: () => import('./vh-officer/vh-officer.module').then(m => m.VhOfficerModule)
     },
-    { path: `${pageUrls.Home}`, component: HomeComponent, canActivate: [AuthGuard] },
+    { path: `${pageUrls.Home}`, component: HomeComponent },
 ];
 
 @NgModule({

@@ -19,6 +19,7 @@ export class HomeComponent implements OnInit {
     ) {}
 
     ngOnInit() {
+        console.log('***** HomeComponent');
         if (this.deviceTypeService.isDesktop() || this.deviceTypeService.isIpad()) {
             this.profileService
                 .getUserProfile()

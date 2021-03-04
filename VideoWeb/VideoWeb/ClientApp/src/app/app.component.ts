@@ -76,8 +76,10 @@ export class AppComponent implements OnInit, OnDestroy {
     //     this.adalService.init(config);
     // }
 
-    ngOnInit() {
-        this.oidcSecurityService.checkAuth().subscribe((auth) => console.log('is authenticated', auth));
+    async ngOnInit() {
+        const isLoggedIn = await this.oidcSecurityService.checkAuth().toPromise();
+        console.log('***** checkAuth: is authenticated 1', isLoggedIn);
+        this.oidcSecurityService.checkAuth().subscribe((auth) => console.log('***** ngOnInit: is authenticated 2', auth));
         this.checkAuth().then(() => {
             this.checkBrowser();
             this.setPageTitle();
@@ -113,19 +115,25 @@ export class AppComponent implements OnInit, OnDestroy {
         const currentUrl = this.locationService.getCurrentUrl();
         if (this.locationService.getCurrentPathName() !== `/${pageUrls.Logout}`) {
 
-            console.log('***** checkAuth');
+            console.log('***** checkAuth:Start');
+            const isLoggedIn = await this.oidcSecurityService.checkAuth().toPromise();
+            console.log('***** checkAuth: isLoggedIn', isLoggedIn);
+            console.log('***** checkAuth:TOKEN: ' + this.oidcSecurityService.getToken());
+
             this.oidcSecurityService.checkAuth().subscribe(async (auth) => {
                 this.loggedIn = auth;
-                console.log('***** is authenticated', this.loggedIn);
+                console.log('***** checkAuth: is authenticated', auth);
 
                 // this.adalService.handleWindowCallback();
                 // this.loggedIn = this.adalService.userInfo.authenticated;
                 if (!this.loggedIn) {
+                    console.log('***** checkAuth: going to login');
                     this.router.navigate([`/${pageUrls.Login}`], { queryParams: { returnUrl: currentUrl } });
                     return;
                 }
                 await this.retrieveProfileRole();
             });
+            console.log('***** checkAuth:Finish');
         }
     }
 
