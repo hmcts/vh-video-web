@@ -6,6 +6,7 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { SelectMediaDevicesComponent } from './select-media-devices.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('SelectMediaDevicesComponent', () => {
     let component: SelectMediaDevicesComponent;
@@ -47,7 +48,7 @@ describe('SelectMediaDevicesComponent', () => {
     });
 
     beforeEach(fakeAsync(() => {
-        component = new SelectMediaDevicesComponent(userMediaService, userMediaStreamService, fb, new MockLogger());
+        component = new SelectMediaDevicesComponent(userMediaService, userMediaStreamService, fb, new MockLogger(), translateServiceSpy);
         component.cameraOn = false;
         component.ngOnInit();
         tick();
@@ -143,12 +144,16 @@ describe('SelectMediaDevicesComponent', () => {
     });
 
     it('should get camera text "OFF" when connectWithCameraOn is false', () => {
+        translateServiceSpy.instant.calls.reset();
+        translateServiceSpy.instant.and.returnValue('off');
         component.connectWithCameraOn = false;
         expect(component.audioOnlyToggleText).toBe('OFF');
     });
 
     it('should get camera text "ON" when connectWithCameraOn is true', () => {
         component.connectWithCameraOn = true;
+        translateServiceSpy.instant.calls.reset();
+        translateServiceSpy.instant.and.returnValue('on');
         expect(component.audioOnlyToggleText).toBe('ON');
     });
 
