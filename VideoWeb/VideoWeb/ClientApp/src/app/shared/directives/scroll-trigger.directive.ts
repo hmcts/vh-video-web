@@ -48,7 +48,6 @@ export class ScrollTriggerDirective {
     }
 
     checkOffset(currentScrollPosition): boolean {
-        console.log();
         return document.body.offsetHeight - currentScrollPosition > window.innerHeight + this.margin;
     }
 }

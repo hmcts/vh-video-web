@@ -172,10 +172,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             var interpreter = _c.Test.ConferenceParticipants.SingleOrDefault(x =>
                 x.User_role == UserRole.Individual && x.Hearing_role == "Interpreter" && x.Linked_participants.Any());
 
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantWithInterpreter(user, interpretee.Id))
-                .Text.Trim().Should().Contain(interpreter.Hearing_role);
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantWithInterpreter(user, interpretee.Id))
-                .Text.Trim().Should().Contain(interpretee.Name);
+            var elementText = _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantWithInterpreter(user, interpretee.Id))
+                    .Text.Trim();
+            elementText.Should().Contain(interpreter.Hearing_role);
+            elementText.Should().Contain(interpretee.Name);
         }
 
         private By GetParticipantWithInterpreter(string user, Guid interpreteeId)
