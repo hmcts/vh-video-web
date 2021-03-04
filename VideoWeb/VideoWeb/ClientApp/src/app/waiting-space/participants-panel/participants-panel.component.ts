@@ -288,10 +288,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             new: newMuteStatus
         });
         this.videoCallService.muteParticipant(p.pexipId, newMuteStatus, this.conferenceId, p.id);
-        if (p instanceof LinkedParticipantPanelModel) {
-            // Participants in a VMR can be muted but they do not return a callback like other participants. Must update manually
-            p.updateParticipant(newMuteStatus, participant.hasHandRaised(), participant.hasSpotlight());
-        }
         if (mutedParticipants.length === 1 && this.isMuteAll) {
             // check if last person to be unmuted manually
             this.logger.debug(`${this.loggerPrefix} Judge has manually unmuted the last muted participant. Unmuting conference`, {
