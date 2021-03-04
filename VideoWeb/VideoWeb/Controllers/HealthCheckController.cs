@@ -39,6 +39,7 @@ namespace VideoWeb.Controllers
         /// </summary>
         /// <returns>Error if fails, otherwise OK status</returns>
         [HttpGet("health")]
+        [HttpGet("health/liveness")]
         [SwaggerOperation(OperationId = "CheckServiceHealth")]
         [ProducesResponseType(typeof(HealthCheckResponse), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(HealthCheckResponse), (int) HttpStatusCode.InternalServerError)]
