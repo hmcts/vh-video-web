@@ -142,7 +142,6 @@ export class NotificationToastrService {
         (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
             color: 'white',
             htmlBody: message,
-            onNoAction: async () => {},
             buttons: [
                 {
                     label: 'Dismiss',
