@@ -48,6 +48,8 @@ export class EventsService {
     private eventHubReconnectSubject = new Subject();
     private hearingTransferSubject = new Subject<HearingTransfer>();
     private participantMediaStatusSubject = new Subject<ParticipantMediaStatusMessage>();
+    private participantRemoteMuteStatusSubject = new Subject<boolean>();
+    private participantHandRaisedStatusSubject = new Subject<boolean>();
     private roomUpdateSubject = new Subject<Room>();
     private roomTransferSubject = new Subject<RoomTransfer>();
 
@@ -210,6 +212,24 @@ export class EventsService {
             }
         );
 
+        this.connection.on('ParticipantRemoteMuteMessage', (participantId: string, conferenceId: string, isRemoteMuted: boolean) => {
+            this.logger.debug('[EventsService] - Participant Remote mute status change received: ', {
+                participantId,
+                conferenceId,
+                isRemoteMuted
+            });
+            this.participantRemoteMuteStatusSubject.next(isRemoteMuted);
+        });
+
+        this.connection.on('ParticipantHandRaiseMessage', (participantId: string, conferenceId: string, hasHandRaised: boolean) => {
+            this.logger.debug('[EventsService] - Participant Hand raised status change received: ', {
+                participantId,
+                conferenceId,
+                hasHandRaised
+            });
+            this.participantHandRaisedStatusSubject.next(hasHandRaised);
+        });
+
         this.connection.on('RoomUpdate', (payload: Room) => {
             this.logger.debug('[EventsService] - Room Update received: ', payload);
             this.roomUpdateSubject.next(payload);
@@ -334,6 +354,14 @@ export class EventsService {
         return this.participantMediaStatusSubject.asObservable();
     }
 
+    getParticipantRemoteMuteStatusMessage(): Observable<boolean> {
+        return this.participantRemoteMuteStatusSubject.asObservable();
+    }
+
+    getParticipantHandRaisedMessage(): Observable<boolean> {
+        return this.participantHandRaisedStatusSubject.asObservable();
+    }
+
     getRoomUpdate(): Observable<Room> {
         return this.roomUpdateSubject.asObservable();
     }
@@ -364,6 +392,24 @@ export class EventsService {
     async sendTransferRequest(conferenceId: string, participantId: string, transferDirection: TransferDirection) {
         await this.connection.send('sendTransferRequest', conferenceId, participantId, transferDirection);
         this.logger.debug('[EventsService] - Sent transfer request to EventHub', transferDirection);
+    }
+
+    async publishRemoteMuteStatus(conferenceId: string, participantId: string, isRemoteMuted: boolean) {
+        await this.connection.send('UpdateParticipantRemoteMuteStatus', conferenceId, participantId, isRemoteMuted);
+        this.logger.debug('[EventsService] - Sent update remote mute status request to EventHub', {
+            conference: conferenceId,
+            participant: participantId,
+            isRemoteMuted
+        });
+    }
+
+    async publishParticipantHandRaisedStatus(conferenceId: string, participantId: string, isRaised: boolean) {
+        await this.connection.send('UpdateParticipantHandStatus', conferenceId, participantId, isRaised);
+        this.logger.debug('[EventsService] - Sent update hand raised status request to EventHub', {
+            conference: conferenceId,
+            participant: participantId,
+            isRaised
+        });
     }
 
     async sendMediaStatus(conferenceId: string, participantId: string, mediaStatus: ParticipantMediaStatus) {
