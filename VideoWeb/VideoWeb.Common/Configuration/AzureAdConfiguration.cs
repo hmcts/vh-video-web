@@ -1,4 +1,4 @@
-﻿namespace VideoWeb.Common.Configuration
+namespace VideoWeb.Common.Configuration
 {
     public class AzureAdConfiguration
     {
