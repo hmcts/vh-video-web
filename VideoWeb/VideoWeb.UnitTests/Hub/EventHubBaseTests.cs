@@ -105,14 +105,25 @@ namespace VideoWeb.UnitTests.Hub
             HubCallerContextMock.Setup(x => x.UserIdentifier).Returns(claims.Identity.Name);
         }
         
-        protected Conference CreateTestConference(string participantUsername)
+        protected Conference CreateTestConference(string participantUsername, bool withLinked = false)
         {
             var conferenceId = Guid.NewGuid();
             var participants = Builder<Participant>.CreateListOfSize(3)
                 .All().With(x=> x.Id = Guid.NewGuid()).With(x=>x.Username = Faker.Internet.Email())
+                .With(x => x.LinkedParticipants = new List<LinkedParticipant>())
                 .TheFirst(1).With(x => x.Role = Role.Judge)
                 .TheNext(1).With(x => x.Role = Role.Individual).With(x => x.Username = participantUsername)
+                .TheNext(1).With(x => x.Role = Role.Individual)
                 .Build().ToList();
+
+            if (withLinked)
+            {
+                var individuals = participants.Where(x => x.Role == Role.Individual).ToList();
+                var participantA = individuals[0];
+                var participantB = individuals[1];
+                participantA.LinkedParticipants.Add(new LinkedParticipant{ LinkedId = participantB.Id, LinkType = LinkType.Interpreter});
+                participantB.LinkedParticipants.Add(new LinkedParticipant{ LinkedId = participantA.Id, LinkType = LinkType.Interpreter});
+            }
 
             return Builder<Conference>.CreateNew()
                 .With(x => x.Id = conferenceId)
