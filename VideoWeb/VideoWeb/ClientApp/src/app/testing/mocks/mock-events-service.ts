@@ -27,6 +27,8 @@ export const messageSubjectMock = new Subject<InstantMessage>();
 export const heartbeatSubjectMock = new Subject<ParticipantHeartbeat>();
 export const hearingTransferSubjectMock = new Subject<HearingTransfer>();
 export const participantMediaStatusSubjectMock = new Subject<ParticipantMediaStatusMessage>();
+export const participantRemoteMuteStatusSubjectMock = new Subject<boolean>();
+export const participantHandRaisedStatusSubjectMock = new Subject<boolean>();
 export const roomUpdateSubjectMock = new Subject<Room>();
 export const roomTransferSubjectMock = new Subject<RoomTransfer>();
 export const adminAnsweredChatSubjectMock = new Subject<ConferenceMessageAnswered>();
@@ -74,6 +76,8 @@ eventsServiceSpy.getChatMessage.and.returnValue(messageSubjectMock.asObservable(
 eventsServiceSpy.getHeartbeat.and.returnValue(heartbeatSubjectMock.asObservable());
 eventsServiceSpy.getHearingTransfer.and.returnValue(hearingTransferSubjectMock.asObservable());
 eventsServiceSpy.getParticipantMediaStatusMessage.and.returnValue(participantMediaStatusSubjectMock.asObservable());
+eventsServiceSpy.getParticipantRemoteMuteStatusMessage.and.returnValue(participantRemoteMuteStatusSubjectMock.asObservable());
+eventsServiceSpy.getParticipantHandRaisedMessage.and.returnValue(participantHandRaisedStatusSubjectMock.asObservable());
 eventsServiceSpy.getRoomUpdate.and.returnValue(roomUpdateSubjectMock.asObservable());
 eventsServiceSpy.getRoomTransfer.and.returnValue(roomTransferSubjectMock.asObservable());
 eventsServiceSpy.getAdminAnsweredChat.and.returnValue(adminAnsweredChatSubjectMock.asObservable());
