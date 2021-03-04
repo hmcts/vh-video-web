@@ -5,7 +5,9 @@ import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
+import { ParticipantRemoteMuteMessage } from 'src/app/shared/models/participant-remote-mute-message';
 import { HearingRole } from '../models/hearing-role-model';
 import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '../models/video-call-models';
 import { VideoCallService } from '../services/video-call.service';
@@ -107,6 +109,16 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
                 await this.handleHearingCountdownComplete(conferenceId);
             })
         );
+        this.eventhubSubscription$.add(
+            this.eventService.getParticipantHandRaisedMessage().subscribe(async message => {
+                this.handleParticipantHandRaiseChange(message);
+            })
+        );
+        this.eventhubSubscription$.add(
+            this.eventService.getParticipantRemoteMuteStatusMessage().subscribe(async message => {
+                this.handleParticipantRemoteMuteChange(message);
+            })
+        );
     }
 
     ngOnDestroy(): void {
@@ -183,6 +195,25 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         }
     }
 
+    handleParticipantRemoteMuteChange(message: ParticipantRemoteMuteMessage) {
+        if (message.participantId !== this.participant.id) {
+            return;
+        }
+        this.logger.info(
+            `${this.loggerPrefix} Participant has been ${message.isRemoteMuted ? ' muted' : 'unmuted'} by the judge`,
+            this.logPayload
+        );
+        this.remoteMuted = message.isRemoteMuted;
+    }
+
+    handleParticipantHandRaiseChange(message: ParticipantHandRaisedMessage) {
+        if (message.participantId !== this.participant.id) {
+            return;
+        }
+        this.logger.info(`${this.loggerPrefix} Participant has ${message.handRaised ? 'raised' : 'lowered'} hand`, this.logPayload);
+        this.handRaised = message.handRaised;
+    }
+
     async handleHearingCountdownComplete(conferenceId: string) {
         if (conferenceId !== this.conferenceId) {
             return;
@@ -250,6 +281,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             this.logger.info(`${this.loggerPrefix} Participant raised own hand`, this.logPayload);
         }
         this.handRaised = !this.handRaised;
+        this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, this.participant.id, this.handRaised);
     }
 
     pause() {

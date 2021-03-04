@@ -70,6 +70,7 @@
               />
               <span
                 *ngIf="!participant.isMicRemoteMuted()"
+                style="padding-top: 0.3vh;"
                 appTooltip
                 [text]="participant.isLocalMicMuted() ? 'Participant muted' : 'Mute participant'"
                 colour="grey"
