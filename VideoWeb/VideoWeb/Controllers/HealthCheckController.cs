@@ -15,7 +15,6 @@ using HealthCheck = VideoWeb.Contract.Responses.HealthCheck;
 namespace VideoWeb.Controllers
 {
     [Produces("application/json")]
-    [Route("HealthCheck")]
     [AllowAnonymous]
     [ApiController]
     public class HealthCheckController : ControllerBase
@@ -38,7 +37,7 @@ namespace VideoWeb.Controllers
         /// Check Service Health
         /// </summary>
         /// <returns>Error if fails, otherwise OK status</returns>
-        [HttpGet("health")]
+        [HttpGet("HealthCheck/health")]
         [HttpGet("health/liveness")]
         [SwaggerOperation(OperationId = "CheckServiceHealth")]
         [ProducesResponseType(typeof(HealthCheckResponse), (int) HttpStatusCode.OK)]
