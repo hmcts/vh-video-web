@@ -16,6 +16,7 @@ import {
     ToggleMuteParticipantEvent,
     ToggleSpotlightParticipantEvent
 } from 'src/app/shared/models/participant-event';
+import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
 import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 import { CaseTypeGroup } from '../models/case-type-group';
 import { HearingRole } from '../models/hearing-role-model';
@@ -135,7 +136,26 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                 this.handleParticipantMediaStatusChange(message);
             })
         );
+
+        this.eventhubSubscription$.add(
+            this.eventService.getParticipantHandRaisedMessage().subscribe(async message => {
+                this.handleParticipantHandRaiseChange(message);
+            })
+        );
     }
+    handleParticipantHandRaiseChange(message: ParticipantHandRaisedMessage) {
+        const participant = this.participants.find(x => x.hasParticipant(message.participantId));
+        if (!participant) {
+            return;
+        }
+        this.logger.debug(`${this.loggerPrefix} Participant hand raised status has been updated`, {
+            conference: this.conferenceId,
+            participant: participant.id,
+            handRaised: message.handRaised
+        });
+        participant.updateParticipant(participant.isMicRemoteMuted(), message.handRaised, participant.hasSpotlight());
+    }
+
     handleParticipantMediaStatusChange(message: ParticipantMediaStatusMessage) {
         const participant = this.participants.find(x => x.hasParticipant(message.participantId));
         if (!participant) {
@@ -182,6 +202,11 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
         participant.assignPexipId(updatedParticipant.uuid);
         participant.updateParticipant(updatedParticipant.isRemoteMuted, updatedParticipant.handRaised, updatedParticipant.isSpotlighted);
+        if (participant instanceof LinkedParticipantPanelModel) {
+            (<LinkedParticipantPanelModel>participant).participants.forEach(async p => {
+                await this.eventService.publishRemoteMuteStatus(this.conferenceId, p.id, updatedParticipant.isRemoteMuted);
+            });
+        }
         this.logger.debug(`${this.loggerPrefix} Participant has been updated in video call`, {
             conference: this.conferenceId,
             participant: participant.id,
@@ -310,6 +335,11 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             conference: this.conferenceId
         });
         this.videoCallService.lowerAllHands(this.conferenceId);
+        this.participants
+            .filter(x => x instanceof LinkedParticipantPanelModel)
+            .forEach(async lp => {
+                this.lowerLinkedParticipantHand(lp as LinkedParticipantPanelModel);
+            });
     }
 
     lowerParticipantHand(participant: PanelModel) {
@@ -320,6 +350,15 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             pexipParticipant: p.pexipId
         });
         this.videoCallService.lowerHandById(p.pexipId, this.conferenceId, p.id);
+        if (p instanceof LinkedParticipantPanelModel) {
+            this.lowerLinkedParticipantHand(p);
+        }
+    }
+
+    lowerLinkedParticipantHand(linkedParticipant: LinkedParticipantPanelModel) {
+        linkedParticipant.participants.forEach(async p => {
+            await this.eventService.publishParticipantHandRaisedStatus(this.conferenceId, p.id, false);
+        });
     }
 
     async callWitnessIntoHearing(participant: PanelModel) {

@@ -23,6 +23,8 @@ import { InstantMessage } from './models/instant-message';
 import { HeartbeatHealth, ParticipantHeartbeat } from './models/participant-heartbeat';
 import { ParticipantStatusMessage } from './models/participant-status-message';
 import { RoomTransfer } from '../shared/models/room-transfer';
+import { ParticipantHandRaisedMessage } from '../shared/models/participant-hand-raised-message';
+import { ParticipantRemoteMuteMessage } from '../shared/models/participant-remote-mute-message';
 
 @Injectable({
     providedIn: 'root'
@@ -48,8 +50,8 @@ export class EventsService {
     private eventHubReconnectSubject = new Subject();
     private hearingTransferSubject = new Subject<HearingTransfer>();
     private participantMediaStatusSubject = new Subject<ParticipantMediaStatusMessage>();
-    private participantRemoteMuteStatusSubject = new Subject<boolean>();
-    private participantHandRaisedStatusSubject = new Subject<boolean>();
+    private participantRemoteMuteStatusSubject = new Subject<ParticipantRemoteMuteMessage>();
+    private participantHandRaisedStatusSubject = new Subject<ParticipantHandRaisedMessage>();
     private roomUpdateSubject = new Subject<Room>();
     private roomTransferSubject = new Subject<RoomTransfer>();
 
@@ -218,7 +220,8 @@ export class EventsService {
                 conferenceId,
                 isRemoteMuted
             });
-            this.participantRemoteMuteStatusSubject.next(isRemoteMuted);
+            const payload = new ParticipantRemoteMuteMessage(conferenceId, participantId, isRemoteMuted);
+            this.participantRemoteMuteStatusSubject.next(payload);
         });
 
         this.connection.on('ParticipantHandRaiseMessage', (participantId: string, conferenceId: string, hasHandRaised: boolean) => {
@@ -227,7 +230,8 @@ export class EventsService {
                 conferenceId,
                 hasHandRaised
             });
-            this.participantHandRaisedStatusSubject.next(hasHandRaised);
+            const payload = new ParticipantHandRaisedMessage(conferenceId, participantId, hasHandRaised);
+            this.participantHandRaisedStatusSubject.next(payload);
         });
 
         this.connection.on('RoomUpdate', (payload: Room) => {
@@ -354,11 +358,11 @@ export class EventsService {
         return this.participantMediaStatusSubject.asObservable();
     }
 
-    getParticipantRemoteMuteStatusMessage(): Observable<boolean> {
+    getParticipantRemoteMuteStatusMessage(): Observable<ParticipantRemoteMuteMessage> {
         return this.participantRemoteMuteStatusSubject.asObservable();
     }
 
-    getParticipantHandRaisedMessage(): Observable<boolean> {
+    getParticipantHandRaisedMessage(): Observable<ParticipantHandRaisedMessage> {
         return this.participantHandRaisedStatusSubject.asObservable();
     }
 
