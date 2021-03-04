@@ -8,6 +8,8 @@ using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
+using VideoWeb.Services.Video;
+using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.UnitTests.EventHandlers
 {
@@ -69,6 +71,39 @@ namespace VideoWeb.UnitTests.EventHandlers
             EventHubClientMock.Verify(
                 x => x.RequestedConsultationMessage(conference.Id, callbackEvent.TransferTo, It.IsAny<Guid>(),
                     _eventHandler.SourceParticipant.Id), Times.Once);
+        }
+
+
+        [Test]
+        public async Task should_join_jvs_to_consultation_when_vho_call_starts()
+        {
+            // Arrange
+            _eventHandler = new VhOfficerCallEventHandler(EventHubContextMock.Object, ConferenceCache,
+                LoggerMock.Object, VideoApiClientMock.Object);
+
+            var conference = TestConference;
+            var endpointForEvent = conference.Endpoints.First();
+
+
+            var callbackEvent = new CallbackEvent
+            {
+                EventType = EventType.VhoCall,
+                EventId = Guid.NewGuid().ToString(),
+                ConferenceId = conference.Id,
+                ParticipantId = endpointForEvent.Id,
+                TransferTo = "ConsultationRoom1",
+                TimeStampUtc = DateTime.UtcNow
+            };
+
+            // Act
+            await _eventHandler.HandleAsync(callbackEvent);
+
+            // Assert
+            VideoApiClientMock.Verify(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r => 
+            r.Conference_id == conference.Id &&
+            r.Defence_advocate_id == Guid.Empty &&
+            r.Endpoint_id == endpointForEvent.Id &&
+            r.Room_label == callbackEvent.TransferTo)), Times.Once);
         }
     }
 }
