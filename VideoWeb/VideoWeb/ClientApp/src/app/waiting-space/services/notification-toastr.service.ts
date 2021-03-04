@@ -43,7 +43,7 @@ export class NotificationToastrService {
             this.notificationSoundService.playConsultationRequestRingtone();
         }
 
-        const requesterDisplayName = requestedBy === undefined || requestedBy === null ? `VHO` : requestedBy.displayName;
+        const requesterDisplayName = requestedBy === undefined || requestedBy === null ? `Video hearings officer` : requestedBy.displayName;
         const requestedById = requestedBy === undefined || requestedBy === null ? Guid.EMPTY : requestedBy.id;
         let message = `<span class="govuk-!-font-weight-bold">Call from ${requesterDisplayName}</span>`;
         const participantsList = participants
