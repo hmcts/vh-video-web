@@ -13,6 +13,7 @@ import {
     ToggleMuteParticipantEvent,
     ToggleSpotlightParticipantEvent
 } from 'src/app/shared/models/participant-event';
+import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -21,6 +22,7 @@ import {
     endpointStatusSubjectMock,
     eventsServiceSpy,
     hearingTransferSubjectMock,
+    participantHandRaisedStatusSubjectMock,
     participantMediaStatusSubjectMock,
     participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
@@ -361,6 +363,26 @@ describe('ParticipantsPanelComponent', () => {
         expect(result.hasSpotlight()).toBeTruthy();
     });
 
+    it('should process video call participant updates for linked participant and publish remote mute status', () => {
+        component.setupVideoCallSubscribers();
+        const pat = component.participants.filter(p => p instanceof LinkedParticipantPanelModel)[0] as LinkedParticipantPanelModel;
+        const displayName = `I1;${pat.pexipDisplayName};${pat.id}`;
+        const pexipParticipant = videoCallTestData.getExamplePexipParticipant(displayName);
+        pexipParticipant.is_muted = 'YES';
+        pexipParticipant.buzz_time = 0;
+        pexipParticipant.spotlight = 0;
+        const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
+
+        onParticipantUpdatedMock.next(payload);
+        const result = component.participants.find(x => x.id === pat.id);
+        expect(result.pexipId).toBe(payload.uuid);
+        expect(result.isMicRemoteMuted()).toBeTruthy();
+
+        pat.participants.forEach(lp => {
+            expect(eventService.publishRemoteMuteStatus).toHaveBeenCalledWith(conferenceId, lp.id, true);
+        });
+    });
+
     it('should not process video call participant updates not in list', () => {
         component.setupVideoCallSubscribers();
         const pat = component.participants.filter(x => x.role !== Role.Judge)[1];
@@ -494,6 +516,15 @@ describe('ParticipantsPanelComponent', () => {
         pat.updateParticipant(false, true, false);
         component.lowerParticipantHand(pat);
         expect(videocallService.lowerHandById).toHaveBeenCalledWith(pat.pexipId, component.conferenceId, pat.id);
+    });
+    it('should lower hand for all participants in a room', () => {
+        const pat = component.participants.filter(p => p instanceof LinkedParticipantPanelModel)[0] as LinkedParticipantPanelModel;
+
+        component.lowerParticipantHand(pat);
+
+        pat.participants.forEach(lp => {
+            expect(eventService.publishParticipantHandRaisedStatus).toHaveBeenCalledWith(conferenceId, lp.id, false);
+        });
     });
 
     it('should return true when participant is disconnected', () => {
@@ -700,5 +731,25 @@ describe('ParticipantsPanelComponent', () => {
         const updatedVideoCount = component.participants.filter(x => x.isLocalCameraOff()).length;
         expect(updatedAudioCount).toBe(0);
         expect(updatedVideoCount).toBe(0);
+    });
+
+    it('should process event hub hand raise message for participant in hearing', () => {
+        component.setupEventhubSubscribers();
+        const pat = participants.filter(x => x.role === Role.Individual)[0];
+        const message = new ParticipantHandRaisedMessage(conferenceId, pat.id, true);
+
+        participantHandRaisedStatusSubjectMock.next(message);
+
+        const updatedPat = component.participants.find(x => x.id === message.participantId);
+        expect(updatedPat.hasHandRaised()).toBe(message.handRaised);
+    });
+
+    it('should not process event hub hand raise message for participant not in list', () => {
+        component.setupEventhubSubscribers();
+        const message = new ParticipantHandRaisedMessage(conferenceId, Guid.create().toString(), true);
+
+        participantHandRaisedStatusSubjectMock.next(message);
+        const updatedHandRaiseCount = component.participants.filter(x => x.hasHandRaised()).length;
+        expect(updatedHandRaiseCount).toBe(0);
     });
 });

@@ -3,11 +3,15 @@ import { ConferenceResponse, ParticipantStatus, Role } from 'src/app/services/cl
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
+import { ParticipantRemoteMuteMessage } from 'src/app/shared/models/participant-remote-mute-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { VideoCallTestData } from 'src/app/testing/mocks/data/video-call-test-data';
 import {
     eventsServiceSpy,
     hearingCountdownCompleteSubjectMock,
+    participantHandRaisedStatusSubjectMock,
+    participantRemoteMuteStatusSubjectMock,
     participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import { onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
@@ -150,6 +154,60 @@ describe('HearingControlsBaseComponent', () => {
         expect(component.remoteMuted).toBeFalsy();
         expect(component.handRaised).toBeTruthy();
         expect(component.handToggleText).toBe('Lower my hand');
+    });
+
+    it('should process hand raised message for participant', () => {
+        component.handRaised = false;
+        const payload = new ParticipantHandRaisedMessage(gloalConference.id, globalParticipant.id, true);
+
+        participantHandRaisedStatusSubjectMock.next(payload);
+
+        expect(component.handRaised).toBeTruthy();
+    });
+
+    it('should process hand lowered message for participant', () => {
+        component.handRaised = true;
+        const payload = new ParticipantHandRaisedMessage(gloalConference.id, globalParticipant.id, false);
+
+        participantHandRaisedStatusSubjectMock.next(payload);
+
+        expect(component.handRaised).toBeFalsy();
+    });
+
+    it('should not process hand raised message for another participant', () => {
+        component.handRaised = false;
+        const payload = new ParticipantHandRaisedMessage(gloalConference.id, Guid.create().toString(), true);
+
+        participantHandRaisedStatusSubjectMock.next(payload);
+
+        expect(component.handRaised).toBeFalsy();
+    });
+
+    it('should process remote mute message for participant', () => {
+        component.remoteMuted = false;
+        const payload = new ParticipantRemoteMuteMessage(gloalConference.id, globalParticipant.id, true);
+
+        participantRemoteMuteStatusSubjectMock.next(payload);
+
+        expect(component.remoteMuted).toBeTruthy();
+    });
+
+    it('should process remote unnmute message for participant', () => {
+        component.remoteMuted = true;
+        const payload = new ParticipantRemoteMuteMessage(gloalConference.id, globalParticipant.id, false);
+
+        participantRemoteMuteStatusSubjectMock.next(payload);
+
+        expect(component.remoteMuted).toBeFalsy();
+    });
+
+    it('should not process remote mute message for another participant', () => {
+        component.remoteMuted = false;
+        const payload = new ParticipantRemoteMuteMessage(gloalConference.id, Guid.create().toString(), true);
+
+        participantRemoteMuteStatusSubjectMock.next(payload);
+
+        expect(component.remoteMuted).toBeFalsy();
     });
 
     it('should show lower hand on hand raised', () => {
