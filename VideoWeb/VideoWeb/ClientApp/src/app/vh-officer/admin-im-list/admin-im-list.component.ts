@@ -16,7 +16,6 @@ export class AdminImListComponent implements OnInit {
 
     roles = Role;
     participantStatus = ParticipantStatus;
-    constructor() {}
 
     ngOnInit() {
         this.initImParticipants(false);
@@ -37,7 +36,7 @@ export class AdminImListComponent implements OnInit {
 
     isParticipantAvailable(participant: Participant): boolean {
         if (participant.isJudge) {
-            return participant.status !== ParticipantStatus.Disconnected;
+            return participant.status !== ParticipantStatus.Disconnected && participant.status !== ParticipantStatus.InConsultation;
         } else {
             return participant.status === ParticipantStatus.Available;
         }

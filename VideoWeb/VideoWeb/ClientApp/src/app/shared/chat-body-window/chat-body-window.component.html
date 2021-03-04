@@ -4,8 +4,8 @@
     <ng-container *ngIf="hasMessageFailed(message)">
       <span id="message-send-error" class="failed-message">
         <img class="alert-image" src="/assets/images/alert-full.png" alt="alerts icon" />
-        <span class="govuk-visually-hidden">Error:</span> message failed to send
-        <a href="javascript:void(0)" class="govuk-link" (click)="retry(message)">try again</a>
+        <span class="govuk-visually-hidden">{{'chat-body-window.error' | translate}}</span> {{'chat-body-window.failed' | translate}}
+        <a href="javascript:void(0)" class="govuk-link" (click)="retry(message)">{{'chat-body-window.try-again' | translate}}</a>
       </span>
     </ng-container>
     <div>

@@ -44,7 +44,7 @@ describe('AdminImListComponent', () => {
     const isParticipantAvailableTestCases = [
         { role: Role.Judge, status: ParticipantStatus.Available, expected: true },
         { role: Role.Judge, status: ParticipantStatus.InHearing, expected: true },
-        { role: Role.Judge, status: ParticipantStatus.InConsultation, expected: true },
+        { role: Role.Judge, status: ParticipantStatus.InConsultation, expected: false },
         { role: Role.Judge, status: ParticipantStatus.Disconnected, expected: false },
         { role: Role.Individual, status: ParticipantStatus.Available, expected: true },
         { role: Role.Individual, status: ParticipantStatus.InHearing, expected: false },

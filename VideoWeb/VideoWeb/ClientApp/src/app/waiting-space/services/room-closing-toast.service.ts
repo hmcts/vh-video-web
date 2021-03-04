@@ -13,8 +13,8 @@ export class RoomClosingToastrService {
 
     toastsDismissed = 0;
 
-    showFirstToastAtMins = 25;
-    showSecondToastAtMins = 25.5;
+    showFirstToastAtMins = 5;
+    showSecondToastAtMins = 0.5;
 
     constructor(private logger: Logger, private toastr: ToastrService) {}
 
