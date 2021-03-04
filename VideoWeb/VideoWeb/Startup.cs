@@ -87,8 +87,7 @@ namespace VideoWeb
                 }
             }
 
-            var zapScan = Configuration.GetValue<bool>("ZapScan");
-            if (!env.IsDevelopment() || zapScan)
+            if (!env.IsDevelopment() || Settings.ZapScan)
             {
                 app.UseSpaStaticFiles();
             }
