@@ -5,6 +5,6 @@ services:
     image: ${DOCKER_REGISTRY-}videoweb
     build:
       context: .
-      dockerfile: ./VideoWeb/Dockerfile
+      dockerfile: ./VideoWeb/VideoWeb/Dockerfile
       args:
         - skip_client_build=false
