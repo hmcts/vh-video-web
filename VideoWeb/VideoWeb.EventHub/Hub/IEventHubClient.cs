@@ -10,6 +10,8 @@ namespace VideoWeb.EventHub.Hub
     {
         Task ParticipantStatusMessage(Guid participantId, string username, Guid conferenceId, ParticipantState participantState);
         Task ParticipantMediaStatusMessage(Guid participantId, Guid conferenceId, ParticipantMediaStatus mediaStatus);
+        Task ParticipantRemoteMuteMessage(Guid participantId, Guid conferenceId, bool isRemoteMuted);
+        Task ParticipantHandRaiseMessage(Guid participantId, Guid conferenceId, bool hasHandRaised);
         Task EndpointStatusMessage(Guid endpointId, Guid conferenceId, EndpointState endpointState);
         Task ConferenceStatusMessage(Guid conferenceId, ConferenceStatus conferenceState);
         Task CountdownFinished(Guid conferenceId);

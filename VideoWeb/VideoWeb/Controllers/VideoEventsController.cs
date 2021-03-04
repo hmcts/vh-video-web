@@ -21,6 +21,7 @@ namespace VideoWeb.Controllers
     [ApiController]
     [Route("callback")]
     [Authorize(AuthenticationSchemes = "Callback")]
+    [AllowAnonymous]
     public class VideoEventsController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
@@ -46,8 +47,8 @@ namespace VideoWeb.Controllers
 
         [HttpPost]
         [SwaggerOperation(OperationId = "SendEvent")]
-        [ProducesResponseType((int) HttpStatusCode.NoContent)]
-        [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> SendHearingEventAsync(ConferenceEventRequest request)
         {
             try
@@ -68,7 +69,7 @@ namespace VideoWeb.Controllers
                     request.Participant_room_id = roomId.ToString();
                     request.Participant_id = null;
                 }
-                
+
                 if (callbackEvent.EventType != EventType.VhoCall)
                 {
                     _logger.LogTrace("Raising video event: ConferenceId: {ConferenceId}, EventType: {EventType}",
@@ -91,7 +92,7 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
-        
+
         private bool IsRoomEvent(ConferenceEventRequest request, Conference conference, out long roomId)
         {
             if (!long.TryParse(request.Participant_id, out roomId)) return false;
