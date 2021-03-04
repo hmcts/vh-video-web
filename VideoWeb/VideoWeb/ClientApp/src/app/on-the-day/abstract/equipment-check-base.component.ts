@@ -10,7 +10,6 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ParticipantStatusBaseDirective } from 'src/app/on-the-day/models/participant-status-base';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { Directive } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 
 @Directive()
 export abstract class EquipmentCheckBaseComponentDirective extends ParticipantStatusBaseDirective {
