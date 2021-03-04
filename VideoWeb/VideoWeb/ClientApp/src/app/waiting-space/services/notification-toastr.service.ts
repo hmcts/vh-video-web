@@ -142,6 +142,9 @@ export class NotificationToastrService {
         (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
             color: 'white',
             htmlBody: message,
+            onNoAction: async () => {
+                this.logger.info(`${this.loggerPrefix} No action called on poor connection alert`);
+            },
             buttons: [
                 {
                     label: 'Dismiss',
