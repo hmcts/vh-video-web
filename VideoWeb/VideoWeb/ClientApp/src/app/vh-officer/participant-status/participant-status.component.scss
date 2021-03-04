@@ -78,3 +78,11 @@
   border-right: solid transparent 10px;
   border-bottom: solid gray 10px;
 }
+
+.interpreter-icon:empty {
+  margin-left: 25px;
+}
+
+.status-box-display {
+  display: flex;
+}

@@ -1,3 +1,4 @@
+import { LinkedParticipantResponse, LinkType } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { ParticipantContactDetails } from './participant-contact-details';
 
@@ -66,5 +67,33 @@ describe('ParticipantContactDetails', () => {
         participant.case_type_group = 'Observer';
         const p = new ParticipantContactDetails(participant);
         expect(p.showCaseRole).toBe(false);
+    });
+    it('should return true if participant is an interpreter', () => {
+        const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
+            'C7163972-A362-4167-8D33-77A64674B31C',
+            'MyVenue'
+        );
+        const participant = participants[0];
+        participant.hearing_role = 'Interpreter';
+        participant.case_type_group = 'Applicant';
+        const p = new ParticipantContactDetails(participant);
+        expect(p.isInterpreterOrInterpretee).toBe(true);
+    });
+    it('should return true if participant is an interpretee', () => {
+        const participants = new ConferenceTestData().getListOParticipantContactDetailsResponseVho(
+            'C7163972-A362-4167-8D33-77A64674B31C',
+            'MyVenue'
+        );
+        const _linkedParticipants: LinkedParticipantResponse[] = [];
+        const lp = new LinkedParticipantResponse();
+        lp.link_type = LinkType.Interpreter;
+        lp.linked_id = '1000';
+        _linkedParticipants.push(lp);
+        const participant = participants[0];
+        participant.hearing_role = 'Litigant in person';
+        participant.case_type_group = 'Applicant';
+        participant.linked_participants = _linkedParticipants;
+        const p = new ParticipantContactDetails(participant);
+        expect(p.isInterpreterOrInterpretee).toBe(true);
     });
 });

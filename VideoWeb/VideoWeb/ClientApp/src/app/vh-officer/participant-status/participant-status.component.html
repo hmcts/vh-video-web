@@ -4,7 +4,25 @@
 
 <div id="participant-status-list">
   <div *ngFor="let participant of participants" class="govuk-grid-row">
-    <div class="govuk-grid-column-one-half">
+    <div class="govuk-grid-column-one-half status-box-display">
+      <div class="interpreter-icon">
+        <img
+          *ngIf="participant.isInterpreterOrInterpretee"
+          src="/assets/images/interpreter.png"
+          height="25"
+          width="25"
+          class="govuk-header__logotype-crest"
+          alt="HM Courts &amp; Tribunals Service crest"
+        />
+        <img
+          *ngIf="participant.isJudge"
+          src="/assets/images/govuk-crest.png"
+          height="25"
+          width="25"
+          class="govuk-header__logotype-crest"
+          alt="HM Courts &amp; Tribunals Service crest"
+        />        
+      </div>        
       <div id="participant-contact-details-link-{{ participant.id }}" class="govuk-body-s tooltip-wrapper">
         <ng-container *ngIf="participant.isJudge; else individualName">
           {{ participant.displayName }}
@@ -16,7 +34,7 @@
           <app-participant-info-tooltip [participant]="participant"></app-participant-info-tooltip>
         </div>
       </div>
-    </div>
+    </div>            
 
     <div class="govuk-grid-column-one-half">
       <p
