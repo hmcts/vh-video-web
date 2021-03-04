@@ -75,6 +75,10 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         return false;
     }
 
+    isInterpreter = function (participant: ParticipantResponse) {
+        return participant.hearing_role === HearingRole.INTERPRETER;
+    };
+
     getParticipantStatus(participant: ParticipantResponse): string {
         if (participant.status === ParticipantStatus.None) {
             return this.camelToSpaced(ParticipantStatus.NotSignedIn.toString());

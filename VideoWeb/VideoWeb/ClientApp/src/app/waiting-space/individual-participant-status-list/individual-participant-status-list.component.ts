@@ -81,6 +81,10 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         return this.isEndpointAvailable(endpoint);
     }
 
+    isInterpreter(participant: ParticipantResponse) {
+        return participant.hearing_role === HearingRole.INTERPRETER;
+    }
+
     getParticipantStatusText(participant: ParticipantResponse): string {
         return participant.status === ParticipantStatus.Available ? 'Available' : 'Unavailable';
     }
