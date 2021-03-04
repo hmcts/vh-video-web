@@ -20,4 +20,16 @@ export class VideoEndpointPanelModel extends PanelModel {
     isAvailable(): boolean {
         return this.status === EndpointStatus.Connected;
     }
+
+    isInConsultation(): boolean {
+        return this.status === EndpointStatus.InConsultation;
+    }
+
+    hasParticipant(participantId: string): boolean {
+        return this.id === participantId;
+    }
+
+    updateStatus(status: EndpointStatus, participantId?: string) {
+        this.status = status;
+    }
 }

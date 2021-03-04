@@ -137,7 +137,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         );
     }
     handleParticipantMediaStatusChange(message: ParticipantMediaStatusMessage) {
-        const participant = this.participants.find(x => x.id === message.participantId);
+        const participant = this.participants.find(x => x.hasParticipant(message.participantId));
         if (!participant) {
             return;
         }
@@ -146,8 +146,11 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             participant: participant.id,
             mediaStatus: message.mediaStatus
         });
-        participant.isLocalAudioMuted = message.mediaStatus.is_local_audio_muted;
-        participant.isLocalVideoMuted = message.mediaStatus.is_local_video_muted;
+        participant.updateParticipantDeviceStatus(
+            message.mediaStatus.is_local_audio_muted,
+            message.mediaStatus.is_local_video_muted,
+            message.participantId
+        );
     }
 
     handleHearingTransferChange(message: HearingTransfer) {
@@ -177,19 +180,20 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             return;
         }
 
-        participant.updateParticipant(updatedParticipant);
+        participant.assignPexipId(updatedParticipant.uuid);
+        participant.updateParticipant(updatedParticipant.isRemoteMuted, updatedParticipant.handRaised, updatedParticipant.isSpotlighted);
         this.logger.debug(`${this.loggerPrefix} Participant has been updated in video call`, {
             conference: this.conferenceId,
             participant: participant.id,
             pexipParticipant: participant.pexipId,
-            isRemoteMuted: participant.isRemoteMuted,
-            handRaised: participant.handRaised,
-            isSpotlighted: participant.isSpotlighted
+            isRemoteMuted: participant.isMicRemoteMuted(),
+            handRaised: participant.hasHandRaised(),
+            isSpotlighted: participant.hasSpotlight()
         });
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
-        const participant = this.participants.find(x => x.id === message.participantId);
+        const participant = this.participants.find(x => x.hasParticipant(message.participantId));
         if (!participant) {
             return;
         }
@@ -198,7 +202,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             participant: participant.id,
             status: message.status
         });
-        (<ParticipantPanelModel>participant).status = message.status;
+        participant.updateStatus(message.status, message.participantId);
         participant.transferringIn = false;
     }
 
@@ -212,7 +216,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             endpoint: endpoint.id,
             status: message.status
         });
-        (<VideoEndpointPanelModel>endpoint).status = message.status;
+        endpoint.updateStatus(message.status);
     }
 
     async getParticipantsList() {
@@ -264,28 +268,32 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             conference: this.conferenceId,
             participant: p.id,
             pexipParticipant: p.pexipId,
-            current: p.isSpotlighted,
-            new: !p.isSpotlighted
+            current: p.hasSpotlight(),
+            new: !p.hasSpotlight()
         });
-        this.videoCallService.spotlightParticipant(p.pexipId, !p.isSpotlighted, this.conferenceId, p.id);
+        this.videoCallService.spotlightParticipant(p.pexipId, !p.hasSpotlight(), this.conferenceId, p.id);
     }
 
     toggleMuteParticipant(participant: PanelModel) {
         const hearingParticipants = this.participants.filter(x => x.isInHearing());
-        const mutedParticipants = hearingParticipants.filter(x => x.isRemoteMuted);
+        const mutedParticipants = hearingParticipants.filter(x => x.isMicRemoteMuted());
         const p = this.participants.find(x => x.id === participant.id);
 
+        const newMuteStatus = !p.isMicRemoteMuted();
         this.logger.debug(`${this.loggerPrefix} Judge is attempting to toggle mute for participant`, {
             conference: this.conferenceId,
             participant: p.id,
             pexipParticipant: p.pexipId,
-            current: p.isRemoteMuted,
-            new: !p.isRemoteMuted
+            current: p.isMicRemoteMuted(),
+            new: newMuteStatus
         });
-        this.videoCallService.muteParticipant(p.pexipId, !p.isRemoteMuted, this.conferenceId, p.id);
-
-        // check if last person to be unmuted manually
+        this.videoCallService.muteParticipant(p.pexipId, newMuteStatus, this.conferenceId, p.id);
+        if (p instanceof LinkedParticipantPanelModel) {
+            // Participants in a VMR can be muted but they do not return a callback like other participants. Must update manually
+            p.updateParticipant(newMuteStatus, participant.hasHandRaised(), participant.hasSpotlight());
+        }
         if (mutedParticipants.length === 1 && this.isMuteAll) {
+            // check if last person to be unmuted manually
             this.logger.debug(`${this.loggerPrefix} Judge has manually unmuted the last muted participant. Unmuting conference`, {
                 conference: this.conferenceId
             });
@@ -293,7 +301,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         }
 
         // mute conference if last person manually muted
-        if (mutedParticipants.length === hearingParticipants.length - 1 && !p.isRemoteMuted) {
+        if (mutedParticipants.length === hearingParticipants.length - 1 && !p.isMicRemoteMuted()) {
             this.logger.debug(`${this.loggerPrefix} Judge has manually muted the last unmuted participant. Muting conference`, {
                 conference: this.conferenceId
             });
@@ -359,8 +367,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             participant: participant.id
         });
 
-        participant.handRaised = false;
-        participant.isSpotlighted = false;
+        participant.dimissed();
 
         try {
             await this.videoCallService.dismissParticipantFromHearing(this.conferenceId, participant.id);
