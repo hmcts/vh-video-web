@@ -8,7 +8,7 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
             // authWellknownEndpoint: 'https://login.microsoftonline.com/fb6e0e22-0da3-4c35-972a-9d61eb256508',
             redirectUrl: 'https://localhost:5800/home',
             clientId: '7a00ed39-469b-4cc6-a1aa-2d7b32c0eed2',
-            scope: 'openid',
+            scope: 'openid profile',
             responseType: 'code',
             silentRenew: true,
             maxIdTokenIatOffsetAllowedInSeconds: 600,

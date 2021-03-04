@@ -77,6 +77,7 @@ export class AppComponent implements OnInit, OnDestroy {
     // }
 
     ngOnInit() {
+        this.oidcSecurityService.checkAuth().subscribe((auth) => console.log('is authenticated', auth));
         this.checkAuth().then(() => {
             this.checkBrowser();
             this.setPageTitle();
