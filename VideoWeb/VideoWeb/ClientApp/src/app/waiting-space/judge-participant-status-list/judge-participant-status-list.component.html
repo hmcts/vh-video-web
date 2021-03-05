@@ -133,7 +133,9 @@
         <div id="p-row-{{ participant.id }}-participant" class="govuk-grid-column-full govuk-!-margin-top-2">
 
           <p id="p-{{ participant.id }}-name-participant" class="govuk-heading-s govuk-!-margin-bottom-3">
-            <img *ngIf="(participant)?hasInterpreterLink(participant):false" class="vh-interpreter-icon" src="/assets/images/interpreter.png" alt="Interpreter" />
+            <span *ngIf="(participant)?hasInterpreterLink(participant):false" class="vh-interpreter-icon">
+              <i class="far fa-2x fa-language"></i>
+            </span>
             {{ participant.name }}
           </p>
 

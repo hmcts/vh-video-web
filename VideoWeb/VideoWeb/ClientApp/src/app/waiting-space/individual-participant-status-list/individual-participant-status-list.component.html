@@ -60,7 +60,9 @@
       <div *ngFor="let participant of nonJudgeParticipants; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
         <div id="p-row-{{ participant.id }}-participant" class="govuk-grid-column-full">
           <p id="p-{{ participant.id }}-name-participant" class="govuk-heading-s govuk-!-margin-bottom-0">
-            <img *ngIf="(participant)?hasInterpreterLink(participant):false" class="vh-interpreter-icon" src="/assets/images/interpreter.png" alt="Interpreter" />
+            <span *ngIf="(participant)?hasInterpreterLink(participant):false" class="vh-interpreter-icon">
+              <i class="far fa-2x fa-language"></i>
+            </span>
             {{ participant.name }}
           </p>
 
