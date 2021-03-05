@@ -7,6 +7,7 @@ import {
     AllowedEndpointResponse,
     ConferenceResponse,
     EndpointStatus,
+    LinkType,
     LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
@@ -117,6 +118,14 @@ export abstract class WRParticipantStatusListDirective {
             this.nonJudgeParticipants = this.orderForInterpreter(nonJudgeParts, individualWithInterpreterIndex);
         }
     }
+
+    hasInterpreterLink(participant: ParticipantResponse) {
+        return participant.linked_participants.some(x => x.link_type === LinkType.Interpreter);
+    }
+
+    isInterpreter = function (participant: ParticipantResponse) {
+        return participant.hearing_role === HearingRole.INTERPRETER;
+    };
 
     getInterpreteeName(interpreterId: string) {
         const interpreter = this.nonJudgeParticipants.find(x => x.id === interpreterId);
