@@ -155,7 +155,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantName(user, representative.Id)).Text.Trim().Should().Be(representative.Name);
                 if (representative.Case_type_group.ToLower().Equals("none")) continue;
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantCaseType(user, representative.Id)).Text.Trim().Should().Be(representative.Case_type_group);
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetRepresentativeRepresentee(user, representative.Id)).Text.Trim().Should().Be($"Representative for {representative.Representee}");
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetRepresentativeRepresentee(user, representative.Id)).Text.Trim().Should().Be($"Representative for\n{representative.Representee}");
             }
 
             foreach (var observer in observers)
