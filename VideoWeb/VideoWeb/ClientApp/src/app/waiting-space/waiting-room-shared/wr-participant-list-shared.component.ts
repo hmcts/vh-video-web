@@ -127,9 +127,9 @@ export abstract class WRParticipantStatusListDirective {
         return participant.linked_participants.some(x => x.link_type === LinkType.Interpreter);
     }
 
-    isInterpreter = function (participant: ParticipantResponse) {
+    isInterpreter(participant: ParticipantResponse) {
         return participant.hearing_role === HearingRole.INTERPRETER;
-    };
+    }
 
     getInterpreteeName(interpreterId: string) {
         const interpreter = this.nonJudgeParticipants.find(x => x.id === interpreterId);

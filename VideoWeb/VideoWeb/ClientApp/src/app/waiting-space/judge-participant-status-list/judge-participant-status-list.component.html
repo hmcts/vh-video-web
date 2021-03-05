@@ -149,7 +149,7 @@
           </p>
 
           <p id="p-{{ participant.id }}-representee-participant" *ngIf="participant.representee" class="govuk-body-s govuk-!-margin-bottom-1">
-            {{ !isCaseTypeNone(participant) ? 'Representative' : participant.hearing_role }} for <br><strong>{{ participant.representee }}</strong>
+            {{ isCaseTypeNone(participant) ? participant.hearing_role : 'Representative' }} for <br><strong>{{ participant.representee }}</strong>
           </p>
           
           <p id="p-{{ participant.id }}-hearing-role-participant" *ngIf="!participant.representee?!isInterpreter(participant):false"
