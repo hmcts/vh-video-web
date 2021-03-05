@@ -1,5 +1,7 @@
 <div *ngIf="loadingData">
-    <p class="govuk-body">Loading please wait...</p>
+    <p class="govuk-body">
+        {{'joh-waiting-room.loading' | translate}}
+    </p>
 </div>
 
 <div *ngIf="showVideo" class="video-background">
@@ -56,7 +58,7 @@
 <div *ngIf="!loadingData && hearing && showExtraContent" class="govuk-grid-row">
     <div class="govuk-grid-column-full">
         <div class="govuk-!-padding-top-5" style="margin-bottom: 0">
-            <h1 class="govuk-heading-xl govuk-!-padding-top-5">Your video hearing {{ getConferenceStatusText() }}</h1>
+            <h1 class="govuk-heading-xl govuk-!-padding-top-5">{{'joh-waiting-room.your-video-hearing' | translate}} {{ getConferenceStatusText() }}</h1>
         </div>
 
         <div class="govuk-grid-row govuk-!-margin-bottom-4" *ngIf="!showVideo">
@@ -66,8 +68,8 @@
                         data-module="govuk-button"
                         type="button"
                         (click)="showChooseCameraDialog()"
-                        aria-label="Choose camera and microphone dialog">
-                    Choose camera and microphone
+                        attr.aria-label="{{'joh-waiting-room.choose-camera-and-microphone-aria-label' | translate}}">
+                    {{'joh-waiting-room.choose-camera-and-microphone' | translate}}
                 </button>
             </div>
             <div class="govuk-grid-column-two-thirds" style="float: right">
@@ -87,7 +89,7 @@
             <tbody class="govuk-table__body">
                 <tr class="govuk-table__row">
                     <td class="govuk-table__cell hearing-details-col1-width">
-                        <strong>{{ hearing.caseName }}</strong> ({{ hearing.caseType }}) <span>case number</span>:
+                        <strong>{{ hearing.caseName }}</strong> ({{ hearing.caseType }}) <span>{{'joh-waiting-room.case-number' | translate}}</span>:
                         <strong>{{ hearing.caseNumber }}</strong>
                     </td>
                     <td class="govuk-table__cell hearing-details-col2-width">
@@ -106,21 +108,21 @@
         <div *ngIf="currentTime" class="govuk-panel" [ngClass]="getCurrentTimeClass()">
             <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="getCurrentTimeClass()">
                 <div *ngIf="hearing.isOnTime() || hearing.isStarting() || hearing.isDelayed()">
-                    <h2 class="govuk-heading-m white">Please wait</h2>
-                    <p class="white">Your video hearing is scheduled to begin at {{ hearing.scheduledStartTime | date: 'HH:mm' }}</p>
+                    <h2 class="govuk-heading-m white">{{'joh-waiting-room.please-wait' | translate}}</h2>
+                    <p class="white">{{'joh-waiting-room.hearing-starting-at' | translate}} {{ hearing.scheduledStartTime | date: 'HH:mm' }}</p>
                 </div>
 
                 <div *ngIf="hearing.isClosed()">
-                    <h2 class="govuk-heading-m white">This hearing has finished. You may now sign out.</h2>
+                    <h2 class="govuk-heading-m white">{{'joh-waiting-room.hearing-closed' | translate}}</h2>
                 </div>
 
                 <div *ngIf="hearing.isPaused()" class="hearing-title-mt--20">
-                    <p class="white">The judge will restart the hearing when they are ready. Please stay near your screen.</p>
+                    <p class="white">{{'joh-waiting-room.hearing-paused' | translate}}</p>
                 </div>
 
                 <div *ngIf="hearing.isSuspended()">
-                    <h2 class="govuk-heading-m">We're having technical issues</h2>
-                    <p>All participants are affected. Stay near your screen for further updates. There's no need to call us.</p>
+                    <h2 class="govuk-heading-m">{{'joh-waiting-room.hearing-suspended-technical-message-1' | translate}}</h2>
+                    <p>{{'joh-waiting-room.hearing-suspended-message-2' | translate}}</p>
                 </div>
             </div>
             <div class="govuk-grid-row">
@@ -131,7 +133,7 @@
                 </div>
                 <div class="govuk-grid-column-one-half">
                     <div class="govuk-body" [ngClass]="getCurrentTimeClass()">
-                        <p class="govuk-!-margin-bottom-4" [ngClass]="getCurrentTimeClass()">The time now is:</p>
+                        <p class="govuk-!-margin-bottom-4" [ngClass]="getCurrentTimeClass()">{{'joh-waiting-room.time-now' | translate}}</p>
                         <p class="govuk-panel__body govuk-!-margin-top-4 govuk-!-font-size-80" [ngClass]="getCurrentTimeClass()">
                             <strong>{{ currentTime | date: 'HH:mm' }}</strong>
                         </p>
@@ -146,7 +148,7 @@
                     data-module="govuk-button"
                     (click)="joinJudicialConsultation()"
                     [disabled]="!connected">
-                Enter consultation room
+                {{'joh-waiting-room.enter-consultation-room' | translate}}
                 <span *ngIf="numberOfJudgeOrJOHsInConsultation" id="numberOfJohsInConsultationBadge" class="badge">
                     {{
           numberOfJudgeOrJOHsInConsultation
@@ -155,7 +157,7 @@
             </button>
         </div>
         <div class="govuk-!-margin-top-9">
-            <p class="govuk-body"><strong>Video hearings team: 0300 303 0655</strong></p>
+            <p class="govuk-body"><strong>{{'joh-waiting-room.video-hearing-team-contact' | translate}}</strong></p>
         </div>
     </div>
 

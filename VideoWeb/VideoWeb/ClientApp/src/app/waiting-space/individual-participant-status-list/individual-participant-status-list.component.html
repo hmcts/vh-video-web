@@ -21,7 +21,7 @@
     <div *ngIf="wingers.length > 0">
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-full">
-            <h2 class="govuk-heading-s">Wingers ({{ wingers.length }})</h2>
+              <h2 class="govuk-heading-s">{{'individual-participant-status-list.wingers' | translate}} ({{ wingers.length }})</h2>
           </div>
         </div>
         <div class="vh-border">
@@ -37,7 +37,7 @@
   <div *ngIf="panelMembers.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">Panel members ({{ panelMembers.length }})</h2>
+          <h2 class="govuk-heading-s">{{'individual-participant-status-list.panel-members' | translate}} ({{ panelMembers.length }})</h2>
       </div>
     </div>
     <div class="vh-border">
@@ -53,7 +53,7 @@
   <div *ngIf="nonJudgeParticipants.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">Participants ({{ nonJudgeParticipants.length }})</h2>
+          <h2 class="govuk-heading-s">{{'individual-participant-status-list.participants' | translate}} ({{ nonJudgeParticipants.length }})</h2>
       </div>
     </div>
     <div class="vh-border">
@@ -62,7 +62,7 @@
           <p id="p-{{ participant.id }}-name" class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
 
           <p id="p-{{ participant.id }}-representee" *ngIf="participant.representee" class="govuk-body-s govuk-!-margin-bottom-1">
-            {{ !isCaseTypeNone(participant) ? 'Representative' : participant.hearing_role }} for {{ participant.representee }}
+              {{ !isCaseTypeNone(participant) ? 'Representative' : participant.hearing_role }} {{'individual-participant-status-list.for' | translate}} {{ participant.representee }}
           </p>
 
           <p id="p-{{ participant.id }}-hearing-role" *ngIf="!participant.representee" class="govuk-body-s govuk-!-margin-bottom-1">
@@ -88,7 +88,7 @@
   <div *ngIf="endpoints.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">Video access points ({{ endpoints.length }})</h2>
+        <h2 class="govuk-heading-s">{{'individual-participant-status-list.video-access-points' | translate}} ({{ endpoints.length }})</h2>
       </div>
     </div>
     <div class="vh-border">
@@ -104,7 +104,7 @@
   <div *ngIf="observers.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">Observers ({{ observers.length }})</h2>
+        <h2 class="govuk-heading-s">{{'individual-participant-status-list.observers' | translate}} ({{ observers.length }})</h2>
       </div>
     </div>
     <div class="vh-border">
