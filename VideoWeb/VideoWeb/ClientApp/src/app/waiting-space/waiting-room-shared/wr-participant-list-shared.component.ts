@@ -109,17 +109,17 @@ export abstract class WRParticipantStatusListDirective {
             x => x.role !== Role.Judge && x.role !== Role.JudicialOfficeHolder && x.hearing_role !== HearingRole.OBSERVER
         );
 
-        const individualWithInterpreterIndex = nonJudgeParts.findIndex(
+        const individualWithInterpreter = nonJudgeParts.find(
             x =>
                 x.role === Role.Individual &&
                 x.hearing_role !== HearingRole.INTERPRETER &&
                 Array.isArray(x.linked_participants) &&
                 x.linked_participants.length > 0
         );
-        if (individualWithInterpreterIndex === -1) {
+        if (!individualWithInterpreter) {
             this.nonJudgeParticipants = nonJudgeParts;
         } else {
-            this.nonJudgeParticipants = this.orderForInterpreter(nonJudgeParts, individualWithInterpreterIndex);
+            this.nonJudgeParticipants = this.orderForInterpreter(nonJudgeParts, individualWithInterpreter);
         }
     }
 
@@ -138,17 +138,13 @@ export abstract class WRParticipantStatusListDirective {
 
     private orderForInterpreter(
         nonJudgeParticipants: ParticipantResponse[],
-        individualWithInterpreterIndex: number
+        individualWithInterpreter: ParticipantResponse
     ): ParticipantResponse[] {
-        const linkDetails = nonJudgeParticipants[individualWithInterpreterIndex].linked_participants[0];
-        let sortedNonJudgeParts: ParticipantResponse[] = [];
-        sortedNonJudgeParts.push(nonJudgeParticipants[individualWithInterpreterIndex]);
-        nonJudgeParticipants.splice(individualWithInterpreterIndex, 1);
-        const interpreterIndex = nonJudgeParticipants.findIndex(x => x.id === linkDetails.linked_id);
-        sortedNonJudgeParts.push(nonJudgeParticipants[interpreterIndex]);
-        nonJudgeParticipants.splice(interpreterIndex, 1);
-        sortedNonJudgeParts = sortedNonJudgeParts.concat(nonJudgeParticipants);
-        return sortedNonJudgeParts;
+        const linkDetails = individualWithInterpreter.linked_participants[0];
+        const sortedParticipants = [individualWithInterpreter];
+        const interpreter = nonJudgeParticipants.find(x => x.id === linkDetails.linked_id);
+        sortedParticipants.push(interpreter);
+        return [...nonJudgeParticipants.filter(p => ![individualWithInterpreter.id, interpreter.id].includes(p.id)), ...sortedParticipants];
     }
 
     protected filterObservers(): void {
