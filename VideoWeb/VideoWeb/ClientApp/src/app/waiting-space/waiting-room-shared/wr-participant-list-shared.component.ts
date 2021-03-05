@@ -110,7 +110,11 @@ export abstract class WRParticipantStatusListDirective {
         );
 
         const individualWithInterpreterIndex = nonJudgeParts.findIndex(
-            x => x.role === Role.Individual && x.hearing_role !== HearingRole.INTERPRETER && x.linked_participants
+            x =>
+                x.role === Role.Individual &&
+                x.hearing_role !== HearingRole.INTERPRETER &&
+                Array.isArray(x.linked_participants) &&
+                x.linked_participants.length > 0
         );
         if (individualWithInterpreterIndex === -1) {
             this.nonJudgeParticipants = nonJudgeParts;

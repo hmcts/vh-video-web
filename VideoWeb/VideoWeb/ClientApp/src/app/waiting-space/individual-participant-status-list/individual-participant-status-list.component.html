@@ -59,24 +59,24 @@
     <div class="vh-border">
       <div *ngFor="let participant of nonJudgeParticipants; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
         <div id="p-row-{{ participant.id }}-participant" class="govuk-grid-column-full">
-          <p id="p-{{ participant.id }}-name" class="govuk-heading-s govuk-!-margin-bottom-0">
+          <p id="p-{{ participant.id }}-name-participant" class="govuk-heading-s govuk-!-margin-bottom-0">
             <img *ngIf="(participant)?hasInterpreterLink(participant):false" class="vh-interpreter-icon" src="/assets/images/interpreter.png" alt="Interpreter" />
             {{ participant.name }}
           </p>
 
-          <p id="p-{{ participant.id }}-hearing-role" *ngIf="(!participant.representee)?isInterpreter(participant):false" class="govuk-body-s govuk-!-margin-bottom-1">
+          <p id="p-{{ participant.id }}-hearing-role-participant" *ngIf="(!participant.representee)?isInterpreter(participant):false" class="govuk-body-s govuk-!-margin-bottom-1">
             {{ participant.hearing_role }} for <br><strong>{{ getInterpreteeName(participant.id) }}</strong>
           </p>
 
-          <p id="p-{{ participant.id }}-representee" *ngIf="participant.representee" class="govuk-body-s govuk-!-margin-bottom-1">
+          <p id="p-{{ participant.id }}-representee-participant" *ngIf="participant.representee" class="govuk-body-s govuk-!-margin-bottom-1">
             {{ !isCaseTypeNone(participant) ? 'Representative' : participant.hearing_role }} for <br><strong>{{ participant.representee }}</strong>
           </p>
           
-          <p id="p-{{ participant.id }}-hearing-role" *ngIf="(!participant.representee)?!isInterpreter(participant):false" class="govuk-body-s govuk-!-margin-bottom-1">
+          <p id="p-{{ participant.id }}-hearing-role-participant" *ngIf="(!participant.representee)?!isInterpreter(participant):false" class="govuk-body-s govuk-!-margin-bottom-1">
             {{ participant.hearing_role }}
           </p>
 
-          <p *ngIf="!isCaseTypeNone(participant)" id="p-{{ participant.id }}-case-type-group" class="govuk-body-s govuk-!-margin-bottom-1">
+          <p *ngIf="!isCaseTypeNone(participant)" id="p-{{ participant.id }}-case-type-group-participant" class="govuk-body-s govuk-!-margin-bottom-1">
             {{ participant.case_type_group }}
           </p>
 
