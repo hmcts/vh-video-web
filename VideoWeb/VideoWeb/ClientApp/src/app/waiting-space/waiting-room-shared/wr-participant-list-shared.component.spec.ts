@@ -340,8 +340,7 @@ describe('JudgeParticipantStatusListComponentWithInterpreter', () => {
     it('non judge participants should have Litigant first and then Interpreter and then the rest', () => {
         const interpretee = component.nonJudgeParticipants.findIndex(x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON);
         const interpreter = component.nonJudgeParticipants.findIndex(x => x.hearing_role === HearingRole.INTERPRETER);
-        expect(interpretee).toEqual(0);
-        expect(interpreter).toEqual(1);
+        expect(interpreter).toEqual(interpretee + 1);
     });
 
     it('getInterpreteeName should return the name of the interpretee given the interpreterId', () => {
