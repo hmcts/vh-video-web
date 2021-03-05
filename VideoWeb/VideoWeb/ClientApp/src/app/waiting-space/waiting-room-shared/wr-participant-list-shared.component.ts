@@ -131,6 +131,10 @@ export abstract class WRParticipantStatusListDirective {
         return participant.hearing_role === HearingRole.INTERPRETER;
     }
 
+    showSingleHearingRole(participant: ParticipantResponse) {
+        return !participant.representee && !this.isInterpreter(participant);
+    }
+
     getInterpreteeName(interpreterId: string) {
         const interpreter = this.nonJudgeParticipants.find(x => x.id === interpreterId);
         return this.nonJudgeParticipants.find(x => x.id === interpreter.linked_participants[0].linked_id).name;
