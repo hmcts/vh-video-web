@@ -9,7 +9,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly By IncomingFeed = By.CssSelector("video[id^='incomingFeed']");
         public static readonly By LockButton = By.Id("lockButton");
         public static readonly By LeavePrivateConsultationButton = By.Id("leaveButton");
-        public static readonly By ConfirmLeavePrivateConsultationButton = By.CssSelector("#pc-leave-modal button[alt='Leave']");
+        public static readonly By ConfirmLeavePrivateConsultationButton = By.XPath("//app-modal//button[text()=' Leave ']");
         public static readonly By ToggleMute = By.CssSelector("#toggle-audio-mute-img span");
         public const string ToggleMuteMicOn = "fa-microphone";
         public const string ToggleMuteMicOff = "fa-microphone-slash";
