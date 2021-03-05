@@ -10,6 +10,7 @@ import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { VideoCheckComponent } from './video-check.component';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('VideoCheckComponent', () => {
     let component: VideoCheckComponent;
@@ -24,6 +25,7 @@ describe('VideoCheckComponent', () => {
     let errorService: jasmine.SpyObj<ErrorService>;
     const logger: Logger = new MockLogger();
     let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
+    const translateService = translateServiceSpy;
 
     beforeAll(() => {
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
@@ -45,6 +47,8 @@ describe('VideoCheckComponent', () => {
     });
 
     beforeEach(() => {
+        translateService.instant.calls.reset();
+
         component = new VideoCheckComponent(
             router,
             activatedRoute,
@@ -53,7 +57,8 @@ describe('VideoCheckComponent', () => {
             adalService,
             errorService,
             logger,
-            participantStatusUpdateService
+            participantStatusUpdateService,
+            translateService
         );
         router.navigate.calls.reset();
         component.ngOnInit();

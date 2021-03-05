@@ -3,12 +3,16 @@ import { JudgeHearingTableComponent } from './judge-hearing-table.component';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
 import { JudgeHearingSummary } from 'src/app/shared/models/JudgeHearingSummary';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('JudgeHearingTableComponent', () => {
-    const component: JudgeHearingTableComponent = new JudgeHearingTableComponent(new MockLogger());
+    const translateService = translateServiceSpy;
+
+    const component: JudgeHearingTableComponent = new JudgeHearingTableComponent(new MockLogger(), translateService);
     const testData = new ConferenceTestData();
 
     beforeEach(() => {
+        translateService.instant.calls.reset();
         component.conferences = testData.getTestData();
         component.ngOnInit();
     });
