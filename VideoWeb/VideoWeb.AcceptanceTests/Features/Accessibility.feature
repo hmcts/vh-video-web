@@ -73,9 +73,15 @@ Scenario: Change camera and microphone page accessibility
 Scenario: Judge Waiting Room page accessibility
     Given the Judge user has progressed to the Waiting Room page
     When the waiting room page has loaded for the Judge
-    Then the page should be accessible 
+    Then the page should be accessible
 
 @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
+Scenario: Judge Consultation Room page accessibility
+  Given the Judge user is on the Waiting Room page
+  When they enter the private consultation room
+  Then the page should be accessible
+
+  @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
 Scenario: Judge Waiting Room Change Camera popup accessibility
     Given the Judge user has progressed to the Waiting Room page
     When the waiting room page has loaded for the Judge
@@ -87,9 +93,15 @@ Scenario: Judge Waiting Room Change Camera popup accessibility
 Scenario: Participant Waiting Room page accessibility
     Given the Participant user has progressed to the Waiting Room page
     When the waiting room page has loaded for the Participant
-    Then the page should be accessible 
+    Then the page should be accessible
 
 @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
+Scenario: Participant Private Consultation page accessibility
+  Given an individual and their representative are in the waiting room 10 minutes before a hearing
+  When the individual starts a private consultation with their representative
+  Then the page should be accessible
+
+  @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
 Scenario: Help page accessibility
 	Given the Participant user has progressed to the Microphone Working page
 	When the user selects the No radiobutton

@@ -3,9 +3,8 @@
   class="govuk-button govuk-!-margin-right-4"
   data-module="govuk-button"
   (click)="equipmentWorksClicked()"
-  alt="Equipment is working and return to hearing list"
 >
-  Equipment is working
+  {{ 'self-test-actions.equipment-is-working' | translate }}
 </button>
 
 <button
@@ -13,7 +12,6 @@
   class="govuk-button govuk-button--warning"
   data-module="govuk-button"
   (click)="equipmenBrokenClicked()"
-  alt="Equipment is faulty and notify admin"
 >
-  Equipment is faulty
+{{ 'self-test-actions.equipment-is-faulty' | translate }}
 </button>

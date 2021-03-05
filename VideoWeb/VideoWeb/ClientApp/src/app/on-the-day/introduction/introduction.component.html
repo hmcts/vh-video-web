@@ -11,17 +11,17 @@
           <img
             src="/assets/images/BluePanelIdent.png"
             class="govuk-header__logotype-crest govuk-!-margin-bottom-6"
-            alt="HM Courts &amp; Tribunals Service crest"
+            alt="{{ 'introduction.hm-courts-and-tribunals-service-crest' | translate }}"
           />
         </div>
         <div class="govuk-grid-column-three-quarters">
-          <h1 class="govuk-heading-xl text-white">Get ready for the hearing</h1>
+          <h1 class="govuk-heading-xl text-white">{{ 'introduction.get-ready-for-the-hearing' | translate }}</h1>
 
-          <p class="govuk-body govuk-!-margin-bottom-3 text-white">Next, we're going to:</p>
+          <p class="govuk-body govuk-!-margin-bottom-3 text-white">{{ 'introduction.next-we-are-going-to' | translate }}</p>
 
           <ul class="govuk-list govuk-list--bullet text-white">
-            <li>check that your equipment is working</li>
-            <li>tell you about the rules of the court</li>
+            <li>{{ 'introduction.check-that-your-equipment-is-working' | translate }}</li>
+            <li>{{ 'introduction.tell-you-about-the-rules-of-the-court' | translate }}</li>
           </ul>
 
           <button
@@ -30,7 +30,7 @@
             (click)="goToEquipmentCheck()"
             id="next"
           >
-            Next
+          {{ 'introduction.next' | translate }}
           </button>
         </div>
       </div>

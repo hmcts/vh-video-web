@@ -8,6 +8,7 @@ import {
     ConferenceResponse,
     ConferenceStatus,
     ConsultationAnswer,
+    InterpreterRoom,
     LinkType,
     LoggedParticipantResponse,
     ParticipantResponse,
@@ -91,6 +92,7 @@ export abstract class WaitingRoomBaseComponent {
     callbackTimeout: NodeJS.Timer;
     private readonly loggerPrefix = '[WR] -';
     loggedInUser: LoggedParticipantResponse;
+    linkedParticipantRoom: InterpreterRoom;
 
     protected constructor(
         protected route: ActivatedRoute,
@@ -491,6 +493,7 @@ export abstract class WaitingRoomBaseComponent {
         if (this.needsInterpreterRoom()) {
             this.logger.debug(`${this.loggerPrefix} calling interpreter room`, logPayload);
             const interpreterRoom = await this.videoCallService.retrieveInterpreterRoom(this.conference.id, this.participant.id);
+            this.linkedParticipantRoom = interpreterRoom;
             pexipNode = interpreterRoom.pexip_node;
             conferenceAlias = interpreterRoom.participant_join_uri;
             displayName = interpreterRoom.tile_display_name;

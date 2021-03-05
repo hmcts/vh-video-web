@@ -1,21 +1,20 @@
 <div class="govuk-grid-row">
     <div class="govuk-grid-column-full govuk-!-margin-top-8">
-        <h1 class="govuk-heading-xl">There is a problem with your camera and microphone</h1>
+        <h1 class="govuk-heading-xl">{{'error-camera-microphone.problem-with-camera-mic' | translate}}</h1>
         <div *ngIf="deviceIsInUse; else deviceNotFound">
             <p class="govuk-body">
-                Your camera and microphone may already be in use. Please close any application that may be using your camera
-                and microphone and try again.
+               {{'error-camera-microphone.camera-mic-in-use' | translate}}
             </p>
 
         </div>
         <ng-template #deviceNotFound>
             <p class="govuk-body">
-                Your camera and microphone cannot be found. Please connect your camera and microphone and try again.
+              {{'error-camera-microphone.camera-mic-cannot-be-found' | translate}}
             </p>
 
         </ng-template>
         <p class="govuk-body govuk-!-margin-bottom-8">
-            Call us if you're still seeing this message.
+            {{'error-camera-microphone.call-us' | translate}}
         </p>
 
         <div class="govuk-!-padding-top-4 govuk-!-padding-bottom-4">
@@ -26,7 +25,7 @@
                     type="button"
                     (click)="continue()"
                     aria-label="Continue to the previous page">
-                Continue
+                {{'error-camera-microphone.button-continue' | translate}}
             </button>
         </div>
     </div>
