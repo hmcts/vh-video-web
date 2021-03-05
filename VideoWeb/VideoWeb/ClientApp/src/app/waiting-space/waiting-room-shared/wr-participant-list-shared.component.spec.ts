@@ -333,8 +333,8 @@ describe('JudgeParticipantStatusListComponentWithInterpreter', () => {
     it('interpreter and interpretee should have hasInterpreterLink set to true', () => {
         const interpreter = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.INTERPRETER);
         const interpretee = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON);
-        expect(interpreter.hasInterpreterLink).toBeTrue();
-        expect(interpretee.hasInterpreterLink).toBeTrue();
+        expect(component.hasInterpreterLink(interpreter)).toBeTrue();
+        expect(component.hasInterpreterLink(interpretee)).toBeTrue();
     });
 
     it('non judge participants should have Litigant first and then Interpreter and then the rest', () => {
