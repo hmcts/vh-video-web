@@ -143,7 +143,7 @@
             {{ participant.hearing_role }}
           </p>
 
-          <p id="p-{{ participant.id }}-hearing-role-participant" *ngIf="(!participant.representee)?isInterpreter(participant):false"
+          <p id="p-{{ participant.id }}-hearing-role-participant" *ngIf="!participant.representee?isInterpreter(participant):false"
             class="govuk-body-s govuk-!-margin-bottom-1">
             {{ participant.hearing_role }} for <br><strong>{{ getInterpreteeName(participant.id) }}</strong>
           </p>
@@ -152,7 +152,7 @@
             {{ !isCaseTypeNone(participant) ? 'Representative' : participant.hearing_role }} for <br><strong>{{ participant.representee }}</strong>
           </p>
           
-          <p id="p-{{ participant.id }}-hearing-role-participant" *ngIf="(!participant.representee)?!isInterpreter(participant):false"
+          <p id="p-{{ participant.id }}-hearing-role-participant" *ngIf="!participant.representee?!isInterpreter(participant):false"
             class="govuk-body-s govuk-!-margin-bottom-1">
             {{ participant.hearing_role }}
           </p>
