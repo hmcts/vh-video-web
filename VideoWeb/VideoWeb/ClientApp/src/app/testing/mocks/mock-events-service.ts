@@ -1,15 +1,17 @@
 import { Subject } from 'rxjs';
 import { EventsService } from 'src/app/services/events.service';
-import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ConferenceMessageAnswered } from 'src/app/services/models/conference-message-answered';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
-import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
+import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { HearingTransfer } from 'src/app/services/models/hearing-transfer';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ParticipantHeartbeat } from 'src/app/services/models/participant-heartbeat';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
+import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
 import { ParticipantMediaStatusMessage } from 'src/app/shared/models/participant-media-status-message';
+import { ParticipantRemoteMuteMessage } from 'src/app/shared/models/participant-remote-mute-message';
 import { Room } from '../../shared/models/room';
 import { RoomTransfer } from '../../shared/models/room-transfer';
 
@@ -27,6 +29,8 @@ export const messageSubjectMock = new Subject<InstantMessage>();
 export const heartbeatSubjectMock = new Subject<ParticipantHeartbeat>();
 export const hearingTransferSubjectMock = new Subject<HearingTransfer>();
 export const participantMediaStatusSubjectMock = new Subject<ParticipantMediaStatusMessage>();
+export const participantRemoteMuteStatusSubjectMock = new Subject<ParticipantRemoteMuteMessage>();
+export const participantHandRaisedStatusSubjectMock = new Subject<ParticipantHandRaisedMessage>();
 export const roomUpdateSubjectMock = new Subject<Room>();
 export const roomTransferSubjectMock = new Subject<RoomTransfer>();
 export const adminAnsweredChatSubjectMock = new Subject<ConferenceMessageAnswered>();
@@ -55,7 +59,11 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'sendMediaStatus',
         'getRoomUpdate',
         'getRoomTransfer',
-        'getAdminAnsweredChat'
+        'getAdminAnsweredChat',
+        'getParticipantRemoteMuteStatusMessage',
+        'getParticipantHandRaisedMessage',
+        'publishParticipantHandRaisedStatus',
+        'publishRemoteMuteStatus'
     ],
     {
         isConnectedToHub: isConnectedSpy
@@ -74,6 +82,8 @@ eventsServiceSpy.getChatMessage.and.returnValue(messageSubjectMock.asObservable(
 eventsServiceSpy.getHeartbeat.and.returnValue(heartbeatSubjectMock.asObservable());
 eventsServiceSpy.getHearingTransfer.and.returnValue(hearingTransferSubjectMock.asObservable());
 eventsServiceSpy.getParticipantMediaStatusMessage.and.returnValue(participantMediaStatusSubjectMock.asObservable());
+eventsServiceSpy.getParticipantRemoteMuteStatusMessage.and.returnValue(participantRemoteMuteStatusSubjectMock.asObservable());
+eventsServiceSpy.getParticipantHandRaisedMessage.and.returnValue(participantHandRaisedStatusSubjectMock.asObservable());
 eventsServiceSpy.getRoomUpdate.and.returnValue(roomUpdateSubjectMock.asObservable());
 eventsServiceSpy.getRoomTransfer.and.returnValue(roomTransferSubjectMock.asObservable());
 eventsServiceSpy.getAdminAnsweredChat.and.returnValue(adminAnsweredChatSubjectMock.asObservable());

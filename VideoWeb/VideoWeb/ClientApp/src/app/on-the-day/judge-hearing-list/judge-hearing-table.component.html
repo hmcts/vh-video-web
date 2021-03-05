@@ -3,10 +3,10 @@
     <table class="govuk-table">
       <thead class="govuk-table__head">
         <tr class="govuk-table__row">
-          <th class="govuk-table__header" scope="col">Time</th>
-          <th class="govuk-table__header" scope="col">Judge</th>
-          <th class="govuk-table__header" scope="col">Hearing</th>
-          <th class="govuk-table__header" scope="col">Attendees</th>
+          <th class="govuk-table__header" scope="col">{{ 'judge-hearing-table.time' | translate }}</th>
+          <th class="govuk-table__header" scope="col">{{ 'judge-hearing-table.judge' | translate }}</th>
+          <th class="govuk-table__header" scope="col">{{ 'judge-hearing-table.hearing' | translate }}</th>
+          <th class="govuk-table__header" scope="col">{{ 'judge-hearing-table.attendees' | translate }}</th>
           <th class="govuk-table__header" scope="col"></th>
         </tr>
       </thead>
@@ -34,7 +34,7 @@
               {{ hearing.caseType }}
             </p>
             <p class="govuk-!-margin-0 govuk-!-padding-0">
-              Case number: <span id="case-number-{{ hearing.id }}" class="govuk-!-font-weight-bold">{{ hearing.caseNumber }}</span>
+              {{ 'judge-hearing-table.case-number' | translate }}<span id="case-number-{{ hearing.id }}" class="govuk-!-font-weight-bold">{{ hearing.caseNumber }}</span>
             </p>
           </td>
 
@@ -45,47 +45,47 @@
               <span *ngIf="hearing.panelMembers.length > 0">
                 <p class="govuk-!-margin-0 govuk-!-padding-0">
                   <span id="panel-member-count-{{ hearing.id }}">
-                    {{ hearing.panelMembers.length }} Panel Member{{ hearing.panelMembers.length > 1 ? 's' : '' }}
+                    {{ hearing.panelMembers.length }} {{ hearing.panelMembers.length > 1 ? getTranslation('panel-members') : getTranslation('panel-member') }}
                   </span>
                 </p>
               </span>
               <span *ngIf="hearing.wingers.length > 0">
                 <p class="govuk-!-margin-0 govuk-!-padding-0">
                   <span id="winger-count-{{ hearing.id }}">
-                    {{ hearing.wingers.length }} Winger{{ hearing.wingers.length > 1 ? 's' : '' }}
+                    {{ hearing.wingers.length }} {{ hearing.wingers.length > 1 ? getTranslation('wingers') : getTranslation('winger') }}
                   </span>
                 </p>
               </span>
               <span *ngIf="hearing.nonJudicialParticipantsExcludingObservers.length > 0">
                 <p class="govuk-!-margin-0 govuk-!-padding-0">
                   <span id="participant-count-{{ hearing.id }}">
-                    {{ hearing.nonJudicialParticipantsExcludingObservers.length }} Participant{{
-                      hearing.nonJudicialParticipantsExcludingObservers.length > 1 ? 's' : ''
+                    {{ hearing.nonJudicialParticipantsExcludingObservers.length }} {{
+                      hearing.nonJudicialParticipantsExcludingObservers.length > 1 ?  getTranslation('participants') : getTranslation('participant')
                     }}
                   </span>
                 </p>
               </span>
               <div *ngIf="hearing.numberOfEndpoints > 0">
                 <span id="endpoints-count-{{ hearing.id }}">
-                  {{ hearing.numberOfEndpoints }} Video access point{{ hearing.numberOfEndpoints > 1 ? 's' : '' }}
+                  {{ hearing.numberOfEndpoints }} {{ hearing.numberOfEndpoints > 1 ? getTranslation('video-access-points') : getTranslation('video-access-point') }}
                 </span>
               </div>
               <span *ngIf="hearing.observers.length > 0">
                 <p class="govuk-!-margin-0 govuk-!-padding-0">
                   <span id="observer-count-{{ hearing.id }}">
-                    {{ hearing.observers.length }} Observer{{ hearing.observers.length > 1 ? 's' : '' }}
+                    {{ hearing.observers.length }} {{ hearing.observers.length > 1 ? getTranslation('observers') : getTranslation('observer') }}
                   </span>
                 </p>
               </span>
             </div>
 
             <div *ngIf="hearing.isClosed() && hearing.isExpired()">
-              <span class="govuk-caption-m">Judicial consultation room is now closed</span>
+              <span class="govuk-caption-m">{{ 'judge-hearing-table.judicial-consultation-room-is-now-closed' | translate }}</span>
             </div>
 
             <div *ngIf="hearing.isClosed() && !hearing.isExpired()">
               <a class="govuk-link" href="javascript:void(0)" (click)="signIntoConference(hearing)"
-                >Judicial consultation room open until {{ hearing.retrieveExpiryTime() | date: 'HH:mm' }}</a
+                >{{ 'judge-hearing-table.judicial-consultation-room-open-until' | translate }}{{ hearing.retrieveExpiryTime() | date: 'HH:mm' }}</a
               >
             </div>
           </td>
@@ -99,12 +99,11 @@
                 data-module="govuk-button"
                 type="button"
                 (click)="signIntoConference(hearing)"
-                alt="Sign into the conference"
               >
-                Select
+              {{ 'judge-hearing-table.select' | translate }}
               </button>
             </div>
-            <div *ngIf="!hearing.isClosed() && !hearing.isReadyToStart()">Not ready to start</div>
+            <div *ngIf="!hearing.isClosed() && !hearing.isReadyToStart()">{{ 'judge-hearing-table.not-ready-to-start' | translate }}</div>
             <div *ngIf="showConferenceStatus(hearing)" class="govuk-!-margin-top-3 govuk-!-margin-bottom-3">
               <span
                 id="hearing-status-{{ hearing.id }}"

@@ -63,6 +63,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Click(WaitingRoomPage.StartPrivateMeetingButton);
             _browsers[_c.CurrentUser].ClickCheckbox(WaitingRoomPage.InviteCheckboxFor(participant.Display_name));
             _browsers[_c.CurrentUser].Click(WaitingRoomPage.ContinueButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateConsultationRoomPage.IncomingFeed);
         }
 
         [When(@"they attempt to start a private consultation with no other participants")]

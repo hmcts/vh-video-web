@@ -11,6 +11,7 @@ import { ConnectionStatusService } from './connection-status.service';
 import { connectionStatusServiceSpyFactory } from '../testing/mocks/mock-connection-status.service';
 import { LocationService } from './location.service';
 import { of } from 'rxjs';
+import { translateServiceSpy } from '../testing/mocks/mock-translation-service';
 
 describe('ErrorService', () => {
     const mockLogger: Logger = new MockLogger();
@@ -35,7 +36,7 @@ describe('ErrorService', () => {
     }
 
     function createService() {
-        service = new ErrorService(routerSpy, mockLogger, connectionStatusServiceSpy, localtionServiceSpy);
+        service = new ErrorService(routerSpy, mockLogger, connectionStatusServiceSpy, localtionServiceSpy, translateServiceSpy);
     }
 
     // ---------------------
@@ -156,15 +157,15 @@ describe('ErrorService', () => {
         spyOn(service, 'goToServiceError');
         const error = new CallError('Error connecting to conference');
         const conferenceId = Guid.create().toString();
-
+        translateServiceSpy.instant.calls.reset();
+        const text1 = `There's a problem with your connection`;
+        const text2 = `Please click "Reconnect" to return to the previous page. Call us if you keep seeing this message.`;
+        translateServiceSpy.instant.and.returnValues(text1, text2);
         // act
         service.handlePexipError(error, conferenceId);
 
         // assert
-        expect(service.goToServiceError).toHaveBeenCalledWith(
-            `There's a problem with your connection`,
-            `Please click "Reconnect" to return to the previous page. Call us if you keep seeing this message.`
-        );
+        expect(service.goToServiceError).toHaveBeenCalledWith(text1, text2);
     });
 
     it('should navigate to service error with connection lost message when pexip error message has firewall or browser extensions issue', () => {
@@ -189,16 +190,16 @@ describe('ErrorService', () => {
             `Your camera and/or microphone are not available. Please make sure they are not being actively used by another app`
         );
         const conferenceId = Guid.create().toString();
+        const text1 = 'Your camera and microphone are blocked';
+        const text2 = 'Please unblock the camera and microphone or call us if there is a problem.';
+        translateServiceSpy.instant.calls.reset();
+        translateServiceSpy.instant.and.returnValues(text1, text2);
 
         // act
         service.handlePexipError(error, conferenceId);
 
         // assert
-        expect(service.goToServiceError).toHaveBeenCalledWith(
-            'Your camera and microphone are blocked',
-            'Please unblock the camera and microphone or call us if there is a problem.',
-            false
-        );
+        expect(service.goToServiceError).toHaveBeenCalledWith(text1, text2, false);
     });
 
     it('should navigate to service error with default message when pexip error message is generic', () => {
@@ -207,15 +208,16 @@ describe('ErrorService', () => {
         spyOn(service, 'goToServiceError');
         const error = new CallError('This meeting has reached the maximum number of participants.');
         const conferenceId = Guid.create().toString();
+        const text1 = 'An unexpected error occurred';
+        const text2 = 'Please click "Reconnect" to return to the previous page.Call us if you keep seeing this message.';
+        translateServiceSpy.instant.calls.reset();
+        translateServiceSpy.instant.and.returnValues(text1, text2);
 
         // act
         service.handlePexipError(error, conferenceId);
 
         // assert
-        expect(service.goToServiceError).toHaveBeenCalledWith(
-            'An unexpected error occurred',
-            'Please click "Reconnect" to return to the previous page. Call us if you keep seeing this message.'
-        );
+        expect(service.goToServiceError).toHaveBeenCalledWith(text1, text2);
     });
 
     it('should navigate to media device error with camera and microphone in use message when pexip return a media related error', () => {

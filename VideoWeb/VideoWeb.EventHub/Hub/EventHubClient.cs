@@ -41,7 +41,7 @@ namespace VideoWeb.EventHub.Hub
         public override async Task OnConnectedAsync()
         {
             var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name);
-            _logger.LogTrace("Connected to event hub server-side: {userName}", userName);
+            _logger.LogTrace("Connected to event hub server-side: {Username}", userName);
             var isAdmin = IsSenderAdmin();
 
             await AddUserToUserGroup(isAdmin);
@@ -64,7 +64,7 @@ namespace VideoWeb.EventHub.Hub
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, VhOfficersGroupName);
             }
-            
+
             await Groups.AddToGroupAsync(Context.ConnectionId, Context.User.Identity.Name.ToLowerInvariant());
         }
 
@@ -73,11 +73,12 @@ namespace VideoWeb.EventHub.Hub
             var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name.ToLowerInvariant());
             if (exception == null)
             {
-                _logger.LogInformation("Disconnected from chat hub server-side: {userName}", userName);
+                _logger.LogInformation("Disconnected from chat hub server-side: {Username}", userName);
             }
             else
             {
-                _logger.LogWarning(exception, "There was an error when disconnecting from chat hub server-side: {userName}", userName);
+                _logger.LogWarning(exception,
+                    "There was an error when disconnecting from chat hub server-side: {Username}", userName);
             }
 
             var isAdmin = IsSenderAdmin();
@@ -100,7 +101,8 @@ namespace VideoWeb.EventHub.Hub
         private async Task RemoveUserFromConferenceGroups(bool isAdmin)
         {
             var conferenceIds = await GetConferenceIds(isAdmin);
-            var tasks = conferenceIds.Select(c => Groups.RemoveFromGroupAsync(Context.ConnectionId, c.ToString())).ToArray();
+            var tasks = conferenceIds.Select(c => Groups.RemoveFromGroupAsync(Context.ConnectionId, c.ToString()))
+                .ToArray();
 
             await Task.WhenAll(tasks);
         }
@@ -137,10 +139,10 @@ namespace VideoWeb.EventHub.Hub
         public async Task SendMessage(Guid conferenceId, string message, string to, Guid messageUuid)
         {
             var userName = await GetObfuscatedUsernameAsync(Context.User.Identity.Name);
-            _logger.LogTrace("{userName} is attempting to SendMessages", userName);
+            _logger.LogTrace("{Username} is attempting to SendMessages", userName);
             // this determines if the message is from admin
             var isSenderAdmin = IsSenderAdmin();
-            _logger.LogDebug("{userName} is sender admin: {isSenderAdmin}", userName, isSenderAdmin);
+            _logger.LogDebug("{Username} is sender admin: {IsSenderAdmin}", userName, isSenderAdmin);
 
             var participantTo = to;
 
@@ -156,7 +158,7 @@ namespace VideoWeb.EventHub.Hub
 
 
             var isRecipientAdmin = await IsRecipientAdmin(participantTo);
-            _logger.LogDebug("{userName} is recipient admin: {isSenderAdmin}", userName, isSenderAdmin);
+            _logger.LogDebug("{Username} is recipient admin: {IsSenderAdmin}", userName, isSenderAdmin);
             // only admins and participants in the conference can send or receive a message within a conference channel
             var from = Context.User.Identity.Name.ToLowerInvariant();
             var participantUsername = isSenderAdmin ? participantTo : from;
@@ -169,7 +171,7 @@ namespace VideoWeb.EventHub.Hub
 
             var dto = new SendMessageDto
             {
-                Conference = new Conference { Id = conferenceId },
+                Conference = new Conference {Id = conferenceId},
                 From = from,
                 To = to,
                 Message = message,
@@ -216,7 +218,7 @@ namespace VideoWeb.EventHub.Hub
                 x.Username.Equals(dto.ParticipantUsername, StringComparison.InvariantCultureIgnoreCase));
 
             var username = await _userProfileService.GetObfuscatedUsernameAsync(participant.Username);
-            _logger.LogDebug("Sending message {MessageUuid} to group {username}", dto.MessageUuid, username);
+            _logger.LogDebug("Sending message {MessageUuid} to group {Username}", dto.MessageUuid, username);
 
             var from = participant.Id.ToString() == dto.To ? dto.From : participant.Id.ToString();
 
@@ -227,7 +229,7 @@ namespace VideoWeb.EventHub.Hub
         private async Task SendToAdmin(SendMessageDto dto, string fromId)
         {
             var groupName = dto.Conference.Id.ToString();
-            _logger.LogDebug("Sending message {MessageUuid} to group {groupName}", dto.MessageUuid, groupName);
+            _logger.LogDebug("Sending message {MessageUuid} to group {GroupName}", dto.MessageUuid, groupName);
             var from = string.IsNullOrEmpty(fromId) ? dto.From : fromId;
             await Clients.Group(groupName)
                 .ReceiveMessage(dto.Conference.Id, from, dto.To, dto.Message, dto.Timestamp, dto.MessageUuid);
@@ -279,7 +281,7 @@ namespace VideoWeb.EventHub.Hub
                 if (participant == null)
                 {
 
-                    _logger.LogDebug("Participant {username} does not exist in conversation", username);
+                    _logger.LogDebug("Participant {Username} does not exist in conversation", username);
                     throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
                 }
             }
@@ -289,7 +291,7 @@ namespace VideoWeb.EventHub.Hub
                 return false;
             }
 
-            _logger.LogDebug("Participant {username} exists in conversation", username);
+            _logger.LogDebug("Participant {Username} exists in conversation", username);
             return true;
         }
 
@@ -351,14 +353,15 @@ namespace VideoWeb.EventHub.Hub
                 var transferringParticipant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
                 if (transferringParticipant == null)
                 {
-                    _logger.LogDebug("Participant {participant} does not exist in {conference}", participantId, conferenceId);
+                    _logger.LogDebug("Participant {ParticipantId} does not exist in {ConferenceId}", participantId,
+                        conferenceId);
                     throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
                 }
 
                 await Clients.Group(VhOfficersGroupName)
                     .HearingTransfer(conferenceId, participantId, transferDirection);
                 _logger.LogTrace(
-                    "Participant Transfer: Participant Id: {participant} | Conference Id: {conference} | Direction: {direction}",
+                    "Participant Transfer: Participant Id: {ParticipantId} | Conference Id: {ConferenceId} | Direction: {Direction}",
                     participantId, conferenceId, transferDirection);
 
                 foreach (var participant in conference.Participants)
@@ -383,7 +386,8 @@ namespace VideoWeb.EventHub.Hub
                 var participant = conference.Participants.SingleOrDefault(x => x.Id == participantId);
                 if (participant == null)
                 {
-                    _logger.LogDebug("Participant {participant} does not exist in {conference}", participantId, conferenceId);
+                    _logger.LogDebug("Participant {ParticipantId} does not exist in {ConferenceId}", participantId,
+                        conferenceId);
                     throw new ParticipantNotFoundException(conferenceId, Context.User.Identity.Name);
                 }
 
@@ -394,13 +398,84 @@ namespace VideoWeb.EventHub.Hub
                     .ParticipantMediaStatusMessage(participantId, conferenceId, mediaStatus);
 
                 _logger.LogTrace(
-                    "Participant device status updated: Participant Id: {participant} | Conference Id: {conference}",
+                    "Participant device status updated: Participant Id: {ParticipantId} | Conference Id: {ConferenceId}",
                     participantId, conferenceId);
 
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occured when updating participant device status");
+            }
+        }
+
+        /// <summary>
+        /// Inform a participant/room when they have been remote muted
+        /// </summary>
+        /// <returns></returns>
+        public async Task UpdateParticipantRemoteMuteStatus(Guid conferenceId, Guid participantId, bool isRemoteMuted)
+        {
+            try
+            {
+                var conference = await GetConference(conferenceId);
+                var participant = conference.Participants.Single(x => x.Id == participantId);
+                var linkedParticipants = conference.Participants
+                    .Where(p => participant.LinkedParticipants.Select(x => x.LinkedId)
+                        .Contains(p.Id)
+                    ).ToList();
+
+                await Clients.Group(participant.Username.ToLowerInvariant())
+                    .ParticipantRemoteMuteMessage(participantId, conferenceId, isRemoteMuted);
+                _logger.LogTrace(
+                    "Participant remote mute status updated: Participant Id: {ParticipantId} | Conference Id: {ConferenceId} to {IsRemoteMuted}",
+                    participantId, conferenceId, isRemoteMuted);
+                Task.WaitAll(
+                    linkedParticipants.Select(linkedParticipant => Clients
+                        .Group(linkedParticipant.Username.ToLowerInvariant())
+                        .ParticipantRemoteMuteMessage(participantId, conferenceId, isRemoteMuted)).ToArray());
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error occured when updating participant {ParticipantId} in conference {ConferenceId} remote mute status to {IsRemoteMuted}",
+                    participantId, conferenceId, isRemoteMuted);
+            }
+        }
+
+        /// <summary>
+        /// Publish a participant's hand status (i.e. raised or lowered)
+        /// </summary>
+        /// <returns></returns>
+        public async Task UpdateParticipantHandStatus(Guid conferenceId, Guid participantId, bool isRaised)
+        {
+            try
+            {
+                var conference = await GetConference(conferenceId);
+                var participant = conference.Participants.Single(x => x.Id == participantId);
+                var linkedParticipants = conference.Participants
+                    .Where(p => participant.LinkedParticipants.Select(x => x.LinkedId)
+                        .Contains(p.Id)
+                    ).ToList();
+
+                var judge = conference.Participants.Single(x => x.IsJudge());
+                await Clients.Group(judge.Username.ToLowerInvariant())
+                    .ParticipantHandRaiseMessage(participantId, conferenceId, isRaised);
+                await Clients.Group(participant.Username.ToLowerInvariant())
+                    .ParticipantHandRaiseMessage(participantId, conferenceId, isRaised);
+                Task.WaitAll(
+                    linkedParticipants.Select(linkedParticipant => Clients
+                        .Group(linkedParticipant.Username.ToLowerInvariant())
+                        .ParticipantHandRaiseMessage(participantId, conferenceId, isRaised)).ToArray());
+                _logger.LogTrace(
+                    "Participant hand status updated: Participant Id: {ParticipantId} | Conference Id: {ConferenceId} to {IsHandRaised}",
+                    participantId, conferenceId, isRaised);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex,
+                    "Error occured when updating participant {ParticipantId} in conference {ConferenceId} hand status to {IsHandRaised}",
+                    participantId, conferenceId, isRaised);
             }
         }
 
@@ -417,7 +492,9 @@ namespace VideoWeb.EventHub.Hub
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occured to find the participant in conference {conferenceId} by participant Id {participantId}", conferenceId, participantId);
+                _logger.LogError(ex,
+                    "Error occured to find the participant in conference {ConferenceId} by participant Id {ParticipantId}",
+                    conferenceId, participantId);
                 return username;
             }
         }
@@ -429,13 +506,14 @@ namespace VideoWeb.EventHub.Hub
             {
                 var conference = await GetConference(conferenceId);
                 var participant = conference.Participants.Single(x =>
-                   x.Username.Equals(participantUsername, StringComparison.InvariantCultureIgnoreCase));
+                    x.Username.Equals(participantUsername, StringComparison.InvariantCultureIgnoreCase));
 
                 return participant.Id.ToString();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occured to find the participant in conference {conferenceId} by username", conferenceId);
+                _logger.LogError(ex, "Error occured to find the participant in conference {ConferenceId} by username",
+                    conferenceId);
                 return particiantId;
             }
         }
