@@ -9,6 +9,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VideoWebService } from '../../services/api/video-web.service';
 import { EquipmentCheckBaseComponentDirective } from '../abstract/equipment-check-base.component';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-microphone-check',
@@ -23,7 +24,8 @@ export class MicrophoneCheckComponent extends EquipmentCheckBaseComponentDirecti
         protected adalService: AdalService,
         protected errorService: ErrorService,
         protected logger: Logger,
-        protected participantStatusUpdateService: ParticipantStatusUpdateService
+        protected participantStatusUpdateService: ParticipantStatusUpdateService,
+        protected translateService: TranslateService
     ) {
         super(router, route, fb, videoWebService, adalService, errorService, logger, participantStatusUpdateService);
     }
@@ -34,7 +36,7 @@ export class MicrophoneCheckComponent extends EquipmentCheckBaseComponentDirecti
     }
 
     getEquipmentCheck(): string {
-        return 'Microphone';
+        return this.translateService.instant('microphone-check.microphone');
     }
 
     getFailureReason(): SelfTestFailureReason {

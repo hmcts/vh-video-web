@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, AbstractControl, Validators } from '@angular/fo
 import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-select-media-devices',
@@ -34,7 +35,8 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         private userMediaService: UserMediaService,
         private userMediaStreamService: UserMediaStreamService,
         private formBuilder: FormBuilder,
-        private logger: Logger
+        private logger: Logger,
+        private translateService: TranslateService
     ) {}
 
     ngOnInit() {
@@ -95,7 +97,10 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     }
 
     get audioOnlyToggleText(): string {
-        return this.connectWithCameraOn ? 'ON' : 'OFF';
+        const result: string = this.connectWithCameraOn
+            ? this.translateService.instant('select-media-devices.on')
+            : this.translateService.instant('select-media-devices.off');
+        return result.toUpperCase();
     }
 
     get hasSingleCameraConncted(): boolean {

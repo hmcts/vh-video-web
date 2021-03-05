@@ -5,19 +5,19 @@
 </div>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <h1 class="govuk-heading-xl">Was your camera working?</h1>
+    <h1 class="govuk-heading-xl">{{ 'camera-check.was-your-camera-working' | translate }}</h1>
 
     <form [formGroup]="form" class="govuk-form-group" (ngSubmit)="onSubmit()">
       <div [ngClass]="showError() ? 'govuk-form-group--error' : 'govuk-form-group'">
         <div *ngIf="showError()" class="govuk-error-message">
-          <span class="govuk-visually-hidden">Error:</span>
-          Select if you could see yourself in the camera window
+          <span class="govuk-visually-hidden">{{ 'camera-check.error' | translate }}</span>
+          {{ 'camera-check.select-if-you-could-see-yourself' | translate }}
         </div>
 
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
             <label class="govuk-body" for="equipmentCheck">
-              Could you see yourself on the screen in the camera window?
+              {{ 'camera-check.could-you-see-yourself-on-the-screen' | translate }}
             </label>
           </legend>
           <div class="govuk-radios govuk-!-margin-top-5">
@@ -31,7 +31,7 @@
                 value="Yes"
               />
               <label class="govuk-label govuk-radios__label" for="camera-yes">
-                Yes
+                {{ 'camera-check.yes' | translate }}
               </label>
             </div>
             <div class="govuk-radios__item">
@@ -44,7 +44,7 @@
                 value="No"
               />
               <label class="govuk-label govuk-radios__label" for="camera-no">
-                No
+                {{ 'camera-check.no' | translate }}
               </label>
             </div>
           </div>
@@ -59,7 +59,7 @@
           (click)="onSubmit()"
           aria-label="Continue to the next page"
         >
-          Continue
+        {{ 'camera-check.continue' | translate }}
         </button>
 
         <button
@@ -70,7 +70,7 @@
           (click)="checkEquipmentAgain()"
           aria-label="Check my equipment again"
         >
-          Check my equipment again
+        {{ 'camera-check.check-my-equipment-again' | translate }}
         </button>
       </div>
     </form>
