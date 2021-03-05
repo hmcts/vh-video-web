@@ -31,8 +31,9 @@ namespace VideoWeb.Extensions
                             ? "Callback" : "Default")
                 .AddJwtBearer("Default", options =>
                 {
-                    options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}";
+                    options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}/";
                     options.TokenValidationParameters.ValidateLifetime = true;
+                    options.TokenValidationParameters.ValidateAudience = false;
                     options.Audience = securitySettings.ClientId;
                     options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
                 }).AddJwtBearer("EventHubUser", options =>
