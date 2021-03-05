@@ -1,160 +1,314 @@
 {
-    "hearing-list-table": {
-        "date-and-time": "Date & time",
-        "hearing-details": "Hearing details",
-        "case-number": "Case number",
-        "sign-in": "Sign in {{date}}",
-        "from": "from {{time}}",
-        "today": "Today",
-        "on-date": "on {{date}}",
-        "button": {
-            "sign-into-hearing": "Sign into hearing"
-        }
-    },
-    "footer": {
-        "privacy-policy": "Privacy policy",
-        "accessibility": "Accessibility",
-        "translate-to": "",
-        "translate-to-test": "",
-        "all-content-availabe-under": "All content is available under the ",
-        "open-government-license": "Open Government Licence v3.0",
-        "except": ", except where otherwise stated",
-        "copyright": "© Crown copyright"
-    },
-    "login": {
-        "redirect": "Please wait while we redirect"
-    },
-    "logout": {
-        "signing-out": "Signing out",
-        "signed-out-successfully": "Signed out successfully. Click",
-        "here": "here",
-        "log-back-in": "to log back in."
-    },
-    "unauthorised": {
-        "not-authorised": "You are not authorised to use this service",
-        "not-registered": "It looks like you are not registered for this service.",
-        "contact-us": "If you think this is a mistake and you need to speak to someone, please contact us using the options below."
-    },
-    "back-navigation": {
-        "back": "Back"
-    },
-    "beta-banner": {
-        "beta": "beta",
-        "this-new-service": " This is a new service – your",
-        "feedback": "feedback",
-        "help-improve": "will help us to improve it."
-    },
-    "chat-base": {
-        "you": "You"
-    },
-    "chat-body-window": {
-        "error": "Error:",
-        "failed": "message failed to send",
-        "try-again": "try again"
-    },
-    "chat-input-box": {
-        "send": "Send",
-        "char-count": "Character count",
-        "maximum": "maximum allowed",
-        "unable-send": "Unable to send message."
-
-    },
-     "contact-us": {
-        "contact-video-hearings": "Contact the video hearings service",
-        "speak-to-admin": "To speak to a hearings administrator:",
-        "call": "call",
-        "email": "email"
-    },
-    "contact-us-folding": {
-        "contact-for-help": "Contact us for help",
-        "call-vh-team": "Call the video hearings team on",
-        "quote-case-number": "and quote your case number",
-        "available-time": "(available between 9am and 5pm, Monday to Friday)",
-        "email-us": "Email us at",
-        "quoting-case-number": "quoting your case number"
-
-    },
-    "equipment-problem": {
-        "problem-with-equipment": "Problems with your equipment?",
-        "not-working-call-us": "something's not working, please call us now.",
-        "call": "Call",
-        "for-vh-team": "for the video hearings team"
-    },
-    "error": {
-        "problem-with-service": "Sorry, there is a problem with the service",
-        "try-later": "Please try again later.",
-        "need-to-speak": "If you need to speak to someone please contact us using the options below.",
-        "problem-with-connection": "There's a problem with your connection",
-        "default-body-message": "Please reconnect. Call us if you keep seeing this message.",
-        "you-not-connected": "You are not connected to the internet. You will not be able to join your video hearing until you are reconnected. Please call the Video Hearings Team to let them know you cannot connect to our service.",
-        "check-security-settings": "Please check that your security settings are not blocking the connection.",
-        "keep-seeing-message": "If you keep seeing this message contact the video hearings team.",
-        "find-out-more": "Find out more about your computer set-up and internet connection at:",
-        "computer-part-of-network": "If your computer is part of a network, your IT support will find guidance and firewall settings at:",
-        "button-reconnect": "Reconnect",
-        "contact-for-help": "Contact us for help",
-        "call-vh-team": "Call the Video Hearings team on",
-        "click-reconnect": "Please click \"Reconnect\" to return to the previous page. Call us if you keep seeing this message."
-
-    },
-    "error-service": {
-        "unexpected-error": "An unexpected error occurred",
-        "click-reconnect": "Please click \"Reconnect\" to return to the previous page. Call us if you keep seeing this message.",
-        "problem-with-connection": "There's a problem with your connection",
-        "camera-mic-blocked": "Your camera and microphone are blocked",
-        "please-unblock": "Please unblock the camera and microphone or call us if there is a problem."
-    },
-    "error-camera-microphone": {
-        "problem-with-camera-mic": "There is a problem with your camera and microphone",
-        "camera-mic-in-use": "Your camera and microphone may already be in use. Please close any application that may be using your camera and microphone and try again.",
-        "camera-mic-cannot-be-found": "Your camera and microphone cannot be found. Please connect your camera and microphone and try again.",
-        "call-us": "Call us if you're still seeing this message.",
-        "button-continue": " Continue"
-    },
-    "header": {
-        "hm-courts": "HM Courts",
-        "tribunals-service": "Tribunals Service",
-        "sign-out": "Sign out"
-    },
-    "not-found": {
-        "page-not-found": "Page not found",
-        "typed-web-address": "If you typed the web address, check it is correct.",
-        "pasted-web-address": "If you pasted the web address, check you copied the entire address.",
-        "web-address-correct": "If the web address is correct or you selected a link or button, contact us using the options below."
-    },
-    "select-media-devices": {
-        "change-camera-mic": "Change your camera and microphone",
-        "browser-support": "Your browser does not support video",
-        "change-camera": "Change camera",
-        "change-microphone": "Change microphone",
-        "green-bar": "Make sure the green bar moves when you speak",
-        "permission-switch-off-camera": "You need permission from the court to switch off your camera",
-        "button-close": "Close",
-        "on": "ON",
-        "off": "OFF",
-        "warning": "Warning",
-        "join-with-camera-on-off": " Join with your camera on/off"
-    },
-    "self-test": {
-        "testing-equipment": "Testing your equipment",
-        "to-be-connected": "Please wait to be connected...",
-        "browser-not-support": "Your browser does not support video",
-        "change-camera-mic": "Change camera or microphone"
-    },
-    "unsupported-browser": {
-        "using-unsupported-browser": "You've signed in using an unsupported browser",
-        "it-looks-like": "It looks like you've signed in using",
-        "unfortunately-this-browser": "Unfortunately this browser is not currently supported.",
-        "please-sign-out": "Please sign out and sign in again using any of the following."
-    },
-    "unsupported-device": {
-        "use-different-device": "Please use a different device",
-        "service-will-not-work": "The service will not work on the device you’re using. Please sign out and sign in again.",
-        "you-may-use": "You may use:",
-        "laptop-or-desktop": "a laptop or desktop computer with a camera and microphone",
-        "apple-ipad": "an Apple iPad (Safari only)",
-        "if-you-cannot-access": "If you cannot access a suitable device, call the video hearings team on 0300 303 0655."
+  "hearing-list-table": {
+    "date-and-time": "Date & time",
+    "hearing-details": "Hearing details",
+    "case-number": "Case number",
+    "sign-in": "Sign in {{date}}",
+    "from": "from {{time}}",
+    "today": "Today",
+    "on-date": "on {{date}}",
+    "button": {
+      "sign-into-hearing": "Sign into hearing"
     }
-
-
+  },
+  "footer": {
+    "privacy-policy": "Privacy policy",
+    "accessibility": "Accessibility",
+    "translate-to": "",
+    "translate-to-test": "",
+    "all-content-availabe-under": "All content is available under the ",
+    "open-government-license": "Open Government Licence v3.0",
+    "except": ", except where otherwise stated",
+    "copyright": "© Crown copyright"
+  },
+  "login": {
+    "redirect": "Please wait while we redirect"
+  },
+  "logout": {
+    "signing-out": "Signing out",
+    "signed-out-successfully": "Signed out successfully. Click",
+    "here": "here",
+    "log-back-in": "to log back in."
+  },
+  "unauthorised": {
+    "not-authorised": "You are not authorised to use this service",
+    "not-registered": "It looks like you are not registered for this service.",
+    "contact-us": "If you think this is a mistake and you need to speak to someone, please contact us using the options below."
+  },
+  "back-navigation": {
+    "back": "Back"
+  },
+  "beta-banner": {
+    "beta": "beta",
+    "this-new-service": " This is a new service – your",
+    "feedback": "feedback",
+    "help-improve": "will help us to improve it."
+  },
+  "chat-base": {
+    "you": "You"
+  },
+  "chat-body-window": {
+    "error": "Error:",
+    "failed": "message failed to send",
+    "try-again": "try again"
+  },
+  "chat-input-box": {
+    "send": "Send",
+    "char-count": "Character count",
+    "maximum": "maximum allowed",
+    "unable-send": "Unable to send message."
+  },
+  "contact-us": {
+    "contact-video-hearings": "Contact the video hearings service",
+    "speak-to-admin": "To speak to a hearings administrator:",
+    "call": "call",
+    "email": "email"
+  },
+  "contact-us-folding": {
+    "contact-for-help": "Contact us for help",
+    "call-vh-team": "Call the video hearings team on",
+    "quote-case-number": "and quote your case number",
+    "available-time": "(available between 9am and 5pm, Monday to Friday)",
+    "email-us": "Email us at",
+    "quoting-case-number": "quoting your case number"
+  },
+  "equipment-problem": {
+    "problem-with-equipment": "Problems with your equipment?",
+    "not-working-call-us": "something's not working, please call us now.",
+    "call": "Call",
+    "for-vh-team": "for the video hearings team"
+  },
+  "error": {
+    "problem-with-service": "Sorry, there is a problem with the service",
+    "try-later": "Please try again later.",
+    "need-to-speak": "If you need to speak to someone please contact us using the options below.",
+    "problem-with-connection": "There's a problem with your connection",
+    "default-body-message": "Please reconnect. Call us if you keep seeing this message.",
+    "you-not-connected": "You are not connected to the internet. You will not be able to join your video hearing until you are reconnected. Please call the Video Hearings Team to let them know you cannot connect to our service.",
+    "check-security-settings": "Please check that your security settings are not blocking the connection.",
+    "keep-seeing-message": "If you keep seeing this message contact the video hearings team.",
+    "find-out-more": "Find out more about your computer set-up and internet connection at:",
+    "computer-part-of-network": "If your computer is part of a network, your IT support will find guidance and firewall settings at:",
+    "button-reconnect": "Reconnect",
+    "contact-for-help": "Contact us for help",
+    "call-vh-team": "Call the Video Hearings team on",
+    "click-reconnect": "Please click \"Reconnect\" to return to the previous page. Call us if you keep seeing this message."
+  },
+  "error-service": {
+    "unexpected-error": "An unexpected error occurred",
+    "click-reconnect": "Please click \"Reconnect\" to return to the previous page. Call us if you keep seeing this message.",
+    "problem-with-connection": "There's a problem with your connection",
+    "camera-mic-blocked": "Your camera and microphone are blocked",
+    "please-unblock": "Please unblock the camera and microphone or call us if there is a problem."
+  },
+  "error-camera-microphone": {
+    "problem-with-camera-mic": "There is a problem with your camera and microphone",
+    "camera-mic-in-use": "Your camera and microphone may already be in use. Please close any application that may be using your camera and microphone and try again.",
+    "camera-mic-cannot-be-found": "Your camera and microphone cannot be found. Please connect your camera and microphone and try again.",
+    "call-us": "Call us if you're still seeing this message.",
+    "button-continue": " Continue"
+  },
+  "header": {
+    "hm-courts": "HM Courts",
+    "tribunals-service": "Tribunals Service",
+    "sign-out": "Sign out"
+  },
+  "not-found": {
+    "page-not-found": "Page not found",
+    "typed-web-address": "If you typed the web address, check it is correct.",
+    "pasted-web-address": "If you pasted the web address, check you copied the entire address.",
+    "web-address-correct": "If the web address is correct or you selected a link or button, contact us using the options below."
+  },
+  "select-media-devices": {
+    "change-camera-mic": "Change your camera and microphone",
+    "browser-support": "Your browser does not support video",
+    "change-camera": "Change camera",
+    "change-microphone": "Change microphone",
+    "green-bar": "Make sure the green bar moves when you speak",
+    "permission-switch-off-camera": "You need permission from the court to switch off your camera",
+    "button-close": "Close",
+    "on": "ON",
+    "off": "OFF",
+    "warning": "Warning",
+    "join-with-camera-on-off": " Join with your camera on/off"
+  },
+  "self-test": {
+    "testing-equipment": "Testing your equipment",
+    "to-be-connected": "Please wait to be connected...",
+    "browser-not-support": "Your browser does not support video",
+    "change-camera-mic": "Change camera or microphone"
+  },
+  "unsupported-browser": {
+    "using-unsupported-browser": "You've signed in using an unsupported browser",
+    "it-looks-like": "It looks like you've signed in using",
+    "unfortunately-this-browser": "Unfortunately this browser is not currently supported.",
+    "please-sign-out": "Please sign out and sign in again using any of the following."
+  },
+  "unsupported-device": {
+    "use-different-device": "Please use a different device",
+    "service-will-not-work": "The service will not work on the device you’re using. Please sign out and sign in again.",
+    "you-may-use": "You may use:",
+    "laptop-or-desktop": "a laptop or desktop computer with a camera and microphone",
+    "apple-ipad": "an Apple iPad (Safari only)",
+    "if-you-cannot-access": "If you cannot access a suitable device, call the video hearings team on 0300 303 0655."
+  },
+  "equipment-check-base": {
+    "yes": "Yes"
+  },
+  "camera-and-microphone": {
+    "continue": "Continue",
+    "sign-into-the-conference": "Sign into the conference"
+  },
+  "camera-check": {
+    "was-your-camera-working": "Was your camera working?",
+    "error": "Error:",
+    "select-if-you-could-see-yourself": "Select if you could see yourself in the camera window",
+    "could-you-see-yourself-on-the-screen": "Could you see yourself on the screen in the camera window?",
+    "yes": "Yes",
+    "no": "No",
+    "continue": "Continue",
+    "check-my-equipment-again": "Check my equipment again",
+    "camera": "Camera"
+  },
+  "declaration": {
+    "declaration": "Declaration",
+    "error": "Error:",
+    "please-tick-the-box-to-confirm-no-recording": "Please tick the box to confirm that you will not record the hearing in any way",
+    "warning": "Warning",
+    "it-is-a-criminal-offence": "It is a criminal offence to record this hearing (by audio or video), to publish any such recording, or to take any images (by photo or screenshot)",
+    "i-confirm-that-i-will-not-record-or-take-any-images": "I confirm that I will not record or take any images of this hearing",
+    "continue": "Continue"
+  },
+  "equipment-check": {
+    "lets-confirm-your-equipment-is-working": "Let's confirm your equipment is working",
+    "this-short-video": "This short video will help you check that your camera and microphone are working.",
+    "equipment-check": "Equipment Check",
+    "continue": "Continue"
+  },
+  "hearing-rules": {
+    "court-rules": "Court rules",
+    "you-must-follow-courtroom-rules": "You must follow the same rules as you would in a courtroom.",
+    "this-means-you": "This means you:",
+    "can-only-drink-water": "can only drink water",
+    "must-not-eat": "must not eat",
+    "must-only-use-your-phone-to-contact-the-vh-team": "must only use your phone for contact with the video hearings team",
+    "must-follow-the-judges-instructions": "must follow the judge’s instructions",
+    "are-not-allowed-to-smoke-including-e-cigarettes": "are not allowed to smoke (including e-cigarettes)",
+    "must-be-alone-unless-you-have-the-judges-permission": "must be alone unless you have the judge’s permission to have someone with you",
+    "must-ask-the-judges-permission-to-move-away-from-screen": "must ask the judge's permission if you need to move away from your screen",
+    "hm-courts-and-tribunals-service-crest": "HM Courts &amp; Tribunals Service crest",
+    "continue": "Continue"
+  },
+  "independent-self-test": {
+    "please-wait-to-be-connected": "Please wait to be connected...",
+    "problems-with-your-equipment": "Problems with your equipment?",
+    "please-call-beforenumber": "Please call the video hearings team on ",
+    "please-call-afternumber": " to let us know.",
+    "continue": "Continue",
+    "re-play-the-video-message": "Re-play the video message",
+    "check-equipment-again": "Check equipment again"
+  },
+  "introduction": {
+    "hm-courts-and-tribunals-service-crest": "HM Courts &amp; Tribunals Service crest",
+    "get-ready-for-the-hearing": "Get ready for the hearing",
+    "next-we-are-going-to": "Next, we're going to:",
+    "check-that-your-equipment-is-working": "check that your equipment is working",
+    "tell-you-about-the-rules-of-the-court": "tell you about the rules of the court",
+    "next": "Next"
+  },
+  "judge-hearing-list": {
+    "loading-please-wait": "Loading please wait...",
+    "video-hearings-for-court-name": "Video hearings for {{ courtName }}",
+    "check-equipment": "Check equipment",
+    "you-have-no-video-hearings": "You have no video hearings",
+    "if-no-details-shown-please-contact-us": "If you are expecting to see details of your hearing listed here, please contact us using the options below.",
+    "do-you-need-help": "Do you need help?",
+    "call-the-video-hearings-team-on": "Call the video hearings team on "
+  },
+  "judge-hearing-table": {
+    "time": "Time",
+    "judge": "Judge",
+    "hearing": "Hearing",
+    "attendees": "Attendees",
+    "case-number": "Case number: ",
+    "panel-member": "Panel Member",
+    "panel-members": "Panel Members",
+    "winger": "Winger",
+    "wingers": "Wingers",
+    "participant": "Participant",
+    "participants": "Participants",
+    "video-access-point": "Video access point",
+    "video-access-points": "Video access points",
+    "observer": "Observer",
+    "observers": "Observers",
+    "winger-single": "Winger",
+    "winger-plural": "Wingers",
+    "judicial-consultation-room-is-now-closed": "Judicial consultation room is now closed",
+    "judicial-consultation-room-open-until": "Judicial consultation room open until ",
+    "sign-into-the-conference": "Sign into the conference",
+    "select": "Select",
+    "not-ready-to-start": "Not ready to start"
+  },
+  "judge-self-test": {
+    "please-wait-to-be-connected": "Please wait to be connected...",
+    "problems-with-your-equipment": "Problems with your equipment?",
+    "please-call-beforenumber": "Please call the video hearings team on ",
+    "please-call-afternumber": " to let us know.",
+    "we-will-tell-the-participants-their-hearing-may-be-delayed": "We'll tell the participants their hearing may be delayed.",
+    "continue": "Continue",
+    "re-play-the-video-message": "Re-play the video message",
+    "check-equipment-again": "Check equipment again"
+  },
+  "microphone-check": {
+    "was-your-microphone-working": "Was your microphone working?",
+    "error": "Error:",
+    "select-if-you-could-see-the-bar-moving-when-you-spoke": "Select if you could see the bar moving when you spoke",
+    "could-you-see-the-bar-moving-when-you-spoke": "Could you see the bar moving when you spoke?",
+    "yes": "Yes",
+    "no": "No",
+    "continue": "Continue",
+    "check-my-equipment-again": "Check my equipment again",
+    "microphone": "Microphone"
+  },
+  "participant-hearings": {
+    "loading-please-wait": "Loading please wait...",
+    "check-equipment": "Check equipment",
+    "you-do-not-have-a-video-hearing-today": "You do not have a video hearing today",
+    "if-no-details-shown-please-contact-us": "If you were expecting to see the details of a hearing here, please contact the video hearings team."
+  },
+  "participant-self-test": {
+    "please-wait-to-be-connected": "Please wait to be connected...",
+    "when-the-video-has-ended-answer-3-questions": "When the video has ended, answer 3 questions to confirm your microphone and camera are working.",
+    "continue": "Continue",
+    "watch-the-video-again": "Watch the video again"
+  },
+  "self-test-actions": {
+    "equipment-is-working": "Equipment is working",
+    "equipment-is-faulty": "Equipment is faulty"
+  },
+  "switch-on-camera-microphone": {
+    "use-your-camera-and-microphone": "Use your camera and microphone",
+    "switch-on-camera-and-mic-to-watch-the-video": "Switch on your camera and microphone to watch the video.",
+    "your-camera-and-microphone-are-switched-on": "Your camera and microphone are switched on",
+    "camera-and-mic-are-switched-on-you-can-continue-to-video": "Your camera and microphone are switched on. You can now continue to the video.",
+    "your-camera-and-microphone-are-blocked": "Your camera and microphone are blocked",
+    "sorry-you-must-use-camera-and-mic": "We're sorry, you can't take part in the hearing without using your camera and microphone.",
+    "stay-close-to-your-phone-we-will-call-in-5-mins": "Stay close to your phone and we'll call you within 5 minutes.",
+    "sorry-hearing-can-not-go-ahead-if-camera-and-mic-are-blocked": "We're sorry, the hearing can't go ahead if your camera and microphone are blocked.",
+    "please-unblock-camera-and-mic-or-call-us-if-any-problems": "Please unblock the camera and microphone or call us if there is a problem.",
+    "helpline-contact-phone": "Helpline: {{ contactPhone }}",
+    "switch-on": "Switch on",
+    "watch-the-video": "Watch the video"
+  },
+  "video-check": {
+    "could-you-see-and-hear-the-video-clearly": "Could you see and hear the video clearly?",
+    "error": "Error:",
+    "select-if-the-image-and-sound-were-clear": "Select if the image and sound were clear",
+    "were-the-image-and-sound-clear": "Were the image and sound clear?",
+    "yes": "Yes",
+    "no": "No",
+    "continue": "Continue",
+    "check-my-equipment-again": "Check my equipment again",
+    "video": "Video"
+  }
 }

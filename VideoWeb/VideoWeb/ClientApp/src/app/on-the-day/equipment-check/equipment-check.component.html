@@ -5,15 +5,15 @@
 </div>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <h1 class="govuk-heading-xl">Let's confirm your equipment is working</h1>
+    <h1 class="govuk-heading-xl"> {{ 'equipment-check.lets-confirm-your-equipment-is-working' | translate }}</h1>
 
     <p class="govuk-body govuk-!-margin-bottom-4">
-      This short video will help you check that your camera and microphone are working.
+      {{ 'equipment-check.this-short-video' | translate }}
     </p>
 
     <div class="govuk-!-margin-top-4">
-      <button id="continue-btn" class="govuk-button" data-module="govuk-button" (click)="goToCameraAndMicCheck()" alt="Equipment Check">
-        Continue
+      <button id="continue-btn" class="govuk-button" data-module="govuk-button" (click)="goToCameraAndMicCheck()">
+        {{ 'equipment-check.continue' | translate }}
       </button>
     </div>
 

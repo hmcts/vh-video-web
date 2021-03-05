@@ -11,6 +11,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { MicrophoneCheckComponent } from './microphone-check.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('MicrophoneCheckComponent', () => {
     let component: MicrophoneCheckComponent;
@@ -25,6 +26,7 @@ describe('MicrophoneCheckComponent', () => {
     let errorService: jasmine.SpyObj<ErrorService>;
     const logger: Logger = new MockLogger();
     let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
+    const translateService = translateServiceSpy;
 
     beforeAll(() => {
         adalService = mockAdalService;
@@ -46,6 +48,8 @@ describe('MicrophoneCheckComponent', () => {
     });
 
     beforeEach(() => {
+        translateService.instant.calls.reset();
+
         component = new MicrophoneCheckComponent(
             router,
             activatedRoute,
@@ -54,7 +58,8 @@ describe('MicrophoneCheckComponent', () => {
             adalService,
             errorService,
             logger,
-            participantStatusUpdateService
+            participantStatusUpdateService,
+            translateService
         );
         router.navigate.calls.reset();
         component.ngOnInit();
@@ -129,7 +134,7 @@ describe('MicrophoneCheckComponent', () => {
     });
 
     it('should return "Microphone" for equipment check', () => {
-        expect(component.getEquipmentCheck()).toBe('Microphone');
+        expect(component.getEquipmentCheck()).toBe('microphone-check.microphone');
     });
 
     it('should return "Microphone" for self test reason', () => {
