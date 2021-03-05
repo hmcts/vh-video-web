@@ -271,6 +271,8 @@
     "microphone": "Microphone"
   },
   "participant-hearings": {
+    "your-video-hearing": "Your video hearing",
+    "your-video-hearings": "Your video hearings",
     "loading-please-wait": "Loading please wait...",
     "check-equipment": "Check equipment",
     "you-do-not-have-a-video-hearing-today": "You do not have a video hearing today",
