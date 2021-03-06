@@ -7,15 +7,15 @@
           height="50"
           width="50"
           class="govuk-header__logotype-crest"
-          alt="HM Courts &amp; Tribunals Service crest"
+          attr.alt="{{'judge-participant-status-list.crest-alt' | translate}}"
         />
       </div>
 
       <div class="govuk-grid-column-two-thirds">
         <div class="govuk-heading-m govuk-!-margin-bottom-0">
-          <span>Judge</span>
+            <span>{{'judge-participant-status-list.judge' | translate}}</span>
           <span *ngIf="isUserJudge"
-            ><a href="javascript:void(0);" (click)="changeJudgeNameShow()" class="govuk-body govuk-link vh-ml10">Edit</a></span
+            ><a href="javascript:void(0);" (click)="changeJudgeNameShow()" class="govuk-body govuk-link vh-ml10">{{'judge-participant-status-list.edit' | translate}}</a></span
           >
         </div>
         <p class="govuk-body-s govuk-!-margin-bottom-0" *ngIf="!showChangeJudgeDisplayName">
@@ -35,14 +35,14 @@
           </div>
           <div class="vh-mt10">
             <span>
-              <input type="button" id="editJudgeDisplayName" (click)="saveJudgeDisplayName()" value="Save" class="govuk-button" />
+              <input type="button" id="editJudgeDisplayName" (click)="saveJudgeDisplayName()" value="{{'judge-participant-status-list.save' | translate}}" class="govuk-button" />
             </span>
             <span>
               <input
                 type="button"
                 id="cancelJudgeDisplayName"
                 (click)="cancelJudgeDisplayName()"
-                value="Cancel"
+                value="{{'judge-participant-status-list.cancel' | translate}}"
                 class="govuk-button vh-ml10 govuk-button--secondary"
               />
             </span>
@@ -68,7 +68,7 @@
   <div *ngIf="wingers.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">Wingers ({{ wingers.length }})</h2>
+          <h2 class="govuk-heading-s">{{'judge-participant-status-list.wingers' | translate}} ({{ wingers.length }})</h2>
       </div>
     </div>
     <div class="vh-border">
@@ -96,7 +96,7 @@
   <div *ngIf="panelMembers.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">Panel members ({{ panelMembers.length }})</h2>
+          <h2 class="govuk-heading-s">{{'judge-participant-status-list.panel-members' | translate}} ({{ panelMembers.length }})</h2>
       </div>
     </div>
     <div class="vh-border">
@@ -124,7 +124,7 @@
   <div *ngIf="nonJudgeParticipants.length > 0 && !hearing.isClosed()">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">Participants ({{ nonJudgeParticipants.length }})</h2>
+        <h2 class="govuk-heading-s">{{'judge-participant-status-list.participants' | translate}} ({{ nonJudgeParticipants.length }})</h2>
       </div>
     </div>
 
@@ -207,7 +207,7 @@
   <div *ngIf="endpoints.length > 0 && !hearing.isClosed()">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">Video access points ({{ endpoints.length }})</h2>
+        <h2 class="govuk-heading-s">{{'judge-participant-status-list.video-access-points' | translate}} ({{ endpoints.length }})</h2>
       </div>
     </div>
     <div class="vh-border">
@@ -235,7 +235,7 @@
   <div *ngIf="observers.length > 0 && !hearing.isClosed()">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">Observers ({{ observers.length }})</h2>
+        <h2 class="govuk-heading-s">{{'judge-participant-status-list.observers' | translate}} ({{ observers.length }})</h2>
       </div>
     </div>
 

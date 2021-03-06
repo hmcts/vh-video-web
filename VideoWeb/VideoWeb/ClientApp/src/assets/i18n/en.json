@@ -369,5 +369,60 @@
         "mute": "Mute",
         "unpin": "Unpin",
         "pin": "Pin"
+    },
+    "judge-participant-status-list": {
+        "crest-alt": "HM Courts &amp; Tribunals Service crest",
+        "edit": "Edit",
+        "judge": "Judge",
+        "save": "Save",
+        "cancel": "Cancel",
+        "wingers": "Wingers",
+        "panel-members": "Panel members",
+        "participants": "Participants",
+        "video-access-points": "Video access points",
+        "observers": "Observers"
+    },
+    "judge-waiting-room": {
+        "start-this-hearing": "Start this hearing",
+        "hearing-suspended": "Hearing suspended",
+        "hearing-paused": "Hearing paused",
+        "hearing-is-closed": "Hearing is closed",
+        "hearing-is-in-session": "Hearing is in session",
+        "loading-please-wait": "Loading please wait...",
+        "browser-support-message": "Your browser does not support Video",
+        "switch-to-main-screen": "Switch to main screen",
+        "return-to-video-hearing-list": "Return to video hearing list",
+        "choose-camera-and-microphone": "Choose camera and microphone",
+        "choose-camera-and-microphone-dialog": "Choose camera and microphone dialog",
+        "details-of-the-hearing": "Details of the hearing",
+        "hearing": "Hearing",
+        "date": "Date",
+        "case-number": "case number",
+        "is-everyone-connected": "Is everyone connected?",
+        "hearing-messages": {
+            "not-started": "If any participants are not connected, you must call the video hearings team on <strong>0300 303 0655</strong> before you start the hearing.",
+            "paused": "Please call the video hearings team on <strong>0300 303 0655</strong> if you're having problems. We'll update the participants.",
+            "suspended": "The video hearings team has been alerted and we're informing the participants. Please call us now on <strong>0300 303 0655</strong>.",
+            "closed": "The consultation room is available for up to 30 minutes after the hearing has finished.",
+            "warning": "Warning",
+            "consultation-room-will-close-at": "The consultation room will close at "
+        },
+        "buttons": {
+            "start-video-hearing": "Start video hearing",
+            "resume-video-hearing": "Resume video hearing",
+            "enter-consultation-room": "Enter consultation room"
+        },
+        "warning": "Warning",
+        "please-wait-while-we-connect-you": "Please wait while we connect you...",
+        "hearing-is-being-recorded": {
+            "true": "The audio of this hearing is being recorded.",
+            "false": "The audio of this hearing is NOT being recorded.",
+            "image-true": "Recording on image",
+            "image-false": "Recording off image"
+        }
+    },
+    "participant-alert": {
+        "disconnected": "Disconnected",
+        "network-connection-is-poor": "Network connection is poor"
     }
 }
