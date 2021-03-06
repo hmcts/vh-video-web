@@ -26,11 +26,11 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
         {
             _mocker = AutoMock.GetLoose();
             var parameters = new ParameterBuilder(_mocker)
-                .AddTypedParameters<InterpreterRoomMapper>()
+                .AddTypedParameters<SharedParticipantRoomMapper>()
                 .Build();
 
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<InterpreterRoomResponse, Guid, InterpreterRoom>())
-                .Returns(_mocker.Create<InterpreterRoomMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<SharedParticipantRoomResponse, Guid, SharedParticipantRoom>())
+                .Returns(_mocker.Create<SharedParticipantRoomMapper>(parameters));
             
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
@@ -48,7 +48,7 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
         [Test]
         public async Task should_return_okay_when_room_maps()
         {
-            var vmr = new InterpreterRoomResponse()
+            var vmr = new SharedParticipantRoomResponse()
             {
                 Label = "Test",
                 Participant_join_uri = "pat_join__interpreter",
@@ -62,7 +62,28 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
                 .ReturnsAsync(vmr);
 
             var result = await _controller.GetInterpreterRoomForParticipant(conferenceId, participantId);
-            result.Should().BeAssignableTo<OkObjectResult>().Which.Value.Should().BeAssignableTo<InterpreterRoom>();
+            result.Should().BeAssignableTo<OkObjectResult>().Which.Value.Should().BeAssignableTo<SharedParticipantRoom>();
+        }
+        
+        [Test]
+        public async Task should_return_call_get_witness_room_when_participant_type_is_Witness()
+        {
+            var vmr = new SharedParticipantRoomResponse()
+            {
+                Label = "Test",
+                Participant_join_uri = "pat_join__interpreter",
+                Pexip_node = "sip.unit.test.com"
+            };
+            var participantId = Guid.NewGuid();
+            var conferenceId = Guid.NewGuid();
+            var participantType = "Witness";
+            
+            _mocker.Mock<IVideoApiClient>()
+                .Setup(x => x.GetWitnessRoomForParticipantAsync(conferenceId, participantId))
+                .ReturnsAsync(vmr);
+
+            var result = await _controller.GetInterpreterRoomForParticipant(conferenceId, participantId, participantType);
+            result.Should().BeAssignableTo<OkObjectResult>().Which.Value.Should().BeAssignableTo<SharedParticipantRoom>();
         }
 
         [Test]

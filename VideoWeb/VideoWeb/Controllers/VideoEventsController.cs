@@ -56,7 +56,7 @@ namespace VideoWeb.Controllers
                 var conferenceId = Guid.Parse(request.Conference_id);
                 var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
                 {
-                    _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
+                    _logger.LogTrace("Retrieving conference details for conference: ${ConferenceId}", conferenceId);
                     return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
                 });
 
@@ -88,7 +88,8 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"ConferenceId: {request.Conference_id}, ErrorCode: {e.StatusCode}");
+                _logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", request.Conference_id,
+                    e.StatusCode);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }

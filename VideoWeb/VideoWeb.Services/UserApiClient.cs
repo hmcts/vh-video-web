@@ -85,6 +85,22 @@ namespace VideoWeb.Services.User
         /// <exception cref="UserApiException">A server side error occurred.</exception>
         System.Threading.Tasks.Task CheckServiceHealthAsync(System.Threading.CancellationToken cancellationToken);
     
+        /// <summary>Run a health check of the service</summary>
+        /// <returns>Error if fails, otherwise OK status</returns>
+        /// <exception cref="UserApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task CheckServiceHealth2Async();
+    
+        /// <summary>Run a health check of the service</summary>
+        /// <returns>Error if fails, otherwise OK status</returns>
+        /// <exception cref="UserApiException">A server side error occurred.</exception>
+        void CheckServiceHealth2();
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Run a health check of the service</summary>
+        /// <returns>Error if fails, otherwise OK status</returns>
+        /// <exception cref="UserApiException">A server side error occurred.</exception>
+        System.Threading.Tasks.Task CheckServiceHealth2Async(System.Threading.CancellationToken cancellationToken);
+    
         /// <summary>Create a new hearings reforms user account</summary>
         /// <param name="request">Details of a new user</param>
         /// <exception cref="UserApiException">A server side error occurred.</exception>
@@ -605,7 +621,86 @@ namespace VideoWeb.Services.User
         public async System.Threading.Tasks.Task CheckServiceHealthAsync(System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/healthcheck/health");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/HealthCheck/health");
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            return;
+                        }
+                        else
+                        if (status_ == "500") 
+                        {
+                            string responseText_ = ( response_.Content == null ) ? string.Empty : await response_.Content.ReadAsStringAsync().ConfigureAwait(false);
+                            throw new UserApiException("A server side error occurred.", (int)response_.StatusCode, responseText_, headers_, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new UserApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <summary>Run a health check of the service</summary>
+        /// <returns>Error if fails, otherwise OK status</returns>
+        /// <exception cref="UserApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task CheckServiceHealth2Async()
+        {
+            return CheckServiceHealth2Async(System.Threading.CancellationToken.None);
+        }
+    
+        /// <summary>Run a health check of the service</summary>
+        /// <returns>Error if fails, otherwise OK status</returns>
+        /// <exception cref="UserApiException">A server side error occurred.</exception>
+        public void CheckServiceHealth2()
+        {
+            System.Threading.Tasks.Task.Run(async () => await CheckServiceHealth2Async(System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <summary>Run a health check of the service</summary>
+        /// <returns>Error if fails, otherwise OK status</returns>
+        /// <exception cref="UserApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task CheckServiceHealth2Async(System.Threading.CancellationToken cancellationToken)
+        {
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/health/liveness");
     
             var client_ = _httpClient;
             try

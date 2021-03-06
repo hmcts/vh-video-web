@@ -8,7 +8,7 @@ import {
     ConferenceResponse,
     ConferenceStatus,
     ConsultationAnswer,
-    InterpreterRoom,
+    SharedParticipantRoom,
     LinkType,
     LoggedParticipantResponse,
     ParticipantResponse,
@@ -92,7 +92,7 @@ export abstract class WaitingRoomBaseComponent {
     callbackTimeout: NodeJS.Timer;
     private readonly loggerPrefix = '[WR] -';
     loggedInUser: LoggedParticipantResponse;
-    linkedParticipantRoom: InterpreterRoom;
+    linkedParticipantRoom: SharedParticipantRoom;
 
     protected constructor(
         protected route: ActivatedRoute,
@@ -492,7 +492,7 @@ export abstract class WaitingRoomBaseComponent {
         let displayName = this.participant.tiled_display_name;
         if (this.needsInterpreterRoom()) {
             this.logger.debug(`${this.loggerPrefix} calling interpreter room`, logPayload);
-            const interpreterRoom = await this.videoCallService.retrieveInterpreterRoom(this.conference.id, this.participant.id);
+            const interpreterRoom = await this.retrieveInterpreterRoom();
             this.linkedParticipantRoom = interpreterRoom;
             pexipNode = interpreterRoom.pexip_node;
             conferenceAlias = interpreterRoom.participant_join_uri;
@@ -508,7 +508,27 @@ export abstract class WaitingRoomBaseComponent {
             return false;
         }
 
-        return this.participant.linked_participants.filter(x => x.link_type === LinkType.Interpreter).length > 0;
+        return this.participant.linked_participants.some(x => x.link_type === LinkType.Interpreter);
+    }
+
+    retrieveInterpreterRoom(): Promise<SharedParticipantRoom> {
+        const logPayload = {
+            conference: this.conferenceId,
+            participant: this.participant.id
+        };
+        const linkedParticipants = this.conference.participants.filter(p =>
+            this.participant.linked_participants.map(lp => lp.linked_id).includes(p.id)
+        );
+        const isWitnessLink =
+            linkedParticipants.some(lp => lp.hearing_role.toUpperCase() === HearingRole.WITNESS.toUpperCase()) ||
+            this.participant.hearing_role.toUpperCase() === HearingRole.WITNESS.toUpperCase();
+        if (isWitnessLink) {
+            this.logger.debug(`${this.loggerPrefix} getting witness interpreter room for participant`, logPayload);
+            return this.videoCallService.retrieveWitnessInterpreterRoom(this.conference.id, this.participant.id);
+        } else {
+            this.logger.debug(`${this.loggerPrefix} getting standard interpreter room for participant`, logPayload);
+            return this.videoCallService.retrieveInterpreterRoom(this.conference.id, this.participant.id);
+        }
     }
 
     disconnect() {
