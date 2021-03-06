@@ -11,7 +11,8 @@ using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Requests;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using VAEventType = VideoWeb.Services.Video.EventType;
 

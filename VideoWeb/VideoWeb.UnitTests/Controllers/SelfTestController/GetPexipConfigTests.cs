@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 

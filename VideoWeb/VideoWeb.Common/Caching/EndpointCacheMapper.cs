@@ -1,6 +1,6 @@
 using System;
 using VideoWeb.Common.Models;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Common.Caching
 {

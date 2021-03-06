@@ -2,7 +2,7 @@ using System;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -15,13 +15,13 @@ namespace VideoWeb.UnitTests.Mappings
             var testVmr = new InterpreterRoomResponse
             {
                 Label = "Interpreter1",
-                Participant_join_uri = "joidshfdsf",
-                Pexip_node = "sip.unit.test.com"
+                ParticipantJoinUri = "joidshfdsf",
+                PexipNode = "sip.unit.test.com"
             };
 
             var result = _sut.Map(testVmr, participantId);
-            result.PexipNode.Should().Be(testVmr.Pexip_node);
-            result.ParticipantJoinUri.Should().Be(testVmr.Participant_join_uri);
+            result.PexipNode.Should().Be(testVmr.PexipNode);
+            result.ParticipantJoinUri.Should().Be(testVmr.ParticipantJoinUri);
             result.DisplayName.Should().Be(testVmr.Label);
             result.TileDisplayName.Should().Be($"I1;Interpreter1;{participantId}");
         }

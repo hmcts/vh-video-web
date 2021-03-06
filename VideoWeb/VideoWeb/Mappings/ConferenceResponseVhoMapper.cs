@@ -4,7 +4,7 @@ using System.Linq;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
 using VideoWeb.Mappings.Interfaces;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.Mappings

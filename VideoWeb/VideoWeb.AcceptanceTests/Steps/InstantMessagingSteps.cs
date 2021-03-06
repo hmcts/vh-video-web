@@ -83,9 +83,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheUserCanSeeTheMessage(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            var chatMessages = new GetChatMessages(_browsers[_c.CurrentUser]).WaitFor(_messages.Count).Fetch();
+            var chatMessages = new GetChatMessages(_browsers[_c.CurrentUser]).WaitFor(messages.Count).Fetch();
             chatMessages.Count.Should().BePositive();
-            AssertChatMessage.Assert(_messages.Last(), chatMessages.Last(), _c.TimeZone);
+            AssertChatMessage.Assert(messages.Last(), chatMessages.Last(), _c.TimeZone);
         }
 
         [Then(@"the (.*) user can see the notification for the message")]
@@ -154,21 +154,21 @@ namespace VideoWeb.AcceptanceTests.Steps
                 Time = _c.TimeZone.Adjust(DateTime.Now).ToShortTimeString()
             });
             _browsers[_c.CurrentUser].Click(InstantMessagePage.SendNewMessageTextBox);
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(InstantMessagePage.SendNewMessageTextBox).SendKeys(_messages.Last().Message);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(InstantMessagePage.SendNewMessageTextBox).SendKeys(messages.Last().Message);
             _browsers[_c.CurrentUser].Click(InstantMessagePage.SendNewMessageButton);
         }
 
         private string GetSenderNameFormat()
         {
-            return _c.CurrentUser.User_type == UserType.VideoHearingsOfficer ? _c.CurrentUser.First_name : _c.CurrentUser.Display_name;
+            return _c.CurrentUser.UserType == UserType.VideoHearingsOfficer ? _c.CurrentUser.FirstName : _c.CurrentUser.DisplayName;
         }
 
         private void CheckMessagesAreAllDisplayed(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            var chatMessages = new GetChatMessages(_browsers[_c.CurrentUser]).WaitFor(_messages.Count).Fetch();
-            chatMessages.Count.Should().Be(_messages.Count);
-            AssertChatMessage.AssertAll(_messages, chatMessages);
+            var chatMessages = new GetChatMessages(_browsers[_c.CurrentUser]).WaitFor(messages.Count).Fetch();
+            chatMessages.Count.Should().Be(messages.Count);
+            AssertChatMessage.AssertAll(messages, chatMessages);
         }
     }
 }

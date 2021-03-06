@@ -16,8 +16,10 @@ using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Bookings;
-using VideoWeb.Services.Video;
+using BookingsApi.Client;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
+using VideoApi.Contract.Requests;
 using UpdateParticipantRequest = VideoWeb.Services.Video.UpdateParticipantRequest;
 
 namespace VideoWeb.Controllers

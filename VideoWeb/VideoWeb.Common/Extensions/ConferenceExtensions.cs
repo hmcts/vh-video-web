@@ -1,4 +1,4 @@
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Common.Extensions
 {

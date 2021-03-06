@@ -7,7 +7,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
 using UserRole = VideoWeb.Services.Video.UserRole;
@@ -15,7 +15,7 @@ using UserRole = VideoWeb.Services.Video.UserRole;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-   public class ConferenceResponseVhoMapperTests
+    public class ConferenceResponseVhoMapperTests
     {
         private ConferenceResponseVhoMapper _sut;
         private AutoMock _mocker;

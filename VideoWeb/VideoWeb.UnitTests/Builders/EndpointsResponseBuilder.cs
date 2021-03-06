@@ -1,6 +1,6 @@
 using FizzWare.NBuilder;
 using System;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Builders
 {

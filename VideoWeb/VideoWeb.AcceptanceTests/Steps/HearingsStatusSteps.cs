@@ -56,7 +56,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private List<string> RemoveAutomationCasesForOtherJudges(IEnumerable<string> caseNumbers)
         {
-            return caseNumbers.Where(caseNumber => _c.Test.Conferences.Any(x => x.Case_number.Equals(caseNumber))).ToList();
+            return caseNumbers.Where(caseNumber => _c.Test.Conferences.Any(x => x.CaseNumber.Equals(caseNumber))).ToList();
         }
 
         [Then(@"the Video Hearings Officer user should see a (.*) notification")]
@@ -70,7 +70,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var response = _c.Apis.TestApi.GetConferenceByConferenceId(_c.Test.Conference.Id);
             var conference = RequestHelper.Deserialise<ConferenceDetailsResponse>(response.Content);
-            conference.Closed_date_time?.Date.Should().Be(DateTime.Now.Date);
+            conference.ClosedDateTime?.Date.Should().Be(DateTime.Now.Date);
         }
 
         [Then(@"the hearing status changed to (.*)")]
@@ -86,7 +86,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private Guid GetJudgeParticipantId()
         {
-            return _c.Test.ConferenceParticipants.First(x => x.User_role.Equals(UserRole.Judge)).Id;
+            return _c.Test.ConferenceParticipants.First(x => x.UserRole.Equals(UserRole.Judge)).Id;
         }
     }
 }

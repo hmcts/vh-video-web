@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
 using VideoWeb.UnitTests.Builders;
 using EventHubEventType = VideoWeb.EventHub.Enums.EventType;
 using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;

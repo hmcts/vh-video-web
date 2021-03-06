@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttributeTests
 {
@@ -52,8 +52,8 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             // arrange
             var actionArguments = new Dictionary<string, object>
             {
-                {"participantId", _participantId},
-                {"conferenceId", _conferenceId}
+                {"participantId", participantId},
+                {"conferenceId", conferenceId}
             };
 
             var user = _userBuilder.WithUsername(USER_NAME).WithRole(appRole).Build();

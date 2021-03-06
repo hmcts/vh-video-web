@@ -86,11 +86,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.ReturnToHearingRoomLink).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.ContactVho).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.HearingTitle).Text.Should().Be($"{_c.Test.Case.Name} ({_c.Test.Hearing.Case_type_name}) case number: {_c.Test.Hearing.Cases.First().Number}");
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.HearingTitle).Text.Should().Be($"{_c.Test.Case.Name} ({_c.Test.Hearing.CaseTypeName}) case number: {_c.Test.Hearing.Cases.First().Number}");
             
-            var startDate = _c.TimeZone.Adjust(_c.Test.Hearing.Scheduled_date_time);
+            var startDate = _c.TimeZone.Adjust(_c.Test.Hearing.ScheduledDateTime);
             var dateAndStartTime = startDate.ToString(DateFormats.JudgeWaitingRoomPageTime);
-            var endTime = startDate.AddMinutes( _c.Test.Hearing.Scheduled_duration).ToString(DateFormats.JudgeWaitingRoomPageTimeEnd);
+            var endTime = startDate.AddMinutes(_c.Test.Hearing.ScheduledDuration).ToString(DateFormats.JudgeWaitingRoomPageTimeEnd);
             var displayedTime = TextHelpers.RemoveSpacesOnSafari(_browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.HearingDateTime).Text);
             displayedTime.Should().Be($"{dateAndStartTime} to {endTime}");
             
@@ -105,10 +105,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails).Text.Should().Contain($"case number: {_c.Test.Hearing.Cases.First().Number}");
             
             var displayedDateTime = TextHelpers.RemoveSpacesOnSafari(_browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.HearingDate).Text);
-            displayedDateTime.Should().Contain(_c.TimeZone.Adjust(_c.Test.Hearing.Scheduled_date_time).ToString(DateFormats.WaitingRoomPageDate));
-            displayedDateTime.Should().Contain(_c.TimeZone.Adjust(_c.Test.Hearing.Scheduled_date_time).ToString(DateFormats.WaitingRoomPageTime));
+            displayedDateTime.Should().Contain(_c.TimeZone.Adjust(_c.Test.Hearing.ScheduledDateTime).ToString(DateFormats.WaitingRoomPageDate));
+            displayedDateTime.Should().Contain(_c.TimeZone.Adjust(_c.Test.Hearing.ScheduledDateTime).ToString(DateFormats.WaitingRoomPageTime));
             
-            var endTime = _c.TimeZone.Adjust(_c.Test.Hearing.Scheduled_date_time).AddMinutes(_c.Test.Hearing.Scheduled_duration).ToString(DateFormats.WaitingRoomPageTime);
+            var endTime = _c.TimeZone.Adjust(_c.Test.Hearing.ScheduledDateTime).AddMinutes(_c.Test.Hearing.ScheduledDuration).ToString(DateFormats.WaitingRoomPageTime);
             displayedDateTime.Should().Contain(endTime);
             
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.ContactVhTeam).Displayed.Should().BeTrue();
@@ -117,10 +117,10 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the (.*) can see a list of participants and their representatives")]
         public void ThenTheUserCanSeeAListOfParticipantsAndTheirRepresentatives(string user)
         {
-            var panelMembers = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("panelmember"));
-            var individuals = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("individual"));
-            var representatives = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("representative"));
-            var observers = _c.Test.ConferenceParticipants.FindAll(x => x.Last_name.ToLower().Contains("observer"));
+            var panelMembers = _c.Test.ConferenceParticipants.FindAll(x => x.LastName.ToLower().Contains("panelmember"));
+            var individuals = _c.Test.ConferenceParticipants.FindAll(x => x.LastName.ToLower().Contains("individual"));
+            var representatives = _c.Test.ConferenceParticipants.FindAll(x => x.LastName.ToLower().Contains("representative"));
+            var observers = _c.Test.ConferenceParticipants.FindAll(x => x.LastName.ToLower().Contains("observer"));
 
             (panelMembers.Count + individuals.Count + representatives.Count + observers.Count).Should().BeGreaterThan(0);
 
@@ -132,18 +132,18 @@ namespace VideoWeb.AcceptanceTests.Steps
             foreach (var individual in individuals)
             {
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantName(user, individual.Id)).Text.Trim().Should().Be(individual.Name);
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantHearingRole(user, individual.Id)).Text.Trim().Should().Be(individual.Hearing_role);
-                if (!individual.Case_type_group.ToLower().Equals("none"))
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantHearingRole(user, individual.Id)).Text.Trim().Should().Be(individual.HearingRole);
+                if (!individual.CaseTypeGroup.ToLower().Equals("none"))
                 {
-                    _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantCaseType(user, individual.Id)).Text.Trim().Should().Be(individual.Case_type_group);
+                    _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantCaseType(user, individual.Id)).Text.Trim().Should().Be(individual.CaseTypeGroup);
                 }
             }
 
             foreach (var representative in representatives)
             {
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantName(user, representative.Id)).Text.Trim().Should().Be(representative.Name);
-                if (representative.Case_type_group.ToLower().Equals("none")) continue;
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantCaseType(user, representative.Id)).Text.Trim().Should().Be(representative.Case_type_group);
+                if (representative.CaseTypeGroup.ToLower().Equals("none")) continue;
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantCaseType(user, representative.Id)).Text.Trim().Should().Be(representative.CaseTypeGroup);
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetRepresentativeRepresentee(user, representative.Id)).Text.Trim().Should().Be($"Representative for {representative.Representee}");
             }
 
@@ -188,8 +188,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheUserCanSeeOtherParticipantsStatus()
         {
             var participants = _c.Test.ConferenceParticipants.Where(participant =>
-                participant.User_role == UserRole.Individual ||
-                participant.User_role == UserRole.Representative);
+                participant.UserRole == UserRole.Individual ||
+                participant.UserRole == UserRole.Representative);
             foreach (var participant in participants)
             {
                 _browsers[_c.CurrentUser].Driver
@@ -301,7 +301,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var loggedInParticipants = LoggedInParticipants(_browsers.Keys, _c.Test.ConferenceParticipants);
             foreach (var user in loggedInParticipants)
             {
-                if ((user.User_role == UserRole.Judge)) continue;
+                if ((user.UserRole == UserRole.Judge)) continue;
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantStatus(user.Id));
                 _browsers[_c.CurrentUser].ScrollTo(JudgeParticipantPanel.ParticipantStatus(user.Id));
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantStatus(user.Id)).Text.ToUpper().Trim()
@@ -311,7 +311,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private static IEnumerable<ParticipantDetailsResponse> LoggedInParticipants(Dictionary<User, UserBrowser>.KeyCollection browsersKeys, IReadOnlyCollection<ParticipantDetailsResponse> allParticipants)
         {
-            var participants = (from user in browsersKeys where allParticipants.Any(x => x.Name.ToLower().Contains(user.Last_name.ToLower())) select allParticipants.First(x => x.Name.ToLower().Contains(user.Last_name.ToLower()))).ToList();
+            var participants = (from user in browsersKeys where allParticipants.Any(x => x.Name.ToLower().Contains(user.LastName.ToLower())) select allParticipants.First(x => x.Name.ToLower().Contains(user.LastName.ToLower()))).ToList();
             participants.Should().NotBeNullOrEmpty();
             return participants;
         }

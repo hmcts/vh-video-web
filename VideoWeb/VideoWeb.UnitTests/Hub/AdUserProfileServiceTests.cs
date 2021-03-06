@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using FizzWare.NBuilder;
 using VideoWeb.Common.Models;
 using VideoWeb.Common.SignalR;
-using VideoWeb.Services.User;
+using UserApi.Client;
+using UserApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Hub
 {

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using VideoWeb.Services.User;
+using UserApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Builders
 {

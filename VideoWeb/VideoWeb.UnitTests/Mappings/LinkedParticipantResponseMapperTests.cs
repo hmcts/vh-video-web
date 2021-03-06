@@ -2,7 +2,6 @@ using System;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
 using VHLinkedParticipantResponse = VideoWeb.Services.Video.LinkedParticipantResponse;
 
 namespace VideoWeb.UnitTests.Mappings

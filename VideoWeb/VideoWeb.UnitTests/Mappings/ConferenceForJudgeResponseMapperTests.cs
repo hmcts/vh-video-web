@@ -5,7 +5,6 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
 using Conference = VideoWeb.Services.Video.ConferenceForJudgeResponse;
 using Participant = VideoWeb.Services.Video.ParticipantForJudgeResponse;
 

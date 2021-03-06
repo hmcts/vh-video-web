@@ -31,9 +31,9 @@ using VideoWeb.Mappings;
 using VideoWeb.Mappings.Decorators;
 using VideoWeb.Mappings.Interfaces;
 using VideoWeb.Middleware;
-using VideoWeb.Services.Bookings;
-using VideoWeb.Services.User;
-using VideoWeb.Services.Video;
+using BookingsApi.Client;
+using UserApi.Client;
+using VideoApi.Client;
 using VideoWeb.Swagger;
 
 namespace VideoWeb.Extensions

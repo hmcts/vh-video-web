@@ -10,7 +10,8 @@ using Moq;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 {
@@ -33,7 +34,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 }
             };
 
-            return new ConferenceManagementController(VideoApiClientMock.Object, _mockLogger.Object,
+            return new ConferenceManagementController(VideoApiClientMock.Object, mockLogger.Object,
                 _conferenceCache.Object)
             {
                 ControllerContext = context

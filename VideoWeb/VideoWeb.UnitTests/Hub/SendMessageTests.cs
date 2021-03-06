@@ -9,8 +9,9 @@ using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Hub;
-using VideoWeb.Services.User;
-using VideoWeb.Services.Video;
+using UserApi.Contract.Responses;
+using VideoApi.Contract.Responses;
+using VideoApi.Contract.Requests;
 using VideoWeb.UnitTests.Builders;
 using VideoWeb.Common.Caching;
 

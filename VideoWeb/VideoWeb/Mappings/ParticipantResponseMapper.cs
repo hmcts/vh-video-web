@@ -4,7 +4,7 @@ using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 using LinkedParticipantResponse = VideoWeb.Contract.Responses.LinkedParticipantResponse;
 using VHLinkedParticipantResponse = VideoWeb.Services.Video.LinkedParticipantResponse;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;

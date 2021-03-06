@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
-using VideoWeb.Services.User;
+using UserApi.Client;
+using UserApi.Contract.Responses;
 
 namespace VideoWeb.Common.SignalR
 {

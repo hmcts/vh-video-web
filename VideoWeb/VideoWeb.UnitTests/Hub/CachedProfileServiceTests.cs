@@ -6,7 +6,8 @@ using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.SignalR;
-using VideoWeb.Services.User;
+using UserApi.Client;
+using UserApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Hub
 {

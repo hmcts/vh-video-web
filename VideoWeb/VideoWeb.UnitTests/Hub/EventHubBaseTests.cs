@@ -12,7 +12,8 @@ using VideoWeb.Common.Models;
 using VideoWeb.Common.SignalR;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Mappers;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Hub
