@@ -1,6 +1,6 @@
 ---
 java:
-  image: 'sdshmctspublic.azurecr.io/vh/video-web:20210305.4'
+  image: 'sdshmctspublic.azurecr.io/vh/video-web:20210306.9'
   applicationPort: 8080
   replicas: 2
   ingressHost: vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net
@@ -31,7 +31,7 @@ java:
       usePodIdentity: true
       secrets:
         - azuread--clientsecret
-        - azuread--clientid       
+        - azuread--clientid
   environment:
     ASPNETCORE_URLS: http://+:8080
     AZUREAD__POSTLOGOUTREDIRECTURI: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/logout
@@ -45,7 +45,7 @@ java:
     VHSERVICES__BOOKINGSAPIURL: https://vh-bookings-api.{{ .Values.global.environment }}.platform.hmcts.net/
     VHSERVICES__TESTAPIRESOURCEURL: https://vh-test-api.{{ .Values.global.environment }}.platform.hmcts.net
     VHSERVICES__TESTAPIRESOURCEID: https://vh-test-api.{{ .Values.global.environment }}.platform.hmcts.net
-    VHSERVICES__TESTAPIURL:  https://vh-test-api.{{ .Values.global.environment }}.platform.hmcts.net/
+    VHSERVICES__TESTAPIURL: https://vh-test-api.{{ .Values.global.environment }}.platform.hmcts.net/
     VHSERVICES__USERAPIRESOURCEID: https://vh-user-api.{{ .Values.global.environment }}.platform.hmcts.net
     VHSERVICES__USERAPIURL: https://vh-user-api.{{ .Values.global.environment }}.platform.hmcts.net/
     VHSERVICES__VIDEOAPIESOURCEID: https://vh-video-api.{{ .Values.global.environment }}.platform.hmcts.net
