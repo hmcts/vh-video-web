@@ -66,16 +66,9 @@
             {{ participant.name }}
           </p>
 
-          <p id="p-{{ participant.id }}-hearing-role-participant" *ngIf="isInterpreter(participant)" class="govuk-body-s govuk-!-margin-bottom-1">
-            {{ participant.hearing_role }} for <br><strong>{{ getInterpreteeName(participant.id) }}</strong>
-          </p>
-
-          <p id="p-{{ participant.id }}-representee-participant" *ngIf="participant.representee" class="govuk-body-s govuk-!-margin-bottom-1">
-            {{ isCaseTypeNone(participant) ? participant.hearing_role  : 'Representative'}} for <br><strong>{{ participant.representee }}</strong>
-          </p>
-          
-          <p id="p-{{ participant.id }}-hearing-role-participant" *ngIf="showSingleHearingRole(participant)" class="govuk-body-s govuk-!-margin-bottom-1">
-            {{ participant.hearing_role }}
+          <p id="p-{{ participant.id }}-hearing-role-participant"
+            class="govuk-body-m govuk-!-margin-bottom-3"
+            [innerHtml]="getHearingRole(participant)">
           </p>
 
           <p *ngIf="!isCaseTypeNone(participant)" id="p-{{ participant.id }}-case-type-group-participant" class="govuk-body-s govuk-!-margin-bottom-1">

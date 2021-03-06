@@ -127,12 +127,17 @@ export abstract class WRParticipantStatusListDirective {
         return participant.linked_participants.some(x => x.link_type === LinkType.Interpreter);
     }
 
-    isInterpreter(participant: ParticipantResponse) {
-        return participant.hearing_role === HearingRole.INTERPRETER;
-    }
-
-    showSingleHearingRole(participant: ParticipantResponse) {
-        return !participant.representee && !this.isInterpreter(participant);
+    getHearingRole(participant: ParticipantResponse) {
+        switch (participant.hearing_role) {
+            case HearingRole.INTERPRETER:
+                var interpreteeName = this.getInterpreteeName(participant.id);
+                return `${participant.hearing_role} for <br><strong>${interpreteeName}</strong>`;
+            case HearingRole.REPRESENTATIVE:
+                var hearingRoleText = this.isCaseTypeNone(participant) ? participant.hearing_role : 'Representative';
+                return `${hearingRoleText} for <br><strong>${participant.representee}</strong>`;
+            default:
+                return `${participant.hearing_role}`;
+        }
     }
 
     getInterpreteeName(interpreterId: string) {
