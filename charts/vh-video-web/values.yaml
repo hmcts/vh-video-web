@@ -1,12 +1,12 @@
 ---
 java:
-  image: 'sdshmctspublic.azurecr.io/vh/video-web:20210211.2'
+  image: 'sdshmctspublic.azurecr.io/vh/video-web:20210305.4'
   applicationPort: 8080
   replicas: 2
   ingressHost: vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net
   releaseNameOverride: vh-video-web
-  readinessPath: /healthcheck/health
-  livenessPath: /healthcheck/health
+  readinessPath: /health/liveness
+  livenessPath: /health/liveness
   livenessDelay: 360
   livenessPeriod: 120
   aadIdentityName: vh-aad-identity
