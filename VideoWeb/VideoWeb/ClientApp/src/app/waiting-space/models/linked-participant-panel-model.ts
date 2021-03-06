@@ -6,7 +6,7 @@ export class LinkedParticipantPanelModel extends PanelModel {
     public participants: PanelModel[];
 
     static fromListOfPanelModels(participants: PanelModel[], pexipDisplayName: string, roomid: string): LinkedParticipantPanelModel {
-        const lip = participants.find(x => x.hearingRole === HearingRole.LITIGANT_IN_PERSON);
+        const lip = participants.find(x => x.hearingRole === HearingRole.LITIGANT_IN_PERSON || x.hearingRole === HearingRole.WITNESS);
         const pexipName = pexipDisplayName;
         const displayName = participants.map(x => x.displayName).join(', ');
         const role = lip.role;
@@ -17,6 +17,10 @@ export class LinkedParticipantPanelModel extends PanelModel {
         const model = new LinkedParticipantPanelModel(roomid, displayName, role, caseTypeGroup, pexipName, hearingRole, representee);
         model.participants = participants;
         return model;
+    }
+
+    get isWitness(): boolean {
+        return this.participants.some(p => p.isWitness);
     }
 
     isInHearing(): boolean {
