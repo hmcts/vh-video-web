@@ -14,7 +14,6 @@ using VideoWeb.Controllers;
 using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.EndpointController
 {

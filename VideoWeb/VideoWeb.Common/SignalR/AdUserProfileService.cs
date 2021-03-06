@@ -24,7 +24,7 @@ namespace VideoWeb.Common.SignalR
             try
             {
                 var profile = await _userApiClient.GetUserByAdUserNameAsync(username);
-                var userName = profile.First_name + " " + profile.Last_name;
+                var userName = profile.FirstName + " " + profile.LastName;
                 var obfuscatedUsername = System.Text.RegularExpressions.Regex.Replace(userName, @"(?!\b)\w", "*");
                 return obfuscatedUsername;
             }

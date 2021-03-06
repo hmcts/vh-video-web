@@ -10,8 +10,8 @@ namespace VideoWeb.Mappings.Requests
         {
             return new LeaveConsultationRequest
             {
-                Conference_id = request.ConferenceId,
-                Participant_id = request.ParticipantId
+                ConferenceId = request.ConferenceId,
+                ParticipantId = request.ParticipantId
             };
         }
     }

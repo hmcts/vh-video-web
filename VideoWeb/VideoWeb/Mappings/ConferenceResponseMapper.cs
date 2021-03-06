@@ -56,14 +56,14 @@ namespace VideoWeb.Mappings
             conference.Participants ??= new List<ParticipantDetailsResponse>();
             return conference.Participants
                 .OrderBy(x => x.CaseTypeGroup)
-                .Select(participantResponseMapper.Map)
+                .Select(_participantResponseMapper.Map)
                 .ToList();
         }
 
         private List<VideoEndpointResponse> MapEndpoints(ConferenceDetailsResponse conference)
         {
             conference.Endpoints ??= new List<EndpointResponse>();
-            return conference.Endpoints.Select(videoEndpointResponseMapper.Map).ToList();
+            return conference.Endpoints.Select(_videoEndpointResponseMapper.Map).ToList();
         }
     }
 }

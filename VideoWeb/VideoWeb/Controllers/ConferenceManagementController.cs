@@ -10,6 +10,7 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.Controllers
 {
@@ -142,8 +143,8 @@ namespace VideoWeb.Controllers
                     participantId, conferenceId);
                 await _videoApiClient.TransferParticipantAsync(conferenceId, new TransferParticipantRequest
                 {
-                    Participant_id = participantId,
-                    Transfer_type = TransferType.Call
+                    ParticipantId = participantId,
+                    TransferType = TransferType.Call
                 });
                 return Accepted();
             }
@@ -178,8 +179,8 @@ namespace VideoWeb.Controllers
                     participantId, conferenceId);
                 await _videoApiClient.TransferParticipantAsync(conferenceId, new TransferParticipantRequest
                 {
-                    Participant_id = participantId,
-                    Transfer_type = TransferType.Dismiss
+                    ParticipantId = participantId,
+                    TransferType = TransferType.Dismiss
                 });
             }
             catch (VideoApiException ex)
@@ -195,9 +196,9 @@ namespace VideoWeb.Controllers
                     participantId, conferenceId);
                 await _videoApiClient.AddTaskAsync(conferenceId, new AddTaskRequest
                 {
-                    Participant_id = participantId,
+                    ParticipantId = participantId,
                     Body = "Witness dismissed",
-                    Task_type = TaskType.Participant
+                    TaskType = TaskType.Participant
                 });
             }
             catch (VideoApiException ex)

@@ -16,7 +16,6 @@ using VideoWeb.Mappings;
 using UserApi.Client;
 using UserApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
-using ProblemDetails = VideoWeb.Services.User.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ProfileController
 {
@@ -53,8 +52,8 @@ namespace VideoWeb.UnitTests.Controllers.ProfileController
         public async Task Should_return_ok_code_when_user_profile_found()
         {
             var username = "judge@hmcts.net";
-            var profile = Builder<UserProfile>.CreateNew().With(x => x.User_role = "Judge")
-                .With(x => x.User_name = username).Build();
+            var profile = Builder<UserProfile>.CreateNew().With(x => x.UserRole = "Judge")
+                .With(x => x.UserName = username).Build();
             _mocker.Mock<IUserApiClient>()
                 .Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(profile);

@@ -10,9 +10,9 @@ namespace VideoWeb.Mappings.Requests
         {
             return new LockRoomRequest
             {
-                Conference_id = input.ConferenceId,
+                ConferenceId = input.ConferenceId,
                 Lock = input.Lock,
-                Room_label = input.RoomLabel
+                RoomLabel = input.RoomLabel
             };
         }
     }

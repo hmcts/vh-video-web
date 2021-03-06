@@ -13,7 +13,11 @@ using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Data.TestData;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.Common.Security.HashGen;
-using VideoWeb.Services.TestApi;
+using TestApi.Client;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
+using BookingsApi.Contract.Responses;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Hooks
 {
@@ -86,7 +90,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 NewConferenceId = Guid.Empty,
                 NewHearingId = Guid.Empty,
                 TestData = new DefaultDataManager().SerialiseTestData(),
-                Users = new List<User>()
+                Users = new List<UserDto>()
             };
         }
 

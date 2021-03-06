@@ -15,7 +15,6 @@ using UserApi.Client;
 using UserApi.Contract.Responses;
 using VideoApi.Client;
 using HealthCheckResponse = VideoWeb.Contract.Responses.HealthCheckResponse;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.HealthController
 {

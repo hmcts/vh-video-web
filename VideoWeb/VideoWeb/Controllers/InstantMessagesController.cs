@@ -73,7 +73,7 @@ namespace VideoWeb.Controllers
                     return Ok(new List<ChatResponse>());
                 }
 
-                var response = await MapMessages(messages, conferenceId);
+                var response = await MapMessages(messages.ToList(), conferenceId);
                 response = response.OrderBy(r => r.Timestamp).ToList();
 
                 return Ok(response);
@@ -112,7 +112,7 @@ namespace VideoWeb.Controllers
                 );
 
                 var unreadInstantMessageConferenceCountResponseMapper = _mapperFactory.Get<Conference, IList<InstantMessageResponse>, UnreadInstantMessageConferenceCountResponse>();
-                var response = unreadInstantMessageConferenceCountResponseMapper.Map(conference, messages);
+                var response = unreadInstantMessageConferenceCountResponseMapper.Map(conference, messages.ToList());
 
                 return Ok(response);
             }
@@ -153,7 +153,7 @@ namespace VideoWeb.Controllers
 
 
                 var unreadAdminMessageResponseMapper = _mapperFactory.Get<Conference, IList<InstantMessageResponse>, UnreadAdminMessageResponse>();
-                var response = unreadAdminMessageResponseMapper.Map(conference, messages);
+                var response = unreadAdminMessageResponseMapper.Map(conference, messages.ToList());
 
                 return Ok(response);
             }

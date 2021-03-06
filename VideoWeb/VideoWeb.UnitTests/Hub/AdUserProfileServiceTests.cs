@@ -26,24 +26,24 @@ namespace VideoWeb.UnitTests.Hub
         [Test]
         public async Task Should_return_obfuscated_username()
         {
-            var userProfile = new UserProfile { User_role = "VhOfficer", User_name = "vhOfficer.User@hmcts.net", First_name = "Manual", Last_name = "User"};
+            var userProfile = new UserProfile { UserRole = "VhOfficer", UserName = "vhOfficer.User@hmcts.net", FirstName = "Manual", LastName = "User"};
             _userApiClientMock.Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>())).ReturnsAsync(userProfile);
 
             var obfuscatedUsername = "M***** U***";
-            var result = await _adUserProfileService.GetObfuscatedUsernameAsync(userProfile.User_name);
+            var result = await _adUserProfileService.GetObfuscatedUsernameAsync(userProfile.UserName);
             result.Should().Be(obfuscatedUsername);
         }
 
         [Test]
         public async Task Should_return_empty_string_if_user_profile_incorrect()
         {
-            var userProfile = new UserProfile { User_role = "VhOfficer", User_name = "vhOfficer.User@hmcts.net", First_name = "Manual", Last_name = "User" };
+            var userProfile = new UserProfile { UserRole = "VhOfficer", UserName = "vhOfficer.User@hmcts.net", FirstName = "Manual", LastName = "User" };
             var apiException = new UserApiException("User does not exist", (int)HttpStatusCode.NotFound,
                 "Invalid User Id", null, null);
             _userApiClientMock.Setup(x => x.GetUserByAdUserNameAsync(It.IsAny<string>())).ThrowsAsync(apiException);
 
             var obfuscatedUsername = string.Empty;
-            var result = await _adUserProfileService.GetObfuscatedUsernameAsync(userProfile.User_name);
+            var result = await _adUserProfileService.GetObfuscatedUsernameAsync(userProfile.UserName);
             result.Should().Be(obfuscatedUsername);
         }
 
@@ -53,8 +53,8 @@ namespace VideoWeb.UnitTests.Hub
             var username = "judge@hmcts.net";
             var role = Role.Judge.ToString();
             var profile =  Builder<UserProfile>.CreateNew()
-                .With(x => x.User_name = username)
-                .With(x => x.User_role = role)
+                .With(x => x.UserName = username)
+                .With(x => x.UserRole = role)
                 .Build();
             _userApiClientMock.Setup(x => 
                     x.GetUserByAdUserNameAsync(It.Is<string>(x => x == username)))

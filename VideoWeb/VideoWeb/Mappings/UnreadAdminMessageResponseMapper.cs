@@ -27,7 +27,7 @@ namespace VideoWeb.Mappings
                 return 0;
             }
 
-            messageResponses = messageResponses.OrderByDescending(x => x.Time_stamp).ToList();
+            messageResponses = messageResponses.OrderByDescending(x => x.TimeStamp).ToList();
             var vhoMessage = messageResponses.FirstOrDefault(m => IsNonParticipantMessage(conference, m));
             return vhoMessage == null ? messageResponses.Count() : messageResponses.IndexOf(vhoMessage);
         }

@@ -34,7 +34,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 }
             };
 
-            return new ConferenceManagementController(VideoApiClientMock.Object, mockLogger.Object,
+            return new ConferenceManagementController(VideoApiClientMock.Object, _mockLogger.Object,
                 _conferenceCache.Object)
             {
                 ControllerContext = context

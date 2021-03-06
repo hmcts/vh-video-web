@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
@@ -21,11 +22,11 @@ namespace VideoWeb.UnitTests.Mappings
             response.Id.Should().Be(participant.Id);
             response.Name.Should().Be(participant.Name);
             response.Status.Should().Be(expectedStatus);
-            response.DisplayName.Should().Be(participant.Display_name);
+            response.DisplayName.Should().Be(participant.DisplayName);
             response.Role.Should().Be(expectedRole);
-            response.CaseTypeGroup.Should().Be(participant.Case_type_group);
+            response.CaseTypeGroup.Should().Be(participant.CaseTypeGroup);
             response.Representee.Should().Be(participant.Representee);
-            response.HearingRole.Should().Be(participant.Hearing_role);
+            response.HearingRole.Should().Be(participant.HearingRole);
         }
 
     }

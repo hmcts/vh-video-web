@@ -234,6 +234,19 @@
           "Microsoft.Win32.SystemEvents": "5.0.0"
         }
       },
+      "TestApi.Client": {
+        "type": "Direct",
+        "requested": "[1.24.8-pullrequest0083-0015, )",
+        "resolved": "1.24.8-pullrequest0083-0015",
+        "contentHash": "gOTjTawYwx8MDkTGh3Esr31JGpgTc7xwot9OxB8MNFk8H9OM33a8ckeljiAE9huFbwOvBjcX6nHbT7XapLcPfQ==",
+        "dependencies": {
+          "BookingsApi.Client": "1.24.17",
+          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
+          "Newtonsoft.Json": "12.0.3",
+          "UserApi.Client": "1.24.2",
+          "VideoApi.Client": "1.23.47"
+        }
+      },
       "VH.AcceptanceTests.Common": {
         "type": "Direct",
         "requested": "[1.21.20, )",

@@ -170,7 +170,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var steps = Steps();
             foreach (var page in journey)
             {
-                if (page != Page.Login) BrowserSteps.ThenTheUserIsOnThePage(page.Name);
+                if (page != Page.Login) _browserSteps.ThenTheUserIsOnThePage(page.Name);
                 if (page.Equals(endPage)) break;
                 steps[page].ProgressToNextPage();
             }

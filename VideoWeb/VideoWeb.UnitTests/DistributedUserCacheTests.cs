@@ -28,7 +28,7 @@ namespace VideoWeb.UnitTests
             var profile = Builder<UserProfile>.CreateNew().Build();
             var serialized = JsonConvert.SerializeObject(profile, SerializerSettings);
             var rawData = Encoding.UTF8.GetBytes(serialized);
-            _distributedCacheMock.Setup(x => x.Get(profile.User_name)).Returns(rawData);
+            _distributedCacheMock.Setup(x => x.Get(profile.UserName)).Returns(rawData);
 
             var cache = new DistributedUserCache(_distributedCacheMock.Object);
             var callCount = 0;
@@ -39,7 +39,7 @@ namespace VideoWeb.UnitTests
                 return Task.FromResult(profile);
             }
 
-            var result = await cache.GetOrAddAsync(profile.User_name, FakeApiCall);
+            var result = await cache.GetOrAddAsync(profile.UserName, FakeApiCall);
             result.Should().BeEquivalentTo(profile);
             callCount.Should().Be(0);
         }
@@ -57,7 +57,7 @@ namespace VideoWeb.UnitTests
                 return Task.FromResult(profile);
             }
 
-            var result = await cache.GetOrAddAsync(profile.User_name, FakeApiCall);
+            var result = await cache.GetOrAddAsync(profile.UserName, FakeApiCall);
             result.Should().BeEquivalentTo(profile);
             callCount.Should().Be(1);
         }
@@ -69,7 +69,7 @@ namespace VideoWeb.UnitTests
             var conferenceResponse = Builder<Conference>.CreateNew().Build();
             var serialisedConference = JsonConvert.SerializeObject(conferenceResponse, SerializerSettings);
             var rawData = Encoding.UTF8.GetBytes(serialisedConference);
-            _distributedCacheMock.Setup(x => x.Get(profile.User_name)).Returns(rawData);
+            _distributedCacheMock.Setup(x => x.Get(profile.UserName)).Returns(rawData);
             var cache = new DistributedUserCache(_distributedCacheMock.Object);
             var callCount = 0;
             
@@ -79,7 +79,7 @@ namespace VideoWeb.UnitTests
                 return Task.FromResult(profile);
             }
             
-            var result = await cache.GetOrAddAsync(profile.User_name, FakeApiCall);
+            var result = await cache.GetOrAddAsync(profile.UserName, FakeApiCall);
             result.Should().BeEquivalentTo(profile);
             callCount.Should().Be(1);
 

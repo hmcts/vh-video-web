@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using VideoWeb.Services.TestApi;
+using TestApi.Client;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
+using VideoApi.Contract.Enums;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Data
 {
@@ -13,13 +17,13 @@ namespace VideoWeb.AcceptanceTests.Data
             List<ParticipantDetailsResponse> participants;
             if (userRole.ToLower().Equals("participants"))
             {
-                participants = conferenceParticipants.FindAll(x => x.User_role == UserRole.Individual || x.User_role == UserRole.Representative);
+                participants = conferenceParticipants.FindAll(x => x.UserRole == UserRole.Individual || x.UserRole == UserRole.Representative);
 
             }
             else
             {
                 Enum.TryParse(EnsureRoleTypeHasCapitalLetter(userRole), out UserRole userRoleEnum);
-                participants = conferenceParticipants.FindAll(x => x.User_role == userRoleEnum);
+                participants = conferenceParticipants.FindAll(x => x.UserRole == userRoleEnum);
             }
 
             participants.Should().NotBeNullOrEmpty($"No participants with role {userRole} found");

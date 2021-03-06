@@ -4,6 +4,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoApi.Contract.Responses;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -16,9 +17,9 @@ namespace VideoWeb.UnitTests.Mappings
             var cachedModel = EndpointCacheMapper.MapEndpointToCacheModel(ep);
 
             cachedModel.Id.Should().Be(ep.Id);
-            cachedModel.DisplayName.Should().Be(ep.Display_name);
+            cachedModel.DisplayName.Should().Be(ep.DisplayName);
             cachedModel.EndpointStatus.ToString().Should().Be(ep.Status.ToString());
-            cachedModel.DefenceAdvocateUsername.Should().Be(ep.Defence_advocate.ToLower());
+            cachedModel.DefenceAdvocateUsername.Should().Be(ep.DefenceAdvocate.ToLower());
         }
 
         [Test]
@@ -26,16 +27,16 @@ namespace VideoWeb.UnitTests.Mappings
         {
             var ep = new EndpointResponse
             {
-                Id = Guid.NewGuid(), Display_name = "my name", Pin = "1234", Sip_address = "sip@sip.com",
-                Status = EndpointState.Connected, Defence_advocate = " ALLUPPER "
+                Id = Guid.NewGuid(), DisplayName = "my name", Pin = "1234", SipAddress = "sip@sip.com",
+                Status = EndpointState.Connected, DefenceAdvocate = " ALLUPPER "
             };
             
             var cachedModel = EndpointCacheMapper.MapEndpointToCacheModel(ep);
 
             cachedModel.Id.Should().Be(ep.Id);
-            cachedModel.DisplayName.Should().Be(ep.Display_name);
+            cachedModel.DisplayName.Should().Be(ep.DisplayName);
             cachedModel.EndpointStatus.ToString().Should().Be(ep.Status.ToString());
-            cachedModel.DefenceAdvocateUsername.Should().Be(ep.Defence_advocate.ToLower().Trim());
+            cachedModel.DefenceAdvocateUsername.Should().Be(ep.DefenceAdvocate.ToLower().Trim());
         }
 
         [Test]
@@ -43,14 +44,14 @@ namespace VideoWeb.UnitTests.Mappings
         {
             var ep = new EndpointResponse
             {
-                Id = Guid.NewGuid(), Display_name = "my name", Pin = "1234", Sip_address = "sip@sip.com",
+                Id = Guid.NewGuid(), DisplayName = "my name", Pin = "1234", SipAddress = "sip@sip.com",
                 Status = EndpointState.Connected
             };
 
             var cachedModel = EndpointCacheMapper.MapEndpointToCacheModel(ep);
 
             cachedModel.Id.Should().Be(ep.Id);
-            cachedModel.DisplayName.Should().Be(ep.Display_name);
+            cachedModel.DisplayName.Should().Be(ep.DisplayName);
             cachedModel.EndpointStatus.ToString().Should().Be(ep.Status.ToString());
             cachedModel.DefenceAdvocateUsername.Should().BeNull();
         }
@@ -60,14 +61,14 @@ namespace VideoWeb.UnitTests.Mappings
         {
             var ep = new EndpointResponse
             {
-                Id = Guid.NewGuid(), Display_name = "my name", Pin = "1234", Sip_address = "sip@sip.com",
-                Status = EndpointState.Connected, Defence_advocate = "  "
+                Id = Guid.NewGuid(), DisplayName = "my name", Pin = "1234", SipAddress = "sip@sip.com",
+                Status = EndpointState.Connected, DefenceAdvocate = "  "
             };
 
             var cachedModel = EndpointCacheMapper.MapEndpointToCacheModel(ep);
 
             cachedModel.Id.Should().Be(ep.Id);
-            cachedModel.DisplayName.Should().Be(ep.Display_name);
+            cachedModel.DisplayName.Should().Be(ep.DisplayName);
             cachedModel.EndpointStatus.ToString().Should().Be(ep.Status.ToString());
             cachedModel.DefenceAdvocateUsername.Should().BeEmpty();
         }

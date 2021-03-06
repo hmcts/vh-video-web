@@ -8,6 +8,7 @@ using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
 using VideoApi.Contract.Requests;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -36,15 +37,15 @@ namespace VideoWeb.UnitTests.Mappings
                 }
             };
             var conferenceEventRequest = Builder<ConferenceEventRequest>.CreateNew()
-                .With(x => x.Conference_id = testConference.Id.ToString())
-                .With(x => x.Participant_id = testConference.Participants[0].Id.ToString())
-                .With(x => x.Event_type = EventType.Joined)
+                .With(x => x.ConferenceId = testConference.Id.ToString())
+                .With(x => x.ParticipantId = testConference.Participants[0].Id.ToString())
+                .With(x => x.EventType = EventType.Joined)
                 .Build();
 
             var result = _sut.Map(conferenceEventRequest, testConference);
             result.Should().NotBeNull();
-            result.TransferFrom.Should().Be(conferenceEventRequest.Transfer_from.ToString());
-            result.TransferTo.Should().Be(conferenceEventRequest.Transfer_to.ToString());
+            result.TransferFrom.Should().Be(conferenceEventRequest.TransferFrom.ToString());
+            result.TransferTo.Should().Be(conferenceEventRequest.TransferTo.ToString());
         }
 
         [Test]
@@ -53,9 +54,9 @@ namespace VideoWeb.UnitTests.Mappings
             var testConference = CreateTestConferenceForEndpointEvent();
             
             var conferenceEventRequest = Builder<ConferenceEventRequest>.CreateNew()
-                .With(x => x.Conference_id = testConference.Id.ToString())
-                .With(x => x.Participant_id = testConference.Endpoints[0].Id.ToString())
-                .With(x => x.Event_type = EventType.Joined)
+                .With(x => x.ConferenceId = testConference.Id.ToString())
+                .With(x => x.ParticipantId = testConference.Endpoints[0].Id.ToString())
+                .With(x => x.EventType = EventType.Joined)
                 .Build();
 
             var result =
@@ -70,9 +71,9 @@ namespace VideoWeb.UnitTests.Mappings
             var testConference = CreateTestConferenceForEndpointEvent();
             
             var conferenceEventRequest = Builder<ConferenceEventRequest>.CreateNew()
-                .With(x => x.Conference_id = testConference.Id.ToString())
-                .With(x => x.Participant_id = testConference.Endpoints[0].Id.ToString())
-                .With(x => x.Event_type = EventType.Disconnected)
+                .With(x => x.ConferenceId = testConference.Id.ToString())
+                .With(x => x.ParticipantId = testConference.Endpoints[0].Id.ToString())
+                .With(x => x.EventType = EventType.Disconnected)
                 .Build();
 
             var result = _sut.Map(conferenceEventRequest, testConference);
@@ -86,9 +87,9 @@ namespace VideoWeb.UnitTests.Mappings
             var testConference = CreateTestConferenceForEndpointEvent();
             
             var conferenceEventRequest = Builder<ConferenceEventRequest>.CreateNew()
-                .With(x => x.Conference_id = testConference.Id.ToString())
-                .With(x => x.Participant_id = testConference.Endpoints[0].Id.ToString())
-                .With(x => x.Event_type = EventType.Transfer)
+                .With(x => x.ConferenceId = testConference.Id.ToString())
+                .With(x => x.ParticipantId = testConference.Endpoints[0].Id.ToString())
+                .With(x => x.EventType = EventType.Transfer)
                 .Build();
 
             var result = _sut.Map(conferenceEventRequest, testConference);

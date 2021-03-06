@@ -10,13 +10,13 @@ namespace VideoWeb.Mappings
     {
         public InterpreterRoom Map(InterpreterRoomResponse input, Guid participantId)
         {
-            var node = input.Pexip_node.Replace("https://", string.Empty);
+            var node = input.PexipNode.Replace("https://", string.Empty);
             var tilePosition = new String(input.Label.Where(char.IsDigit).ToArray());
             var tileDisplayName = $"I{tilePosition};{input.Label};{participantId}";
             return new InterpreterRoom
             {
                 PexipNode = node,
-                ParticipantJoinUri = input.Participant_join_uri,
+                ParticipantJoinUri = input.ParticipantJoinUri,
                 DisplayName = input.Label,
                 TileDisplayName = tileDisplayName
             };

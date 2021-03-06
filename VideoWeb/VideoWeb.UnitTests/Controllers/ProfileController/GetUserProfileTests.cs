@@ -15,7 +15,6 @@ using VideoWeb.Mappings;
 using UserApi.Client;
 using UserApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
-using ProblemDetails = VideoWeb.Services.User.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.ProfileController
 {

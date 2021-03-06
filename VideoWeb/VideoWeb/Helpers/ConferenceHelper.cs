@@ -1,4 +1,5 @@
 using System;
+using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
 
 namespace VideoWeb.Helpers

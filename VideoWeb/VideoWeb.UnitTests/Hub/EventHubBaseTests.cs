@@ -15,6 +15,7 @@ using VideoWeb.EventHub.Mappers;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Hub
 {
@@ -77,10 +78,10 @@ namespace VideoWeb.UnitTests.Hub
         protected string[] SetupJudgeConferences(int numOfConferences, int numOfConferencesWithUser)
         {
             var participantsWithUser = Builder<ParticipantSummaryResponse>.CreateListOfSize(3)
-                .TheFirst(1).With(x => x.Username = Claims.Identity.Name).With(x => x.User_role = UserRole.Judge)
+                .TheFirst(1).With(x => x.Username = Claims.Identity.Name).With(x => x.UserRole = UserRole.Judge)
                 .Build().ToList();
             var participantsWithoutUser = Builder<ParticipantSummaryResponse>.CreateListOfSize(3)
-                .TheFirst(1).With(x => x.User_role = UserRole.Judge)
+                .TheFirst(1).With(x => x.UserRole = UserRole.Judge)
                 .Build().ToList();
 
             var conferences = Builder<ConferenceForAdminResponse>.CreateListOfSize(numOfConferences).All()

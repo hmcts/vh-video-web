@@ -20,7 +20,7 @@ using BookingsApi.Client;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
-using UpdateParticipantRequest = VideoWeb.Services.Video.UpdateParticipantRequest;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.Controllers
 {
@@ -83,11 +83,11 @@ namespace VideoWeb.Controllers
             var eventTypeMapper = _mapperFactory.Get<EventType, string>();
             var conferenceEventRequest = new ConferenceEventRequest
             {
-                Conference_id = conferenceId.ToString(),
-                Participant_id = participantId.ToString(),
-                Event_id = Guid.NewGuid().ToString(),
-                Event_type = updateParticipantStatusEventRequest.EventType,
-                Time_stamp_utc = DateTime.UtcNow,
+                ConferenceId = conferenceId.ToString(),
+                ParticipantId = participantId.ToString(),
+                EventId = Guid.NewGuid().ToString(),
+                EventType = updateParticipantStatusEventRequest.EventType,
+                TimeStampUtc = DateTime.UtcNow,
                 Reason = eventTypeMapper.Map(updateParticipantStatusEventRequest.EventType)
             };
 

@@ -7,8 +7,13 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.Common.Models;
-using VideoWeb.Services.TestApi;
+using TestApi.Client;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
 using RoomType = VideoWeb.Common.Models.RoomType;
+using VideoApi.Contract.Enums;
+using VideoApi.Contract.Responses;
+using TestApi.Contract.Dtos;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -16,9 +21,9 @@ namespace VideoWeb.AcceptanceTests.Steps
     public class FiltersSteps
     {
         private readonly TestContext _c;
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly HearingAlertsSteps _alertsSteps;
-        public FiltersSteps(TestContext c, HearingAlertsSteps alertsSteps, Dictionary<User, UserBrowser> browsers)
+        public FiltersSteps(TestContext c, HearingAlertsSteps alertsSteps, Dictionary<UserDto, UserBrowser> browsers)
         {
             _c = c;
             _alertsSteps = alertsSteps;
@@ -38,8 +43,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         private ParticipantDetailsResponse GetUserFromConferenceDetails(string userRole)
         {
             var participantUser = userRole.ToLower().Equals("judge") || userRole.ToLower().Equals("Judge")
-                ? _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(Role.Judge.ToString()))
-                : _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(Role.Individual.ToString()));
+                ? _c.Test.ConferenceParticipants.Find(x => x.UserRole.ToString().Equals(Role.Judge.ToString()))
+                : _c.Test.ConferenceParticipants.Find(x => x.UserRole.ToString().Equals(Role.Individual.ToString()));
             return participantUser;
         }
 
@@ -50,7 +55,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(FiltersPopupPage.FiltersPopup).Displayed.Should().BeTrue();
             ClickSelectAll();
 
-            var judges = _c.Test.Conferences.Select(conference => conference.Participants.First(x => x.User_role == UserRole.Judge).Last_name).ToList();
+            var judges = _c.Test.Conferences.Select(conference => conference.Participants.First(x => x.UserRole == UserRole.Judge).LastName).ToList();
 
             foreach (var judge in judges)
             {
@@ -70,7 +75,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             ClickSelectAll();
             ClickSelectAll(); // Clicking 'Select All' twice will remove any previous selections
 
-            var judge = _c.Test.Conferences.Last().Participants.First(x => x.User_role == UserRole.Judge).Last_name;
+            var judge = _c.Test.Conferences.Last().Participants.First(x => x.UserRole == UserRole.Judge).LastName;
             _browsers[_c.CurrentUser].ClickCheckbox(FiltersPopupPage.CheckBox(judge));
             _browsers[_c.CurrentUser].Click(FiltersPopupPage.ApplyButton);
             _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(FiltersPopupPage.FiltersPopup).Should().BeTrue();

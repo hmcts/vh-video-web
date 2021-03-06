@@ -13,7 +13,6 @@ using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
 {
@@ -52,8 +51,8 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
             var vmr = new InterpreterRoomResponse()
             {
                 Label = "Test",
-                Participant_join_uri = "pat_join__interpreter",
-                Pexip_node = "sip.unit.test.com"
+                ParticipantJoinUri = "pat_join__interpreter",
+                PexipNode = "sip.unit.test.com"
             };
             var participantId = Guid.NewGuid();
             var conferenceId = Guid.NewGuid();

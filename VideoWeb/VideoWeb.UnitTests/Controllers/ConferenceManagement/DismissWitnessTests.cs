@@ -12,6 +12,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 {

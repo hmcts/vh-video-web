@@ -8,7 +8,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
 using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
-using UserRole = VideoWeb.Services.Video.UserRole;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -51,20 +51,20 @@ namespace VideoWeb.UnitTests.Mappings
             var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
 
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-                .With(x => x.Current_status = ConferenceState.Suspended)
+                .With(x => x.CurrentStatus = ConferenceState.Suspended)
                 .With(x => x.Participants = participants)
-                .With(x => x.Meeting_room = meetingRoom)
+                .With(x => x.MeetingRoom = meetingRoom)
                 .With(x=> x.Endpoints = endpoints)
                 .Build();
 
             var response = _sut.Map(conference);
 
             response.Id.Should().Be(conference.Id);
-            response.CaseName.Should().Be(conference.Case_name);
-            response.CaseType.Should().Be(conference.Case_type);
-            response.CaseNumber.Should().Be(conference.Case_number);
-            response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);
-            response.ScheduledDuration.Should().Be(conference.Scheduled_duration);
+            response.CaseName.Should().Be(conference.CaseName);
+            response.CaseType.Should().Be(conference.CaseType);
+            response.CaseNumber.Should().Be(conference.CaseNumber);
+            response.ScheduledDateTime.Should().Be(conference.ScheduledDateTime);
+            response.ScheduledDuration.Should().Be(conference.ScheduledDuration);
             response.Status.Should().Be(expectedConferenceStatus);
             response.Endpoints.Should().NotBeNull();
             response.Endpoints.Count.Should().Be(2);
@@ -80,8 +80,8 @@ namespace VideoWeb.UnitTests.Mappings
                 }
                 if (participantResponse.Role == Role.Judge)
                 {
-                    var judge = participants.SingleOrDefault(p => p.User_role == UserRole.Judge);
-                    participantResponse.TiledDisplayName.Should().Be($"T{0};{judge.Display_name};{judge.Id}");
+                    var judge = participants.SingleOrDefault(p => p.UserRole == UserRole.Judge);
+                    participantResponse.TiledDisplayName.Should().Be($"T{0};{judge.DisplayName};{judge.Id}");
                 }
                 if (participantResponse.Role == Role.Individual)
                 {
@@ -100,8 +100,8 @@ namespace VideoWeb.UnitTests.Mappings
             caseTypeGroups[1].Should().Be("Defendant");
             caseTypeGroups[2].Should().Be("None");
 
-            response.ParticipantUri.Should().Be(meetingRoom.Participant_uri);
-            response.PexipNodeUri.Should().Be(meetingRoom.Pexip_node);
+            response.ParticipantUri.Should().Be(meetingRoom.ParticipantUri);
+            response.PexipNodeUri.Should().Be(meetingRoom.PexipNode);
             response.PexipSelfTestNodeUri.Should().NotBeNullOrWhiteSpace();
         }
 
@@ -127,19 +127,19 @@ namespace VideoWeb.UnitTests.Mappings
             var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
 
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-                .With(x => x.Current_status = ConferenceState.Suspended)
+                .With(x => x.CurrentStatus = ConferenceState.Suspended)
                 .With(x => x.Participants = participants)
-                .With(x => x.Meeting_room = meetingRoom)
+                .With(x => x.MeetingRoom = meetingRoom)
                 .Build();
 
             var response = _sut.Map(conference);
 
             response.Id.Should().Be(conference.Id);
-            response.CaseName.Should().Be(conference.Case_name);
-            response.CaseType.Should().Be(conference.Case_type);
-            response.CaseNumber.Should().Be(conference.Case_number);
-            response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);
-            response.ScheduledDuration.Should().Be(conference.Scheduled_duration);
+            response.CaseName.Should().Be(conference.CaseName);
+            response.CaseType.Should().Be(conference.CaseType);
+            response.CaseNumber.Should().Be(conference.CaseNumber);
+            response.ScheduledDateTime.Should().Be(conference.ScheduledDateTime);
+            response.ScheduledDuration.Should().Be(conference.ScheduledDuration);
             response.Status.Should().Be(expectedConferenceStatus);
 
             var participantsResponse = response.Participants;
@@ -174,8 +174,8 @@ namespace VideoWeb.UnitTests.Mappings
             caseTypeGroups[3].Should().Be("Observer");
             caseTypeGroups[4].Should().Be("Panel Member");
 
-            response.ParticipantUri.Should().Be(meetingRoom.Participant_uri);
-            response.PexipNodeUri.Should().Be(meetingRoom.Pexip_node);
+            response.ParticipantUri.Should().Be(meetingRoom.ParticipantUri);
+            response.PexipNodeUri.Should().Be(meetingRoom.PexipNode);
             response.PexipSelfTestNodeUri.Should().NotBeNullOrWhiteSpace();
         }
     }

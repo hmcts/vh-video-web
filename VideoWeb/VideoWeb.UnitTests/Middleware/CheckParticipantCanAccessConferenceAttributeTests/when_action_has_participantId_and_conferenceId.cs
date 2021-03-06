@@ -52,8 +52,8 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             // arrange
             var actionArguments = new Dictionary<string, object>
             {
-                {"participantId", participantId},
-                {"conferenceId", conferenceId}
+                {"participantId", _participantId},
+                {"conferenceId", _conferenceId}
             };
 
             var user = _userBuilder.WithUsername(USER_NAME).WithRole(appRole).Build();

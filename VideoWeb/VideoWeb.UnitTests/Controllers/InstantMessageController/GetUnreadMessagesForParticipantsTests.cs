@@ -14,7 +14,6 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.InstantMessageController
 {
@@ -133,15 +132,15 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             return new List<InstantMessageResponse>
             {
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge -> vho - 03", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-1)},
+                    {From = judge.Username, MessageText = "judge -> vho - 03", To = vho1Username, TimeStamp = DateTime.UtcNow.AddMinutes(-1)},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge -> vho - 02", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-2)},
+                    {From = judge.Username, MessageText = "judge -> vho - 02", To = vho1Username, TimeStamp = DateTime.UtcNow.AddMinutes(-2)},
                 new InstantMessageResponse
-                    {From = vho1Username, Message_text = "vho -> judge - 02", To = judge.Username, Time_stamp = DateTime.UtcNow.AddMinutes(-3)},
+                    {From = vho1Username, MessageText = "vho -> judge - 02", To = judge.Username, TimeStamp = DateTime.UtcNow.AddMinutes(-3)},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge -> vho - 01", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-4)},
+                    {From = judge.Username, MessageText = "judge -> vho - 01", To = vho1Username, TimeStamp = DateTime.UtcNow.AddMinutes(-4)},
                 new InstantMessageResponse
-                    {From = vho1Username, Message_text = "vho -> judge - 01", To = judge.Username, Time_stamp = DateTime.UtcNow.AddMinutes(-5)},
+                    {From = vho1Username, MessageText = "vho -> judge - 01", To = judge.Username, TimeStamp = DateTime.UtcNow.AddMinutes(-5)},
             };
         }
 
@@ -153,13 +152,13 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             return new List<InstantMessageResponse>
             {
                 new InstantMessageResponse
-                    {From = representative.Username, Message_text = "representative -> vho - 03", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-1)},
+                    {From = representative.Username, MessageText = "representative -> vho - 03", To = vho1Username, TimeStamp = DateTime.UtcNow.AddMinutes(-1)},
                 new InstantMessageResponse
-                    {From = representative.Username, Message_text = "representative -> vho - 02", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-2)},
+                    {From = representative.Username, MessageText = "representative -> vho - 02", To = vho1Username, TimeStamp = DateTime.UtcNow.AddMinutes(-2)},
                 new InstantMessageResponse
-                    {From = representative.Username, Message_text = "representative -> vho - 01", To = vho1Username, Time_stamp = DateTime.UtcNow.AddMinutes(-3)},
+                    {From = representative.Username, MessageText = "representative -> vho - 01", To = vho1Username, TimeStamp = DateTime.UtcNow.AddMinutes(-3)},
                 new InstantMessageResponse
-                    {From = vho1Username, Message_text = "vho -> representative - 01", To = representative.Username, Time_stamp = DateTime.UtcNow.AddMinutes(-4)},
+                    {From = vho1Username, MessageText = "vho -> representative - 01", To = representative.Username, TimeStamp = DateTime.UtcNow.AddMinutes(-4)},
             };
         }
     }

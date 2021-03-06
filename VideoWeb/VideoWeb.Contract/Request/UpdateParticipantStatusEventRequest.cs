@@ -1,4 +1,6 @@
-﻿namespace VideoWeb.Contract.Request
+using VideoApi.Contract.Enums;
+
+namespace VideoWeb.Contract.Request
 {
     public class UpdateParticipantStatusEventRequest
     {

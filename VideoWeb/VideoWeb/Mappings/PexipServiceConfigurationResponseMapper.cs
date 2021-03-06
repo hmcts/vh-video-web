@@ -10,7 +10,7 @@ namespace VideoWeb.Mappings
         {
             return new SelfTestPexipResponse
             {
-                PexipSelfTestNode = pexipConfigResponse?.Pexip_self_test_node
+                PexipSelfTestNode = pexipConfigResponse?.PexipSelfTestNode
             };
         }
     }

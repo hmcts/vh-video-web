@@ -12,7 +12,11 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.Services.TestApi;
+using TestApi.Client;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
+using VideoApi.Contract.Enums;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -21,11 +25,11 @@ namespace VideoWeb.AcceptanceTests.Steps
     {
         private const int ExtraTimeAfterReachingWaitingRoom = 3;
         private const int ExtraTimeInWaitingRoomAfterThePause = 10;
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly BrowserSteps _browserSteps;
 
-        public WaitingRoomSteps(Dictionary<User, UserBrowser> browsers, TestContext testContext,
+        public WaitingRoomSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext testContext,
             BrowserSteps browserSteps)
         {
             _browsers = browsers;
@@ -309,7 +313,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             }
         }
 
-        private static IEnumerable<ParticipantDetailsResponse> LoggedInParticipants(Dictionary<User, UserBrowser>.KeyCollection browsersKeys, IReadOnlyCollection<ParticipantDetailsResponse> allParticipants)
+        private static IEnumerable<ParticipantDetailsResponse> LoggedInParticipants(Dictionary<UserDto, UserBrowser>.KeyCollection browsersKeys, IReadOnlyCollection<ParticipantDetailsResponse> allParticipants)
         {
             var participants = (from user in browsersKeys where allParticipants.Any(x => x.Name.ToLower().Contains(user.LastName.ToLower())) select allParticipants.First(x => x.Name.ToLower().Contains(user.LastName.ToLower()))).ToList();
             participants.Should().NotBeNullOrEmpty();

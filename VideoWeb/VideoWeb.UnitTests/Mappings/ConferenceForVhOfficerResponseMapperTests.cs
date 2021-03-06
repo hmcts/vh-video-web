@@ -7,6 +7,7 @@ using NUnit.Framework;
 using VideoWeb.Mappings;
 using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -28,7 +29,7 @@ namespace VideoWeb.UnitTests.Mappings
         {
             var conference = Builder<ConferenceForAdminResponse>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
-                .With(x => x.Hearing_ref_id = Guid.NewGuid())
+                .With(x => x.HearingRefId = Guid.NewGuid())
                 .Build();
 
             var participants = new List<ParticipantSummaryResponse>
@@ -46,19 +47,19 @@ namespace VideoWeb.UnitTests.Mappings
             var response = _sut.Map(conference);
 
             response.Id.Should().Be(conference.Id);
-            response.CaseName.Should().Be(conference.Case_name);
-            response.CaseNumber.Should().Be(conference.Case_number);
-            response.CaseType.Should().Be(conference.Case_type);
-            response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);
-            response.ScheduledDuration.Should().Be(conference.Scheduled_duration);
+            response.CaseName.Should().Be(conference.CaseName);
+            response.CaseNumber.Should().Be(conference.CaseNumber);
+            response.CaseType.Should().Be(conference.CaseType);
+            response.ScheduledDateTime.Should().Be(conference.ScheduledDateTime);
+            response.ScheduledDuration.Should().Be(conference.ScheduledDuration);
             response.Status.ToString().Should().Be(conference.Status.ToString());
-            response.HearingVenueName.Should().Be(conference.Hearing_venue_name);
+            response.HearingVenueName.Should().Be(conference.HearingVenueName);
             response.Participants.Count.Should().Be(participants.Count);
-            response.StartedDateTime.Should().Be(conference.Started_date_time);
-            response.ClosedDateTime.Should().Be(conference.Closed_date_time);
-            response.TelephoneConferenceId.Should().Be(conference.Telephone_conference_id);
-            response.TelephoneConferenceNumber.Should().Be(conference.Telephone_conference_number);
-            response.CreatedDateTime.Should().Be(conference.Created_date_time);
+            response.StartedDateTime.Should().Be(conference.StartedDateTime);
+            response.ClosedDateTime.Should().Be(conference.ClosedDateTime);
+            response.TelephoneConferenceId.Should().Be(conference.TelephoneConferenceId);
+            response.TelephoneConferenceNumber.Should().Be(conference.TelephoneConferenceNumber);
+            response.CreatedDateTime.Should().Be(conference.CreatedDateTime);
         }
     }
 }

@@ -5,7 +5,10 @@ using FluentAssertions;
 using Selenium.Axe;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
-using VideoWeb.Services.TestApi;
+using TestApi.Client;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
+using TestApi.Contract.Dtos;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -13,9 +16,9 @@ namespace VideoWeb.AcceptanceTests.Steps
     public class AccessibilitySteps
     {
         private readonly TestContext _c;
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
 
-        public AccessibilitySteps(TestContext testContext, Dictionary<User, UserBrowser> browsers)
+        public AccessibilitySteps(TestContext testContext, Dictionary<UserDto, UserBrowser> browsers)
         {
             _c = testContext;
             _browsers = browsers;

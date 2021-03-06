@@ -18,9 +18,13 @@ using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.Common.Extensions;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Services.TestApi;
+using TestApi.Client;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using RoomType = VideoWeb.Common.Models.RoomType;
+using VideoApi.Contract.Responses;
+using TestApi.Contract.Dtos;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -28,10 +32,10 @@ namespace VideoWeb.AcceptanceTests.Steps
     public sealed class HearingAlertsSteps
     {
         private const int TimeoutForCheckboxToNotBeEnabled = 10;
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
 
-        public HearingAlertsSteps(Dictionary<User, UserBrowser> browsers, TestContext context)
+        public HearingAlertsSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext context)
         {
             _browsers = browsers;
             _c = context;
@@ -50,7 +54,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             var response = SendEventToVideoApi(request);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-            Tasks.GetTheTaskId(c, EventType.MediaPermissionDenied);
+            Tasks.GetTheTaskId(_c, EventType.MediaPermissionDenied);
         }
 
         [When(@"the hearing is suspended")]
@@ -65,7 +69,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             var response = SendEventToVideoWeb(request);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-            Tasks.GetTheTaskId(c, EventType.Suspend);
+            Tasks.GetTheTaskId(_c, EventType.Suspend);
         }
 
         [When(@"a (.*) has disconnected from the (.*)")]
@@ -82,7 +86,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             var response = SendEventToVideoWeb(request);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-            Tasks.GetTheTaskId(c, EventType.Disconnected);
+            Tasks.GetTheTaskId(_c, EventType.Disconnected);
         }
 
         [When(@"a participant has failed the self-test with (.*)")]
@@ -99,7 +103,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             var response = SendEventToVideoApi(request);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-            Tasks.GetTheTaskId(c, EventType.SelfTestFailed);
+            Tasks.GetTheTaskId(_c, EventType.SelfTestFailed);
         }
 
         private ParticipantDetailsResponse GetUserFromConferenceDetails(string userRole)
@@ -134,10 +138,10 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheVideoHearingsOfficerUserShouldNotSeeAnAlert()
         {
             _browsers[_c.CurrentUser].Refresh();
-            Scrolling.ScrollToTheHearing(browsers[C.CurrentUser], _c.Test.Conference.Id);
+            Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser], _c.Test.Conference.Id);
             _browsers[_c.CurrentUser].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
-            Scrolling.ScrollToTheTopOfThePage(browsers[C.CurrentUser]);
-            Tasks.TasksListShouldBeEmpty(c);
+            Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
+            Tasks.TasksListShouldBeEmpty(_c);
         }
 
         [Then(@"the Video Hearings Officer user should see a (.*) notification and a (.*) alert")]
@@ -145,10 +149,10 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser].Refresh();
             _browsers[_c.CurrentUser].Driver.WaitForAngular();
-            Scrolling.ScrollToTheHearing(browsers[C.CurrentUser], _c.Test.Conference.Id);
+            Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser], _c.Test.Conference.Id);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.StatusBadge(_c.Test.Conference.Id)).Text.Trim().Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
             _browsers[_c.CurrentUser].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
-            Scrolling.ScrollToTheTopOfThePage(browsers[C.CurrentUser]);
+            Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.TaskDetails(_c.Test.TaskId)).Text.Trim().Should().Be(alertType);
 

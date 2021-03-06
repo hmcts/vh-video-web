@@ -37,9 +37,9 @@ namespace VideoWeb.UnitTests.Hub
             _userApiClientMock.Setup(x => x.GetUserByAdUserNameAsync(_username)).ReturnsAsync(_profile);
             var result = await _cachedProfileService.GetObfuscatedUsernameAsync(_username);
             var split = result.Split(' ');
-            split[0].Should().StartWith(_profile.First_name[0].ToString());
+            split[0].Should().StartWith(_profile.FirstName[0].ToString());
             split[0].Should().EndWith("*");
-            split[1].Should().StartWith(_profile.Last_name[0].ToString());
+            split[1].Should().StartWith(_profile.LastName[0].ToString());
             split[1].Should().EndWith("*");
         }
 
@@ -58,7 +58,7 @@ namespace VideoWeb.UnitTests.Hub
         {
             var username = "test@aa.com";
             var profile = Builder<UserProfile>.CreateNew()
-                .With(x => x.User_name = username).Build();
+                .With(x => x.UserName = username).Build();
             
             Task<UserProfile> FakeApiCall(string s)
             {
@@ -75,7 +75,7 @@ namespace VideoWeb.UnitTests.Hub
         private UserProfile InitProfile(string username)
         {
            return Builder<UserProfile>.CreateNew()
-                .With(x => x.User_name = username).Build();
+                .With(x => x.UserName = username).Build();
         }
     }
 }

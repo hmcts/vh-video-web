@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using VideoApi.Contract.Enums;
 using VideoWeb.Mappings;
 using VideoWeb.UnitTests.Builders;
 using VHEndpointStatus = VideoWeb.Common.Models.EndpointStatus;
@@ -18,11 +19,11 @@ namespace VideoWeb.UnitTests.Mappings
             var result = _sut.Map(endpoint, 1);
 
             result.Should().NotBeNull();
-            result.DisplayName.Should().Be(endpoint.Display_name);
+            result.DisplayName.Should().Be(endpoint.DisplayName);
             result.Id.Should().Be(endpoint.Id);
             result.Status.ToString().Should().Be(endpoint.Status.ToString());
-            result.DefenceAdvocateUsername.Should().Be(endpoint.Defence_advocate);
-            result.PexipDisplayName.Should().Be($"T{100 + 1};{endpoint.Display_name};{endpoint.Id}");
+            result.DefenceAdvocateUsername.Should().Be(endpoint.DefenceAdvocate);
+            result.PexipDisplayName.Should().Be($"T{100 + 1};{endpoint.DisplayName};{endpoint.Id}");
         }
     }
 }

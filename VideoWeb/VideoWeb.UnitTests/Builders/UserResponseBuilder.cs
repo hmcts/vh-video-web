@@ -8,12 +8,12 @@ namespace VideoWeb.UnitTests.Builders
         public static List<UserResponse> BuildData()
         {
             return new List<UserResponse> {
-                new UserResponse{First_name="Manual03", Last_name="Court room 01"},
-                new UserResponse{First_name="Manual01", Last_name="Court room 03"},
-                new UserResponse{First_name="Manual01", Last_name="Court room 02"},
-                new UserResponse{First_name="Manual02", Last_name="Court room 01"},
-                new UserResponse{First_name="Manual02", Last_name="Court room 02"},
-                new UserResponse{First_name="Manual01", Last_name="Court room 01"}
+                new UserResponse{FirstName="Manual03", LastName="Court room 01"},
+                new UserResponse{FirstName="Manual01", LastName="Court room 03"},
+                new UserResponse{FirstName="Manual01", LastName="Court room 02"},
+                new UserResponse{FirstName="Manual02", LastName="Court room 01"},
+                new UserResponse{FirstName="Manual02", LastName="Court room 02"},
+                new UserResponse{FirstName="Manual01", LastName="Court room 01"}
             };
         }
     }

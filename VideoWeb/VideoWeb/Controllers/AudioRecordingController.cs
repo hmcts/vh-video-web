@@ -35,7 +35,7 @@ namespace VideoWeb.Controllers
             try
             { 
                 var response = await _videoApiClient.GetAudioStreamInfoAsync(hearingId);
-                return Ok(response.Is_recording);
+                return Ok(response.IsRecording);
             }
             catch (VideoApiException e)
             {

@@ -6,6 +6,7 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
+using System.Threading.Tasks;
 
 namespace VideoWeb.Controllers
 {
@@ -33,11 +34,11 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(SelfTestPexipResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [SwaggerOperation(OperationId = "GetPexipConfig")]
-        public ActionResult<SelfTestPexipResponse> GetPexipConfig()
+        public async Task<ActionResult<SelfTestPexipResponse>> GetPexipConfig()
         {
             try
             {
-                var config = _videoApiClient.GetPexipServicesConfiguration();
+                var config = await _videoApiClient.GetPexipServicesConfigurationAsync();
                 var selfTestPexipResponseMapper = _mapperFactory.Get<PexipConfigResponse, SelfTestPexipResponse>();
                 var response = selfTestPexipResponseMapper.Map(config);
                 

@@ -32,10 +32,10 @@ namespace VideoWeb.EventHub.Handlers
             {
                 return _videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
                 {
-                    Conference_id = SourceConference.Id,
-                    Defence_advocate_id = Guid.Empty,
-                    Endpoint_id = SourceEndpoint.Id,
-                    Room_label = targetRoom
+                    ConferenceId = SourceConference.Id,
+                    DefenceAdvocateId = Guid.Empty,
+                    EndpointId = SourceEndpoint.Id,
+                    RoomLabel = targetRoom
                 });
             }
 

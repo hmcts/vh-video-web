@@ -6,7 +6,7 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
 using VideoApi.Contract.Responses;
 using LinkedParticipantResponse = VideoWeb.Contract.Responses.LinkedParticipantResponse;
-using VHLinkedParticipantResponse = VideoWeb.Services.Video.LinkedParticipantResponse;
+using VHLinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 using ParticipantStatus = VideoWeb.Common.Models.ParticipantStatus;
 
 namespace VideoWeb.Mappings
@@ -15,8 +15,7 @@ namespace VideoWeb.Mappings
     {
         private readonly IMapTo<RoomResponse, RoomSummaryResponse> _roomResponseMapper;
 
-        private readonly IMapTo<VHLinkedParticipantResponse, LinkedParticipantResponse>
-            _linkedParticipantResponseMapper;
+        private readonly IMapTo<VHLinkedParticipantResponse, LinkedParticipantResponse> _linkedParticipantResponseMapper;
 
         public ParticipantResponseMapper(IMapTo<RoomResponse, RoomSummaryResponse> roomResponseMapper, IMapTo<VHLinkedParticipantResponse, LinkedParticipantResponse> linkedParticipantResponseMapper)
         {
@@ -26,9 +25,9 @@ namespace VideoWeb.Mappings
 
         public ParticipantResponse Map(ParticipantDetailsResponse participant)
         {
-            var status = Enum.Parse<ParticipantStatus>(participant.Current_status.ToString());
-            var role = Enum.Parse<Role>(participant.User_role.ToString());
-            var links = (participant.Linked_participants ?? new List<VHLinkedParticipantResponse>())
+            var status = Enum.Parse<ParticipantStatus>(participant.CurrentStatus.ToString());
+            var role = Enum.Parse<Role>(participant.UserRole.ToString());
+            var links = (participant.LinkedParticipants ?? new List<VHLinkedParticipantResponse>())
                 .Select(_linkedParticipantResponseMapper.Map).ToList();
             var response = new ParticipantResponse
             {
@@ -36,19 +35,19 @@ namespace VideoWeb.Mappings
                 Name = participant.Name,
                 Status = status,
                 Role = role,
-                DisplayName = participant.Display_name,
-                CaseTypeGroup = participant.Case_type_group,
+                DisplayName = participant.DisplayName,
+                CaseTypeGroup = participant.CaseTypeGroup,
                 Representee = participant.Representee,
-                FirstName = participant.First_name,
-                LastName = participant.Last_name,
-                HearingRole = participant.Hearing_role,
-                CurrentRoom = _roomResponseMapper.Map(participant.Current_room),
+                FirstName = participant.FirstName,
+                LastName = participant.LastName,
+                HearingRole = participant.HearingRole,
+                CurrentRoom = _roomResponseMapper.Map(participant.CurrentRoom),
                 LinkedParticipants = links
             };
 
             if (role == Role.Judge)
             {
-                response.TiledDisplayName = $"T{0};{participant.Display_name};{participant.Id}";
+                response.TiledDisplayName = $"T{0};{participant.DisplayName};{participant.Id}";
             }
 
             return response;

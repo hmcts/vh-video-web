@@ -1,6 +1,10 @@
 using System;
 using System.Collections.Generic;
-using VideoWeb.Services.TestApi;
+using TestApi.Client;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
+using TestApi.Contract.Requests;
 
 namespace VideoWeb.AcceptanceTests.Builders
 {
@@ -16,17 +20,17 @@ namespace VideoWeb.AcceptanceTests.Builders
             _request = new CreateHearingRequest()
             {
                 Application = Application.VideoWeb,
-                Audio_recording_required = false,
-                Case_type = CASE_TYPE_NAME,
-                Questionnaire_not_required = true,
-                Scheduled_date_time = DateTime.UtcNow,
-                Test_type = TestType.Automated,
-                Users = new List<User>(),
+                AudioRecordingRequired = false,
+                CaseType = CASE_TYPE_NAME,
+                QuestionnaireNotRequired = true,
+                ScheduledDateTime = DateTime.UtcNow,
+                TestType = TestType.Automated,
+                Users = new List<UserDto>(),
                 Venue = DEFAULT_VENUE
             };
         }
 
-        public HearingRequestBuilder WithUsers(List<User> users)
+        public HearingRequestBuilder WithUsers(List<UserDto> users)
         {
             _request.Users = users;
             return this;
@@ -34,7 +38,7 @@ namespace VideoWeb.AcceptanceTests.Builders
 
         public HearingRequestBuilder WithScheduledTime(DateTime scheduledDateTime)
         {
-            _request.Scheduled_date_time = scheduledDateTime;
+            _request.ScheduledDateTime = scheduledDateTime;
             return this;
         }
 
@@ -46,13 +50,13 @@ namespace VideoWeb.AcceptanceTests.Builders
 
         public HearingRequestBuilder WithAudioRecordingRequired(bool audioRecordingRequired)
         {
-            _request.Audio_recording_required = audioRecordingRequired;
+            _request.AudioRecordingRequired = audioRecordingRequired;
             return this;
         }
 
         public HearingRequestBuilder WithCACDCaseType()
         {
-            _request.Case_type = CACD_CASE_TYPE_NAME;
+            _request.CaseType = CACD_CASE_TYPE_NAME;
             return this;
         }
 

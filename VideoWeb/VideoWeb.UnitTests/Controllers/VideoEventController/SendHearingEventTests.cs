@@ -21,8 +21,8 @@ using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using VideoWeb.UnitTests.Builders;
 using Endpoint = VideoWeb.Common.Models.Endpoint;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 using VideoApi.Contract.Enums;
+using RoomType = VideoApi.Contract.Enums.RoomType;
 
 namespace VideoWeb.UnitTests.Controllers.VideoEventController
 {

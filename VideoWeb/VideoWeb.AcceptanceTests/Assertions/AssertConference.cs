@@ -2,8 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using BookingsApi.Contract.Responses;
 using FluentAssertions;
-using VideoWeb.Services.TestApi;
+using TestApi.Client;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
+using VideoApi.Contract.Enums;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Assertions
 {
@@ -19,13 +24,13 @@ namespace VideoWeb.AcceptanceTests.Assertions
         public void MatchesHearing(HearingDetailsResponse hearing)
         {
             var hearingCase = hearing.Cases.First();
-            _conference.Case_name.Should().Be(hearingCase.Name);
-            _conference.Case_number.Should().Be(hearingCase.Number);
-            _conference.Case_type.Should().Be(hearing.Case_type_name);
-            _conference.Current_status.Should().Be(ConferenceState.NotStarted);
-            _conference.Hearing_id.Should().Be(hearing.Id);
-            _conference.Scheduled_date_time.Should().Be(hearing.Scheduled_date_time);
-            _conference.Scheduled_duration.Should().Be(hearing.Scheduled_duration);
+            _conference.CaseName.Should().Be(hearingCase.Name);
+            _conference.CaseNumber.Should().Be(hearingCase.Number);
+            _conference.CaseType.Should().Be(hearing.CaseTypeName);
+            _conference.CurrentStatus.Should().Be(ConferenceState.NotStarted);
+            _conference.HearingId.Should().Be(hearing.Id);
+            _conference.ScheduledDateTime.Should().Be(hearing.ScheduledDateTime);
+            _conference.ScheduledDuration.Should().Be(hearing.ScheduledDuration);
             ParticipantsMatch(hearing.Participants);
         }
 
@@ -35,7 +40,7 @@ namespace VideoWeb.AcceptanceTests.Assertions
 
             foreach (var conferenceParticipant in conferenceParticipants)
             {
-                if (conferenceParticipant.Ref_id == Guid.Empty)
+                if (conferenceParticipant.RefId == Guid.Empty)
                 {
                     throw new DataException("Participant Ref Id cannot be null");                  
                 }
@@ -43,12 +48,12 @@ namespace VideoWeb.AcceptanceTests.Assertions
                 var participantFound = false;
                 foreach (var hearingParticipant in hearingParticipants)
                 {
-                    if (!conferenceParticipant.Ref_id.Equals(hearingParticipant.Id)) continue;
-                    conferenceParticipant.Case_type_group.Should().Be(hearingParticipant.Case_role_name);
-                    conferenceParticipant.Display_name.Should().Be(hearingParticipant.Display_name);
-                    conferenceParticipant.Name.Should().Be($"{hearingParticipant.Title} {hearingParticipant.First_name} {hearingParticipant.Last_name}");
+                    if (!conferenceParticipant.RefId.Equals(hearingParticipant.Id)) continue;
+                    conferenceParticipant.CaseTypeGroup.Should().Be(hearingParticipant.CaseRoleName);
+                    conferenceParticipant.DisplayName.Should().Be(hearingParticipant.DisplayName);
+                    conferenceParticipant.Name.Should().Be($"{hearingParticipant.Title} {hearingParticipant.FirstName} {hearingParticipant.LastName}");
                     conferenceParticipant.Username.ToLower().Should().Be(hearingParticipant.Username.ToLower());
-                    if (conferenceParticipant.User_role == UserRole.Representative)
+                    if (conferenceParticipant.UserRole == UserRole.Representative)
                         conferenceParticipant.Representee.Should().Be(hearingParticipant.Representee);
                     participantFound = true;
                     break;

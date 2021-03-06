@@ -11,7 +11,10 @@ using OpenQA.Selenium.Support.UI;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.Services.TestApi;
+using TestApi.Client;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -20,10 +23,10 @@ namespace VideoWeb.AcceptanceTests.Steps
     {
         private const int ExtraTimeoutToLoadVideoFromKinly = 60;
         private const int VideoFinishedPlayingTimeout = 120;
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
 
-        public PracticeVideoHearingSteps(Dictionary<User, UserBrowser> browsers, TestContext c)
+        public PracticeVideoHearingSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext c)
         {
             _browsers = browsers;
             _c = c;
@@ -77,7 +80,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the test score should be produced")]
         public void ThenTheTestScoreShouldBeProduced()
         {
-            var participantId = _c.Test.ConferenceParticipants.First(x => x.Display_name.ToLower().Equals(_c.CurrentUser.Display_name.ToLower())).Id;
+            var participantId = _c.Test.ConferenceParticipants.First(x => x.DisplayName.ToLower().Equals(_c.CurrentUser.DisplayName.ToLower())).Id;
 
             var response = _c.Apis.TestApi.PollForSelfTestScoreResponse(_c.Test.NewConferenceId, participantId);
             response.StatusCode.Should().Be(HttpStatusCode.OK);

@@ -10,10 +10,10 @@ namespace VideoWeb.Mappings
         {
             return new UpdateParticipantRequest
             {
-                First_name = input.FirstName,
-                Last_name = input.LastName,
+                FirstName = input.FirstName,
+                LastName = input.LastName,
                 Fullname = input.Fullname,
-                Display_name = input.DisplayName,
+                DisplayName = input.DisplayName,
                 Representee = input.Representee
             };
         }

@@ -23,19 +23,19 @@ namespace VideoWeb.Mappings
             var mappedParticipants = participants.Select(participant => new ParticipantForUserResponse
                 {
                     Id = participant.Id,
-                    DisplayName = participant.Display_name,
+                    DisplayName = participant.DisplayName,
                     Status = Enum.Parse<ParticipantStatus>(participant.Status.ToString()),
-                    Role = Enum.Parse<Role>(participant.User_role.ToString()),
+                    Role = Enum.Parse<Role>(participant.UserRole.ToString()),
                     Representee = string.IsNullOrWhiteSpace(participant.Representee) ? null : participant.Representee,
-                    CaseTypeGroup = participant.Case_group,
-                    FirstName = participant.First_name,
-                    LastName = participant.Last_name,
-                    HearingRole = participant.Hearing_role,
-                    CurrentRoom = _roomResponseMapper.Map(participant.Current_room),
-                    LinkedParticipants = participant.Linked_participants.Select(x =>
+                    CaseTypeGroup = participant.CaseGroup,
+                    FirstName = participant.FirstName,
+                    LastName = participant.LastName,
+                    HearingRole = participant.HearingRole,
+                    CurrentRoom = _roomResponseMapper.Map(participant.CurrentRoom),
+                    LinkedParticipants = participant.LinkedParticipants.Select(x =>
                         new Contract.Responses.LinkedParticipantResponse
                         {
-                            LinkedId = x.Linked_id,
+                            LinkedId = x.LinkedId,
                             LinkType = Enum.Parse<LinkType>(x.Type.ToString(), true)
                         }).ToList()
                 })

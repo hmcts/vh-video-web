@@ -17,7 +17,6 @@ using VideoWeb.EventHub.Handlers.Core;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 using Moq;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController

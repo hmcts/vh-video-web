@@ -27,7 +27,7 @@ namespace VideoWeb.Mappings
             {
                 var participantMessageResponses = messageResponses
                     .Where(p => p.From == participant.Username || p.To == participant.Username)
-                    .OrderByDescending(x => x.Time_stamp).ToList();
+                    .OrderByDescending(x => x.TimeStamp).ToList();
 
                 var vhoMessage = participantMessageResponses.FirstOrDefault(m => IsNonParticipantMessage(conference, m));
                 var participantMessageCount = vhoMessage == null ? participantMessageResponses.Count : participantMessageResponses.IndexOf(vhoMessage);

@@ -19,7 +19,6 @@ using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController

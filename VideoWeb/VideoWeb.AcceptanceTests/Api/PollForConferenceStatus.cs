@@ -2,7 +2,11 @@ using System;
 using System.Threading;
 using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Helpers;
-using VideoWeb.Services.TestApi;
+using TestApi.Client;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
+using VideoApi.Contract.Enums;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Api
 {
@@ -48,10 +52,10 @@ namespace VideoWeb.AcceptanceTests.Api
                 var conference = RequestHelper.Deserialise<ConferenceDetailsResponse>(response.Content);
                 if (conference != null)
                 {
-                    actualState = conference.Current_status;
+                    actualState = conference.CurrentStatus;
                     if (actualState.Equals(_expectedState))
                     {
-                        return conference.Current_status;
+                        return conference.CurrentStatus;
                     }
                 }
                 Thread.Sleep(TimeSpan.FromSeconds(1));

@@ -12,11 +12,10 @@ using VideoWeb.EventHub.Handlers.Core;
 using VideoApi.Client;
 using VideoWeb.UnitTests.Builders;
 using EventHubEventType = VideoWeb.EventHub.Enums.EventType;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
-using UpdateParticipantRequest = VideoWeb.Services.Video.UpdateParticipantRequest;
 using Autofac.Extras.Moq;
 using VideoWeb.Contract.Request;
 using VideoWeb.Mappings;
+using VideoApi.Contract.Requests;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {
@@ -68,7 +67,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
                 .Setup(x => x.UpdateParticipantDetailsAsync(It.IsAny<Guid>(), It.IsAny<Guid>(),
                     It.Is<UpdateParticipantRequest>(participantRequest =>
                         request.Fullname == participantRequest.Fullname &&
-                        request.DisplayName == participantRequest.Display_name)))
+                        request.DisplayName == participantRequest.DisplayName)))
                 .Returns(Task.FromResult(default(object)));
 
             var result = await _sut.UpdateParticipantDisplayNameAsync(conferenceId, participantId, request);

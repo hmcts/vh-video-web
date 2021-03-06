@@ -30,7 +30,7 @@ namespace VideoWeb.Mappings
                 ScheduledDuration = conference.ScheduledDuration,
                 ClosedDateTime = conference.ClosedDateTime,
                 ScheduledDateTime = conference.ScheduledDateTime,
-                Participants = conference.Participants.Select(participantForJudgeResponseMapper.Map).ToList(),
+                Participants = conference.Participants.Select(_participantForJudgeResponseMapper.Map).ToList(),
                 NumberOfEndpoints = conference.NumberOfEndpoints
             };
         }

@@ -11,10 +11,10 @@ namespace VideoWeb.Common.Caching
             return new Endpoint
             {
                 Id = endpointResponse.Id,
-                DisplayName = endpointResponse.Display_name,
+                DisplayName = endpointResponse.DisplayName,
                 EndpointStatus =
                     (EndpointStatus) Enum.Parse(typeof(EndpointStatus), endpointResponse.Status.ToString()),
-                DefenceAdvocateUsername = endpointResponse.Defence_advocate?.ToLower().Trim()
+                DefenceAdvocateUsername = endpointResponse.DefenceAdvocate?.ToLower().Trim()
             };
         }
     }

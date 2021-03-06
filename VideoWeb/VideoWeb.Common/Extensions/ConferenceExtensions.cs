@@ -1,3 +1,4 @@
+using VideoApi.Contract.Enums;
 using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Common.Extensions

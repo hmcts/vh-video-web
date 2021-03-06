@@ -6,7 +6,8 @@ using NUnit.Framework;
 using VideoWeb.Mappings;
 using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
-using Conference = VideoWeb.Services.Video.ConferenceForIndividualResponse;
+using Conference = VideoApi.Contract.Responses.ConferenceForIndividualResponse;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -35,11 +36,11 @@ namespace VideoWeb.UnitTests.Mappings
             var response = _sut.Map(conference);
 
             response.Id.Should().Be(conference.Id);
-            response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);
-            response.CaseNumber.Should().Be(conference.Case_number);
-            response.CaseName.Should().Be(conference.Case_name);
+            response.ScheduledDateTime.Should().Be(conference.ScheduledDateTime);
+            response.CaseNumber.Should().Be(conference.CaseNumber);
+            response.CaseName.Should().Be(conference.CaseName);
             response.Status.Should().Be(conference.Status);
-            response.ClosedDateTime.Should().Be(conference.Closed_date_time);
+            response.ClosedDateTime.Should().Be(conference.ClosedDateTime);
         }
     }
 }

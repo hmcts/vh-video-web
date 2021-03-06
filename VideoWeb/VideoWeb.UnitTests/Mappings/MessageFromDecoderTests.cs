@@ -11,7 +11,7 @@ using VideoWeb.Helpers;
 using UserApi.Client;
 using UserApi.Contract.Responses;
 using VideoApi.Contract.Responses;
-using UserRole = VideoWeb.Services.Video.UserRole;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -26,7 +26,7 @@ namespace VideoWeb.UnitTests.Mappings
         {
             _userCache = new DictionaryUserCache();
             _userApiClientMock = new Mock<IUserApiClient>();
-            _decoder = new MessageFromDecoder(_userApiClientMock.Object, userCache);
+            _decoder = new MessageFromDecoder(_userApiClientMock.Object, _userCache);
         }
 
         [Test]

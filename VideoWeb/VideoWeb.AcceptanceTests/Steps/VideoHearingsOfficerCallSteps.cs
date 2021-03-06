@@ -9,7 +9,9 @@ using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.Services.TestApi;
+using TestApi.Client;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -19,11 +21,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         private const int SecondsWaitToCallAndAnswer = 5;
         private const int SecondsDelayBeforeCallingTheParticipant = 5;
         private const int Retries = 60;
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly BrowserSteps _browserSteps;
 
-        public VideoHearingsOfficerCallSteps(Dictionary<User, UserBrowser> browsers, TestContext c, BrowserSteps browserSteps)
+        public VideoHearingsOfficerCallSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext c, BrowserSteps browserSteps)
         {
             _browsers = browsers;
             _c = c;
@@ -41,7 +43,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var user = Users.GetUserFromText(text, _c.Test.Users);
             var participant = _c.Test.ConferenceParticipants.First(x => x.Username.ToLower().Contains(user.Username.ToLower()));
             Thread.Sleep(TimeSpan.FromSeconds(SecondsDelayBeforeCallingTheParticipant));
-            _browsers[_c.CurrentUser].Click(AdminPanelPage.ParticipantInIframe(participant.Display_name));
+            _browsers[_c.CurrentUser].Click(AdminPanelPage.ParticipantInIframe(participant.DisplayName));
             Thread.Sleep(TimeSpan.FromSeconds(SecondsDelayBeforeCallingTheParticipant));
             _browsers[_c.CurrentUser].Click(AdminPanelPage.VhoPrivateConsultationLink(participant.Id));
             _browsers[_c.CurrentUser].LastWindowName = _browsers[_c.CurrentUser].SwitchTab("Private Consultation");
@@ -104,7 +106,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var user = Users.GetUserFromText(text, _c.Test.Users);
             var participant = _c.Test.ConferenceParticipants.Find(x => x.Username.ToLower().Contains(user.Username.ToLower()));
             Thread.Sleep(TimeSpan.FromSeconds(SecondsDelayBeforeCallingTheParticipant));
-            _browsers[_c.CurrentUser].Click(AdminPanelPage.ParticipantInIframe(participant.Display_name));
+            _browsers[_c.CurrentUser].Click(AdminPanelPage.ParticipantInIframe(participant.DisplayName));
             Thread.Sleep(TimeSpan.FromSeconds(SecondsDelayBeforeCallingTheParticipant));
             _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(AdminPanelPage.VhoPrivateConsultationLink(participant.Id)).Should().BeTrue();
         }

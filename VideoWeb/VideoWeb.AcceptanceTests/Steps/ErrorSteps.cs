@@ -8,18 +8,21 @@ using RestSharp;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.Services.TestApi;
+using TestApi.Client;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
+using TestApi.Contract.Dtos;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
     public sealed class ErrorSteps
     {
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly LoginSteps _loginSteps;
 
-        public ErrorSteps(Dictionary<User, UserBrowser> browsers, TestContext testContext, LoginSteps loginSteps)
+        public ErrorSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext testContext, LoginSteps loginSteps)
         {
             _browsers = browsers;
             _c = testContext;
@@ -42,7 +45,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user is removed from the hearing")]
         public void WhenTheUserIsRemovedFromTheHearing()
         {
-            var participantId = _c.Test.ConferenceParticipants.First(x => x.Display_name == _c.CurrentUser.Display_name).Id;
+            var participantId = _c.Test.ConferenceParticipants.First(x => x.DisplayName == _c.CurrentUser.DisplayName).Id;
             var response = _c.Apis.TestApi.RemoveParticipantFromConference(_c.Test.NewConferenceId, participantId);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             response.ResponseStatus.Should().Be(ResponseStatus.Completed);

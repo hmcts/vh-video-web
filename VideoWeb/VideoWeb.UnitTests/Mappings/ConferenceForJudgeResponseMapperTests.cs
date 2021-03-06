@@ -4,9 +4,10 @@ using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
+using VideoApi.Contract.Enums;
 using VideoWeb.Mappings;
-using Conference = VideoWeb.Services.Video.ConferenceForJudgeResponse;
-using Participant = VideoWeb.Services.Video.ParticipantForJudgeResponse;
+using Conference = VideoApi.Contract.Responses.ConferenceForJudgeResponse;
+using Participant = VideoApi.Contract.Responses.ParticipantForJudgeResponse;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -37,22 +38,22 @@ namespace VideoWeb.UnitTests.Mappings
             var conference = Builder<Conference>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
                 .With(x => x.Participants = participants)
-                .With(x => x.Number_of_endpoints = 2)
-                .With(x => x.Closed_date_time = DateTime.UtcNow.AddMinutes(-10))
+                .With(x => x.NumberOfEndpoints = 2)
+                .With(x => x.ClosedDateTime = DateTime.UtcNow.AddMinutes(-10))
                 .Build();
 
             var response = _sut.Map(conference);
 
             response.Id.Should().Be(conference.Id);
-            response.ScheduledDateTime.Should().Be(conference.Scheduled_date_time);
-            response.ClosedDateTime.Should().HaveValue().And.Be(conference.Closed_date_time);
-            response.ScheduledDuration.Should().Be(conference.Scheduled_duration);
-            response.CaseType.Should().Be(conference.Case_type);
-            response.CaseNumber.Should().Be(conference.Case_number);
-            response.CaseName.Should().Be(conference.Case_name);
+            response.ScheduledDateTime.Should().Be(conference.ScheduledDateTime);
+            response.ClosedDateTime.Should().HaveValue().And.Be(conference.ClosedDateTime);
+            response.ScheduledDuration.Should().Be(conference.ScheduledDuration);
+            response.CaseType.Should().Be(conference.CaseType);
+            response.CaseNumber.Should().Be(conference.CaseNumber);
+            response.CaseName.Should().Be(conference.CaseName);
             response.Status.ToString().Should().Be(conference.Status.ToString());
             response.Participants.Count.Should().Be(participants.Count);
-            response.NumberOfEndpoints.Should().Be(conference.Number_of_endpoints);
+            response.NumberOfEndpoints.Should().Be(conference.NumberOfEndpoints);
         }
     }
 }

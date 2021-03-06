@@ -32,20 +32,20 @@ namespace VideoWeb.UnitTests.Mappings
             var messages = new List<InstantMessageResponse>
             {
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 5", Time_stamp = DateTime.UtcNow.AddMinutes(-1), To = vho1Username
+                    {From = judge.Username, MessageText = "judge - 5", TimeStamp = DateTime.UtcNow.AddMinutes(-1), To = vho1Username
 },
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 4", Time_stamp = DateTime.UtcNow.AddMinutes(-2), To = vho1Username},
+                    {From = judge.Username, MessageText = "judge - 4", TimeStamp = DateTime.UtcNow.AddMinutes(-2), To = vho1Username},
                 new InstantMessageResponse
-                    {From = vho1Username, Message_text = "vho - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-3), To = judge.Username},
+                    {From = vho1Username, MessageText = "vho - 1", TimeStamp = DateTime.UtcNow.AddMinutes(-3), To = judge.Username},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 3", Time_stamp = DateTime.UtcNow.AddMinutes(-4), To = vho1Username},
+                    {From = judge.Username, MessageText = "judge - 3", TimeStamp = DateTime.UtcNow.AddMinutes(-4), To = vho1Username},
                 new InstantMessageResponse
-                    {From = vho2Username, Message_text = "vho2 - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-5), To = judge.Username},
+                    {From = vho2Username, MessageText = "vho2 - 1", TimeStamp = DateTime.UtcNow.AddMinutes(-5), To = judge.Username},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 2", Time_stamp = DateTime.UtcNow.AddMinutes(-6), To = vho1Username},
+                    {From = judge.Username, MessageText = "judge - 2", TimeStamp = DateTime.UtcNow.AddMinutes(-6), To = vho1Username},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-7), To = vho1Username},
+                    {From = judge.Username, MessageText = "judge - 1", TimeStamp = DateTime.UtcNow.AddMinutes(-7), To = vho1Username},
             };
 
             var response = _sut.Map(conference, messages);

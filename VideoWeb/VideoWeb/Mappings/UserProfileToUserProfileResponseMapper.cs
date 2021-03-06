@@ -19,13 +19,13 @@ namespace VideoWeb.Mappings
         {
             var response = new UserProfileResponse
             {
-                FirstName = profile.First_name,
-                LastName = profile.Last_name,
-                DisplayName = profile.Display_name,
-                Username = profile.User_name
+                FirstName = profile.FirstName,
+                LastName = profile.LastName,
+                DisplayName = profile.DisplayName,
+                Username = profile.UserName
             };
 
-            var userRole = profile.User_role;
+            var userRole = profile.UserRole;
 
             response.Role = userRole switch
             {

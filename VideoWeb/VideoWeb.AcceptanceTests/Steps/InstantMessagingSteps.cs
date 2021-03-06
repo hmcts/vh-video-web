@@ -8,19 +8,22 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Assertions;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.Services.TestApi;
+using TestApi.Client;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
+using TestApi.Contract.Dtos;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
     public class InstantMessagingSteps
     {
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly BrowserSteps _browserSteps;
         private readonly List<ChatMessage> _messages;
 
-        public InstantMessagingSteps(Dictionary<User, UserBrowser> browsers, TestContext c, BrowserSteps browserSteps)
+        public InstantMessagingSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext c, BrowserSteps browserSteps)
         {
             _browsers = browsers;
             _c = c;
