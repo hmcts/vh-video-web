@@ -48,7 +48,7 @@ java:
     VHSERVICES__TESTAPIURL: https://vh-test-api.{{ .Values.global.environment }}.platform.hmcts.net/
     VHSERVICES__USERAPIRESOURCEID: https://vh-user-api.{{ .Values.global.environment }}.platform.hmcts.net
     VHSERVICES__USERAPIURL: https://vh-user-api.{{ .Values.global.environment }}.platform.hmcts.net/
-    VHSERVICES__VIDEOAPIESOURCEID: https://vh-video-api.{{ .Values.global.environment }}.platform.hmcts.net
+    VHSERVICES__VIDEOAPIRESOURCEID: https://vh-video-api.{{ .Values.global.environment }}.platform.hmcts.net
     VHSERVICES__VIDEOAPIURL: https://vh-video-api.{{ .Values.global.environment }}.platform.hmcts.net/
     VHSERVICES__VIDEOWEBAPIURL: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net/
     VHSERVICES__VIDEOWEBRESOURCEID: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net
