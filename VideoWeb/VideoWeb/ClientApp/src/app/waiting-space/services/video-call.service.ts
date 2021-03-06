@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { Observable, Subject } from 'rxjs';
-import { ApiClient, HearingLayout, InterpreterRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
+import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { UserMediaService } from 'src/app/services/user-media.service';
@@ -385,12 +385,21 @@ export class VideoCallService {
         this.pexipAPI.stopPresentation();
     }
 
-    retrieveInterpreterRoom(conferenceId: string, participantId: string): Promise<InterpreterRoom> {
+    retrieveInterpreterRoom(conferenceId: string, participantId: string): Promise<SharedParticipantRoom> {
         this.logger.info(`${this.loggerPrefix} Attempting to retrieve interpreter room for participant`, {
             conference: conferenceId,
             participant: participantId
         });
 
-        return this.apiClient.getInterpreterRoomForParticipant(conferenceId, participantId).toPromise();
+        return this.apiClient.getInterpreterRoomForParticipant(conferenceId, participantId, 'Civilian').toPromise();
+    }
+
+    retrieveWitnessInterpreterRoom(conferenceId: string, participantId: string): Promise<SharedParticipantRoom> {
+        this.logger.info(`${this.loggerPrefix} Attempting to retrieve interpreter room for participant`, {
+            conference: conferenceId,
+            participant: participantId
+        });
+
+        return this.apiClient.getInterpreterRoomForParticipant(conferenceId, participantId, 'Witness').toPromise();
     }
 }

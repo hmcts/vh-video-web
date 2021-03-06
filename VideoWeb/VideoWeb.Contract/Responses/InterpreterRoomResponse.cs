@@ -1,6 +1,6 @@
 namespace VideoWeb.Contract.Responses
 {
-    public class InterpreterRoom
+    public class SharedParticipantRoom
     {
         public string PexipNode { get; set; }
         public string ParticipantJoinUri { get; set; }

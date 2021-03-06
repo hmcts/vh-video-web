@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import {
     ConferenceResponse,
     ConferenceStatus,
-    InterpreterRoom,
+    SharedParticipantRoom,
     LinkedParticipantResponse,
     LinkType,
     LoggedParticipantResponse,
@@ -43,6 +43,7 @@ import {
     videoWebService
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
+import { HearingRole } from '../../models/hearing-role-model';
 
 describe('WaitingRoomComponent message and clock', () => {
     let component: WRTestComponent;
@@ -379,13 +380,39 @@ describe('WaitingRoomComponent message and clock', () => {
         component.participant.linked_participants = [
             new LinkedParticipantResponse({ linked_id: Guid.create().toString(), link_type: LinkType.Interpreter })
         ];
-        const room = new InterpreterRoom({
+        const room = new SharedParticipantRoom({
             participant_join_uri: 'patjoinuri',
             pexip_node: 'sip.test.node',
             display_name: 'foo',
             tile_display_name: `I1;Interpreter1;${component.participant.id}`
         });
         videoCallService.retrieveInterpreterRoom.and.resolveTo(room);
+
+        await component.call();
+
+        expect(videoCallService.makeCall).toHaveBeenCalledWith(
+            room.pexip_node,
+            room.participant_join_uri,
+            room.tile_display_name,
+            component.maxBandwidth
+        );
+    });
+
+    it('should use witness interpreter room when participant or links is a witness', async () => {
+        const witness = component.conference.participants.find(x => x.hearing_role === HearingRole.WITNESS);
+        witness.linked_participants = [
+            new LinkedParticipantResponse({ linked_id: component.participant.id, link_type: LinkType.Interpreter })
+        ];
+        component.participant.linked_participants = [
+            new LinkedParticipantResponse({ linked_id: witness.id, link_type: LinkType.Interpreter })
+        ];
+        const room = new SharedParticipantRoom({
+            participant_join_uri: 'patjoinuri',
+            pexip_node: 'sip.test.node',
+            display_name: 'foo',
+            tile_display_name: `I1;Interpreter1;${component.participant.id}`
+        });
+        videoCallService.retrieveWitnessInterpreterRoom.and.resolveTo(room);
 
         await component.call();
 
