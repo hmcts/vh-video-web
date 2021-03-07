@@ -1,5 +1,5 @@
 <div class="container" *ngIf="participants.length > 0">
-  <h4 class="govuk-heading-s white">Participants ({{ participants.length }})</h4>
+  <h4 class="govuk-heading-s white">{{'participants-panel.participants' | translate}} ({{ participants.length }})</h4>
 
   <div class="button-row">
     <div
@@ -7,22 +7,24 @@
       data-prevent-double-click="true"
       (click)="muteAndLockAll()"
       appTooltip
-      text="Mute all participants and prevent them from unmuting"
+      [text]="{{'participants-panel.mute-tooltip' | translate}}"
       colour="grey"
     >
-      Mute & lock
+      {{'participants-panel.mute-lock' | translate}}
     </div>
     <div
       class="small-button"
       data-prevent-double-click="true"
       (click)="unlockAll()"
       appTooltip
-      text="Allow all participants to unmute"
+      [text]="{{'participants-panel.unmute-tooltip' | translate}}"
       colour="grey"
     >
-      Unlock mute
+      {{'participants-panel.unmute-lock' | translate}}
     </div>
-    <div class="small-button" (click)="lowerAllHands()" appTooltip text="Lower all raised hands" colour="grey">Lower hands</div>
+    <div class="small-button" (click)="lowerAllHands()" appTooltip [text]="{{'participants-panel.lower-hands-tooltip' | translate}}" colour="grey">
+      {{'participants-panel.lower-hands' | translate}}
+    </div>
   </div>
 
   <div class="panel-container-list participants-grid" id="panelList">
@@ -35,7 +37,7 @@
         [colour]="getPanelRowTooltipColour(participant)"
       >
         <span *ngIf="participant.isJudge">
-          <img src="/assets/images/UkGovCrestWhite.png" class="panel-icon panel-icon-crest" alt="HMCTS Crest" />
+          <img src="/assets/images/UkGovCrestWhite.png" class="panel-icon panel-icon-crest" attr.alt="{{'participants-panel.crest' | translate}}" />
           <br />
         </span>
         <span *ngIf="isEndpoint(participant)">
@@ -61,18 +63,18 @@
               <img
                 *ngIf="participant.isMicRemoteMuted()"
                 appTooltip
-                [text]="participant.isMicRemoteMuted() ? 'Unlock mute' : 'Mute participant'"
+                [text]="participant.isMicRemoteMuted() ? '{{'participants-panel.unmute-lock' | translate}}' : '{{'participants-panel.mute-participant' | translate}}'"
                 colour="grey"
                 [src]="participant.isMicRemoteMuted() ? '/assets/images/mic_remote_mute.png' : '/assets/images/mic.png'"
                 class="panel-icon"
-                [alt]="participant.isMicRemoteMuted() ? 'Microphone muted icon' : 'Microphone on icon'"
+                [alt]="participant.isMicRemoteMuted() ? '{{'participants-panel.microphone-muted-icon' | translate}}' : '{{'participants-panel.microphone-on-icon' | translate}}'"
                 (click)="toggleMuteParticipant(participant); $event.stopPropagation()"
               />
               <span
                 *ngIf="!participant.isMicRemoteMuted()"
                 style="padding-top: 0.3vh;"
                 appTooltip
-                [text]="participant.isLocalMicMuted() ? 'Participant muted' : 'Mute participant'"
+                [text]="participant.isLocalMicMuted() ? '{{'participants-panel.participant-muted' | translate}}' : '{{'participants-panel.mute-participant' | translate}}'"
                 colour="grey"
                 class="fas fa-microphone icon-button"
                 [class]="{ red: participant.isLocalMicMuted() }"
@@ -85,7 +87,7 @@
             <span
               *ngIf="!participant.transferringIn"
               appTooltip
-              [text]="participant.isAvailable() ? 'Call witness' : 'Witness unavailable'"
+              [text]="participant.isAvailable() ? '{{'participants-panel.call-witness' | translate}}' : '{{'participants-panel.witness-unavailable' | translate}}'"
               [colour]="participant.isAvailable() ? 'green' : 'grey'"
               class="fas icon-button"
               [class]="{
@@ -96,7 +98,7 @@
               (click)="callWitnessIntoHearing(participant); $event.stopPropagation()"
             >
             </span>
-            <div *ngIf="participant.transferringIn" class="yellow">Joining...</div>
+            <div *ngIf="participant.transferringIn" class="yellow">{{'participants-panel.joining1' | translate}}</div>
           </div>
         </div>
 
@@ -106,7 +108,7 @@
             *ngIf="!participant.isJudge && participant.hasHandRaised()"
             class="icon-button"
             appTooltip
-            text="Lower hand"
+            text="{{'participants-panel.lower-hand' | translate}}"
             colour="grey"
             (click)="lowerParticipantHand(participant); $event.stopPropagation()"
           >
@@ -122,8 +124,8 @@
             appTooltip
             [text]="
               participant.hasSpotlight()
-                ? participant.displayName + ' (remove spotlight)'
-                : participant.displayName + ' (click to spotlight)'
+                ? participant.displayName + ' ({{'participants-panel.remove-spotlight' | translate}})'
+                : participant.displayName + ' ({{'participants-panel.click-to-spotlight' | translate}})'
             "
             colour="blue"
             (click)="toggleSpotlightParticipant(participant); $event.stopPropagation()"
@@ -131,7 +133,7 @@
             <span class="far fa-thumbtack" [class]="{ yellow: participant.hasSpotlight() }"></span>
           </div>
           <div *ngIf="isParticipantInHearing(participant) && participant.isLocalCameraOff()" class="icon-button no-click">
-            <span appTooltip text="Camera off" colour="red" class="far fa-video-slash red"> </span>
+            <span appTooltip [text]="{{'participants-panel.camera-off' | translate}}" colour="red" class="far fa-video-slash red"> </span>
           </div>
         </div>
 
@@ -162,5 +164,5 @@
   </div>
 </div>
 <div class="container" *ngIf="participants.length == 0">
-  <h4 class="govuk-heading-s white">Loading Participants</h4>
+  <h4 class="govuk-heading-s white">{{'participants-panel.loading-participants' | translate}}</h4>
 </div>

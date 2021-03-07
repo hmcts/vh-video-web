@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import {
     AllowedEndpointResponse,
     EndpointStatus,
@@ -20,10 +21,13 @@ export class StartPrivateConsultationComponent {
     @Input() endpoints: VideoEndpointResponse[];
     @Output() continue = new EventEmitter<{ participants: string[]; endpoints: string[] }>();
     @Output() cancel = new EventEmitter();
-    constructor(protected logger: Logger) {}
+    constructor(protected logger: Logger, protected translateService: TranslateService) {}
 
     participantHearingRoleText(participant: ParticipantResponse): string {
-        return participant.representee ? `${participant.hearing_role} for ${participant.representee}` : participant.hearing_role;
+        const translatedtext = this.translateService.instant('start-private-consultation.for');
+        return participant.representee
+            ? `${participant.hearing_role} ${translatedtext} ${participant.representee}`
+            : participant.hearing_role;
     }
 
     participantSelected(id: string): boolean {
@@ -97,11 +101,14 @@ export class StartPrivateConsultationComponent {
 
     getParticipantStatus(participant: ParticipantResponse): string {
         if (this.getParticipantDisabled(participant)) {
-            return 'Unavailable';
+            const translatedtext = this.translateService.instant('start-private-consultation.unavailable');
+            return translatedtext;
         }
         if (participant.status === ParticipantStatus.InConsultation && participant.current_room != null) {
+            const translatedtext = this.translateService.instant('start-private-consultation.in');
             return (
-                'In ' +
+                translatedtext +
+                ' ' +
                 this.camelToSpaced(
                     participant.current_room.label
                         .replace('ParticipantConsultationRoom', 'MeetingRoom')
@@ -114,11 +121,14 @@ export class StartPrivateConsultationComponent {
 
     getEndpointStatus(endpoint: VideoEndpointResponse): string {
         if (this.getEndpointDisabled(endpoint)) {
-            return 'Unavailable';
+            const translatedtext = this.translateService.instant('start-private-consultation.unavailable');
+            return translatedtext;
         }
         if (endpoint.status === EndpointStatus.InConsultation && endpoint.current_room != null) {
+            const translatedtext = this.translateService.instant('start-private-consultation.in');
             return (
-                'In ' +
+                translatedtext +
+                ' ' +
                 this.camelToSpaced(endpoint.current_room.label.replace('ParticipantConsultationRoom', 'MeetingRoom')).toLowerCase() +
                 (endpoint.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
             );

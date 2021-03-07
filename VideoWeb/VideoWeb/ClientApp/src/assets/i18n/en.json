@@ -507,6 +507,17 @@
         "close": "Close",
         "for": "for"
     },
+    "start-private-consultation": {
+        "invite": "Invite others to a private meeting",
+        "warning": "Warning",
+        "confidential-declaration": "All meetings outside the hearing are confidential and not recorded as part of court or tribunal proceedings",
+        "video-access-point": "Video access point",
+        "continue": "Continue",
+        "close": "Close",
+        "for": "for",
+        "unavailable": "Unavailable",
+        "in": "In"
+    },
     "private-consultation-participants": {
         "calling": "Calling...",
         "declined": "Declined",
@@ -515,5 +526,59 @@
         "transferring": "Transferring",
         "Calling": "Calling",
         "not-available": "Not available"
+    },
+    "participants-panel": {
+        "joining": "Joining",
+        "not-joined": "Not joined",
+        "disconnected": "DISCONNECTED",
+        "red": "red",
+        "blue": "blue",
+        "grey": "grey",
+        "participants": "Participants",
+        "mute-lock": "Mute & lock",
+        "mute-tooltip": "Mute all participants and prevent them from unmuting",
+        "unmute-lock": "Unlock mute",
+        "unmute-tooltip": "Allow all participants to unmute",
+        "lower-hands": "Lower hands",
+        "lower-hand": "Lower hand",
+        "lower-hands-tooltip": "Lower all raised hands",
+        "crest": "HMCTS Crest",
+        "camera-off": "Camera off",
+        "remove-spotlight": "remove spotlight",
+        "click-to-spotlight": "click to spotlight",
+        "loading-participants": "Loading Participants",
+        "joining1": "Joining...",
+        "call-witness": "Call witness",
+        "witness-unavailable": "Witness unavailable",
+        "mute-participant": "Mute participant",
+        "microphone-muted-icon": "Microphone muted icon",
+        "microphone-on-icon": "Microphone on icon",
+        "participant-muted": "Participant muted"
+    },
+    "private-consultation-room-controls": {
+        "browser-support": "Your browser does not support video",
+        "leave": "Leave",
+        "lock-the-room-toggle-false": "Lock the room ",
+        "lock-the-room-toggle-true": "Unlock the room ",
+        "close": "Close",
+        "pause": "Pause",
+        "hand-raise-toggle-true": "Lower hand",
+        "hand-raise-toggle-false": "Raise hand",
+        "remote-muted": "You have been been remote muted",
+        "audio-mute-toggle-true": "Unmute microphone",
+        "audio-mute-toggle-false": "Mute microphone",
+        "video-mute-toggle-true": "Turn on camera",
+        "video-mute-toggle-false": "Turn off camera",
+        "selfview-toggle-true": "Hide my self-view",
+        "selfview-toggle-false": "Show my self-view",
+        "participants-panel": "Participants Panel",
+        "chat-panel": "Chat Panel",
+        "share-my-screen": "Share my screen",
+        "start-sharing-screen": "Start sharing screen",
+        "stop-sharing-my-screen": "Stop sharing my screen",
+        "stop-sharing-screen": "Stop sharing screen"
+    },
+    "select-hearing-layout": {
+        "choose-hearing-layout": "Choose hearing layout"
     }
 }
