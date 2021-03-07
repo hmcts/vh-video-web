@@ -155,7 +155,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantName(user, representative.Id)).Text.Trim().Should().Be(representative.Name);
                 if (representative.Case_type_group.ToLower().Equals("none")) continue;
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantCaseType(user, representative.Id)).Text.Trim().Should().Be(representative.Case_type_group);
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetRepresentativeRepresentee(user, representative.Id)).Text.Trim().Should().Be($"Representative for\n{representative.Representee}");
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantHearingRole(user, representative.Id)).Text.Trim().Should().Be($"Representative for\n{representative.Representee}");
             }
 
             foreach (var observer in observers)
@@ -203,11 +203,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         private By GetParticipantCaseType(string user, Guid id)
         {
             return user == "Participant" ? ParticipantListPanel.ParticipantCaseTypeGroup(id) : JudgeParticipantPanel.ParticipantCaseType(id);
-        }
-
-        private By GetRepresentativeRepresentee(string user, Guid id)
-        {
-            return user == "Participant" ? ParticipantListPanel.RepresentativeRepresentee(id) : JudgeParticipantPanel.RepresentativeRepresentee(id);
         }
 
         private By GetObserverName(string user, Guid id)
