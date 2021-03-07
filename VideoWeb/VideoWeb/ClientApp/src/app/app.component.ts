@@ -118,7 +118,7 @@ export class AppComponent implements OnInit, OnDestroy {
             console.log('***** checkAuth:Start');
             const isLoggedIn = await this.oidcSecurityService.checkAuth().toPromise();
             console.log('***** checkAuth: isLoggedIn', isLoggedIn);
-            console.log('***** checkAuth:TOKEN: ' + this.oidcSecurityService.getToken());
+            console.log('***** checkAuth:TOKEN: ' + this.oidcSecurityService.getIdToken());
 
             this.oidcSecurityService.checkAuth().subscribe(async (auth) => {
                 this.loggedIn = auth;
