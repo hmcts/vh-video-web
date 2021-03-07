@@ -1,16 +1,16 @@
 <div *ngIf="isNetworkPoor" class="govuk-grid-row right-align-text">
   <div class="govuk-grid-column-full">
     <span class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0 govuk-!-margin-right-2">
-      <img id="network-bad-img" class="networkIcon lower" src="/assets/images/alert-1.png" alt="Good network icon" /> Your connection is
-      poor
+      <img id="network-bad-img" class="networkIcon lower" src="/assets/images/alert-1.png" alt="{{'participant-network-health.good-network-icon' | translate}}" />
+        {{'participant-network-health.your-connection-is-poor' | translate}}
     </span>
     <a class="govuk-body-s health-text--info" [ngClass]="{ 'vh-block': !showDetail }" (click)="displayGuidanceModal()"
-      >Tips for improving your connection</a
+      >{{'participant-network-health.tips-for-improving-your-connection' | translate}}</a
     >
   </div>
 
   <div class="govuk-grid-column-full" *ngIf="showDetail">
-    <p class="govuk-body-s govuk-!-margin-bottom-0">The hearing may be disrupted if your internet connection does not improve</p>
+    <p class="govuk-body-s govuk-!-margin-bottom-0">{{'participant-network-health.show-detail' | translate}}</p>
   </div>
 </div>
 
@@ -18,11 +18,11 @@
   <div class="modal-content shadow">
     <div class="govuk-grid-row govuk-body">
       <div class="govuk-grid-column-full govuk-!-margin-4">
-        <h2 class="govuk-heading-l">Tips for improving your internet connection</h2>
+        <h2 class="govuk-heading-l">{{'participant-network-health.tips-for-improving-your-internet-connection' | translate}}</h2>
         <ul class="govuk-list govuk-list--bullet">
-          <li>If you're on WiFi, try moving close to your router</li>
-          <li>If others are using the same connection, ask if they can wait until you've finished your hearing</li>
-          <li>If possible, use a wired connection rather than WiFi</li>
+          <li>{{'participant-network-health.message1' | translate}}</li>
+          <li>{{'participant-network-health.message2' | translate}}</li>
+          <li>{{'participant-network-health.message3' | translate}}</li>
         </ul>
       </div>
       <div class="actions-row">
@@ -32,7 +32,7 @@
           data-module="govuk-button"
           (click)="closeGuidanceModal()"
         >
-          Close
+          {{'participant-network-health.close' | translate}}
         </button>
       </div>
     </div>

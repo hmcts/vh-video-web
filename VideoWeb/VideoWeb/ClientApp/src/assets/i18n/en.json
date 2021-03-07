@@ -424,5 +424,96 @@
     "participant-alert": {
         "disconnected": "Disconnected",
         "network-connection-is-poor": "Network connection is poor"
+    },
+    "participant-chat": {
+        "message-vho": "Message video hearings officer",
+        "open": "Open instant messaging chat window arrow",
+        "close": "Close instant messaging chat window arrow",
+        "loading": "Loading..."
+    },
+    "participant-network-health": {
+        "your-connection-is-poor": "Your connection is poor",
+        "good-network-icon": "Good network icon",
+        "tips-for-improving-your-connection": "Tips for improving your connection",
+        "show-detail": "The hearing may be disrupted if your internet connection does not improve",
+        "tips-for-improving-your-internet-connection": "Tips for improving your internet connection",
+        "close": "Close",
+        "message1": "If you're on WiFi, try moving close to your router",
+        "message2": "If others are using the same connection, ask if they can wait until you've finished your hearing",
+        "message3": "If possible, use a wired connection rather than WiFi"
+    },
+    "waiting-room-monitor": {
+        "your-internet-connection-is-poor": "Your internet connection is poor",
+        "good-network-icon-in-hearing": "Good network icon in hearing",
+        "trouble-seeing": "Others may have trouble seeing and hearing you."
+    },
+    "participant-waiting-room": {
+        "is-suspended": "is suspended",
+        "is-paused": "is paused",
+        "is-closed": "is closed",
+        "is-in-session": "is in session",
+        "is-delayed": "is delayed",
+        "is-about-to-begin": "is about to begin",
+        "loading-please-wait": "Loading please wait...",
+        "browser-support": "Your browser does not support video",
+        "lock-the-room": "Lock the room to prevent others joining",
+        "invite-others": "Invite others by calling them or unlock the room for others to join",
+        "witness-transferring-warning-image": "Witness transferring warning image",
+        "hearing-ready": "Please get ready <br/> You'll &thinsp; join the hearing in a few seconds",
+        "your-video-hearing": "Your video hearing",
+        "choose-camera-and-microphone": "Choose camera and microphone",
+        "choose-camera-and-microphone-aria-label": "Choose camera and microphone dialog",
+        "details-of-the-hearing": "Details of the hearing",
+        "hearing": "Hearing",
+        "date": "Date",
+        "case-number": "case number",
+        "please-wait": "Please wait",
+        "hearing-starting-at": "Your video hearing is scheduled to begin at",
+        "hearing-status-messages": {
+            "starting": "Please stay near your screen",
+            "starting1": "Make sure you're ready when the judge starts the hearing.",
+            "delayed": "Your hearing is delayed",
+            "delayed1": "We're sorry for the delay. Stay near your screen for further updates.",
+            "closed": "This hearing has finished. You may now sign out.",
+            "paused": "The judge will restart the hearing when they are ready. Please stay near your screen.",
+            "suspended": "We're having technical issues",
+            "suspended1": "All participants are affected. Stay near your screen for further updates. There's no need to call us.",
+            "in-session": "The hearing has started",
+            "in-session1": "The judge will bring you into the hearing when they are ready for you. An alert will sound and you will join the hearing a few seconds later."
+        },
+        "hearing-about-to-start": "The judge will bring you into the hearing when they are ready for you. An alert will sound and you will join the hearing a few seconds later.",
+        "time-now": "The time now is:",
+        "private-consultation": {
+            "start": "Start a private meeting",
+            "join": "Join a private meeting",
+            "what-are-private-meetings": "What are private meetings?",
+            "talk-to-other-participants": "You can talk to other participants in private before the hearing begins or during a break, if you wish.",
+            "guide1": "Start a meeting by choosing who you want to speak to from the list",
+            "guide2": "Join a meeting that's already started by choosing from the list",
+            "guide3": "If a meeting room is locked you'll need to be invited by someone in the meeting",
+            "guide4": "If you wish to have a private conversation during the hearing you'll need to ask the judge's permission."
+        },
+        "vh-team": "Video hearings team: 0300 303 0655"
+    },
+    "invite-participant": {
+        "invite-this-person": "Invite this person to the meeting"
+    },
+    "join-private-consultation": {
+        "join": "Join a private meeting",
+        "warning": "Warning",
+        "confidential-declaration": "All meetings outside the hearing are confidential and not recorded as part of court or tribunal proceedings",
+        "video-access-point": "Video access point",
+        "continue": "Continue",
+        "close": "Close",
+        "for": "for"
+    },
+    "private-consultation-participants": {
+        "calling": "Calling...",
+        "declined": "Declined",
+        "failed": "Failed",
+        "no-answer": "No Answer",
+        "transferring": "Transferring",
+        "Calling": "Calling",
+        "not-available": "Not available"
     }
 }

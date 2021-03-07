@@ -1,4 +1,6 @@
 import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+
 import {
     ConferenceResponse,
     LoggedParticipantResponse,
@@ -19,6 +21,7 @@ describe('JoinPrivateConsultationComponent', () => {
     let videoWebService: jasmine.SpyObj<VideoWebService>;
 
     let logged: LoggedParticipantResponse;
+    const translateService = translateServiceSpy;
 
     beforeAll(() => {
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName']);
@@ -40,7 +43,7 @@ describe('JoinPrivateConsultationComponent', () => {
             role: Role.Judge
         });
 
-        component = new JoinPrivateConsultationComponent(logger);
+        component = new JoinPrivateConsultationComponent(logger, translateService);
     });
 
     it('should create', () => {

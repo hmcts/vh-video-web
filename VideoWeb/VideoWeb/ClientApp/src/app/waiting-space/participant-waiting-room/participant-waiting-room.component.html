@@ -1,5 +1,5 @@
 <div *ngIf="loadingData">
-  <p class="govuk-body">Loading please wait...</p>
+  <p class="govuk-body">{{'participant-waiting-room.loading-please-wait' | translate}}</p>
 </div>
 
 <div *ngIf="showVideo" class="video-background">
@@ -13,10 +13,10 @@
               <span class="lock-badge" [class]="this.participant?.current_room?.locked ? 'locked' : 'unlocked'">{{this.participant?.current_room?.locked ? 'locked' : 'unlocked'}}</span>
             </div>
             <div *ngIf="!this.participant?.current_room?.locked" class="room-status-desc">
-              Lock the room to prevent others joining
+              {{'participant-waiting-room.lock-the-room' | translate}}
             </div>
             <div *ngIf="this.participant?.current_room?.locked" class="room-status-desc">
-              Invite others by calling them or unlock the room for others to join
+              {{'participant-waiting-room.invite-others' | translate}}
             </div>
           </ng-container>
           <ng-container *ngIf="isJohRoom || !isPrivateConsultation">
@@ -48,7 +48,7 @@
   </div>
   <div class="video-wrapper">
       <video id="incomingFeedPrivate" autoplay [srcObject]="presentationStream && !streamInMain ? presentationStream : stream" poster="/assets/images/empty_crest.jpg">
-          Your browser does not support Video
+          {{'participant-waiting-room.browser-support' | translate}}
       </video>
       <div id="secondIncomingFeed"
             *ngIf="presentationStream"
@@ -61,7 +61,7 @@
                   height="auto"
                   poster="/assets/images/empty_crest.jpg"
                   class="fill-container">
-              Your browser does not support Video
+              {{'participant-waiting-room.browser-support' | translate}}
           </video>
       </div>
   </div>
@@ -74,13 +74,11 @@
   <div class="video-background">
     <div class="transferMessage">
       <img class="transferFeedImage" id="transferFeedImage" src="/assets/images/UkGovCrestWhite.png"
-        alt="Witness transferring warning image" />
-      <h2 class="govuk-heading-m white govuk-!-margin-top-5">
-        Please get ready <br />
-        You'll &thinsp; join the hearing in a few seconds
+        alt="{{'participant-waiting-room.witness-transferring-warning-image' | translate}}" />
+      <h2 class="govuk-heading-m white govuk-!-margin-top-5" [innerHTML]="'participant-waiting-room.hearing-ready' | translate">
       </h2>
       <video id="outgoingFeedVideoTransfer" [muted]="true" [srcObject]="outgoingStream" autoplay height="auto">
-        Your browser does not support Video
+        {{'participant-waiting-room.browser-support' | translate}}
       </video>
     </div>
   </div>
@@ -89,14 +87,14 @@
 <div *ngIf="!loadingData && hearing && showExtraContent" class="govuk-grid-row">
   <div class="govuk-grid-column-full">
     <div class="govuk-!-padding-top-5" style="margin-bottom: 0">
-      <h1 class="govuk-heading-xl govuk-!-padding-top-5">Your video hearing {{ getConferenceStatusText() }}</h1>
+      <h1 class="govuk-heading-xl govuk-!-padding-top-5">{{'participant-waiting-room.your-video-hearing' | translate}} {{ getConferenceStatusText() }}</h1>
     </div>
 
     <div class="govuk-grid-row govuk-!-margin-bottom-4" *ngIf="!showVideo">
       <div class="govuk-grid-column-one-third">
         <button id="changeCameraButton" class="govuk-button" data-module="govuk-button" type="button"
-          (click)="showChooseCameraDialog()" aria-label="Choose camera and microphone dialog">
-          Choose camera and microphone
+          (click)="showChooseCameraDialog()" attr.aria-label="{{'participant-waiting-room.choose-camera-and-microphone-aria-label' | translate}}">
+          {{'participant-waiting-room.choose-camera-and-microphone' | translate}}
         </button>
       </div>
       <div class="govuk-grid-column-two-thirds" style="float: right">
@@ -107,17 +105,17 @@
       </div>
     </div>
 
-    <table class="govuk-table vh-fullwidth" aria-describedby="Details of the hearing">
+    <table class="govuk-table vh-fullwidth" attr.aria-describedby="{{'participant-waiting-room.details-of-the-hearing' | translate}}">
       <thead class="govuk-table__head no-mass">
         <tr class="govuk-table__row">
-          <th scope="col" class="govuk-table__header">Hearing</th>
-          <th scope="col" class="govuk-table__header">Date</th>
+          <th scope="col" class="govuk-table__header">{{'participant-waiting-room.hearing' | translate}}</th>
+          <th scope="col" class="govuk-table__header">{{'participant-waiting-room.date' | translate}}</th>
         </tr>
       </thead>
       <tbody class="govuk-table__body">
         <tr class="govuk-table__row">
           <td class="govuk-table__cell hearing-details-col1-width">
-            <strong>{{ hearing.caseName }}</strong> ({{ hearing.caseType }}) <span>case number</span>:
+            <strong>{{ hearing.caseName }}</strong> ({{ hearing.caseType }}) <span>{{'participant-waiting-room.case-number' | translate}}</span>:
             <strong>{{ hearing.caseNumber }}</strong>
           </td>
           <td class="govuk-table__cell hearing-details-col2-width">
@@ -136,52 +134,45 @@
     <div *ngIf="currentTime" class="govuk-panel" [ngClass]="getCurrentTimeClass()">
       <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="getCurrentTimeClass()">
         <div *ngIf="!isWitness && hearing.isOnTime()">
-          <h2 class="govuk-heading-m white">Please wait</h2>
-          <p class="white">Your video hearing is scheduled to begin at {{ hearing.scheduledStartTime | date: 'HH:mm'
-            }}
+          <h2 class="govuk-heading-m white">{{'participant-waiting-room.please-wait' | translate}}</h2>
+          <p class="white">{{'participant-waiting-room.hearing-starting-at' | translate}} {{ hearing.scheduledStartTime | date: 'HH:mm' }}
           </p>
         </div>
 
         <div *ngIf="!isWitness && hearing.isStarting()">
-          <h2 class="govuk-heading-m white">Please stay near your screen</h2>
-          <p class="white">Make sure you're ready when the judge starts the hearing.</p>
+          <h2 class="govuk-heading-m white">{{'participant-waiting-room.hearing-status-messages.starting' | translate}}</h2>
+          <p class="white">{{'participant-waiting-room.hearing-status-messages.starting1' | translate}}</p>
         </div>
 
         <div *ngIf="!isWitness && hearing.isDelayed()">
-          <h2 class="govuk-heading-m">Your hearing is delayed</h2>
-          <p>We're sorry for the delay. Stay near your screen for further updates.</p>
+          <h2 class="govuk-heading-m">{{'participant-waiting-room.hearing-status-messages.delayed' | translate}}</h2>
+          <p>{{'participant-waiting-room.hearing-status-messages.delayed1' | translate}}</p>
         </div>
 
         <div *ngIf="!isWitness && hearing.isClosed()">
-          <h2 class="govuk-heading-m white">This hearing has finished. You may now sign out.</h2>
+            <h2 class="govuk-heading-m white">{{'participant-waiting-room.hearing-status-messages.closed' | translate}}</h2>
         </div>
 
         <div *ngIf="!isWitness && hearing.isPaused()" class="hearing-title-mt--20">
-          <p class="white">The judge will restart the hearing when they are ready. Please stay near your screen.</p>
+          <p class="white">{{'participant-waiting-room.hearing-status-messages.paused' | translate}}</p>
         </div>
 
         <div *ngIf="hearing.isSuspended()">
-          <h2 class="govuk-heading-m">We're having technical issues</h2>
-          <p>All participants are affected. Stay near your screen for further updates. There's no need to call us.</p>
+          <h2 class="govuk-heading-m">{{'participant-waiting-room.hearing-status-messages.suspended' | translate}}</h2>
+          <p>{{'participant-waiting-room.hearing-status-messages.suspended1' | translate}}</p>
         </div>
 
         <div *ngIf="isWitness && hearing.isInSession()">
-          <h2 class="govuk-heading-m white">The hearing has started</h2>
+          <h2 class="govuk-heading-m white">{{'participant-waiting-room.hearing-status-messages.in-session' | translate}}</h2>
           <p class="white">
-            The judge will bring you into the hearing when they are ready for you. An alert will sound and you will
-            join
-            the hearing a few
-            seconds later.
+            {{'participant-waiting-room.hearing-status-messages.in-session1' | translate}}
           </p>
         </div>
 
         <div *ngIf="isWitness && (hearing.isOnTime() || hearing.isStarting() || hearing.isDelayed())">
-          <h2 class="govuk-heading-m white">Please wait</h2>
+          <h2 class="govuk-heading-m white">{{'participant-waiting-room.please-wait' | translate}}</h2>
           <p class="white">
-            The judge will bring you into the hearing when they are ready for you. An alert will sound and you will
-            join
-            the hearing a few
-            seconds later.
+              {{'participant-waiting-room.hearing-about-to-start' | translate}}
           </p>
         </div>
       </div>
@@ -194,7 +185,7 @@
         </div>
         <div class="govuk-grid-column-one-half">
           <div class="govuk-body" [ngClass]="getCurrentTimeClass()">
-            <p class="govuk-!-margin-bottom-4" [ngClass]="getCurrentTimeClass()">The time now is:</p>
+            <p class="govuk-!-margin-bottom-4" [ngClass]="getCurrentTimeClass()">{{'participant-waiting-room.time-now' | translate}}</p>
             <p class="govuk-panel__body govuk-!-margin-top-4 govuk-!-font-size-80" [ngClass]="getCurrentTimeClass()">
               <strong>{{ currentTime | date: 'HH:mm' }}</strong>
             </p>
@@ -206,12 +197,12 @@
     <div *ngIf="canStartJoinConsultation">
       <a href="javascript:void(0)" class="govuk-button" role="button" draggable="false" id="openStartPCButton"
         data-module="govuk-button" (click)="openStartConsultationModal()">
-        Start a private meeting
+        {{'participant-waiting-room.private-consultation.start' | translate}}
       </a>
 
       <a href="javascript:void(0)" class="govuk-button govuk-button-blue govuk-!-margin-left-5" role="button"
         draggable="false" id="openJoinPCButton" data-module="govuk-button" (click)="openJoinConsultationModal()">
-        Join a private meeting
+        {{'participant-waiting-room.private-consultation.join' | translate}}
       </a>
     </div>
     
@@ -219,27 +210,27 @@
       <details class="govuk-details" data-module="govuk-details">
         <summary class="govuk-details__summary" (click)="toggleAccordian()" tabindex="0" role="button" [attr.aria-expanded]="privateConsultationAccordianExpanded">
           <span class="govuk-details__summary-text" id="what-are-private-meetings">
-            What are private meetings?
+            {{'participant-waiting-room.private-consultation.what-are-private-meetings' | translate}}
           </span>
         </summary>
         <div class="govuk-details__text" *ngIf="privateConsultationAccordianExpanded">
           <p class="govuk-body govuk-!-margin-bottom-0">
-            You can talk to other participants in private before the hearing begins or during a break, if you wish.
+            {{'participant-waiting-room.private-consultation.talk-to-other-participants' | translate}}
           </p>
           <ul>
-            <li>Start a meeting by choosing who you want to speak to from the list</li>
-            <li>Join a meeting that's already started by choosing from the list</li>
-            <li>If a meeting room is locked you'll need to be invited by someone in the meeting</li>
+            <li{{'participant-waiting-room.private-consultation.guide1' | translate}}>
+            <li{{'participant-waiting-room.private-consultation.guide2' | translate}}>
+            <li{{'participant-waiting-room.private-consultation.guide3' | translate}}>
           </ul>    
           <p class="govuk-body govuk-!-margin-bottom-0">
-            If you wish to have a private conversation during the hearing you'll need to ask the judge's permission.
+            {{'participant-waiting-room.private-consultation.guide4' | translate}}
           </p>
         </div>
       </details>
     </div>
     
     <div class="govuk-!-margin-top-9">
-      <p class="govuk-body"><strong>Video hearings team: 0300 303 0655</strong></p>
+      <p class="govuk-body"><strong>{{'participant-waiting-room.vh-team' | translate}}</strong></p>
     </div>
   </div>
 
