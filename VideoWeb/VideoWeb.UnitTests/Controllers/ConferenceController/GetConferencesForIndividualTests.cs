@@ -10,10 +10,10 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Controllers;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
-using Conference = VideoWeb.Services.Video.ConferenceForIndividualResponse;
+using Conference = VideoApi.Contract.Responses.ConferenceForIndividualResponse;
 using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
 using Autofac.Extras.Moq;
 using VideoWeb.Mappings;
@@ -48,8 +48,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .AddTypedParameters<ParticipantForUserResponseMapper>()
                 .Build();
 
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoWeb.Services.Video.ConferenceForJudgeResponse, VideoWeb.Contract.Responses.ConferenceForJudgeResponse>()).Returns(_mocker.Create<ConferenceForJudgeResponseMapper>(parameters));
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoWeb.Services.Video.ConferenceForIndividualResponse, VideoWeb.Contract.Responses.ConferenceForIndividualResponse>()).Returns(_mocker.Create<ConferenceForIndividualResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForJudgeResponse, VideoWeb.Contract.Responses.ConferenceForJudgeResponse>()).Returns(_mocker.Create<ConferenceForJudgeResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForIndividualResponse, VideoWeb.Contract.Responses.ConferenceForIndividualResponse>()).Returns(_mocker.Create<ConferenceForIndividualResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceForAdminResponse, ConferenceForVhOfficerResponse>()).Returns(_mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponseVho>()).Returns(_mocker.Create<ConferenceResponseVhoMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));
@@ -62,7 +62,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public async Task Should_return_ok_with_list_of_conferences()
         {
             var conferences = Builder<Conference>.CreateListOfSize(10).All()
-                .With(x => x.Scheduled_date_time = DateTime.UtcNow.AddMinutes(-60))
+                .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
                 .Build().ToList();
 
             _mocker.Mock<IVideoApiClient>()

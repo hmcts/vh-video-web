@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
 
 namespace VideoWeb.AcceptanceTests.Helpers
 {
@@ -10,22 +11,22 @@ namespace VideoWeb.AcceptanceTests.Helpers
     {
         public static UserDto GetDefaultParticipantUser(List<UserDto> users)
         {
-            return users.First(x => x.User_type == UserType.Individual);
+            return users.First(x => x.UserType == UserType.Individual);
         }
 
         public static UserDto GetJudgeUser(List<UserDto> users)
         {
-            return users.First(x => x.User_type == UserType.Judge);
+            return users.First(x => x.UserType == UserType.Judge);
         }
 
         public static UserDto GetUserFromDisplayName(List<UserDto> users, string displayName)
         {
-            if (users.Any(x => x.Display_name.ToLower().Contains(displayName.ToLower().Replace(" ", ""))))
+            if (users.Any(x => x.DisplayName.ToLower().Contains(displayName.ToLower().Replace(" ", ""))))
             {
-                return users.First(x => x.Display_name.ToLower().Contains(displayName.ToLower().Replace(" ", "")));
+                return users.First(x => x.DisplayName.ToLower().Contains(displayName.ToLower().Replace(" ", "")));
             }
 
-            var usersList = users.Select(x => x.Display_name).Aggregate("", (current, name) => current + name + ",");
+            var usersList = users.Select(x => x.DisplayName).Aggregate("", (current, name) => current + name + ",");
             throw new InvalidOperationException($"No user with display name '{displayName}' found in the list: '{usersList}'");
         }
 
@@ -36,7 +37,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
             if (user.Contains("judge"))
             {
-                return users.First(x => x.User_type == UserType.Judge);
+                return users.First(x => x.UserType == UserType.Judge);
             }
 
             if (user.Contains("individual"))
@@ -63,7 +64,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             if (user.Contains("video hearings officer") ||
                 user.Contains("videohearingsofficer"))
             {
-                return users.First(x => x.User_type == UserType.VideoHearingsOfficer);
+                return users.First(x => x.UserType == UserType.VideoHearingsOfficer);
             }
 
             if (user.Contains("winger"))
@@ -76,7 +77,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
 
         private static List<UserDto> GetAllUsersOfType(List<UserDto> users, UserType userType)
         {
-            return users.FindAll(x => x.User_type == userType);
+            return users.FindAll(x => x.UserType == userType);
         }
 
         public static UserDto GetUserFromText(string text, List<UserDto> users)

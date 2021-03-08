@@ -8,7 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Requests;
 using VideoWeb.UnitTests.Builders;
 using ProblemDetails = Microsoft.AspNetCore.Mvc.ProblemDetails;
 
@@ -41,7 +42,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             VideoApiClientMock.Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
-                    It.Is<TransferParticipantRequest>(r => r.Participant_id == participant.Id)), Times.Never);
+                    It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id)), Times.Never);
         }
 
         [Test]
@@ -63,7 +64,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             VideoApiClientMock.Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
-                    It.Is<TransferParticipantRequest>(r => r.Participant_id == participant.Id)), Times.Never);
+                    It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id)), Times.Never);
         }
 
         [Test]
@@ -84,7 +85,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             VideoApiClientMock.Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
-                    It.Is<TransferParticipantRequest>(r => r.Participant_id == participant.Id)), Times.Never);
+                    It.Is<TransferParticipantRequest>(r => r.ParticipantId == participant.Id)), Times.Never);
         }
 
         [Test]
@@ -133,7 +134,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             VideoApiClientMock.Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.Is<TransferParticipantRequest>(r =>
-                        r.Participant_id == witness.Id && r.Transfer_type == TransferType.Call)), Times.Once);
+                        r.ParticipantId == witness.Id && r.TransferType == TransferType.Call)), Times.Once);
         }
     }
 }

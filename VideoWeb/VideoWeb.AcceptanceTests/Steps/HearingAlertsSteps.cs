@@ -18,9 +18,10 @@ using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.Common.Extensions;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Dtos;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using RoomType = VideoWeb.Common.Models.RoomType;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -105,8 +106,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         private ParticipantDetailsResponse GetUserFromConferenceDetails(string userRole)
         {
             _c.Test.Participant = userRole.ToLower().Equals("judge") || userRole.ToLower().Equals("Judge")
-                ? _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(Role.Judge.ToString()))
-                : _c.Test.ConferenceParticipants.Find(x => x.User_role.ToString().Equals(Role.Individual.ToString()));
+                ? _c.Test.ConferenceParticipants.Find(x => x.UserRole.ToString().Equals(Role.Judge.ToString()))
+                : _c.Test.ConferenceParticipants.Find(x => x.UserRole.ToString().Equals(Role.Individual.ToString()));
             return _c.Test.Participant;
         }
 
@@ -207,7 +208,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private Guid GetJudgeParticipantId()
         {
-            return _c.Test.ConferenceParticipants.First(x => x.User_role.ToString().Equals(Role.Judge.ToString())).Id;
+            return _c.Test.ConferenceParticipants.First(x => x.UserRole.ToString().Equals(Role.Judge.ToString())).Id;
         }
 
         private IRestResponse SendEventToVideoApi(CallbackEvent request)

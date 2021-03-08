@@ -8,9 +8,10 @@ using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Helpers;
-using VideoWeb.Services.User;
-using VideoWeb.Services.Video;
-using UserRole = VideoWeb.Services.Video.UserRole;
+using UserApi.Client;
+using UserApi.Contract.Responses;
+using VideoApi.Contract.Responses;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -35,7 +36,7 @@ namespace VideoWeb.UnitTests.Mappings
 
             var message = new InstantMessageResponse
             {
-                From = loggedInUsername, Message_text = "test", Time_stamp = DateTime.UtcNow
+                From = loggedInUsername, MessageText = "test", TimeStamp = DateTime.UtcNow
             };
             var result = _decoder.IsMessageFromUser(message, loggedInUsername);
             result.Should().BeTrue();
@@ -49,7 +50,7 @@ namespace VideoWeb.UnitTests.Mappings
 
             var message = new InstantMessageResponse
             {
-                From = otherUsername, Message_text = "test", Time_stamp = DateTime.UtcNow
+                From = otherUsername, MessageText = "test", TimeStamp = DateTime.UtcNow
             };
             var result = _decoder.IsMessageFromUser(message, loggedInUsername);
             result.Should().BeFalse();
@@ -64,7 +65,7 @@ namespace VideoWeb.UnitTests.Mappings
 
             var message = new InstantMessageResponse
             {
-                From = loggedInUsername, Message_text = "test", Time_stamp = DateTime.UtcNow
+                From = loggedInUsername, MessageText = "test", TimeStamp = DateTime.UtcNow
             };
 
             var result = await _decoder.GetMessageOriginatorAsync(conference, message);
@@ -77,12 +78,12 @@ namespace VideoWeb.UnitTests.Mappings
             var nonParticipantUsername = "someone@else.com";
             var userProfile = new UserProfile
             {
-                First_name = "Someone",
-                Last_name = "Else",
-                User_name = nonParticipantUsername,
-                Display_name = "Some other user display",
+                FirstName = "Someone",
+                LastName = "Else",
+                UserName = nonParticipantUsername,
+                DisplayName = "Some other user display",
                 Email = "else@someone.net",
-                User_role = UserRole.VideoHearingsOfficer.ToString()
+                UserRole = UserRole.VideoHearingsOfficer.ToString()
             };
             _userApiClientMock.Setup(x => x.GetUserByAdUserNameAsync(nonParticipantUsername)).ReturnsAsync(userProfile);
 
@@ -92,11 +93,11 @@ namespace VideoWeb.UnitTests.Mappings
 
             var message = new InstantMessageResponse
             {
-                From = nonParticipantUsername, Message_text = "test", Time_stamp = DateTime.UtcNow
+                From = nonParticipantUsername, MessageText = "test", TimeStamp = DateTime.UtcNow
             };
 
             var result = await _decoder.GetMessageOriginatorAsync(conference, message);
-            result.Should().BeEquivalentTo(userProfile.First_name);
+            result.Should().BeEquivalentTo(userProfile.FirstName);
         }
 
         private static Conference CreateConferenceResponse(string username, string displayName)

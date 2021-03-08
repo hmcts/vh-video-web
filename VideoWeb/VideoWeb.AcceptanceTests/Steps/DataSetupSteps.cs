@@ -8,8 +8,14 @@ using NUnit.Framework;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Helpers;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Enums;
 using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
+using TestApi.Contract.Responses;
+using TestApi.Contract.Requests;
+using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.Requests.Enums;
+using VideoApi.Contract.Responses;
+using BookingsApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -197,12 +203,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"I attempt to retrieve the new conference details from the video api")]
         public void CreateConference()
         {
-            var vho = _c.Test.Users.First(x => x.User_type == UserType.VideoHearingsOfficer);
+            var vho = _c.Test.Users.First(x => x.UserType == UserType.VideoHearingsOfficer);
 
             var request = new UpdateBookingStatusRequest()
             {
-                Updated_by = vho.Username,
-                Cancel_reason = null,
+                UpdatedBy = vho.Username,
+                CancelReason = null,
                 Status = UpdateBookingStatus.Created
             };
 
@@ -257,10 +263,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             var request = new AllocateUsersRequest()
             {
                 Application = Application.VideoWeb,
-                Expiry_in_minutes = expiresIn,
-                Is_prod_user = _c.VideoWebConfig.IsLive,
-                Test_type = TestType.Automated,
-                User_types = userTypes
+                ExpiryInMinutes = expiresIn,
+                IsProdUser = _c.VideoWebConfig.IsLive,
+                TestType = TestType.Automated,
+                UserTypes = userTypes
             };
 
             var response = _c.Apis.TestApi.AllocateUsers(request);

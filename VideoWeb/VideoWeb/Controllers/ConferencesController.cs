@@ -13,9 +13,10 @@ using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
-using JudgeConference = VideoWeb.Services.Video.ConferenceForJudgeResponse;
-using IndividualConference = VideoWeb.Services.Video.ConferenceForIndividualResponse;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
+using JudgeConference = VideoApi.Contract.Responses.ConferenceForJudgeResponse;
+using IndividualConference = VideoApi.Contract.Responses.ConferenceForIndividualResponse;
 using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
 using ConferenceForJudgeResponse = VideoWeb.Contract.Responses.ConferenceForJudgeResponse;
 using VideoWeb.Middleware;
@@ -89,7 +90,7 @@ namespace VideoWeb.Controllers
             {
                 var username = User.Identity.Name;
                 var conferencesForIndividual = await _videoApiClient.GetConferencesTodayForIndividualByUsernameAsync(username);
-                conferencesForIndividual = conferencesForIndividual.Where(c => ConferenceHelper.HasNotPassed(c.Status, c.Closed_date_time)).ToList();
+                conferencesForIndividual = conferencesForIndividual.Where(c => ConferenceHelper.HasNotPassed(c.Status, c.ClosedDateTime)).ToList();
                 var conferenceForIndividualResponseMapper = _mapperFactory.Get<IndividualConference, ConferenceForIndividualResponse>();
                 var response = conferencesForIndividual
                     .Select(conferenceForIndividualResponseMapper.Map)
@@ -121,8 +122,8 @@ namespace VideoWeb.Controllers
                 var conferences = await _videoApiClient.GetConferencesTodayForAdminAsync(query.UserNames);
                 var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, ConferenceForVhOfficerResponse>();
                 var responses = conferences
-                    .Where(c => ConferenceHelper.HasNotPassed(c.Status, c.Closed_date_time))
-                    .OrderBy(x => x.Closed_date_time)
+                    .Where(c => ConferenceHelper.HasNotPassed(c.Status, c.ClosedDateTime))
+                    .OrderBy(x => x.ClosedDateTime)
                     .Select(conferenceForVhOfficerResponseMapper.Map)
                     .ToList();
 
@@ -169,7 +170,7 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
 
-            var exceededTimeLimit = !ConferenceHelper.HasNotPassed(conference.Current_status, conference.Closed_date_time);
+            var exceededTimeLimit = !ConferenceHelper.HasNotPassed(conference.CurrentStatus, conference.ClosedDateTime);
             if (exceededTimeLimit)
             {
                 _logger.LogInformation(
@@ -191,7 +192,7 @@ namespace VideoWeb.Controllers
 
             conference.Participants = conference
                 .Participants
-                .Where(x => displayRoles.Contains((Role) x.User_role)).ToList();
+                .Where(x => displayRoles.Contains((Role) x.UserRole)).ToList();
 
             var conferenceResponseVhoMapper = _mapperFactory.Get<ConferenceDetailsResponse, ConferenceResponseVho>();
             var response = conferenceResponseVhoMapper.Map(conference);
@@ -235,7 +236,7 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
 
-            var exceededTimeLimit = !ConferenceHelper.HasNotPassed(conference.Current_status, conference.Closed_date_time);
+            var exceededTimeLimit = !ConferenceHelper.HasNotPassed(conference.CurrentStatus, conference.ClosedDateTime);
             if (conference.Participants.All(x => x.Username.ToLower().Trim() != username) || exceededTimeLimit)
             {
                 _logger.LogInformation(
@@ -254,7 +255,7 @@ namespace VideoWeb.Controllers
             };
 
             conference.Participants = conference.Participants
-                .Where(x => displayRoles.Contains((Role)x.User_role)).ToList();
+                .Where(x => displayRoles.Contains((Role)x.UserRole)).ToList();
 
             var conferenceResponseMapper = _mapperFactory.Get<ConferenceDetailsResponse, ConferenceResponse>();
             var response = conferenceResponseMapper.Map(conference);

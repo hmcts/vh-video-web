@@ -9,15 +9,15 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
+using Moq;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {
@@ -64,7 +64,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
             var participantId = Guid.NewGuid();
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetHeartbeatDataForParticipantAsync(conferenceId, participantId))
-                .Returns(Task.FromResult(responses));
+                .ReturnsAsync(responses);
 
             var result = await _sut.GetHeartbeatDataForParticipantAsync(conferenceId, participantId);
             var typedResult = (OkObjectResult)result;

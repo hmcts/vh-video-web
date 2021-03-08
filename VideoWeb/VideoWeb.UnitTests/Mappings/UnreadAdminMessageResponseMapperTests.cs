@@ -7,7 +7,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -32,19 +32,19 @@ namespace VideoWeb.UnitTests.Mappings
             var messages = new List<InstantMessageResponse>
             {
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 5", Time_stamp = DateTime.UtcNow.AddMinutes(-1)},
+                    {From = judge.Username, MessageText = "judge - 5", TimeStamp = DateTime.UtcNow.AddMinutes(-1)},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 4", Time_stamp = DateTime.UtcNow.AddMinutes(-2)},
+                    {From = judge.Username, MessageText = "judge - 4", TimeStamp = DateTime.UtcNow.AddMinutes(-2)},
                 new InstantMessageResponse
-                    {From = vho1Username, Message_text = "vho - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-3)},
+                    {From = vho1Username, MessageText = "vho - 1", TimeStamp = DateTime.UtcNow.AddMinutes(-3)},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 3", Time_stamp = DateTime.UtcNow.AddMinutes(-4)},
+                    {From = judge.Username, MessageText = "judge - 3", TimeStamp = DateTime.UtcNow.AddMinutes(-4)},
                 new InstantMessageResponse
-                    {From = vho2Username, Message_text = "vho2 - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-5)},
+                    {From = vho2Username, MessageText = "vho2 - 1", TimeStamp = DateTime.UtcNow.AddMinutes(-5)},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 2", Time_stamp = DateTime.UtcNow.AddMinutes(-6)},
+                    {From = judge.Username, MessageText = "judge - 2", TimeStamp = DateTime.UtcNow.AddMinutes(-6)},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-7)},
+                    {From = judge.Username, MessageText = "judge - 1", TimeStamp = DateTime.UtcNow.AddMinutes(-7)},
             };
 
             var response = _sut.Map(conference, messages);
@@ -69,15 +69,15 @@ namespace VideoWeb.UnitTests.Mappings
             var messages = new List<InstantMessageResponse>
             {
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 5", Time_stamp = DateTime.UtcNow.AddMinutes(-1)},
+                    {From = judge.Username, MessageText = "judge - 5", TimeStamp = DateTime.UtcNow.AddMinutes(-1)},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 4", Time_stamp = DateTime.UtcNow.AddMinutes(-2)},
+                    {From = judge.Username, MessageText = "judge - 4", TimeStamp = DateTime.UtcNow.AddMinutes(-2)},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 3", Time_stamp = DateTime.UtcNow.AddMinutes(-4)},
+                    {From = judge.Username, MessageText = "judge - 3", TimeStamp = DateTime.UtcNow.AddMinutes(-4)},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 2", Time_stamp = DateTime.UtcNow.AddMinutes(-6)},
+                    {From = judge.Username, MessageText = "judge - 2", TimeStamp = DateTime.UtcNow.AddMinutes(-6)},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-7)},
+                    {From = judge.Username, MessageText = "judge - 1", TimeStamp = DateTime.UtcNow.AddMinutes(-7)},
             };
 
             var response = _sut.Map(conference, messages);

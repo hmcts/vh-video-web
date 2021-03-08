@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using AcceptanceTests.Common.Data.TestData;
 using VideoWeb.AcceptanceTests.Data.TestData;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Dtos;
+using VideoApi.Contract.Responses;
+using BookingsApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Data
 {

@@ -16,10 +16,13 @@ using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
+using VideoApi.Contract.Requests;
 using VideoWeb.UnitTests.Builders;
 using Endpoint = VideoWeb.Common.Models.Endpoint;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
+using VideoApi.Contract.Enums;
+using RoomType = VideoApi.Contract.Enums.RoomType;
 
 namespace VideoWeb.UnitTests.Controllers.VideoEventController
 {
@@ -80,7 +83,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         {
             // Arrange
             var request = CreateRequest();
-            request.Participant_id = _testConference.CivilianRooms.First().Id.ToString();
+            request.ParticipantId = _testConference.CivilianRooms.First().Id.ToString();
 
             // Act
             var result = await _sut.SendHearingEventAsync(request);
@@ -97,9 +100,9 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         {
             // Arrange
             var request = CreateRequest();
-            request.Event_type = EventType.Transfer;
-            request.Transfer_to = "JudgeConsultationRoom3";
-            request.Transfer_from = RoomType.WaitingRoom.ToString();
+            request.EventType = EventType.Transfer;
+            request.TransferTo = "JudgeConsultationRoom3";
+            request.TransferFrom = RoomType.WaitingRoom.ToString();
 
             // Act
             var result = await _sut.SendHearingEventAsync(request);
@@ -116,9 +119,9 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         {
             // Arrange
             var request = CreateRequest();
-            request.Event_type = EventType.Transfer;
-            request.Transfer_from = "JudgeConsultationRoom3";
-            request.Transfer_to = RoomType.WaitingRoom.ToString();
+            request.EventType = EventType.Transfer;
+            request.TransferFrom = "JudgeConsultationRoom3";
+            request.TransferTo = RoomType.WaitingRoom.ToString();
 
             // Act
             var result = await _sut.SendHearingEventAsync(request);
@@ -165,7 +168,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             typedResult.Should().NotBeNull();
             _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == eventType)), Times.Once);
             _mocker.Mock<IVideoApiClient>().Verify(x =>
-                x.RaiseVideoEventAsync(It.Is<ConferenceEventRequest>(r => r.Event_type == expectedEventType)));
+                x.RaiseVideoEventAsync(It.Is<ConferenceEventRequest>(r => r.EventType == expectedEventType)));
         }
 
         [TestCase(EventType.Joined)]
@@ -175,7 +178,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         {
             // Arrange
             var request = CreateEndpointRequest(incomingEventType);
-            request.Participant_id = Guid.NewGuid().ToString();
+            request.ParticipantId = Guid.NewGuid().ToString();
             var eventType = Enum.Parse<EventHub.Enums.EventType>(incomingEventType.ToString());
 
             // Act
@@ -187,7 +190,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             typedResult.Should().NotBeNull();
             _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == eventType)), Times.Once);
             _mocker.Mock<IVideoApiClient>().Verify(x =>
-                x.RaiseVideoEventAsync(It.Is<ConferenceEventRequest>(r => r.Event_type == incomingEventType)));
+                x.RaiseVideoEventAsync(It.Is<ConferenceEventRequest>(r => r.EventType == incomingEventType)));
         }
 
         [Test]
@@ -254,9 +257,9 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         private ConferenceEventRequest CreateRequest(string phone = null)
         {
             return Builder<ConferenceEventRequest>.CreateNew()
-                .With(x => x.Conference_id = _testConference.Id.ToString())
-                .With(x => x.Participant_id = _testConference.Participants[0].Id.ToString())
-                .With(x => x.Event_type = EventType.Joined)
+                .With(x => x.ConferenceId = _testConference.Id.ToString())
+                .With(x => x.ParticipantId = _testConference.Participants[0].Id.ToString())
+                .With(x => x.EventType = EventType.Joined)
                 .With(x => x.Phone = phone)
                 .Build();
         }
@@ -264,11 +267,11 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         private ConferenceEventRequest CreateEndpointRequest(EventType incomingEventType)
         {
             return Builder<ConferenceEventRequest>.CreateNew()
-                .With(x => x.Conference_id = _testConference.Id.ToString())
-                .With(x => x.Participant_id = _testConference.Endpoints[0].Id.ToString())
-                .With(x => x.Event_type = incomingEventType)
-                .With(x => x.Transfer_to = "ParticipantConsultationRoom10")
-                .With(x => x.Transfer_from = RoomType.WaitingRoom.ToString())
+                .With(x => x.ConferenceId = _testConference.Id.ToString())
+                .With(x => x.ParticipantId = _testConference.Endpoints[0].Id.ToString())
+                .With(x => x.EventType = incomingEventType)
+                .With(x => x.TransferTo = "ParticipantConsultationRoom10")
+                .With(x => x.TransferFrom = RoomType.WaitingRoom.ToString())
                 .With(x => x.Phone = null)
                 .Build();
         }

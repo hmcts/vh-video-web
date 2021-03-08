@@ -11,8 +11,10 @@ using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.Services.TestApi;
-using UserRole = VideoWeb.Services.TestApi.UserRole;
+using TestApi.Contract.Enums;
+using VideoApi.Contract.Responses;
+using VideoApi.Contract.Enums;
+using TestApi.Contract.Dtos;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -123,8 +125,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var response = _c.Apis.TestApi.GetAudioRecordingLink(_c.Test.NewHearingId);
             var audioLink = RequestHelper.Deserialise<AudioRecordingResponse>(response.Content);
-            audioLink.Audio_file_links.Should().NotBeNullOrEmpty();
-            audioLink.Audio_file_links.First().ToLower().Should().Contain(_c.Test.NewHearingId.ToString().ToLower());
+            audioLink.AudioFileLinks.Should().NotBeNullOrEmpty();
+            audioLink.AudioFileLinks.First().ToLower().Should().Contain(_c.Test.NewHearingId.ToString().ToLower());
         }
 
         [Then(@"the VHO can see that (.*) is in the Waiting Room")]
@@ -145,7 +147,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             SwitchToTheVhoIframe();
 
-            var judgeId = _c.Test.Conference.Participants.First(x => x.User_role == UserRole.Judge).Id;
+            var judgeId = _c.Test.Conference.Participants.First(x => x.UserRole == UserRole.Judge).Id;
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantInHearingRoom(judgeId)).Displayed.Should().BeTrue();
 
             var user = Users.GetUserFromText(text, _c.Test.Users);

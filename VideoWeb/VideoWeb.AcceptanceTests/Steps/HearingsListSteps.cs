@@ -8,8 +8,10 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
 using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
+using BookingsApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -36,8 +38,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             }
             else
             {
-                var element = _c.CurrentUser.User_type == UserType.Judge ? JudgeHearingListPage.StartHearingButton(_c.Test.Conference.Id) : ParticipantHearingListPage.SignInButton(_c.Test.Conference.Id);
-                var tolerance = _c.CurrentUser.User_type == UserType.Judge ? 30 : ToleranceInMinutes * 60;
+                var element = _c.CurrentUser.UserType == UserType.Judge ? JudgeHearingListPage.StartHearingButton(_c.Test.Conference.Id) : ParticipantHearingListPage.SignInButton(_c.Test.Conference.Id);
+                var tolerance = _c.CurrentUser.UserType == UserType.Judge ? 30 : ToleranceInMinutes * 60;
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantHearingListPage.HearingListPageTitle).Displayed.Should().BeTrue();
                 _browsers[_c.CurrentUser].ScrollTo(element);
                 _browsers[_c.CurrentUser].Click(element, tolerance);
@@ -98,22 +100,22 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheParticipantCanSeeAListOfHearingsIncludingTheNewHearing()
         {
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantHearingListPage.CaseNumber(_c.Test.Conference.Id)).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantHearingListPage.HearingDate(_c.Test.Conference.Id)).Text.Should().Be($"{_c.TimeZone.Adjust(_c.Test.Hearing.Scheduled_date_time).ToString(DateFormats.HearingListPageDate)}");
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantHearingListPage.HearingTime(_c.Test.Conference.Id)).Text.Should().Be($"{_c.TimeZone.Adjust(_c.Test.Hearing.Scheduled_date_time):HH:mm}");
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantHearingListPage.HearingDate(_c.Test.Conference.Id)).Text.Should().Be($"{_c.TimeZone.Adjust(_c.Test.Hearing.ScheduledDateTime).ToString(DateFormats.HearingListPageDate)}");
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantHearingListPage.HearingTime(_c.Test.Conference.Id)).Text.Should().Be($"{_c.TimeZone.Adjust(_c.Test.Hearing.ScheduledDateTime):HH:mm}");
         }
 
         [Then(@"the user can see their details at the top of the hearing list")]
         public void ThenTheUserCanSeeTheirDetailsAtTheTopOfTheHearingList()
         {
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeHearingListPage.HearingListTitle).Text
-                .Should().Be($"Video hearings for {_c.CurrentUser.First_name}, {_c.CurrentUser.Last_name}");
+                .Should().Be($"Video hearings for {_c.CurrentUser.FirstName}, {_c.CurrentUser.LastName}");
         }
 
         [Then(@"the Judge can see a list of hearings including the new hearing")]
         public void ThenTheJudgeCanSeeAListOfHearingsIncludingTheNewHearing()
         {
-            var scheduledDateTime = _c.TimeZone.Adjust(_c.Test.Hearing.Scheduled_date_time);
-            var scheduledDuration = _c.Test.Hearing.Scheduled_duration;
+            var scheduledDateTime = _c.TimeZone.Adjust(_c.Test.Hearing.ScheduledDateTime);
+            var scheduledDuration = _c.Test.Hearing.ScheduledDuration;
 
             var rowData = new GetHearingRow()
                 .WithConferenceId(_c.Test.Conference.Id)
@@ -123,9 +125,9 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeHearingListPage.Date(scheduledDateTime.ToString(DateFormats.JudgeHearingListDate))).Displayed.Should().BeTrue();
             rowData.StartTime.Should().Be(scheduledDateTime.ToString(DateFormats.JudgeHearingListTime));
             rowData.EndTime.Should().Be(scheduledDateTime.AddMinutes(scheduledDuration).ToString(DateFormats.JudgeHearingListTime));
-            rowData.Judge.Should().Be(_c.CurrentUser.Display_name);
+            rowData.Judge.Should().Be(_c.CurrentUser.DisplayName);
             rowData.CaseName.Trim().Should().Be(_c.Test.Case.Name);
-            rowData.CaseType.Trim().Should().Be(_c.Test.Hearing.Case_type_name);
+            rowData.CaseType.Trim().Should().Be(_c.Test.Hearing.CaseTypeName);
             rowData.CaseNumber.Trim().Should().Be(_c.Test.Case.Number);
             ParticipantsDisplayed(_c.Test.HearingParticipants, rowData);
         }
@@ -172,7 +174,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             foreach (var conference in _c.Test.Conferences)
             {
-                if (_c.TimeZone.Adjust(conference.Scheduled_date_time).Day.Equals(_c.TimeZone.Adjust(DateTime.Now).Day))
+                if (_c.TimeZone.Adjust(conference.ScheduledDateTime).Day.Equals(_c.TimeZone.Adjust(DateTime.Now).Day))
                 {
                     _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(conference.Id)).Displayed.Should().BeTrue();
                 }
@@ -191,7 +193,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private static void AssertParticipantsCount(IList<ParticipantResponse> participantResponses, HearingRow rowData)
         {
-            var participantsCount = participantResponses.Count(x => x.Hearing_role_name == "Individual" || x.Hearing_role_name == "Representative" || x.Hearing_role_name == "Litigant in person");
+            var participantsCount = participantResponses.Count(x => x.HearingRoleName == "Individual" || x.HearingRoleName == "Representative" || x.HearingRoleName == "Litigant in person");
             if (participantsCount > 0)
             {
                 var participantEnding = participantsCount > 1 ? "s" : "";
@@ -199,7 +201,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 rowData.ParticipantCount.Should().Be(participantsCountText);
             }
 
-            var panelMembersCount = participantResponses.Count(x => x.Hearing_role_name == "Panel Member");
+            var panelMembersCount = participantResponses.Count(x => x.HearingRoleName == "Panel Member");
             if (panelMembersCount > 0)
             {
                 var panelMembersEnding = panelMembersCount > 1 ? "s" : "";
@@ -207,7 +209,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 rowData.PanelMembersCount.Should().Be(panelMembersCountText);
             }
 
-            var observersCount = participantResponses.Count(x => x.Hearing_role_name == "Observer");
+            var observersCount = participantResponses.Count(x => x.HearingRoleName == "Observer");
             if (observersCount > 0)
             {
                 var observersEnding = observersCount > 1 ? "s" : "";
@@ -215,7 +217,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 rowData.ObserversCount.Should().Be(observersCountText);
             }
 
-            var wingersCount = participantResponses.Count(x => x.Hearing_role_name == "Winger");
+            var wingersCount = participantResponses.Count(x => x.HearingRoleName == "Winger");
             if (wingersCount > 0)
             {
                 var wingersEnding = wingersCount > 1 ? "s" : "";

@@ -11,9 +11,9 @@ using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Requests;
 using EventType = VideoWeb.EventHub.Enums.EventType;
-using VAEventType = VideoWeb.Services.Video.EventType;
 
 namespace VideoWeb.Controllers
 {
@@ -52,7 +52,7 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var conferenceId = Guid.Parse(request.Conference_id);
+                var conferenceId = Guid.Parse(request.ConferenceId);
                 var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
                 {
                     _logger.LogTrace("Retrieving conference details for conference: ${ConferenceId}", conferenceId);
@@ -61,18 +61,18 @@ namespace VideoWeb.Controllers
 
                 var callbackEventMapper = _mapperFactory.Get<ConferenceEventRequest, Conference, CallbackEvent>();
                 var callbackEvent = callbackEventMapper.Map(request, conference);
-                request.Event_type = Enum.Parse<VAEventType>(callbackEvent.EventType.ToString());
+                request.EventType = Enum.Parse<VideoApi.Contract.Enums.EventType>(callbackEvent.EventType.ToString());
 
                 if (IsRoomEvent(request, conference, out var roomId))
                 {
-                    request.Participant_room_id = roomId.ToString();
-                    request.Participant_id = null;
+                    request.ParticipantRoomId = roomId.ToString();
+                    request.ParticipantId = null;
                 }
 
                 if (callbackEvent.EventType != EventType.VhoCall)
                 {
                     _logger.LogTrace("Raising video event: ConferenceId: {ConferenceId}, EventType: {EventType}",
-                        request.Conference_id, request.Event_type);
+                        request.ConferenceId, request.EventType);
                     await _videoApiClient.RaiseVideoEventAsync(request);
                 }
 
@@ -87,7 +87,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", request.Conference_id,
+                _logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", request.ConferenceId,
                     e.StatusCode);
                 return StatusCode(e.StatusCode, e.Response);
             }
@@ -95,7 +95,7 @@ namespace VideoWeb.Controllers
 
         private bool IsRoomEvent(ConferenceEventRequest request, Conference conference, out long roomId)
         {
-            if (!long.TryParse(request.Participant_id, out roomId)) return false;
+            if (!long.TryParse(request.ParticipantId, out roomId)) return false;
             var id = roomId;
             return conference.CivilianRooms.Any(x => x.Id == id);
         }

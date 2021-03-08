@@ -14,7 +14,7 @@ using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Middleware;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttributeTests

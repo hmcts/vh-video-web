@@ -16,10 +16,12 @@ using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
+using BookingsApi.Client;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
+using VideoApi.Contract.Requests;
+using VideoApi.Contract.Enums;
 using VideoWeb.Middleware;
-using VideoWeb.Services.Bookings;
-using VideoWeb.Services.Video;
-using UpdateParticipantRequest = VideoWeb.Services.Video.UpdateParticipantRequest;
 
 namespace VideoWeb.Controllers
 {
@@ -84,11 +86,11 @@ namespace VideoWeb.Controllers
             var eventTypeMapper = _mapperFactory.Get<EventType, string>();
             var conferenceEventRequest = new ConferenceEventRequest
             {
-                Conference_id = conferenceId.ToString(),
-                Participant_id = participantId.ToString(),
-                Event_id = Guid.NewGuid().ToString(),
-                Event_type = updateParticipantStatusEventRequest.EventType,
-                Time_stamp_utc = DateTime.UtcNow,
+                ConferenceId = conferenceId.ToString(),
+                ParticipantId = participantId.ToString(),
+                EventId = Guid.NewGuid().ToString(),
+                EventType = updateParticipantStatusEventRequest.EventType,
+                TimeStampUtc = DateTime.UtcNow,
                 Reason = eventTypeMapper.Map(updateParticipantStatusEventRequest.EventType)
             };
 

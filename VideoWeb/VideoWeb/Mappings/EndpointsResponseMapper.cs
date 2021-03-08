@@ -2,7 +2,7 @@ using System;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
@@ -18,15 +18,15 @@ namespace VideoWeb.Mappings
         public VideoEndpointResponse Map(EndpointResponse endpoint, int index)
         {
             var status = Enum.Parse<EndpointStatus>(endpoint.Status.ToString());
-            var pexipDisplayName = $"T{100 + index};{endpoint.Display_name};{endpoint.Id}";
+            var pexipDisplayName = $"T{100 + index};{endpoint.DisplayName};{endpoint.Id}";
             return new VideoEndpointResponse
             {
-                DisplayName = endpoint.Display_name,
+                DisplayName = endpoint.DisplayName,
                 Id = endpoint.Id,
                 Status = status,
-                DefenceAdvocateUsername = endpoint.Defence_advocate,
+                DefenceAdvocateUsername = endpoint.DefenceAdvocate,
                 PexipDisplayName = pexipDisplayName,
-                CurrentRoom = _roomResponseMapper.Map(endpoint.Current_room)
+                CurrentRoom = _roomResponseMapper.Map(endpoint.CurrentRoom)
             };
         }
     }

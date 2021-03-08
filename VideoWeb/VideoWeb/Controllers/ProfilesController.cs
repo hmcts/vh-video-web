@@ -8,7 +8,8 @@ using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Caching;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
-using VideoWeb.Services.User;
+using UserApi.Client;
+using UserApi.Contract.Responses;
 
 namespace VideoWeb.Controllers
 {

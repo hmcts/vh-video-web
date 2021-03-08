@@ -21,9 +21,9 @@ namespace VideoWeb.UnitTests.Mappings.Requests
 
             var result = _sut.Map(request);
 
-            result.Conference_id.Should().Be(request.ConferenceId);
-            result.Requested_by.Should().Be(request.RequestedBy);
-            result.Room_type.Should().Equals(request.RoomType);
+            result.ConferenceId.Should().Be(request.ConferenceId);
+            result.RequestedBy.Should().Be(request.RequestedBy);
+            result.RoomType.Should().Equals(request.RoomType);
         }
     }
 }

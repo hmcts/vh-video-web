@@ -1,4 +1,4 @@
-﻿
+
 using Moq;
 using NUnit.Framework;
 using System;
@@ -9,7 +9,7 @@ namespace VideoWeb.UnitTests.Controllers.TokenController
 {
     public class TokenControllerTest
     {
-        public VideoWeb.Controllers.TokenController _tokenController;
+        public VideoWeb.Controllers.TokenController TokenController;
         protected Mock<IHashGenerator> hashGenerator;
         protected Mock<ICustomJwtTokenProvider> customJwtTokenProvider;
         protected Guid participantId;
@@ -25,7 +25,7 @@ namespace VideoWeb.UnitTests.Controllers.TokenController
             hashGenerator.Setup(h => h.GenerateSelfTestTokenHash(It.IsAny<string>(), It.IsAny<string>())).Returns(token);
             customJwtTokenProvider.Setup(v => v.GenerateToken(It.IsAny<string>(), It.IsAny<int>())).Returns(token);
 
-            _tokenController = new VideoWeb.Controllers.TokenController(hashGenerator.Object, 
+            TokenController = new VideoWeb.Controllers.TokenController(hashGenerator.Object, 
                                                                         customJwtTokenProvider.Object, 
                                                                         new KinlyConfiguration() { HashExpiresInMinutes = 30, ExpiresInMinutes = 20 });
         }

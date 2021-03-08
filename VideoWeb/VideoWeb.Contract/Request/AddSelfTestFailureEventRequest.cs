@@ -1,5 +1,5 @@
-﻿using System.ComponentModel;
-using VideoWeb.Services.Video;
+using System.ComponentModel;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.Contract.Request
 {

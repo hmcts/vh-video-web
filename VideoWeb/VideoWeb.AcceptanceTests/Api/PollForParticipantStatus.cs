@@ -4,7 +4,8 @@ using System.Threading;
 using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Helpers;
 using FluentAssertions;
-using VideoWeb.Services.TestApi;
+using VideoApi.Contract.Enums;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Api
 {
@@ -54,7 +55,7 @@ namespace VideoWeb.AcceptanceTests.Api
                 var conference = RequestHelper.Deserialise<ConferenceDetailsResponse>(response.Content);
                 conference.Should().NotBeNull();
                 var participant = conference.Participants.Find(x => x.Username.ToLower().Equals(_username.ToLower()));
-                actualState = participant.Current_status;
+                actualState = participant.CurrentStatus;
                 if (_expectedStates.Contains(actualState))
                 {
                     return actualState;

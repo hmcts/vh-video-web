@@ -3,7 +3,7 @@ using System.Linq;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
 using VideoWeb.Mappings.Interfaces;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
@@ -24,26 +24,26 @@ namespace VideoWeb.Mappings
             var response = new ConferenceResponse
             {
                 Id = conference.Id,
-                CaseName = conference.Case_name,
-                CaseNumber = conference.Case_number,
-                CaseType = conference.Case_type,
-                ScheduledDateTime = conference.Scheduled_date_time,
-                ScheduledDuration = conference.Scheduled_duration,
-                Status = ConferenceHelper.GetConferenceStatus(conference.Current_status),
+                CaseName = conference.CaseName,
+                CaseNumber = conference.CaseNumber,
+                CaseType = conference.CaseType,
+                ScheduledDateTime = conference.ScheduledDateTime,
+                ScheduledDuration = conference.ScheduledDuration,
+                Status = ConferenceHelper.GetConferenceStatus(conference.CurrentStatus),
                 Participants = MapParticipants(conference),
-                ClosedDateTime = conference.Closed_date_time,
-                HearingVenueName = conference.Hearing_venue_name,
-                AudioRecordingRequired = conference.Audio_recording_required,
-                HearingRefId = conference.Hearing_id,
+                ClosedDateTime = conference.ClosedDateTime,
+                HearingVenueName = conference.HearingVenueName,
+                AudioRecordingRequired = conference.AudioRecordingRequired,
+                HearingRefId = conference.HearingId,
                 Endpoints = MapEndpoints(conference)
             };
 
-            if (conference.Meeting_room != null)
+            if (conference.MeetingRoom != null)
             {
 
-                response.ParticipantUri = conference.Meeting_room.Participant_uri;
-                response.PexipNodeUri = conference.Meeting_room.Pexip_node;
-                response.PexipSelfTestNodeUri = conference.Meeting_room.Pexip_self_test_node;
+                response.ParticipantUri = conference.MeetingRoom.ParticipantUri;
+                response.PexipNodeUri = conference.MeetingRoom.PexipNode;
+                response.PexipSelfTestNodeUri = conference.MeetingRoom.PexipSelfTestNode;
 
                 ParticipantTilePositionHelper.AssignTilePositions(response.Participants);
             }
@@ -55,7 +55,7 @@ namespace VideoWeb.Mappings
         {
             conference.Participants ??= new List<ParticipantDetailsResponse>();
             return conference.Participants
-                .OrderBy(x => x.Case_type_group)
+                .OrderBy(x => x.CaseTypeGroup)
                 .Select(_participantResponseMapper.Map)
                 .ToList();
         }
