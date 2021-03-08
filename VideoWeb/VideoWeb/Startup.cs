@@ -35,11 +35,7 @@ namespace VideoWeb
             services.AddCustomTypes();
 
             services.RegisterAuthSchemes(Configuration);
-            services.AddMvc(opt =>
-            {
-                opt.Filters.Add(typeof(LoggingMiddleware));
-                opt.Filters.Add(typeof(CheckParticipantCanAccessConferenceFilter));
-            });
+            services.AddMvc(opt => opt.Filters.Add(typeof(LoggingMiddleware)));
             services.AddMvc().AddFluentValidation();
             services.AddApplicationInsightsTelemetry(Configuration["ApplicationInsights:InstrumentationKey"]);
             // In production, the Angular files will be served from this directory
