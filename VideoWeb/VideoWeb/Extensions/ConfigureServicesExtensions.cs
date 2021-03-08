@@ -255,10 +255,7 @@ namespace VideoWeb.Extensions
         private static IVideoApiClient BuildVideoApiClient(HttpClient httpClient,
             HearingServicesConfiguration serviceSettings)
         {
-            return new VideoApiClient(httpClient)
-            {
-                BaseUrl = serviceSettings.VideoApiUrl
-            };
+            return VideoApiClient.GetClient(serviceSettings.VideoApiUrl, httpClient);
         }
 
         private static IUserApiClient BuildUserApiClient(HttpClient httpClient,
