@@ -13,9 +13,7 @@ using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Data.TestData;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.Common.Security.HashGen;
-using TestApi.Client;
 using TestApi.Contract.Dtos;
-using TestApi.Contract.Enums;
 using BookingsApi.Contract.Responses;
 using VideoApi.Contract.Responses;
 

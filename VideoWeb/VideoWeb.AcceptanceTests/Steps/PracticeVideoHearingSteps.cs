@@ -11,9 +11,7 @@ using OpenQA.Selenium.Support.UI;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using TestApi.Client;
 using TestApi.Contract.Dtos;
-using TestApi.Contract.Enums;
 using VideoApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Steps

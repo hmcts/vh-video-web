@@ -4,9 +4,6 @@ using System.Threading;
 using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Api.Helpers;
 using FluentAssertions;
-using TestApi.Client;
-using TestApi.Contract.Dtos;
-using TestApi.Contract.Enums;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Responses;
 

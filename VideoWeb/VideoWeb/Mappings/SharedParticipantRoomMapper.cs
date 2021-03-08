@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
-using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {

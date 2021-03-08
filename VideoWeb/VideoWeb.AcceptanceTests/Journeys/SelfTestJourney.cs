@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using VideoWeb.AcceptanceTests.Pages;
-using TestApi.Client;
-using TestApi.Contract.Dtos;
 using TestApi.Contract.Enums;
 
 namespace VideoWeb.AcceptanceTests.Journeys

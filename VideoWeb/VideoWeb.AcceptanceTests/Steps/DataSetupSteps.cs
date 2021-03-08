@@ -8,8 +8,6 @@ using NUnit.Framework;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Helpers;
-using TestApi.Client;
-using TestApi.Contract.Dtos;
 using TestApi.Contract.Enums;
 using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
 using TestApi.Contract.Responses;

@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using TestApi.Client;
-using TestApi.Contract.Dtos;
-using TestApi.Contract.Enums;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Responses;
 

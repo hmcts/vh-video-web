@@ -4,9 +4,6 @@ using System.Data;
 using System.Linq;
 using BookingsApi.Contract.Responses;
 using FluentAssertions;
-using TestApi.Client;
-using TestApi.Contract.Dtos;
-using TestApi.Contract.Enums;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Responses;
 

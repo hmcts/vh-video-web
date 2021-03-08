@@ -9,9 +9,7 @@ using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using TestApi.Client;
 using TestApi.Contract.Dtos;
-using TestApi.Contract.Enums;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {

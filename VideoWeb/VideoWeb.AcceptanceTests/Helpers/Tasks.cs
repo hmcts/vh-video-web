@@ -3,9 +3,6 @@ using System.Linq;
 using System.Net;
 using AcceptanceTests.Common.Api.Helpers;
 using FluentAssertions;
-using TestApi.Client;
-using TestApi.Contract.Dtos;
-using TestApi.Contract.Enums;
 using VideoApi.Contract.Responses;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 

@@ -4,9 +4,6 @@ using Castle.Core.Internal;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
-using TestApi.Client;
-using TestApi.Contract.Dtos;
-using TestApi.Contract.Enums;
 using TestApi.Contract.Requests;
 
 namespace VideoWeb.AcceptanceTests.Hooks

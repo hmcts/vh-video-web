@@ -7,8 +7,6 @@ using AcceptanceTests.Common.Api.Helpers;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
-using TestApi.Client;
-using TestApi.Contract.Dtos;
 using TestApi.Contract.Enums;
 using VideoApi.Contract.Responses;
 using BookingsApi.Contract.Responses;

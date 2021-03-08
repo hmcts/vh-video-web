@@ -11,7 +11,6 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Mappings;
 using VideoApi.Client;
-using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
