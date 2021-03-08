@@ -98,13 +98,6 @@ namespace VideoWeb.Middleware
 
             return Guid.Empty;
         }
-        private void SetActionArgument(ActionExecutingContext context, string actionArgumentKey, string value)
-        {
-            if (context.ActionArguments.ContainsKey(actionArgumentKey))
-            {
-                context.ActionArguments[actionArgumentKey] = value;
-            }
-        }
 
         private Guid GetLoggedInParticipantId(ActionExecutingContext context, Conference conference)
         {
