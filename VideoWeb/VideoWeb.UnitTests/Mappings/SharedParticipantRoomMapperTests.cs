@@ -6,13 +6,13 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    public class InterpreterRoomMapperTests : BaseMockerSutTestSetup<InterpreterRoomMapper>
+    public class SharedParticipantRoomMapperTests : BaseMockerSutTestSetup<SharedParticipantRoomMapper>
     {
         [Test]
         public void should_map_vmr_to_interpreter_rom()
         {
             var participantId = Guid.NewGuid();
-            var testVmr = new InterpreterRoomResponse
+            var testVmr = new SharedParticipantRoomResponse
             {
                 Label = "Interpreter1",
                 Participant_join_uri = "joidshfdsf",
