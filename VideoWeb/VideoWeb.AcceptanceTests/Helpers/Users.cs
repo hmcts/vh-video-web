@@ -2,41 +2,42 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
 
 namespace VideoWeb.AcceptanceTests.Helpers
 {
     public static class Users
     {
-        public static User GetDefaultParticipantUser(List<User> users)
+        public static UserDto GetDefaultParticipantUser(List<UserDto> users)
         {
-            return users.First(x => x.User_type == UserType.Individual);
+            return users.First(x => x.UserType == UserType.Individual);
         }
 
-        public static User GetJudgeUser(List<User> users)
+        public static UserDto GetJudgeUser(List<UserDto> users)
         {
-            return users.First(x => x.User_type == UserType.Judge);
+            return users.First(x => x.UserType == UserType.Judge);
         }
 
-        public static User GetUserFromDisplayName(List<User> users, string displayName)
+        public static UserDto GetUserFromDisplayName(List<UserDto> users, string displayName)
         {
-            if (users.Any(x => x.Display_name.ToLower().Contains(displayName.ToLower().Replace(" ", ""))))
+            if (users.Any(x => x.DisplayName.ToLower().Contains(displayName.ToLower().Replace(" ", ""))))
             {
-                return users.First(x => x.Display_name.ToLower().Contains(displayName.ToLower().Replace(" ", "")));
+                return users.First(x => x.DisplayName.ToLower().Contains(displayName.ToLower().Replace(" ", "")));
             }
 
-            var usersList = users.Select(x => x.Display_name).Aggregate("", (current, name) => current + name + ",");
+            var usersList = users.Select(x => x.DisplayName).Aggregate("", (current, name) => current + name + ",");
             throw new InvalidOperationException($"No user with display name '{displayName}' found in the list: '{usersList}'");
         }
 
-        public static User GetUser(List<User> users, string number, string user)
+        public static UserDto GetUser(List<UserDto> users, string number, string user)
         {
             var index = ParticipantHelper.GetIndexFromNumber(number);
             user = user.ToLowerInvariant();
 
             if (user.Contains("judge"))
             {
-                return users.First(x => x.User_type == UserType.Judge);
+                return users.First(x => x.UserType == UserType.Judge);
             }
 
             if (user.Contains("individual"))
@@ -63,7 +64,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             if (user.Contains("video hearings officer") ||
                 user.Contains("videohearingsofficer"))
             {
-                return users.First(x => x.User_type == UserType.VideoHearingsOfficer);
+                return users.First(x => x.UserType == UserType.VideoHearingsOfficer);
             }
 
             if (user.Contains("winger"))
@@ -74,12 +75,12 @@ namespace VideoWeb.AcceptanceTests.Helpers
             throw new DataException($"No matching user could be found from '{user}'");
         }
 
-        private static List<User> GetAllUsersOfType(List<User> users, UserType userType)
+        private static List<UserDto> GetAllUsersOfType(List<UserDto> users, UserType userType)
         {
-            return users.FindAll(x => x.User_type == userType);
+            return users.FindAll(x => x.UserType == userType);
         }
 
-        public static User GetUserFromText(string text, List<User> users)
+        public static UserDto GetUserFromText(string text, List<UserDto> users)
         {
             text = text.ToLower().Replace("'s", string.Empty).Replace("the", string.Empty).Trim();
 

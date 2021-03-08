@@ -3,7 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
-using VideoWeb.Services.User;
+using UserApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -19,18 +19,18 @@ namespace VideoWeb.UnitTests.Mappings
         {
             var profile = new UserProfile
             {
-                User_role = role,
-                First_name = "Court 11",
-                Last_name = "Taylor House",
-                User_name = "Court 11, Taylor House"
+                UserRole = role,
+                FirstName = "Court 11",
+                LastName = "Taylor House",
+                UserName = "Court 11, Taylor House"
             };
             var response = _sut.Map(profile);
 
             response.Role.Should().Be(expectedRole);
-            response.FirstName.Should().Be(profile.First_name);
-            response.LastName.Should().Be(profile.Last_name);
-            response.DisplayName.Should().Be(profile.Display_name);
-            response.Username.Should().Be(profile.User_name);
+            response.FirstName.Should().Be(profile.FirstName);
+            response.LastName.Should().Be(profile.LastName);
+            response.DisplayName.Should().Be(profile.DisplayName);
+            response.Username.Should().Be(profile.UserName);
         }
 
         [Test]
@@ -38,7 +38,7 @@ namespace VideoWeb.UnitTests.Mappings
         {
             Action action = () => _sut.Map(new UserProfile
             {
-                User_role = "Random"
+                UserRole = "Random"
             });
 
             action.Should().Throw<NotSupportedException>().WithMessage("Role Random is not supported for this application");

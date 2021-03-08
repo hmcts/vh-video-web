@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.TasksController
 {

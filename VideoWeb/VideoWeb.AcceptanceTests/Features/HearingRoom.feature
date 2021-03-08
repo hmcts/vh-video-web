@@ -151,7 +151,8 @@ Scenario: Winger joins hearing
 	And the hearing status changed to Closed
 	When in the Winger's browser
 	Then the participants waiting room displays the closed status
-
+  
+@HearingTest @DisableLogging
 Scenario: Judge opens a closed hearing
 	Given the Judge user has progressed to the Waiting Room page
 	Then the user is on the Waiting Room page

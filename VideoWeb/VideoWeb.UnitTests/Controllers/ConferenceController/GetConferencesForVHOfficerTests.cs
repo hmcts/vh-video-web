@@ -17,11 +17,11 @@ using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
-using LinkedParticipantResponse = VideoWeb.Services.Video.LinkedParticipantResponse;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
-using UserRole = VideoWeb.Services.Video.UserRole;
+using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Controllers.ConferenceController
 {
@@ -62,31 +62,31 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var participants = Builder<ParticipantSummaryResponse>.CreateListOfSize(4)
                 .All()
                 .With(x => x.Username = Internet.Email())
-                .With(x => x.Linked_participants = new List<LinkedParticipantResponse>())
-                .TheFirst(1).With(x => x.User_role = UserRole.Judge)
-                .TheRest().With(x => x.User_role = UserRole.Individual).Build().ToList();
+                .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())
+                .TheFirst(1).With(x => x.UserRole = UserRole.Judge)
+                .TheRest().With(x => x.UserRole = UserRole.Individual).Build().ToList();
 
 
             var conferences = Builder<ConferenceForAdminResponse>.CreateListOfSize(10).All()
                 .With(x => x.Participants = participants)
-                .With(x => x.Scheduled_date_time = DateTime.UtcNow.AddMinutes(-60))
-                .With(x => x.Scheduled_duration = 20)
+                .With(x => x.ScheduledDateTime = DateTime.UtcNow.AddMinutes(-60))
+                .With(x => x.ScheduledDuration = 20)
                 .With(x => x.Status = ConferenceState.NotStarted)
-                .With(x => x.Closed_date_time = null)
+                .With(x => x.ClosedDateTime = null)
                 .Build().ToList();
             conferences.Last().Status = ConferenceState.InSession;
 
             var minutes = -60;
             foreach (var conference in conferences)
             {
-                conference.Closed_date_time = DateTime.UtcNow.AddMinutes(minutes);
+                conference.ClosedDateTime = DateTime.UtcNow.AddMinutes(minutes);
                 minutes += 30;
             }
 
             var closedConferenceTimeLimit = DateTime.UtcNow.AddMinutes(30);
             var expectedConferenceIds = conferences.Where(x =>
                     x.Status != ConferenceState.Closed ||
-                    DateTime.Compare(x.Closed_date_time.GetValueOrDefault(), closedConferenceTimeLimit) < 0)
+                    DateTime.Compare(x.ClosedDateTime.GetValueOrDefault(), closedConferenceTimeLimit) < 0)
                 .Select(x => x.Id).ToList();
 
             _mocker.Mock<IVideoApiClient>()
@@ -94,19 +94,19 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .ReturnsAsync(conferences);
 
             var conferenceWithMessages = conferences.First();
-            var judge = conferenceWithMessages.Participants.Single(x => x.User_role == UserRole.Judge);
+            var judge = conferenceWithMessages.Participants.Single(x => x.UserRole == UserRole.Judge);
             var messages = new List<InstantMessageResponse>
             {
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 5", Time_stamp = DateTime.UtcNow.AddMinutes(-1)},
+                    {From = judge.Username, MessageText = "judge - 5", TimeStamp = DateTime.UtcNow.AddMinutes(-1)},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 4", Time_stamp = DateTime.UtcNow.AddMinutes(-2)},
+                    {From = judge.Username, MessageText = "judge - 4", TimeStamp = DateTime.UtcNow.AddMinutes(-2)},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 3", Time_stamp = DateTime.UtcNow.AddMinutes(-4)},
+                    {From = judge.Username, MessageText = "judge - 3", TimeStamp = DateTime.UtcNow.AddMinutes(-4)},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 2", Time_stamp = DateTime.UtcNow.AddMinutes(-6)},
+                    {From = judge.Username, MessageText = "judge - 2", TimeStamp = DateTime.UtcNow.AddMinutes(-6)},
                 new InstantMessageResponse
-                    {From = judge.Username, Message_text = "judge - 1", Time_stamp = DateTime.UtcNow.AddMinutes(-7)},
+                    {From = judge.Username, MessageText = "judge - 1", TimeStamp = DateTime.UtcNow.AddMinutes(-7)},
             };
 
             foreach (var conference in conferences)
@@ -130,7 +130,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
             var i = 1;
             foreach (var conference in conferencesForUser)
             {
-                conference.CaseName.Should().Be($"Case_name{i++}");
+                conference.CaseName.Should().Be($"CaseName{i++}");
             }
 
             // paused hearings in sessions cannot chat, no need to get history
@@ -156,8 +156,8 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .AddTypedParameters<ConferenceForJudgeResponseMapper>()
                 .Build();
 
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoWeb.Services.Video.ConferenceForJudgeResponse, VideoWeb.Contract.Responses.ConferenceForJudgeResponse>()).Returns(_mocker.Create<ConferenceForJudgeResponseMapper>(parameters));
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoWeb.Services.Video.ConferenceForIndividualResponse, VideoWeb.Contract.Responses.ConferenceForIndividualResponse>()).Returns(_mocker.Create<ConferenceForIndividualResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForJudgeResponse, VideoWeb.Contract.Responses.ConferenceForJudgeResponse>()).Returns(_mocker.Create<ConferenceForJudgeResponseMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<VideoApi.Contract.Responses.ConferenceForIndividualResponse, VideoWeb.Contract.Responses.ConferenceForIndividualResponse>()).Returns(_mocker.Create<ConferenceForIndividualResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceForAdminResponse, ConferenceForVhOfficerResponse>()).Returns(_mocker.Create<ConferenceForVhOfficerResponseMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponseVho>()).Returns(_mocker.Create<ConferenceResponseVhoMapper>(parameters));
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceDetailsResponse, ConferenceResponse>()).Returns(_mocker.Create<ConferenceResponseMapper>(parameters));

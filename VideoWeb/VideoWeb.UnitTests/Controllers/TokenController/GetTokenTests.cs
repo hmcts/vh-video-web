@@ -11,7 +11,7 @@ namespace VideoWeb.UnitTests.Controllers.TokenController
         [Test]
         public void Should_return_ok_token_response()
         { 
-            var result = _tokenController.GetSelfTestToken(participantId);
+            var result = TokenController.GetSelfTestToken(participantId);
 
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();

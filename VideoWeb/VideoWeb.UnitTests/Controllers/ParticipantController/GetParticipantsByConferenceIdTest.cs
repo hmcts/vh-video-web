@@ -14,9 +14,11 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
-using LinkedParticipantResponse = VideoWeb.Services.Video.LinkedParticipantResponse;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
+using VideoApi.Contract.Requests;
+using LinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {
@@ -76,7 +78,7 @@ namespace VideoWeb.UnitTests.Controllers.ParticipantController
         private List<ParticipantSummaryResponse> CreateValidParticipantsSummaryResponse()
         {
             return Builder<ParticipantSummaryResponse>.CreateListOfSize(3).All()
-                .With(x => x.Linked_participants = new List<LinkedParticipantResponse>()).Build().ToList();
+                .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>()).Build().ToList();
         }
     }
 }

@@ -6,7 +6,7 @@ using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
 
@@ -54,13 +54,13 @@ namespace VideoWeb.UnitTests.EventHandlers
             {
                 Id = p.Id,
                 Username = p.Username,
-                Display_name = p.DisplayName,
+                DisplayName = p.DisplayName,
             }).ToList();
 
             var conference = new ConferenceDetailsResponse
             {
                 Id = TestConference.Id,
-                Hearing_id = TestConference.HearingId,
+                HearingId = TestConference.HearingId,
                 Participants = pats
             };
             return conference;

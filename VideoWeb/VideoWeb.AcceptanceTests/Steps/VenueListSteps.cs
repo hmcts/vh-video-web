@@ -8,17 +8,19 @@ using OpenQA.Selenium;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
     public class VenueListSteps : ISteps
     {
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
 
-        public VenueListSteps(Dictionary<User, UserBrowser> browsers, TestContext testContext)
+        public VenueListSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext testContext)
         {
             _browsers = browsers;
             _c = testContext;
@@ -26,7 +28,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         
         public void ProgressToNextPage()
         {
-            SelectVenues(_c.Test.Conference.Participants.First(x => x.User_role == UserRole.Judge).First_name);
+            SelectVenues(_c.Test.Conference.Participants.First(x => x.UserRole == UserRole.Judge).FirstName);
             ConfirmVenue();
         }
         
@@ -56,7 +58,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the VHO selects all the venues")]
         public void SelectAllVenuesAndProceed()
         {
-            var venues = _c.Test.Users.Where(user => user.User_type == UserType.Judge).Aggregate("", (current, user) => current + user.First_name + ",");
+            var venues = _c.Test.Users.Where(user => user.UserType == UserType.Judge).Aggregate("", (current, user) => current + user.FirstName + ",");
             SelectVenues(venues);
             ConfirmVenue();
         }

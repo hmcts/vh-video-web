@@ -7,7 +7,9 @@ using AcceptanceTests.Common.Api.Helpers;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Enums;
+using VideoApi.Contract.Responses;
+using BookingsApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Hooks
 {
@@ -21,7 +23,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         {
             if (context?.Test?.Users == null) return;
             if (context.Test?.Users?.Count == 0) return;
-            if (context.Test.Users.All(x => x.User_type != UserType.Judge)) return;
+            if (context.Test.Users.All(x => x.UserType != UserType.Judge)) return;
             _username = Users.GetJudgeUser(context.Test.Users).Username;
             ClearHearingsForUser(context.Apis.TestApi);
             ClearClosedConferencesForUser(context.Apis.TestApi);
@@ -67,7 +69,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             var response = api.GetConferenceByConferenceId(conferenceId);
             if (!response.IsSuccessful) return Guid.Empty;
             var conference = RequestHelper.Deserialise<ConferenceDetailsResponse>(response.Content);
-            return conference.Hearing_id;
+            return conference.HearingId;
         }
 
         private static bool HearingHasNotBeenDeletedAlready(TestApiManager api, Guid hearingId)

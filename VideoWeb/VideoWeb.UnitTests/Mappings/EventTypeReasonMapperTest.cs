@@ -1,7 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
+using VideoApi.Contract.Enums;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
 
 namespace VideoWeb.UnitTests.Mappings
 {

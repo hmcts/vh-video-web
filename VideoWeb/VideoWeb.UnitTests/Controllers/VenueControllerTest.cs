@@ -6,7 +6,8 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Controllers;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Controllers
 {

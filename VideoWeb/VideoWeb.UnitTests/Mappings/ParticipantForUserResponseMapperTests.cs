@@ -6,7 +6,8 @@ using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -18,54 +19,54 @@ namespace VideoWeb.UnitTests.Mappings
             var participants = new List<ParticipantSummaryResponse>()
             {
                 Builder<ParticipantSummaryResponse>.CreateNew()
-                    .With(x => x.User_role = UserRole.Judge)
-                    .With(x => x.Case_group = "Judge")
+                    .With(x => x.UserRole = UserRole.Judge)
+                    .With(x => x.CaseGroup = "Judge")
                     .With(x => x.Status = ParticipantState.Available)
                     .With(x => x.Id = Guid.NewGuid())
-                    .With(x => x.Linked_participants = new List<LinkedParticipantResponse>())
+                    .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())
                     .Build(),
                 Builder<ParticipantSummaryResponse>.CreateNew()
-                    .With(x => x.User_role = UserRole.Individual)
-                    .With(x => x.Case_group = "Applicant")
+                    .With(x => x.UserRole = UserRole.Individual)
+                    .With(x => x.CaseGroup = "Applicant")
                     .With(x => x.Status = ParticipantState.Joining)
                     .With(x => x.Id = Guid.NewGuid())
-                    .With(x => x.Linked_participants = new List<LinkedParticipantResponse>())
+                    .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())
                     .Build(),
                 Builder<ParticipantSummaryResponse>.CreateNew()
-                    .With(x => x.User_role = UserRole.Representative)
-                    .With(x => x.Case_group = "Applicant")
+                    .With(x => x.UserRole = UserRole.Representative)
+                    .With(x => x.CaseGroup = "Applicant")
                     .With(x => x.Status = ParticipantState.Available)
                     .With(x => x.Id = Guid.NewGuid())
-                    .With(x => x.Linked_participants = new List<LinkedParticipantResponse>())
+                    .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())
                     .Build(),
                 Builder<ParticipantSummaryResponse>.CreateNew()
-                    .With(x => x.User_role = UserRole.Individual)
-                    .With(x => x.Case_group = "Defendant")
+                    .With(x => x.UserRole = UserRole.Individual)
+                    .With(x => x.CaseGroup = "Defendant")
                     .With(x => x.Status = ParticipantState.Available)
                     .With(x => x.Id = Guid.NewGuid())
-                    .With(x => x.Linked_participants = new List<LinkedParticipantResponse>())
+                    .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())
                     .Build(),
-                Builder<ParticipantSummaryResponse>.CreateNew().With(x => x.User_role = UserRole.Representative)
-                    .With(x => x.Case_group = "Defendant")
+                Builder<ParticipantSummaryResponse>.CreateNew().With(x => x.UserRole = UserRole.Representative)
+                    .With(x => x.CaseGroup = "Defendant")
                     .With(x => x.Status = ParticipantState.InConsultation)
                     .With(x => x.Id = Guid.NewGuid())
-                    .With(x => x.Linked_participants = new List<LinkedParticipantResponse>())
+                    .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())
                     .Build(),
-                Builder<ParticipantSummaryResponse>.CreateNew().With(x => x.User_role = UserRole.Individual)
-                    .With(x => x.Case_group = "Defendant")
-                    .With(x => x.Hearing_role = "Interpreter")
+                Builder<ParticipantSummaryResponse>.CreateNew().With(x => x.UserRole = UserRole.Individual)
+                    .With(x => x.CaseGroup = "Defendant")
+                    .With(x => x.HearingRole = "Interpreter")
                     .With(x => x.Status = ParticipantState.Available)
                     .With(x => x.Id = Guid.NewGuid())
-                    .With(x => x.Linked_participants = new List<LinkedParticipantResponse>())
+                    .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>())
                     .Build()
             };
 
-            var interpreter = participants.First(p => p.Hearing_role == "Interpreter");
+            var interpreter = participants.First(p => p.HearingRole == "Interpreter");
             var interpretee = participants.First(p =>
-                p.Case_group == "Defendant" && p.User_role == UserRole.Individual && p.Id != interpreter.Id);
+                p.CaseGroup == "Defendant" && p.UserRole == UserRole.Individual && p.Id != interpreter.Id);
 
-            interpretee.Linked_participants.Add(new LinkedParticipantResponse{Linked_id = interpreter.Id, Type = LinkedParticipantType.Interpreter});
-            interpreter.Linked_participants.Add(new LinkedParticipantResponse{Linked_id = interpretee.Id, Type = LinkedParticipantType.Interpreter});
+            interpretee.LinkedParticipants.Add(new LinkedParticipantResponse{LinkedId = interpreter.Id, Type = LinkedParticipantType.Interpreter});
+            interpreter.LinkedParticipants.Add(new LinkedParticipantResponse{LinkedId = interpretee.Id, Type = LinkedParticipantType.Interpreter});
             
             var response = _sut.Map(participants);
 
@@ -73,13 +74,13 @@ namespace VideoWeb.UnitTests.Mappings
             {
                 var participant = participants[index];
                 response[index].Id.Should().Be(participant.Id);
-                response[index].DisplayName.Should().BeEquivalentTo(participant.Display_name);
-                response[index].Role.Should().BeEquivalentTo(participant.User_role);
+                response[index].DisplayName.Should().BeEquivalentTo(participant.DisplayName);
+                response[index].Role.Should().BeEquivalentTo(participant.UserRole);
                 response[index].Status.ToString().Should().BeEquivalentTo(participant.Status.ToString());
                 response[index].Representee.Should().BeEquivalentTo(participant.Representee);
-                response[index].CaseTypeGroup.Should().BeEquivalentTo(participant.Case_group);
+                response[index].CaseTypeGroup.Should().BeEquivalentTo(participant.CaseGroup);
                 response[index].TiledDisplayName.Should().NotBeNullOrWhiteSpace();
-                response[index].HearingRole.Should().BeEquivalentTo(participant.Hearing_role);
+                response[index].HearingRole.Should().BeEquivalentTo(participant.HearingRole);
             }
             
             var tiledNames = response.Select(x => x.TiledDisplayName).ToList();
