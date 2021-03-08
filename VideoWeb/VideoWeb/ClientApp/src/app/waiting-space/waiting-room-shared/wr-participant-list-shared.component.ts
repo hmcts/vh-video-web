@@ -130,11 +130,11 @@ export abstract class WRParticipantStatusListDirective {
     getHearingRole(participant: ParticipantResponse) {
         switch (participant.hearing_role) {
             case HearingRole.INTERPRETER:
-                var interpreteeName = this.getInterpreteeName(participant.id);
+                const interpreteeName = this.getInterpreteeName(participant.id);
                 return `${participant.hearing_role} for <br><strong>${interpreteeName}</strong>`;
             default:
                 if (participant.representee) {
-                    var hearingRoleText = this.isCaseTypeNone(participant) ? participant.hearing_role : 'Representative';
+                    const hearingRoleText = this.isCaseTypeNone(participant) ? participant.hearing_role : 'Representative';
                     return `${hearingRoleText} for <br><strong>${participant.representee}</strong>`;
                 }
                 return `${participant.hearing_role}`;
