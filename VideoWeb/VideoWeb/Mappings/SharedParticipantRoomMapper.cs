@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using VideoApi.Contract.Responses;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
 
