@@ -17,9 +17,9 @@ namespace VideoWeb.AcceptanceTests.Steps
     public class BrowserSteps
     {
         private readonly TestContext _c;
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
 
-        public BrowserSteps(TestContext context, Dictionary<User, UserBrowser> browsers)
+        public BrowserSteps(TestContext context, Dictionary<UserDto, UserBrowser> browsers)
         {
             _c = context;
             _browsers = browsers;
@@ -90,14 +90,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             return user.Equals("participant");
         }
 
-        private User GetDefaultParticipant()
+        private UserDto GetDefaultParticipant()
         {
             if (_c.Test.Users.Count != 0) return Users.GetDefaultParticipantUser(_c.Test.Users);
             AllocateSingleUser(UserType.Individual);
             return Users.GetDefaultParticipantUser(_c.Test.Users);
         }
 
-        private User GetMatchingDisplayName(string userType)
+        private UserDto GetMatchingDisplayName(string userType)
         {
             if (_c.Test.Users.Count != 0)
                 return Users.GetUserFromDisplayName(_c.Test.Users, userType.Replace(" ", string.Empty));

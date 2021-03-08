@@ -16,9 +16,9 @@ namespace VideoWeb.AcceptanceTests.Steps
     public class FiltersSteps
     {
         private readonly TestContext _c;
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly HearingAlertsSteps _alertsSteps;
-        public FiltersSteps(TestContext c, HearingAlertsSteps alertsSteps, Dictionary<User, UserBrowser> browsers)
+        public FiltersSteps(TestContext c, HearingAlertsSteps alertsSteps, Dictionary<UserDto, UserBrowser> browsers)
         {
             _c = c;
             _alertsSteps = alertsSteps;

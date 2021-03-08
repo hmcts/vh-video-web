@@ -16,11 +16,11 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public sealed class ErrorSteps
     {
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly LoginSteps _loginSteps;
 
-        public ErrorSteps(Dictionary<User, UserBrowser> browsers, TestContext testContext, LoginSteps loginSteps)
+        public ErrorSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext testContext, LoginSteps loginSteps)
         {
             _browsers = browsers;
             _c = testContext;

@@ -10,7 +10,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
     public class TestContext
     {
         public Apis Apis { get; set; }
-        public User CurrentUser { get; set; }
+        public UserDto CurrentUser { get; set; }
         public DriverSetup Driver { get; set; }
         public Test Test { get; set; }
         public TimeZone TimeZone { get; set; }

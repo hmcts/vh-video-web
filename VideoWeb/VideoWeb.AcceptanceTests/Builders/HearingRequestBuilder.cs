@@ -21,12 +21,12 @@ namespace VideoWeb.AcceptanceTests.Builders
                 Questionnaire_not_required = true,
                 Scheduled_date_time = DateTime.UtcNow,
                 Test_type = TestType.Automated,
-                Users = new List<User>(),
+                Users = new List<UserDto>(),
                 Venue = DEFAULT_VENUE
             };
         }
 
-        public HearingRequestBuilder WithUsers(List<User> users)
+        public HearingRequestBuilder WithUsers(List<UserDto> users)
         {
             _request.Users = users;
             return this;
