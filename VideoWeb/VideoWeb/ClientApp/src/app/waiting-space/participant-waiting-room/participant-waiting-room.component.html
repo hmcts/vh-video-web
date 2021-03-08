@@ -6,9 +6,9 @@
   <div class="header-bar">
       <div class="govuk-body" [class]="(!isJohRoom && isPrivateConsultation) ? 'header-content-grid-with-lock': 'header-content-grid'">
           <ng-container *ngIf="!isJohRoom && isPrivateConsultation">
-            <div class="room-title">
+            <h1 class="room-title">
               {{getRoomName()}} 
-            </div>
+            </h1>
             <div class="room-status">
               <span class="lock-badge" [class]="this.participant?.current_room?.locked ? 'locked' : 'unlocked'">{{this.participant?.current_room?.locked ? 'locked' : 'unlocked'}}</span>
             </div>
