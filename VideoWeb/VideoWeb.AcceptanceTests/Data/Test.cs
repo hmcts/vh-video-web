@@ -24,5 +24,6 @@ namespace VideoWeb.AcceptanceTests.Data
         public long TaskId { get; set; }
         public DefaultData TestData { get; set; }
         public List<UserDto> Users { get; set; }
+        public DateTime HearingClosedTime { get; set; }
     }
 }
