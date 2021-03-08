@@ -16,7 +16,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
     [Binding]
     public class DriverHooks
     {
-        private Dictionary<User, UserBrowser> _browsers;
+        private Dictionary<UserDto, UserBrowser> _browsers;
         private readonly IObjectContainer _objectContainer;
 
         public DriverHooks(IObjectContainer objectContainer)
@@ -34,7 +34,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         [BeforeScenario(Order = (int)HooksSequence.InitialiseBrowserHooks)]
         public void InitialiseBrowserContainer()
         {
-            _browsers = new Dictionary<User, UserBrowser>();
+            _browsers = new Dictionary<UserDto, UserBrowser>();
             _objectContainer.RegisterInstanceAs(_browsers);
         }
 
@@ -90,7 +90,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 SignOut(context.CurrentUser);
         }
 
-        private bool SignOutLinkIsPresent(User user)
+        private bool SignOutLinkIsPresent(UserDto user)
         {
             try
             {
@@ -103,7 +103,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             }
         }
 
-        private void SignOut(User user)
+        private void SignOut(UserDto user)
         {
             try
             {
@@ -122,7 +122,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             if (_browsers == null) return;
             if (_browsers.Count.Equals(0))
             {
-                context.CurrentUser = context.Test.Users.Count.Equals(0) ? new User()
+                context.CurrentUser = context.Test.Users.Count.Equals(0) ? new UserDto
                 {
                     User_type = UserType.Individual,
                     Username = "logger"

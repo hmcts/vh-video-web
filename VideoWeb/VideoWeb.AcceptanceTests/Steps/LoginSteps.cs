@@ -16,10 +16,10 @@ namespace VideoWeb.AcceptanceTests.Steps
     {
         private const int ReachedThePageRetries = 2;
         private LoginSharedSteps _loginSharedSteps;
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
 
-        public LoginSteps(Dictionary<User, UserBrowser> browsers, TestContext c)
+        public LoginSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext c)
         {
             _browsers = browsers;
             _c = c;

@@ -18,11 +18,11 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public sealed class ParticipantStatusSteps
     {
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
         private const int MaxRetries = 30;
 
-        public ParticipantStatusSteps(Dictionary<User, UserBrowser> browsers, TestContext testContext)
+        public ParticipantStatusSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext testContext)
         {
             _c = testContext;
             _browsers = browsers;

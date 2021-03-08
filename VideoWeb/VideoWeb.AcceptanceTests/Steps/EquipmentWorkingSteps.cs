@@ -12,11 +12,11 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public class EquipmentWorkingSteps : ISteps
     {
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly CommonSteps _commonSteps;
 
-        public EquipmentWorkingSteps(Dictionary<User, UserBrowser> browsers, TestContext testContext, CommonSteps commonSteps)
+        public EquipmentWorkingSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext testContext, CommonSteps commonSteps)
         {
             _browsers = browsers;
             _c = testContext;

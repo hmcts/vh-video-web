@@ -21,11 +21,11 @@ namespace VideoWeb.AcceptanceTests.Steps
     {
         private const int ExtraTimeAfterReachingWaitingRoom = 3;
         private const int ExtraTimeInWaitingRoomAfterThePause = 10;
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly BrowserSteps _browserSteps;
 
-        public WaitingRoomSteps(Dictionary<User, UserBrowser> browsers, TestContext testContext,
+        public WaitingRoomSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext testContext,
             BrowserSteps browserSteps)
         {
             _browsers = browsers;
@@ -336,7 +336,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             }
         }
 
-        private static IEnumerable<ParticipantDetailsResponse> LoggedInParticipants(Dictionary<User, UserBrowser>.KeyCollection browsersKeys, IReadOnlyCollection<ParticipantDetailsResponse> allParticipants)
+        private static IEnumerable<ParticipantDetailsResponse> LoggedInParticipants(Dictionary<UserDto, UserBrowser>.KeyCollection browsersKeys, IReadOnlyCollection<ParticipantDetailsResponse> allParticipants)
         {
             var participants = (from user in browsersKeys where allParticipants.Any(x => x.Name.ToLower().Contains(user.Last_name.ToLower())) select allParticipants.First(x => x.Name.ToLower().Contains(user.Last_name.ToLower()))).ToList();
             participants.Should().NotBeNullOrEmpty();
