@@ -21,7 +21,6 @@ namespace VideoWeb.Controllers
     [ApiController]
     [Route("callback")]
     [Authorize(AuthenticationSchemes = "Callback")]
-    [AllowAnonymous]
     public class VideoEventsController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
@@ -56,7 +55,7 @@ namespace VideoWeb.Controllers
                 var conferenceId = Guid.Parse(request.ConferenceId);
                 var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
                 {
-                    _logger.LogTrace($"Retrieving conference details for conference: ${conferenceId}");
+                    _logger.LogTrace("Retrieving conference details for conference: ${ConferenceId}", conferenceId);
                     return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
                 });
 
@@ -88,7 +87,8 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, $"ConferenceId: {request.ConferenceId}, ErrorCode: {e.StatusCode}");
+                _logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", request.ConferenceId,
+                    e.StatusCode);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }

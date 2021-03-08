@@ -31,14 +31,19 @@ namespace VideoWeb.Controllers
 
         [HttpGet("{conferenceId}/rooms/interpreter/{participantId}")]
         [SwaggerOperation(OperationId = "GetInterpreterRoomForParticipant")]
-        [ProducesResponseType(typeof(InterpreterRoom), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(SharedParticipantRoom), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetInterpreterRoomForParticipant(Guid conferenceId, Guid participantId)
+        public async Task<IActionResult> GetInterpreterRoomForParticipant(Guid conferenceId, Guid participantId, [FromQuery] string participantType = "Civilian")
         {
             try
             {
-                var room = await _videoApiClient.GetInterpreterRoomForParticipantAsync(conferenceId, participantId);
-                var mapper = _mapperFactory.Get<InterpreterRoomResponse, Guid, InterpreterRoom>();
+                var room = participantType switch
+                {
+                    "Witness" => await _videoApiClient.GetWitnessRoomForParticipantAsync(conferenceId,
+                        participantId),
+                    _ => await _videoApiClient.GetInterpreterRoomForParticipantAsync(conferenceId, participantId)
+                };
+                var mapper = _mapperFactory.Get<SharedParticipantRoomResponse, Guid, SharedParticipantRoom>();
                 var response = mapper.Map(room, participantId);
                 return Ok(response);
             }

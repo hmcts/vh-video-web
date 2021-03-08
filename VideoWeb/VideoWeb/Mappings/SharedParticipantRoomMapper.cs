@@ -6,14 +6,14 @@ using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
-    public class InterpreterRoomMapper : IMapTo<InterpreterRoomResponse, Guid, InterpreterRoom>
+    public class SharedParticipantRoomMapper : IMapTo<SharedParticipantRoomResponse, Guid, SharedParticipantRoom>
     {
-        public InterpreterRoom Map(InterpreterRoomResponse input, Guid participantId)
+        public SharedParticipantRoom Map(SharedParticipantRoomResponse input, Guid participantId)
         {
             var node = input.PexipNode.Replace("https://", string.Empty);
             var tilePosition = new String(input.Label.Where(char.IsDigit).ToArray());
             var tileDisplayName = $"I{tilePosition};{input.Label};{participantId}";
-            return new InterpreterRoom
+            return new SharedParticipantRoom
             {
                 PexipNode = node,
                 ParticipantJoinUri = input.ParticipantJoinUri,

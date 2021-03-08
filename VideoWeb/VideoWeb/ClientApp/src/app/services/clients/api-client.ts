@@ -1851,6 +1851,87 @@ export class ApiClient {
     }
 
     /**
+     * Check Service Health
+     * @return Success
+     */
+    checkServiceHealth2(): Observable<HealthCheckResponse> {
+        let url_ = this.baseUrl + '/health/liveness';
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({
+                Accept: 'application/json'
+            })
+        };
+
+        return this.http
+            .request('get', url_, options_)
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processCheckServiceHealth2(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processCheckServiceHealth2(<any>response_);
+                        } catch (e) {
+                            return <Observable<HealthCheckResponse>>(<any>_observableThrow(e));
+                        }
+                    } else return <Observable<HealthCheckResponse>>(<any>_observableThrow(response_));
+                })
+            );
+    }
+
+    protected processCheckServiceHealth2(response: HttpResponseBase): Observable<HealthCheckResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result200: any = null;
+                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result200 = HealthCheckResponse.fromJS(resultData200);
+                    return _observableOf(result200);
+                })
+            );
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result500: any = null;
+                    let resultData500 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result500 = HealthCheckResponse.fromJS(resultData500);
+                    return throwException('Server Error', status, _responseText, _headers, result500);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<HealthCheckResponse>(<any>null);
+    }
+
+    /**
      * Get all the instant messages for a conference for a participant
      * @param conferenceId Id of the conference
      * @param participantId the participant in the conference
@@ -3802,14 +3883,21 @@ export class ApiClient {
     }
 
     /**
+     * @param participantType (optional)
      * @return Success
      */
-    getInterpreterRoomForParticipant(conferenceId: string, participantId: string): Observable<InterpreterRoom> {
-        let url_ = this.baseUrl + '/conferences/{conferenceId}/rooms/interpreter/{participantId}';
+    getInterpreterRoomForParticipant(
+        conferenceId: string,
+        participantId: string,
+        participantType: string | undefined
+    ): Observable<SharedParticipantRoom> {
+        let url_ = this.baseUrl + '/conferences/{conferenceId}/rooms/interpreter/{participantId}?';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
         if (participantId === undefined || participantId === null) throw new Error("The parameter 'participantId' must be defined.");
         url_ = url_.replace('{participantId}', encodeURIComponent('' + participantId));
+        if (participantType === null) throw new Error("The parameter 'participantType' cannot be null.");
+        else if (participantType !== undefined) url_ += 'participantType=' + encodeURIComponent('' + participantType) + '&';
         url_ = url_.replace(/[?&]$/, '');
 
         let options_: any = {
@@ -3833,14 +3921,14 @@ export class ApiClient {
                         try {
                             return this.processGetInterpreterRoomForParticipant(<any>response_);
                         } catch (e) {
-                            return <Observable<InterpreterRoom>>(<any>_observableThrow(e));
+                            return <Observable<SharedParticipantRoom>>(<any>_observableThrow(e));
                         }
-                    } else return <Observable<InterpreterRoom>>(<any>_observableThrow(response_));
+                    } else return <Observable<SharedParticipantRoom>>(<any>_observableThrow(response_));
                 })
             );
     }
 
-    protected processGetInterpreterRoomForParticipant(response: HttpResponseBase): Observable<InterpreterRoom> {
+    protected processGetInterpreterRoomForParticipant(response: HttpResponseBase): Observable<SharedParticipantRoom> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
@@ -3856,7 +3944,7 @@ export class ApiClient {
                 _observableMergeMap(_responseText => {
                     let result200: any = null;
                     let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result200 = InterpreterRoom.fromJS(resultData200);
+                    result200 = SharedParticipantRoom.fromJS(resultData200);
                     return _observableOf(result200);
                 })
             );
@@ -3882,7 +3970,7 @@ export class ApiClient {
                 })
             );
         }
-        return _observableOf<InterpreterRoom>(<any>null);
+        return _observableOf<SharedParticipantRoom>(<any>null);
     }
 }
 
@@ -6505,13 +6593,13 @@ export interface IConferenceEventRequest {
     phone?: string | undefined;
 }
 
-export class InterpreterRoom implements IInterpreterRoom {
+export class SharedParticipantRoom implements ISharedParticipantRoom {
     pexip_node?: string | undefined;
     participant_join_uri?: string | undefined;
     display_name?: string | undefined;
     tile_display_name?: string | undefined;
 
-    constructor(data?: IInterpreterRoom) {
+    constructor(data?: ISharedParticipantRoom) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
@@ -6528,9 +6616,9 @@ export class InterpreterRoom implements IInterpreterRoom {
         }
     }
 
-    static fromJS(data: any): InterpreterRoom {
+    static fromJS(data: any): SharedParticipantRoom {
         data = typeof data === 'object' ? data : {};
-        let result = new InterpreterRoom();
+        let result = new SharedParticipantRoom();
         result.init(data);
         return result;
     }
@@ -6545,7 +6633,7 @@ export class InterpreterRoom implements IInterpreterRoom {
     }
 }
 
-export interface IInterpreterRoom {
+export interface ISharedParticipantRoom {
     pexip_node?: string | undefined;
     participant_join_uri?: string | undefined;
     display_name?: string | undefined;
