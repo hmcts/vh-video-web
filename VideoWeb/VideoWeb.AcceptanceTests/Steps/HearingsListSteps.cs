@@ -53,7 +53,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user clicks on Consultation Room link")]
         public void WhenTheUserClicksOnConsultationRoomLink()
         {
-            var closeTime = _c.TimeZone.Adjust(DateTime.Now.AddMinutes(30)).ToString(DateFormats.WaitingRoomPageTime);
+            var closeTime = _c.TimeZone.Adjust(_c.Test.HearingClosedTime.AddMinutes(30)).ToString(DateFormats.WaitingRoomPageTime);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.ConsultationRoomLink(closeTime)).Click();
         }
 
