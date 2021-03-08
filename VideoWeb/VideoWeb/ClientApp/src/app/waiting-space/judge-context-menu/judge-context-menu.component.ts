@@ -46,8 +46,7 @@ export class JudgeContextMenuComponent {
 
     isClickedOutsideOfOpenMenu(event: Event) {
         const outsideElement = !this.elementRef.nativeElement.contains(event.target);
-        const isClickedOutsideOfOpenElement = outsideElement && this.isDroppedDown;
-        return isClickedOutsideOfOpenElement;
+        return outsideElement && this.isDroppedDown;
     }
 
     lowerParticipantHand() {

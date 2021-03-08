@@ -101,13 +101,11 @@ export class StartPrivateConsultationComponent {
 
     getParticipantStatus(participant: ParticipantResponse): string {
         if (this.getParticipantDisabled(participant)) {
-            const translatedtext = this.translateService.instant('start-private-consultation.unavailable');
-            return translatedtext;
+            return this.translateService.instant('start-private-consultation.unavailable');
         }
         if (participant.status === ParticipantStatus.InConsultation && participant.current_room != null) {
-            const translatedtext = this.translateService.instant('start-private-consultation.in');
             return (
-                translatedtext +
+                this.translateService.instant('start-private-consultation.in') +
                 ' ' +
                 this.camelToSpaced(
                     participant.current_room.label
@@ -121,13 +119,11 @@ export class StartPrivateConsultationComponent {
 
     getEndpointStatus(endpoint: VideoEndpointResponse): string {
         if (this.getEndpointDisabled(endpoint)) {
-            const translatedtext = this.translateService.instant('start-private-consultation.unavailable');
-            return translatedtext;
+            return this.translateService.instant('start-private-consultation.unavailable');
         }
         if (endpoint.status === EndpointStatus.InConsultation && endpoint.current_room != null) {
-            const translatedtext = this.translateService.instant('start-private-consultation.in');
             return (
-                translatedtext +
+                this.translateService.instant('start-private-consultation.in') +
                 ' ' +
                 this.camelToSpaced(endpoint.current_room.label.replace('ParticipantConsultationRoom', 'MeetingRoom')).toLowerCase() +
                 (endpoint.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
