@@ -52,16 +52,16 @@
                         <ng-container *ngIf="!participant.isJudge">
                             <img *ngIf="participant.isMicRemoteMuted()"
                                  appTooltip
-                                 [text]="participant.isMicRemoteMuted() ? 'Unlock mute' : 'Mute participant'"
+                                 text="participant.isMicRemoteMuted() ? '{{ 'participants-panel.unmute-lock' | translate }}' : '{{ 'participants-panel.mute-participant' | translate }}'"
                                  colour="grey"
                                  [src]="participant.isMicRemoteMuted() ? '/assets/images/mic_remote_mute.png' : '/assets/images/mic.png'"
                                  class="panel-icon"
-                                 [alt]="participant.isMicRemoteMuted() ? 'Microphone muted icon' : 'Microphone on icon'"
+                                 alt="participant.isMicRemoteMuted() ? '{{ 'participants-panel.microphone-muted-icon' | translate }}' : '{{ 'participants-panel.microphone-on-icon' | translate }}'"
                                  (click)="toggleMuteParticipant(participant); $event.stopPropagation()" />
                             <span *ngIf="!participant.isMicRemoteMuted()"
                                   style="padding-top: 0.3vh;"
                                   appTooltip
-                                  [text]="participant.isLocalMicMuted() ? 'Participant muted' : 'Mute participant'"
+                                  text="participant.isLocalMicMuted() ? '{{ 'participants-panel.participant-muted' | translate }}' : '{{ 'participants-panel.mute-participant' | translate }}'"
                                   colour="grey"
                                   class="fas fa-microphone icon-button"
                                   [class]="{ red: participant.isLocalMicMuted() }"
@@ -72,7 +72,7 @@
                     <div *ngIf="participant.isWitness && !participant.isInHearing()">
                         <span *ngIf="!participant.transferringIn"
                               appTooltip
-                              [text]="participant.isAvailable() ? 'Call witness' : 'Witness unavailable'"
+                              text="participant.isAvailable() ? '{{ 'participants-panel.call-witness' | translate }}' : '{{ 'participants-panel.witness-unavailable' | translate }}'"
                               [colour]="participant.isAvailable() ? 'green' : 'grey'"
                               class="fas icon-button"
                               [class]="{
@@ -82,7 +82,7 @@
               }"
                               (click)="callWitnessIntoHearing(participant); $event.stopPropagation()">
                         </span>
-                        <div *ngIf="participant.transferringIn" class="yellow">Joining...</div>
+                        <div *ngIf="participant.transferringIn" class="yellow">{{ 'participants-panel.joining1' | translate }}</div>
                     </div>
                 </div>
 
@@ -113,7 +113,7 @@
                         <span class="far fa-thumbtack" [class]="{ yellow: participant.hasSpotlight() }"></span>
                     </div>
                     <div *ngIf="isParticipantInHearing(participant) && participant.isLocalCameraOff()" class="icon-button no-click">
-                        <span appTooltip text="Camera off" colour="red" class="far fa-video-slash red"> </span>
+                        <span appTooltip text="{{ 'participants-panel.camera-off' | translate }}" colour="red" class="far fa-video-slash red"> </span>
                     </div>
                 </div>
 
