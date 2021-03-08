@@ -350,4 +350,27 @@ describe('JudgeParticipantStatusListComponentWithInterpreter', () => {
 
         expect(interpreteeName).toEqual(interpretee.name);
     });
+
+    fit('getHearingRole should return contain Interpreter for when displaying an Interpreter', () => {
+        const interpreter = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.INTERPRETER);
+        const interpretee = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON);
+        const hearingRoleText = component.getHearingRole(interpreter);
+
+        expect(hearingRoleText).toEqual(`${interpreter.hearing_role} for <br><strong>${interpretee.name}</strong>`);
+    });
+
+    fit('getHearingRole should return contain Representative for when displaying a participant with Representee set and a case type set', () => {
+        const representative = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.REPRESENTATIVE);
+        const litigant = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON);
+        const hearingRoleText = component.getHearingRole(representative);
+
+        expect(hearingRoleText).toEqual(`${representative.hearing_role} for <br><strong>${representative.representee}</strong>`);
+    });
+
+    fit('getHearingRole should return contain the hearing role when displaying a participant', () => {
+        const litigant = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON);
+        const hearingRoleText = component.getHearingRole(litigant);
+
+        expect(hearingRoleText).toEqual(`${litigant.hearing_role}`);
+    });
 });
