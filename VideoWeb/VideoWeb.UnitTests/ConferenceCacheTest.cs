@@ -33,6 +33,20 @@ namespace VideoWeb.UnitTests
             await _conferenceCache.AddConferenceAsync(conference);
             _memoryCache.Get(conference.Id).Should().NotBeNull();
         }
+        
+        [Test]
+        public async Task Should_update_conference_to_cache()
+        {
+            var newVenueName = "Updated Name for Test";
+            var conference = CreateConferenceResponse();
+            await _conferenceCache.AddConferenceAsync(conference);
+            var cacheModel = _memoryCache.Get(conference.Id).As<Conference>();
+            cacheModel.HearingVenueName = newVenueName;
+            await _conferenceCache.UpdateConferenceAsync(cacheModel);
+            var updatedCacheModel = _memoryCache.Get(conference.Id).As<Conference>();
+            updatedCacheModel.HearingVenueName.Should().Be(newVenueName);
+
+        }
 
         [Test]
         public async Task GetOrAddConferenceAsync_should_return_conference_when_cache_contains_key()

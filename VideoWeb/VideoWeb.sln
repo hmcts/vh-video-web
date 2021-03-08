@@ -15,8 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.Common", "VideoWeb
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.Contract", "VideoWeb.Contract\VideoWeb.Contract.csproj", "{6F865A99-C586-4FF1-B102-81F87C686578}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.Services", "VideoWeb.Services\VideoWeb.Services.csproj", "{473B7E77-C3AC-4131-9026-A9EA6107C0B9}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.AcceptanceTests", "VideoWeb.AcceptanceTests\VideoWeb.AcceptanceTests.csproj", "{E901FAB5-4429-4A0B-BEF0-058610D0EDB6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.EventHub", "VideoWeb.EventHub\VideoWeb.EventHub.csproj", "{371E895D-1CDC-4872-BCCC-7199DD3AA519}"
@@ -49,10 +47,6 @@ Global
 		{6F865A99-C586-4FF1-B102-81F87C686578}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F865A99-C586-4FF1-B102-81F87C686578}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F865A99-C586-4FF1-B102-81F87C686578}.Release|Any CPU.Build.0 = Release|Any CPU
-		{473B7E77-C3AC-4131-9026-A9EA6107C0B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{473B7E77-C3AC-4131-9026-A9EA6107C0B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{473B7E77-C3AC-4131-9026-A9EA6107C0B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{473B7E77-C3AC-4131-9026-A9EA6107C0B9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E901FAB5-4429-4A0B-BEF0-058610D0EDB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E901FAB5-4429-4A0B-BEF0-058610D0EDB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E901FAB5-4429-4A0B-BEF0-058610D0EDB6}.Release|Any CPU.ActiveCfg = Release|Any CPU

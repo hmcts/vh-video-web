@@ -18,7 +18,11 @@ namespace VideoWeb.Common.Caching
         public async Task AddConferenceAsync(ConferenceDetailsResponse conferenceResponse)
         {
             var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse);
-            
+            await UpdateConferenceAsync(conference);
+        }
+
+        public async Task UpdateConferenceAsync(Conference conference)
+        {
             await _memoryCache.GetOrCreateAsync(conference.Id, entry =>
             {
                 entry.SlidingExpiration = TimeSpan.FromHours(4);
