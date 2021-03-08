@@ -61,6 +61,17 @@ describe('LinkedParticipantPanelModel', () => {
         expect(model.hasParticipant(patId)).toBeFalsy();
     });
 
+    it('should return false when none of the participants are witnesses', () => {
+        createLinkedModel();
+        expect(model.isWitness).toBeFalsy();
+    });
+
+    it('should return true when one of the participants is a witness', () => {
+        participants = new ConferenceTestData().getListOfLinkedParticipants(true);
+        createLinkedModel();
+        expect(model.isWitness).toBeTruthy();
+    });
+
     function createLinkedModel() {
         const pats = participants.map(p => new ParticipantPanelModel(p));
         const roomLabel = 'Interpreter1';

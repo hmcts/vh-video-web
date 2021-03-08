@@ -9,9 +9,9 @@ using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoApi.Contract.Responses;
 
-namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceFilterTests
+namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttributeTests
 {
-    public class when_action_has_conferenceId : CheckParticipantCanAccessConferenceFilterTest
+    public class when_action_has_participantId_and_conferenceId : CheckParticipantCanAccessConferenceAttributeTest
     {
         [TestCaseSource(nameof(AllNonVhoUsers))]
         public async Task should_return_404_if_conference_does_not_exist(string appRole)
@@ -19,6 +19,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceFilte
             // arrange
             var actionArguments = new Dictionary<string, object>
             {
+                {"participantId", _participantId},
                 {"conferenceId", _conferenceId}
             };
 
@@ -44,18 +45,19 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceFilte
                 .Should().Be(message404);
         }
 
+
         [TestCaseSource(nameof(AllNonVhoUsers))]
         public async Task should_return_401_if_conference_exists_but_user_does_not_belong_to_it(string appRole)
         {
             // arrange
             var actionArguments = new Dictionary<string, object>
             {
+                {"participantId", _participantId},
                 {"conferenceId", _conferenceId}
             };
 
             var user = _userBuilder.WithUsername(USER_NAME).WithRole(appRole).Build();
 
-            var participantId = Guid.NewGuid();
             var conference = new Conference
             {
                 // conference exists...
@@ -66,7 +68,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceFilte
                     {
                         // ...but user does not belong to it
                         Username = "Username",
-                        Id = participantId
+                        Id = Guid.NewGuid()
                     }
                 }
             };
@@ -97,6 +99,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceFilte
             // arrange
             var actionArguments = new Dictionary<string, object>
             {
+                {"participantId", _participantId},
                 {"conferenceId", _conferenceId}
             };
 

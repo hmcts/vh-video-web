@@ -15,6 +15,7 @@ using VideoWeb.Helpers;
 using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
+using VideoWeb.Middleware;
 
 namespace VideoWeb.Controllers
 {
@@ -50,6 +51,7 @@ namespace VideoWeb.Controllers
         /// <param name="conferenceId">Id of the conference</param>
         /// <param name="participantId">the participant in the conference</param>
         /// <returns>List of instant messages involving participant in a conference</returns>
+        [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
         [HttpGet("{conferenceId}/instantmessages/participant/{participantId}")]
         [SwaggerOperation(OperationId = "GetConferenceInstantMessageHistoryForParticipant")]
         [ProducesResponseType(typeof(List<ChatResponse>), (int)HttpStatusCode.OK)]
@@ -129,6 +131,7 @@ namespace VideoWeb.Controllers
         /// <param name="conferenceId">Id of the conference</param>
         /// <param name="participantId">the participant in the conference</param>
         /// <returns>Number of unread message</returns>
+        [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
         [HttpGet("{conferenceId}/instantmessages/unread/participant/{participantId}")]
         [SwaggerOperation(OperationId = "GetNumberOfUnreadAdminMessagesForConferenceByParticipant")]
         [ProducesResponseType(typeof(UnreadAdminMessageResponse), (int)HttpStatusCode.OK)]

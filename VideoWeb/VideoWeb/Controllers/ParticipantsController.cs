@@ -21,6 +21,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using VideoApi.Contract.Enums;
+using VideoWeb.Middleware;
 
 namespace VideoWeb.Controllers
 {
@@ -49,6 +50,7 @@ namespace VideoWeb.Controllers
             _mapperFactory = mapperFactory;
         }
 
+        [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
         [HttpGet("{conferenceId}/participants/{participantId}/selftestresult")]
         [SwaggerOperation(OperationId = "GetTestCallResult")]
         [ProducesResponseType(typeof(TestCallScoreResponse), (int)HttpStatusCode.OK)]
@@ -68,6 +70,7 @@ namespace VideoWeb.Controllers
             }
         }
 
+        [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
         [HttpPost("{conferenceId}/participantstatus")]
         [SwaggerOperation(OperationId = "UpdateParticipantStatus")]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -164,6 +167,7 @@ namespace VideoWeb.Controllers
             }
         }
 
+        [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
         [HttpPost("{conferenceId}/participants/{participantId}/participantDisplayName")]
         [SwaggerOperation(OperationId = "UpdateParticipantDisplayName")]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -238,6 +242,7 @@ namespace VideoWeb.Controllers
             }
         }
 
+        [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
         [HttpGet("{conferenceId}/participants")]
         [SwaggerOperation(OperationId = "GetParticipantsByConferenceId")]
         [ProducesResponseType(typeof(List<ParticipantForUserResponse>), (int)HttpStatusCode.OK)]
