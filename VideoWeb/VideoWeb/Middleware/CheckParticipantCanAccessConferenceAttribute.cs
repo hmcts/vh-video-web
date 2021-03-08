@@ -10,14 +10,14 @@ using VideoWeb.Services.Video;
 
 namespace VideoWeb.Middleware
 {
-    public class CheckParticipantCanAccessConferenceFilter : IAsyncActionFilter
+    public class CheckParticipantCanAccessConferenceAttribute : ActionFilterAttribute
     {
-        private readonly ILogger<CheckParticipantCanAccessConferenceFilter> _logger;
+        private readonly ILogger<CheckParticipantCanAccessConferenceAttribute> _logger;
         private readonly IConferenceCache _conferenceCache;
         private readonly IVideoApiClient _videoApiClient;
 
-        public CheckParticipantCanAccessConferenceFilter(
-            ILogger<CheckParticipantCanAccessConferenceFilter> logger,
+        public CheckParticipantCanAccessConferenceAttribute(
+            ILogger<CheckParticipantCanAccessConferenceAttribute> logger,
             IConferenceCache conferenceCache,
             IVideoApiClient videoApiClient)
         {
@@ -26,7 +26,7 @@ namespace VideoWeb.Middleware
             _videoApiClient = videoApiClient;
         }
 
-        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+        public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             if (context.HttpContext.User.IsInRole(AppRoles.VhOfficerRole))
             {
