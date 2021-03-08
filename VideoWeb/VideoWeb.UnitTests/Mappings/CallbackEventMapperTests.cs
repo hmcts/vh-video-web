@@ -62,7 +62,7 @@ namespace VideoWeb.UnitTests.Mappings
             var result =
                 _sut.Map(conferenceEventRequest, testConference);
             result.Should().NotBeNull();
-            result.EventType.Should().Be(EventType.EndpointJoined);
+            result.EventType.Should().Be(EventHub.Enums.EventType.EndpointJoined);
         }
 
         [Test]
@@ -78,7 +78,7 @@ namespace VideoWeb.UnitTests.Mappings
 
             var result = _sut.Map(conferenceEventRequest, testConference);
             result.Should().NotBeNull();
-            result.EventType.Should().Be(EventType.EndpointDisconnected);
+            result.EventType.Should().Be(EventHub.Enums.EventType.EndpointDisconnected);
         }
         
         [Test]
@@ -94,7 +94,7 @@ namespace VideoWeb.UnitTests.Mappings
 
             var result = _sut.Map(conferenceEventRequest, testConference);
             result.Should().NotBeNull();
-            result.EventType.Should().Be(EventType.EndpointTransfer);
+            result.EventType.Should().Be(EventHub.Enums.EventType.EndpointTransfer);
         }
 
         private static Conference CreateTestConferenceForEndpointEvent()

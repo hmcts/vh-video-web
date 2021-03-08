@@ -62,7 +62,7 @@ namespace VideoWeb.Controllers
 
                 var callbackEventMapper = _mapperFactory.Get<ConferenceEventRequest, Conference, CallbackEvent>();
                 var callbackEvent = callbackEventMapper.Map(request, conference);
-                request.EventType = (VideoApi.Contract.Enums.EventType)Enum.Parse<EventType>(callbackEvent.EventType.ToString());
+                request.EventType = Enum.Parse<VideoApi.Contract.Enums.EventType>(callbackEvent.EventType.ToString());
 
                 if (IsRoomEvent(request, conference, out var roomId))
                 {
