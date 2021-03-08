@@ -63,6 +63,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.ConfirmClosePopup).Displayed.Should().BeTrue();
             }
             _browsers[_c.CurrentUser].Click(HearingRoomPage.ConfirmCloseButton);
+            _c.Test.HearingClosedTime = DateTime.Now;
             Thread.Sleep(TimeSpan.FromSeconds(PauseCloseTransferDuration));
         }
 
