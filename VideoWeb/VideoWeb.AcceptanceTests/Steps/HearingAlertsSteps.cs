@@ -28,10 +28,10 @@ namespace VideoWeb.AcceptanceTests.Steps
     public sealed class HearingAlertsSteps
     {
         private const int TimeoutForCheckboxToNotBeEnabled = 10;
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
 
-        public HearingAlertsSteps(Dictionary<User, UserBrowser> browsers, TestContext context)
+        public HearingAlertsSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext context)
         {
             _browsers = browsers;
             _c = context;

@@ -20,10 +20,10 @@ namespace VideoWeb.AcceptanceTests.Steps
     {
         private const int ExtraTimeoutToLoadVideoFromKinly = 60;
         private const int VideoFinishedPlayingTimeout = 120;
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
 
-        public PracticeVideoHearingSteps(Dictionary<User, UserBrowser> browsers, TestContext c)
+        public PracticeVideoHearingSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext c)
         {
             _browsers = browsers;
             _c = c;

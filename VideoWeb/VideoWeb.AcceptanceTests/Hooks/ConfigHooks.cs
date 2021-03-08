@@ -86,7 +86,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 NewConferenceId = Guid.Empty,
                 NewHearingId = Guid.Empty,
                 TestData = new DefaultDataManager().SerialiseTestData(),
-                Users = new List<User>()
+                Users = new List<UserDto>()
             };
         }
 

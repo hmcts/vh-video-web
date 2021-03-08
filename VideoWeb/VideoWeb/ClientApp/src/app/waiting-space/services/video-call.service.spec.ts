@@ -1,6 +1,6 @@
 import { Guid } from 'guid-typescript';
 import { of } from 'rxjs';
-import { ApiClient, HearingLayout, StartHearingRequest } from 'src/app/services/clients/api-client';
+import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { UserMediaService } from 'src/app/services/user-media.service';
@@ -25,7 +25,8 @@ describe('VideoCallService', () => {
             'pauseVideoHearing',
             'endVideoHearing',
             'callWitness',
-            'dismissWitness'
+            'dismissWitness',
+            'getInterpreterRoomForParticipant'
         ]);
 
         userMediaService = jasmine.createSpyObj<UserMediaService>('UserMediaService', [
@@ -315,5 +316,24 @@ describe('VideoCallService', () => {
 
         // Assert
         expect(pexipSpy.stopPresentation).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call api to get interpreter room', async () => {
+        const conferenceId = Guid.create().toString();
+        const participantId = Guid.create().toString();
+        apiClient.getInterpreterRoomForParticipant.and.returnValue(of(new SharedParticipantRoom({ display_name: 'Interpreter1' })));
+
+        await service.retrieveInterpreterRoom(conferenceId, participantId);
+
+        expect(apiClient.getInterpreterRoomForParticipant).toHaveBeenCalledWith(conferenceId, participantId, 'Civilian');
+    });
+
+    it('should call api to get interpreter room with participant type witness', async () => {
+        const conferenceId = Guid.create().toString();
+        const participantId = Guid.create().toString();
+        apiClient.getInterpreterRoomForParticipant.and.returnValue(of(new SharedParticipantRoom({ display_name: 'Interpreter1' })));
+        await service.retrieveWitnessInterpreterRoom(conferenceId, participantId);
+
+        expect(apiClient.getInterpreterRoomForParticipant).toHaveBeenCalledWith(conferenceId, participantId, 'Witness');
     });
 });

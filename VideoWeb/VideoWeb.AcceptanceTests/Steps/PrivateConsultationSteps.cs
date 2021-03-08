@@ -22,13 +22,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         private const int SecondsWaitToCallAndAnswer = 15;
         private const int SecondsWaitForTransfer = 5;
         private const int ExtraTimeToConnectTheParticipantsInSaucelabs = 300;
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly BrowserSteps _browserSteps;
         private readonly ProgressionSteps _progressionSteps;
         private const int MaxRetries = 30;
 
-        public PrivateConsultationSteps(Dictionary<User, UserBrowser> browsers, TestContext testContext, BrowserSteps browserSteps, ProgressionSteps progressionSteps)
+        public PrivateConsultationSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext testContext, BrowserSteps browserSteps, ProgressionSteps progressionSteps)
         {
             _browsers = browsers;
             _c = testContext;
@@ -63,6 +63,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Click(WaitingRoomPage.StartPrivateMeetingButton);
             _browsers[_c.CurrentUser].ClickCheckbox(WaitingRoomPage.InviteCheckboxFor(participant.Display_name));
             _browsers[_c.CurrentUser].Click(WaitingRoomPage.ContinueButton);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateConsultationRoomPage.IncomingFeed);
         }
 
         [When(@"they attempt to start a private consultation with no other participants")]

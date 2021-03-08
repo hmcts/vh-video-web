@@ -19,11 +19,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         private const int SecondsWaitToCallAndAnswer = 5;
         private const int SecondsDelayBeforeCallingTheParticipant = 5;
         private const int Retries = 60;
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly BrowserSteps _browserSteps;
 
-        public VideoHearingsOfficerCallSteps(Dictionary<User, UserBrowser> browsers, TestContext c, BrowserSteps browserSteps)
+        public VideoHearingsOfficerCallSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext c, BrowserSteps browserSteps)
         {
             _browsers = browsers;
             _c = c;
@@ -53,7 +53,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browserSteps.GivenInTheUsersBrowser(user);
             Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitToCallAndAnswer));
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateCallPopupPage.IncomingCallMessage).Text.Should().Contain("VHO");
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateCallPopupPage.IncomingCallMessage).Text.Should().Contain("Video hearings officer");
             _browsers[_c.CurrentUser].Click(PrivateCallPopupPage.AcceptPrivateCall);
         }
 

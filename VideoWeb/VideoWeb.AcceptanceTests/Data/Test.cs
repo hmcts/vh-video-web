@@ -23,6 +23,6 @@ namespace VideoWeb.AcceptanceTests.Data
         public bool SelfTestJourney { get; set; } = false;
         public long TaskId { get; set; }
         public DefaultData TestData { get; set; }
-        public List<User> Users { get; set; }
+        public List<UserDto> Users { get; set; }
     }
 }

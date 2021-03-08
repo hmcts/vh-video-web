@@ -6,9 +6,9 @@ namespace VideoWeb.AcceptanceTests.Helpers
 {
     public static class UserDetailsResponseToUsersMapper
     {
-        public static List<User> Map(List<UserDetailsResponse> usersResponses)
+        public static List<UserDto> Map(List<UserDetailsResponse> usersResponses)
         {
-            return usersResponses.Select(user => new User()
+            return usersResponses.Select(user => new UserDto()
                 {
                     Application = user.Application,
                     Contact_email = user.Contact_email,
@@ -26,9 +26,9 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 .ToList();
         }
 
-        public static List<User> Map(UserDetailsResponse user)
+        public static List<UserDto> Map(UserDetailsResponse user)
         {
-            var u = new User()
+            var u = new UserDto()
             {
                 Application = user.Application,
                 Contact_email = user.Contact_email,
@@ -43,7 +43,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 User_type = user.User_type,
                 Username = user.Username
             };
-            return new List<User>(){u};
+            return new List<UserDto>(){u};
         }
     }
 }
