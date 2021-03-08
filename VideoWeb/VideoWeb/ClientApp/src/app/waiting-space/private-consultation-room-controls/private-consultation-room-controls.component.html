@@ -5,7 +5,7 @@
              id="toggle-participants-panel"
              appTooltip
              *ngIf="isJudge && !isPrivateConsultation"
-             text="Participants Panel"
+             text="{{ 'private-consultation-room-controls.participants-panel' | translate }}"
              colour="grey"
              (click)="togglePanelStatus('Participants')">
             <span class="far fa-users"></span>
@@ -15,7 +15,7 @@
              id="toggle-chat-panel"
              appTooltip
              *ngIf="isJudge && !isPrivateConsultation"
-             text="Chat Panel"
+             text="{{ 'private-consultation-room-controls.chat-panel' | translate }}"
              colour="grey"
              (click)="togglePanelStatus('Chat')">
             <span class="far fa-comment"></span>
@@ -24,21 +24,21 @@
 
         <img *ngIf="!screenShareStream && canShowScreenShareButton"
              appTooltip
-             text="Share my screen"
+             text="{{ 'private-consultation-room-controls.share-my-screen' | translate }}"
              colour="grey"
              id="start-screenshare-img"
              class="icon-button"
              src="/assets/images/share-screen.png"
-             alt="Start sharing screen"
+             alt="{{ 'private-consultation-room-controls.start-sharing-screen' | translate }}"
              (click)="startScreenShare()" />
         <img *ngIf="screenShareStream"
              appTooltip
-             text="Stop sharing my screen"
+             text="{{ 'private-consultation-room-controls.stop-sharing-my-screen' | translate }}"
              colour="red"
              id="stop-screenshare-img"
              class="icon-button"
              src="/assets/images/stop-share.png"
-             alt="Stop sharing screen"
+             alt="{{ 'private-consultation-room-controls.stop-sharing-screen' | translate }}"
              (click)="stopScreenShare()" />
 
         <div class="flexBar"></div>
@@ -77,7 +77,7 @@
              id="toggle-audio-mute-locked-img"
              appTooltip
              *ngIf="remoteMuted && !isJudge"
-             text="You have been been remote muted"
+             text="{{ 'private-consultation-room-controls.remote-muted' | translate }}"
              colour="grey">
             <span class="far fa-microphone-slash red"></span>
         </div>
