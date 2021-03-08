@@ -16,7 +16,7 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public class JudgePrivateConsultationSteps
     {
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly ProgressionSteps _progressionSteps;
         private readonly DataSetupSteps _dataSetupSteps;
@@ -24,7 +24,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly HearingRoomSteps _hearingRoomSteps;
         private const int MaxRetries = 30;
 
-        public JudgePrivateConsultationSteps(Dictionary<User, UserBrowser> browsers, TestContext testContext, 
+        public JudgePrivateConsultationSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext testContext, 
             ProgressionSteps progressionSteps, DataSetupSteps dataSetupSteps, BrowserSteps browserSteps,
             HearingRoomSteps hearingRoomSteps)
         {

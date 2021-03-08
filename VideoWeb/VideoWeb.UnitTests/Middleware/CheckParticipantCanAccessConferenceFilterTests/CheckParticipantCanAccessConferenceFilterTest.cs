@@ -17,14 +17,14 @@ using VideoWeb.Middleware;
 using VideoWeb.Services.Video;
 using VideoWeb.UnitTests.Builders;
 
-namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttributeTests
+namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceFilterTests
 {
-    public class CheckParticipantCanAccessConferenceAttributeTest
+    public class CheckParticipantCanAccessConferenceFilterTest
     {
-        protected Mock<ILogger<CheckParticipantCanAccessConferenceAttribute>> _logger;
+        protected Mock<ILogger<CheckParticipantCanAccessConferenceFilter>> _logger;
         protected Mock<IConferenceCache> _conferenceCache;
         protected Mock<IVideoApiClient> _videoApiClient;
-        protected CheckParticipantCanAccessConferenceAttribute _sut;
+        protected CheckParticipantCanAccessConferenceFilter _sut;
         protected readonly Guid _participantId = Guid.NewGuid();
         protected readonly Guid _conferenceId = Guid.NewGuid();
         protected ActionExecutingContext _actionExecutingContext;
@@ -35,10 +35,10 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
         [SetUp]
         public void SetUp()
         {
-            _logger = new Mock<ILogger<CheckParticipantCanAccessConferenceAttribute>>();
+            _logger = new Mock<ILogger<CheckParticipantCanAccessConferenceFilter>>();
             _conferenceCache = new Mock<IConferenceCache>();
             _videoApiClient = new Mock<IVideoApiClient>();
-            _sut = new CheckParticipantCanAccessConferenceAttribute(
+            _sut = new CheckParticipantCanAccessConferenceFilter(
                 _logger.Object,
                 _conferenceCache.Object,
                 _videoApiClient.Object

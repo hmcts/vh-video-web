@@ -22,11 +22,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         private const int CountdownDuration = 30;
         private const int ExtraTimeAfterTheCountdown = 10;
         private const int PauseCloseTransferDuration = 15;
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly BrowserSteps _browserSteps;
 
-        public HearingRoomSteps(Dictionary<User, UserBrowser> browsers, TestContext testContext, BrowserSteps browserSteps)
+        public HearingRoomSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext testContext, BrowserSteps browserSteps)
         {
             _browsers = browsers;
             _c = testContext;

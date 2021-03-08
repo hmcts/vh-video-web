@@ -19,9 +19,9 @@ namespace VideoWeb.AcceptanceTests.Steps
     {
         private const int MaxRetries = 20;
         private readonly TestContext _c;
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
 
-        public HearingsStatusSteps(Dictionary<User, UserBrowser> browsers, TestContext c)
+        public HearingsStatusSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext c)
         {
             _c = c;
             _browsers = browsers;

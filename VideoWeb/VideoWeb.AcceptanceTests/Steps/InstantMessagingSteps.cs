@@ -15,12 +15,12 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public class InstantMessagingSteps
     {
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
         private readonly BrowserSteps _browserSteps;
         private readonly List<ChatMessage> _messages;
 
-        public InstantMessagingSteps(Dictionary<User, UserBrowser> browsers, TestContext c, BrowserSteps browserSteps)
+        public InstantMessagingSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext c, BrowserSteps browserSteps)
         {
             _browsers = browsers;
             _c = c;

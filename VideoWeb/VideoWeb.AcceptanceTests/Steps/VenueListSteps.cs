@@ -15,10 +15,10 @@ namespace VideoWeb.AcceptanceTests.Steps
     [Binding]
     public class VenueListSteps : ISteps
     {
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
 
-        public VenueListSteps(Dictionary<User, UserBrowser> browsers, TestContext testContext)
+        public VenueListSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext testContext)
         {
             _browsers = browsers;
             _c = testContext;

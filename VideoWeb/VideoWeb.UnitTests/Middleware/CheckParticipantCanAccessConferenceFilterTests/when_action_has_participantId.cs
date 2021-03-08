@@ -4,9 +4,9 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 
-namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttributeTests
+namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceFilterTests
 {
-    public class when_action_has_participantId : CheckParticipantCanAccessConferenceAttributeTest
+    public class when_action_has_participantId : CheckParticipantCanAccessConferenceFilterTest
     {
         [TestCaseSource(nameof(AllNonVhoUsers))]
         public async Task should_continue_with_other_middleware(string appRole)

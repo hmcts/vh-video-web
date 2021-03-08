@@ -13,9 +13,9 @@ namespace VideoWeb.AcceptanceTests.Steps
     public class AccessibilitySteps
     {
         private readonly TestContext _c;
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
 
-        public AccessibilitySteps(TestContext testContext, Dictionary<User, UserBrowser> browsers)
+        public AccessibilitySteps(TestContext testContext, Dictionary<UserDto, UserBrowser> browsers)
         {
             _c = testContext;
             _browsers = browsers;

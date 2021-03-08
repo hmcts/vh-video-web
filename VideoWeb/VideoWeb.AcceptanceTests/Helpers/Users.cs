@@ -8,17 +8,17 @@ namespace VideoWeb.AcceptanceTests.Helpers
 {
     public static class Users
     {
-        public static User GetDefaultParticipantUser(List<User> users)
+        public static UserDto GetDefaultParticipantUser(List<UserDto> users)
         {
             return users.First(x => x.User_type == UserType.Individual);
         }
 
-        public static User GetJudgeUser(List<User> users)
+        public static UserDto GetJudgeUser(List<UserDto> users)
         {
             return users.First(x => x.User_type == UserType.Judge);
         }
 
-        public static User GetUserFromDisplayName(List<User> users, string displayName)
+        public static UserDto GetUserFromDisplayName(List<UserDto> users, string displayName)
         {
             if (users.Any(x => x.Display_name.ToLower().Contains(displayName.ToLower().Replace(" ", ""))))
             {
@@ -29,7 +29,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             throw new InvalidOperationException($"No user with display name '{displayName}' found in the list: '{usersList}'");
         }
 
-        public static User GetUser(List<User> users, string number, string user)
+        public static UserDto GetUser(List<UserDto> users, string number, string user)
         {
             var index = ParticipantHelper.GetIndexFromNumber(number);
             user = user.ToLowerInvariant();
@@ -74,12 +74,12 @@ namespace VideoWeb.AcceptanceTests.Helpers
             throw new DataException($"No matching user could be found from '{user}'");
         }
 
-        private static List<User> GetAllUsersOfType(List<User> users, UserType userType)
+        private static List<UserDto> GetAllUsersOfType(List<UserDto> users, UserType userType)
         {
             return users.FindAll(x => x.User_type == userType);
         }
 
-        public static User GetUserFromText(string text, List<User> users)
+        public static UserDto GetUserFromText(string text, List<UserDto> users)
         {
             text = text.ToLower().Replace("'s", string.Empty).Replace("the", string.Empty).Trim();
 

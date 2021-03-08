@@ -18,10 +18,10 @@ namespace VideoWeb.AcceptanceTests.Steps
     {
         private const int ToleranceInMinutes = 3;
         private const int MinutesToWaitBeforeAllowedToJoinHearing = 30;
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
 
-        public HearingsListSteps(Dictionary<User, UserBrowser> browsers, TestContext testContext)
+        public HearingsListSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext testContext)
         {
             _browsers = browsers;
             _c = testContext;
