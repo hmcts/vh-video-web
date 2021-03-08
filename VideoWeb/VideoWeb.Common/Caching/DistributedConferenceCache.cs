@@ -20,6 +20,11 @@ namespace VideoWeb.Common.Caching
         public async Task AddConferenceAsync(ConferenceDetailsResponse conferenceResponse)
         {
             var conference = ConferenceCacheMapper.MapConferenceToCacheModel(conferenceResponse);
+            await UpdateConferenceAsync(conference);
+        }
+
+        public async Task UpdateConferenceAsync(Conference conference)
+        {
             var serialisedConference = JsonConvert.SerializeObject(conference, CachingHelper.SerializerSettings);
 
             var data = Encoding.UTF8.GetBytes(serialisedConference);
@@ -29,7 +34,6 @@ namespace VideoWeb.Common.Caching
                 {
                     SlidingExpiration = TimeSpan.FromHours(4)
                 });
-
         }
 
         public async Task<Conference> GetOrAddConferenceAsync(Guid id, Func<Task<ConferenceDetailsResponse>> addConferenceDetailsFactory)

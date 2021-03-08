@@ -2376,8 +2376,7 @@
           "VH.Core.Configuration": "0.1.12",
           "VideoWeb.Common": "1.0.0",
           "VideoWeb.Contract": "1.0.0",
-          "VideoWeb.EventHub": "1.0.0",
-          "VideoWeb.Services": "1.0.0"
+          "VideoWeb.EventHub": "1.0.0"
         }
       },
       "videoweb.common": {
@@ -2391,14 +2390,14 @@
           "Microsoft.IdentityModel.Clients.ActiveDirectory": "5.2.8",
           "StackExchange.Redis": "2.1.28",
           "System.IdentityModel.Tokens.Jwt": "5.6.0",
-          "VideoWeb.Services": "1.0.0"
+          "UserApi.Client": "1.24.2",
+          "VideoApi.Client": "1.23.48"
         }
       },
       "videoweb.contract": {
         "type": "Project",
         "dependencies": {
-          "VideoWeb.Common": "1.0.0",
-          "VideoWeb.Services": "1.0.0"
+          "VideoWeb.Common": "1.0.0"
         }
       },
       "videoweb.eventhub": {
@@ -2411,18 +2410,7 @@
           "System.Text.Json": "4.7.1",
           "UserApi.Client": "1.24.2",
           "VideoApi.Client": "1.23.48",
-          "VideoWeb.Common": "1.0.0",
-          "VideoWeb.Services": "1.0.0"
-        }
-      },
-      "videoweb.services": {
-        "type": "Project",
-        "dependencies": {
-          "BookingsApi.Client": "1.24.17",
-          "Microsoft.Extensions.Options": "3.1.10",
-          "Newtonsoft.Json": "12.0.3",
-          "UserApi.Client": "1.24.2",
-          "VideoApi.Client": "1.23.48"
+          "VideoWeb.Common": "1.0.0"
         }
       }
     }
