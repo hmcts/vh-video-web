@@ -18,6 +18,7 @@ using JudgeConference = VideoWeb.Services.Video.ConferenceForJudgeResponse;
 using IndividualConference = VideoWeb.Services.Video.ConferenceForIndividualResponse;
 using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
 using ConferenceForJudgeResponse = VideoWeb.Contract.Responses.ConferenceForJudgeResponse;
+using VideoWeb.Middleware;
 
 namespace VideoWeb.Controllers
 {
@@ -205,6 +206,7 @@ namespace VideoWeb.Controllers
         /// </summary>
         /// <param name="conferenceId">The unique id of the conference</param>
         /// <returns>the details of a conference, if permitted</returns>
+        [ServiceFilter(typeof(CheckParticipantCanAccessConferenceAttribute))]
         [HttpGet("{conferenceId}")]
         [ProducesResponseType(typeof(ConferenceResponse), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
