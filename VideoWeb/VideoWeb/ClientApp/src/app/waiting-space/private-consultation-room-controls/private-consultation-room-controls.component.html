@@ -47,7 +47,7 @@
              id="toggle-self-view-img"
              appTooltip
              *ngIf="!audioOnly"
-             [text]="selfViewOpen ? 'Hide my self-view' : 'Show my self-view'"
+             text="selfViewOpen ? '{{ 'private-consultation-room-controls.selfview-toggle-true' | translate }}' : '{{ 'private-consultation-room-controls.selfview-toggle-false' | translate }}'"
              colour="grey"
              (click)="toggleView()">
             <span class="far" [class]="selfViewOpen ? 'fa-eye' : 'fa-eye-slash'"></span>
@@ -57,7 +57,7 @@
              id="toggle-video-mute-img"
              appTooltip
              *ngIf="!isJudge && !audioOnly"
-             [text]="videoMuted ? 'Turn on camera' : 'Turn off camera'"
+             text="videoMuted ? '{{ 'private-consultation-room-controls.video-mute-toggle-true' | translate }}' : '{{ 'private-consultation-room-controls.video-mute-toggle-false' | translate }}'"
              colour="grey"
              (click)="toggleVideoMute()">
             <span class="far" [class]="videoMuted ? 'fa-video-slash' : 'fa-video'"></span>
@@ -67,7 +67,7 @@
              id="toggle-audio-mute-img"
              appTooltip
              *ngIf="!remoteMuted || isJudge"
-             [text]="audioMuted ? 'Unmute microphone' : 'Mute microphone'"
+             text="audioMuted ? '{{ 'private-consultation-room-controls.audio-mute-toggle-true' | translate }}' : '{{ 'private-consultation-room-controls.audio-mute-toggle-false' | translate }}'"
              colour="grey"
              (click)="toggleMute()">
             <span class="far" [class]="audioMuted ? 'fa-microphone-slash' : 'fa-microphone'"></span>
@@ -86,7 +86,7 @@
              id="toggle-hand-raised-img"
              appTooltip
              *ngIf="!isPrivateConsultation && !isJudge"
-             [text]="handRaised ? 'Lower hand' : 'Raise hand'"
+             text="handRaised ? '{{ 'private-consultation-room-controls.hand-raise-toggle-true' | translate }}' : '{{ 'private-consultation-room-controls.hand-raise-toggle-false' | translate }}'"
              colour="grey"
              (click)="toggleHandRaised()">
             <span class="far fa-hand-paper" [class]="{ 'yellow': handRaised }"></span>
