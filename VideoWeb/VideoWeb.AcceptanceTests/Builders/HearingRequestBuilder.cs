@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using TestApi.Client;
-using TestApi.Contract.Dtos;
 using TestApi.Contract.Dtos;
 using TestApi.Contract.Enums;
 using TestApi.Contract.Requests;

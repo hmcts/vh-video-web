@@ -7,13 +7,10 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.Common.Models;
-using TestApi.Client;
 using TestApi.Contract.Dtos;
-using TestApi.Contract.Enums;
 using RoomType = VideoWeb.Common.Models.RoomType;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Responses;
-using TestApi.Contract.Dtos;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {

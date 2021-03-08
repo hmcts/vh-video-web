@@ -71,8 +71,8 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
             var vmr = new SharedParticipantRoomResponse()
             {
                 Label = "Test",
-                Participant_join_uri = "pat_join__interpreter",
-                Pexip_node = "sip.unit.test.com"
+                ParticipantJoinUri = "pat_join__interpreter",
+                PexipNode = "sip.unit.test.com"
             };
             var participantId = Guid.NewGuid();
             var conferenceId = Guid.NewGuid();

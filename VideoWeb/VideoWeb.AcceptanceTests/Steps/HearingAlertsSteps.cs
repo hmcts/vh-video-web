@@ -18,13 +18,10 @@ using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.Common.Extensions;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Models;
-using TestApi.Client;
 using TestApi.Contract.Dtos;
-using TestApi.Contract.Enums;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using RoomType = VideoWeb.Common.Models.RoomType;
 using VideoApi.Contract.Responses;
-using TestApi.Contract.Dtos;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {

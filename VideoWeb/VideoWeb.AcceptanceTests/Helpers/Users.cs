@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using TestApi.Client;
-using TestApi.Contract.Dtos;
 using TestApi.Contract.Dtos;
 using TestApi.Contract.Enums;
 

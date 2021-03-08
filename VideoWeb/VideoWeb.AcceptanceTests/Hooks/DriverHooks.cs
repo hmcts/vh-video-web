@@ -8,11 +8,9 @@ using BoDi;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
-using TestApi.Client;
 using TestApi.Contract.Dtos;
 using TestApi.Contract.Enums;
 using TimeZone = AcceptanceTests.Common.Data.Time.TimeZone;
-using TestApi.Contract.Dtos;
 
 namespace VideoWeb.AcceptanceTests.Hooks
 {

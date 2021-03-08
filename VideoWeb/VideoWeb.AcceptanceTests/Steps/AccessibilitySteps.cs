@@ -5,9 +5,6 @@ using FluentAssertions;
 using Selenium.Axe;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
-using TestApi.Client;
-using TestApi.Contract.Dtos;
-using TestApi.Contract.Enums;
 using TestApi.Contract.Dtos;
 
 namespace VideoWeb.AcceptanceTests.Steps

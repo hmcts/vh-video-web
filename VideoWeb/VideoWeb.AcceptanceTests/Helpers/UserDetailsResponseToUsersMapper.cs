@@ -1,9 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using TestApi.Client;
 using TestApi.Contract.Dtos;
-using TestApi.Contract.Dtos;
-using TestApi.Contract.Enums;
 using TestApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Helpers

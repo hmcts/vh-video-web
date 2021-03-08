@@ -2,12 +2,9 @@ using System;
 using System.Collections.Generic;
 using AcceptanceTests.Common.Data.TestData;
 using VideoWeb.AcceptanceTests.Data.TestData;
-using TestApi.Client;
 using TestApi.Contract.Dtos;
-using TestApi.Contract.Enums;
 using VideoApi.Contract.Responses;
 using BookingsApi.Contract.Responses;
-using TestApi.Contract.Dtos;
 
 namespace VideoWeb.AcceptanceTests.Data
 {
