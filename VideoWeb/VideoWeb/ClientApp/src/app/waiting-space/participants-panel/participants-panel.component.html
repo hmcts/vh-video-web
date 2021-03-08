@@ -6,7 +6,7 @@
              data-prevent-double-click="true"
              (click)="muteAndLockAll()"
              appTooltip
-             text="Mute all participants and prevent them from unmuting"
+             text="{{ 'participants-panel.mute-tooltip' | translate }}"
              colour="grey">
             {{ 'participants-panel.mute-lock' | translate }}
         </div>
@@ -14,11 +14,11 @@
              data-prevent-double-click="true"
              (click)="unlockAll()"
              appTooltip
-             text="Allow all participants to unmute"
+             text="{{ 'participants-panel.unmute-tooltip' | translate }}"
              colour="grey">
             {{ 'participants-panel.unmute-lock' | translate }}
         </div>
-        <div class="small-button" (click)="lowerAllHands()" appTooltip text="Lower all raised hands" colour="grey">{{ 'participants-panel.lower-hands' | translate }}</div>
+        <div class="small-button" (click)="lowerAllHands()" appTooltip text="{{ 'participants-panel.lower-hands-tooltip' | translate }}" colour="grey">{{ 'participants-panel.lower-hands' | translate }}</div>
     </div>
 
     <div class="panel-container-list participants-grid" id="panelList">
