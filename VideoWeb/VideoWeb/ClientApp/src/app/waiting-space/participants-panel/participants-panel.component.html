@@ -103,11 +103,8 @@
                     <div *ngIf="isParticipantInHearing(participant) && !participant.isLocalCameraOff()"
                          class="icon-button"
                          appTooltip
-                         [text]="
-              participant.hasSpotlight()
-                ? participant.displayName + ' (remove spotlight)'
-                : participant.displayName + ' (click to spotlight)'
-            "
+                         text=" participant.hasSpotlight() ? participant.displayName + '{{ 'participants-panel.remove-spotlight' | translate }}' :
+                         participant.displayName + '{{ 'participants-panel.click-to-spotlight' | translate }}'"
                          colour="blue"
                          (click)="toggleSpotlightParticipant(participant); $event.stopPropagation()">
                         <span class="far fa-thumbtack" [class]="{ yellow: participant.hasSpotlight() }"></span>
