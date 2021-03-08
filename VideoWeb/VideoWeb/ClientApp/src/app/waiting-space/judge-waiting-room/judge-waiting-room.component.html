@@ -55,7 +55,7 @@
                             *ngIf="presentationStream"
                             (click)="switchStreamWindows()"
                             appTooltip
-                            attr.text="{{'judge-waiting-room.switch-to-main-screen' | translate}}"
+                            text="{{'judge-waiting-room.switch-to-main-screen' | translate}}"
                             colour="grey">
                         <video [srcObject]="presentationStream && !streamInMain ? stream : presentationStream"
                                autoplay
@@ -85,7 +85,7 @@
                     data-module="govuk-button"
                     type="button"
                     (click)="showChooseCameraDialog()"
-                    attr.aria-label="{{'judge-waiting-room.choose-camera-and-microphone-dialog' | translate}}">
+                    aria-label="{{'judge-waiting-room.choose-camera-and-microphone-dialog' | translate}}">
                 {{'judge-waiting-room.choose-camera-and-microphone' | translate}}
             </button>
         </div>
@@ -96,7 +96,7 @@
         </div>
     </div>
 
-    <table class="govuk-table vh-fullwidth" attr.aria-describedby="{{'judge-waiting-room.details-of-the-hearing' | translate}}">
+    <table class="govuk-table vh-fullwidth" aria-describedby="{{'judge-waiting-room.details-of-the-hearing' | translate}}">
         <thead class="govuk-table__head no-mass">
             <tr class="govuk-table__row">
                 <th scope="col" class="govuk-table__header">{{'judge-waiting-room.hearing' | translate}}</th>
