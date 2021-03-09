@@ -665,5 +665,16 @@
         "individual": "Individual",
         "representative": "Representative",
         "judicial-office-holder": "Judicial Office Holder"
+    },
+    "confirm-start-hearing-popup": {
+        "hearing-about-to-start": "You are about to {{ action }} this hearing",
+        "participant-sees-countdown-timer": "Participants will see a countdown timer before the hearing begins.",
+        "private-consultations": "Any participants in private consultations will automatically be brought into the hearing.",
+        "confirm-start-hearing": "Confirm start hearing",
+        "hearing": "hearing",
+        "cancel-start-hearing": "Cancel start hearing",
+        "cancel": "Cancel",
+        "resume": "resume",
+        "start": "start"
     }
 }
