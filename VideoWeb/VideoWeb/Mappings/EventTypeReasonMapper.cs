@@ -1,5 +1,5 @@
 using VideoWeb.Mappings.Interfaces;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.Mappings
 {

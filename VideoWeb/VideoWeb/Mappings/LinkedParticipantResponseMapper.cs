@@ -2,7 +2,7 @@ using System;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings.Interfaces;
 using LinkedParticipantResponse = VideoWeb.Contract.Responses.LinkedParticipantResponse;
-using VHLinkedParticipantResponse = VideoWeb.Services.Video.LinkedParticipantResponse;
+using VHLinkedParticipantResponse = VideoApi.Contract.Responses.LinkedParticipantResponse;
 
 namespace VideoWeb.Mappings
 {
@@ -12,7 +12,7 @@ namespace VideoWeb.Mappings
         {
             return new LinkedParticipantResponse
             {
-                LinkedId = input.Linked_id,
+                LinkedId = input.LinkedId,
                 LinkType = Enum.Parse<LinkType>(input.Type.ToString())
             };
         }

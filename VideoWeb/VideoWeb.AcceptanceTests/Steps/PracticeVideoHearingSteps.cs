@@ -11,7 +11,8 @@ using OpenQA.Selenium.Support.UI;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Dtos;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -77,7 +78,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the test score should be produced")]
         public void ThenTheTestScoreShouldBeProduced()
         {
-            var participantId = _c.Test.ConferenceParticipants.First(x => x.Display_name.ToLower().Equals(_c.CurrentUser.Display_name.ToLower())).Id;
+            var participantId = _c.Test.ConferenceParticipants.First(x => x.DisplayName.ToLower().Equals(_c.CurrentUser.DisplayName.ToLower())).Id;
 
             var response = _c.Apis.TestApi.PollForSelfTestScoreResponse(_c.Test.NewConferenceId, participantId);
             response.StatusCode.Should().Be(HttpStatusCode.OK);

@@ -1,4 +1,4 @@
-﻿
+
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -12,7 +12,7 @@ namespace VideoWeb.UnitTests.Controllers.TokenController
         [Test]
         public void Should_return_ok_token_response()
         {
-            var result = _tokenController.GetJwToken(participantId);
+            var result = TokenController.GetJwToken(participantId);
 
             var typedResult = (OkObjectResult)result;
             typedResult.Should().NotBeNull();

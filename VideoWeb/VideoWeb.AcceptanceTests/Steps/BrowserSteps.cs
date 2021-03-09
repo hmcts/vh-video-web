@@ -9,7 +9,10 @@ using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
+using TestApi.Contract.Requests;
+using TestApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -117,10 +120,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             var request = new AllocateUserRequest()
             {
                 Application = Application.VideoWeb,
-                Expiry_in_minutes = 1,
-                Is_prod_user = _c.VideoWebConfig.IsLive,
-                Test_type = TestType.Automated,
-                User_type = userType
+                ExpiryInMinutes = 1,
+                IsProdUser = _c.VideoWebConfig.IsLive,
+                TestType = TestType.Automated,
+                UserType = userType
             };
 
             var response = _c.Apis.TestApi.AllocateUser(request);

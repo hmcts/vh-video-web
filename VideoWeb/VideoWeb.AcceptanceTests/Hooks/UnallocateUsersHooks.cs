@@ -4,7 +4,7 @@ using Castle.Core.Internal;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Requests;
 
 namespace VideoWeb.AcceptanceTests.Hooks
 {

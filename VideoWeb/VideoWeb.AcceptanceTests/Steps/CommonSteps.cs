@@ -6,7 +6,7 @@ using AcceptanceTests.Common.PageObject.Pages;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Dtos;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {

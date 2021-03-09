@@ -14,17 +14,17 @@ using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Middleware;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
 using VideoWeb.UnitTests.Builders;
 
-namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceFilterTests
+namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttributeTests
 {
-    public class CheckParticipantCanAccessConferenceFilterTest
+    public class CheckParticipantCanAccessConferenceAttributeTest
     {
-        protected Mock<ILogger<CheckParticipantCanAccessConferenceFilter>> _logger;
+        protected Mock<ILogger<CheckParticipantCanAccessConferenceAttribute>> _logger;
         protected Mock<IConferenceCache> _conferenceCache;
         protected Mock<IVideoApiClient> _videoApiClient;
-        protected CheckParticipantCanAccessConferenceFilter _sut;
+        protected CheckParticipantCanAccessConferenceAttribute _sut;
         protected readonly Guid _participantId = Guid.NewGuid();
         protected readonly Guid _conferenceId = Guid.NewGuid();
         protected ActionExecutingContext _actionExecutingContext;
@@ -35,10 +35,10 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceFilte
         [SetUp]
         public void SetUp()
         {
-            _logger = new Mock<ILogger<CheckParticipantCanAccessConferenceFilter>>();
+            _logger = new Mock<ILogger<CheckParticipantCanAccessConferenceAttribute>>();
             _conferenceCache = new Mock<IConferenceCache>();
             _videoApiClient = new Mock<IVideoApiClient>();
-            _sut = new CheckParticipantCanAccessConferenceFilter(
+            _sut = new CheckParticipantCanAccessConferenceAttribute(
                 _logger.Object,
                 _conferenceCache.Object,
                 _videoApiClient.Object

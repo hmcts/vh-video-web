@@ -2,7 +2,7 @@ using AcceptanceTests.Common.Configuration;
 using AcceptanceTests.Common.Data.Time;
 using AcceptanceTests.Common.Driver.Drivers;
 using VideoWeb.AcceptanceTests.Configuration;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Dtos;
 using Test = VideoWeb.AcceptanceTests.Data.Test;
 
 namespace VideoWeb.AcceptanceTests.Helpers

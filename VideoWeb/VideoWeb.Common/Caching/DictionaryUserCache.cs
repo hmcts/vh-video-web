@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using VideoWeb.Services.User;
+using UserApi.Contract.Responses;
 
 namespace VideoWeb.Common.Caching
 {

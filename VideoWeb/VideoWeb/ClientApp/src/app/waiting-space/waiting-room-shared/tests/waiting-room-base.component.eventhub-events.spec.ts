@@ -125,7 +125,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         component.participant.status = ParticipantStatus.InHearing;
         const payload = new RequestedConsultationMessage(component.conference.id, 'AdminRoom', Guid.EMPTY, component.participant.id);
 
-        spyOn(logger, 'debug');
+        // spyOn(logger, 'debug');
         requestedConsultationMessageSubject.next(payload);
         flushMicrotasks();
 

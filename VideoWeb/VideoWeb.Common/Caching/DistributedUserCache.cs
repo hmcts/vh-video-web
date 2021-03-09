@@ -3,7 +3,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
-using VideoWeb.Services.User;
+using UserApi.Contract.Responses;
 
 namespace VideoWeb.Common.Caching
 {

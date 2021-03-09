@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoWeb.Services.User;
-using VideoWeb.Services.Video;
+using UserApi.Client;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Helpers
 {
@@ -49,7 +49,7 @@ namespace VideoWeb.Helpers
                 username, async key => await _userApiClient.GetUserByAdUserNameAsync(key)
             );
 
-            return userProfile.First_name;
+            return userProfile.FirstName;
         }
 
         public bool IsMessageFromUser(InstantMessageResponse message, string loggedInUsername)

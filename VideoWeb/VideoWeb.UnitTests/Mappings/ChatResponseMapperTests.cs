@@ -5,7 +5,7 @@ using FluentAssertions.Extensions;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -32,8 +32,8 @@ namespace VideoWeb.UnitTests.Mappings
             {
                 From = senderUsername,
                 To = recipientUsername,
-                Message_text = "test message from john",
-                Time_stamp = DateTime.Now.AsUtc()
+                MessageText = "test message from john",
+                TimeStamp = DateTime.Now.AsUtc()
             };
 
             var response = _sut.Map(message, fromDisplayName, true, conference);
@@ -41,8 +41,8 @@ namespace VideoWeb.UnitTests.Mappings
             response.From.Should().Be(conference.Participants[0].Id.ToString());
             response.FromDisplayName.Should().Be(fromDisplayName);
             response.To.Should().Be(conference.Participants[1].Id.ToString());
-            response.Message.Should().Be(message.Message_text);
-            response.Timestamp.Should().Be(message.Time_stamp);
+            response.Message.Should().Be(message.MessageText);
+            response.Timestamp.Should().Be(message.TimeStamp);
             response.IsUser.Should().BeTrue();
             response.Id.Should().NotBeEmpty();
         }

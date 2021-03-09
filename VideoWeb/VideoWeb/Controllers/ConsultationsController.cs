@@ -12,7 +12,8 @@ using VideoWeb.Contract.Request;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Requests;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;
 
 namespace VideoWeb.Controllers
@@ -157,10 +158,10 @@ namespace VideoWeb.Controllers
                         {
                             await _videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
                             {
-                                Conference_id = request.ConferenceId,
-                                Defence_advocate_id = requestedBy.Id,
-                                Endpoint_id = endpoint.Id,
-                                Room_label = room.Label
+                                ConferenceId = request.ConferenceId,
+                                DefenceAdvocateId = requestedBy.Id,
+                                EndpointId = endpoint.Id,
+                                RoomLabel = room.Label
                             });
                             break;
                         }
@@ -255,10 +256,10 @@ namespace VideoWeb.Controllers
                 await NotifyConsultationResponseAsync(conference, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring);
                 await _videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
                 {
-                    Conference_id = request.ConferenceId,
-                    Defence_advocate_id = requestedBy.Id,
-                    Endpoint_id = request.EndpointId,
-                    Room_label = request.RoomLabel
+                    ConferenceId = request.ConferenceId,
+                    DefenceAdvocateId = requestedBy.Id,
+                    EndpointId = request.EndpointId,
+                    RoomLabel = request.RoomLabel
                 });
             }
             catch (VideoApiException e)

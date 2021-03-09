@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using VideoWeb.Common.Models;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Common.Caching
 {
@@ -19,17 +19,17 @@ namespace VideoWeb.Common.Caching
                 ? new List<Endpoint>()
                 : conferenceResponse.Endpoints.Select(EndpointCacheMapper.MapEndpointToCacheModel).ToList();
 
-            var civilianRooms = conferenceResponse.Civilian_rooms == null
+            var civilianRooms = conferenceResponse.CivilianRooms == null
                 ? new List<CivilianRoom>()
-                : conferenceResponse.Civilian_rooms.Select(CivilianRoomCacheMapper.MapCivilianRoomToCacheModel)
+                : conferenceResponse.CivilianRooms.Select(CivilianRoomCacheMapper.MapCivilianRoomToCacheModel)
                     .ToList();
             
             var conference = new Conference
             {
                 Id = conferenceResponse.Id,
-                HearingId = conferenceResponse.Hearing_id,
+                HearingId = conferenceResponse.HearingId,
                 Participants = participants,
-                HearingVenueName = conferenceResponse.Hearing_venue_name,
+                HearingVenueName = conferenceResponse.HearingVenueName,
                 Endpoints = endpoints,
                 CivilianRooms = civilianRooms
             };
@@ -38,23 +38,23 @@ namespace VideoWeb.Common.Caching
 
         private static Participant MapParticipantToCacheModel(ParticipantDetailsResponse participant)
         {
-            var links = (participant.Linked_participants ?? new List<LinkedParticipantResponse>())
+            var links = (participant.LinkedParticipants ?? new List<LinkedParticipantResponse>())
                 .Select(MapLinkedParticipantToCacheModel).ToList();
             return new Participant
             {
                 Id = participant.Id,
-                RefId = participant.Ref_id,
+                RefId = participant.RefId,
                 Name = participant.Name,
-                FirstName = participant.First_name,
-                LastName = participant.Last_name,
-                ContactEmail = participant.Contact_email,
-                ContactTelephone = participant.Contact_telephone,
-                DisplayName = participant.Display_name,
-                Role = Enum.Parse<Role>(participant.User_role.ToString(), true),
-                HearingRole = participant.Hearing_role,
-                ParticipantStatus = Enum.Parse<ParticipantStatus>(participant.Current_status.ToString(), true),
+                FirstName = participant.FirstName,
+                LastName = participant.LastName,
+                ContactEmail = participant.ContactEmail,
+                ContactTelephone = participant.ContactTelephone,
+                DisplayName = participant.DisplayName,
+                Role = Enum.Parse<Role>(participant.UserRole.ToString(), true),
+                HearingRole = participant.HearingRole,
+                ParticipantStatus = Enum.Parse<ParticipantStatus>(participant.CurrentStatus.ToString(), true),
                 Username = participant.Username,
-                CaseTypeGroup = participant.Case_type_group,
+                CaseTypeGroup = participant.CaseTypeGroup,
                 Representee = participant.Representee,
                 LinkedParticipants = links
             };
@@ -65,7 +65,7 @@ namespace VideoWeb.Common.Caching
         {
             return new LinkedParticipant
             {
-                LinkedId = linkedParticipant.Linked_id,
+                LinkedId = linkedParticipant.LinkedId,
                 LinkType = Enum.Parse<LinkType>(linkedParticipant.Type.ToString(), true)
             };
         }

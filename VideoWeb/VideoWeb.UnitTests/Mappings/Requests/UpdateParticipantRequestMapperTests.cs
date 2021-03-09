@@ -16,10 +16,10 @@ namespace VideoWeb.UnitTests.Mappings.Requests
             
             var result = _sut.Map(request);
 
-            result.First_name.Should().Be(request.FirstName);
-            result.Last_name.Should().Be(request.LastName);
+            result.FirstName.Should().Be(request.FirstName);
+            result.LastName.Should().Be(request.LastName);
             result.Fullname.Should().Be(request.Fullname);
-            result.Display_name.Should().Be(request.DisplayName);
+            result.DisplayName.Should().Be(request.DisplayName);
             result.Representee.Should().Be(request.Representee);
         }
     }

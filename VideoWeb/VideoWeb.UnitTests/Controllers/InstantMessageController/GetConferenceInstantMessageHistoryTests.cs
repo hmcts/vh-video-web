@@ -12,8 +12,8 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Helpers;
-using VideoWeb.Services.Video;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Controllers.InstantMessageController
 {
@@ -73,7 +73,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
             var messages = Builder<InstantMessageResponse>.CreateListOfSize(5)
                 .TheFirst(2)
                 .With(x => x.From = "john@hmcts.net").TheNext(3)
-                .With(x => x.From = "some_other@hmcts.net")
+                .With(x => x.From = "someOther@hmcts.net")
                 .Build().ToList();
 
             mocker.Mock<IVideoApiClient>().Setup(x => x.GetInstantMessageHistoryForParticipantAsync(conferenceId, conference.Participants[0].Username))
@@ -90,7 +90,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
                 Times.Exactly(2));
 
             mocker.Mock<IMessageDecoder>().Verify(x => x.IsMessageFromUser(
-                    It.Is<InstantMessageResponse>(m => m.From == "some_other@hmcts.net"), conference.Participants[0].Username),
+                    It.Is<InstantMessageResponse>(m => m.From == "someOther@hmcts.net"), conference.Participants[0].Username),
                 Times.Exactly(3));
 
             var typedResult = (OkObjectResult)result;
@@ -130,7 +130,7 @@ namespace VideoWeb.UnitTests.Controllers.InstantMessageController
                 .TheFirst(1)
                 .With(x => x.Username = "john@hmcts.net")
                 .TheLast(1)
-                .With(x => x.Username = "some_other@hmcts.net")
+                .With(x => x.Username = "someOther@hmcts.net")
                 .TheFirst(1).With(x => x.Role = Role.Judge)
                 .TheRest().With(x => x.Role = Role.Individual).Build().ToList();
 

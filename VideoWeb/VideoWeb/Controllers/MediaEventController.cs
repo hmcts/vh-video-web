@@ -8,7 +8,8 @@ using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Extensions;
 using VideoWeb.Contract.Request;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Requests;
 
 namespace VideoWeb.Controllers
 {
@@ -43,11 +44,11 @@ namespace VideoWeb.Controllers
             {
                 await _videoApiClient.RaiseVideoEventAsync(new ConferenceEventRequest
                 {
-                    Conference_id = conferenceId.ToString(),
-                    Participant_id = participantId.ToString(),
-                    Event_id = Guid.NewGuid().ToString(),
-                    Event_type = addMediaEventRequest.EventType,
-                    Time_stamp_utc = DateTime.UtcNow,
+                    ConferenceId = conferenceId.ToString(),
+                    ParticipantId = participantId.ToString(),
+                    EventId = Guid.NewGuid().ToString(),
+                    EventType = addMediaEventRequest.EventType,
+                    TimeStampUtc = DateTime.UtcNow,
                     Reason = "media permission denied"
                 });
 
@@ -74,11 +75,11 @@ namespace VideoWeb.Controllers
             {
                 var eventRequest = new ConferenceEventRequest
                 {
-                    Conference_id = conferenceId.ToString(),
-                    Participant_id = participantId.ToString(),
-                    Event_id = Guid.NewGuid().ToString(),
-                    Event_type = addSelfTestFailureEventRequest.EventType,
-                    Time_stamp_utc = DateTime.UtcNow,
+                    ConferenceId = conferenceId.ToString(),
+                    ParticipantId = participantId.ToString(),
+                    EventId = Guid.NewGuid().ToString(),
+                    EventType = addSelfTestFailureEventRequest.EventType,
+                    TimeStampUtc = DateTime.UtcNow,
                     Reason = $"Failed self-test ({addSelfTestFailureEventRequest.SelfTestFailureReason.DescriptionAttr()})"
                 };
                 await _videoApiClient.RaiseVideoEventAsync(eventRequest);

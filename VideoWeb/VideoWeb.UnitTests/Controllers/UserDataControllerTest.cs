@@ -10,7 +10,8 @@ using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Mappings;
-using VideoWeb.Services.User;
+using UserApi.Client;
+using UserApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Controllers

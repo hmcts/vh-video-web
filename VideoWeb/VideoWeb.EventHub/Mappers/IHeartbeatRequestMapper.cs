@@ -1,6 +1,6 @@
 ﻿using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Requests;
 
 namespace VideoWeb.EventHub.Mappers
 {
