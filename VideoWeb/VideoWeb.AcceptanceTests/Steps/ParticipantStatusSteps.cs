@@ -30,9 +30,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers = browsers;
         }
 
-        [Given(@"the (.*) status is (.*)")]
-        [When(@"the (.*) statuses are (.*)")]
-        [When(@"the (.*) status is (.*)")]
+        [Given(@"the (.*) (?:status|statuses) is set to (.*)")]
+        [When(@"the (.*) (?:status|statuses) (?:change|changes) to (.*)")]
         public void WhenTheParticipantsStatusesChange(string text, string action)
         {
             var statuses = new Dictionary<string, IParticipantStatusStrategy>
@@ -50,8 +49,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             }
         }
 
-        [Then(@"the VHO can see the (.*) status is (.*)")]
-        [Then(@"the VHO can see the (.*) statuses are (.*)")]
+        [Given(@"the VHO can see the (.*) (?:status|statuses) (?:is|are) (.*)")]
+        [Then(@"the VHO can see the (.*) (?:status|statuses) (?:is|are) (.*)")]
         public void ThenTheParticipantsStatusesAre(string text, string participantStatus)
         {
             Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser], _c.Test.Conference.Id);
@@ -82,8 +81,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 participantState.Should().Be(expectedState);
         }
 
-        [Then(@"the VHO can see the (.*) status has updated to (.*)")]
-        [Then(@"the VHO can see the (.*) statuses have updated to (.*)")]
+        [Then(@"the VHO can see the (.*) (?:status|statuses) (?:has|have) updated to (.*)")]
         public void ThenTheParticipantsStatusesShouldUpdateTo(string text, string expectedStatus)
         {
             _browsers[_c.CurrentUser].Refresh();
