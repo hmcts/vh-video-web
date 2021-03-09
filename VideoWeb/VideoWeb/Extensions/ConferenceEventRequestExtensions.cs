@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Castle.Core.Internal;
+using Newtonsoft.Json;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common.Models;
 
@@ -21,24 +22,16 @@ namespace VideoWeb.Extensions
             return conference.CivilianRooms.Any(x => x.Id == id);
         }
 
-        public static List<ConferenceEventRequest> CreateEventsForParticipantsInRoom(this ConferenceEventRequest request,
+        public static List<ConferenceEventRequest> CreateEventsForParticipantsInRoom(
+            this ConferenceEventRequest request,
             Conference conference, long roomId)
         {
             return conference.CivilianRooms.First(x => x.Id == roomId).Participants.Select(p =>
             {
-                var participantEventRequest = new ConferenceEventRequest
-                {
-                    ConferenceId = request.ConferenceId,
-                    EventId = request.EventId,
-                    EventType = request.EventType,
-                    ParticipantId = p.ToString(),
-                    ParticipantRoomId = roomId.ToString(),
-                    Phone = request.Phone,
-                    Reason = request.Reason,
-                    TimeStampUtc = request.TimeStampUtc,
-                    TransferFrom = request.TransferFrom,
-                    TransferTo = request.TransferTo
-                };
+                var json = JsonConvert.SerializeObject(request);
+                var participantEventRequest = JsonConvert.DeserializeObject<ConferenceEventRequest>(json);
+                participantEventRequest.ParticipantId = p.ToString();
+                participantEventRequest.ParticipantRoomId = roomId.ToString();
                 return participantEventRequest;
             }).ToList();
         }
