@@ -256,7 +256,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         expect(component.canInvite).toBe(true);
     });
 
-    describe('JudgeParticipantStatusListComponentWithInterpreter', () => {
+    describe('ParticipantStatusListSupportForInterpreter', () => {
         const testData = new ConferenceTestData();
         const individualProfile = individualTestProfile;
         let userInfo: adal.User;
