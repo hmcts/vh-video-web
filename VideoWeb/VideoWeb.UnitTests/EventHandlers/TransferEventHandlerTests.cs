@@ -5,7 +5,6 @@ using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
-using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
 

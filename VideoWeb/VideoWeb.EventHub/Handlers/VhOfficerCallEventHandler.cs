@@ -6,7 +6,8 @@ using VideoWeb.Common.Caching;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Requests;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.EventHub.Handlers
@@ -31,10 +32,10 @@ namespace VideoWeb.EventHub.Handlers
             {
                 return _videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
                 {
-                    Conference_id = SourceConference.Id,
-                    Defence_advocate_id = Guid.Empty,
-                    Endpoint_id = SourceEndpoint.Id,
-                    Room_label = targetRoom
+                    ConferenceId = SourceConference.Id,
+                    DefenceAdvocateId = Guid.Empty,
+                    EndpointId = SourceEndpoint.Id,
+                    RoomLabel = targetRoom
                 });
             }
 

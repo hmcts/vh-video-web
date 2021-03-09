@@ -1,7 +1,7 @@
 using System;
 using VideoWeb.Contract.Request;
 using VideoWeb.Mappings.Interfaces;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Requests;
 
 namespace VideoWeb.Mappings.Requests
 {
@@ -13,10 +13,10 @@ namespace VideoWeb.Mappings.Requests
 
             return new ConsultationRequestResponse
             {
-                Conference_id = request.ConferenceId,
-                Requested_by = request.RequestedById,
-                Requested_for = request.RequestedForId,
-                Room_label = request.RoomLabel,
+                ConferenceId = request.ConferenceId,
+                RequestedBy = request.RequestedById,
+                RequestedFor = request.RequestedForId,
+                RoomLabel = request.RoomLabel,
                 Answer = answer
             };
         }

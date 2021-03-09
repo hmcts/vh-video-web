@@ -10,7 +10,7 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.Helpers;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Controllers.InstantMessageController

@@ -12,7 +12,8 @@ using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Mappers;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Requests;
 
 namespace VideoWeb.EventHub.Hub
 {
@@ -191,7 +192,7 @@ namespace VideoWeb.EventHub.Hub
             {
                 From = from,
                 To = participantTo,
-                Message_text = message
+                MessageText = message
             });
 
             if (isSenderAdmin)
@@ -209,7 +210,7 @@ namespace VideoWeb.EventHub.Hub
             }
 
             var user = await _userProfileService.GetUserAsync(recipientUsername);
-            return user != null && user.User_role.Equals("VHOfficer", StringComparison.InvariantCultureIgnoreCase);
+            return user != null && user.UserRole.Equals("VHOfficer", StringComparison.InvariantCultureIgnoreCase);
         }
 
         private async Task SendToParticipant(SendMessageDto dto)

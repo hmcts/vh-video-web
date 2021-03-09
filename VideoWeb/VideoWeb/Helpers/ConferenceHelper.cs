@@ -1,6 +1,6 @@
 using System;
+using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
-using VideoWeb.Services.Video;
 
 namespace VideoWeb.Helpers
 {

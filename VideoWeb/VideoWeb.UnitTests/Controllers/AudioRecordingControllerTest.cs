@@ -7,7 +7,8 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using VideoWeb.Controllers;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Controllers
 {

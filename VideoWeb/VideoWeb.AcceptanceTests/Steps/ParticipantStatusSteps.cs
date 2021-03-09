@@ -11,18 +11,20 @@ using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.AcceptanceTests.Strategies.ParticipantStatus;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Dtos;
+using VideoApi.Contract.Enums;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
     public sealed class ParticipantStatusSteps
     {
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
         private const int MaxRetries = 30;
 
-        public ParticipantStatusSteps(Dictionary<User, UserBrowser> browsers, TestContext testContext)
+        public ParticipantStatusSteps(Dictionary<UserDto, UserBrowser> browsers, TestContext testContext)
         {
             _c = testContext;
             _browsers = browsers;
@@ -41,7 +43,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {"In hearing", new InHearingStrategy()},
                 {"Joining", new JoiningStrategy()}
             };
-            var participants = text.Equals("participants") ? _c.Test.ConferenceParticipants.Where(x => x.User_role != UserRole.Judge) : ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, text);
+            var participants = text.Equals("participants") ? _c.Test.ConferenceParticipants.Where(x => x.UserRole != UserRole.Judge) : ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, text);
             foreach (var participant in participants)
             {
                 statuses[action].Execute(_c, participant.Id);
@@ -56,7 +58,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
-            var participants = text.Equals("participants") ? _c.Test.ConferenceParticipants.Where(x => x.User_role != UserRole.Judge) : ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, text);
+            var participants = text.Equals("participants") ? _c.Test.ConferenceParticipants.Where(x => x.UserRole != UserRole.Judge) : ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, text);
             CheckParticipantStatus(participantStatus, participants);
         }
 
@@ -89,7 +91,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
-            var participants = text.Equals("participants") ? _c.Test.ConferenceParticipants.Where(x => x.User_role != UserRole.Judge) : ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, text);
+            var participants = text.Equals("participants") ? _c.Test.ConferenceParticipants.Where(x => x.UserRole != UserRole.Judge) : ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, text);
             CheckParticipantStatus(expectedStatus, participants);
         }
 

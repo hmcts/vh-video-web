@@ -9,7 +9,7 @@ using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 
 
 namespace VideoWeb.UnitTests
@@ -32,6 +32,20 @@ namespace VideoWeb.UnitTests
             var conference = CreateConferenceResponse();
             await _conferenceCache.AddConferenceAsync(conference);
             _memoryCache.Get(conference.Id).Should().NotBeNull();
+        }
+        
+        [Test]
+        public async Task Should_update_conference_to_cache()
+        {
+            var newVenueName = "Updated Name for Test";
+            var conference = CreateConferenceResponse();
+            await _conferenceCache.AddConferenceAsync(conference);
+            var cacheModel = _memoryCache.Get(conference.Id).As<Conference>();
+            cacheModel.HearingVenueName = newVenueName;
+            await _conferenceCache.UpdateConferenceAsync(cacheModel);
+            var updatedCacheModel = _memoryCache.Get(conference.Id).As<Conference>();
+            updatedCacheModel.HearingVenueName.Should().Be(newVenueName);
+
         }
 
         [Test]

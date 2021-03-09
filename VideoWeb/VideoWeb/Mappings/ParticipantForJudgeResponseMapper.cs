@@ -1,7 +1,7 @@
 using System;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings.Interfaces;
-using Participant = VideoWeb.Services.Video.ParticipantForJudgeResponse;
+using Participant = VideoApi.Contract.Responses.ParticipantForJudgeResponse;
 using ParticipantForJudgeResponse = VideoWeb.Contract.Responses.ParticipantForJudgeResponse;
 
 namespace VideoWeb.Mappings
@@ -13,10 +13,10 @@ namespace VideoWeb.Mappings
             return new ParticipantForJudgeResponse
             {
                 Role = Enum.Parse<Role>(participant.Role.ToString()),
-                DisplayName = participant.Display_name,
+                DisplayName = participant.DisplayName,
                 Representee = participant.Representee,
-                CaseTypeGroup = participant.Case_type_group,
-                HearingRole = participant.Hearing_role
+                CaseTypeGroup = participant.CaseTypeGroup,
+                HearingRole = participant.HearingRole
             };
         }
     }

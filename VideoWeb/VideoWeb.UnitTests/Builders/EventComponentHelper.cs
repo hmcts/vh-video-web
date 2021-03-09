@@ -10,7 +10,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
 
 namespace VideoWeb.UnitTests.Builders
 {

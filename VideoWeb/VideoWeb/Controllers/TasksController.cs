@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Models;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
+using VideoApi.Contract.Requests;
 
 namespace VideoWeb.Controllers
 {
@@ -62,7 +64,7 @@ namespace VideoWeb.Controllers
             {
                 var request = new UpdateTaskRequest
                 {
-                    Updated_by = username
+                    UpdatedBy = username
                 };
                 var updatedTask = await _videoApiClient.UpdateTaskStatusAsync(conferenceId, taskId, request);
                 

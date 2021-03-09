@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using AcceptanceTests.Common.Data.TestData;
 using VideoWeb.AcceptanceTests.Data.TestData;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Dtos;
+using VideoApi.Contract.Responses;
+using BookingsApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Data
 {
@@ -23,6 +25,7 @@ namespace VideoWeb.AcceptanceTests.Data
         public bool SelfTestJourney { get; set; } = false;
         public long TaskId { get; set; }
         public DefaultData TestData { get; set; }
-        public List<User> Users { get; set; }
+        public List<UserDto> Users { get; set; }
+        public DateTime HearingClosedTime { get; set; }
     }
 }

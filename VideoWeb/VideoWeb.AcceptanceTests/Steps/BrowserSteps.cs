@@ -9,7 +9,10 @@ using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
+using TestApi.Contract.Requests;
+using TestApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -17,9 +20,9 @@ namespace VideoWeb.AcceptanceTests.Steps
     public class BrowserSteps
     {
         private readonly TestContext _c;
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
 
-        public BrowserSteps(TestContext context, Dictionary<User, UserBrowser> browsers)
+        public BrowserSteps(TestContext context, Dictionary<UserDto, UserBrowser> browsers)
         {
             _c = context;
             _browsers = browsers;
@@ -90,14 +93,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             return user.Equals("participant");
         }
 
-        private User GetDefaultParticipant()
+        private UserDto GetDefaultParticipant()
         {
             if (_c.Test.Users.Count != 0) return Users.GetDefaultParticipantUser(_c.Test.Users);
             AllocateSingleUser(UserType.Individual);
             return Users.GetDefaultParticipantUser(_c.Test.Users);
         }
 
-        private User GetMatchingDisplayName(string userType)
+        private UserDto GetMatchingDisplayName(string userType)
         {
             if (_c.Test.Users.Count != 0)
                 return Users.GetUserFromDisplayName(_c.Test.Users, userType.Replace(" ", string.Empty));
@@ -117,10 +120,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             var request = new AllocateUserRequest()
             {
                 Application = Application.VideoWeb,
-                Expiry_in_minutes = 1,
-                Is_prod_user = _c.VideoWebConfig.IsLive,
-                Test_type = TestType.Automated,
-                User_type = userType
+                ExpiryInMinutes = 1,
+                IsProdUser = _c.VideoWebConfig.IsLive,
+                TestType = TestType.Automated,
+                UserType = userType
             };
 
             var response = _c.Apis.TestApi.AllocateUser(request);

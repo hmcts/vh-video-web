@@ -31,9 +31,9 @@ using VideoWeb.Mappings;
 using VideoWeb.Mappings.Decorators;
 using VideoWeb.Mappings.Interfaces;
 using VideoWeb.Middleware;
-using VideoWeb.Services.Bookings;
-using VideoWeb.Services.User;
-using VideoWeb.Services.Video;
+using BookingsApi.Client;
+using UserApi.Client;
+using VideoApi.Client;
 using VideoWeb.Swagger;
 
 namespace VideoWeb.Extensions
@@ -249,19 +249,19 @@ namespace VideoWeb.Extensions
         private static IBookingsApiClient BuildBookingsApiClient(HttpClient httpClient,
             HearingServicesConfiguration servicesConfiguration)
         {
-            return new BookingsApiClient(httpClient) { BaseUrl = servicesConfiguration.BookingsApiUrl };
+            return BookingsApiClient.GetClient(servicesConfiguration.BookingsApiUrl, httpClient);
         }
 
         private static IVideoApiClient BuildVideoApiClient(HttpClient httpClient,
             HearingServicesConfiguration serviceSettings)
         {
-            return new VideoApiClient(httpClient) { BaseUrl = serviceSettings.VideoApiUrl, ReadResponseAsString = true };
+            return VideoApiClient.GetClient(serviceSettings.VideoApiUrl, httpClient);
         }
 
         private static IUserApiClient BuildUserApiClient(HttpClient httpClient,
             HearingServicesConfiguration serviceSettings)
         {
-            return new UserApiClient(httpClient) { BaseUrl = serviceSettings.UserApiUrl };
+            return UserApiClient.GetClient(serviceSettings.UserApiUrl, httpClient);
         }
     }
 }

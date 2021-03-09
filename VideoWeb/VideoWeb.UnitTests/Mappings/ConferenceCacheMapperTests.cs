@@ -4,9 +4,9 @@ using FizzWare.NBuilder;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
-using BookingParticipant = VideoWeb.Services.Bookings.ParticipantResponse;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -19,7 +19,7 @@ namespace VideoWeb.UnitTests.Mappings
             var response = ConferenceCacheMapper.MapConferenceToCacheModel(conference);
             
             response.Id.Should().Be(conference.Id);
-            response.HearingId.Should().Be(conference.Hearing_id);
+            response.HearingId.Should().Be(conference.HearingId);
 
             response.Participants.Count.Should().Be(conference.Participants.Count);
 
@@ -28,19 +28,19 @@ namespace VideoWeb.UnitTests.Mappings
 
             resultParticipant.Id.Should().Be(participant.Id);
             resultParticipant.Username.Should().Be(participant.Username);
-            resultParticipant.Role.Should().Be(participant.User_role);
-            resultParticipant.HearingRole.Should().Be(participant.Hearing_role);
-            resultParticipant.DisplayName.Should().Be(participant.Display_name);
-            resultParticipant.FirstName.Should().Be(participant.First_name);
-            resultParticipant.LastName.Should().Be(participant.Last_name);
-            resultParticipant.ContactEmail.Should().Be(participant.Contact_email);
-            resultParticipant.ContactTelephone.Should().Be(participant.Contact_telephone);
+            resultParticipant.Role.Should().Be(participant.UserRole);
+            resultParticipant.HearingRole.Should().Be(participant.HearingRole);
+            resultParticipant.DisplayName.Should().Be(participant.DisplayName);
+            resultParticipant.FirstName.Should().Be(participant.FirstName);
+            resultParticipant.LastName.Should().Be(participant.LastName);
+            resultParticipant.ContactEmail.Should().Be(participant.ContactEmail);
+            resultParticipant.ContactTelephone.Should().Be(participant.ContactTelephone);
             resultParticipant.Representee.Should().Be(participant.Representee);
-            resultParticipant.LinkedParticipants.Count.Should().Be(participant.Linked_participants.Count);
+            resultParticipant.LinkedParticipants.Count.Should().Be(participant.LinkedParticipants.Count);
             resultParticipant.LinkedParticipants[0].LinkType.ToString().Should()
-                .Be(participant.Linked_participants[0].Type.ToString());
+                .Be(participant.LinkedParticipants[0].Type.ToString());
             resultParticipant.LinkedParticipants[0].LinkedId.Should()
-                .Be(participant.Linked_participants[0].Linked_id);
+                .Be(participant.LinkedParticipants[0].LinkedId);
 
             var judge = response.Participants.First(x => x.HearingRole == "Judge");
             judge.IsJudge().Should().BeTrue();
@@ -68,15 +68,15 @@ namespace VideoWeb.UnitTests.Mappings
             };
             var participantA = participants[0];
             var participantB = participants[1];
-            participantA.Linked_participants.Add(new LinkedParticipantResponse
+            participantA.LinkedParticipants.Add(new LinkedParticipantResponse
             {
-                Linked_id = participantB.Id,
+                LinkedId = participantB.Id,
                 Type = LinkedParticipantType.Interpreter
             });
             
-            participantB.Linked_participants.Add(new LinkedParticipantResponse
+            participantB.LinkedParticipants.Add(new LinkedParticipantResponse
             {
-                Linked_id = participantA.Id,
+                LinkedId = participantA.Id,
                 Type = LinkedParticipantType.Interpreter
             });
             var endpoints = Builder<EndpointResponse>.CreateListOfSize(2).Build().ToList();
@@ -84,9 +84,9 @@ namespace VideoWeb.UnitTests.Mappings
             var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
 
             var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-                .With(x => x.Current_status = ConferenceState.Suspended)
+                .With(x => x.CurrentStatus = ConferenceState.Suspended)
                 .With(x => x.Participants = participants)
-                .With(x => x.Meeting_room = meetingRoom)
+                .With(x => x.MeetingRoom = meetingRoom)
                 .With(x => x.Endpoints = endpoints)
                 .Build();
             return conference;

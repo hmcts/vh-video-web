@@ -5,10 +5,9 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
-using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Requests;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.UnitTests.EventHandlers
@@ -100,10 +99,10 @@ namespace VideoWeb.UnitTests.EventHandlers
 
             // Assert
             VideoApiClientMock.Verify(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r => 
-            r.Conference_id == conference.Id &&
-            r.Defence_advocate_id == Guid.Empty &&
-            r.Endpoint_id == endpointForEvent.Id &&
-            r.Room_label == callbackEvent.TransferTo)), Times.Once);
+            r.ConferenceId == conference.Id &&
+            r.DefenceAdvocateId == Guid.Empty &&
+            r.EndpointId == endpointForEvent.Id &&
+            r.RoomLabel == callbackEvent.TransferTo)), Times.Once);
         }
     }
 }

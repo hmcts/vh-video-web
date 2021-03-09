@@ -10,6 +10,7 @@ namespace VideoWeb.Common.Models
         {
             Participants = new List<Participant>();
             Endpoints = new List<Endpoint>();
+            CivilianRooms = new List<CivilianRoom>();
         }
 
         public Guid Id { get; set; }
@@ -22,6 +23,34 @@ namespace VideoWeb.Common.Models
         public Participant GetJudge()
         {
             return Participants.SingleOrDefault(x => x.IsJudge());
+        }
+
+        public void AddParticipantToRoom(long roomId, Guid participantId)
+        {
+            var room = GetOrCreateCivilianRoom(roomId);
+            if (!room.Participants.Contains(participantId))
+            {
+                room.Participants.Add(participantId);
+            }
+        }
+
+        public void RemoveParticipantFromRoom(long roomId, Guid participantId)
+        {
+            var room = GetOrCreateCivilianRoom(roomId);
+            if (room.Participants.Contains(participantId))
+            {
+                room.Participants.Remove(participantId);
+            }
+        }
+
+        private CivilianRoom GetOrCreateCivilianRoom(long roomId)
+        {
+            var room = CivilianRooms.FirstOrDefault(x => x.Id == roomId);
+            if (room != null) return room;
+            room = new CivilianRoom {Id = roomId};
+            CivilianRooms.Add(room);
+
+            return room;
         }
     }
 }

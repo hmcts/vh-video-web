@@ -6,7 +6,7 @@ using AcceptanceTests.Common.PageObject.Pages;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Dtos;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -14,9 +14,9 @@ namespace VideoWeb.AcceptanceTests.Steps
     public class CommonSteps
     {
         private readonly TestContext _c;
-        private readonly Dictionary<User, UserBrowser> _browsers;
+        private readonly Dictionary<UserDto, UserBrowser> _browsers;
 
-        public CommonSteps(TestContext testContext, Dictionary<User, UserBrowser> browsers)
+        public CommonSteps(TestContext testContext, Dictionary<UserDto, UserBrowser> browsers)
         {
             _c = testContext;
             _browsers = browsers;

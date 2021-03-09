@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -11,52 +8,22 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
-using VideoWeb.Common.Models;
-using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
-using VideoWeb.UnitTests.Builders;
-using Endpoint = VideoWeb.Common.Models.Endpoint;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
+using VideoApi.Contract.Requests;
+using VideoApi.Contract.Enums;
+using RoomType = VideoApi.Contract.Enums.RoomType;
 
 namespace VideoWeb.UnitTests.Controllers.VideoEventController
 {
-    public class SendHearingEventTests
+    public class SendHearingEventTests : BaseSendHearingEventTests
     {
-        private VideoEventsController _sut;
-        private Conference _testConference;
-        private AutoMock _mocker;
-
         [SetUp]
         public void Setup()
         {
-            _mocker = AutoMock.GetLoose();
-
-            _testConference = BuildConferenceForTest();
-            
-            var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
-            var context = new ControllerContext
-            {
-                HttpContext = new DefaultHttpContext
-                {
-                    User = claimsPrincipal
-                }
-            };
-
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ConferenceEventRequest, Conference, CallbackEvent>()).Returns(_mocker.Create<CallbackEventMapper>());
-            _sut = _mocker.Create<VideoEventsController>();
-            _sut.ControllerContext = context;
-
-            var conference = CreateValidConferenceResponse(null);
-            _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferenceDetailsByIdAsync(It.IsAny<Guid>()))
-                .ReturnsAsync(conference);
-            _mocker.Mock<IConferenceCache>().Setup(cache => cache.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
-                .ReturnsAsync(_testConference);
-            _mocker.Mock<IEventHandlerFactory>().Setup(x => x.Get(It.IsAny<EventHub.Enums.EventType>())).Returns(_mocker.Mock<IEventHandler>().Object);
+            SetupTestConferenceAndMocks();
         }
 
         [Test]
@@ -66,46 +33,29 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             var request = CreateRequest();
 
             // Act
-            var result = await _sut.SendHearingEventAsync(request);
+            var result = await Sut.SendHearingEventAsync(request);
 
             // Assert
-            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
+            Mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
             result.Should().BeOfType<NoContentResult>();
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
         }
 
-        [Test]
-        public async Task should_return_no_content_when_event_is_for_room()
-        {
-            // Arrange
-            var request = CreateRequest();
-            request.Participant_id = _testConference.CivilianRooms.First().Id.ToString();
-
-            // Act
-            var result = await _sut.SendHearingEventAsync(request);
-
-            // Assert
-            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
-            result.Should().BeOfType<NoContentResult>();
-            var typedResult = (NoContentResult) result;
-            typedResult.Should().NotBeNull();
-        }
-        
         [Test]
         public async Task should_return_no_content_when_transfer_to_new_consultation_room()
         {
             // Arrange
             var request = CreateRequest();
-            request.Event_type = EventType.Transfer;
-            request.Transfer_to = "JudgeConsultationRoom3";
-            request.Transfer_from = RoomType.WaitingRoom.ToString();
+            request.EventType = EventType.Transfer;
+            request.TransferTo = "JudgeConsultationRoom3";
+            request.TransferFrom = RoomType.WaitingRoom.ToString();
 
             // Act
-            var result = await _sut.SendHearingEventAsync(request);
+            var result = await Sut.SendHearingEventAsync(request);
 
             // Assert
-            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
+            Mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
             result.Should().BeOfType<NoContentResult>();
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
@@ -116,15 +66,15 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         {
             // Arrange
             var request = CreateRequest();
-            request.Event_type = EventType.Transfer;
-            request.Transfer_from = "JudgeConsultationRoom3";
-            request.Transfer_to = RoomType.WaitingRoom.ToString();
+            request.EventType = EventType.Transfer;
+            request.TransferFrom = "JudgeConsultationRoom3";
+            request.TransferTo = RoomType.WaitingRoom.ToString();
 
             // Act
-            var result = await _sut.SendHearingEventAsync(request);
+            var result = await Sut.SendHearingEventAsync(request);
 
             // Assert
-            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
+            Mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
             result.Should().BeOfType<NoContentResult>();
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
@@ -137,10 +87,10 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             var request = CreateRequest("0123456789");
 
             // Act
-            var result = await _sut.SendHearingEventAsync(request);
+            var result = await Sut.SendHearingEventAsync(request);
 
             // Assert
-            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Never);
+            Mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Never);
             result.Should().BeOfType<NoContentResult>();
             var typedResult = (NoContentResult)result;
             typedResult.Should().NotBeNull();
@@ -157,15 +107,15 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             var eventType = Enum.Parse<EventHub.Enums.EventType>(expectedEventType.ToString());
 
             // Act
-            var result = await _sut.SendHearingEventAsync(request);
+            var result = await Sut.SendHearingEventAsync(request);
             
             // Assert
             result.Should().BeOfType<NoContentResult>();
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
-            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == eventType)), Times.Once);
-            _mocker.Mock<IVideoApiClient>().Verify(x =>
-                x.RaiseVideoEventAsync(It.Is<ConferenceEventRequest>(r => r.Event_type == expectedEventType)));
+            Mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == eventType)), Times.Once);
+            Mocker.Mock<IVideoApiClient>().Verify(x =>
+                x.RaiseVideoEventAsync(It.Is<ConferenceEventRequest>(r => r.EventType == expectedEventType)));
         }
 
         [TestCase(EventType.Joined)]
@@ -175,19 +125,19 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         {
             // Arrange
             var request = CreateEndpointRequest(incomingEventType);
-            request.Participant_id = Guid.NewGuid().ToString();
+            request.ParticipantId = Guid.NewGuid().ToString();
             var eventType = Enum.Parse<EventHub.Enums.EventType>(incomingEventType.ToString());
 
             // Act
-            var result = await _sut.SendHearingEventAsync(request);
+            var result = await Sut.SendHearingEventAsync(request);
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
             var typedResult = (NoContentResult)result;
             typedResult.Should().NotBeNull();
-            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == eventType)), Times.Once);
-            _mocker.Mock<IVideoApiClient>().Verify(x =>
-                x.RaiseVideoEventAsync(It.Is<ConferenceEventRequest>(r => r.Event_type == incomingEventType)));
+            Mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == eventType)), Times.Once);
+            Mocker.Mock<IVideoApiClient>().Verify(x =>
+                x.RaiseVideoEventAsync(It.Is<ConferenceEventRequest>(r => r.EventType == incomingEventType)));
         }
 
         [Test]
@@ -196,13 +146,13 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             // Arrange
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id", null, default, null);
-            _mocker.Mock<IVideoApiClient>()
+            Mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
             var request = CreateRequest();
 
             // Act
-            var result = await _sut.SendHearingEventAsync(request);
+            var result = await Sut.SendHearingEventAsync(request);
 
             // Assert
             result.Should().BeOfType<ObjectResult>();
@@ -216,13 +166,13 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             // Arrange
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
-            _mocker.Mock<IVideoApiClient>()
+            Mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()))
                 .ThrowsAsync(apiException);
             var request = CreateRequest();
 
             // Act
-            var result = await _sut.SendHearingEventAsync(request);
+            var result = await Sut.SendHearingEventAsync(request);
 
             // Assert
             result.Should().BeOfType<ObjectResult>();
@@ -236,13 +186,13 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             // Arrange
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
-            _mocker.Mock<IConferenceCache>()
+            Mocker.Mock<IConferenceCache>()
                 .Setup(x => x.GetOrAddConferenceAsync(It.IsAny<Guid>(), It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .ThrowsAsync(apiException);
             var request = CreateRequest();
 
             // Act
-            var result = await _sut.SendHearingEventAsync(request);
+            var result = await Sut.SendHearingEventAsync(request);
 
             // Assert
             result.Should().BeOfType<ObjectResult>();
@@ -250,76 +200,18 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             typedResult.Should().NotBeNull();
             typedResult.StatusCode.Should().Be(StatusCodes.Status500InternalServerError);
         }
-
-        private ConferenceEventRequest CreateRequest(string phone = null)
-        {
-            return Builder<ConferenceEventRequest>.CreateNew()
-                .With(x => x.Conference_id = _testConference.Id.ToString())
-                .With(x => x.Participant_id = _testConference.Participants[0].Id.ToString())
-                .With(x => x.Event_type = EventType.Joined)
-                .With(x => x.Phone = phone)
-                .Build();
-        }
         
         private ConferenceEventRequest CreateEndpointRequest(EventType incomingEventType)
         {
             return Builder<ConferenceEventRequest>.CreateNew()
-                .With(x => x.Conference_id = _testConference.Id.ToString())
-                .With(x => x.Participant_id = _testConference.Endpoints[0].Id.ToString())
-                .With(x => x.Event_type = incomingEventType)
-                .With(x => x.Transfer_to = "ParticipantConsultationRoom10")
-                .With(x => x.Transfer_from = RoomType.WaitingRoom.ToString())
+                .With(x => x.ConferenceId = TestConference.Id.ToString())
+                .With(x => x.ParticipantId = TestConference.Endpoints[0].Id.ToString())
+                .With(x => x.EventType = incomingEventType)
+                .With(x => x.TransferTo = "ParticipantConsultationRoom10")
+                .With(x => x.TransferFrom = RoomType.WaitingRoom.ToString())
+                .With(x => x.ParticipantRoomId = null)
                 .With(x => x.Phone = null)
                 .Build();
-        }
-        
-        private static Conference BuildConferenceForTest()
-        {
-            return new Conference
-            {
-                Id = Guid.NewGuid(),
-                HearingId = Guid.NewGuid(),
-                Participants = new List<Participant>()
-                {
-                    Builder<Participant>.CreateNew()
-                        .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
-                        .Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
-                        .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
-                        .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
-                        .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
-                        .With(x => x.Id = Guid.NewGuid()).Build()
-                },
-                Endpoints = new List<Endpoint>
-                {
-                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP1")
-                        .Build(),
-                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP2")
-                        .Build()
-                },
-                HearingVenueName = "Hearing Venue Test",
-                CivilianRooms = new List<CivilianRoom>
-                {
-                    new CivilianRoom {Id = 1, RoomLabel = "Interpreter1", Participants = new List<Guid>()}
-                }
-            };
-        }
-
-        private ConferenceDetailsResponse CreateValidConferenceResponse(string username = "john@hmcts.net")
-        {
-            var participants = Builder<ParticipantDetailsResponse>.CreateListOfSize(2).Build().ToList();
-            if (!string.IsNullOrWhiteSpace(username))
-            {
-                participants.First().Username = username;
-            }
-
-            var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-                .With(x => x.Participants = participants)
-                .Build();
-            return conference;
         }
         
     }

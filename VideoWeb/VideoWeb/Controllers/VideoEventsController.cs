@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -10,10 +11,11 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
+using VideoWeb.Extensions;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
-using EventType = VideoWeb.EventHub.Enums.EventType;
-using VAEventType = VideoWeb.Services.Video.EventType;
+using VideoApi.Client;
+using VideoApi.Contract.Enums;
+using VideoApi.Contract.Requests;
 
 namespace VideoWeb.Controllers
 {
@@ -46,58 +48,93 @@ namespace VideoWeb.Controllers
 
         [HttpPost]
         [SwaggerOperation(OperationId = "SendEvent")]
-        [ProducesResponseType((int)HttpStatusCode.NoContent)]
-        [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int) HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
         public async Task<IActionResult> SendHearingEventAsync(ConferenceEventRequest request)
         {
             try
             {
-                var conferenceId = Guid.Parse(request.Conference_id);
+                var conferenceId = Guid.Parse(request.ConferenceId);
                 var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
                 {
-                    _logger.LogTrace("Retrieving conference details for conference: ${ConferenceId}", conferenceId);
+                    _logger.LogTrace("Retrieving conference details for conference: {ConferenceId}", conferenceId);
                     return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
                 });
+                await UpdateConferenceRoomParticipants(conference, request);
 
-                var callbackEventMapper = _mapperFactory.Get<ConferenceEventRequest, Conference, CallbackEvent>();
-                var callbackEvent = callbackEventMapper.Map(request, conference);
-                request.Event_type = Enum.Parse<VAEventType>(callbackEvent.EventType.ToString());
-
-                if (IsRoomEvent(request, conference, out var roomId))
+                var events = new List<ConferenceEventRequest>() {request};
+                if (request.IsParticipantAVmr(conference, out var roomId))
                 {
-                    request.Participant_room_id = roomId.ToString();
-                    request.Participant_id = null;
+                    request.ParticipantRoomId = roomId.ToString();
+                    request.ParticipantId = null;
+                    events = request.CreateEventsForParticipantsInRoom(conference, roomId);
                 }
 
-                if (callbackEvent.EventType != EventType.VhoCall)
-                {
-                    _logger.LogTrace("Raising video event: ConferenceId: {ConferenceId}, EventType: {EventType}",
-                        request.Conference_id, request.Event_type);
-                    await _videoApiClient.RaiseVideoEventAsync(request);
-                }
-
-                if (!string.IsNullOrEmpty(request.Phone))
-                {
-                    return NoContent();
-                }
-
-                var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
-                await handler.HandleAsync(callbackEvent);
+                await Task.WhenAll(events.Select(SendEventToVideoApi));
+                await Task.WhenAll(events.Select(e => PublishEventToUi(e, conference)));
                 return NoContent();
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", request.Conference_id,
+                _logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", request.ConferenceId,
                     e.StatusCode);
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
 
-        private bool IsRoomEvent(ConferenceEventRequest request, Conference conference, out long roomId)
+        private async Task SendEventToVideoApi(ConferenceEventRequest request)
         {
-            if (!long.TryParse(request.Participant_id, out roomId)) return false;
-            var id = roomId;
-            return conference.CivilianRooms.Any(x => x.Id == id);
+            if (request.EventType != EventType.VhoCall)
+            {
+                _logger.LogTrace("Raising video event: ConferenceId: {ConferenceId}, EventType: {EventType}",
+                        request.ConferenceId, request.EventType);
+
+                await _videoApiClient.RaiseVideoEventAsync(request);
+            }
+        }
+
+        private async Task PublishEventToUi(ConferenceEventRequest request, Conference conference)
+        {
+            if (!string.IsNullOrEmpty(request.Phone))
+            {
+                return;
+            }
+            
+            var callbackEventMapper = _mapperFactory.Get<ConferenceEventRequest, Conference, CallbackEvent>();
+            var callbackEvent = callbackEventMapper.Map(request, conference);
+            request.EventType = Enum.Parse<EventType>(callbackEvent.EventType.ToString());
+            var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
+            await handler.HandleAsync(callbackEvent);
+        }
+
+        /// <summary>
+        /// This updates the VMRs for a conference when a participant joins or leaves a VMR
+        /// </summary>
+        /// <param name="conference"></param>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        private async Task UpdateConferenceRoomParticipants(Conference conference, ConferenceEventRequest request)
+        {
+            if (!request.IsParticipantAndVmrEvent())
+            {
+                return;
+            }
+            var roomId = long.Parse(request.ParticipantRoomId);
+            var participantId = Guid.Parse(request.ParticipantId);
+            
+
+            switch (request.EventType)
+            {
+                case EventType.Joined:
+                    conference.AddParticipantToRoom(roomId, participantId);
+                    break;
+                case EventType.Disconnected:
+                    conference.RemoveParticipantFromRoom(roomId, participantId);
+                    break;
+                default: return;
+            }
+
+            await _conferenceCache.UpdateConferenceAsync(conference);
         }
     }
 }

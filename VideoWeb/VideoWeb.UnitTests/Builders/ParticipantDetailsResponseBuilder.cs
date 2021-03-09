@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using FizzWare.NBuilder;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Enums;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Builders
 {
@@ -13,21 +14,21 @@ namespace VideoWeb.UnitTests.Builders
         {
             _participant = Builder<ParticipantDetailsResponse>.CreateNew()
                 .With(x => x.Id = Guid.NewGuid())
-                .With(x => x.Current_status = ParticipantState.Available)
-                .With(x => x.Case_type_group = caseTypeGroup)
-                .With(x => x.User_role = role)
-                .With(x=> x.Linked_participants = new List<LinkedParticipantResponse>());
+                .With(x => x.CurrentStatus = ParticipantState.Available)
+                .With(x => x.CaseTypeGroup = caseTypeGroup)
+                .With(x => x.UserRole = role)
+                .With(x=> x.LinkedParticipants = new List<LinkedParticipantResponse>());
         }
 
         public ParticipantDetailsResponseBuilder WithStatus(ParticipantState state)
         {
-            _participant.With(x => x.Current_status = state);
+            _participant.With(x => x.CurrentStatus = state);
             return this;
         }
 
         public ParticipantDetailsResponseBuilder WithHearingRole(string hearingRole)
         {
-            _participant.With(x => x.Hearing_role = hearingRole);
+            _participant.With(x => x.HearingRole = hearingRole);
             return this;
         }
 
