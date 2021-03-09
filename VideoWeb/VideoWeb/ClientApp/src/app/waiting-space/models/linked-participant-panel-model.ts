@@ -54,11 +54,11 @@ export class LinkedParticipantPanelModel extends PanelModel {
     }
 
     isLocalMicMuted(): boolean {
-        return this.participants.filter(p => p.isLocalMicMuted()).length === this.participantsInHearing.length;
+        return this.participantsInHearing.every(p => p.isLocalMicMuted());
     }
 
     isLocalCameraOff(): boolean {
-        return this.participants.filter(p => p.isLocalCameraOff()).length === this.participantsInHearing.length;
+        return this.participantsInHearing.every(p => p.isLocalCameraOff());
     }
 
     updateParticipantDeviceStatus(isAudioMuted: boolean, isVideoMuted: boolean, participantId?: string) {
