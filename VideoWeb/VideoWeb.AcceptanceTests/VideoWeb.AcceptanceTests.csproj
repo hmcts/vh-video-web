@@ -60,13 +60,13 @@
     <PackageReference Include="SpecFlow.NUnit" Version="3.6.23" />
     <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.6.23" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
-    <PackageReference Include="VH.AcceptanceTests.Common" Version="1.21.20" />
+    <PackageReference Include="TestApi.Client" Version="1.24.9" />
+    <PackageReference Include="VH.AcceptanceTests.Common" Version="1.21.21" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\VideoWeb.Contract\VideoWeb.Contract.csproj" />
     <ProjectReference Include="..\VideoWeb.EventHub\VideoWeb.EventHub.csproj" />
-    <ProjectReference Include="..\VideoWeb.Services\VideoWeb.Services.csproj" />
   </ItemGroup>
 
 </Project>

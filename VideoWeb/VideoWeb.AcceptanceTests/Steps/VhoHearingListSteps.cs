@@ -10,7 +10,9 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Dtos;
+using VideoApi.Contract.Responses;
+using BookingsApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -45,10 +47,10 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.CaseName(hearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.CaseNumber(hearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
-            var timespan = TimeSpan.FromMinutes(hearingThatShouldBeVisible.Scheduled_duration);
+            var timespan = TimeSpan.FromMinutes(hearingThatShouldBeVisible.ScheduledDuration);
             var listedFor = DateTimeToString.GetListedForTimeAsString(timespan);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.HearingTime(hearingThatShouldBeVisible.Id)).Text.Trim()
-                .Should().Be($"{_c.TimeZone.Adjust(hearingThatShouldBeVisible.Scheduled_date_time):HH:mm}");
+                .Should().Be($"{_c.TimeZone.Adjust(hearingThatShouldBeVisible.ScheduledDateTime):HH:mm}");
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.ListedFor(hearingThatShouldBeVisible.Id)).Text.Trim()
                 .Should().Be($"{listedFor}");
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
@@ -65,9 +67,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheVhoShouldSeeTheParticipantContactDetails()
         {
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
-            var hearingParticipants = _c.Test.HearingParticipants.FindAll(x => x.User_role_name.Equals("Individual") || x.User_role_name.Equals("Representative"));
+            var hearingParticipants = _c.Test.HearingParticipants.FindAll(x => x.UserRoleName.Equals("Individual") || x.UserRoleName.Equals("Representative"));
             var hearingParticipant = hearingParticipants.First();
-            var conferenceParticipant = _c.Test.ConferenceParticipants.Find(x => x.Name.Contains(hearingParticipant.Last_name));
+            var conferenceParticipant = _c.Test.ConferenceParticipants.Find(x => x.Name.Contains(hearingParticipant.LastName));
             var firstParticipantLink = _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.ParticipantContactLink(conferenceParticipant.Id));
             firstParticipantLink.Displayed.Should().BeTrue();
             var action = new Actions(_browsers[_c.CurrentUser].Driver.WrappedDriver);
@@ -80,8 +82,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var participantEmailAndRole = $"{participant.Name}";
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.ParticipantContactName(participant.Id)).Text.Trim().Should().Be(participantEmailAndRole);
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.ParticipantContactEmail(participant.Id)).Text.Trim().Should().Be(hearingParticipant.Contact_email);
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.ParticipantContactPhone(participant.Id)).Text.Trim().Should().Be(hearingParticipant.Telephone_number);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.ParticipantContactEmail(participant.Id)).Text.Trim().Should().Be(hearingParticipant.ContactEmail);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.ParticipantContactPhone(participant.Id)).Text.Trim().Should().Be(hearingParticipant.TelephoneNumber);
         }
     }
 }

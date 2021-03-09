@@ -516,19 +516,27 @@ export abstract class WaitingRoomBaseComponent {
             conference: this.conferenceId,
             participant: this.participant.id
         };
-        const linkedParticipants = this.conference.participants.filter(p =>
-            this.participant.linked_participants.map(lp => lp.linked_id).includes(p.id)
-        );
-        const isWitnessLink =
-            linkedParticipants.some(lp => lp.hearing_role.toUpperCase() === HearingRole.WITNESS.toUpperCase()) ||
-            this.participant.hearing_role.toUpperCase() === HearingRole.WITNESS.toUpperCase();
-        if (isWitnessLink) {
+
+        if (this.isOrHasWitnessLink()) {
             this.logger.debug(`${this.loggerPrefix} getting witness interpreter room for participant`, logPayload);
             return this.videoCallService.retrieveWitnessInterpreterRoom(this.conference.id, this.participant.id);
         } else {
             this.logger.debug(`${this.loggerPrefix} getting standard interpreter room for participant`, logPayload);
             return this.videoCallService.retrieveInterpreterRoom(this.conference.id, this.participant.id);
         }
+    }
+
+    isOrHasWitnessLink(): boolean {
+        if (this.participant.hearing_role.toUpperCase() === HearingRole.WITNESS.toUpperCase()) {
+            return true;
+        }
+        if (!this.participant.linked_participants) {
+            return false;
+        }
+        const linkedParticipants = this.conference.participants.filter(p =>
+            this.participant.linked_participants.map(lp => lp.linked_id).includes(p.id)
+        );
+        return linkedParticipants.some(lp => lp.hearing_role.toUpperCase() === HearingRole.WITNESS.toUpperCase());
     }
 
     disconnect() {
@@ -733,7 +741,7 @@ export abstract class WaitingRoomBaseComponent {
             return;
         }
 
-        if (this.hearing.isInSession() && this.participant.hearing_role !== HearingRole.WITNESS) {
+        if (this.hearing.isInSession() && !this.isOrHasWitnessLink()) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because hearing is in session';
             this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
@@ -744,7 +752,7 @@ export abstract class WaitingRoomBaseComponent {
             return;
         }
 
-        if (this.participant.hearing_role === HearingRole.WITNESS && this.participant.status === ParticipantStatus.InHearing) {
+        if (this.isOrHasWitnessLink() && this.participant.status === ParticipantStatus.InHearing) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because witness is in hearing';
             this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);

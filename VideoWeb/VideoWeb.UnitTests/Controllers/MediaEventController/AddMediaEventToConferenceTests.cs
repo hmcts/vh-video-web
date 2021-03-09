@@ -11,9 +11,10 @@ using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
+using VideoApi.Contract.Requests;
 using VideoWeb.UnitTests.Builders;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 
 namespace VideoWeb.UnitTests.Controllers.MediaEventController
 {
@@ -71,11 +72,11 @@ namespace VideoWeb.UnitTests.Controllers.MediaEventController
             _videoApiClientMock.Verify(v =>
                 v.RaiseVideoEventAsync( It.Is<ConferenceEventRequest>(
                     c =>
-                    c.Conference_id == conferenceId.ToString() &&
-                    c.Participant_id == _testConference.Participants[0].Id.ToString() &&
-                    c.Event_id  != string.Empty &&
-                    c.Event_type == addMediaEventRequest.EventType &&
-                    c.Time_stamp_utc != DateTime.MinValue &&
+                    c.ConferenceId == conferenceId.ToString() &&
+                    c.ParticipantId == _testConference.Participants[0].Id.ToString() &&
+                    c.EventId  != string.Empty &&
+                    c.EventType == addMediaEventRequest.EventType &&
+                    c.TimeStampUtc != DateTime.MinValue &&
                     c.Reason == "media permission denied"
                 )),Times.Once);
         }

@@ -6,7 +6,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using VideoWeb.Common.Models;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
 
 namespace VideoWeb.Controllers
 {
@@ -35,7 +35,7 @@ namespace VideoWeb.Controllers
             try
             { 
                 var response = await _videoApiClient.GetAudioStreamInfoAsync(hearingId);
-                return Ok(response.Is_recording);
+                return Ok(response.IsRecording);
             }
             catch (VideoApiException e)
             {

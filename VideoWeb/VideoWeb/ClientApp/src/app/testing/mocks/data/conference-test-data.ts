@@ -165,7 +165,7 @@ export class ConferenceTestData {
         });
     }
 
-    getListOfLinkedParticipants(): ParticipantForUserResponse[] {
+    getListOfLinkedParticipants(isWitness: boolean = false): ParticipantForUserResponse[] {
         const participants: ParticipantForUserResponse[] = [];
 
         const id1 = Guid.create().toString();
@@ -200,6 +200,10 @@ export class ConferenceTestData {
             linked_participants: [new LinkedParticipantResponse({ link_type: LinkType.Interpreter, linked_id: id1 })],
             current_room: room
         });
+
+        if (isWitness) {
+            participant2.hearing_role = HearingRole.WITNESS;
+        }
 
         participants.push(participant1);
         participants.push(participant2);

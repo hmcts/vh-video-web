@@ -11,15 +11,17 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
+using VideoApi.Contract.Requests;
 using VideoWeb.UnitTests.Builders;
-using ProblemDetails = VideoWeb.Services.Video.ProblemDetails;
 using EventHubEventType = VideoWeb.EventHub.Enums.EventType;
 using Autofac.Extras.Moq;
 using VideoWeb.Mappings;
 using System.Collections.Generic;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Models;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {

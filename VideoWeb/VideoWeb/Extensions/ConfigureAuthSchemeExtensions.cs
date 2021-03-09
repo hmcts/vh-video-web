@@ -41,7 +41,7 @@ namespace VideoWeb.Extensions
                     {
                         OnMessageReceived = context =>
                         {
-                            var accessToken = context.Request.Query["access_token"];
+                            var accessToken = context.Request.Query["accessToken"];
                             if (string.IsNullOrEmpty(accessToken)) return Task.CompletedTask;
 
                             var path = context.HttpContext.Request.Path;

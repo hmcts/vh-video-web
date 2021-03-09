@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using AcceptanceTests.Common.Api.Hearings;
 using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Helpers;
 using FluentAssertions;
@@ -9,7 +8,7 @@ using RestSharp;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Dtos;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -43,7 +42,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the user is removed from the hearing")]
         public void WhenTheUserIsRemovedFromTheHearing()
         {
-            var participantId = _c.Test.ConferenceParticipants.First(x => x.Display_name == _c.CurrentUser.Display_name).Id;
+            var participantId = _c.Test.ConferenceParticipants.First(x => x.DisplayName == _c.CurrentUser.DisplayName).Id;
             var response = _c.Apis.TestApi.RemoveParticipantFromConference(_c.Test.NewConferenceId, participantId);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             response.ResponseStatus.Should().Be(ResponseStatus.Completed);

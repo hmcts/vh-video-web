@@ -1,7 +1,7 @@
 using System;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings.Interfaces;
-using Conference = VideoWeb.Services.Video.ConferenceForIndividualResponse;
+using Conference = VideoApi.Contract.Responses.ConferenceForIndividualResponse;
 using ConferenceForIndividualResponse = VideoWeb.Contract.Responses.ConferenceForIndividualResponse;
 
 namespace VideoWeb.Mappings
@@ -13,11 +13,11 @@ namespace VideoWeb.Mappings
             return new ConferenceForIndividualResponse
             {
                 Id = conference.Id,
-                CaseName = conference.Case_name,
-                CaseNumber = conference.Case_number,
-                ScheduledDateTime = conference.Scheduled_date_time,
+                CaseName = conference.CaseName,
+                CaseNumber = conference.CaseNumber,
+                ScheduledDateTime = conference.ScheduledDateTime,
                 Status = Enum.Parse<ConferenceStatus>(conference.Status.ToString()),
-                ClosedDateTime = conference.Closed_date_time
+                ClosedDateTime = conference.ClosedDateTime
             };
         }
     }

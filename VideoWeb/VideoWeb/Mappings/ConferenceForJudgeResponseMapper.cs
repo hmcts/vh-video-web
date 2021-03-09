@@ -3,9 +3,9 @@ using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
-using Conference = VideoWeb.Services.Video.ConferenceForJudgeResponse;
+using Conference = VideoApi.Contract.Responses.ConferenceForJudgeResponse;
 using ConferenceForJudgeResponse = VideoWeb.Contract.Responses.ConferenceForJudgeResponse;
-using Participant = VideoWeb.Services.Video.ParticipantForJudgeResponse;
+using Participant = VideoApi.Contract.Responses.ParticipantForJudgeResponse;
 
 namespace VideoWeb.Mappings
 {
@@ -24,14 +24,14 @@ namespace VideoWeb.Mappings
             {
                 Id = conference.Id,
                 Status = Enum.Parse<ConferenceStatus>(conference.Status.ToString()),
-                CaseName = conference.Case_name,
-                CaseNumber = conference.Case_number,
-                CaseType = conference.Case_type,
-                ScheduledDuration = conference.Scheduled_duration,
-                ClosedDateTime = conference.Closed_date_time,
-                ScheduledDateTime = conference.Scheduled_date_time,
+                CaseName = conference.CaseName,
+                CaseNumber = conference.CaseNumber,
+                CaseType = conference.CaseType,
+                ScheduledDuration = conference.ScheduledDuration,
+                ClosedDateTime = conference.ClosedDateTime,
+                ScheduledDateTime = conference.ScheduledDateTime,
                 Participants = conference.Participants.Select(_participantForJudgeResponseMapper.Map).ToList(),
-                NumberOfEndpoints = conference.Number_of_endpoints
+                NumberOfEndpoints = conference.NumberOfEndpoints
             };
         }
     }

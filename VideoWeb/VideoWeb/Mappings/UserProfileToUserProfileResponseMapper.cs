@@ -2,7 +2,7 @@ using System;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
-using VideoWeb.Services.User;
+using UserApi.Contract.Responses;
 
 namespace VideoWeb.Mappings
 {
@@ -19,13 +19,13 @@ namespace VideoWeb.Mappings
         {
             var response = new UserProfileResponse
             {
-                FirstName = profile.First_name,
-                LastName = profile.Last_name,
-                DisplayName = profile.Display_name,
-                Username = profile.User_name
+                FirstName = profile.FirstName,
+                LastName = profile.LastName,
+                DisplayName = profile.DisplayName,
+                Username = profile.UserName
             };
 
-            var userRole = profile.User_role;
+            var userRole = profile.UserRole;
 
             response.Role = userRole switch
             {

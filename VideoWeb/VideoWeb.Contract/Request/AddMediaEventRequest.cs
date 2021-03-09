@@ -1,4 +1,4 @@
-﻿using VideoWeb.Services.Video;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.Contract.Request
 {

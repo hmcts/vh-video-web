@@ -18,9 +18,11 @@ using VideoWeb.Controllers;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
+using VideoApi.Contract.Requests;
 using VideoWeb.UnitTests.Builders;
-using ProblemDetails = VideoWeb.Services.User.ProblemDetails;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.UnitTests.Controllers.ParticipantController
 {

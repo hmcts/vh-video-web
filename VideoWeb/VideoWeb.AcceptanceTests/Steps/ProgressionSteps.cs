@@ -163,7 +163,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {Journey.SelfTest, new SelfTestJourney()},
                 {Journey.Vho, new VhoJourney()}
             };
-            journeys[userJourney].VerifyUserIsApplicableToJourney(_c.CurrentUser.User_type);
+            journeys[userJourney].VerifyUserIsApplicableToJourney(_c.CurrentUser.UserType);
             journeys[userJourney].VerifyDestinationIsInThatJourney(endPage);
             if (userJourney == Journey.JudgeSelftest || userJourney == Journey.SelfTest) _c.Test.SelfTestJourney = true;           
             var journey = journeys[userJourney].Journey();
