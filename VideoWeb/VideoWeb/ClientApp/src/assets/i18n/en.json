@@ -384,7 +384,9 @@
         "panel-members": "Panel members",
         "participants": "Participants",
         "video-access-points": "Video access points",
-        "observers": "Observers"
+        "observers": "Observers",
+        "not-signed-in": "Not signed in",
+        "connected": "Connected"
     },
     "judge-waiting-room": {
         "start-this-hearing": "Start this hearing",
@@ -667,5 +669,21 @@
         "individual": "Individual",
         "representative": "Representative",
         "judicial-office-holder": "Judicial Office Holder"
+    },
+    "participant-status": {
+        "none": "None",
+        "not-signed-in": "Not signed in",
+        "unable-to-join": "Unable to join",
+        "joining": "Joining",
+        "available": "Available",
+        "in-hearing": "In hearing",
+        "in-consultation": "In consultation",
+        "disconnected": "Disconnected"
+    },
+    "endpoint-status": {
+        "not-yet-joined": "Not yet joined",
+        "connected": "Connected",
+        "disconnected": "Disconnected",
+        "in-consultation":"In consultation"
     }
 }
