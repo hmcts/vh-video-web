@@ -58,7 +58,6 @@ export class LinkedParticipantPanelModel extends PanelModel {
     }
 
     isLocalCameraOff(): boolean {
-        const participantsInHearing = this.participants.filter(p => p.isInHearing());
         return this.participants.filter(p => p.isLocalCameraOff()).length === this.participantsInHearing.length;
     }
 
