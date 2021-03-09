@@ -97,9 +97,8 @@ export class JoinPrivateConsultationComponent {
 
     getParticipantHearingRoleText(participant: ParticipantResponse) {
         const translatedtext = this.translateService.instant('join-private-consultation.for');
-        return participant.representee
-            ? `${participant.hearing_role} ${translatedtext} ${participant.representee}`
-            : participant.hearing_role;
+        const hearingRoleText = this.translateService.instant('hearing-role.' + participant.hearing_role);
+        return participant.representee ? `${hearingRoleText} ${translatedtext} ${participant.representee}` : hearingRoleText;
     }
 
     protected camelToSpaced(word: string) {
