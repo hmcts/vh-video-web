@@ -130,7 +130,10 @@ export abstract class WaitingRoomBaseComponent {
 
     get numberOfJudgeOrJOHsInConsultation(): number {
         return this.conference.participants.filter(
-            x => (x.role === Role.Judge || x.role === Role.JudicialOfficeHolder) && x.status === ParticipantStatus.InConsultation
+            x =>
+                (x.role === Role.Judge || x.role === Role.JudicialOfficeHolder) &&
+                x.status === ParticipantStatus.InConsultation &&
+                x.current_room?.label.toLowerCase().startsWith('judgejohconsultationroom')
         ).length;
     }
 

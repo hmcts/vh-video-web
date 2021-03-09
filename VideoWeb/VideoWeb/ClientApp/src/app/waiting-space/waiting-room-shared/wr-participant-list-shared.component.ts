@@ -11,7 +11,8 @@ import {
     ParticipantResponse,
     ParticipantStatus,
     Role,
-    VideoEndpointResponse
+    VideoEndpointResponse,
+    LinkType
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -104,9 +105,60 @@ export abstract class WRParticipantStatusListDirective {
     }
 
     protected filterNonJudgeParticipants(): void {
-        this.nonJudgeParticipants = this.conference.participants.filter(
+        const nonJudgeParts = this.conference.participants.filter(
             x => x.role !== Role.Judge && x.role !== Role.JudicialOfficeHolder && x.hearing_role !== HearingRole.OBSERVER
         );
+
+        const interpreterList = nonJudgeParts.filter(
+            x =>
+                x.role === Role.Individual &&
+                x.hearing_role === HearingRole.INTERPRETER &&
+                Array.isArray(x.linked_participants) &&
+                x.linked_participants.length > 0
+        );
+        if (!interpreterList) {
+            this.nonJudgeParticipants = nonJudgeParts;
+        } else {
+            this.nonJudgeParticipants = this.orderForInterpreter(nonJudgeParts, interpreterList);
+        }
+    }
+
+    hasInterpreterLink(participant: ParticipantResponse) {
+        return participant?.linked_participants.some(x => x.link_type === LinkType.Interpreter);
+    }
+
+    getHearingRole(participant: ParticipantResponse) {
+        if (participant.hearing_role === HearingRole.INTERPRETER) {
+            const interpreteeName = this.getInterpreteeName(participant.id);
+            return `${participant.hearing_role} for <br><strong>${interpreteeName}</strong>`;
+        }
+        if (participant.representee) {
+            const hearingRoleText = this.isCaseTypeNone(participant) ? participant.hearing_role : 'Representative';
+            return `${hearingRoleText} for <br><strong>${participant.representee}</strong>`;
+        }
+        return `${participant.hearing_role}`;
+    }
+
+    getInterpreteeName(interpreterId: string) {
+        const interpreter = this.nonJudgeParticipants.find(x => x.id === interpreterId);
+        return this.nonJudgeParticipants.find(x => x.id === interpreter.linked_participants[0].linked_id).name;
+    }
+
+    private orderForInterpreter(
+        nonJudgeParticipants: ParticipantResponse[],
+        interpreterList: ParticipantResponse[]
+    ): ParticipantResponse[] {
+        const sortedParticipants = [];
+        const linkedParticipantIds = [];
+        interpreterList.forEach(interpreter => {
+            const linkDetails = interpreter.linked_participants[0];
+            const interpretee = nonJudgeParticipants.find(x => x.id === linkDetails.linked_id);
+            sortedParticipants.push(interpretee);
+            linkedParticipantIds.push(interpretee.id);
+            sortedParticipants.push(interpreter);
+            linkedParticipantIds.push(interpreter.id);
+        });
+        return [...nonJudgeParticipants.filter(p => !linkedParticipantIds.includes(p.id)), ...sortedParticipants];
     }
 
     protected filterObservers(): void {
