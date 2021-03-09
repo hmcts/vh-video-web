@@ -150,14 +150,12 @@
                     [disabled]="!connected">
                 {{'joh-waiting-room.enter-consultation-room' | translate}}
                 <span *ngIf="numberOfJudgeOrJOHsInConsultation" id="numberOfJohsInConsultationBadge" class="badge">
-                    {{
-          numberOfJudgeOrJOHsInConsultation
-                    }}
+                    {{numberOfJudgeOrJOHsInConsultation}}
                 </span>
             </button>
         </div>
         <div class="govuk-!-margin-top-9">
-            <p class="govuk-body"><strong>{{'joh-waiting-room.video-hearing-team-contact' | translate { phone : '0300 303 0655' }}}</strong></p>
+            <p class="govuk-body"><strong>{{'joh-waiting-room.video-hearing-team-contact' | translate:{ phone: '0300 303 0655' } }}</strong></p>
         </div>
     </div>
 
