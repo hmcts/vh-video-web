@@ -256,8 +256,11 @@ describe('WaitingRoomComponent message and clock', () => {
 
     it('should return the total number of judge and JOHs in consultation', () => {
         component.conference.participants.forEach(x => (x.status = ParticipantStatus.InConsultation));
-        const expectecCount = component.conference.participants.filter(x => x.role === Role.JudicialOfficeHolder || x.role === Role.Judge)
-            .length;
+        const expectecCount = component.conference.participants.filter(
+            x =>
+                (x.role === Role.JudicialOfficeHolder || x.role === Role.Judge) &&
+                x.current_room?.label.toLowerCase().includes('judgejohconsultationroom')
+        ).length;
 
         expect(component.numberOfJudgeOrJOHsInConsultation).toBe(expectecCount);
     });
