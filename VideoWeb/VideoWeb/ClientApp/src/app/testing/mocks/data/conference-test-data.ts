@@ -142,7 +142,7 @@ export class ConferenceTestData {
 
     getConferenceDetailNowWithInterpreter(): ConferenceResponse {
         const now = new Date(new Date().toUTCString());
-        let conference = this.initConferenceDetails(now);
+        const conference = this.initConferenceDetails(now);
         conference.participants = conference.participants.concat(this.getListOfLinkedParticipants());
         return conference;
     }
