@@ -277,8 +277,12 @@ describe('WaitingRoom ParticipantList Base', () => {
         });
 
         beforeEach(() => {
-            conference = new ConferenceTestData().getConferenceDetailNowWithInterpreter();
-            const participantObserverPanelMember = new ConferenceTestData().getListOfParticipantsObserverAndPanelMembers();
+            conference = testData.getConferenceDetailNow();
+            const firstLinkedParticipants = testData.getListOfLinkedParticipants();
+            firstLinkedParticipants.forEach(x => conference.participants.push(x));
+            const secondLinkedParticipants = testData.getListOfExtraLinkedParticipants();
+            secondLinkedParticipants.forEach(x => conference.participants.push(x));
+            const participantObserverPanelMember = testData.getListOfParticipantsObserverAndPanelMembers();
             participantObserverPanelMember.forEach(x => conference.participants.push(x));
             const loggedUser = conference.participants.find(x => x.role === Role.Judge);
             const userLogged = new LoggedParticipantResponse({
@@ -302,7 +306,7 @@ describe('WaitingRoom ParticipantList Base', () => {
             expect(component).toBeTruthy();
             expect(component.judge).toBeDefined();
             expect(component.nonJudgeParticipants).toBeDefined();
-            expect(component.nonJudgeParticipants.length).toBe(4);
+            expect(component.nonJudgeParticipants.length).toBe(6);
 
             expect(component.observers).toBeDefined();
             expect(component.observers.length).toBe(2);
@@ -316,7 +320,7 @@ describe('WaitingRoom ParticipantList Base', () => {
             expect(component.endpoints).toBeDefined();
             expect(component.endpoints.length).toBe(2);
 
-            expect(component.participantCount).toBe(7);
+            expect(component.participantCount).toBe(9);
         });
 
         it('interpreter and interpretee should have hasInterpreterLink set to true', () => {
@@ -330,14 +334,35 @@ describe('WaitingRoom ParticipantList Base', () => {
             expect(component.hasInterpreterLink(interpretee)).toBeTrue();
         });
 
-        it('non judge participants should have Litigant first and then Interpreter and then the rest', () => {
-            const interpretee = component.nonJudgeParticipants.findIndex(
+        it('participant list should always have interpretee before interpreter', () => {
+            const interpreteeIndex = component.nonJudgeParticipants.findIndex(
                 x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON && x.display_name === 'Interpretee'
             );
-            const interpreter = component.nonJudgeParticipants.findIndex(
+            const interpreterIndex = component.nonJudgeParticipants.findIndex(
                 x => x.hearing_role === HearingRole.INTERPRETER && x.display_name === 'Interpreter'
             );
-            expect(interpreter).toEqual(interpretee + 1);
+            expect(interpreterIndex).toEqual(interpreteeIndex + 1);
+        });
+
+        it('participant list should always have interpretee before each interpreter when multiple interpreters exist', () => {
+            const interpretee1Index = component.nonJudgeParticipants.findIndex(
+                x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON && x.display_name === 'Interpretee'
+            );
+
+            const interpreter1Index = component.nonJudgeParticipants.findIndex(
+                x => x.hearing_role === HearingRole.INTERPRETER && x.display_name === 'Interpreter'
+            );
+
+            const interpretee2Index = component.nonJudgeParticipants.findIndex(
+                x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON && x.display_name === 'Interpretee 2'
+            );
+
+            const interpreter2Index = component.nonJudgeParticipants.findIndex(
+                x => x.hearing_role === HearingRole.INTERPRETER && x.display_name === 'Interpreter 2'
+            );
+
+            expect(interpreter1Index).toEqual(interpretee1Index + 1);
+            expect(interpreter2Index).toEqual(interpretee2Index + 1);
         });
 
         it('getInterpreteeName should return the name of the interpretee given the interpreterId', () => {

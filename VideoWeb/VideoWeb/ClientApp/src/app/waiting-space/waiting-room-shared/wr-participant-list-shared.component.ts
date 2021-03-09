@@ -109,17 +109,17 @@ export abstract class WRParticipantStatusListDirective {
             x => x.role !== Role.Judge && x.role !== Role.JudicialOfficeHolder && x.hearing_role !== HearingRole.OBSERVER
         );
 
-        const individualWithInterpreter = nonJudgeParts.find(
+        const interpreterList = nonJudgeParts.filter(
             x =>
                 x.role === Role.Individual &&
-                x.hearing_role !== HearingRole.INTERPRETER &&
+                x.hearing_role === HearingRole.INTERPRETER &&
                 Array.isArray(x.linked_participants) &&
                 x.linked_participants.length > 0
         );
-        if (!individualWithInterpreter) {
+        if (!interpreterList) {
             this.nonJudgeParticipants = nonJudgeParts;
         } else {
-            this.nonJudgeParticipants = this.orderForInterpreter(nonJudgeParts, individualWithInterpreter);
+            this.nonJudgeParticipants = this.orderForInterpreter(nonJudgeParts, interpreterList);
         }
     }
 
@@ -146,13 +146,19 @@ export abstract class WRParticipantStatusListDirective {
 
     private orderForInterpreter(
         nonJudgeParticipants: ParticipantResponse[],
-        individualWithInterpreter: ParticipantResponse
+        interpreterList: ParticipantResponse[]
     ): ParticipantResponse[] {
-        const linkDetails = individualWithInterpreter.linked_participants[0];
-        const sortedParticipants = [individualWithInterpreter];
-        const interpreter = nonJudgeParticipants.find(x => x.id === linkDetails.linked_id);
-        sortedParticipants.push(interpreter);
-        return [...nonJudgeParticipants.filter(p => ![individualWithInterpreter.id, interpreter.id].includes(p.id)), ...sortedParticipants];
+        const sortedParticipants = [];
+        const linkedParticipantIds = [];
+        interpreterList.forEach(interpreter => {
+            const linkDetails = interpreter.linked_participants[0];
+            const interpretee = nonJudgeParticipants.find(x => x.id === linkDetails.linked_id);
+            sortedParticipants.push(interpretee);
+            linkedParticipantIds.push(interpretee.id);
+            sortedParticipants.push(interpreter);
+            linkedParticipantIds.push(interpreter.id);
+        });
+        return [...nonJudgeParticipants.filter(p => !linkedParticipantIds.includes(p.id)), ...sortedParticipants];
     }
 
     protected filterObservers(): void {

@@ -140,13 +140,6 @@ export class ConferenceTestData {
         return this.initConferenceDetails(now);
     }
 
-    getConferenceDetailNowWithInterpreter(): ConferenceResponse {
-        const now = new Date(new Date().toUTCString());
-        const conference = this.initConferenceDetails(now);
-        conference.participants = conference.participants.concat(this.getListOfLinkedParticipants());
-        return conference;
-    }
-
     getConferenceDetailPast(): ConferenceResponse {
         const date = new Date(new Date().toUTCString());
         date.setUTCHours(date.getUTCHours() - 26);
@@ -186,7 +179,7 @@ export class ConferenceTestData {
             role: Role.Individual,
             representee: null,
             case_type_group: 'applicant',
-            tiled_display_name: `T2;Inpreter;${id1}`,
+            tiled_display_name: `T2;Interpreter;${id1}`,
             hearing_role: 'Interpreter',
             first_name: 'Interpreter',
             last_name: 'Doe',
@@ -200,11 +193,56 @@ export class ConferenceTestData {
             role: Role.Individual,
             representee: null,
             case_type_group: 'applicant',
-            tiled_display_name: `T2;Inpretee;${id2}`,
+            tiled_display_name: `T2;Interpretee;${id2}`,
             hearing_role: 'Litigant in person',
             first_name: 'Interpretee',
             last_name: 'Doe',
             linked_participants: [new LinkedParticipantResponse({ link_type: LinkType.Interpreter, linked_id: id1 })],
+            current_room: room
+        });
+
+        if (isWitness) {
+            participant2.hearing_role = HearingRole.WITNESS;
+        }
+
+        participants.push(participant1);
+        participants.push(participant2);
+        return participants;
+    }
+
+    getListOfExtraLinkedParticipants(isWitness: boolean = false): ParticipantForUserResponse[] {
+        const participants: ParticipantForUserResponse[] = [];
+
+        const id3 = Guid.create().toString();
+        const id4 = Guid.create().toString();
+        const room = new RoomSummaryResponse({ id: '321', label: 'Interpreter2', locked: false });
+
+        const participant1 = new ParticipantForUserResponse({
+            id: id3,
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'Interpreter 2',
+            role: Role.Individual,
+            representee: null,
+            case_type_group: 'applicant',
+            tiled_display_name: `T7;Interpreter 2;${id3}`,
+            hearing_role: 'Interpreter',
+            first_name: 'Tim',
+            last_name: 'Jones',
+            linked_participants: [new LinkedParticipantResponse({ link_type: LinkType.Interpreter, linked_id: id4 })]
+        });
+
+        const participant2 = new ParticipantForUserResponse({
+            id: id4,
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'Interpretee 2',
+            role: Role.Individual,
+            representee: null,
+            case_type_group: 'applicant',
+            tiled_display_name: `T7;Interpretee 2;${id4}`,
+            hearing_role: 'Litigant in person',
+            first_name: 'Bob',
+            last_name: 'Smith',
+            linked_participants: [new LinkedParticipantResponse({ link_type: LinkType.Interpreter, linked_id: id3 })],
             current_room: room
         });
 
