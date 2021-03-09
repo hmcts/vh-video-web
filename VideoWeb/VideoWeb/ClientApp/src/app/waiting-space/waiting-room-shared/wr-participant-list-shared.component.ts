@@ -124,7 +124,7 @@ export abstract class WRParticipantStatusListDirective {
     }
 
     hasInterpreterLink(participant: ParticipantResponse) {
-        return participant.linked_participants.some(x => x.link_type === LinkType.Interpreter);
+        return participant?.linked_participants.some(x => x.link_type === LinkType.Interpreter);
     }
 
     getHearingRole(participant: ParticipantResponse) {

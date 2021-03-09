@@ -140,6 +140,13 @@ export class ConferenceTestData {
         return this.initConferenceDetails(now);
     }
 
+    getConferenceDetailNowWithInterpreter(): ConferenceResponse {
+        const now = new Date(new Date().toUTCString());
+        let conference = this.initConferenceDetails(now);
+        conference.participants = conference.participants.concat(this.getListOfLinkedParticipants());
+        return conference;
+    }
+
     getConferenceDetailPast(): ConferenceResponse {
         const date = new Date(new Date().toUTCString());
         date.setUTCHours(date.getUTCHours() - 26);

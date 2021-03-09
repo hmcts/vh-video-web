@@ -258,16 +258,7 @@ describe('WaitingRoom ParticipantList Base', () => {
 
     describe('JudgeParticipantStatusListComponentWithInterpreter', () => {
         const testData = new ConferenceTestData();
-
-        let component: WrParticipantStatusListTest;
-        let videoWebService: jasmine.SpyObj<VideoWebService>;
-        let adalService: jasmine.SpyObj<AdalService>;
-        let consultationService: jasmine.SpyObj<ConsultationService>;
-        const eventsService = eventsServiceSpy;
-        const judgeProfile = judgeTestProfile;
         const individualProfile = individualTestProfile;
-        const logger: Logger = new MockLogger();
-        let conference: ConferenceResponse;
         let userInfo: adal.User;
 
         beforeAll(() => {
@@ -286,7 +277,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         });
 
         beforeEach(() => {
-            conference = new ConferenceTestData().getConferenceDetailNow();
+            conference = new ConferenceTestData().getConferenceDetailNowWithInterpreter();
             const participantObserverPanelMember = new ConferenceTestData().getListOfParticipantsObserverAndPanelMembers();
             participantObserverPanelMember.forEach(x => conference.participants.push(x));
             const loggedUser = conference.participants.find(x => x.role === Role.Judge);
@@ -311,7 +302,7 @@ describe('WaitingRoom ParticipantList Base', () => {
             expect(component).toBeTruthy();
             expect(component.judge).toBeDefined();
             expect(component.nonJudgeParticipants).toBeDefined();
-            expect(component.nonJudgeParticipants.length).toBe(3);
+            expect(component.nonJudgeParticipants.length).toBe(4);
 
             expect(component.observers).toBeDefined();
             expect(component.observers.length).toBe(2);
@@ -325,33 +316,49 @@ describe('WaitingRoom ParticipantList Base', () => {
             expect(component.endpoints).toBeDefined();
             expect(component.endpoints.length).toBe(2);
 
-            expect(component.participantCount).toBe(6);
+            expect(component.participantCount).toBe(7);
         });
 
         it('interpreter and interpretee should have hasInterpreterLink set to true', () => {
-            const interpreter = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.INTERPRETER);
-            const interpretee = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON);
+            const interpreter = component.nonJudgeParticipants.find(
+                x => x.hearing_role === HearingRole.INTERPRETER && x.display_name === 'Interpreter'
+            );
+            const interpretee = component.nonJudgeParticipants.find(
+                x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON && x.display_name === 'Interpretee'
+            );
             expect(component.hasInterpreterLink(interpreter)).toBeTrue();
             expect(component.hasInterpreterLink(interpretee)).toBeTrue();
         });
 
         it('non judge participants should have Litigant first and then Interpreter and then the rest', () => {
-            const interpretee = component.nonJudgeParticipants.findIndex(x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON);
-            const interpreter = component.nonJudgeParticipants.findIndex(x => x.hearing_role === HearingRole.INTERPRETER);
+            const interpretee = component.nonJudgeParticipants.findIndex(
+                x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON && x.display_name === 'Interpretee'
+            );
+            const interpreter = component.nonJudgeParticipants.findIndex(
+                x => x.hearing_role === HearingRole.INTERPRETER && x.display_name === 'Interpreter'
+            );
             expect(interpreter).toEqual(interpretee + 1);
         });
 
         it('getInterpreteeName should return the name of the interpretee given the interpreterId', () => {
-            const interpreter = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.INTERPRETER);
-            const interpretee = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON);
+            const interpreter = component.nonJudgeParticipants.find(
+                x => x.hearing_role === HearingRole.INTERPRETER && x.display_name === 'Interpreter'
+            );
+            const interpretee = component.nonJudgeParticipants.find(
+                x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON && x.display_name === 'Interpretee'
+            );
             const interpreteeName = component.getInterpreteeName(interpreter.id);
 
             expect(interpreteeName).toEqual(interpretee.name);
         });
 
         it('getHearingRole should return contain Interpreter for when displaying an Interpreter', () => {
-            const interpreter = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.INTERPRETER);
-            const interpretee = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON);
+            const interpreter = component.nonJudgeParticipants.find(
+                x => x.hearing_role === HearingRole.INTERPRETER && x.display_name === 'Interpreter'
+            );
+            const interpretee = component.nonJudgeParticipants.find(
+                x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON && x.display_name === 'Interpretee'
+            );
             const hearingRoleText = component.getHearingRole(interpreter);
 
             expect(hearingRoleText).toEqual(`${interpreter.hearing_role} for <br><strong>${interpretee.name}</strong>`);
@@ -359,7 +366,6 @@ describe('WaitingRoom ParticipantList Base', () => {
 
         it('getHearingRole should return contain Representative for when displaying a participant with Representee set and a case type set', () => {
             const representative = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.REPRESENTATIVE);
-            const litigant = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON);
             const hearingRoleText = component.getHearingRole(representative);
 
             expect(hearingRoleText).toEqual(`${representative.hearing_role} for <br><strong>${representative.representee}</strong>`);
@@ -372,4 +378,4 @@ describe('WaitingRoom ParticipantList Base', () => {
             expect(hearingRoleText).toEqual(`${litigant.hearing_role}`);
         });
     });
-    });
+});
