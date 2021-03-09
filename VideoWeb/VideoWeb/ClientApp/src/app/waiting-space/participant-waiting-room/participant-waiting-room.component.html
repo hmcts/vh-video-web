@@ -20,9 +20,9 @@
             </div>
           </ng-container>
           <ng-container *ngIf="isJohRoom || !isPrivateConsultation">
-            <div class="room-title">
+            <h1 class="room-title">
                 {{getCaseNameAndNumber()}}
-            </div>
+            </h1>
         </ng-container>
         <ng-container *ngIf="connected">
           <app-private-consultation-room-controls
