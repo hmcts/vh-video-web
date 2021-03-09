@@ -358,7 +358,9 @@
         "hearing-suspended--message": "All participants are affected. Stay near your screen for further updates. There's no need to call us.",
         "time-now": "The time now is:",
         "enter-consultation-room": "Enter consultation room",
-        "video-hearing-team-contact": "Video hearings team: {{phone}}"
+        "video-hearing-team-contact": "Video hearings team: {{phone}}",
+        "switch-to-main-screen": "Switch to main screen",
+        "browser-doesnt-support-video": "Your browser does not support Video"
     },
     "judge-context-menu": {
         "context-menu-icon": "Context menu icon",

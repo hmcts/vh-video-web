@@ -32,13 +32,13 @@
 
     <div class="video-wrapper">
         <video id="incomingFeedPrivate" autoplay [srcObject]="presentationStream && !streamInMain ? presentationStream : stream" height="auto" poster="/assets/images/empty_crest.jpg">
-            Your browser does not support Video
+            {{ 'joh-waiting-room.browser-doesnt-support-video' | translate }}
         </video>
         <div id="secondIncomingFeed"
             *ngIf="presentationStream"
             (click)="switchStreamWindows()"
             appTooltip
-            text="Switch to main screen"
+            [text]="'joh-waiting-room.switch-to-main-screen' | translate"
             colour="grey">
             <video
                 [srcObject]="presentationStream && !streamInMain ? stream : presentationStream"
@@ -46,7 +46,7 @@
                 height="auto"
                 poster="/assets/images/empty_crest.jpg"
                 class="fill-container">
-            Your browser does not support Video
+                {{ 'joh-waiting-room.browser-doesnt-support-video' | translate }}
             </video>
         </div>
     </div>

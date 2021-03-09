@@ -5,7 +5,7 @@
              id="toggle-participants-panel"
              appTooltip
              *ngIf="isJudge && !isPrivateConsultation"
-             text="{{ 'private-consultation-room-controls.participants-panel' | translate }}"
+             [text]="'private-consultation-room-controls.participants-panel' | translate"
              colour="grey"
              (click)="togglePanelStatus('Participants')">
             <span class="far fa-users"></span>
@@ -15,7 +15,7 @@
              id="toggle-chat-panel"
              appTooltip
              *ngIf="isJudge && !isPrivateConsultation"
-             text="{{ 'private-consultation-room-controls.chat-panel' | translate }}"
+             [text]="'private-consultation-room-controls.chat-panel' | translate"
              colour="grey"
              (click)="togglePanelStatus('Chat')">
             <span class="far fa-comment"></span>
@@ -24,7 +24,7 @@
 
         <img *ngIf="!screenShareStream && canShowScreenShareButton"
              appTooltip
-             text="{{ 'private-consultation-room-controls.share-my-screen' | translate }}"
+             [text]="'private-consultation-room-controls.share-my-screen' | translate"
              colour="grey"
              id="start-screenshare-img"
              class="icon-button"
@@ -33,7 +33,7 @@
              (click)="startScreenShare()" />
         <img *ngIf="screenShareStream"
              appTooltip
-             text="{{ 'private-consultation-room-controls.stop-sharing-my-screen' | translate }}"
+             [text]="'private-consultation-room-controls.stop-sharing-my-screen' | translate"
              colour="red"
              id="stop-screenshare-img"
              class="icon-button"
@@ -47,7 +47,7 @@
              id="toggle-self-view-img"
              appTooltip
              *ngIf="!audioOnly"
-             text="selfViewOpen ? '{{ 'private-consultation-room-controls.selfview-toggle-true' | translate }}' : '{{ 'private-consultation-room-controls.selfview-toggle-false' | translate }}'"
+             [text]="(selfViewOpen ? 'private-consultation-room-controls.selfview-toggle-true' : 'private-consultation-room-controls.selfview-toggle-false') | translate"
              colour="grey"
              (click)="toggleView()">
             <span class="far" [class]="selfViewOpen ? 'fa-eye' : 'fa-eye-slash'"></span>
@@ -57,7 +57,7 @@
              id="toggle-video-mute-img"
              appTooltip
              *ngIf="!isJudge && !audioOnly"
-             text="videoMuted ? '{{ 'private-consultation-room-controls.video-mute-toggle-true' | translate }}' : '{{ 'private-consultation-room-controls.video-mute-toggle-false' | translate }}'"
+             [text]="(videoMuted ? 'private-consultation-room-controls.video-mute-toggle-true' : 'private-consultation-room-controls.video-mute-toggle-false') | translate"
              colour="grey"
              (click)="toggleVideoMute()">
             <span class="far" [class]="videoMuted ? 'fa-video-slash' : 'fa-video'"></span>
@@ -67,7 +67,7 @@
              id="toggle-audio-mute-img"
              appTooltip
              *ngIf="!remoteMuted || isJudge"
-             text="audioMuted ? '{{ 'private-consultation-room-controls.audio-mute-toggle-true' | translate }}' : '{{ 'private-consultation-room-controls.audio-mute-toggle-false' | translate }}'"
+             [text]="(audioMuted ? 'private-consultation-room-controls.audio-mute-toggle-true' : 'private-consultation-room-controls.audio-mute-toggle-false') | translate"
              colour="grey"
              (click)="toggleMute()">
             <span class="far" [class]="audioMuted ? 'fa-microphone-slash' : 'fa-microphone'"></span>
@@ -77,7 +77,7 @@
              id="toggle-audio-mute-locked-img"
              appTooltip
              *ngIf="remoteMuted && !isJudge"
-             text="{{ 'private-consultation-room-controls.remote-muted' | translate }}"
+             [text]="'private-consultation-room-controls.remote-muted' | translate"
              colour="grey">
             <span class="far fa-microphone-slash red"></span>
         </div>
@@ -86,7 +86,7 @@
              id="toggle-hand-raised-img"
              appTooltip
              *ngIf="!isPrivateConsultation && !isJudge"
-             text="handRaised ? '{{ 'private-consultation-room-controls.hand-raise-toggle-true' | translate }}' : '{{ 'private-consultation-room-controls.hand-raise-toggle-false' | translate }}'"
+             [text]="(handRaised ? 'private-consultation-room-controls.hand-raise-toggle-true' :'private-consultation-room-controls.hand-raise-toggle-false') | translate"
              colour="grey"
              (click)="toggleHandRaised()">
             <span class="far fa-hand-paper" [class]="{ 'yellow': handRaised }"></span>
@@ -133,4 +133,4 @@
     </video>
 </div>
 
-<app-confirm-close-hearing-popup *ngIf="!isPrivateConsultation && isJudge && displayConfirmPopup" (popupAnswered)="close($event)"> </app-confirm-close-hearing-popup>
+<app-confirm-close-hearing-popup *ngIf="!isPrivateConsultation && isJudge && displayConfirmPopup" (popupAnswered)="close($event)"></app-confirm-close-hearing-popup>
