@@ -354,11 +354,11 @@
         "hearing-starting-at": "Your video hearing is scheduled to begin at",
         "hearing-closed": "This hearing has finished. You may now sign out.",
         "hearing-paused": "The judge will restart the hearing when they are ready. Please stay near your screen.",
-        "hearing-suspended-technical-message-1": "We're having technical issues",
-        "hearing-suspended--message-2": "All participants are affected. Stay near your screen for further updates. There's no need to call us.",
+        "hearing-suspended-technical-title": "We're having technical issues",
+        "hearing-suspended--message": "All participants are affected. Stay near your screen for further updates. There's no need to call us.",
         "time-now": "The time now is:",
         "enter-consultation-room": "Enter consultation room",
-        "video-hearing-team-contact": "Video hearings team: 0300 303 0655"
+        "video-hearing-team-contact": "Video hearings team: {{phone}}"
     },
     "judge-context-menu": {
         "context-menu-icon": "Context menu icon",
@@ -400,9 +400,9 @@
         "case-number": "case number",
         "is-everyone-connected": "Is everyone connected?",
         "hearing-messages": {
-            "not-started": "If any participants are not connected, you must call the video hearings team on <strong>0300 303 0655</strong> before you start the hearing.",
-            "paused": "Please call the video hearings team on <strong>0300 303 0655</strong> if you're having problems. We'll update the participants.",
-            "suspended": "The video hearings team has been alerted and we're informing the participants. Please call us now on <strong>0300 303 0655</strong>.",
+            "not-started": "If any participants are not connected, you must call the video hearings team on <strong>{{phone}}</strong> before you start the hearing.",
+            "paused": "Please call the video hearings team on <strong>{{phone}}</strong> if you're having problems. We'll update the participants.",
+            "suspended": "The video hearings team has been alerted and we're informing the participants. Please call us now on <strong>{{phone}}</strong>.",
             "closed": "The consultation room is available for up to 30 minutes after the hearing has finished.",
             "warning": "Warning",
             "consultation-room-will-close-at": "The consultation room will close at "
@@ -470,16 +470,16 @@
         "please-wait": "Please wait",
         "hearing-starting-at": "Your video hearing is scheduled to begin at",
         "hearing-status-messages": {
-            "starting": "Please stay near your screen",
-            "starting1": "Make sure you're ready when the judge starts the hearing.",
-            "delayed": "Your hearing is delayed",
-            "delayed1": "We're sorry for the delay. Stay near your screen for further updates.",
+            "starting-title": "Please stay near your screen",
+            "starting-body": "Make sure you're ready when the judge starts the hearing.",
+            "delayed-title": "Your hearing is delayed",
+            "delayed-body": "We're sorry for the delay. Stay near your screen for further updates.",
             "closed": "This hearing has finished. You may now sign out.",
             "paused": "The judge will restart the hearing when they are ready. Please stay near your screen.",
-            "suspended": "We're having technical issues",
-            "suspended1": "All participants are affected. Stay near your screen for further updates. There's no need to call us.",
-            "in-session": "The hearing has started",
-            "in-session1": "The judge will bring you into the hearing when they are ready for you. An alert will sound and you will join the hearing a few seconds later."
+            "suspended-title": "We're having technical issues",
+            "suspended-body": "All participants are affected. Stay near your screen for further updates. There's no need to call us.",
+            "in-session-title": "The hearing has started",
+            "in-session-body": "The judge will bring you into the hearing when they are ready for you. An alert will sound and you will join the hearing a few seconds later."
         },
         "hearing-about-to-start": "The judge will bring you into the hearing when they are ready for you. An alert will sound and you will join the hearing a few seconds later.",
         "time-now": "The time now is:",
@@ -493,7 +493,7 @@
             "guide3": "If a meeting room is locked you'll need to be invited by someone in the meeting",
             "guide4": "If you wish to have a private conversation during the hearing you'll need to ask the judge's permission."
         },
-        "vh-team": "Video hearings team: 0300 303 0655"
+        "vh-team": "Video hearings team: {{phone}}"
     },
     "invite-participant": {
         "invite-this-person": "Invite this person to the meeting"
@@ -580,5 +580,88 @@
     },
     "select-hearing-layout": {
         "choose-hearing-layout": "Choose hearing layout"
+    },
+    "hearing-role": {
+        "app": "App",
+        "app-advocate": "App Advocate",
+        "appellant-lip": "Appellant LIP",
+        "applicant-lip": "Applicant LIP",
+        "claimaint-lip": "Claimaint LIP",
+        "claimant-lip": "Claimant LIP",
+        "defendant-lip": "Defendant LIP",
+        "expert": "Expert",
+        "interpreter": "Interpreter",
+        "judge": "Judge",
+        "litigant-in-person": "Litigant in person",
+        "macKenzie-friend": "MacKenzie friend",
+        "observer": "Observer",
+        "panel-member": "Panel Member",
+        "presenting-officer": "Presenting Officer",
+        "prosecution": "Prosecution",
+        "prosecution-advocate": "Prosecution Advocate",
+        "representative": "Representative",
+        "respondent": "Respondent",
+        "respondent-Advocate": "Respondent Advocate",
+        "respondent-lip": "Respondent LIP",
+        "special-counsel": "Special Counsel",
+        "state-lip": "State LIP",
+        "winger": "Winger",
+        "witness": "Witness"
+    },
+    "case-role": {
+        "appellant": "Appellant",
+        "applicant": "Applicant",
+        "claimant": "Claimant",
+        "defendant": "Defendant",
+        "home-office": "Home Office",
+        "judge": "Judge",
+        "none": "None",
+        "observer": "Observer",
+        "panel-member": "Panel Member",
+        "respondent": "Respondent",
+        "state": "State"
+    },
+    "case-type": {
+        "children-act": "Children Act",
+        "civil": "Civil",
+        "civil-money-claims": "Civil Money Claims",
+        "court-of-appeal-criminal-division": "Court of Appeal Criminal Division",
+        "employment-tribunal": "Employment Tribunal",
+        "family-law-act": "Family Law Act",
+        "financial-remedy": "Financial Remedy",
+        "generic": "Generic",
+        "grc---charity": "GRC - Charity",
+        "grc---crb": "GRC - CRB",
+        "grc---dvsa": "GRC - DVSA",
+        "grc---environment": "GRC - Environment",
+        "grc---estate-agents": "GRC - Estate Agents",
+        "grc---food": "GRC - Food",
+        "grc---gambling": "GRC - Gambling",
+        "grc---immigration-services": "GRC - Immigration Services",
+        "grc---information-rights": "GRC - Information Rights",
+        "grc---pensions-regulation": "GRC - Pensions Regulation",
+        "grc---professional-regulations": "GRC - Professional Regulations",
+        "grc---query-jurisdiction": "GRC - Query Jurisdiction",
+        "grc---welfare-of-animals": "GRC - Welfare of Animals",
+        "housing-&-planning-act": "Housing & Planning Act",
+        "housing-act": "Housing Act",
+        "immigration-and-asylum": "Immigration and Asylum",
+        "land-registration": "Land Registration",
+        "leasehold-enfranchisement": "Leasehold Enfranchisement",
+        "leasehold-management": "Leasehold Management",
+        "park-homes": "Park Homes",
+        "rents": "Rents",
+        "right-to-buy": "Right to buy",
+        "tax": "Tax",
+        "tribunal": "Tribunal"
+    },
+    "user-role": {
+        "case-admin": "Case admin",
+        "video-hearings-officer": "Video hearings officer",
+        "hearing-facilitation-support-(ctrt-clerk)": "Hearing facilitation support (CTRT Clerk)",
+        "judge": "Judge",
+        "individual": "Individual",
+        "representative": "Representative",
+        "judicial-office-holder": "Judicial Office Holder"
     }
 }
