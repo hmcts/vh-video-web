@@ -86,7 +86,10 @@ describe('JoinPrivateConsultationComponent', () => {
     });
 
     it('should return participant hearing role text', () => {
-        expect(component.getParticipantHearingRoleText(globalParticipant)).toEqual('Litigant in person');
+        const expectedText = 'Litigant In Person';
+        translateService.instant.calls.reset();
+        translateServiceSpy.instant.and.returnValues('for', expectedText);
+        expect(component.getParticipantHearingRoleText(globalParticipant)).toEqual(expectedText);
     });
 
     it('should return rooms available', () => {

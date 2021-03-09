@@ -1,10 +1,10 @@
 <div id="confirmationDialog" class="vh-popup-overlay">
   <div class="vh-popup">
-    <h1 class="govuk-heading-m">You are about to {{ action }} this hearing</h1>
+    <h1 class="govuk-heading-m">{{ 'confirm-start-hearing-popup.hearing-about-to-start' | translate:{ action: action } }}</h1>
 
-    <p class="govuk-body">Participants will see a countdown timer before the hearing begins.</p>
+    <p class="govuk-body">{{ 'confirm-start-hearing-popup.participant-sees-countdown-timer' | translate }}</p>
     <p class="govuk-body govuk-!-margin-bottom-9">
-      Any participants in private consultations will automatically be brought into the hearing.
+      {{ 'confirm-start-hearing-popup.private-consultations' | translate }}
     </p>
 
     <button
@@ -12,10 +12,10 @@
       class="govuk-button govuk-!-margin-right-1"
       type="button"
       data-module="govuk-button"
-      aria-label="Confirm start hearing"
+      attr.aria-label="{{ 'confirm-start-hearing-popup.confirm-start-hearing' | translate }}"
       (click)="respondWithYes()"
     >
-      {{ action | titlecase }} hearing
+      {{ action | titlecase }} {{ 'confirm-start-hearing-popup.hearing' | translate }}
     </button>
 
     <button
@@ -23,10 +23,10 @@
       class="govuk-button govuk-button--secondary govuk-!-margin-left-2"
       type="button"
       data-module="govuk-button"
-      aria-label="Cancel start hearing"
+      attr.aria-label="{{ 'confirm-start-hearing-popup.cancel-start-hearing' | translate }}"
       (click)="respondWithNo()"
     >
-      Cancel
+      {{ 'confirm-start-hearing-popup.cancel' | translate }}
     </button>
   </div>
 </div>
