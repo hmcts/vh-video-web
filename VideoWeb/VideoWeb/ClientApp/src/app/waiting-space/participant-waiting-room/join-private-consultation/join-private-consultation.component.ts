@@ -97,7 +97,7 @@ export class JoinPrivateConsultationComponent {
 
     getParticipantHearingRoleText(participant: ParticipantResponse) {
         const translatedtext = this.translateService.instant('join-private-consultation.for');
-        const hearingRoleText = this.translateService.instant('hearing-role.' + participant.hearing_role);
+        const hearingRoleText = this.translateService.instant('hearing-role.' + participant.hearing_role.replace(' ', '-').toLowerCase());
         return participant.representee ? `${hearingRoleText} ${translatedtext} ${participant.representee}` : hearingRoleText;
     }
 
