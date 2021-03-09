@@ -4,29 +4,25 @@ Feature: Login
 	So that I can access and sign out of the application
 
 Scenario: Judge login
-	Given a new browser is open for a Judge
-	When the user attempts to login with valid credentials
-	Then the user is on the Hearing List page
-	When the user attempts to logout and log back in
-	Then the user should be navigated to sign in screen
+	Given the Judge is on the login page
+  When they attempt to login with valid credentials
+  Then they should be on the Hearing List page
+  And they should have the option to log back in when they logout
 
 Scenario: Individual login
-	Given a new browser is open for an Individual
-	When the user attempts to login with valid credentials
-	Then the user is on the Hearing List page
-	When the user attempts to logout and log back in
-	Then the user should be navigated to sign in screen
+  Given the Individual is on the login page
+	When they attempt to login with valid credentials
+	Then they should be on the Hearing List page
+	And they should have the option to log back in when they logout
 
 Scenario: Representative login
-	Given a new browser is open for an Representative
-	When the user attempts to login with valid credentials
-	Then the user is on the Hearing List page
-	When the user attempts to logout and log back in
-	Then the user should be navigated to sign in screen
+  Given the Representative is on the login page
+  When they attempt to login with valid credentials
+  Then they should be on the Hearing List page
+  And they should have the option to log back in when they logout
 
 Scenario: Video Hearings Officer login
-	Given a new browser is open for a Video Hearings Officer
-	When the user attempts to login with valid credentials
-	Then the user is on the VHO Venue List page
-	When the user attempts to logout and log back in
-	Then the user should be navigated to sign in screen
+  Given the Video Hearings Officer is on the login page
+  When they attempt to login with valid credentials
+  Then they should be on the VHO Venue List page
+  And they should have the option to log back in when they logout
