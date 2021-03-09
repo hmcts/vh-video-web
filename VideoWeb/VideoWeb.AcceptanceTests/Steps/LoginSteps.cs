@@ -34,7 +34,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
         
         [Then(@"they should have the option to log back in when they logout")]
-        public void WhenTheUserAttemptsToLogout()
+        public void ThenTheyShouldHaveOptionToLogBackInAfterLogout()
         {
             _browsers[_c.CurrentUser].ClickLink(CommonPages.SignOutLink);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(CommonPages.SignOutMessage).Displayed.Should().BeTrue();
