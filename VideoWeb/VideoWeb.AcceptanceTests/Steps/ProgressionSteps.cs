@@ -82,6 +82,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserSteps.GivenANewBrowserIsOpenFor(user);
             Progression(FromString(user), page);
         }
+        
+        [Given(@"the (.*) user with an Interpreter has progressed to the (.*) page")]
+        public void GivenIHaveAnInterpreterAndHaveProgressedToThePage(string user, string page)
+        {
+            _dataSetupSteps.GivenIHaveAnInterpreterAndHaveAHearingAndAConference();
+            _browserSteps.GivenANewBrowserIsOpenFor(user);
+            Progression(FromString(user), page);
+        }
 
         [Given(@"the (.*) user is on the (.*) page")]
         public void GivenIAmOnThePage(string user, string page)
@@ -90,8 +98,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserSteps.ThenTheUserIsOnThePage(page);
         }
         
-        [Given(@"(?:an|a|the) (.*) user has progressed to the (.*) page with a hearing in (.*) minute time")]
-        [Given(@"(?:an|a|the) (.*) user has progressed to the (.*) page with a hearing in (.*) minutes time")]
+        [Given(@"(?:an|a|the) (.*) user has progressed to the (.*) page with a hearing in (.*) (?:minute|minutes) time")]
         public void GivenIAmOnThePageWithAHearingInMinuteTime(string user, string page, int minutes)
         {
             _dataSetupSteps.GivenIHaveAHearingAndAConferenceInMinutesTime(minutes);
