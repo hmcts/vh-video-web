@@ -138,19 +138,20 @@ export class ParticipantStatusComponent implements OnInit {
     }
 
     private sortParticipants() {
-        const judges = this.participants.filter(participant => participant.isJudge);
+        const judges = this.participants.filter(participant => participant.hearingRole === 'Judge');
         const panelMembersAndWingers = this.participants.filter(participant =>
             ['Panel Member', 'Winger'].includes(participant.hearingRole)
         );
-
+        const observers = this.participants.filter(participant => participant.hearingRole === 'Observer');
         const interpretersAndInterpretees = this.participants.filter(participant => participant.isInterpreterOrInterpretee);
         const others = this.participants.filter(
             participant =>
-                !participant.isJudge &&
-                !['Observer', 'Panel Member', 'Winger'].includes(participant.hearingRole) &&
-                !interpretersAndInterpretees.includes(participant)
+                !judges.includes(participant) &&
+                !panelMembersAndWingers.includes(participant) &&
+                !interpretersAndInterpretees.includes(participant) &&
+                !observers.includes(participant)
         );
-        const observers = this.participants.filter(participant => participant.hearingRole === 'Observer');
+
         this.sortedParticipants = [...judges, ...panelMembersAndWingers, ...others, ...interpretersAndInterpretees, ...observers];
         return this.sortedParticipants;
     }
