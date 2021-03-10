@@ -713,7 +713,8 @@
     "available": "Available",
     "inhearing": "In hearing",
     "inconsultation": "In consultation",
-    "disconnected": "Disconnected"
+    "disconnected": "Disconnected",
+    "hmcts-crest": "HM Courts & Tribunals Service crest"
   },
   "endpoint-status": {
     "notyetjoined": "Not yet joined",

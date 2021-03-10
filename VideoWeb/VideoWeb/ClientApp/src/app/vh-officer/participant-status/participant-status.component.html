@@ -7,15 +7,15 @@
     <div class="govuk-grid-column-one-half status-box-display">
       <div class="interpreter-icon">
         <span *ngIf="participant.isInterpreterOrInterpretee" class="vh-interpreter-icon">
-          <em class="far fa-2x fa-language"></em>
+          <em class="far fa-1x fa-language"></em>
         </span>
         <img
           *ngIf="participant.isJudge"
           src="/assets/images/govuk-crest.png"
-          height="40"
-          width="40"
+          height="20"
+          width="20"
           class="govuk-header__logotype-crest"
-          alt="HM Courts &amp; Tribunals Service crest"
+          [attr.alt]="'participant-status.hmcts-crest' | translate"
         />        
       </div>        
       <div id="participant-contact-details-link-{{ participant.id }}" class="govuk-body-s tooltip-wrapper">
