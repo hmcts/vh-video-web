@@ -754,5 +754,98 @@
       "title": "Select your hearing lists",
       "label": "Venue name {{name}}",
       "allocation-list-label": "Venue allocation list"
+    },
+    "privacy-policy": {
+        "crest-image-alt": "HMCTS logo crest image",
+        "heading": "Our privacy policy for the video hearings service",
+        "print-button": "Print",
+        "paragraph1": "The video hearings service is managed by HM Courts and Tribunals Service (HMCTS).",
+        "paragraph2": "When you use this service we (HMCTS) will ask you to provide some personal data. This policy explains why we collect your personal data, what we do with it and your rights.",
+        "why-we-collect": {
+            "heading": "Why we collect your personal data",
+            "paragraph": "We collect your personal data so you can take part in a video hearing and to meet legal requirements. We also collect data to improve the service."
+        },        
+        "what-we-do": {
+            "heading": "What we do with your personal data",
+            "paragraph1": "Your personal data is processed by our staff in the UK, and the data is stored within the EEA.",
+            "paragraph2": "HMCTS is an executive agency of the Ministry of Justice. The Ministry of Justice is known as the 'data controller' of the personal data you provide. The Ministry's personal information charter explains more about how we process data."
+        },
+        "what-we-collect": {
+            "heading": "The data we collect",
+            "paragraph": "The personal data we collect includes:",
+            "list": {
+                "1": "your name, address and contact details, including your email address and telephone number",
+                "2": "details of your company and your role, if applicable",
+                "3": "details of anyone who acts on your behalf or anyone that you act for in a video hearing",
+                "4": "information we gather to assess your suitability for a video hearing",
+                "5": "information about your video hearing",
+                "6": "information that tells us if you open an email from us, or click on a link in an email",
+                "7": "the login details you use to access the video hearings service",
+                "8": "information about the way you access this service including your IP address, internet speed, computer operating system and the browser you use to access the internet. We do this by",
+                "8-cookies": "using cookies"
+            }
+        },
+        "how-long": {
+            "heading": "How long we keep your data",
+            "paragraph": "The video hearings service will keep this information for 3 months after the date your hearing is booked to take place. We'll then delete it. Information about your application or your case is held by a different department in HMCTS and different arrangements may apply."
+        },
+        "shoring-and-sharing": {
+            "heading": "Storing and sharing your data internationally",
+            "paragraph": "Sometimes your personal data will be stored outside the UK. When we do this, we comply with data protection law."
+        },
+        "your-rights": {
+            "heading": "Your rights",
+            "paragraph1": "You can ask:",
+            "list-ask": {
+                "1": "to see the personal data that we hold on you",
+                "2": "to have the personal data corrected",
+                "3": "to have the personal data removed or deleted (this will depend on the circumstances, for example, if you decide not to continue with your case)",
+                "4": "that access to the personal data is restricted (for example, you can ask to have your data stored for longer and not automatically deleted)"
+            },
+            "paragraph2": "If you want to see the personal data that we hold on you, you can:",
+            "list-see": {
+                "1-1": "complete a form to",
+                "1-link": "make a subject access request.",
+                "1-2": "Your request goes to the MoJ as data controller.",
+                "2": "write to us: Disclosure Team, Post point 10.38, 102 Petty France, London, SW1H 9AJ"
+            },
+            "paragraph3": "You can ask for more information about:",
+            "list-more": {
+                "1": "agreements we have on sharing information with other organisations",
+                "2": "when we are allowed to pass on personal information without telling you",
+                "3": "our instructions to staff on how to collect, use or delete your personal information",
+                "4": "how we check that the information we hold is accurate and up to date"
+            },
+            "paragraph4": "You can contact the MoJ data protection officer by:",
+            "list-contact": {
+                "1": "writing to us: Post point 10.38, 102 Petty France, London, SW1H 9AJ",
+                "2": "emailing:"
+            }
+        },
+        "how-to-complain": {
+            "heading": "How to complain",
+            "paragraph1-1": "See our ",
+            "paragraph1-link": "complaints procedure",
+            "paragraph1-2": "if you want to complain about how we've handled your personal data.",
+            "paragraph2-1": "Write to: Post point 10.38, 102 Petty France, London, SW1H 9AJ",
+            "paragraph2-2": "Email: ",
+            "paragraph3-1": "You can also complain to the ",
+            "paragraph3-link": "Information Commissioner's Office",
+            "paragraph3-2": "if you're not satisfied with our response or believe we're not processing your personal data lawfully."
+        },
+        "hearings-recorded": {
+            "heading": "Where hearings are recorded",
+            "paragraph1": "The process for recording video hearings is the same as for hearings held in a court or tribunal building:",
+            "list": {
+                "1": "hearings at the Crown Court and at civil and family courts are always recorded",
+                "2-1": "tribunal hearings are not always recorded. ",
+                "2-link": "Contact the tribunal",
+                "2-2": " to find out if the hearing was recorded.",
+                "3": "hearings at magistrates' courts are never recorded."
+            },
+            "paragraph2-1": "Where hearings are recorded you may ",
+            "paragraph2-link": "apply for a transcript.",
+            "paragraph3": "Participants must not record or take any images of the hearing."
+        }
     }
 }
