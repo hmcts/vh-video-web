@@ -62,7 +62,7 @@ export class BetaBannerComponent implements OnInit, OnDestroy {
     }
 
     updateFeedbackUrl() {
-        if (this.status === ConferenceStatus.Closed && this.router.url.indexOf('waiting-room') > -1) {
+        if (this.status === ConferenceStatus.Closed) {
             this.setFeedbackUrl(this.exitSurveyUrl[this.translateService.currentLang]);
         } else {
             this.setFeedbackUrl(this.inPageFeedbackUrl[this.translateService.currentLang]);

@@ -1,12 +1,10 @@
 import { OnDestroy, OnInit } from '@angular/core';
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { AdalService } from 'adal-angular4';
-import { Guid } from 'guid-typescript';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
-    ConsultationAnswer,
     LoggedParticipantResponse,
     EndpointStatus,
     ParticipantResponse,
@@ -17,20 +15,19 @@ import {
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
 import { individualTestProfile, judgeTestProfile } from 'src/app/testing/data/test-profiles';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
 import {
-    requestedConsultationMessageSubjectMock,
     eventsServiceSpy,
     participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { WRParticipantStatusListDirective } from './wr-participant-list-shared.component';
 import { HearingRole } from '../models/hearing-role-model';
+import { TranslateService } from '@ngx-translate/core';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 class WrParticipantStatusListTest extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
     constructor(
@@ -38,9 +35,10 @@ class WrParticipantStatusListTest extends WRParticipantStatusListDirective imple
         protected consultationService: ConsultationService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected videoWebService: VideoWebService
+        protected videoWebService: VideoWebService,
+        protected translateService: TranslateService
     ) {
-        super(adalService, consultationService, eventService, videoWebService, logger);
+        super(adalService, consultationService, eventService, videoWebService, logger, translateService);
     }
 
     ngOnInit() {
@@ -68,6 +66,7 @@ describe('WaitingRoom ParticipantList Base', () => {
     let videoWebService: jasmine.SpyObj<VideoWebService>;
     let adalService: jasmine.SpyObj<AdalService>;
     let consultationService: jasmine.SpyObj<ConsultationService>;
+    const translateService = translateServiceSpy;
     const eventsService = eventsServiceSpy;
     const judgeProfile = judgeTestProfile;
     const logger: Logger = new MockLogger();
@@ -95,7 +94,7 @@ describe('WaitingRoom ParticipantList Base', () => {
             role: loggedUser.role
         });
 
-        component = new WrParticipantStatusListTest(adalService, consultationService, eventsService, logger, videoWebService);
+        component = new WrParticipantStatusListTest(adalService, consultationService, eventsService, logger, videoWebService, translateService);
         component.conference = conference;
         component.loggedInUser = userLogged;
         component.ngOnInit();
@@ -258,7 +257,6 @@ describe('WaitingRoom ParticipantList Base', () => {
 
     describe('ParticipantStatusListSupportForInterpreter', () => {
         const testData = new ConferenceTestData();
-        const individualProfile = individualTestProfile;
         let userInfo: adal.User;
 
         beforeAll(() => {
@@ -268,11 +266,6 @@ describe('WaitingRoom ParticipantList Base', () => {
                 userInfo: userInfo
             });
             videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails', 'getObfuscatedName']);
-            const logged = new LoggedParticipantResponse({
-                participant_id: '1111-1111',
-                display_name: 'Some name',
-                role: Role.Individual
-            });
             videoWebService.getObfuscatedName.and.returnValue('test username');
         });
 
@@ -291,7 +284,7 @@ describe('WaitingRoom ParticipantList Base', () => {
                 role: loggedUser.role
             });
 
-            component = new WrParticipantStatusListTest(adalService, consultationService, eventsService, logger, videoWebService);
+            component = new WrParticipantStatusListTest(adalService, consultationService, eventsService, logger, videoWebService, translateService);
             component.conference = conference;
             component.loggedInUser = userLogged;
             component.ngOnInit();
@@ -386,21 +379,21 @@ describe('WaitingRoom ParticipantList Base', () => {
             );
             const hearingRoleText = component.getHearingRole(interpreter);
 
-            expect(hearingRoleText).toEqual(`${interpreter.hearing_role} for <br><strong>${interpretee.name}</strong>`);
+            expect(hearingRoleText).toEqual(`hearing-role.interpreter wr-participant-list-shared.for <br><strong>${interpretee.name}</strong>`);
         });
 
         it('getHearingRole should return contain Representative for when displaying a participant with Representee set and a case type set', () => {
             const representative = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.REPRESENTATIVE);
             const hearingRoleText = component.getHearingRole(representative);
 
-            expect(hearingRoleText).toEqual(`${representative.hearing_role} for <br><strong>${representative.representee}</strong>`);
+            expect(hearingRoleText).toEqual(`wr-participant-list-shared.representative wr-participant-list-shared.for <br><strong>${representative.representee}</strong>`);
         });
 
         it('getHearingRole should return contain the hearing role when displaying a participant', () => {
             const litigant = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.LITIGANT_IN_PERSON);
             const hearingRoleText = component.getHearingRole(litigant);
 
-            expect(hearingRoleText).toEqual(`${litigant.hearing_role}`);
+            expect(hearingRoleText).toEqual('hearing-role.litigant-in-person');
         });
     });
 });

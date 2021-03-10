@@ -11,22 +11,19 @@ describe('ConfirmStartHearingPopupComponent', () => {
     });
 
     it('should return "start" by default', () => {
-        const expectedText = 'start';
-        translateServiceSpy.instant.and.returnValues(expectedText);
-        expect(component.action).toBe('start');
+        const expectedText = 'confirm-start-hearing-popup.start';
+        expect(component.action).toBe(expectedText);
     });
 
     it('should return "start" if hearing has not started', () => {
         component.hearingStarted = false;
-        const expectedText = 'start';
-        translateServiceSpy.instant.and.returnValues(expectedText);
+        const expectedText = 'confirm-start-hearing-popup.start';
         expect(component.action).toBe(expectedText);
     });
 
     it('should return "resume" if hearing has already begun', () => {
         component.hearingStarted = true;
-        const expectedText = 'resume';
-        translateServiceSpy.instant.and.returnValues(expectedText);
+        const expectedText = 'confirm-start-hearing-popup.resume';
         expect(component.action).toBe(expectedText);
     });
 });
