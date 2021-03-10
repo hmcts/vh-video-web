@@ -3,6 +3,7 @@ import { ConsultationAnswer } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Participant } from 'src/app/shared/models/participant';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import {
@@ -20,11 +21,12 @@ describe('NotificationToastrService', () => {
     let service: NotificationToastrService;
     const logger: Logger = new MockLogger();
     let roomLabel: string;
+    const translateService = translateServiceSpy;
 
     beforeAll(() => {});
 
     beforeEach(() => {
-        service = new NotificationToastrService(logger, toastrService, consultationService, notificationSoundsService);
+        service = new NotificationToastrService(logger, toastrService, consultationService, notificationSoundsService, translateService);
         roomLabel = 'Meeting room 1';
         consultationService.respondToConsultationRequest.calls.reset();
         notificationSoundsService.playConsultationRequestRingtone.calls.reset();
@@ -188,7 +190,7 @@ describe('NotificationToastrService', () => {
 
         // Assert
         expect(mockToast.toastRef.componentInstance.vhToastOptions.htmlBody).toBe(
-            '<span class="govuk-!-font-weight-bold">Call from Greeno</span><br/>with<br/>Chris Witness'
+            '<span class="govuk-!-font-weight-bold">notification-toastr.invite.call-from</span><br/>notification-toastr.invite.with<br/>Chris Witness'
         );
     });
 
@@ -210,7 +212,7 @@ describe('NotificationToastrService', () => {
 
         // Assert
         expect(mockToast.toastRef.componentInstance.vhToastOptions.htmlBody).toBe(
-            '<span class="govuk-!-font-weight-bold">Call from Greeno</span><br/>with<br/>Chris Witness<br/>DispName1'
+            '<span class="govuk-!-font-weight-bold">notification-toastr.invite.call-from</span><br/>notification-toastr.invite.with<br/>Chris Witness<br/>DispName1'
         );
     });
 
@@ -230,7 +232,7 @@ describe('NotificationToastrService', () => {
 
         // Assert
         expect(mockToast.toastRef.componentInstance.vhToastOptions.htmlBody).toBe(
-            '<span class="govuk-!-font-weight-bold">Call from Greeno</span>'
+            '<span class="govuk-!-font-weight-bold">notification-toastr.invite.call-from</span>'
         );
     });
 
@@ -251,7 +253,7 @@ describe('NotificationToastrService', () => {
 
         // Assert
         expect(mockToast.toastRef.componentInstance.vhToastOptions.buttons[0].hoverColour).toBe('green');
-        expect(mockToast.toastRef.componentInstance.vhToastOptions.buttons[0].label).toBe('Accept');
+        expect(mockToast.toastRef.componentInstance.vhToastOptions.buttons[0].label).toBe('notification-toastr.invite.accept');
         expect(consultationService.respondToConsultationRequest).toHaveBeenCalledWith(
             globalConference.id,
             p.id,
@@ -281,7 +283,7 @@ describe('NotificationToastrService', () => {
 
         // Assert
         expect(mockToast.toastRef.componentInstance.vhToastOptions.buttons[1].hoverColour).toBe('red');
-        expect(mockToast.toastRef.componentInstance.vhToastOptions.buttons[1].label).toBe('Decline');
+        expect(mockToast.toastRef.componentInstance.vhToastOptions.buttons[1].label).toBe('notification-toastr.invite.decline');
         expect(consultationService.respondToConsultationRequest).toHaveBeenCalledWith(
             globalConference.id,
             p.id,

@@ -15,6 +15,7 @@ import { ImHelper } from '../im-helper';
 import { Hearing } from '../models/hearing';
 import { ChatBaseComponent } from './chat-base.component';
 import { TranslateService } from '@ngx-translate/core';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 class ChatBaseTest extends ChatBaseComponent {
     content: ElementRef<HTMLElement>;
@@ -60,7 +61,6 @@ describe('ChatBaseComponent', () => {
     let hearing: Hearing;
     const adminProfile = adminTestProfile;
     let contentElement: HTMLDivElement;
-    let translateServiceSpy: jasmine.SpyObj<TranslateService>;
 
     beforeAll(() => {
         adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
@@ -77,7 +77,6 @@ describe('ChatBaseComponent', () => {
             'getProfileByUsername',
             'getUserProfile'
         ]);
-        translateServiceSpy = jasmine.createSpyObj<TranslateService>('TranslateService', ['instant']);
     });
 
     beforeEach(() => {
