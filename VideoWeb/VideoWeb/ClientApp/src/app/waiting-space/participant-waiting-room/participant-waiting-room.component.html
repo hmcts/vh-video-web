@@ -93,7 +93,7 @@
     <div class="govuk-grid-row govuk-!-margin-bottom-4" *ngIf="!showVideo">
       <div class="govuk-grid-column-one-third">
         <button id="changeCameraButton" class="govuk-button" data-module="govuk-button" type="button"
-          (click)="showChooseCameraDialog()" attr.aria-label="{{'participant-waiting-room.choose-camera-and-microphone-aria-label' | translate}}">
+          (click)="showChooseCameraDialog()" [attr.aria-label]="'participant-waiting-room.choose-camera-and-microphone-aria-label' | translate">
           {{'participant-waiting-room.choose-camera-and-microphone' | translate}}
         </button>
       </div>
@@ -105,7 +105,7 @@
       </div>
     </div>
 
-    <table class="govuk-table vh-fullwidth" attr.aria-describedby="{{'participant-waiting-room.details-of-the-hearing' | translate}}">
+    <table class="govuk-table vh-fullwidth" [attr.aria-label]="'participant-waiting-room.details-of-the-hearing' | translate">
       <thead class="govuk-table__head no-mass">
         <tr class="govuk-table__row">
           <th scope="col" class="govuk-table__header">{{'participant-waiting-room.hearing' | translate}}</th>
