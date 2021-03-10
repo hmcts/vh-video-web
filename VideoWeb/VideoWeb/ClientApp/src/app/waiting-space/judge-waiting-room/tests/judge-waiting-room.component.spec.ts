@@ -125,18 +125,17 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     }));
 
     const getConferenceStatusTextTestCases = [
-        { status: ConferenceStatus.NotStarted, expected: 'Start this hearing' },
-        { status: ConferenceStatus.InSession, expected: 'Hearing is in session' },
-        { status: ConferenceStatus.Paused, expected: 'Hearing paused' },
-        { status: ConferenceStatus.Suspended, expected: 'Hearing suspended' },
-        { status: ConferenceStatus.Closed, expected: 'Hearing is closed' }
+        { status: ConferenceStatus.NotStarted, expected: 'judge-waiting-room.start-this-hearing' },
+        { status: ConferenceStatus.InSession, expected: 'judge-waiting-room.hearing-is-in-session' },
+        { status: ConferenceStatus.Paused, expected: 'judge-waiting-room.hearing-paused' },
+        { status: ConferenceStatus.Suspended, expected: 'judge-waiting-room.hearing-suspended' },
+        { status: ConferenceStatus.Closed, expected: 'judge-waiting-room.hearing-is-closed' }
     ];
 
     getConferenceStatusTextTestCases.forEach(test => {
         it(`should return hearing status text '${test.expected}'`, () => {
             component.conference.status = test.status;
             translateService.instant.calls.reset();
-            translateServiceSpy.instant.and.returnValues(test.expected);
             expect(component.getConferenceStatusText()).toBe(test.expected);
         });
     });

@@ -106,7 +106,7 @@
         <tbody class="govuk-table__body">
             <tr class="govuk-table__row">
                 <td class="govuk-table__cell hearing-details-col1-width">
-                    <strong>{{ conference.case_name }}</strong> ({{ 'case-type.' + conference.case_type.replace(' ', '-').toLowerCase() | translate }}) <span>{{'judge-waiting-room.case-number' | translate}}</span>:
+                    <strong>{{ conference.case_name }}</strong> ({{ ('case-type.' + stringToTranslateId(conference.case_type)) | translate }}) <span>{{'judge-waiting-room.case-number' | translate}}</span>:
                     <strong>{{ conference.case_number }}</strong>
                 </td>
                 <td class="govuk-table__cell hearing-details-col2-width">

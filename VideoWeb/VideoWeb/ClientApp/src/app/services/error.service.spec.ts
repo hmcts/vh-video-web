@@ -158,9 +158,8 @@ describe('ErrorService', () => {
         const error = new CallError('Error connecting to conference');
         const conferenceId = Guid.create().toString();
         translateServiceSpy.instant.calls.reset();
-        const text1 = `There's a problem with your connection`;
-        const text2 = `Please click "Reconnect" to return to the previous page. Call us if you keep seeing this message.`;
-        translateServiceSpy.instant.and.returnValues(text1, text2);
+        const text1 = 'error-service.problem-with-connection';
+        const text2 = 'error-service.click-reconnect';
         // act
         service.handlePexipError(error, conferenceId);
 
@@ -190,10 +189,9 @@ describe('ErrorService', () => {
             `Your camera and/or microphone are not available. Please make sure they are not being actively used by another app`
         );
         const conferenceId = Guid.create().toString();
-        const text1 = 'Your camera and microphone are blocked';
-        const text2 = 'Please unblock the camera and microphone or call us if there is a problem.';
+        const text1 = 'error-service.camera-mic-blocked';
+        const text2 = 'error-service.please-unblock';
         translateServiceSpy.instant.calls.reset();
-        translateServiceSpy.instant.and.returnValues(text1, text2);
 
         // act
         service.handlePexipError(error, conferenceId);
@@ -208,10 +206,9 @@ describe('ErrorService', () => {
         spyOn(service, 'goToServiceError');
         const error = new CallError('This meeting has reached the maximum number of participants.');
         const conferenceId = Guid.create().toString();
-        const text1 = 'An unexpected error occurred';
-        const text2 = 'Please click "Reconnect" to return to the previous page.Call us if you keep seeing this message.';
+        const text1 = 'error-service.unexpected-error';
+        const text2 = 'error-service.click-reconnect';
         translateServiceSpy.instant.calls.reset();
-        translateServiceSpy.instant.and.returnValues(text1, text2);
 
         // act
         service.handlePexipError(error, conferenceId);

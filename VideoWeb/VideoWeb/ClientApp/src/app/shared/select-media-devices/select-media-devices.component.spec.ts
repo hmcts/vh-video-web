@@ -145,16 +145,14 @@ describe('SelectMediaDevicesComponent', () => {
 
     it('should get camera text "OFF" when connectWithCameraOn is false', () => {
         translateServiceSpy.instant.calls.reset();
-        translateServiceSpy.instant.and.returnValue('off');
         component.connectWithCameraOn = false;
-        expect(component.audioOnlyToggleText).toBe('OFF');
+        expect(component.audioOnlyToggleText).toBe('SELECT-MEDIA-DEVICES.OFF');
     });
 
     it('should get camera text "ON" when connectWithCameraOn is true', () => {
         component.connectWithCameraOn = true;
         translateServiceSpy.instant.calls.reset();
-        translateServiceSpy.instant.and.returnValue('on');
-        expect(component.audioOnlyToggleText).toBe('ON');
+        expect(component.audioOnlyToggleText).toBe('SELECT-MEDIA-DEVICES.ON');
     });
 
     it('should publish camera setting on toggle switch', () => {

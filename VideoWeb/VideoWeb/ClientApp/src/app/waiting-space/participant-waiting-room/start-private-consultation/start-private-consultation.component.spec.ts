@@ -98,8 +98,7 @@ describe('StartPrivateConsultationComponent', () => {
         participant.representee = representee;
         participant.hearing_role = representive;
         translateService.instant.calls.reset();
-        translateServiceSpy.instant.and.returnValues('for');
-        expect(component.participantHearingRoleText(participant)).toEqual(`${representive} for ${representee}`);
+        expect(component.participantHearingRoleText(participant)).toEqual(`${representive} start-private-consultation.for ${representee}`);
     });
 
     it('should return unavailable status class for disconnected', () => {
@@ -154,8 +153,7 @@ describe('StartPrivateConsultationComponent', () => {
         const participant = conference.participants[0];
         participant.status = ParticipantStatus.Disconnected;
         translateService.instant.calls.reset();
-        const expectedText = 'Unavailable';
-        translateServiceSpy.instant.and.returnValues(expectedText);
+        const expectedText = 'start-private-consultation.unavailable';
         expect(component.getParticipantStatus(participant)).toEqual(expectedText);
     });
 
@@ -164,8 +162,7 @@ describe('StartPrivateConsultationComponent', () => {
         participant.status = ParticipantStatus.InConsultation;
         participant.current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
         translateService.instant.calls.reset();
-        translateServiceSpy.instant.and.returnValues('In');
-        expect(component.getParticipantStatus(participant)).toContain('In meeting room 1');
+        expect(component.getParticipantStatus(participant)).toContain('start-private-consultation.in meeting room 1');
     });
 
     it('should return in judge consultaion participant status', () => {
@@ -173,16 +170,14 @@ describe('StartPrivateConsultationComponent', () => {
         participant.status = ParticipantStatus.InConsultation;
         participant.current_room = new RoomSummaryResponse({ label: 'JudgeJOHConsultationRoom1' });
         translateService.instant.calls.reset();
-        translateServiceSpy.instant.and.returnValues('In');
-        expect(component.getParticipantStatus(participant)).toContain('In judge room 1');
+        expect(component.getParticipantStatus(participant)).toContain('start-private-consultation.in judge room 1');
     });
 
     it('should return unavailable endpoint status', () => {
         const endpoint = conference.endpoints[0];
         endpoint.status = EndpointStatus.Disconnected;
         translateService.instant.calls.reset();
-        const expectedText = 'Unavailable';
-        translateServiceSpy.instant.and.returnValues(expectedText);
+        const expectedText = 'start-private-consultation.unavailable';
         expect(component.getEndpointStatus(endpoint)).toEqual(expectedText);
     });
 
@@ -191,7 +186,6 @@ describe('StartPrivateConsultationComponent', () => {
         endpoint.status = EndpointStatus.InConsultation;
         endpoint.current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
         translateService.instant.calls.reset();
-        translateServiceSpy.instant.and.returnValues('In');
-        expect(component.getEndpointStatus(endpoint)).toContain('In meeting room 1');
+        expect(component.getEndpointStatus(endpoint)).toContain('start-private-consultation.in meeting room 1');
     });
 });
