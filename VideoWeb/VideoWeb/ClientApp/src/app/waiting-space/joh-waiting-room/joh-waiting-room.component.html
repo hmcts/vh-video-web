@@ -97,8 +97,8 @@
     <table class="govuk-table vh-fullwidth" aria-describedby="Details of the hearing">
       <thead class="govuk-table__head no-mass">
         <tr class="govuk-table__row">
-          <th scope="col" class="govuk-table__header">Hearing</th>
-          <th scope="col" class="govuk-table__header">Date</th>
+          <th scope="col" class="govuk-table__header">{{ 'joh-waiting-room.hearing' | translate}}</th>
+          <th scope="col" class="govuk-table__header">{{ 'joh-waiting-room.date' | translate}}</th>
         </tr>
       </thead>
       <tbody class="govuk-table__body">
@@ -123,8 +123,8 @@
     <div *ngIf="currentTime" class="govuk-panel" [ngClass]="getCurrentTimeClass()">
       <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="getCurrentTimeClass()">
         <div *ngIf="hearing.isOnTime() || hearing.isStarting() || hearing.isDelayed()">
-          <h2 class="govuk-heading-m white">Please wait</h2>
-          <p class="white">Your video hearing is scheduled to begin at {{ hearing.scheduledStartTime | date: 'HH:mm' }}</p>
+          <h2 class="govuk-heading-m white">{{ 'joh-waiting-room.please-wait' | translate}}</h2>
+          <p class="white">{{ 'joh-waiting-room.hearing-starting-at' | translate: { date: hearing.scheduledStartTime | date: 'HH:mm' } }}</p>
         </div>
 
                 <div *ngIf="hearing.isClosed()">

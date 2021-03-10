@@ -358,7 +358,7 @@
         "choose-camera-and-microphone-aria-label": "Choose camera and microphone dialog",
         "case-number": "case number",
         "please-wait": "Please wait",
-        "hearing-starting-at": "Your video hearing is scheduled to begin at",
+        "hearing-starting-at": "Your video hearing is scheduled to begin at {{date}}",
         "hearing-closed": "This hearing has finished. You may now sign out.",
         "hearing-paused": "The judge will restart the hearing when they are ready. Please stay near your screen.",
         "hearing-suspended-technical-title": "We're having technical issues",
