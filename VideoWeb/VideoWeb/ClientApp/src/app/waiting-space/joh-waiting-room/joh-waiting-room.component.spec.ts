@@ -25,6 +25,7 @@ import {
     videoWebService
 } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { JohWaitingRoomComponent } from './joh-waiting-room.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('JohWaitingRoomComponent', () => {
     let component: JohWaitingRoomComponent;
@@ -42,7 +43,10 @@ describe('JohWaitingRoomComponent', () => {
         snapshot: { data: { loggedUser: logged } }
     };
 
+    const translateService = translateServiceSpy;
+
     beforeEach(async () => {
+        translateService.instant.calls.reset();
         component = new JohWaitingRoomComponent(
             activatedRoute,
             videoWebService,
@@ -60,7 +64,8 @@ describe('JohWaitingRoomComponent', () => {
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
-            clockService
+            clockService,
+            translateService
         );
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
@@ -100,6 +105,7 @@ describe('JohWaitingRoomComponent', () => {
         it(`should return hearing status text '${test.expected}'`, () => {
             component.hearing = new Hearing(test.conference);
             component.hearing.getConference().status = test.status;
+            translateServiceSpy.instant.and.returnValues(test.expected);
             expect(component.getConferenceStatusText()).toBe(test.expected);
         });
     });

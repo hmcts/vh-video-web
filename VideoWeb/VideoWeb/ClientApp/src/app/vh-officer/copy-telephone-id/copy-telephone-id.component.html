@@ -5,7 +5,7 @@
     (tooltipShown)="resetText()"
     class="icons"
     src="/assets/images/phone.png"
-    alt="Copy joining by phone details to clipboard"
+    [attr.alt]="'copy-telephone-id.alt' | translate"
     (click)="copyToClipboard(); $event.stopPropagation()"
   />
 </div>

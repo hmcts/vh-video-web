@@ -11,6 +11,7 @@ import {
     DismissWitnessFromHearingEvent
 } from 'src/app/shared/models/participant-event';
 import { ElementRef } from '@angular/core';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('JudgeContextMenuComponent', () => {
     const participants = new ConferenceTestData().getListOfParticipants();
@@ -19,10 +20,12 @@ describe('JudgeContextMenuComponent', () => {
     let nativeElement: HTMLDivElement;
 
     let component: JudgeContextMenuComponent;
+    const translateService = translateServiceSpy;
+
     beforeEach(() => {
         nativeElement = document.createElement('div');
         elementRef = new ElementRef<HTMLDivElement>(nativeElement);
-        component = new JudgeContextMenuComponent(logger, elementRef);
+        component = new JudgeContextMenuComponent(logger, elementRef, translateService);
         component.participant = new ParticipantPanelModel(participants[0]);
     });
 

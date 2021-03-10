@@ -5,15 +5,15 @@
         ><img
           src="/assets/images/alert-1.png"
           rel="exclamation mark"
-          alt="warning exclamation mark"
+          [attr.alt]="'audio-alert.warning-icon' | translate"
           id="exclamation-mark"
           width="40"
           height="40"
       /></span>
 
       <span class="govuk-warning-text__text vh-msg">
-        <span class="govuk-warning-text__assistive">Warning</span>
-        There’s a problem with recording. Some or all of the audio for this hearing may not be recorded.
+        <span class="govuk-warning-text__assistive">{{'audio-alert.title' | translate}}</span>
+        {{'audio-alert.message' | translate}}
       </span>
       <span class="vh-inline">
         <a class="vh-close-popup" href="javascript:void(0);" (click)="closeAlert()" id="closeAlertBtn">&#10006;</a>

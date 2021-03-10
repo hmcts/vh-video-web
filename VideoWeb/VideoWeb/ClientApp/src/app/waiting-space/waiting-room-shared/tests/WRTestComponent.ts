@@ -12,11 +12,11 @@ import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { NotificationSoundsService } from '../../services/notification-sounds.service';
 import { VideoCallService } from '../../services/video-call.service';
-import { WaitingRoomBaseComponent } from '../waiting-room-base.component';
+import { WaitingRoomBaseDirective } from '../waiting-room-base.component';
 import { NotificationToastrService } from 'src/app/waiting-space/services/notification-toastr.service';
 import { RoomClosingToastrService } from 'src/app/waiting-space/services/room-closing-toast.service';
 
-export class WRTestComponent extends WaitingRoomBaseComponent {
+export class WRTestComponent extends WaitingRoomBaseDirective {
     constructor(
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,

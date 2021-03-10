@@ -8,6 +8,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-participant-list-shared.component';
 import { ActivatedRoute } from '@angular/router';
 import { HearingRole } from '../../models/hearing-role-model';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-private-consultation-participants',
@@ -24,7 +25,8 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         protected eventService: EventsService,
         protected logger: Logger,
         protected videoWebService: VideoWebService,
-        protected route: ActivatedRoute
+        protected route: ActivatedRoute,
+        protected translateService: TranslateService
     ) {
         super(adalService, consultationService, eventService, videoWebService, logger);
         this.loggerPrefix = '[PrivateConsultationParticipantsComponent] - ';
@@ -121,22 +123,22 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
             return '';
         }
         if (this.participantCallStatuses[participant.id] === 'Calling') {
-            return 'Calling...';
+            return this.translateService.instant('private-consultation-participants.calling');
         }
         if (this.participantCallStatuses[participant.id] === ConsultationAnswer.Rejected) {
-            return 'Declined';
+            return this.translateService.instant('private-consultation-participants.declined');
         }
         if (this.participantCallStatuses[participant.id] === ConsultationAnswer.Failed) {
-            return 'Failed';
+            return this.translateService.instant('private-consultation-participants.failed');
         }
         if (this.participantCallStatuses[participant.id] === ConsultationAnswer.None) {
-            return 'No Answer';
+            return this.translateService.instant('private-consultation-participants.no-answer');
         }
         if (
             this.participantCallStatuses[participant.id] === ConsultationAnswer.Transferring ||
             this.participantCallStatuses[participant.id] === ConsultationAnswer.Accepted
         ) {
-            return 'Transferring';
+            return this.translateService.instant('private-consultation-participants.transferring');
         }
         if (participant.current_room?.label) {
             return (
@@ -147,7 +149,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         }
 
         if (!this.isParticipantAvailable(participant)) {
-            return 'Not available';
+            return this.translateService.instant('private-consultation-participants.not-available');
         }
     }
 
