@@ -1,3 +1,4 @@
+import { Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
@@ -52,7 +53,8 @@ import { VideoCallService } from '../services/video-call.service';
 
 declare var HeartbeatFactory: any;
 
-export abstract class WaitingRoomBaseComponent {
+@Directive()
+export abstract class WaitingRoomBaseDirective {
     maxBandwidth = null;
     audioOnly: boolean;
     hearingStartingAnnounced: boolean;
@@ -93,6 +95,9 @@ export abstract class WaitingRoomBaseComponent {
     private readonly loggerPrefix = '[WR] -';
     loggedInUser: LoggedParticipantResponse;
     linkedParticipantRoom: SharedParticipantRoom;
+
+    @ViewChild('incomingFeed', { static: false }) videoStream: ElementRef<HTMLVideoElement>;
+    countdownComplete: boolean;
 
     protected constructor(
         protected route: ActivatedRoute,
@@ -318,6 +323,14 @@ export abstract class WaitingRoomBaseComponent {
         this.eventHubSubscription$.add(
             this.eventService.getHearingTransfer().subscribe(async message => {
                 this.handleHearingTransferChange(message);
+                this.updateShowVideo();
+            })
+        );
+
+        this.logger.debug('[WR] - Subscribing to countdown complete message');
+        this.eventHubSubscription$.add(
+            this.eventService.getHearingCountdownCompleteMessage().subscribe(async conferenceId => {
+                this.handleCountdownCompleteMessage(conferenceId);
                 this.updateShowVideo();
             })
         );
@@ -632,8 +645,34 @@ export abstract class WaitingRoomBaseComponent {
         this.hearing.getConference().status = message.status;
         this.conference.status = message.status;
 
+        if (message.status === ConferenceStatus.InSession) {
+            this.countdownComplete = false;
+        }
+
         if (message.status === ConferenceStatus.Closed) {
             this.getConferenceClosedTime(this.hearing.id);
+        }
+    }
+
+    shouldMuteHearing(): boolean {
+        return !this.countdownComplete && this.hearing.isInSession();
+    }
+
+    updateVideoStreamMuteStatus() {
+        if (this.shouldMuteHearing()) {
+            this.toggleVideoStreamMute(true);
+        } else {
+            this.toggleVideoStreamMute(false);
+        }
+    }
+
+    toggleVideoStreamMute(muted: boolean): void {
+        if (this.videoStream) {
+            this.logger.debug(`${this.loggerPrefix} Updating video stream mute status to ${muted}`, {
+                conference: this.conferenceId,
+                participant: this.participant.id
+            });
+            this.videoStream.nativeElement.muted = muted;
         }
     }
 
@@ -686,6 +725,14 @@ export abstract class WaitingRoomBaseComponent {
                 participant: message.participantId
             });
         }
+    }
+
+    handleCountdownCompleteMessage(conferenceId: string) {
+        if (!this.validateIsForConference(conferenceId)) {
+            return;
+        }
+        this.countdownComplete = true;
+        this.toggleVideoStreamMute(false);
     }
 
     protected validateIsForConference(conferenceId: string): boolean {

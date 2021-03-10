@@ -18,14 +18,14 @@ import { NotificationSoundsService } from '../services/notification-sounds.servi
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
-import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
+import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
 
 @Component({
     selector: 'app-joh-waiting-room',
     templateUrl: './joh-waiting-room.component.html',
     styleUrls: ['../waiting-room-global-styles.scss', './joh-waiting-room.component.scss']
 })
-export class JohWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
+export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     private readonly loggerPrefixJOH = '[JOH WR] -';
 
     constructor(

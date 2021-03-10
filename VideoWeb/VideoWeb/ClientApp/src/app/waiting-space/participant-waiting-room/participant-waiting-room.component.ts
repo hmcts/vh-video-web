@@ -20,7 +20,7 @@ import { ConferenceStatusMessage } from 'src/app/services/models/conference-stat
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
-import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
+import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -28,7 +28,7 @@ import { TranslateService } from '@ngx-translate/core';
     templateUrl: './participant-waiting-room.component.html',
     styleUrls: ['../waiting-room-global-styles.scss', './participant-waiting-room.component.scss']
 })
-export class ParticipantWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
+export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     currentTime: Date;
     hearingStartingAnnounced: boolean;
 
