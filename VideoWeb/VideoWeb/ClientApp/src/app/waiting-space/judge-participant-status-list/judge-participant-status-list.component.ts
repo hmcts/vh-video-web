@@ -84,11 +84,11 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         if (participant.status === ParticipantStatus.Available || participant.status === ParticipantStatus.InHearing) {
             return this.translateService.instant('judge-participant-status-list.connected');
         }
-        return this.translateService.instant('participant-status.' + participant.status.toString().replace(' ', '-').toLowerCase());
+        return this.translateService.instant('participant-status.' + participant.status.toString().toLowerCase());
     }
 
     getEndpointStatus(endpoint: VideoEndpointResponse): string {
-        return this.translateService.instant('endpoint-status.' + endpoint.status.toString().replace(' ', '-').toLowerCase());
+        return this.translateService.instant('endpoint-status.' + endpoint.status.toString().toLowerCase());
     }
 
     getParticipantStatusCss(participant: ParticipantResponse): string {

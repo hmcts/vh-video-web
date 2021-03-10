@@ -685,16 +685,16 @@
     },
     "participant-status": {
         "none": "None",
-        "not-signed-in": "Not signed in",
-        "unable-to-join": "Unable to join",
+        "notsignedin": "Not signed in",
+        "unabletojoin": "Unable to join",
         "joining": "Joining",
         "available": "Available",
-        "in-hearing": "In hearing",
-        "in-consultation": "In consultation",
+        "inhearing": "In hearing",
+        "inconsultation": "In consultation",
         "disconnected": "Disconnected"
     },
     "endpoint-status": {
-        "not-yet-joined": "Not yet joined",
+        "notyetjoined": "Not yet joined",
         "connected": "Connected",
         "disconnected": "Disconnected",
         "in-consultation":"In consultation"
