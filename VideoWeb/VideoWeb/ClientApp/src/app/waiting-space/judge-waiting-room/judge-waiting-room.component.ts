@@ -19,14 +19,14 @@ import { NotificationSoundsService } from '../services/notification-sounds.servi
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
-import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
+import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
 
 @Component({
     selector: 'app-judge-waiting-room',
     templateUrl: './judge-waiting-room.component.html',
     styleUrls: ['./judge-waiting-room.component.scss', '../waiting-room-global-styles.scss']
 })
-export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
+export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     private readonly loggerPrefixJudge = '[Judge WR] -';
     audioRecordingInterval: NodeJS.Timer;
     isRecording: boolean;
