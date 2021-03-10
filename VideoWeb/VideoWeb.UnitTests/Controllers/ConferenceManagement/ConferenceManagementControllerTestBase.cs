@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using FizzWare.NBuilder;
@@ -53,9 +54,9 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .ReturnsAsync(TestConference);
         }
 
-        protected static Conference BuildConferenceForTest()
+        protected static Conference BuildConferenceForTest(bool withWitnessRoom = false)
         {
-            return new Conference
+            var conference = new Conference
             {
                 Id = Guid.NewGuid(),
                 HearingId = Guid.NewGuid(),
@@ -82,12 +83,36 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                         .With(x => x.Username = Faker.Internet.Email("representative2"))
                         .With(x => x.HearingRole = "Professional")
                         .With(x => x.Id = Guid.NewGuid()).Build(),
-                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.HearingRole = "Witness")
                         .With(x => x.Username = Faker.Internet.Email("witness1"))
                         .With(x => x.Id = Guid.NewGuid()).Build()
                 }
             };
+
+            if (!withWitnessRoom) return conference;
+
+            var witnessInRoom = Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
+                .With(x => x.HearingRole = "Witness")
+                .With(x => x.Username = Faker.Internet.Email("witness2"))
+                .With(x => x.Id = Guid.NewGuid()).Build();
+            
+            var witnessInterpreter = Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
+                .With(x => x.HearingRole = "Interpreter")
+                .With(x => x.Username = Faker.Internet.Email("interpreter"))
+                .With(x => x.Id = Guid.NewGuid()).Build();
+
+            witnessInRoom.LinkedParticipants = new List<LinkedParticipant>
+                {new LinkedParticipant {LinkedId = witnessInterpreter.Id, LinkType = LinkType.Interpreter}};
+            
+            witnessInterpreter.LinkedParticipants = new List<LinkedParticipant>
+                {new LinkedParticipant {LinkedId = witnessInRoom.Id, LinkType = LinkType.Interpreter}};
+            var witnessParticipants = new List<Participant> {witnessInRoom, witnessInterpreter};
+            var room = new CivilianRoom
+                {Id = 1234, RoomLabel = "Interpreter1", Participants = witnessParticipants.Select(x => x.Id).ToList()};
+            conference.CivilianRooms.Add(room);
+            conference.Participants.AddRange(witnessParticipants);
+            return conference;
         }
     }
 }
