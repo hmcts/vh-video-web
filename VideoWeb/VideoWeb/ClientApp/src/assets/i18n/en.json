@@ -113,7 +113,8 @@
         "hm-courts": "HM Courts",
         "tribunals-service": "Tribunals Service",
         "sign-out": "Sign out",
-        "crest-image-alt": "HMCTS logo crest image"
+        "crest-image-alt": "HMCTS logo crest image",
+        "account-navigation-label": "Account navigation"
     },
     "not-found": {
         "page-not-found": "Page not found",
@@ -750,6 +751,8 @@
       "cancel-close-label": "Cancel closing the hearing"
     },
     "venue-list": {
-      "label": "Venue name {{name}}"
+      "title": "Select your hearing lists",
+      "label": "Venue name {{name}}",
+      "allocation-list-label": "Venue allocation list"
     }
 }

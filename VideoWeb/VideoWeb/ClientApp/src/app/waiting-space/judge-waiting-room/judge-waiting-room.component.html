@@ -48,7 +48,7 @@
                 </div>
 
                 <div class="video-wrapper">
-                    <video id="incomingFeedJudgePrivate" [srcObject]="presentationStream && !streamInMain ? presentationStream : stream" autoplay height="auto" class="incomingFeedPrivate">
+                    <video id="incomingFeedJudgePrivate" #incomingFeed (playing)="updateVideoStreamMuteStatus()" [srcObject]="presentationStream && !streamInMain ? presentationStream : stream" autoplay height="auto" class="incomingFeedPrivate">
                        {{'judge-waiting-room.browser-support-message' | translate}}
                     </video>
                     <div id="secondIncomingFeed"
@@ -106,7 +106,7 @@
         <tbody class="govuk-table__body">
             <tr class="govuk-table__row">
                 <td class="govuk-table__cell hearing-details-col1-width">
-                    <strong>{{ conference.case_name }}</strong> ({{ 'case-role.' + conference.case_type.replace(' ', '-').toLowerCase() | translate }}) <span>{{'judge-waiting-room.case-number' | translate}}</span>:
+                    <strong>{{ conference.case_name }}</strong> ({{ 'case-type.' + conference.case_type.replace(' ', '-').toLowerCase() | translate }}) <span>{{'judge-waiting-room.case-number' | translate}}</span>:
                     <strong>{{ conference.case_number }}</strong>
                 </td>
                 <td class="govuk-table__cell hearing-details-col2-width">

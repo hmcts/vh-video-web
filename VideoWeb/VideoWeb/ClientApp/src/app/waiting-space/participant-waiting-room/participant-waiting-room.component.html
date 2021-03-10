@@ -47,7 +47,7 @@
       </app-private-consultation-participants>
   </div>
   <div class="video-wrapper">
-      <video id="incomingFeedPrivate" autoplay [srcObject]="presentationStream && !streamInMain ? presentationStream : stream" poster="/assets/images/empty_crest.jpg">
+      <video id="incomingFeedPrivate" #incomingFeed (playing)="updateVideoStreamMuteStatus()" autoplay [srcObject]="presentationStream && !streamInMain ? presentationStream : stream" poster="/assets/images/empty_crest.jpg">
           {{'participant-waiting-room.browser-support' | translate}}
       </video>
       <div id="secondIncomingFeed"
