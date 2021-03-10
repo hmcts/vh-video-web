@@ -1,13 +1,13 @@
 <div class="govuk-grid-row govuk-!-margin-bottom-2 govuk-!-margin-top-2">
   <div class="govuk-grid-column-full">
-    <h1 class="govuk-heading-m">Select your hearing lists</h1>
+    <h1 class="govuk-heading-m">{{'venue-list.title' | translate}}</h1>
   </div>
 
   <div class="govuk-grid-column-three-quarters">
     <ng-select
       id="venue-allocation-list"
       class="custom"
-      aria-label="Venue allocation list"
+      [attr.aria-label]="'venue-list.allocation-list-label' | translate"
       [items]="judges"
       [multiple]="true"
       bindLabel="name"

@@ -24,7 +24,7 @@
                     data-module="govuk-button"
                     type="button"
                     (click)="continue()"
-                    aria-label="Continue to the previous page">
+                    [attr.aria-label]="'error-camera-microphone.button-continue' | translate">
                 {{'error-camera-microphone.button-continue' | translate}}
             </button>
         </div>
