@@ -570,7 +570,7 @@
         "pause": "Pause",
         "hand-raise-toggle-true": "Lower hand",
         "hand-raise-toggle-false": "Raise hand",
-        "remote-muted": "You have been been remote muted",
+        "remote-muted": "Judge has muted you. Raise your hand to speak.",
         "audio-mute-toggle-true": "Unmute microphone",
         "audio-mute-toggle-false": "Mute microphone",
         "video-mute-toggle-true": "Turn on camera",
