@@ -1,11 +1,13 @@
 import { HearingLayout } from 'src/app/services/clients/api-client';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 import { HearingLayoutComponent } from './hearing-layout.component';
 
 describe('HearingLayoutComponent', () => {
     let component: HearingLayoutComponent;
-
+    const translateService = translateServiceSpy;
+    
     beforeEach(() => {
-        component = new HearingLayoutComponent();
+        component = new HearingLayoutComponent(translateService);
     });
 
     const getLayoutImagePathTestCases = [
@@ -22,9 +24,9 @@ describe('HearingLayoutComponent', () => {
     });
 
     const getLayoutTitleTestCases = [
-        { layout: HearingLayout.Dynamic, expected: 'Dynamic' },
-        { layout: HearingLayout.OnePlus7, expected: '1 main speaker' },
-        { layout: HearingLayout.TwoPlus21, expected: '2 main speakers' }
+        { layout: HearingLayout.Dynamic, expected: 'hearing-layout.title-dynamic' },
+        { layout: HearingLayout.OnePlus7, expected: 'hearing-layout.title-1-plus-7' },
+        { layout: HearingLayout.TwoPlus21, expected: 'hearing-layout.title-2-plus-21' }
     ];
 
     getLayoutTitleTestCases.forEach(test => {
@@ -35,9 +37,9 @@ describe('HearingLayoutComponent', () => {
     });
 
     const getLayoutDescriptionTestCases = [
-        { layout: HearingLayout.Dynamic, expected: 'Layout automatically' },
-        { layout: HearingLayout.OnePlus7, expected: 'Up to 7 participants on screen' },
-        { layout: HearingLayout.TwoPlus21, expected: 'Up to 21 participants on screen' }
+        { layout: HearingLayout.Dynamic, expected: 'hearing-layout.description-dynamic' },
+        { layout: HearingLayout.OnePlus7, expected: 'hearing-layout.description-1-plus-7' },
+        { layout: HearingLayout.TwoPlus21, expected: 'hearing-layout.description-2-plus-21' }
     ];
 
     getLayoutDescriptionTestCases.forEach(test => {

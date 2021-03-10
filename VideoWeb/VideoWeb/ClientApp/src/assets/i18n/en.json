@@ -461,6 +461,8 @@
         "trouble-seeing": "Others may have trouble seeing and hearing you."
     },
     "participant-waiting-room": {
+        "locked": "locked",
+        "unlocked": "unlocked",
         "is-suspended": "is suspended",
         "is-paused": "is paused",
         "is-closed": "is closed",
@@ -519,7 +521,8 @@
         "video-access-point": "Video access point",
         "continue": "Continue",
         "close": "Close",
-        "for": "for"
+        "for": "for",
+        "no-meetings-to-join": "There are no meetings to join"
     },
     "start-private-consultation": {
         "invite": "Invite others to a private meeting",
@@ -543,6 +546,7 @@
         "crest-icon-alt": "Crest"
     },
     "participants-panel": {
+        "for": "for",
         "joining": "Joining",
         "not-joined": "Not joined",
         "disconnected": "DISCONNECTED",
@@ -598,7 +602,13 @@
     },
     "hearing-layout": {
       "layout-image-alt": "Layout image for {{layout}}",
-      "recommended": "recommended"
+      "recommended": "recommended",
+      "title-1-plus-7": "1 main speaker",
+      "title-2-plus-21": "2 main speakers",
+      "title-dynamic": "Dynamic",
+      "description-1-plus-7": "Up to 7 participants on screen. The current speaker appears in the main window.",
+      "description-2-plus-21": "Up to 21 participants on screen. The current speakers appear in 2 main windows.",
+      "description-dynamic": "Layout automatically adapts to the number of participants."
     },
     "hearing-role": {
         "app": "App",
@@ -674,6 +684,18 @@
         "tax": "Tax",
         "tribunal": "Tribunal"
     },
+    "case-type-group": {
+        "observer": "Observer",
+        "panelmember": "PanelMember",
+        "none": "None",
+        "judge": "Judge",
+        "applicant": "Applicant",
+        "panel member": "Panel Member",
+        "defendant": "Defendant",
+        "respondent": "Respondent",
+        "appellant": "Appellant",
+        "claimant": "Claimant"
+    },
     "user-role": {
         "case-admin": "Case admin",
         "video-hearings-officer": "Video hearings officer",
@@ -698,6 +720,13 @@
         "connected": "Connected",
         "disconnected": "Disconnected",
         "in-consultation":"In consultation"
+    },
+    "conference-status": {
+        "notstarted": "Not Started",
+        "insession": "In Session",
+        "paused": "Paused",
+        "suspended": "Suspended",
+        "closed": "Closed"
     },
     "confirm-start-hearing-popup": {
         "hearing-about-to-start": "You are about to {{ action }} this hearing",
@@ -847,5 +876,23 @@
             "paragraph2-link": "apply for a transcript.",
             "paragraph3": "Participants must not record or take any images of the hearing."
         }
+    },
+    "wr-participant-list-shared": {
+        "for": "for",
+        "representative": "Representative"
+    },
+    "notification-toastr": {
+        "invite": {
+            "call-from": "Call from {{name}}",
+            "video-hearing-officer": "Video hearings officer",
+            "with": "with",
+            "accept": "Accept",
+            "decline": "Decline"
+        },
+        "poor-connection": {
+            "title": "Alert",
+            "message": "Your internet connection is poor. People may have trouble seeing and hearing you.",
+            "dismiss": "Dismiss"
+        }        
     }
 }

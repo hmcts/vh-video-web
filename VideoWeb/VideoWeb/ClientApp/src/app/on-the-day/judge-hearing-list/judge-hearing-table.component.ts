@@ -33,6 +33,10 @@ export class JudgeHearingTableComponent implements OnInit {
 
         this.hearings.push(last);
     }
+    
+    stringToTranslateId(str: string) {
+        return str.replace(/\s/g, '-').toLowerCase();
+    }
 
     getRepresentative(participants: ParticipantSummary[]): ParticipantSummary {
         return participants.find(x => x.representee && x.representee.trim() !== '');

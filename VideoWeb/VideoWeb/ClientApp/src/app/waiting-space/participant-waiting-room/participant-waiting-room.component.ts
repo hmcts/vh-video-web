@@ -149,7 +149,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         } else if (this.hearing.isClosed()) {
             return this.translateService.instant('participant-waiting-room.is-closed');
         }
-        return this.translateService.instant('participant-waiting-room.isis-in-session');
+        return this.translateService.instant('participant-waiting-room.is-in-session');
     }
 
     getCurrentTimeClass() {

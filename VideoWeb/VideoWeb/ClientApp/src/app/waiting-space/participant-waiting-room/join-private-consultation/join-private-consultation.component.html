@@ -11,7 +11,7 @@
             </span>
         </div>
         <ng-container *ngIf="!roomsAvailable()">
-          <p>There are no meetings to join</p>
+          <p>{{'join-private-consultation.no-meetings-to-join' | translate}}</p>
         </ng-container>
           <div *ngFor="let roomDetails of getRoomDetails()" class="govuk-radios--small govuk-radios__item">
             <input class="govuk-radios__input"

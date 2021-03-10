@@ -29,7 +29,8 @@ export abstract class ChatBaseComponent {
         protected adalService: AdalService,
         protected imHelper: ImHelper,
         protected translateService: TranslateService
-    ) {}
+    ) {
+    }
 
     abstract content: ElementRef<HTMLElement>;
     abstract sendMessage(messageBody: string): void;
@@ -45,7 +46,13 @@ export abstract class ChatBaseComponent {
     }
 
     async setupChatSubscription(): Promise<Subscription> {
-        this.logger.debug('[ChatHub] Subscribing to chat messages');
+        this.logger.debug('[ChatHub] Subscribing');
+        this.translateService.onLangChange.subscribe(() => {
+            this.messages.filter(m => m.is_user).forEach(m => {
+                m.from_display_name = this.translateService.instant('chat-base.you');
+            })
+        });
+
         const sub = this.eventService.getChatMessage().subscribe({
             next: async message => {
                 await this.handleIncomingMessage(message);
