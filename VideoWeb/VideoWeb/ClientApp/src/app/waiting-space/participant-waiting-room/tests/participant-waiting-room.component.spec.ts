@@ -177,12 +177,36 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
 
     const getConferenceStatusTextTestCases = [
         { conference: conferenceTestData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: '' },
-        { conference: conferenceTestData.getConferenceDetailNow(), status: ConferenceStatus.NotStarted, expected: 'participant-waiting-room.is-about-to-begin' },
-        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.NotStarted, expected: 'participant-waiting-room.is-delayed' },
-        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.InSession, expected: 'participant-waiting-room.is-in-session' },
-        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Paused, expected: 'participant-waiting-room.is-paused' },
-        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Suspended, expected: 'participant-waiting-room.is-suspended' },
-        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Closed, expected: 'participant-waiting-room.is-closed' }
+        {
+            conference: conferenceTestData.getConferenceDetailNow(),
+            status: ConferenceStatus.NotStarted,
+            expected: 'participant-waiting-room.is-about-to-begin'
+        },
+        {
+            conference: conferenceTestData.getConferenceDetailPast(),
+            status: ConferenceStatus.NotStarted,
+            expected: 'participant-waiting-room.is-delayed'
+        },
+        {
+            conference: conferenceTestData.getConferenceDetailPast(),
+            status: ConferenceStatus.InSession,
+            expected: 'participant-waiting-room.is-in-session'
+        },
+        {
+            conference: conferenceTestData.getConferenceDetailPast(),
+            status: ConferenceStatus.Paused,
+            expected: 'participant-waiting-room.is-paused'
+        },
+        {
+            conference: conferenceTestData.getConferenceDetailPast(),
+            status: ConferenceStatus.Suspended,
+            expected: 'participant-waiting-room.is-suspended'
+        },
+        {
+            conference: conferenceTestData.getConferenceDetailPast(),
+            status: ConferenceStatus.Closed,
+            expected: 'participant-waiting-room.is-closed'
+        }
     ];
 
     getConferenceStatusTextTestCases.forEach(test => {

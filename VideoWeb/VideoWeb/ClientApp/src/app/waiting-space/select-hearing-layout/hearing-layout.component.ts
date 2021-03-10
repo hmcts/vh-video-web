@@ -10,9 +10,8 @@ import { TranslateService } from '@ngx-translate/core';
 export class HearingLayoutComponent {
     @Input() layout: HearingLayout;
     @Input() recommended: boolean;
-    
-    constructor(private translateService: TranslateService) {
-    }
+
+    constructor(private translateService: TranslateService) {}
 
     getLayoutImagePath() {
         switch (this.layout) {

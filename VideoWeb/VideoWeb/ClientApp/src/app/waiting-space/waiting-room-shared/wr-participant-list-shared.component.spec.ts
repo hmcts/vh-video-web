@@ -19,10 +19,7 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 import { individualTestProfile, judgeTestProfile } from 'src/app/testing/data/test-profiles';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
-import {
-    eventsServiceSpy,
-    participantStatusSubjectMock
-} from 'src/app/testing/mocks/mock-events-service';
+import { eventsServiceSpy, participantStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { WRParticipantStatusListDirective } from './wr-participant-list-shared.component';
 import { HearingRole } from '../models/hearing-role-model';
@@ -94,7 +91,14 @@ describe('WaitingRoom ParticipantList Base', () => {
             role: loggedUser.role
         });
 
-        component = new WrParticipantStatusListTest(adalService, consultationService, eventsService, logger, videoWebService, translateService);
+        component = new WrParticipantStatusListTest(
+            adalService,
+            consultationService,
+            eventsService,
+            logger,
+            videoWebService,
+            translateService
+        );
         component.conference = conference;
         component.loggedInUser = userLogged;
         component.ngOnInit();
@@ -284,7 +288,14 @@ describe('WaitingRoom ParticipantList Base', () => {
                 role: loggedUser.role
             });
 
-            component = new WrParticipantStatusListTest(adalService, consultationService, eventsService, logger, videoWebService, translateService);
+            component = new WrParticipantStatusListTest(
+                adalService,
+                consultationService,
+                eventsService,
+                logger,
+                videoWebService,
+                translateService
+            );
             component.conference = conference;
             component.loggedInUser = userLogged;
             component.ngOnInit();
@@ -379,14 +390,18 @@ describe('WaitingRoom ParticipantList Base', () => {
             );
             const hearingRoleText = component.getHearingRole(interpreter);
 
-            expect(hearingRoleText).toEqual(`hearing-role.interpreter wr-participant-list-shared.for <br><strong>${interpretee.name}</strong>`);
+            expect(hearingRoleText).toEqual(
+                `hearing-role.interpreter wr-participant-list-shared.for <br><strong>${interpretee.name}</strong>`
+            );
         });
 
         it('getHearingRole should return contain Representative for when displaying a participant with Representee set and a case type set', () => {
             const representative = component.nonJudgeParticipants.find(x => x.hearing_role === HearingRole.REPRESENTATIVE);
             const hearingRoleText = component.getHearingRole(representative);
 
-            expect(hearingRoleText).toEqual(`wr-participant-list-shared.representative wr-participant-list-shared.for <br><strong>${representative.representee}</strong>`);
+            expect(hearingRoleText).toEqual(
+                `wr-participant-list-shared.representative wr-participant-list-shared.for <br><strong>${representative.representee}</strong>`
+            );
         });
 
         it('getHearingRole should return contain the hearing role when displaying a participant', () => {

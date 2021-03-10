@@ -33,7 +33,7 @@ export class JudgeHearingTableComponent implements OnInit {
 
         this.hearings.push(last);
     }
-    
+
     stringToTranslateId(str: string) {
         return str.replace(/\s/g, '-').toLowerCase();
     }

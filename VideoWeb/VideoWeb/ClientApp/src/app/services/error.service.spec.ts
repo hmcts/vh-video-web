@@ -159,7 +159,7 @@ describe('ErrorService', () => {
         const conferenceId = Guid.create().toString();
         translateServiceSpy.instant.calls.reset();
         const text1 = 'error-service.problem-with-connection';
-        const text2 = 'error-service.click-reconnect'
+        const text2 = 'error-service.click-reconnect';
         // act
         service.handlePexipError(error, conferenceId);
 

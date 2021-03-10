@@ -49,7 +49,8 @@ export class BetaBannerComponent implements OnInit, OnDestroy {
         this.subscriptions.add(
             this.translateService.onLangChange.subscribe(() => {
                 this.updateFeedbackUrl();
-            }));
+            })
+        );
     }
 
     private getInPageFeedbackUrl() {

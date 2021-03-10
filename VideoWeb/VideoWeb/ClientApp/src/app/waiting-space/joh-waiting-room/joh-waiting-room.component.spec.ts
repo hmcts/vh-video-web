@@ -95,10 +95,26 @@ describe('JohWaitingRoomComponent', () => {
 
     const getConferenceStatusTextTestCases = [
         { conference: conferenceTestData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: '' },
-        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.InSession, expected: 'joh-waiting-room.is-in-session' },
-        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Paused, expected: 'joh-waiting-room.is-paused' },
-        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Suspended, expected: 'joh-waiting-room.is-suspended' },
-        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Closed, expected: 'joh-waiting-room.is-closed' }
+        {
+            conference: conferenceTestData.getConferenceDetailPast(),
+            status: ConferenceStatus.InSession,
+            expected: 'joh-waiting-room.is-in-session'
+        },
+        {
+            conference: conferenceTestData.getConferenceDetailPast(),
+            status: ConferenceStatus.Paused,
+            expected: 'joh-waiting-room.is-paused'
+        },
+        {
+            conference: conferenceTestData.getConferenceDetailPast(),
+            status: ConferenceStatus.Suspended,
+            expected: 'joh-waiting-room.is-suspended'
+        },
+        {
+            conference: conferenceTestData.getConferenceDetailPast(),
+            status: ConferenceStatus.Closed,
+            expected: 'joh-waiting-room.is-closed'
+        }
     ];
 
     getConferenceStatusTextTestCases.forEach(test => {

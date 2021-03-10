@@ -99,7 +99,6 @@ describe('BetaBannerComponent', () => {
         const message = new ConferenceStatusMessage(conference.id, ConferenceStatus.Closed);
         hearingStatusSubjectMock.next(message);
         expect(component.pageUrl).toContain(`${component.exitSurveyUrl['en']}/`);
-        
     });
 
     it('should update feedback url to in page survey ', () => {

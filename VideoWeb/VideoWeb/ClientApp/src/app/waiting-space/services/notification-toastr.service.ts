@@ -45,9 +45,14 @@ export class NotificationToastrService {
             this.notificationSoundService.playConsultationRequestRingtone();
         }
 
-        const requesterDisplayName = requestedBy === undefined || requestedBy === null ? this.translateService.instant('notification-toastr.invite.video-hearing-officer') : requestedBy.displayName;
+        const requesterDisplayName =
+            requestedBy === undefined || requestedBy === null
+                ? this.translateService.instant('notification-toastr.invite.video-hearing-officer')
+                : requestedBy.displayName;
         const requestedById = requestedBy === undefined || requestedBy === null ? Guid.EMPTY : requestedBy.id;
-        let message = `<span class="govuk-!-font-weight-bold">${ this.translateService.instant('notification-toastr.invite.call-from', { name: requesterDisplayName }) }</span>`;
+        let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('notification-toastr.invite.call-from', {
+            name: requesterDisplayName
+        })}</span>`;
         const participantsList = participants
             .filter(p => p.id !== requestedById)
             .map(p => p.displayName)
@@ -134,7 +139,9 @@ export class NotificationToastrService {
         this.activeHeartbeatReport.push(heartbeatKey);
         this.logger.debug(`${this.loggerPrefix} creating 'poor network connection' toastr notification`);
 
-        let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('notification-toastr.poor-connection.title')}</span>`;
+        let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant(
+            'notification-toastr.poor-connection.title'
+        )}</span>`;
         message += `<br/>${this.translateService.instant('notification-toastr.poor-connection.message')}<br/>`;
         const toast = this.toastr.show('', '', {
             timeOut: 120000,

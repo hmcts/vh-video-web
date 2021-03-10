@@ -5,7 +5,7 @@ import { HearingLayoutComponent } from './hearing-layout.component';
 describe('HearingLayoutComponent', () => {
     let component: HearingLayoutComponent;
     const translateService = translateServiceSpy;
-    
+
     beforeEach(() => {
         component = new HearingLayoutComponent(translateService);
     });
