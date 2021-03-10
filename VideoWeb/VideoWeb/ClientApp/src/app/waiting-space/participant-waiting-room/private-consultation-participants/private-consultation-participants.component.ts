@@ -109,9 +109,13 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     getPrivateConsultationParticipants(): ParticipantResponse[] {
-        return this.participantsInConsultation.filter(
-            p => p.hearing_role !== HearingRole.WITNESS && p.hearing_role !== HearingRole.OBSERVER
-        );
+        if (this.roomLabel?.toLowerCase().includes('judgejohconsultationroom')) {
+            return this.participantsInConsultation;
+        } else {
+            return this.participantsInConsultation.filter(
+                p => p.hearing_role !== HearingRole.WITNESS && p.hearing_role !== HearingRole.OBSERVER
+            );
+        }
     }
 
     getParticipantStatus(participant: any): string {
