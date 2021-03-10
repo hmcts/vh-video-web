@@ -149,7 +149,7 @@
                         id="p-{{ participant.id }}-case-type-group-participant"
                         class="govuk-body-m govuk-!-margin-bottom-3"
                     >
-                        {{ participant.case_type_group }}
+                        {{ ('case-type-group.' + stringToTranslateId(participant.case_type_group)) | translate }}
                     </p>
 
                     <div class="govuk-body-s govuk-!-margin-bottom-3">

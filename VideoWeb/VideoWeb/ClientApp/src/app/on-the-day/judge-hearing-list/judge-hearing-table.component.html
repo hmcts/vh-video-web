@@ -31,7 +31,7 @@
               {{ hearing.caseName }}
             </p>
             <p id="case-type-{{ hearing.id }}" class="govuk-!-margin-0">
-              {{ hearing.caseType }}
+              {{ 'case-type.' + stringToTranslateId(hearing.caseType) | translate }}
             </p>
             <p class="govuk-!-margin-0 govuk-!-padding-0">
               {{ 'judge-hearing-table.case-number' | translate }}<span id="case-number-{{ hearing.id }}" class="govuk-!-font-weight-bold">{{ hearing.caseNumber }}</span>
@@ -113,7 +113,7 @@
                   'conference-paused': hearing.isPaused(),
                   'conference-suspended': hearing.isSuspended()
                 }"
-                >{{ hearing.status }}</span
+                >{{ 'conference-status.' + stringToTranslateId(hearing.status) | translate }}</span
               >
             </div>
           </td>

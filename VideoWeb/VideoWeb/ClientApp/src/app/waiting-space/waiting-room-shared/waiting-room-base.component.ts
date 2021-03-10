@@ -146,6 +146,10 @@ export abstract class WaitingRoomBaseDirective {
         return this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
     }
 
+    stringToTranslateId(str: string) {
+        return str.replace(/\s/g, '-').toLowerCase();
+    }
+
     getConference() {
         return this.videoWebService
             .getConferenceById(this.conferenceId)

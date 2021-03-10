@@ -142,13 +142,13 @@ describe('JudgeParticipantStatusListComponent', () => {
     });
 
     const participantStatusTestCases = [
-        { status: ParticipantStatus.Available, expected: 'Connected' },
-        { status: ParticipantStatus.InConsultation, expected: 'In consultation' },
-        { status: ParticipantStatus.InHearing, expected: 'Connected' },
-        { status: ParticipantStatus.Disconnected, expected: 'Disconnected' },
-        { status: ParticipantStatus.Joining, expected: 'Joining' },
-        { status: ParticipantStatus.NotSignedIn, expected: 'Not signed in' },
-        { status: ParticipantStatus.None, expected: 'Not signed in' }
+        { status: ParticipantStatus.Available, expected: 'judge-participant-status-list.connected' },
+        { status: ParticipantStatus.InConsultation, expected: 'participant-status.inconsultation' },
+        { status: ParticipantStatus.InHearing, expected: 'judge-participant-status-list.connected' },
+        { status: ParticipantStatus.Disconnected, expected: 'participant-status.disconnected' },
+        { status: ParticipantStatus.Joining, expected: 'participant-status.joining' },
+        { status: ParticipantStatus.NotSignedIn, expected: 'participant-status.notsignedin' },
+        { status: ParticipantStatus.None, expected: 'judge-participant-status-list.not-signed-in' }
     ];
 
     participantStatusTestCases.forEach(test => {
@@ -156,7 +156,6 @@ describe('JudgeParticipantStatusListComponent', () => {
             const pat = component.conference.participants[0];
             pat.status = test.status;
             translateService.instant.calls.reset();
-            translateServiceSpy.instant.and.returnValues(test.expected);
             expect(component.getParticipantStatus(pat)).toBe(test.expected);
         });
     });
@@ -176,15 +175,14 @@ describe('JudgeParticipantStatusListComponent', () => {
             const pat = component.conference.participants[0];
             pat.status = test.status;
             translateService.instant.calls.reset();
-            translateServiceSpy.instant.and.returnValues(test.expected);
             expect(component.getParticipantStatusCss(pat)).toBe(test.expected);
         });
     });
 
     const endpointsStatusTestCases = [
-        { status: EndpointStatus.NotYetJoined, expected: 'Not yet joined' },
-        { status: EndpointStatus.Disconnected, expected: 'Disconnected' },
-        { status: EndpointStatus.Connected, expected: 'Connected' }
+        { status: EndpointStatus.NotYetJoined, expected: 'endpoint-status.notyetjoined' },
+        { status: EndpointStatus.Disconnected, expected: 'endpoint-status.disconnected' },
+        { status: EndpointStatus.Connected, expected: 'endpoint-status.connected' }
     ];
 
     endpointsStatusTestCases.forEach(test => {
@@ -192,7 +190,6 @@ describe('JudgeParticipantStatusListComponent', () => {
             const endpoint = component.conference.endpoints[0];
             endpoint.status = test.status;
             translateService.instant.calls.reset();
-            translateServiceSpy.instant.and.returnValues(test.expected);
             expect(component.getEndpointStatus(endpoint)).toBe(test.expected);
         });
     });

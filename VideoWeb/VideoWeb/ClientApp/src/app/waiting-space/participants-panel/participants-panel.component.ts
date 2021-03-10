@@ -445,7 +445,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             return participant.displayName + ': ' + this.getTranslatedText('joining') + this.getAdditionalText(participant);
         }
         if (!participant.isDisconnected() && !participant.isInHearing()) {
-            return participant.displayName + ': ' + this.getTranslatedText('not-joined') + +this.getAdditionalText(participant);
+            return participant.displayName + ': ' + this.getTranslatedText('not-joined') + this.getAdditionalText(participant);
         }
         if (participant.isDisconnected()) {
             return participant.displayName + ': ' + this.getTranslatedText('disconnected') + this.getAdditionalText(participant);
@@ -459,11 +459,11 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     getPanelRowTooltipColour(participant: PanelModel) {
         if (participant.isDisconnected()) {
-            return this.getTranslatedText('red');
+            return 'red';
         } else if (participant.isAvailable() || participant.isInHearing()) {
-            return this.getTranslatedText('blue');
+            return 'blue';
         } else {
-            return this.getTranslatedText('grey');
+            return 'grey';
         }
     }
 

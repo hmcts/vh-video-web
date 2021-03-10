@@ -281,12 +281,12 @@ describe('PrivateConsultationParticipantsComponent', () => {
     it('should get status from participant', () => {
         component.roomLabel = 'Room1';
         const statuses = [
-            ['Calling', 'Calling...'],
-            ['Transferring', 'Transferring'],
-            ['Accepted', 'Transferring'],
-            ['Rejected', 'Declined'],
-            ['Failed', 'Failed'],
-            ['None', 'No Answer']
+            ['Calling', 'private-consultation-participants.calling'],
+            ['Transferring', 'private-consultation-participants.transferring'],
+            ['Accepted', 'private-consultation-participants.transferring'],
+            ['Rejected', 'private-consultation-participants.declined'],
+            ['Failed', 'private-consultation-participants.failed'],
+            ['None', 'private-consultation-participants.no-answer']
         ];
         statuses.forEach(([status, resultText]) => {
             const participant = new ParticipantResponse({
@@ -295,7 +295,6 @@ describe('PrivateConsultationParticipantsComponent', () => {
             component.participantCallStatuses['Participant1'] = status;
 
             translateService.instant.calls.reset();
-            translateServiceSpy.instant.and.returnValues(resultText);
             const result = component.getParticipantStatus(participant);
 
             // Assert
@@ -341,8 +340,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         });
 
         translateService.instant.calls.reset();
-        const expectedText = 'Not available';
-        translateServiceSpy.instant.and.returnValues(expectedText);
+        const expectedText = 'private-consultation-participants.not-available';
         const result = component.getParticipantStatus(participant);
 
         // Assert
