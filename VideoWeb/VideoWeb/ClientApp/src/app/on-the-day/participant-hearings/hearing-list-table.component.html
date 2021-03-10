@@ -30,7 +30,7 @@
           type="button"
           *ngIf="canStartHearing(conference)"
           (click)="signIntoConference(conference)"
-          attr.aria-label="{{ 'hearing-list-table.button.sign-into-hearing' | translate }}"
+          [attr.aria-label]="'hearing-list-table.button.sign-into-hearing' | translate"
         >
         {{ 'hearing-list-table.button.sign-into-hearing' | translate }}
         </button>

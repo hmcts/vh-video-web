@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
 
-namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceFilterTests
+namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttributeTests
 {
-    public class when_user_has_VhOfficerRole : CheckParticipantCanAccessConferenceFilterTest
+    public class when_user_has_VhOfficerRole : CheckParticipantCanAccessConferenceAttributeTest
     {
         [Test]
         public async Task should_continue_with_other_middleware()

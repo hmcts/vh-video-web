@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using FluentAssertions;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Enums;
 
 namespace VideoWeb.AcceptanceTests.Journeys
 {

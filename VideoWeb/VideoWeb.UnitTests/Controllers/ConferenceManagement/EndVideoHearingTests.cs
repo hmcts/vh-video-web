@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using VideoApi.Client;
 using VideoWeb.Common.Models;
 using VideoWeb.UnitTests.Builders;
 
@@ -63,7 +64,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
             Controller = SetupControllerWithClaims(user);
             
             var responseMessage = "Could not pause a video hearing";
-            var apiException = new Services.Video.VideoApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
+            var apiException = new VideoApiException<ProblemDetails>("Internal Server Error", (int) HttpStatusCode.InternalServerError,
                 responseMessage, null, default, null);
             VideoApiClientMock
                 .Setup(x => x.EndVideoHearingAsync(TestConference.Id))

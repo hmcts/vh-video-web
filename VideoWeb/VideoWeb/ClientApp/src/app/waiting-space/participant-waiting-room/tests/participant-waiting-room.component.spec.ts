@@ -37,12 +37,15 @@ import {
     videoWebService
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('ParticipantWaitingRoomComponent when conference exists', () => {
     let component: ParticipantWaitingRoomComponent;
     const conferenceTestData = new ConferenceTestData();
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
+    const translateService = translateServiceSpy;
+
     beforeAll(() => {
         initAllWRDependencies();
 
@@ -90,7 +93,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
-            clockService
+            clockService,
+            translateService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
@@ -185,6 +189,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         it(`should return hearing status text '${test.expected}'`, () => {
             component.hearing = new Hearing(test.conference);
             component.hearing.getConference().status = test.status;
+            translateService.instant.calls.reset();
+            translateServiceSpy.instant.and.returnValues(test.expected);
             expect(component.getConferenceStatusText()).toBe(test.expected);
         });
     });

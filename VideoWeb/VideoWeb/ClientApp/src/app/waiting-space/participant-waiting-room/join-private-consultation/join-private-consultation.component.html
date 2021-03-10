@@ -3,11 +3,11 @@
     <!-- Modal content -->
     <div class="modal-content">
       <div class="govuk-width-container">
-          <h2 class="govuk-heading-l govuk-!-margin-top-6 govuk-!-margin-bottom-6">Join a private meeting</h2>
+          <h2 class="govuk-heading-l govuk-!-margin-top-6 govuk-!-margin-bottom-6">{{'join-private-consultation.join' | translate}}</h2>
           <div class="govuk-warning-text">
               <span aria-hidden="true" class="govuk-warning-text__icon">!</span>
               <span class="govuk-warning-text__text">
-                <span class="govuk-warning-text__assistive">Warning</span> All meetings outside the hearing are confidential and not recorded as part of court or tribunal proceedings
+                <span class="govuk-warning-text__assistive">{{'join-private-consultation.warning' | translate}}</span> {{'join-private-consultation.confidential-declaration' | translate}}
             </span>
         </div>
         <ng-container *ngIf="!roomsAvailable()">
@@ -28,7 +28,7 @@
                     <span class="govuk-!-font-weight-bold">{{participant.display_name}}</span> {{getParticipantHearingRoleText(participant)}}
                   </li>
                   <li *ngFor="let endpoint of roomDetails.endpoints">
-                    <span class="govuk-!-font-weight-bold">{{endpoint.display_name}}</span> Video access point
+                    <span class="govuk-!-font-weight-bold">{{endpoint.display_name}}</span> {{'join-private-consultation.video-access-point' | translate}}
                   </li>
                 </ul>
             </label>
@@ -42,7 +42,7 @@
                 [disabled]="continueDisabled()"
                 (click)="onContinue()"
                 >
-                Continue
+                {{'join-private-consultation.continue' | translate}}
                 </button>
             <button
                 id="cancel-btn"
@@ -50,10 +50,9 @@
                 data-module="govuk-button"
                 (click)="onCancel()"
                 >
-                Close
+                {{'join-private-consultation.close' | translate}}
                 </button>
             </div>
         </div>
       </div>
     </div>
-  

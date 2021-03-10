@@ -8,8 +8,14 @@ using NUnit.Framework;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Builders;
 using VideoWeb.AcceptanceTests.Helpers;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Enums;
 using TestContext = VideoWeb.AcceptanceTests.Helpers.TestContext;
+using TestApi.Contract.Responses;
+using TestApi.Contract.Requests;
+using BookingsApi.Contract.Requests;
+using BookingsApi.Contract.Requests.Enums;
+using VideoApi.Contract.Responses;
+using BookingsApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -20,6 +26,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private const int DEFAULT_PANEL_MEMBERS = 0;
         private const int DEFAULT_OBSERVERS = 0;
         private const int DEFAULT_WINGERS = 0;
+        private const int DEFAULT_INDIVIDUALS_WITH_INTERPRETERS = 0;
         private const string DEFAULT_VENUE = "Birmingham Civil and Family Justice Centre";
         private const int ALLOCATE_USERS_FOR_MINUTES = 8;
         private const int ALLOCATE_USERS_FOR_HEARING_TESTS = 15;
@@ -38,6 +45,15 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void GivenIHaveAHearingAndAConference()
         {
             var userTypes = CreateUserTypes();
+            AllocateUsers(userTypes);
+            GivenIHaveAHearing();
+            CreateConference();
+        }
+        
+        [Given(@"I have an Interpreter and have a hearing")]
+        public void GivenIHaveAnInterpreterAndHaveAHearingAndAConference()
+        {
+            var userTypes = CreateUserTypes(0,1,0,0,individualsAndInterpreters: 1);
             AllocateUsers(userTypes);
             GivenIHaveAHearing();
             CreateConference();
@@ -197,12 +213,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"I attempt to retrieve the new conference details from the video api")]
         public void CreateConference()
         {
-            var vho = _c.Test.Users.First(x => x.User_type == UserType.VideoHearingsOfficer);
+            var vho = _c.Test.Users.First(x => x.UserType == UserType.VideoHearingsOfficer);
 
             var request = new UpdateBookingStatusRequest()
             {
-                Updated_by = vho.Username,
-                Cancel_reason = null,
+                UpdatedBy = vho.Username,
+                CancelReason = null,
                 Status = UpdateBookingStatus.Created
             };
 
@@ -220,7 +236,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             int individualsAndRepresentatives = DEFAULT_INDIVIDUALS_WITH_REPRESENTATIVES, 
             int observers = DEFAULT_OBSERVERS, 
             int panelMembers = DEFAULT_PANEL_MEMBERS,
-            int wingers = DEFAULT_WINGERS)
+            int wingers = DEFAULT_WINGERS,
+            int individualsAndInterpreters = DEFAULT_INDIVIDUALS_WITH_INTERPRETERS)
         {
             var userTypes = new List<UserType> { UserType.Judge, UserType.VideoHearingsOfficer };
 
@@ -244,6 +261,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 userTypes.Add(UserType.Winger);
             }
+            
+            for (var i = 0; i < individualsAndInterpreters; i++)
+            {
+                userTypes.Add(UserType.Individual);
+                userTypes.Add(UserType.Interpreter);
+            }
 
             return userTypes;
         }
@@ -257,10 +280,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             var request = new AllocateUsersRequest()
             {
                 Application = Application.VideoWeb,
-                Expiry_in_minutes = expiresIn,
-                Is_prod_user = _c.VideoWebConfig.IsLive,
-                Test_type = TestType.Automated,
-                User_types = userTypes
+                ExpiryInMinutes = expiresIn,
+                IsProdUser = _c.VideoWebConfig.IsLive,
+                TestType = TestType.Automated,
+                UserTypes = userTypes
             };
 
             var response = _c.Apis.TestApi.AllocateUsers(request);

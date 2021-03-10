@@ -8,7 +8,8 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Assertions;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -160,7 +161,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private string GetSenderNameFormat()
         {
-            return _c.CurrentUser.User_type == UserType.VideoHearingsOfficer ? _c.CurrentUser.First_name : _c.CurrentUser.Display_name;
+            return _c.CurrentUser.UserType == UserType.VideoHearingsOfficer ? _c.CurrentUser.FirstName : _c.CurrentUser.DisplayName;
         }
 
         private void CheckMessagesAreAllDisplayed(string user)

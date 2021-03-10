@@ -35,6 +35,7 @@ import { ParticipantPanelModel } from '../models/participant-panel-model';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
 import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
 import { ParticipantsPanelComponent } from './participants-panel.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -51,11 +52,19 @@ describe('ParticipantsPanelComponent', () => {
     const videocallService = videoCallServiceSpy;
     const eventService = eventsServiceSpy;
     const logger = new MockLogger();
+    const translateService = translateServiceSpy;
 
     let component: ParticipantsPanelComponent;
 
     beforeEach(() => {
-        component = new ParticipantsPanelComponent(videoWebServiceSpy, activatedRoute, videocallService, eventService, logger);
+        component = new ParticipantsPanelComponent(
+            videoWebServiceSpy,
+            activatedRoute,
+            videocallService,
+            eventService,
+            logger,
+            translateService
+        );
         component.participants = new ParticipantPanelModelMapper().mapFromParticipantUserResponse(participants);
         component.conferenceId = conferenceId;
         component.witnessTransferTimeout = {};
@@ -64,6 +73,7 @@ describe('ParticipantsPanelComponent', () => {
             component.participants = component.participants.concat(new VideoEndpointPanelModel(endpoint));
         });
         videocallService.muteParticipant.calls.reset();
+        translateService.instant.calls.reset();
     });
 
     afterEach(() => {
@@ -564,18 +574,21 @@ describe('ParticipantsPanelComponent', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Available;
         const model = new ParticipantPanelModel(p);
+        translateServiceSpy.instant.and.returnValues('Joining');
         expect(component.getPanelRowTooltipText(model)).toContain(p.display_name + ': Joining');
     });
     it('should getPanelRowTooltipText return "Not Joined" for participant not joined', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Joining;
         const model = new ParticipantPanelModel(p);
+        translateServiceSpy.instant.and.returnValues('Not joined');
         expect(component.getPanelRowTooltipText(model)).toContain(p.display_name + ': Not joined');
     });
     it('should getPanelRowTooltipText return "DISCONNECTED" for disconnected participant', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Disconnected;
         const model = new ParticipantPanelModel(p);
+        translateServiceSpy.instant.and.returnValues('DISCONNECTED');
         expect(component.getPanelRowTooltipText(model)).toContain(p.display_name + ': DISCONNECTED');
     });
     it('should getPanelRowTooltipText return displayname as default', () => {
@@ -594,6 +607,7 @@ describe('ParticipantsPanelComponent', () => {
         const p = participants[0];
         p.status = ParticipantStatus.InHearing;
         const model = new ParticipantPanelModel(p);
+        translateServiceSpy.instant.and.returnValues('for');
         expect(component.getPanelRowTooltipText(model)).toEqual(
             `${p.display_name}<br/>${p.hearing_role} for ${p.representee}<br/>${p.case_type_group}`
         );
@@ -620,24 +634,28 @@ describe('ParticipantsPanelComponent', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Disconnected;
         const model = new ParticipantPanelModel(p);
+        translateServiceSpy.instant.and.returnValues('red');
         expect(component.getPanelRowTooltipColour(model)).toBe('red');
     });
     it('should get blue tooltip when participant is available', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Available;
         const model = new ParticipantPanelModel(p);
+        translateServiceSpy.instant.and.returnValues('blue');
         expect(component.getPanelRowTooltipColour(model)).toBe('blue');
     });
     it('should get blue tooltip when participant is in hearing', () => {
         const p = participants[0];
         p.status = ParticipantStatus.InHearing;
         const model = new ParticipantPanelModel(p);
+        translateServiceSpy.instant.and.returnValues('blue');
         expect(component.getPanelRowTooltipColour(model)).toBe('blue');
     });
     it('should get grey tooltip as default', () => {
         const p = participants[0];
         p.status = ParticipantStatus.NotSignedIn;
         const model = new ParticipantPanelModel(p);
+        translateServiceSpy.instant.and.returnValues('grey');
         expect(component.getPanelRowTooltipColour(model)).toBe('grey');
     });
 
@@ -720,18 +738,21 @@ describe('ParticipantsPanelComponent', () => {
         expect(updatedPat.isLocalCameraOff()).toBe(mediaStatus.is_local_video_muted);
     });
 
-    it('should not process eventhub device status message for participant not in list', () => {
+    it('should not process eventhub device status message for participant not in list', fakeAsync(() => {
         component.setupEventhubSubscribers();
         const mediaStatus = new ParticipantMediaStatus(true, true);
         const message = new ParticipantMediaStatusMessage(conferenceId, Guid.create().toString(), mediaStatus);
+        const beforeMicCount = component.participants.filter(x => x.isLocalMicMuted()).length;
+        const beforeCamCount = component.participants.filter(x => x.isLocalCameraOff()).length;
 
         participantMediaStatusSubjectMock.next(message);
+        flushMicrotasks();
 
         const updatedAudioCount = component.participants.filter(x => x.isLocalMicMuted()).length;
         const updatedVideoCount = component.participants.filter(x => x.isLocalCameraOff()).length;
-        expect(updatedAudioCount).toBe(0);
-        expect(updatedVideoCount).toBe(0);
-    });
+        expect(updatedAudioCount).toBe(beforeMicCount);
+        expect(updatedVideoCount).toBe(beforeCamCount);
+    }));
 
     it('should process event hub hand raise message for participant in hearing', () => {
         component.setupEventhubSubscribers();

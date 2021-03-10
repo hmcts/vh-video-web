@@ -57,7 +57,7 @@
           data-module="govuk-button"
           type="button"
           (click)="onSubmit()"
-          aria-label="Continue to the next page"
+          [attr.aria-label]="'camera-check.continue' | translate"
         >
         {{ 'camera-check.continue' | translate }}
         </button>
@@ -68,7 +68,7 @@
           data-module="govuk-button"
           type="button"
           (click)="checkEquipmentAgain()"
-          aria-label="Check my equipment again"
+          [attr.aria-label]="'camera-check.check-my-equipment-again' | translate"
         >
         {{ 'camera-check.check-my-equipment-again' | translate }}
         </button>

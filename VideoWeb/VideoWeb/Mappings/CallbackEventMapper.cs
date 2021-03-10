@@ -3,7 +3,7 @@ using System.Linq;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings.Interfaces;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Requests;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.Mappings
@@ -12,19 +12,19 @@ namespace VideoWeb.Mappings
     {
         public CallbackEvent Map(ConferenceEventRequest request, Conference conference)
         {
-            var eventType = Enum.Parse<EventType>(request.Event_type.ToString());
-            var conferenceId = Guid.Parse(request.Conference_id);
-            Guid.TryParse(request.Participant_id, out var participantId);
+            var eventType = Enum.Parse<EventType>(request.EventType.ToString());
+            var conferenceId = Guid.Parse(request.ConferenceId);
+            Guid.TryParse(request.ParticipantId, out var participantId);
             
             var callbackEvent = new CallbackEvent
             {
-                EventId = request.Event_id,
+                EventId = request.EventId,
                 EventType = eventType,
                 ConferenceId = conferenceId,
                 Reason = request.Reason,
-                TransferTo = request.Transfer_to,
-                TransferFrom = request.Transfer_from,
-                TimeStampUtc = request.Time_stamp_utc,
+                TransferTo = request.TransferTo,
+                TransferFrom = request.TransferFrom,
+                TimeStampUtc = request.TimeStampUtc,
                 ParticipantId = participantId
             };
             

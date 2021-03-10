@@ -1,3 +1,4 @@
+import { Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
@@ -52,7 +53,8 @@ import { VideoCallService } from '../services/video-call.service';
 
 declare var HeartbeatFactory: any;
 
-export abstract class WaitingRoomBaseComponent {
+@Directive()
+export abstract class WaitingRoomBaseDirective {
     maxBandwidth = null;
     audioOnly: boolean;
     hearingStartingAnnounced: boolean;
@@ -94,6 +96,9 @@ export abstract class WaitingRoomBaseComponent {
     loggedInUser: LoggedParticipantResponse;
     linkedParticipantRoom: SharedParticipantRoom;
 
+    @ViewChild('incomingFeed', { static: false }) videoStream: ElementRef<HTMLVideoElement>;
+    countdownComplete: boolean;
+
     protected constructor(
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,
@@ -130,7 +135,10 @@ export abstract class WaitingRoomBaseComponent {
 
     get numberOfJudgeOrJOHsInConsultation(): number {
         return this.conference.participants.filter(
-            x => (x.role === Role.Judge || x.role === Role.JudicialOfficeHolder) && x.status === ParticipantStatus.InConsultation
+            x =>
+                (x.role === Role.Judge || x.role === Role.JudicialOfficeHolder) &&
+                x.status === ParticipantStatus.InConsultation &&
+                x.current_room?.label.toLowerCase().startsWith('judgejohconsultationroom')
         ).length;
     }
 
@@ -315,6 +323,14 @@ export abstract class WaitingRoomBaseComponent {
         this.eventHubSubscription$.add(
             this.eventService.getHearingTransfer().subscribe(async message => {
                 this.handleHearingTransferChange(message);
+                this.updateShowVideo();
+            })
+        );
+
+        this.logger.debug('[WR] - Subscribing to countdown complete message');
+        this.eventHubSubscription$.add(
+            this.eventService.getHearingCountdownCompleteMessage().subscribe(async conferenceId => {
+                this.handleCountdownCompleteMessage(conferenceId);
                 this.updateShowVideo();
             })
         );
@@ -516,19 +532,27 @@ export abstract class WaitingRoomBaseComponent {
             conference: this.conferenceId,
             participant: this.participant.id
         };
-        const linkedParticipants = this.conference.participants.filter(p =>
-            this.participant.linked_participants.map(lp => lp.linked_id).includes(p.id)
-        );
-        const isWitnessLink =
-            linkedParticipants.some(lp => lp.hearing_role.toUpperCase() === HearingRole.WITNESS.toUpperCase()) ||
-            this.participant.hearing_role.toUpperCase() === HearingRole.WITNESS.toUpperCase();
-        if (isWitnessLink) {
+
+        if (this.isOrHasWitnessLink()) {
             this.logger.debug(`${this.loggerPrefix} getting witness interpreter room for participant`, logPayload);
             return this.videoCallService.retrieveWitnessInterpreterRoom(this.conference.id, this.participant.id);
         } else {
             this.logger.debug(`${this.loggerPrefix} getting standard interpreter room for participant`, logPayload);
             return this.videoCallService.retrieveInterpreterRoom(this.conference.id, this.participant.id);
         }
+    }
+
+    isOrHasWitnessLink(): boolean {
+        if (this.participant.hearing_role.toUpperCase() === HearingRole.WITNESS.toUpperCase()) {
+            return true;
+        }
+        if (!this.participant.linked_participants) {
+            return false;
+        }
+        const linkedParticipants = this.conference.participants.filter(p =>
+            this.participant.linked_participants.map(lp => lp.linked_id).includes(p.id)
+        );
+        return linkedParticipants.some(lp => lp.hearing_role.toUpperCase() === HearingRole.WITNESS.toUpperCase());
     }
 
     disconnect() {
@@ -621,8 +645,34 @@ export abstract class WaitingRoomBaseComponent {
         this.hearing.getConference().status = message.status;
         this.conference.status = message.status;
 
+        if (message.status === ConferenceStatus.InSession) {
+            this.countdownComplete = false;
+        }
+
         if (message.status === ConferenceStatus.Closed) {
             this.getConferenceClosedTime(this.hearing.id);
+        }
+    }
+
+    shouldMuteHearing(): boolean {
+        return !this.countdownComplete && this.hearing.isInSession();
+    }
+
+    updateVideoStreamMuteStatus() {
+        if (this.shouldMuteHearing()) {
+            this.toggleVideoStreamMute(true);
+        } else {
+            this.toggleVideoStreamMute(false);
+        }
+    }
+
+    toggleVideoStreamMute(muted: boolean): void {
+        if (this.videoStream) {
+            this.logger.debug(`${this.loggerPrefix} Updating video stream mute status to ${muted}`, {
+                conference: this.conferenceId,
+                participant: this.participant.id
+            });
+            this.videoStream.nativeElement.muted = muted;
         }
     }
 
@@ -675,6 +725,14 @@ export abstract class WaitingRoomBaseComponent {
                 participant: message.participantId
             });
         }
+    }
+
+    handleCountdownCompleteMessage(conferenceId: string) {
+        if (!this.validateIsForConference(conferenceId)) {
+            return;
+        }
+        this.countdownComplete = true;
+        this.toggleVideoStreamMute(false);
     }
 
     protected validateIsForConference(conferenceId: string): boolean {
@@ -733,7 +791,7 @@ export abstract class WaitingRoomBaseComponent {
             return;
         }
 
-        if (this.hearing.isInSession() && this.participant.hearing_role !== HearingRole.WITNESS) {
+        if (this.hearing.isInSession() && !this.isOrHasWitnessLink()) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because hearing is in session';
             this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
@@ -744,7 +802,7 @@ export abstract class WaitingRoomBaseComponent {
             return;
         }
 
-        if (this.participant.hearing_role === HearingRole.WITNESS && this.participant.status === ParticipantStatus.InHearing) {
+        if (this.isOrHasWitnessLink() && this.participant.status === ParticipantStatus.InHearing) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because witness is in hearing';
             this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);

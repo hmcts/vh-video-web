@@ -28,10 +28,12 @@ import {
     videoWebService
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('ParticipantWaitingRoomComponent event hub events', () => {
     let component: ParticipantWaitingRoomComponent;
     const hearingStatusSubject = hearingStatusSubjectMock;
+    const translateService = translateServiceSpy;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -55,7 +57,8 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
-            clockService
+            clockService,
+            translateService
         );
         adalService.userInfo.userName = 'chris.green@hearings.net';
 

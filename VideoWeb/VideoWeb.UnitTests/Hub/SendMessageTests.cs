@@ -9,8 +9,9 @@ using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Hub;
-using VideoWeb.Services.User;
-using VideoWeb.Services.Video;
+using UserApi.Contract.Responses;
+using VideoApi.Contract.Responses;
+using VideoApi.Contract.Requests;
 using VideoWeb.UnitTests.Builders;
 using VideoWeb.Common.Caching;
 
@@ -100,7 +101,7 @@ namespace VideoWeb.UnitTests.Hub
             UpdateUserIdentity(claims);
             var fromJudgeId = JudgeParticipantId.ToString();
             var fromUsername = JudgeUsername;
-            var toUsername = AdminUserProfile.User_name;
+            var toUsername = AdminUserProfile.UserName;
             const string message = "test message";
             var messageUuid = Guid.NewGuid();
 
@@ -124,7 +125,7 @@ namespace VideoWeb.UnitTests.Hub
 
             var fromIndividualId = IndividualParticipantId.ToString();
             var fromUsername = IndividualUsername;
-            var toUsername = AdminUserProfile.User_name;
+            var toUsername = AdminUserProfile.UserName;
             const string message = "test message";
             var messageUuid = Guid.NewGuid();
 
@@ -292,7 +293,7 @@ namespace VideoWeb.UnitTests.Hub
             VideoApiClientMock.Verify(x => x.AddInstantMessageToConferenceAsync(
                     It.Is<Guid>(c => c == Conference.Id),
                     It.Is<AddInstantMessageRequest>(
-                        r => r.From == fromUsername && r.To == toUsername && r.Message_text == message
+                        r => r.From == fromUsername && r.To == toUsername && r.MessageText == message
                     ))
                 , times);
         }
@@ -365,8 +366,8 @@ namespace VideoWeb.UnitTests.Hub
         private UserProfile InitProfile(string username, string role)
         {
             return Builder<UserProfile>.CreateNew()
-                .With(x => x.User_name = username)
-                .With(x => x.User_role = role)
+                .With(x => x.UserName = username)
+                .With(x => x.UserRole = role)
                 .Build();
         }
     }

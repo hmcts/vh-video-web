@@ -9,7 +9,10 @@ using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
+using TestApi.Contract.Requests;
+using TestApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -25,10 +28,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers = browsers;
         }
 
-        [Given(@"a new browser is open for user (.*)")]
-        [Given(@"a new browser is open for the (.*)")]
-        [Given(@"a new browser is open for a (.*)")]
-        [Given(@"a new browser is open for an (.*)")]
+        [Given(@"a new browser is open for (?:user|the|a|an) (.*)")]
+        [Given(@"(?:the|an|a) (.*) is on the login page")]
         public void GivenANewBrowserIsOpenFor(string user)
         {
             SwitchCurrentUser(user);
@@ -117,10 +118,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             var request = new AllocateUserRequest()
             {
                 Application = Application.VideoWeb,
-                Expiry_in_minutes = 1,
-                Is_prod_user = _c.VideoWebConfig.IsLive,
-                Test_type = TestType.Automated,
-                User_type = userType
+                ExpiryInMinutes = 1,
+                IsProdUser = _c.VideoWebConfig.IsLive,
+                TestType = TestType.Automated,
+                UserType = userType
             };
 
             var response = _c.Apis.TestApi.AllocateUser(request);
@@ -138,6 +139,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Then(@"the user is on the (.*) page")]
+        [Then(@"they should be on the (.*) page")]
         public void ThenTheUserIsOnThePage(string page)
         {
             _browsers[_c.CurrentUser].PageUrl(Page.FromString(page).Url);

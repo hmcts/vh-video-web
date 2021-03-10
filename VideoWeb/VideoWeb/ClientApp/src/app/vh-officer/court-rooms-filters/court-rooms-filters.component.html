@@ -12,7 +12,7 @@
             id="btn-cancel-filters"
             class="govuk-button govuk-button--secondary"
             style="margin-right: 5px;"
-            alt="Apply selected filters"
+            [attr.alt]="'court-room-filters.cancel-filters-alt' | translate"
           />
           <input
             type="button"
@@ -21,7 +21,7 @@
             id="applyFilter"
             class="govuk-button"
             [disabled]="disableFilterApply"
-            alt="Apply selected filters"
+            [attr.alt]="'court-room-filters.apply-filters-alt' | translate"
           />
         </span>
         <hr />

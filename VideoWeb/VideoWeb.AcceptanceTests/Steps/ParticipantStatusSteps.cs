@@ -11,7 +11,9 @@ using VideoWeb.AcceptanceTests.Data;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using VideoWeb.AcceptanceTests.Strategies.ParticipantStatus;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Dtos;
+using VideoApi.Contract.Enums;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -28,9 +30,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers = browsers;
         }
 
-        [Given(@"the (.*) status is (.*)")]
-        [When(@"the (.*) statuses are (.*)")]
-        [When(@"the (.*) status is (.*)")]
+        [Given(@"the (.*) (?:status|statuses) is set to (.*)")]
+        [When(@"the (.*) (?:status|statuses) (?:change|changes) to (.*)")]
         public void WhenTheParticipantsStatusesChange(string text, string action)
         {
             var statuses = new Dictionary<string, IParticipantStatusStrategy>
@@ -41,22 +42,22 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {"In hearing", new InHearingStrategy()},
                 {"Joining", new JoiningStrategy()}
             };
-            var participants = text.Equals("participants") ? _c.Test.ConferenceParticipants.Where(x => x.User_role != UserRole.Judge) : ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, text);
+            var participants = text.Equals("participants") ? _c.Test.ConferenceParticipants.Where(x => x.UserRole != UserRole.Judge) : ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, text);
             foreach (var participant in participants)
             {
                 statuses[action].Execute(_c, participant.Id);
             }
         }
 
-        [Then(@"the VHO can see the (.*) status is (.*)")]
-        [Then(@"the VHO can see the (.*) statuses are (.*)")]
+        [Given(@"the VHO can see the (.*) (?:status|statuses) (?:is|are) (.*)")]
+        [Then(@"the VHO can see the (.*) (?:status|statuses) (?:is|are) (.*)")]
         public void ThenTheParticipantsStatusesAre(string text, string participantStatus)
         {
             Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser], _c.Test.Conference.Id);
             _browsers[_c.CurrentUser].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
-            var participants = text.Equals("participants") ? _c.Test.ConferenceParticipants.Where(x => x.User_role != UserRole.Judge) : ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, text);
+            var participants = text.Equals("participants") ? _c.Test.ConferenceParticipants.Where(x => x.UserRole != UserRole.Judge) : ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, text);
             CheckParticipantStatus(participantStatus, participants);
         }
 
@@ -80,8 +81,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 participantState.Should().Be(expectedState);
         }
 
-        [Then(@"the VHO can see the (.*) status has updated to (.*)")]
-        [Then(@"the VHO can see the (.*) statuses have updated to (.*)")]
+        [Then(@"the VHO can see the (.*) (?:status|statuses) (?:has|have) updated to (.*)")]
         public void ThenTheParticipantsStatusesShouldUpdateTo(string text, string expectedStatus)
         {
             _browsers[_c.CurrentUser].Refresh();
@@ -89,7 +89,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
-            var participants = text.Equals("participants") ? _c.Test.ConferenceParticipants.Where(x => x.User_role != UserRole.Judge) : ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, text);
+            var participants = text.Equals("participants") ? _c.Test.ConferenceParticipants.Where(x => x.UserRole != UserRole.Judge) : ParticipantsManager.GetParticipantsFromRole(_c.Test.ConferenceParticipants, text);
             CheckParticipantStatus(expectedStatus, participants);
         }
 

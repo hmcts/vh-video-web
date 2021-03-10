@@ -1,140 +1,136 @@
 <div class="controls-container">
-  <div class="icons-container">
-    
-    <div class="icon-button"
-      id="toggle-participants-panel" 
-      appTooltip
-      *ngIf="isJudge && !isPrivateConsultation"
-      text="Participants Panel"
-      colour="grey"
-      (click)="togglePanelStatus('Participants')">
-      <span class="far fa-users"></span>
-    </div>
+    <div class="icons-container">
 
-    <div class="icon-button"
-      id="toggle-chat-panel" 
-      appTooltip
-      *ngIf="isJudge && !isPrivateConsultation"
-      text="Chat Panel"
-      colour="grey"
-      (click)="togglePanelStatus('Chat')">
-      <span class="far fa-comment"></span>
-      <span class="badge"*ngIf="unreadMessageCount > 0">{{unreadMessageCount > 9 ? '9+' : unreadMessageCount }}</span>
-    </div>
+        <div class="icon-button"
+             id="toggle-participants-panel"
+             appTooltip
+             *ngIf="isJudge && !isPrivateConsultation"
+             [text]="'private-consultation-room-controls.participants-panel' | translate"
+             colour="grey"
+             (click)="togglePanelStatus('Participants')">
+            <span class="far fa-users"></span>
+        </div>
 
-    <img
-      *ngIf="!screenShareStream && canShowScreenShareButton"
-      appTooltip
-      text="Share my screen"
-      colour="grey"
-      id="start-screenshare-img"
-      class="icon-button"
-      src="/assets/images/share-screen.png"
-      alt="Start sharing screen"
-      (click)="startScreenShare()"
-    />
-    <img
-      *ngIf="screenShareStream"
-      appTooltip
-      text="Stop sharing my screen"
-      colour="red"
-      id="stop-screenshare-img"
-      class="icon-button"
-      src="/assets/images/stop-share.png"
-      alt="Stop sharing screen"
-      (click)="stopScreenShare()"
-    />
+        <div class="icon-button"
+             id="toggle-chat-panel"
+             appTooltip
+             *ngIf="isJudge && !isPrivateConsultation"
+             [text]="'private-consultation-room-controls.chat-panel' | translate"
+             colour="grey"
+             (click)="togglePanelStatus('Chat')">
+            <span class="far fa-comment"></span>
+            <span class="badge" *ngIf="unreadMessageCount > 0">{{unreadMessageCount > 9 ? '9+' : unreadMessageCount }}</span>
+        </div>
 
-    <div class="flexBar"></div>
-    
-    <div class="icon-button"
-      id="toggle-self-view-img" 
-      appTooltip
-      *ngIf="!audioOnly"
-      [text]="selfViewOpen ? 'Hide my self-view' : 'Show my self-view'"
-      colour="grey"
-      (click)="toggleView()">
-      <span class="far" [class]="selfViewOpen ? 'fa-eye' : 'fa-eye-slash'"></span>
-    </div>
-    
-    <div class="icon-button"
-      id="toggle-video-mute-img" 
-      appTooltip
-      *ngIf="!isJudge && !audioOnly"
-      [text]="videoMuted ? 'Turn on camera' : 'Turn off camera'"
-      colour="grey"
-      (click)="toggleVideoMute()">
-      <span class="far" [class]="videoMuted ? 'fa-video-slash' : 'fa-video'"></span>
-    </div>
-    
-    <div class="icon-button"
-      id="toggle-audio-mute-img" 
-      appTooltip
-      *ngIf="!remoteMuted || isJudge"
-      [text]="audioMuted ? 'Unmute microphone' : 'Mute microphone'"
-      colour="grey"
-      (click)="toggleMute()">
-      <span class="far" [class]="audioMuted ? 'fa-microphone-slash' : 'fa-microphone'"></span>
-    </div>
-    
-    <div class="icon-button"
-      id="toggle-audio-mute-locked-img" 
-      appTooltip
-      *ngIf="remoteMuted && !isJudge"
-      text="You have been been remote muted"
-      colour="grey">
-      <span class="far fa-microphone-slash red"></span>
-    </div>
-    
-    <div class="icon-button"
-      id="toggle-hand-raised-img" 
-      appTooltip
-      *ngIf="!isPrivateConsultation && !isJudge"
-      [text]="handRaised ? 'Lower hand' : 'Raise hand'"
-      colour="grey"
-      (click)="toggleHandRaised()">
-      <span class="far fa-hand-paper" [class]="{ 'yellow': handRaised }"></span>
-    </div>
+        <img *ngIf="!screenShareStream && canShowScreenShareButton"
+             appTooltip
+             [text]="'private-consultation-room-controls.share-my-screen' | translate"
+             colour="grey"
+             id="start-screenshare-img"
+             class="icon-button"
+             src="/assets/images/share-screen.png"
+             [attr.alt]="'private-consultation-room-controls.start-sharing-screen' | translate"
+             (click)="startScreenShare()" />
+        <img *ngIf="screenShareStream"
+             appTooltip
+             [text]="'private-consultation-room-controls.stop-sharing-my-screen' | translate"
+             colour="red"
+             id="stop-screenshare-img"
+             class="icon-button"
+             src="/assets/images/stop-share.png"
+             [attr.alt]="'private-consultation-room-controls.stop-sharing-screen' | translate"
+             (click)="stopScreenShare()" />
 
-    <button *ngIf="!isPrivateConsultation && isJudge" id="pause-hearing" class="small-button blue" data-module="govuk-button"
-      (click)="pause()" type="button">
-      Pause
-    </button>
-    
-    <button *ngIf="!isPrivateConsultation && isJudge" id="end-hearing" class="small-button red" data-module="govuk-button"
-      (click)="displayConfirmationDialog()" type="button">
-      Close
-    </button>
+        <div class="flexBar"></div>
 
-    <div class="flexBar" *ngIf="isPrivateConsultation && showConsultationControls"></div>
-      
-    <button *ngIf="isPrivateConsultation && showConsultationControls && !isJOHConsultation && !isJOHRoom"
-      id="lockButton"
-      class="small-button"
-      [class]="roomLocked ? 'greygreen' : 'greyred'" data-module="govuk-button"
-      (click)="lockPrivateConsultation(!roomLocked)"
-      type="button">
-      {{ roomLocked ? 'Unlock the room ' : 'Lock the room ' }}
-    </button>
+        <div class="icon-button"
+             id="toggle-self-view-img"
+             appTooltip
+             *ngIf="!audioOnly"
+             [text]="(selfViewOpen ? 'private-consultation-room-controls.selfview-toggle-true' : 'private-consultation-room-controls.selfview-toggle-false') | translate"
+             colour="grey"
+             (click)="toggleView()">
+            <span class="far" [class]="selfViewOpen ? 'fa-eye' : 'fa-eye-slash'"></span>
+        </div>
 
-    <button *ngIf="showConsultationControls" id="leaveButton" class="small-button red" data-module="govuk-button"
-      (click)="leavePrivateConsultation()" type="button">
-      Leave
-    </button>
-  </div>
+        <div class="icon-button"
+             id="toggle-video-mute-img"
+             appTooltip
+             *ngIf="!isJudge && !audioOnly"
+             [text]="(videoMuted ? 'private-consultation-room-controls.video-mute-toggle-true' : 'private-consultation-room-controls.video-mute-toggle-false') | translate"
+             colour="grey"
+             (click)="toggleVideoMute()">
+            <span class="far" [class]="videoMuted ? 'fa-video-slash' : 'fa-video'"></span>
+        </div>
+
+        <div class="icon-button"
+             id="toggle-audio-mute-img"
+             appTooltip
+             *ngIf="!remoteMuted || isJudge"
+             [text]="(audioMuted ? 'private-consultation-room-controls.audio-mute-toggle-true' : 'private-consultation-room-controls.audio-mute-toggle-false') | translate"
+             colour="grey"
+             (click)="toggleMute()">
+            <span class="far" [class]="audioMuted ? 'fa-microphone-slash' : 'fa-microphone'"></span>
+        </div>
+
+        <div class="icon-button"
+             id="toggle-audio-mute-locked-img"
+             appTooltip
+             *ngIf="remoteMuted && !isJudge"
+             [text]="'private-consultation-room-controls.remote-muted' | translate"
+             colour="grey">
+            <span class="far fa-microphone-slash red"></span>
+        </div>
+
+        <div class="icon-button"
+             id="toggle-hand-raised-img"
+             appTooltip
+             *ngIf="!isPrivateConsultation && !isJudge"
+             [text]="(handRaised ? 'private-consultation-room-controls.hand-raise-toggle-true' :'private-consultation-room-controls.hand-raise-toggle-false') | translate"
+             colour="grey"
+             (click)="toggleHandRaised()">
+            <span class="far fa-hand-paper" [class]="{ 'yellow': handRaised }"></span>
+        </div>
+
+        <button *ngIf="!isPrivateConsultation && isJudge" id="pause-hearing" class="small-button blue" data-module="govuk-button"
+                (click)="pause()" type="button">
+            {{ 'private-consultation-room-controls.pause' | translate }}
+        </button>
+
+        <button *ngIf="!isPrivateConsultation && isJudge" id="end-hearing" class="small-button red" data-module="govuk-button"
+                (click)="displayConfirmationDialog()" type="button">
+            {{ 'private-consultation-room-controls.close' | translate }}
+        </button>
+
+        <div class="flexBar" *ngIf="isPrivateConsultation && showConsultationControls"></div>
+
+        <button *ngIf="isPrivateConsultation && showConsultationControls && !isJOHConsultation && !isJOHRoom"
+                id="lockButton"
+                class="small-button"
+                [class]="roomLocked ? 'greygreen' : 'greyred'" data-module="govuk-button"
+                (click)="lockPrivateConsultation(!roomLocked)"
+                type="button">
+            {{ 'private-consultation-room-controls.lock-the-room-toggle-' + roomLocked | translate }}
+        </button>
+
+        <button *ngIf="showConsultationControls" id="leaveButton" class="small-button red" data-module="govuk-button"
+                (click)="leavePrivateConsultation()" type="button">
+            {{ 'private-consultation-room-controls.leave' | translate }}
+        </button>
+    </div>
 </div>
 
 <div class="outgoing-video-container">
-  <video [ngClass]="{ 'vh-fade-in': selfViewOpen, 'vh-fade-out': !selfViewOpen }" id="outgoingFeedVideo"
-    [muted]="true" [srcObject]="this.outgoingStream" autoplay height="auto">
-    Your browser does not support Video
-  </video>
+    <video [ngClass]="{ 'vh-fade-in': selfViewOpen, 'vh-fade-out': !selfViewOpen }" id="outgoingFeedVideo"
+           [muted]="true" [srcObject]="this.outgoingStream" autoplay height="auto">
+        {{ 'private-consultation-room-controls.browser-support' | translate }}
+    </video>
 </div>
 <div class="outgoing-present-video-container">
-  <video [ngClass]="{ 'vh-fade-in': this.screenShareStream, 'vh-fade-out': !this.screenShareStream }" id="outgoingFeedPresentVideo"
-    [muted]="true" [srcObject]="this.screenShareStream" autoplay height="auto">
-    Your browser does not support Video
-  </video>
+    <video [ngClass]="{ 'vh-fade-in': this.screenShareStream, 'vh-fade-out': !this.screenShareStream }" id="outgoingFeedPresentVideo"
+           [muted]="true" [srcObject]="this.screenShareStream" autoplay height="auto">
+        {{ 'private-consultation-room-controls.browser-support' | translate }}
+    </video>
 </div>
 
-<app-confirm-close-hearing-popup *ngIf="!isPrivateConsultation && isJudge && displayConfirmPopup" (popupAnswered)="close($event)"> </app-confirm-close-hearing-popup>
+<app-confirm-close-hearing-popup *ngIf="!isPrivateConsultation && isJudge && displayConfirmPopup" (popupAnswered)="close($event)"></app-confirm-close-hearing-popup>

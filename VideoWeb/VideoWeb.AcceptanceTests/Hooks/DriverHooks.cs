@@ -8,7 +8,8 @@ using BoDi;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
 using TimeZone = AcceptanceTests.Common.Data.Time.TimeZone;
 
 namespace VideoWeb.AcceptanceTests.Hooks
@@ -122,9 +123,9 @@ namespace VideoWeb.AcceptanceTests.Hooks
             if (_browsers == null) return;
             if (_browsers.Count.Equals(0))
             {
-                context.CurrentUser = context.Test.Users.Count.Equals(0) ? new UserDto
+                context.CurrentUser = context.Test.Users.Count.Equals(0) ? new UserDto()
                 {
-                    User_type = UserType.Individual,
+                    UserType = UserType.Individual,
                     Username = "logger"
                 } : Users.GetDefaultParticipantUser(context.Test.Users);
 

@@ -3,10 +3,10 @@ import { HearingRole } from './hearing-role-model';
 import { PanelModel } from './panel-model-base';
 
 export class LinkedParticipantPanelModel extends PanelModel {
-    public participants: PanelModel[];
+    public participants: PanelModel[] = [];
 
     static fromListOfPanelModels(participants: PanelModel[], pexipDisplayName: string, roomid: string): LinkedParticipantPanelModel {
-        const lip = participants.find(x => x.hearingRole === HearingRole.LITIGANT_IN_PERSON);
+        const lip = participants.find(x => x.hearingRole === HearingRole.LITIGANT_IN_PERSON || x.hearingRole === HearingRole.WITNESS);
         const pexipName = pexipDisplayName;
         const displayName = participants.map(x => x.displayName).join(', ');
         const role = lip.role;
@@ -17,6 +17,14 @@ export class LinkedParticipantPanelModel extends PanelModel {
         const model = new LinkedParticipantPanelModel(roomid, displayName, role, caseTypeGroup, pexipName, hearingRole, representee);
         model.participants = participants;
         return model;
+    }
+
+    get isWitness(): boolean {
+        return this.participants.some(p => p.isWitness);
+    }
+
+    private get participantsInHearing(): PanelModel[] {
+        return this.participants.filter(p => p.isInHearing());
     }
 
     isInHearing(): boolean {
@@ -46,11 +54,11 @@ export class LinkedParticipantPanelModel extends PanelModel {
     }
 
     isLocalMicMuted(): boolean {
-        return this.participants.some(p => p.isLocalMicMuted());
+        return this.participantsInHearing.every(p => p.isLocalMicMuted());
     }
 
     isLocalCameraOff(): boolean {
-        return this.participants.some(p => p.isLocalCameraOff());
+        return this.participantsInHearing.every(p => p.isLocalCameraOff());
     }
 
     updateParticipantDeviceStatus(isAudioMuted: boolean, isVideoMuted: boolean, participantId?: string) {

@@ -10,7 +10,7 @@ using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
-using VideoWeb.Services.Video;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests
 {

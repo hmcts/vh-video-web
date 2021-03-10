@@ -5,7 +5,7 @@ using VideoWeb.Common.Caching;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Services.Video;
+using VideoApi.Client;
 using EndpointState = VideoWeb.EventHub.Enums.EndpointState;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 

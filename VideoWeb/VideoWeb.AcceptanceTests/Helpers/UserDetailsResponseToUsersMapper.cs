@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using VideoWeb.Services.TestApi;
+using TestApi.Contract.Dtos;
+using TestApi.Contract.Responses;
 
 namespace VideoWeb.AcceptanceTests.Helpers
 {
@@ -11,16 +12,16 @@ namespace VideoWeb.AcceptanceTests.Helpers
             return usersResponses.Select(user => new UserDto()
                 {
                     Application = user.Application,
-                    Contact_email = user.Contact_email,
-                    Created_date = user.Created_date,
-                    Display_name = user.Display_name,
-                    First_name = user.First_name,
+                    ContactEmail = user.ContactEmail,
+                    CreatedDate = user.CreatedDate,
+                    DisplayName = user.DisplayName,
+                    FirstName = user.FirstName,
                     Id = user.Id,
-                    Is_prod_user = user.Is_prod_user,
-                    Last_name = user.Last_name,
+                    IsProdUser = user.IsProdUser,
+                    LastName = user.LastName,
                     Number = user.Number,
-                    Test_type = user.Test_type,
-                    User_type = user.User_type,
+                    TestType = user.TestType,
+                    UserType = user.UserType,
                     Username = user.Username
                 })
                 .ToList();
@@ -31,16 +32,16 @@ namespace VideoWeb.AcceptanceTests.Helpers
             var u = new UserDto()
             {
                 Application = user.Application,
-                Contact_email = user.Contact_email,
-                Created_date = user.Created_date,
-                Display_name = user.Display_name,
-                First_name = user.First_name,
+                ContactEmail = user.ContactEmail,
+                CreatedDate = user.CreatedDate,
+                DisplayName = user.DisplayName,
+                FirstName = user.FirstName,
                 Id = user.Id,
-                Is_prod_user = user.Is_prod_user,
-                Last_name = user.Last_name,
+                IsProdUser = user.IsProdUser,
+                LastName = user.LastName,
                 Number = user.Number,
-                Test_type = user.Test_type,
-                User_type = user.User_type,
+                TestType = user.TestType,
+                UserType = user.UserType,
                 Username = user.Username
             };
             return new List<UserDto>(){u};

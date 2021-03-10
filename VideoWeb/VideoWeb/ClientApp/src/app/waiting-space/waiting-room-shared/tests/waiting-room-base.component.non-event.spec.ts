@@ -256,8 +256,11 @@ describe('WaitingRoomComponent message and clock', () => {
 
     it('should return the total number of judge and JOHs in consultation', () => {
         component.conference.participants.forEach(x => (x.status = ParticipantStatus.InConsultation));
-        const expectecCount = component.conference.participants.filter(x => x.role === Role.JudicialOfficeHolder || x.role === Role.Judge)
-            .length;
+        const expectecCount = component.conference.participants.filter(
+            x =>
+                (x.role === Role.JudicialOfficeHolder || x.role === Role.Judge) &&
+                x.current_room?.label.toLowerCase().includes('judgejohconsultationroom')
+        ).length;
 
         expect(component.numberOfJudgeOrJOHsInConsultation).toBe(expectecCount);
     });
@@ -422,5 +425,32 @@ describe('WaitingRoomComponent message and clock', () => {
             room.tile_display_name,
             component.maxBandwidth
         );
+    });
+
+    it('should mute video stream when hearing is in session and countdown is not complete', () => {
+        component.countdownComplete = false;
+        component.hearing.getConference().status = ConferenceStatus.InSession;
+        spyOn(component, 'toggleVideoStreamMute');
+
+        component.updateVideoStreamMuteStatus();
+        expect(component.toggleVideoStreamMute).toHaveBeenCalledWith(true);
+    });
+
+    it('should not mute video stream when hearing is in session and countdown is complete', () => {
+        component.countdownComplete = true;
+        component.hearing.getConference().status = ConferenceStatus.InSession;
+        spyOn(component, 'toggleVideoStreamMute');
+
+        component.updateVideoStreamMuteStatus();
+        expect(component.toggleVideoStreamMute).toHaveBeenCalledWith(false);
+    });
+
+    it('should not mute video stream when hearing is in not in session and countdown is not complete', () => {
+        component.countdownComplete = false;
+        component.hearing.getConference().status = ConferenceStatus.Paused;
+        spyOn(component, 'toggleVideoStreamMute');
+
+        component.updateVideoStreamMuteStatus();
+        expect(component.toggleVideoStreamMute).toHaveBeenCalledWith(false);
     });
 });

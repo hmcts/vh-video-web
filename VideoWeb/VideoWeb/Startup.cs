@@ -2,7 +2,6 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Connections;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -35,11 +34,7 @@ namespace VideoWeb
             services.AddCustomTypes();
 
             services.RegisterAuthSchemes(Configuration);
-            services.AddMvc(opt =>
-            {
-                opt.Filters.Add(typeof(LoggingMiddleware));
-                opt.Filters.Add(typeof(CheckParticipantCanAccessConferenceFilter));
-            });
+            services.AddMvc(opt => opt.Filters.Add(typeof(LoggingMiddleware)));
             services.AddMvc().AddFluentValidation();
             services.AddApplicationInsightsTelemetry(Configuration["ApplicationInsights:InstrumentationKey"]);
             // In production, the Angular files will be served from this directory
