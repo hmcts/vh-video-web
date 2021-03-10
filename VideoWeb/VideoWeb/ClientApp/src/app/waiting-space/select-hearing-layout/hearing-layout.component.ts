@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { HearingLayout } from 'src/app/services/clients/api-client';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-hearing-layout',
@@ -9,6 +10,8 @@ import { HearingLayout } from 'src/app/services/clients/api-client';
 export class HearingLayoutComponent {
     @Input() layout: HearingLayout;
     @Input() recommended: boolean;
+
+    constructor(private translateService: TranslateService) {}
 
     getLayoutImagePath() {
         switch (this.layout) {
@@ -24,22 +27,22 @@ export class HearingLayoutComponent {
     getLayoutTitle() {
         switch (this.layout) {
             case HearingLayout.OnePlus7:
-                return '1 main speaker';
+                return this.translateService.instant('hearing-layout.title-1-plus-7');
             case HearingLayout.TwoPlus21:
-                return '2 main speakers';
+                return this.translateService.instant('hearing-layout.title-2-plus-21');
             default:
-                return 'Dynamic';
+                return this.translateService.instant('hearing-layout.title-dynamic');
         }
     }
 
     getLayoutDescription() {
         switch (this.layout) {
             case HearingLayout.OnePlus7:
-                return 'Up to 7 participants on screen. The current speaker appears in the main window.';
+                return this.translateService.instant('hearing-layout.description-1-plus-7');
             case HearingLayout.TwoPlus21:
-                return 'Up to 21 participants on screen. The current speakers appear in 2 main windows.';
+                return this.translateService.instant('hearing-layout.description-2-plus-21');
             default:
-                return 'Layout automatically adapts to the number of participants.';
+                return this.translateService.instant('hearing-layout.description-dynamic');
         }
     }
 }

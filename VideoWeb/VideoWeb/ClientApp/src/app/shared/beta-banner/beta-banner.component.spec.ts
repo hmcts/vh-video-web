@@ -2,6 +2,7 @@ import { Component, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { TranslateService } from '@ngx-translate/core';
 import { AdalService } from 'adal-angular4';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -11,6 +12,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy, hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { BetaBannerComponent } from './beta-banner.component';
@@ -50,6 +52,7 @@ describe('BetaBannerComponent', () => {
                     { provide: Logger, useClass: MockLogger },
                     { provide: VideoWebService, useValue: videoWebServiceSpy },
                     { provide: AdalService, useClass: MockAdalService },
+                    { provide: TranslateService, useValue: translateServiceSpy },
                     { provide: EventsService, useValue: eventsServiceSpy }
                 ],
                 schemas: [NO_ERRORS_SCHEMA]
@@ -62,6 +65,7 @@ describe('BetaBannerComponent', () => {
         router = TestBed.inject(Router);
         fixture = TestBed.createComponent(BetaBannerComponent);
         component = fixture.componentInstance;
+        translateServiceSpy.currentLang = 'en';
     });
 
     afterEach(() => {
@@ -74,7 +78,7 @@ describe('BetaBannerComponent', () => {
             router.navigate(['sub-component1']);
             tick();
             expect(router.url).toBe('/sub-component1');
-            expect(component.pageUrl).toBe(`${component.inPageFeedbackUrl}/sub-component1`);
+            expect(component.pageUrl).toBe(`${component.inPageFeedbackUrl['en']}/sub-component1`);
         });
     }));
 
@@ -85,17 +89,16 @@ describe('BetaBannerComponent', () => {
             router.navigate(['waiting-room']);
             tick();
             expect(router.url).toBe('/waiting-room');
-            expect(component.pageUrl).toBe(`${component.exitSurveyUrl}/waiting-room`);
+            expect(component.pageUrl).toBe(`${component.exitSurveyUrl['en']}/waiting-room`);
         });
     }));
 
     it('should update feedback url to exit survey on conference close', () => {
         component.ngOnInit();
+
         const message = new ConferenceStatusMessage(conference.id, ConferenceStatus.Closed);
-
         hearingStatusSubjectMock.next(message);
-
-        expect(component.pageUrl).toContain(`${component.exitSurveyUrl}/`);
+        expect(component.pageUrl).toContain(`${component.exitSurveyUrl['en']}/`);
     });
 
     it('should update feedback url to in page survey ', () => {
@@ -103,6 +106,6 @@ describe('BetaBannerComponent', () => {
         const message = new ConferenceStatusMessage(conference.id, ConferenceStatus.InSession);
 
         hearingStatusSubjectMock.next(message);
-        expect(component.pageUrl).toContain(`${component.inPageFeedbackUrl}/`);
+        expect(component.pageUrl).toContain(`${component.inPageFeedbackUrl['en']}/`);
     });
 });

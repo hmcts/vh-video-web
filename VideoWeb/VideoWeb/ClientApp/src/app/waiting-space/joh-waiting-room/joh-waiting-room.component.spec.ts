@@ -95,17 +95,32 @@ describe('JohWaitingRoomComponent', () => {
 
     const getConferenceStatusTextTestCases = [
         { conference: conferenceTestData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: '' },
-        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.InSession, expected: 'is in session' },
-        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Paused, expected: 'is paused' },
-        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Suspended, expected: 'is suspended' },
-        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Closed, expected: 'is closed' }
+        {
+            conference: conferenceTestData.getConferenceDetailPast(),
+            status: ConferenceStatus.InSession,
+            expected: 'joh-waiting-room.is-in-session'
+        },
+        {
+            conference: conferenceTestData.getConferenceDetailPast(),
+            status: ConferenceStatus.Paused,
+            expected: 'joh-waiting-room.is-paused'
+        },
+        {
+            conference: conferenceTestData.getConferenceDetailPast(),
+            status: ConferenceStatus.Suspended,
+            expected: 'joh-waiting-room.is-suspended'
+        },
+        {
+            conference: conferenceTestData.getConferenceDetailPast(),
+            status: ConferenceStatus.Closed,
+            expected: 'joh-waiting-room.is-closed'
+        }
     ];
 
     getConferenceStatusTextTestCases.forEach(test => {
         it(`should return hearing status text '${test.expected}'`, () => {
             component.hearing = new Hearing(test.conference);
             component.hearing.getConference().status = test.status;
-            translateServiceSpy.instant.and.returnValues(test.expected);
             expect(component.getConferenceStatusText()).toBe(test.expected);
         });
     });

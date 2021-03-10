@@ -1,131 +1,107 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds"><img alt="HMCTS logo crest image" src="/assets/images/hmcts-logo.gif" /></div>
+  <div class="govuk-grid-column-two-thirds"><img [attr.alt]="'privacy-policy.crest-image-alt' | translate" src="/assets/images/hmcts-logo.gif" /></div>
 </div>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
-    <h2 class="govuk-heading-l">Our privacy policy for the video hearings service</h2>
+    <h2 class="govuk-heading-l">{{'privacy-policy.heading' | translate}}</h2>
 
-    <button class="govuk-button govuk-!-display-none-print" (click)="printPage()" type="button">Print</button>
+    <button class="govuk-button govuk-!-display-none-print" (click)="printPage()" type="button">{{'privacy-policy.print-button' | translate}}</button>
 
-    <p class="govuk-body">The video hearings service is managed by HM Courts and Tribunals Service (HMCTS).</p>
-    <p class="govuk-body">
-      When you use this service we (HMCTS) will ask you to provide some personal data. This policy explains why we collect your personal
-      data, what we do with it and your rights.
+    <p class="govuk-body">{{'privacy-policy.paragraph1' | translate}}</p>
+    <p class="govuk-body">{{'privacy-policy.paragraph2' | translate}}</p>
+
+    <h3 class="govuk-heading-m">{{'privacy-policy.why-we-collect.heading' | translate}}</h3>
+    <p class="govuk-body">{{'privacy-policy.why-we-collect.paragraph' | translate}}
     </p>
 
-    <h3 class="govuk-heading-m">Why we collect your personal data</h3>
-    <p class="govuk-body">
-      We collect your personal data so you can take part in a video hearing and to meet legal requirements. We also collect data to improve
-      the service.
-    </p>
+    <h3 class="govuk-heading-m">{{'privacy-policy.what-we-do.heading' | translate}}</h3>
+    <p class="govuk-body">{{'privacy-policy.what-we-do.paragraph1' | translate}}</p>
+    <p class="govuk-body">{{'privacy-policy.what-we-do.paragraph2' | translate}}</p>
 
-    <h3 class="govuk-heading-m">What we do with your personal data</h3>
-    <p class="govuk-body">Your personal data is processed by our staff in the UK, and the data is stored within the EEA.</p>
-    <p class="govuk-body">
-      HMCTS is an executive agency of the Ministry of Justice. The Ministry of Justice is known as the 'data controller' of the personal
-      data you provide. The Ministry's personal information charter explains more about how we process data.
-    </p>
-
-    <h3 class="govuk-heading-m">The data we collect</h3>
-    <p class="govuk-body">The personal data we collect includes:</p>
+    <h3 class="govuk-heading-m">{{'privacy-policy.what-we-collect.heading' | translate}}</h3>
+    <p class="govuk-body">{{'privacy-policy.what-we-collect.paragraph' | translate}}</p>
     <ul class="govuk-list govuk-list--bullet">
-      <li>your name, address and contact details, including your email address and telephone number</li>
-      <li>details of your company and your role, if applicable</li>
-      <li>details of anyone who acts on your behalf or anyone that you act for in a video hearing</li>
-      <li>information we gather to assess your suitability for a video hearing</li>
-      <li>information about your video hearing</li>
-      <li>information that tells us if you open an email from us, or click on a link in an email</li>
-      <li>the login details you use to access the video hearings service</li>
+      <li>{{'privacy-policy.what-we-collect.list.1' | translate}}</li>
+      <li>{{'privacy-policy.what-we-collect.list.2' | translate}}</li>
+      <li>{{'privacy-policy.what-we-collect.list.3' | translate}}</li>
+      <li>{{'privacy-policy.what-we-collect.list.4' | translate}}</li>
+      <li>{{'privacy-policy.what-we-collect.list.5' | translate}}</li>
+      <li>{{'privacy-policy.what-we-collect.list.6' | translate}}</li>
+      <li>{{'privacy-policy.what-we-collect.list.7' | translate}}</li>
       <li>
-        information about the way you access this service including your IP address, internet speed, computer operating system and the
-        browser you use to access the internet. We do this by
-        <a href="http://www.aboutcookies.org.uk/managing-cookies" rel="noopener noreferrer" target="_blank">using cookies</a>.
+        {{'privacy-policy.what-we-collect.list.8' | translate}} <a href="http://www.aboutcookies.org.uk/managing-cookies" rel="noopener noreferrer" target="_blank">{{'privacy-policy.what-we-collect.list.8-cookies' | translate}}</a>.
       </li>
     </ul>
 
-    <h3 class="govuk-heading-m">How long we keep your data</h3>
-    <p class="govuk-body">
-      The video hearings service will keep this information for 3 months after the date your hearing is booked to take place. We'll then
-      delete it. Information about your application or your case is held by a different department in HMCTS and different arrangements may
-      apply.
-    </p>
+    <h3 class="govuk-heading-m">{{'privacy-policy.how-long.heading' | translate}}</h3>
+    <p class="govuk-body">{{'privacy-policy.how-long.paragraph' | translate}}</p>
 
-    <h3 class="govuk-heading-m">Storing and sharing your data internationally</h3>
-    <p class="govuk-body">
-      Sometimes your personal data will be stored outside the UK. When we do this, we comply with data protection law.
-    </p>
+    <h3 class="govuk-heading-m">{{'privacy-policy.shoring-and-sharing.heading' | translate}}</h3>
+    <p class="govuk-body">{{'privacy-policy.shoring-and-sharing.paragraph' | translate}} </p>
 
-    <h3 class="govuk-heading-m">Your rights</h3>
-    <p class="govuk-body">You can ask:</p>
+    <h3 class="govuk-heading-m">{{'privacy-policy.your-rights.heading' | translate}}</h3>
+    <p class="govuk-body">{{'privacy-policy.your-rights.paragraph1' | translate}}</p>
     <ul class="govuk-list govuk-list--bullet">
-      <li>to see the personal data that we hold on you</li>
-      <li>to have the personal data corrected</li>
-      <li>
-        to have the personal data removed or deleted (this will depend on the circumstances, for example, if you decide not to continue with
-        your case)
-      </li>
-      <li>
-        that access to the personal data is restricted (for example, you can ask to have your data stored for longer and not automatically
-        deleted)
-      </li>
+      <li>{{'privacy-policy.your-rights.list-ask.1' | translate}}</li>
+      <li>{{'privacy-policy.your-rights.list-ask.2' | translate}}</li>
+      <li>{{'privacy-policy.your-rights.list-ask.3' | translate}}</li>
+      <li>{{'privacy-policy.your-rights.list-ask.4' | translate}}</li>
     </ul>
-    <p class="govuk-body">If you want to see the personal data that we hold on you, you can:</p>
+    <p class="govuk-body">{{'privacy-policy.your-rights.paragraph2' | translate}}</p>
     <ul class="govuk-list govuk-list--bullet">
       <li>
-        <span>complete a form to </span>
+        {{'privacy-policy.your-rights.list-see.1-1' | translate}}
         <a target="_blank" href="https://www.gov.uk/government/publications/request-your-personal-data-from-moj" rel="noopener noreferrer">
-          make a subject access request</a
-        >.
-        <span> Your request goes to the MoJ as data controller.</span>
+          {{'privacy-policy.your-rights.list-see.1-link' | translate}}</a>
+          {{'privacy-policy.your-rights.list-see.1-2' | translate}}
       </li>
-      <li>write to us: Disclosure Team, Post point 10.38, 102 Petty France, London, SW1H 9AJ</li>
+      <li>{{'privacy-policy.your-rights.list-see.2' | translate}}</li>
     </ul>
-    <p class="govuk-body">You can ask for more information about:</p>
+    <p class="govuk-body">{{'privacy-policy.your-rights.paragraph3' | translate}}</p>
     <ul class="govuk-list govuk-list--bullet">
-      <li>agreements we have on sharing information with other organisations</li>
-      <li>when we are allowed to pass on personal information without telling you</li>
-      <li>our instructions to staff on how to collect, use or delete your personal information</li>
-      <li>how we check that the information we hold is accurate and up to date</li>
+      <li>{{'privacy-policy.your-rights.list-more.1' | translate}}</li>
+      <li>{{'privacy-policy.your-rights.list-more.2' | translate}}</li>
+      <li>{{'privacy-policy.your-rights.list-more.3' | translate}}</li>
+      <li>{{'privacy-policy.your-rights.list-more.4' | translate}}</li>
     </ul>
-    <p class="govuk-body">You can contact the MoJ data protection officer by:</p>
+    <p class="govuk-body">{{'privacy-policy.your-rights.paragraph4' | translate}}</p>
     <ul class="govuk-list govuk-list--bullet">
-      <li>writing to us: Post point 10.38, 102 Petty France, London, SW1H 9AJ</li>
+      <li>{{'privacy-policy.your-rights.list-contact.1' | translate}}</li>
       <li>
-        emailing:
+        {{'privacy-policy.your-rights.list-contact.2' | translate}}
         <a href="mailto:data.compliance@justice.gov.uk">data.compliance@justice.gov.uk</a>
       </li>
     </ul>
-    <h3 class="govuk-heading-m">How to complain</h3>
+    <h3 class="govuk-heading-m">{{'privacy-policy.how-to-complain.heading' | translate}}</h3>
     <p class="govuk-body">
-      <span>See our </span>
+      {{'privacy-policy.how-to-complain.paragraph1-1' | translate}}
       <a href="https://www.gov.uk/government/organisations/hm-courts-and-tribunals-service/about/complaints-procedure">
-        complaints procedure
+        {{'privacy-policy.how-to-complain.paragraph1-link' | translate}}
       </a>
-      <span>if you want to complain about how we've handled your personal data.</span>
+      {{'privacy-policy.how-to-complain.paragraph1-2' | translate}}
     </p>
     <p class="govuk-body">
-      <span>Write to: </span>Post point 10.38, 102 Petty France, London, SW1H 9AJ<br />
-      <span>Email: </span>
+      {{'privacy-policy.how-to-complain.paragraph2-1' | translate}}<br />
+      {{'privacy-policy.how-to-complain.paragraph2-2' | translate}}
       <a href="mailto:data.compliance@justice.gov.uk">data.compliance@justice.gov.uk</a>
     </p>
     <p class="govuk-body">
-      <span>You can also complain to the </span>
-      <a href="https://ico.org.uk/global/contact-us">Information Commissioner's Office</a>
-      <span> if you're not satisfied with our response or believe we're not processing your personal data lawfully.</span>
+      {{'privacy-policy.how-to-complain.paragraph3-1' | translate}}
+      <a href="https://ico.org.uk/global/contact-us">{{'privacy-policy.how-to-complain.paragraph3-link' | translate}}</a>
+      {{'privacy-policy.how-to-complain.paragraph3-2' | translate}}
     </p>
-    <h3 class="govuk-heading-m">Where hearings are recorded</h3>
-    <p class="govuk-body">The process for recording video hearings is the same as for hearings held in a court or tribunal building:</p>
+    <h3 class="govuk-heading-m">{{'privacy-policy.hearings-recorded.heading' | translate}}</h3>
+    <p class="govuk-body">{{'privacy-policy.hearings-recorded.paragraph1' | translate}}</p>
     <ul class="govuk-list govuk-list--bullet">
-      <li>hearings at the Crown Court and at civil and family courts are always recorded</li>
+      <li>{{'privacy-policy.hearings-recorded.list.1' | translate}}</li>
       <li>
-        tribunal hearings are not always recorded. <a href="https://www.gov.uk/find-court-tribunal">Contact the tribunal</a> to find out if
-        the hearing was recorded.
+        {{'privacy-policy.hearings-recorded.list.2-1' | translate}}<a href="https://www.gov.uk/find-court-tribunal">{{'privacy-policy.hearings-recorded.list.2-link' | translate}}</a> {{'privacy-policy.hearings-recorded.list.2-2' | translate}}
       </li>
-      <li>hearings at magistrates' courts are never recorded.</li>
+      <li>{{'privacy-policy.hearings-recorded.list.3' | translate}}</li>
     </ul>
     <p class="govuk-body">
-      Where hearings are recorded you may <a href="https://www.gov.uk/apply-transcript-court-tribunal-hearing"> apply for a transcript.</a>
+      {{'privacy-policy.hearings-recorded.paragraph2-1' | translate}}<a href="https://www.gov.uk/apply-transcript-court-tribunal-hearing">{{'privacy-policy.hearings-recorded.paragraph2-link' | translate}}</a>
     </p>
-    <p class="govuk-body">Participants must not record or take any images of the hearing.</p>
+    <p class="govuk-body">{{'privacy-policy.hearings-recorded.paragraph3' | translate}}</p>
   </div>
 </div>

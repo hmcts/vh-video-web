@@ -97,8 +97,7 @@ describe('HearingControlsBaseComponent', () => {
         component.handRaised = false;
         component.toggleHandRaised();
         expect(videoCallService.raiseHand).toHaveBeenCalledTimes(1);
-        const expectedText = 'Lower my hand';
-        translateServiceSpy.instant.and.returnValues(expectedText);
+        const expectedText = 'hearing-controls.lower-my-hand';
         expect(component.handToggleText).toBe(expectedText);
     });
 
@@ -106,8 +105,7 @@ describe('HearingControlsBaseComponent', () => {
         component.handRaised = true;
         component.toggleHandRaised();
         expect(videoCallService.lowerHand).toHaveBeenCalledTimes(1);
-        const expectedText = 'Raise my hand';
-        translateServiceSpy.instant.and.returnValues(expectedText);
+        const expectedText = 'hearing-controls.raise-my-hand';
         expect(component.handToggleText).toBe(expectedText);
     });
 
@@ -121,8 +119,7 @@ describe('HearingControlsBaseComponent', () => {
 
         expect(videoCallService.toggleVideo).toHaveBeenCalledTimes(1);
         expect(component.videoMuted).toBeFalsy();
-        const expectedText = 'Switch camera off';
-        translateServiceSpy.instant.and.returnValues(expectedText);
+        const expectedText = 'hearing-controls.switch-camera-off';
         expect(component.videoMutedText).toBe(expectedText);
         expect(eventsService.sendMediaStatus).toHaveBeenCalledTimes(1);
     });
@@ -136,8 +133,7 @@ describe('HearingControlsBaseComponent', () => {
 
         expect(videoCallService.toggleVideo).toHaveBeenCalledTimes(1);
         expect(component.videoMuted).toBeTruthy();
-        const expectedText = 'Switch camera on';
-        translateServiceSpy.instant.and.returnValues(expectedText);
+        const expectedText = 'hearing-controls.switch-camera-on';
         expect(component.videoMutedText).toBe(expectedText);
     });
 
@@ -147,8 +143,7 @@ describe('HearingControlsBaseComponent', () => {
         const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         onParticipantUpdatedSubject.next(payload);
         expect(component.handRaised).toBeFalsy();
-        const expectedText = 'Raise my hand';
-        translateServiceSpy.instant.and.returnValues(expectedText);
+        const expectedText = 'hearing-controls.raise-my-hand';
         expect(component.handToggleText).toBe(expectedText);
     });
 
@@ -172,8 +167,7 @@ describe('HearingControlsBaseComponent', () => {
         onParticipantUpdatedSubject.next(payload);
         expect(component.remoteMuted).toBeFalsy();
         expect(component.handRaised).toBeTruthy();
-        const expectedText = 'Lower my hand';
-        translateServiceSpy.instant.and.returnValues(expectedText);
+        const expectedText = 'hearing-controls.lower-my-hand';
         expect(component.handToggleText).toBe(expectedText);
     });
 
@@ -237,8 +231,8 @@ describe('HearingControlsBaseComponent', () => {
         const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         onParticipantUpdatedSubject.next(payload);
         expect(component.handRaised).toBeTruthy();
-        const expectedText = 'Lower my hand';
-        translateServiceSpy.instant.and.returnValues(expectedText);
+        const expectedText = 'hearing-controls.lower-my-hand';
+
         expect(component.handToggleText).toBe(expectedText);
     });
 
@@ -251,8 +245,7 @@ describe('HearingControlsBaseComponent', () => {
         component.handRaised = false;
         onParticipantUpdatedSubject.next(payload);
         expect(component.handRaised).toBeFalsy();
-        const expectedText = 'Raise my hand';
-        translateServiceSpy.instant.and.returnValues(expectedText);
+        const expectedText = 'hearing-controls.raise-my-hand';
         expect(component.handToggleText).toBe(expectedText);
     });
 
