@@ -10,6 +10,7 @@ import {
 } from 'src/app/shared/models/participant-event';
 import { HearingRole } from '../models/hearing-role-model';
 import { CaseTypeGroup } from '../models/case-type-group';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-judge-context-menu',
@@ -31,7 +32,7 @@ export class JudgeContextMenuComponent {
     @Output() callWitnessIntoHearingEvent = new EventEmitter<CallWitnessIntoHearingEvent>();
     @Output() dismissWitnessFromHearingEvent = new EventEmitter<DismissWitnessFromHearingEvent>();
 
-    constructor(private logger: Logger, private elementRef: ElementRef) {}
+    constructor(private logger: Logger, private elementRef: ElementRef, protected translateService: TranslateService) {}
 
     @HostListener('document:click', ['$event'])
     clickout(event: Event) {
@@ -45,8 +46,7 @@ export class JudgeContextMenuComponent {
 
     isClickedOutsideOfOpenMenu(event: Event) {
         const outsideElement = !this.elementRef.nativeElement.contains(event.target);
-        const isClickedOutsideOfOpenElement = outsideElement && this.isDroppedDown;
-        return isClickedOutsideOfOpenElement;
+        return outsideElement && this.isDroppedDown;
     }
 
     lowerParticipantHand() {
@@ -107,5 +107,17 @@ export class JudgeContextMenuComponent {
             this.participant.caseTypeGroup.toLowerCase() === 'endpoint'
             ? false
             : true;
+    }
+
+    getMutedStatusText(): string {
+        return this.participant.isMicRemoteMuted()
+            ? this.translateService.instant('judge-context-menu.unmute')
+            : this.translateService.instant('judge-context-menu.mute');
+    }
+
+    getPinStatusText(): string {
+        return this.participant.hasSpotlight()
+            ? this.translateService.instant('judge-context-menu.unpin')
+            : this.translateService.instant('judge-context-menu.pin');
     }
 }

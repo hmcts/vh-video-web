@@ -12,7 +12,7 @@
         height="50"
         width="50"
         class="govuk-header__logotype-crest"
-        alt="HM Courts &amp; Tribunals Service crest"
+        [attr.alt]="'individual-participant-status-list.crest-icon-alt' | translate"
       />
     </div>
   </div>
@@ -21,7 +21,7 @@
     <div *ngIf="wingers.length > 0">
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-full">
-            <h2 class="govuk-heading-s">Wingers ({{ wingers.length }})</h2>
+              <h2 class="govuk-heading-s">{{'individual-participant-status-list.wingers' | translate}} ({{ wingers.length }})</h2>
           </div>
         </div>
         <div class="vh-border">
@@ -37,7 +37,7 @@
   <div *ngIf="panelMembers.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">Panel members ({{ panelMembers.length }})</h2>
+          <h2 class="govuk-heading-s">{{'individual-participant-status-list.panel-members' | translate}} ({{ panelMembers.length }})</h2>
       </div>
     </div>
     <div class="vh-border">
@@ -53,7 +53,7 @@
     <div *ngIf="nonJudgeParticipants.length > 0">
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-full">
-                <h2 class="govuk-heading-s">Participants ({{ nonJudgeParticipants.length }})</h2>
+                <h2 class="govuk-heading-s">{{'individual-participant-status-list.participants' | translate}} ({{ nonJudgeParticipants.length }})</h2>
             </div>
         </div>
         <div class="vh-border">
@@ -90,7 +90,7 @@
   <div *ngIf="endpoints.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">Video access points ({{ endpoints.length }})</h2>
+        <h2 class="govuk-heading-s">{{'individual-participant-status-list.video-access-points' | translate}} ({{ endpoints.length }})</h2>
       </div>
     </div>
     <div class="vh-border">
@@ -106,7 +106,7 @@
   <div *ngIf="observers.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">Observers ({{ observers.length }})</h2>
+        <h2 class="govuk-heading-s">{{'individual-participant-status-list.observers' | translate}} ({{ observers.length }})</h2>
       </div>
     </div>
     <div class="vh-border">

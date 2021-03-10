@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -41,7 +42,8 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         protected eventService: EventsService,
         protected logger: Logger,
         protected videoWebService: VideoWebService,
-        protected route: ActivatedRoute
+        protected route: ActivatedRoute,
+        private translateService: TranslateService
     ) {
         super(adalService, consultationService, eventService, videoWebService, logger);
     }
@@ -77,16 +79,16 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
 
     getParticipantStatus(participant: ParticipantResponse): string {
         if (participant.status === ParticipantStatus.None) {
-            return this.camelToSpaced(ParticipantStatus.NotSignedIn.toString());
+            return this.translateService.instant('judge-participant-status-list.not-signed-in');
         }
         if (participant.status === ParticipantStatus.Available || participant.status === ParticipantStatus.InHearing) {
-            return 'Connected';
+            return this.translateService.instant('judge-participant-status-list.connected');
         }
-        return this.camelToSpaced(participant.status.toString());
+        return this.translateService.instant('participant-status.' + participant.status.toString().toLowerCase());
     }
 
     getEndpointStatus(endpoint: VideoEndpointResponse): string {
-        return this.camelToSpaced(endpoint.status.toString());
+        return this.translateService.instant('endpoint-status.' + endpoint.status.toString().toLowerCase());
     }
 
     getParticipantStatusCss(participant: ParticipantResponse): string {

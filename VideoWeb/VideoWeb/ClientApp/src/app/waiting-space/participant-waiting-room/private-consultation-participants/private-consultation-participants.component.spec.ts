@@ -30,6 +30,7 @@ import { RequestedConsultationMessage } from 'src/app/services/models/requested-
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { globalConference, globalParticipant } from '../../waiting-room-shared/tests/waiting-room-base-setup';
 import { HearingRole } from '../../models/hearing-role-model';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('PrivateConsultationParticipantsComponent', () => {
     let component: PrivateConsultationParticipantsComponent;
@@ -43,6 +44,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
+    const translateService = translateServiceSpy;
 
     beforeAll(() => {
         adalService = mockAdalService;
@@ -76,7 +78,8 @@ describe('PrivateConsultationParticipantsComponent', () => {
             eventsService,
             logger,
             videoWebService,
-            activatedRoute
+            activatedRoute,
+            translateService
         );
 
         component.conference = conference;
@@ -285,16 +288,18 @@ describe('PrivateConsultationParticipantsComponent', () => {
             ['Failed', 'Failed'],
             ['None', 'No Answer']
         ];
-        statuses.forEach(([status, resultClass]) => {
+        statuses.forEach(([status, resultText]) => {
             const participant = new ParticipantResponse({
                 id: 'Participant1'
             });
             component.participantCallStatuses['Participant1'] = status;
 
+            translateService.instant.calls.reset();
+            translateServiceSpy.instant.and.returnValues(resultText);
             const result = component.getParticipantStatus(participant);
 
             // Assert
-            expect(result).toBe(resultClass);
+            expect(result).toBe(resultText);
         });
     });
 
@@ -335,10 +340,13 @@ describe('PrivateConsultationParticipantsComponent', () => {
             status: ParticipantStatus.Disconnected
         });
 
+        translateService.instant.calls.reset();
+        const expectedText = 'Not available';
+        translateServiceSpy.instant.and.returnValues(expectedText);
         const result = component.getParticipantStatus(participant);
 
         // Assert
-        expect(result).toBe('Not available');
+        expect(result).toBe(expectedText);
     });
 
     it('should get participant available if available', () => {

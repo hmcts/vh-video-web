@@ -21,6 +21,7 @@ import { NotificationToastrService } from '../services/notification-toastr.servi
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -50,7 +51,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
-        protected clockService: ClockService
+        protected clockService: ClockService,
+        protected translateService: TranslateService
     ) {
         super(
             route,
@@ -134,20 +136,20 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     getConferenceStatusText(): string {
         if (this.hearing.getConference().status === ConferenceStatus.NotStarted) {
             if (this.hearing.isStarting()) {
-                return 'is about to begin';
+                return this.translateService.instant('participant-waiting-room.is-about-to-begin');
             } else if (this.hearing.isDelayed()) {
-                return 'is delayed';
+                return this.translateService.instant('participant-waiting-room.is-delayed');
             } else {
                 return '';
             }
         } else if (this.hearing.isSuspended()) {
-            return 'is suspended';
+            return this.translateService.instant('participant-waiting-room.is-suspended');
         } else if (this.hearing.isPaused()) {
-            return 'is paused';
+            return this.translateService.instant('participant-waiting-room.is-paused');
         } else if (this.hearing.isClosed()) {
-            return 'is closed';
+            return this.translateService.instant('participant-waiting-room.is-closed');
         }
-        return 'is in session';
+        return this.translateService.instant('participant-waiting-room.isis-in-session');
     }
 
     getCurrentTimeClass() {

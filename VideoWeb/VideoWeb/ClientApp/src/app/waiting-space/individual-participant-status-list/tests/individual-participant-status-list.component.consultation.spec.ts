@@ -23,6 +23,7 @@ import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { CaseTypeGroup } from '../../models/case-type-group';
 import { HearingRole } from '../../models/hearing-role-model';
 import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('IndividualParticipantStatusListComponent consultations', () => {
     let component: IndividualParticipantStatusListComponent;
@@ -46,6 +47,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     const testdata = new ConferenceTestData();
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
+    const translateService = translateServiceSpy;
 
     beforeAll(() => {
         adalService = mockAdalService;
@@ -86,7 +88,8 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
             eventsService,
             logger,
             videoWebService,
-            activatedRoute
+            activatedRoute,
+            translateService
         );
 
         component.conference = conference;
