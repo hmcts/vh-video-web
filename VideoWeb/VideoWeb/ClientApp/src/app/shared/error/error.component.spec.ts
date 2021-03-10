@@ -93,9 +93,7 @@ describe('ErrorComponent', () => {
     it('should show default error message if session storage is empty', () => {
         errorServiceSpy.getErrorMessageFromStorage.and.returnValue(null);
         translateServiceSpy.instant.calls.reset();
-        const text1 = 'Please reconnect. Call us if you keep seeing this message.';
-        translateServiceSpy.instant.and.returnValue(text1);
-
+        const text1 = 'error.default-body-message';
         component.ngOnInit();
         expect(component.errorMessageTitle).toBeUndefined();
         expect(component.errorMessageBody).toBe(text1);
@@ -106,9 +104,8 @@ describe('ErrorComponent', () => {
     it('should show default error message if internet connection is down', () => {
         spyPropertyGetter(connectionStatusServiceSpy, 'status').and.returnValue(false);
         translateServiceSpy.instant.calls.reset();
-        const text1 = 'Please reconnect. Call us if you keep seeing this message.';
-        const text2 = `There's a problem with your connection`;
-        translateServiceSpy.instant.and.returnValues(text1, text2);
+        const text1 = 'error.default-body-message';
+        const text2 = `error.problem-with-connection`;
 
         component.ngOnInit();
         expect(component.errorMessageTitle).toBe(text2);
@@ -121,9 +118,8 @@ describe('ErrorComponent', () => {
         spyPropertyGetter(connectionStatusServiceSpy, 'status').and.returnValue(true);
         component.hasLostInternet = true;
         translateServiceSpy.instant.calls.reset();
-        const text1 = 'Please reconnect. Call us if you keep seeing this message.';
-        const text2 = `There's a problem with your connection`;
-        translateServiceSpy.instant.and.returnValues(text1, text2);
+        const text1 = 'error.default-body-message';
+        const text2 = `error.problem-with-connection`;
 
         component.ngOnInit();
         expect(component.errorMessageTitle).toBe(text2);

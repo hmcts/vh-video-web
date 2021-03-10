@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -23,9 +24,10 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         protected eventService: EventsService,
         protected logger: Logger,
         protected videoWebService: VideoWebService,
-        protected route: ActivatedRoute
+        protected route: ActivatedRoute,
+        protected translateService: TranslateService
     ) {
-        super(adalService, consultationService, eventService, videoWebService, logger);
+        super(adalService, consultationService, eventService, videoWebService, logger, translateService);
     }
 
     ngOnInit() {
@@ -82,7 +84,9 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
     }
 
     getParticipantStatusText(participant: ParticipantResponse): string {
-        return participant.status === ParticipantStatus.Available ? 'Available' : 'Unavailable';
+        return participant.status === ParticipantStatus.Available
+            ? this.translateService.instant('individual-participant-status-list.available')
+            : this.translateService.instant('individual-participant-status-list.unavailable');
     }
 
     getParticipantStatusCss(participant: ParticipantResponse): string {

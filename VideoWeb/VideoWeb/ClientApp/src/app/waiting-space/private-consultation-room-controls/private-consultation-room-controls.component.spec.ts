@@ -19,6 +19,7 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '../models/video-call-models';
 import { deviceTypeService } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { PrivateConsultationRoomControlsComponent } from './private-consultation-room-controls.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     let component: PrivateConsultationRoomControlsComponent;
@@ -36,9 +37,17 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     const logger: Logger = new MockLogger();
 
     const testData = new VideoCallTestData();
+    const translateService = translateServiceSpy;
 
     beforeEach(() => {
-        component = new PrivateConsultationRoomControlsComponent(videoCallService, eventsService, deviceTypeService, logger);
+        translateService.instant.calls.reset();
+        component = new PrivateConsultationRoomControlsComponent(
+            videoCallService,
+            eventsService,
+            deviceTypeService,
+            logger,
+            translateService
+        );
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
         component.setupEventhubSubscribers();
@@ -76,7 +85,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         component.handRaised = false;
         component.toggleHandRaised();
         expect(videoCallService.raiseHand).toHaveBeenCalledTimes(1);
-        expect(component.handToggleText).toBe('Lower my hand');
+        const expectedText = 'hearing-controls.lower-my-hand';
+        expect(component.handToggleText).toBe(expectedText);
     });
 
     it('should lower hand on toggle if hand raised', () => {
@@ -84,7 +94,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         component.handRaised = true;
         component.toggleHandRaised();
         expect(videoCallService.lowerHand).toHaveBeenCalledTimes(1);
-        expect(component.handToggleText).toBe('Raise my hand');
+        const expectedText = 'hearing-controls.raise-my-hand';
+        expect(component.handToggleText).toBe(expectedText);
     });
 
     it('should switch camera on if camera is off', async () => {
@@ -97,7 +108,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
         expect(videoCallService.toggleVideo).toHaveBeenCalledTimes(1);
         expect(component.videoMuted).toBeFalsy();
-        expect(component.videoMutedText).toBe('Switch camera off');
+        const expectedText = 'hearing-controls.switch-camera-off';
+        expect(component.videoMutedText).toBe(expectedText);
         expect(eventsService.sendMediaStatus).toHaveBeenCalledTimes(1);
     });
 
@@ -110,7 +122,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
         expect(videoCallService.toggleVideo).toHaveBeenCalledTimes(1);
         expect(component.videoMuted).toBeTruthy();
-        expect(component.videoMutedText).toBe('Switch camera on');
+        const expectedText = 'hearing-controls.switch-camera-on';
+        expect(component.videoMutedText).toBe(expectedText);
     });
 
     it('should show raised hand on hand lowered', () => {
@@ -119,7 +132,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         onParticipantUpdatedSubject.next(payload);
         expect(component.handRaised).toBeFalsy();
-        expect(component.handToggleText).toBe('Raise my hand');
+        const expectedText = 'hearing-controls.raise-my-hand';
+        expect(component.handToggleText).toBe(expectedText);
     });
 
     it('should show remote muted when muted by host', () => {
@@ -142,7 +156,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         onParticipantUpdatedSubject.next(payload);
         expect(component.remoteMuted).toBeFalsy();
         expect(component.handRaised).toBeTruthy();
-        expect(component.handToggleText).toBe('Lower my hand');
+        const expectedText = 'hearing-controls.lower-my-hand';
+        expect(component.handToggleText).toBe(expectedText);
     });
 
     it('should show lower hand on hand raised', () => {
@@ -151,7 +166,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         onParticipantUpdatedSubject.next(payload);
         expect(component.handRaised).toBeTruthy();
-        expect(component.handToggleText).toBe('Lower my hand');
+        const expectedText = 'hearing-controls.lower-my-hand';
+        expect(component.handToggleText).toBe(expectedText);
     });
 
     it('should not show lower hand when hand raised for another participant', () => {
@@ -163,7 +179,8 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         component.handRaised = false;
         onParticipantUpdatedSubject.next(payload);
         expect(component.handRaised).toBeFalsy();
-        expect(component.handToggleText).toBe('Raise my hand');
+        const expectedText = 'hearing-controls.raise-my-hand';
+        expect(component.handToggleText).toBe(expectedText);
     });
 
     it('should mute locally if remote muted and not muted locally', () => {

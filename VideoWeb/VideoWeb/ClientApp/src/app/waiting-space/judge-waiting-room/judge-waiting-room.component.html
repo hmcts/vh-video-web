@@ -1,5 +1,5 @@
 <div *ngIf="loadingData">
-    <p class="govuk-body">Loading please wait...</p>
+    <p class="govuk-body">{{'judge-waiting-room.loading-please-wait' | translate}}</p>
 </div>
 
 <!-- contains the in-hearing participant list and incoming video -->
@@ -10,9 +10,9 @@
 
                 <div class="header-bar">
                     <div class="header-content-grid govuk-body">
-                        <div class="room-title">
+                        <h1 class="room-title">
                             {{getCaseNameAndNumber()}}
-                        </div>
+                        </h1>
                         <app-private-consultation-room-controls [conferenceId]="conference.id"
                                                                 [participant]="participant"
                                                                 [audioOnly]="audioOnly"
@@ -48,21 +48,21 @@
                 </div>
 
                 <div class="video-wrapper">
-                    <video id="incomingFeedJudgePrivate" [srcObject]="presentationStream && !streamInMain ? presentationStream : stream" autoplay height="auto" class="incomingFeedPrivate">
-                        Your browser does not support Video
+                    <video id="incomingFeedJudgePrivate" #incomingFeed (playing)="updateVideoStreamMuteStatus()" [srcObject]="presentationStream && !streamInMain ? presentationStream : stream" autoplay height="auto" class="incomingFeedPrivate">
+                       {{'judge-waiting-room.browser-support-message' | translate}}
                     </video>
                     <div id="secondIncomingFeed"
                             *ngIf="presentationStream"
                             (click)="switchStreamWindows()"
                             appTooltip
-                            text="Switch to main screen"
+                            [text]="'judge-waiting-room.switch-to-main-screen' | translate"
                             colour="grey">
                         <video [srcObject]="presentationStream && !streamInMain ? stream : presentationStream"
-                                autoplay
-                                height="auto"
-                                poster="/assets/images/empty_crest.jpg"
-                                class="fill-container">
-                            Your browser does not support Video
+                               autoplay
+                               height="auto"
+                               poster="/assets/images/empty_crest.jpg"
+                               class="fill-container">
+                            {{'judge-waiting-room.browser-support-message' | translate}}
                         </video>
                     </div>
                 </div>
@@ -75,7 +75,7 @@
 </div>
 <div *ngIf="!loadingData && conference" [ngClass]="{ 'no-mass': showVideo }">
     <a id="back-to-hearing-list-link" href="javascript:void(0)" (click)="goToJudgeHearingList()" class="govuk-back-link">
-        Return to video hearing list
+        {{'judge-waiting-room.return-to-video-hearing-list' | translate}}
     </a>
 
     <div class="govuk-grid-row govuk-!-margin-top-5" *ngIf="!showVideo">
@@ -85,8 +85,8 @@
                     data-module="govuk-button"
                     type="button"
                     (click)="showChooseCameraDialog()"
-                    aria-label="Choose camera and microphone dialog">
-                Choose camera and microphone
+                    [attr.aria-label]="'judge-waiting-room.choose-camera-and-microphone-dialog' | translate">
+                {{'judge-waiting-room.choose-camera-and-microphone' | translate}}
             </button>
         </div>
         <div class="govuk-grid-column-two-thirds">
@@ -96,17 +96,17 @@
         </div>
     </div>
 
-    <table class="govuk-table vh-fullwidth" aria-describedby="Details of the hearing">
+    <table class="govuk-table vh-fullwidth" [attr.aria-label]="'judge-waiting-room.details-of-the-hearing' | translate">
         <thead class="govuk-table__head no-mass">
             <tr class="govuk-table__row">
-                <th scope="col" class="govuk-table__header">Hearing</th>
-                <th scope="col" class="govuk-table__header">Date</th>
+                <th scope="col" class="govuk-table__header">{{'judge-waiting-room.hearing' | translate}}</th>
+                <th scope="col" class="govuk-table__header">{{'judge-waiting-room.date' | translate}}</th>
             </tr>
         </thead>
         <tbody class="govuk-table__body">
             <tr class="govuk-table__row">
                 <td class="govuk-table__cell hearing-details-col1-width">
-                    <strong>{{ conference.case_name }}</strong> ({{ conference.case_type }}) <span>case number</span>:
+                    <strong>{{ conference.case_name }}</strong> ({{ ('case-type.' + stringToTranslateId(conference.case_type)) | translate }}) <span>{{'judge-waiting-room.case-number' | translate}}</span>:
                     <strong>{{ conference.case_number }}</strong>
                 </td>
                 <td class="govuk-table__cell hearing-details-col2-width">
@@ -129,30 +129,27 @@
 
         <app-select-hearing-layout *ngIf="!hearing.isClosed()" [conference]="conference"></app-select-hearing-layout>
 
-        <h2 class="govuk-heading-m" *ngIf="isNotStarted()">Is everyone connected?</h2>
+        <h2 class="govuk-heading-m" *ngIf="isNotStarted()">{{'judge-waiting-room.is-everyone-connected' | translate}}</h2>
 
-        <p class="govuk-body govuk-!-margin-bottom-3" *ngIf="isNotStarted()">
-            If any participants are not connected, you must call the video hearings team on <strong>0300 303 0655</strong> before you start the
-            hearing.
+        <p class="govuk-body govuk-!-margin-bottom-3" *ngIf="isNotStarted()" [innerHTML]="'judge-waiting-room.hearing-messages.not-started' | translate:{ phone: '0300 303 0655' }">
         </p>
 
-        <p class="govuk-body govuk-!-margin-bottom-3" *ngIf="hearingPaused()">
-            Please call the video hearings team on <strong>0300 303 0655</strong> if you're having problems. We'll update the participants.
+        <p class="govuk-body govuk-!-margin-bottom-3" *ngIf="hearingPaused()"[innerHTML]="'judge-waiting-room.hearing-messages.paused' | translate:{ phone: '0300 303 0655' }">
+            
         </p>
 
-        <p class="govuk-body govuk-!-margin-bottom-3" *ngIf="hearingSuspended()">
-            The video hearings team has been alerted and we're informing the participants. Please call us now on <strong>0300 303 0655</strong>.
+        <p class="govuk-body govuk-!-margin-bottom-3" *ngIf="hearingSuspended()" [innerHTML]="'judge-waiting-room.hearing-messages.suspended' | translate:{ phone: '0300 303 0655' }">
+            
         </p>
 
         <div *ngIf="hearing.isClosed()">
-            <p class="govuk-body govuk-!-margin-bottom-3">
-                The consultation room is available for up to 30 minutes after the hearing has finished.
+            <p class="govuk-body govuk-!-margin-bottom-3" [innerHTML]="'judge-waiting-room.hearing-messages.closed' | translate">
             </p>
             <div class="govuk-warning-text">
                 <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
                 <strong class="govuk-warning-text__text">
-                    <span class="govuk-warning-text__assistive">Warning</span>
-                    The consultation room will close at {{ hearing.retrieveExpiryTime() | date: 'HH:mm' }}
+                    <span class="govuk-warning-text__assistive">{{'judge-waiting-room.hearing-messages.warning' | translate}}</span>
+                    {{'judge-waiting-room.hearing-messages.consultation-room-will-close-at' | translate}} {{ hearing.retrieveExpiryTime() | date: 'HH:mm' }}
                 </strong>
             </div>
         </div>
@@ -162,10 +159,10 @@
                 <img id="recording-on-img"
                      class="audio-icon"
                      src="/assets/images/{{ conference.audio_recording_required ? 'audio_on' : 'audio_off' }}.png"
-                     alt="Recording {{ conference.audio_recording_required ? 'on' : 'off' }} image" />
+                     [attr.alt]="'judge-waiting-room.hearing-is-being-recorded.image-' + conference.audio_recording_required | translate" />
             </span>
             <strong class="govuk-!-padding-1">
-                The audio of this hearing is {{ conference.audio_recording_required ? '' : 'NOT' }} being recorded.
+                {{'judge-waiting-room.hearing-is-being-recorded.' + conference.audio_recording_required | translate}}
             </strong>
         </p>
 
@@ -175,14 +172,14 @@
                     type="button"
                     class="govuk-button govuk-button--start govuk-!-margin-right-3 vh-btn-text"
                     (click)="displayConfirmStartPopup()">
-                Start video hearing
+                {{'judge-waiting-room.buttons.start-video-hearing' | translate}}
             </button>
             <button [disabled]="!connected"
                     *ngIf="hearingPaused() || hearingSuspended()"
                     type="button"
                     class="govuk-button govuk-button--start govuk-!-margin-right-3 vh-btn-text"
                     (click)="displayConfirmStartPopup()">
-                Resume video hearing
+                {{'judge-waiting-room.buttons.resume-video-hearing' | translate}}
             </button>
             <button class="govuk-button govuk-button--bigblue vh-btn-text"
                     type="button"
@@ -190,25 +187,23 @@
                     data-module="govuk-button"
                     (click)="joinJudicialConsultation()"
                     [disabled]="!connected">
-                Enter consultation room
+                {{'judge-waiting-room.buttons.enter-consultation-room' | translate}}
                 <span *ngIf="numberOfJudgeOrJOHsInConsultation" id="numberOfJohsInConsultationBadge" class="badge">
-                    {{
-          numberOfJudgeOrJOHsInConsultation
-                    }}
+                    {{numberOfJudgeOrJOHsInConsultation}}
                 </span>
             </button>
         </div>
         <div *ngIf="!connected" class="govuk-warning-text">
             <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
             <strong class="govuk-warning-text__text">
-                <span class="govuk-warning-text__assistive">Warning</span>
-                Please wait while we connect you...
+                <span class="govuk-warning-text__assistive">{{'judge-waiting-room.warning' | translate}}</span>
+                {{'judge-waiting-room.please-wait-while-we-connect-you' | translate}}
             </strong>
         </div>
     </div>
 
     <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': showVideo }">
-        <app-judge-participant-status-list aria-label="list of participants in hearing" [conference]="conference">
+        <app-judge-participant-status-list [attr.aria-label]="'judge-waiting-room.judge-participant-status-list-label' | translate" [conference]="conference">
         </app-judge-participant-status-list>
     </div>
 </div>

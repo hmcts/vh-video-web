@@ -25,6 +25,7 @@ import {
     videoWebService
 } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { JohWaitingRoomComponent } from './joh-waiting-room.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('JohWaitingRoomComponent', () => {
     let component: JohWaitingRoomComponent;
@@ -42,7 +43,10 @@ describe('JohWaitingRoomComponent', () => {
         snapshot: { data: { loggedUser: logged } }
     };
 
+    const translateService = translateServiceSpy;
+
     beforeEach(async () => {
+        translateService.instant.calls.reset();
         component = new JohWaitingRoomComponent(
             activatedRoute,
             videoWebService,
@@ -60,7 +64,8 @@ describe('JohWaitingRoomComponent', () => {
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
-            clockService
+            clockService,
+            translateService
         );
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
@@ -90,10 +95,26 @@ describe('JohWaitingRoomComponent', () => {
 
     const getConferenceStatusTextTestCases = [
         { conference: conferenceTestData.getConferenceDetailFuture(), status: ConferenceStatus.NotStarted, expected: '' },
-        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.InSession, expected: 'is in session' },
-        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Paused, expected: 'is paused' },
-        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Suspended, expected: 'is suspended' },
-        { conference: conferenceTestData.getConferenceDetailPast(), status: ConferenceStatus.Closed, expected: 'is closed' }
+        {
+            conference: conferenceTestData.getConferenceDetailPast(),
+            status: ConferenceStatus.InSession,
+            expected: 'joh-waiting-room.is-in-session'
+        },
+        {
+            conference: conferenceTestData.getConferenceDetailPast(),
+            status: ConferenceStatus.Paused,
+            expected: 'joh-waiting-room.is-paused'
+        },
+        {
+            conference: conferenceTestData.getConferenceDetailPast(),
+            status: ConferenceStatus.Suspended,
+            expected: 'joh-waiting-room.is-suspended'
+        },
+        {
+            conference: conferenceTestData.getConferenceDetailPast(),
+            status: ConferenceStatus.Closed,
+            expected: 'joh-waiting-room.is-closed'
+        }
     ];
 
     getConferenceStatusTextTestCases.forEach(test => {

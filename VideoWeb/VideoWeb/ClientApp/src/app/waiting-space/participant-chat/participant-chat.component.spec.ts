@@ -14,6 +14,7 @@ import { adminTestProfile, judgeTestProfile } from '../../testing/data/test-prof
 import { ParticipantChatComponent } from './participant-chat.component';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('ParticipantChatComponent', () => {
     let component: ParticipantChatComponent;
@@ -26,7 +27,6 @@ describe('ParticipantChatComponent', () => {
     let profileService: jasmine.SpyObj<ProfileService>;
     let adalService: jasmine.SpyObj<AdalService>;
     let activatedRoute: ActivatedRoute;
-    let translateServiceSpy: jasmine.SpyObj<TranslateService>;
 
     const judgeProfile = judgeTestProfile;
     const adminProfile = adminTestProfile;
@@ -45,7 +45,6 @@ describe('ParticipantChatComponent', () => {
         adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
             userInfo: <adal.User>{ userName: judgeUsername, authenticated: true }
         });
-        translateServiceSpy = jasmine.createSpyObj<TranslateService>('TranslateService', ['instant']);
     });
 
     beforeEach(() => {

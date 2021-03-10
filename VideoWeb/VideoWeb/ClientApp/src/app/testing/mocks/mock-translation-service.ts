@@ -13,6 +13,7 @@ translateServiceSpy = jasmine.createSpyObj<TranslateService>(
     }
 );
 
+translateServiceSpy.currentLang = 'en';
 translateServiceSpy.instant.and.callFake(k => k);
 translateServiceSpy.use.and.callFake(k => from(Promise.resolve(k)));
 translateServiceSpy.get.and.callFake(k => from(Promise.resolve(k)));

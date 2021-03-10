@@ -129,7 +129,7 @@ namespace VideoWeb.Controllers
         [HttpPost("{conferenceId}/participant/{participantId}/call")]
         [SwaggerOperation(OperationId = "CallWitness")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        public async Task<IActionResult> CallWitnessAsync(Guid conferenceId, Guid participantId)
+        public async Task<IActionResult> CallWitnessAsync(Guid conferenceId, string participantId)
         {
             var validatedRequest = await ValidateWitnessInConference(conferenceId, participantId);
             if (validatedRequest != null)
@@ -141,11 +141,7 @@ namespace VideoWeb.Controllers
             {
                 _logger.LogDebug("Sending request to call witness {Participant} into video hearing {Conference}",
                     participantId, conferenceId);
-                await _videoApiClient.TransferParticipantAsync(conferenceId, new TransferParticipantRequest
-                {
-                    ParticipantId = participantId,
-                    TransferType = TransferType.Call
-                });
+                await _videoApiClient.TransferParticipantAsync(conferenceId, BuildTransferRequest(TransferType.Call, participantId));
                 return Accepted();
             }
             catch (VideoApiException ex)
@@ -165,7 +161,7 @@ namespace VideoWeb.Controllers
         [HttpPost("{conferenceId}/participant/{participantId}/dismiss")]
         [SwaggerOperation(OperationId = "DismissWitness")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
-        public async Task<IActionResult> DismissWitnessAsync(Guid conferenceId, Guid participantId)
+        public async Task<IActionResult> DismissWitnessAsync(Guid conferenceId, string participantId)
         {
             var validatedRequest = await ValidateWitnessInConference(conferenceId, participantId);
             if (validatedRequest != null)
@@ -177,11 +173,7 @@ namespace VideoWeb.Controllers
             {
                 _logger.LogDebug("Sending request to dismiss witness {Participant} from video hearing {Conference}",
                     participantId, conferenceId);
-                await _videoApiClient.TransferParticipantAsync(conferenceId, new TransferParticipantRequest
-                {
-                    ParticipantId = participantId,
-                    TransferType = TransferType.Dismiss
-                });
+                await _videoApiClient.TransferParticipantAsync(conferenceId, BuildTransferRequest(TransferType.Dismiss, participantId));
             }
             catch (VideoApiException ex)
             {
@@ -194,12 +186,7 @@ namespace VideoWeb.Controllers
             {
                 _logger.LogDebug("Sending alert to vho witness {Participant} dismissed from video hearing {Conference}",
                     participantId, conferenceId);
-                await _videoApiClient.AddTaskAsync(conferenceId, new AddTaskRequest
-                {
-                    ParticipantId = participantId,
-                    Body = "Witness dismissed",
-                    TaskType = TaskType.Participant
-                });
+                await SendParticipantDismissed(conferenceId, participantId);
             }
             catch (VideoApiException ex)
             {
@@ -208,6 +195,32 @@ namespace VideoWeb.Controllers
                 return StatusCode(ex.StatusCode, ex.Response);
             }
             return Accepted();
+        }
+
+        private async Task SendParticipantDismissed(Guid conferenceId, string participantId)
+        {
+            if (Guid.TryParse(participantId, out var participantGuid))
+            {
+                await _videoApiClient.AddTaskAsync(conferenceId, new AddTaskRequest
+                {
+                    ParticipantId = participantGuid,
+                    Body = "Witness dismissed",
+                    TaskType = TaskType.Participant
+                });
+                return;
+            }
+
+            var conference = await GetConference(conferenceId);
+            var roomId = long.Parse(participantId);
+            var room = conference.CivilianRooms.Single(r => r.Id == roomId);
+            var witness =
+                conference.Participants.First(x => room.Participants.Contains(x.Id) && x.IsWitness());
+            await _videoApiClient.AddTaskAsync(conferenceId, new AddTaskRequest
+            {
+                ParticipantId = witness.Id,
+                Body = "Witness dismissed",
+                TaskType = TaskType.Participant
+            });
         }
 
         private async Task<IActionResult> ValidateUserIsJudgeAndInConference(Guid conferenceId)
@@ -221,12 +234,12 @@ namespace VideoWeb.Controllers
             return Unauthorized("User must be a Judge");
         }
 
-        private async Task<IActionResult> ValidateWitnessInConference(Guid conferenceId, Guid participantId)
+        private async Task<IActionResult> ValidateWitnessInConference(Guid conferenceId, string participantId)
         {
             var judgeValidation = await ValidateUserIsJudgeAndInConference(conferenceId);
             if (judgeValidation != null) return judgeValidation;
 
-            if (await IsParticipantAWitness(conferenceId, participantId))
+            if (await IsParticipantAWitnessOrAWitnessRoom(conferenceId, participantId))
             { 
                 return null;
             }
@@ -238,27 +251,50 @@ namespace VideoWeb.Controllers
 
         private async Task<bool> IsConferenceJudge(Guid conferenceId)
         {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync
-            (
-                conferenceId,
-                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
-            );
-
+            var conference = await GetConference(conferenceId);
             return conference.GetJudge().Username
                 .Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase);
         }
 
-        private async Task<bool> IsParticipantAWitness(Guid conferenceId, Guid participantId)
+        private TransferParticipantRequest BuildTransferRequest(TransferType transferType, string participantId)
         {
-            var conference = await _conferenceCache.GetOrAddConferenceAsync
+            var transferRequest = new TransferParticipantRequest {TransferType = transferType};
+            if (long.TryParse(participantId, out var roomId))
+            {
+                transferRequest.RoomId = roomId;
+            }
+            else
+            {
+                transferRequest.ParticipantId = Guid.Parse(participantId);
+            }
+
+            return transferRequest;
+        }
+
+        private async Task<bool> IsParticipantAWitnessOrAWitnessRoom(Guid conferenceId, string participantId)
+        {
+            var conference = await GetConference(conferenceId);
+
+            if (Guid.TryParse(participantId, out var participantGuid))
+            {
+                var participant = conference.Participants.SingleOrDefault(x => x.Id == participantGuid);
+                return participant != null && participant.IsWitness();
+            }
+
+            if (!long.TryParse(participantId, out var roomId)) return false;
+
+            var room = conference.CivilianRooms.SingleOrDefault(x => x.Id == roomId);
+            return room != null &&
+                   conference.Participants.Any(p => room.Participants.Contains(p.Id) && p.IsWitness());
+        }
+
+        private async Task<Conference> GetConference(Guid conferenceId)
+        {
+            return await _conferenceCache.GetOrAddConferenceAsync
             (
                 conferenceId,
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId)
             );
-
-            var witness = conference.Participants.SingleOrDefault(x => x.Id == participantId);
-            
-            return witness != null ? witness.IsWitness(): default;
         }
     }
 }

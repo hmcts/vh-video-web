@@ -1,5 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { AdalService } from 'adal-angular4';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
@@ -19,14 +20,14 @@ import { NotificationSoundsService } from '../services/notification-sounds.servi
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
-import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
+import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
 
 @Component({
     selector: 'app-judge-waiting-room',
     templateUrl: './judge-waiting-room.component.html',
     styleUrls: ['./judge-waiting-room.component.scss', '../waiting-room-global-styles.scss']
 })
-export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
+export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     private readonly loggerPrefixJudge = '[Judge WR] -';
     audioRecordingInterval: NodeJS.Timer;
     isRecording: boolean;
@@ -61,7 +62,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
         protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
-        protected clockService: ClockService
+        protected clockService: ClockService,
+        protected translateService: TranslateService
     ) {
         super(
             route,
@@ -135,15 +137,15 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseComponent implemen
     getConferenceStatusText() {
         switch (this.conference.status) {
             case ConferenceStatus.NotStarted:
-                return 'Start this hearing';
+                return this.translateService.instant('judge-waiting-room.start-this-hearing');
             case ConferenceStatus.Suspended:
-                return 'Hearing suspended';
+                return this.translateService.instant('judge-waiting-room.hearing-suspended');
             case ConferenceStatus.Paused:
-                return 'Hearing paused';
+                return this.translateService.instant('judge-waiting-room.hearing-paused');
             case ConferenceStatus.Closed:
-                return 'Hearing is closed';
+                return this.translateService.instant('judge-waiting-room.hearing-is-closed');
             default:
-                return 'Hearing is in session';
+                return this.translateService.instant('judge-waiting-room.hearing-is-in-session');
         }
     }
 

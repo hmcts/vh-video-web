@@ -26,6 +26,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private const int DEFAULT_PANEL_MEMBERS = 0;
         private const int DEFAULT_OBSERVERS = 0;
         private const int DEFAULT_WINGERS = 0;
+        private const int DEFAULT_INDIVIDUALS_WITH_INTERPRETERS = 0;
         private const string DEFAULT_VENUE = "Birmingham Civil and Family Justice Centre";
         private const int ALLOCATE_USERS_FOR_MINUTES = 8;
         private const int ALLOCATE_USERS_FOR_HEARING_TESTS = 15;
@@ -44,6 +45,15 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void GivenIHaveAHearingAndAConference()
         {
             var userTypes = CreateUserTypes();
+            AllocateUsers(userTypes);
+            GivenIHaveAHearing();
+            CreateConference();
+        }
+        
+        [Given(@"I have an Interpreter and have a hearing")]
+        public void GivenIHaveAnInterpreterAndHaveAHearingAndAConference()
+        {
+            var userTypes = CreateUserTypes(0,1,0,0,individualsAndInterpreters: 1);
             AllocateUsers(userTypes);
             GivenIHaveAHearing();
             CreateConference();
@@ -226,7 +236,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             int individualsAndRepresentatives = DEFAULT_INDIVIDUALS_WITH_REPRESENTATIVES, 
             int observers = DEFAULT_OBSERVERS, 
             int panelMembers = DEFAULT_PANEL_MEMBERS,
-            int wingers = DEFAULT_WINGERS)
+            int wingers = DEFAULT_WINGERS,
+            int individualsAndInterpreters = DEFAULT_INDIVIDUALS_WITH_INTERPRETERS)
         {
             var userTypes = new List<UserType> { UserType.Judge, UserType.VideoHearingsOfficer };
 
@@ -249,6 +260,12 @@ namespace VideoWeb.AcceptanceTests.Steps
             for (var i = 0; i < wingers; i++)
             {
                 userTypes.Add(UserType.Winger);
+            }
+            
+            for (var i = 0; i < individualsAndInterpreters; i++)
+            {
+                userTypes.Add(UserType.Individual);
+                userTypes.Add(UserType.Interpreter);
             }
 
             return userTypes;

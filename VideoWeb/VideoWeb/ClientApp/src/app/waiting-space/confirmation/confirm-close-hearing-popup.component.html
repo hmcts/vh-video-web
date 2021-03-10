@@ -1,9 +1,9 @@
 <div id="confirmationDialog" class="vh-popup-overlay">
   <div class="vh-popup">
-    <h1 class="govuk-heading-m">You are about to close this hearing</h1>
+    <h1 class="govuk-heading-m">{{'confirm-close-hearing-popup.title' | translate}}</h1>
 
     <p class="govuk-body govuk-!-margin-bottom-9">
-      Close the hearing if you have completed proceedings. Once closed, the hearing is ended and cannot be re-opened.
+      {{'confirm-close-hearing-popup.message' | translate}}
     </p>
 
     <button
@@ -11,10 +11,10 @@
       class="govuk-button govuk-!-margin-right-1"
       type="button"
       data-module="govuk-button"
-      aria-label="Confirm closing the hearing"
+      [attr.aria-label]="'confirm-close-hearing-popup.close-hearing-label' | translate"
       (click)="respondWithYes()"
     >
-      Close hearing
+    {{'confirm-close-hearing-popup.close-hearing' | translate}}
     </button>
 
     <button
@@ -22,10 +22,10 @@
       class="govuk-button govuk-button--secondary"
       type="button"
       data-module="govuk-button"
-      aria-label="Cancel closing the hearing"
+      [attr.aria-label]="'confirm-close-hearing-popup.cancel-close-label' | translate"
       (click)="respondWithNo()"
     >
-      Keep hearing open
+    {{'confirm-close-hearing-popup.cancel-close' | translate}}
     </button>
   </div>
 </div>

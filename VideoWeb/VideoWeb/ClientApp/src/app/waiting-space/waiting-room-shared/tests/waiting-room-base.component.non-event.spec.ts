@@ -426,4 +426,31 @@ describe('WaitingRoomComponent message and clock', () => {
             component.maxBandwidth
         );
     });
+
+    it('should mute video stream when hearing is in session and countdown is not complete', () => {
+        component.countdownComplete = false;
+        component.hearing.getConference().status = ConferenceStatus.InSession;
+        spyOn(component, 'toggleVideoStreamMute');
+
+        component.updateVideoStreamMuteStatus();
+        expect(component.toggleVideoStreamMute).toHaveBeenCalledWith(true);
+    });
+
+    it('should not mute video stream when hearing is in session and countdown is complete', () => {
+        component.countdownComplete = true;
+        component.hearing.getConference().status = ConferenceStatus.InSession;
+        spyOn(component, 'toggleVideoStreamMute');
+
+        component.updateVideoStreamMuteStatus();
+        expect(component.toggleVideoStreamMute).toHaveBeenCalledWith(false);
+    });
+
+    it('should not mute video stream when hearing is in not in session and countdown is not complete', () => {
+        component.countdownComplete = false;
+        component.hearing.getConference().status = ConferenceStatus.Paused;
+        spyOn(component, 'toggleVideoStreamMute');
+
+        component.updateVideoStreamMuteStatus();
+        expect(component.toggleVideoStreamMute).toHaveBeenCalledWith(false);
+    });
 });

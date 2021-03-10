@@ -1,4 +1,5 @@
 import { Directive, Input } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
@@ -11,7 +12,8 @@ import {
     ParticipantResponse,
     ParticipantStatus,
     Role,
-    VideoEndpointResponse
+    VideoEndpointResponse,
+    LinkType
 } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -41,7 +43,8 @@ export abstract class WRParticipantStatusListDirective {
         protected consultationService: ConsultationService,
         protected eventService: EventsService,
         protected videoWebService: VideoWebService,
-        protected logger: Logger
+        protected logger: Logger,
+        protected translateService: TranslateService
     ) {}
 
     initParticipants() {
@@ -104,9 +107,67 @@ export abstract class WRParticipantStatusListDirective {
     }
 
     protected filterNonJudgeParticipants(): void {
-        this.nonJudgeParticipants = this.conference.participants.filter(
+        const nonJudgeParts = this.conference.participants.filter(
             x => x.role !== Role.Judge && x.role !== Role.JudicialOfficeHolder && x.hearing_role !== HearingRole.OBSERVER
         );
+
+        const interpreterList = nonJudgeParts.filter(
+            x =>
+                x.role === Role.Individual &&
+                x.hearing_role === HearingRole.INTERPRETER &&
+                Array.isArray(x.linked_participants) &&
+                x.linked_participants.length > 0
+        );
+        if (!interpreterList) {
+            this.nonJudgeParticipants = nonJudgeParts;
+        } else {
+            this.nonJudgeParticipants = this.orderForInterpreter(nonJudgeParts, interpreterList);
+        }
+    }
+
+    hasInterpreterLink(participant: ParticipantResponse) {
+        return participant?.linked_participants.some(x => x.link_type === LinkType.Interpreter);
+    }
+
+    getHearingRole(participant: ParticipantResponse) {
+        const translatedHearingRole = this.translateService.instant('hearing-role.' + this.stringToTranslateId(participant.hearing_role));
+        const translatedFor = this.translateService.instant('wr-participant-list-shared.for');
+        const translatedRepresentative = this.translateService.instant('wr-participant-list-shared.representative');
+        if (participant.hearing_role === HearingRole.INTERPRETER) {
+            const interpreteeName = this.getInterpreteeName(participant.id);
+            return `${translatedHearingRole} ${translatedFor} <br><strong>${interpreteeName}</strong>`;
+        }
+        if (participant.representee) {
+            const hearingRoleText = this.isCaseTypeNone(participant) ? translatedHearingRole : translatedRepresentative;
+            return `${hearingRoleText} ${translatedFor} <br><strong>${participant.representee}</strong>`;
+        }
+        return `${translatedHearingRole}`;
+    }
+
+    stringToTranslateId(str: string) {
+        return str.replace(/\s/g, '-').toLowerCase();
+    }
+
+    getInterpreteeName(interpreterId: string) {
+        const interpreter = this.nonJudgeParticipants.find(x => x.id === interpreterId);
+        return this.nonJudgeParticipants.find(x => x.id === interpreter.linked_participants[0].linked_id).name;
+    }
+
+    private orderForInterpreter(
+        nonJudgeParticipants: ParticipantResponse[],
+        interpreterList: ParticipantResponse[]
+    ): ParticipantResponse[] {
+        const sortedParticipants = [];
+        const linkedParticipantIds = [];
+        interpreterList.forEach(interpreter => {
+            const linkDetails = interpreter.linked_participants[0];
+            const interpretee = nonJudgeParticipants.find(x => x.id === linkDetails.linked_id);
+            sortedParticipants.push(interpretee);
+            linkedParticipantIds.push(interpretee.id);
+            sortedParticipants.push(interpreter);
+            linkedParticipantIds.push(interpreter.id);
+        });
+        return [...nonJudgeParticipants.filter(p => !linkedParticipantIds.includes(p.id)), ...sortedParticipants];
     }
 
     protected filterObservers(): void {

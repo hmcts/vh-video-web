@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantResponse } from 'src/app/services/clients/api-client';
@@ -48,7 +49,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private route: ActivatedRoute,
         private videoCallService: VideoCallService,
         private eventService: EventsService,
-        private logger: Logger
+        private logger: Logger,
+        protected translateService: TranslateService
     ) {}
 
     ngOnInit() {
@@ -440,13 +442,13 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     getPanelRowTooltipText(participant: PanelModel) {
         if (participant.isAvailable()) {
-            return participant.displayName + ': Joining' + this.getAdditionalText(participant);
+            return participant.displayName + ': ' + this.getTranslatedText('joining') + this.getAdditionalText(participant);
         }
         if (!participant.isDisconnected() && !participant.isInHearing()) {
-            return participant.displayName + ': Not joined' + this.getAdditionalText(participant);
+            return participant.displayName + ': ' + this.getTranslatedText('not-joined') + this.getAdditionalText(participant);
         }
         if (participant.isDisconnected()) {
-            return participant.displayName + ': DISCONNECTED' + this.getAdditionalText(participant);
+            return participant.displayName + ': ' + this.getTranslatedText('disconnected') + this.getAdditionalText(participant);
         }
         return participant.displayName + this.getAdditionalText(participant);
     }
@@ -465,9 +467,13 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         }
     }
 
+    getTranslatedText(key: string): string {
+        return this.translateService.instant(`participants-panel.${key}`);
+    }
+
     private getHearingRole(participant: PanelModel): string {
         return participant.representee
-            ? `<br/>${participant.hearingRole} for ${participant.representee}`
+            ? `<br/>${participant.hearingRole} ${this.getTranslatedText('for')} ${participant.representee}`
             : `<br/>${participant.hearingRole}`;
     }
 
