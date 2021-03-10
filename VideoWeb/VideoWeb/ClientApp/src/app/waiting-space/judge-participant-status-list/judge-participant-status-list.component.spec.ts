@@ -17,6 +17,7 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { VideoWebService } from '../../services/api/video-web.service';
 import { Logger } from '../../services/logging/logger-base';
 import { JudgeParticipantStatusListComponent } from './judge-participant-status-list.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('JudgeParticipantStatusListComponent', () => {
     const testData = new ConferenceTestData();
@@ -32,6 +33,8 @@ describe('JudgeParticipantStatusListComponent', () => {
     let conference: ConferenceResponse;
     let userInfo: adal.User;
     let activatedRoute: ActivatedRoute;
+    const translateService = translateServiceSpy;
+
     beforeAll(() => {
         consultationService = consultationServiceSpyFactory();
         userInfo = <adal.User>{ userName: judgeProfile.username, authenticated: true };
@@ -62,7 +65,8 @@ describe('JudgeParticipantStatusListComponent', () => {
             eventsService,
             logger,
             videoWebService,
-            activatedRoute
+            activatedRoute,
+            translateService
         );
         component.conference = conference;
         component.ngOnInit();
@@ -151,6 +155,8 @@ describe('JudgeParticipantStatusListComponent', () => {
         it(`should return ${test.expected} when participant status is ${test.status}`, () => {
             const pat = component.conference.participants[0];
             pat.status = test.status;
+            translateService.instant.calls.reset();
+            translateServiceSpy.instant.and.returnValues(test.expected);
             expect(component.getParticipantStatus(pat)).toBe(test.expected);
         });
     });
@@ -169,6 +175,8 @@ describe('JudgeParticipantStatusListComponent', () => {
         it(`should return class ${test.expected} when participant status is ${test.status}`, () => {
             const pat = component.conference.participants[0];
             pat.status = test.status;
+            translateService.instant.calls.reset();
+            translateServiceSpy.instant.and.returnValues(test.expected);
             expect(component.getParticipantStatusCss(pat)).toBe(test.expected);
         });
     });
@@ -183,6 +191,8 @@ describe('JudgeParticipantStatusListComponent', () => {
         it(`should return ${test.expected} when endpoint status is ${test.status}`, () => {
             const endpoint = component.conference.endpoints[0];
             endpoint.status = test.status;
+            translateService.instant.calls.reset();
+            translateServiceSpy.instant.and.returnValues(test.expected);
             expect(component.getEndpointStatus(endpoint)).toBe(test.expected);
         });
     });
@@ -218,7 +228,8 @@ describe('JudgeParticipantStatusListComponent', () => {
             eventsService,
             logger,
             videoWebService,
-            activatedRoute
+            activatedRoute,
+            translateService
         );
         component.conference = conference;
         component.ngOnInit();

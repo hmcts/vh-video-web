@@ -1,5 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -44,7 +45,8 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
-        protected clockService: ClockService
+        protected clockService: ClockService,
+        protected translateService: TranslateService
     ) {
         super(
             route,
@@ -86,13 +88,13 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         if (this.hearing.getConference().status === ConferenceStatus.NotStarted) {
             return '';
         } else if (this.hearing.isSuspended()) {
-            return 'is suspended';
+            return this.translateService.instant('joh-waiting-room.is-suspended');
         } else if (this.hearing.isPaused()) {
-            return 'is paused';
+            return this.translateService.instant('joh-waiting-room.is-paused');
         } else if (this.hearing.isClosed()) {
-            return 'is closed';
+            return this.translateService.instant('joh-waiting-room.is-closed');
         }
-        return 'is in session';
+        return this.translateService.instant('joh-waiting-room.is-in-session');
     }
 
     getCurrentTimeClass() {

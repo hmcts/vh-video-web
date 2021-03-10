@@ -33,12 +33,15 @@ import {
     videoWebService
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
 import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
     let audioRecordingService: jasmine.SpyObj<AudioRecordingService>;
     let activatedRoute: ActivatedRoute;
     let logged: LoggedParticipantResponse;
+    const translateService = translateServiceSpy;
+
     beforeAll(() => {
         initAllWRDependencies();
         audioRecordingService = jasmine.createSpyObj<AudioRecordingService>('AudioRecordingService', ['getAudioStreamInfo']);
@@ -73,7 +76,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
-            clockService
+            clockService,
+            translateService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
@@ -131,6 +135,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     getConferenceStatusTextTestCases.forEach(test => {
         it(`should return hearing status text '${test.expected}'`, () => {
             component.conference.status = test.status;
+            translateService.instant.calls.reset();
+            translateServiceSpy.instant.and.returnValues(test.expected);
             expect(component.getConferenceStatusText()).toBe(test.expected);
         });
     });

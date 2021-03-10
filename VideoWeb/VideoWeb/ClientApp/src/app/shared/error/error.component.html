@@ -44,7 +44,7 @@
                     data-module="govuk-button"
                     type="button"
                     (click)="reconnect()"
-                    aria-label="Continue to the next page">
+                    [attr.aria-label]="'error.button-reconnect' | translate">
                 {{'error.button-reconnect' | translate}} 
             </button>
         </div>

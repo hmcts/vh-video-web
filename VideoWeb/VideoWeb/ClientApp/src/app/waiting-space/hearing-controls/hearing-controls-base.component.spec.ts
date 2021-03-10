@@ -20,6 +20,7 @@ import { HearingRole } from '../models/hearing-role-model';
 import { ParticipantUpdated } from '../models/video-call-models';
 import { PrivateConsultationRoomControlsComponent } from '../private-consultation-room-controls/private-consultation-room-controls.component';
 import { HearingControlsBaseComponent } from './hearing-controls-base.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('HearingControlsBaseComponent', () => {
     let component: HearingControlsBaseComponent;
@@ -31,6 +32,7 @@ describe('HearingControlsBaseComponent', () => {
 
     const videoCallService = videoCallServiceSpy;
     const onParticipantUpdatedSubject = onParticipantUpdatedMock;
+    const translateService = translateServiceSpy;
 
     const deviceTypeService = jasmine.createSpyObj<DeviceTypeService>('DeviceTypeService', [
         'getBrowserName',
@@ -45,7 +47,14 @@ describe('HearingControlsBaseComponent', () => {
     const testData = new VideoCallTestData();
 
     beforeEach(() => {
-        component = new PrivateConsultationRoomControlsComponent(videoCallService, eventsService, deviceTypeService, logger);
+        translateService.instant.calls.reset();
+        component = new PrivateConsultationRoomControlsComponent(
+            videoCallService,
+            eventsService,
+            deviceTypeService,
+            logger,
+            translateService
+        );
         component.participant = globalParticipant;
         component.conferenceId = gloalConference.id;
         component.isPrivateConsultation = false;
@@ -88,14 +97,18 @@ describe('HearingControlsBaseComponent', () => {
         component.handRaised = false;
         component.toggleHandRaised();
         expect(videoCallService.raiseHand).toHaveBeenCalledTimes(1);
-        expect(component.handToggleText).toBe('Lower my hand');
+        const expectedText = 'Lower my hand';
+        translateServiceSpy.instant.and.returnValues(expectedText);
+        expect(component.handToggleText).toBe(expectedText);
     });
 
     it('should lower hand on toggle if hand raised', () => {
         component.handRaised = true;
         component.toggleHandRaised();
         expect(videoCallService.lowerHand).toHaveBeenCalledTimes(1);
-        expect(component.handToggleText).toBe('Raise my hand');
+        const expectedText = 'Raise my hand';
+        translateServiceSpy.instant.and.returnValues(expectedText);
+        expect(component.handToggleText).toBe(expectedText);
     });
 
     it('should switch camera on if camera is off', async () => {
@@ -108,7 +121,9 @@ describe('HearingControlsBaseComponent', () => {
 
         expect(videoCallService.toggleVideo).toHaveBeenCalledTimes(1);
         expect(component.videoMuted).toBeFalsy();
-        expect(component.videoMutedText).toBe('Switch camera off');
+        const expectedText = 'Switch camera off';
+        translateServiceSpy.instant.and.returnValues(expectedText);
+        expect(component.videoMutedText).toBe(expectedText);
         expect(eventsService.sendMediaStatus).toHaveBeenCalledTimes(1);
     });
 
@@ -121,7 +136,9 @@ describe('HearingControlsBaseComponent', () => {
 
         expect(videoCallService.toggleVideo).toHaveBeenCalledTimes(1);
         expect(component.videoMuted).toBeTruthy();
-        expect(component.videoMutedText).toBe('Switch camera on');
+        const expectedText = 'Switch camera on';
+        translateServiceSpy.instant.and.returnValues(expectedText);
+        expect(component.videoMutedText).toBe(expectedText);
     });
 
     it('should show raised hand on hand lowered', () => {
@@ -130,7 +147,9 @@ describe('HearingControlsBaseComponent', () => {
         const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         onParticipantUpdatedSubject.next(payload);
         expect(component.handRaised).toBeFalsy();
-        expect(component.handToggleText).toBe('Raise my hand');
+        const expectedText = 'Raise my hand';
+        translateServiceSpy.instant.and.returnValues(expectedText);
+        expect(component.handToggleText).toBe(expectedText);
     });
 
     it('should show remote muted when muted by host', () => {
@@ -153,7 +172,9 @@ describe('HearingControlsBaseComponent', () => {
         onParticipantUpdatedSubject.next(payload);
         expect(component.remoteMuted).toBeFalsy();
         expect(component.handRaised).toBeTruthy();
-        expect(component.handToggleText).toBe('Lower my hand');
+        const expectedText = 'Lower my hand';
+        translateServiceSpy.instant.and.returnValues(expectedText);
+        expect(component.handToggleText).toBe(expectedText);
     });
 
     it('should process hand raised message for participant', () => {
@@ -216,7 +237,9 @@ describe('HearingControlsBaseComponent', () => {
         const payload = ParticipantUpdated.fromPexipParticipant(pexipParticipant);
         onParticipantUpdatedSubject.next(payload);
         expect(component.handRaised).toBeTruthy();
-        expect(component.handToggleText).toBe('Lower my hand');
+        const expectedText = 'Lower my hand';
+        translateServiceSpy.instant.and.returnValues(expectedText);
+        expect(component.handToggleText).toBe(expectedText);
     });
 
     it('should not show lower hand when hand raised for another participant', () => {
@@ -228,7 +251,9 @@ describe('HearingControlsBaseComponent', () => {
         component.handRaised = false;
         onParticipantUpdatedSubject.next(payload);
         expect(component.handRaised).toBeFalsy();
-        expect(component.handToggleText).toBe('Raise my hand');
+        const expectedText = 'Raise my hand';
+        translateServiceSpy.instant.and.returnValues(expectedText);
+        expect(component.handToggleText).toBe(expectedText);
     });
 
     it('should mute locally if remote muted and not muted locally', () => {

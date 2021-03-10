@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { ParticipantResponse, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 
@@ -15,7 +16,7 @@ export class JoinPrivateConsultationComponent {
     @Output() continue = new EventEmitter<string>();
     @Output() cancel = new EventEmitter();
 
-    constructor(protected logger: Logger) {}
+    constructor(protected logger: Logger, protected translateService: TranslateService) {}
 
     roomsAvailable(): boolean {
         return this.roomDetails.length > 0;
@@ -95,7 +96,11 @@ export class JoinPrivateConsultationComponent {
     }
 
     getParticipantHearingRoleText(participant: ParticipantResponse) {
-        return participant.representee ? `${participant.hearing_role} for ${participant.representee}` : participant.hearing_role;
+        const translatedtext = this.translateService.instant('join-private-consultation.for');
+        const hearingRoleText = this.translateService.instant(
+            'hearing-role.' + participant.hearing_role.toLowerCase().split(' ').join('-')
+        );
+        return participant.representee ? `${hearingRoleText} ${translatedtext} ${participant.representee}` : hearingRoleText;
     }
 
     protected camelToSpaced(word: string) {

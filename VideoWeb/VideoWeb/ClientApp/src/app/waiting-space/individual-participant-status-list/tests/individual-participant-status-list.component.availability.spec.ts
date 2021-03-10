@@ -21,6 +21,7 @@ import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consul
 import { eventsServiceSpy, participantStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('IndividualParticipantStatusListComponent Participant Status and Availability', () => {
     let component: IndividualParticipantStatusListComponent;
@@ -36,6 +37,8 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
     let participantsWinger: ParticipantResponseVho[];
     let activatedRoute: ActivatedRoute;
     let logged: LoggedParticipantResponse;
+    const translateService = translateServiceSpy;
+
     beforeAll(() => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
         const testParticipant = conference.participants.filter(x => x.role === Role.Individual)[0];
@@ -58,6 +61,7 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
     });
 
     beforeEach(() => {
+        translateService.instant.calls.reset();
         activatedRoute = <any>{
             snapshot: { data: { loggedUser: logged } }
         };
@@ -69,7 +73,8 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
             eventsService,
             logger,
             videoWebService,
-            activatedRoute
+            activatedRoute,
+            translateService
         );
         conference = new ConferenceTestData().getConferenceDetailFuture();
         component.conference = conference;
@@ -99,6 +104,7 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
         it(`should return text "${test.expected}" when participant status is ${test.status}`, () => {
             const pat = component.conference.participants[0];
             pat.status = test.status;
+            translateServiceSpy.instant.and.returnValues(test.expected);
             expect(component.getParticipantStatusText(pat)).toBe(test.expected);
         });
     });
