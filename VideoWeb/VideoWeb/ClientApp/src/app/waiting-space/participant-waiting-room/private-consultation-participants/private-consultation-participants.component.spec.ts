@@ -30,6 +30,7 @@ import { RequestedConsultationMessage } from 'src/app/services/models/requested-
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { globalConference, globalParticipant } from '../../waiting-room-shared/tests/waiting-room-base-setup';
 import { HearingRole } from '../../models/hearing-role-model';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('PrivateConsultationParticipantsComponent', () => {
     let component: PrivateConsultationParticipantsComponent;
@@ -43,6 +44,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
+    const translateService = translateServiceSpy;
 
     beforeAll(() => {
         adalService = mockAdalService;
@@ -76,7 +78,8 @@ describe('PrivateConsultationParticipantsComponent', () => {
             eventsService,
             logger,
             videoWebService,
-            activatedRoute
+            activatedRoute,
+            translateService
         );
 
         component.conference = conference;
@@ -278,23 +281,24 @@ describe('PrivateConsultationParticipantsComponent', () => {
     it('should get status from participant', () => {
         component.roomLabel = 'Room1';
         const statuses = [
-            ['Calling', 'Calling...'],
-            ['Transferring', 'Transferring'],
-            ['Accepted', 'Transferring'],
-            ['Rejected', 'Declined'],
-            ['Failed', 'Failed'],
-            ['None', 'No Answer']
+            ['Calling', 'private-consultation-participants.calling'],
+            ['Transferring', 'private-consultation-participants.transferring'],
+            ['Accepted', 'private-consultation-participants.transferring'],
+            ['Rejected', 'private-consultation-participants.declined'],
+            ['Failed', 'private-consultation-participants.failed'],
+            ['None', 'private-consultation-participants.no-answer']
         ];
-        statuses.forEach(([status, resultClass]) => {
+        statuses.forEach(([status, resultText]) => {
             const participant = new ParticipantResponse({
                 id: 'Participant1'
             });
             component.participantCallStatuses['Participant1'] = status;
 
+            translateService.instant.calls.reset();
             const result = component.getParticipantStatus(participant);
 
             // Assert
-            expect(result).toBe(resultClass);
+            expect(result).toBe(resultText);
         });
     });
 
@@ -335,10 +339,12 @@ describe('PrivateConsultationParticipantsComponent', () => {
             status: ParticipantStatus.Disconnected
         });
 
+        translateService.instant.calls.reset();
+        const expectedText = 'private-consultation-participants.not-available';
         const result = component.getParticipantStatus(participant);
 
         // Assert
-        expect(result).toBe('Not available');
+        expect(result).toBe(expectedText);
     });
 
     it('should get participant available if available', () => {

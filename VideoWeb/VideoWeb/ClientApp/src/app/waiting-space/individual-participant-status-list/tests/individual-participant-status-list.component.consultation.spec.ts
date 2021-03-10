@@ -4,9 +4,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
     ConferenceStatus,
-    ConsultationAnswer,
     LoggedParticipantResponse,
-    EndpointStatus,
     ParticipantResponse,
     ParticipantResponseVho,
     ParticipantStatus,
@@ -14,21 +12,18 @@ import {
     RoomSummaryResponse
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
 import { Participant } from 'src/app/shared/models/participant';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
 import { requestedConsultationMessageSubjectMock, eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
-import { CaseTypeGroup } from '../../models/case-type-group';
 import { HearingRole } from '../../models/hearing-role-model';
 import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('IndividualParticipantStatusListComponent consultations', () => {
     let component: IndividualParticipantStatusListComponent;
     let conference: ConferenceResponse;
-    let consultationRequester: Participant;
-    let consultationRequestee: Participant;
     let participantsObserverPanelMember: ParticipantResponseVho[];
     let participantsWinger: ParticipantResponseVho[];
     let participantsWitness: ParticipantResponseVho[];
@@ -37,7 +32,6 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     let adalService;
     let consultationService: jasmine.SpyObj<ConsultationService>;
     const eventsService = eventsServiceSpy;
-    const requestedConsultationSubject = requestedConsultationMessageSubjectMock;
 
     let logger: jasmine.SpyObj<Logger>;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
@@ -46,6 +40,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     const testdata = new ConferenceTestData();
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
+    const translateService = translateServiceSpy;
 
     beforeAll(() => {
         adalService = mockAdalService;
@@ -73,8 +68,6 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
             display_name: judge.display_name,
             role: Role.Judge
         });
-        consultationRequester = new Participant(conference.participants[0]);
-        consultationRequestee = new Participant(conference.participants[1]);
         activatedRoute = <any>{
             snapshot: { data: { loggedUser: logged } }
         };
@@ -86,7 +79,8 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
             eventsService,
             logger,
             videoWebService,
-            activatedRoute
+            activatedRoute,
+            translateService
         );
 
         component.conference = conference;

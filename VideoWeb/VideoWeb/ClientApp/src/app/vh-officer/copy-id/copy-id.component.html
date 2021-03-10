@@ -5,7 +5,7 @@
     (tooltipShown)="resetText()"
     class="icons"
     src="/assets/images/share.png"
-    alt="copy-conference-id-icon"
+    [attr.alt]="'copy-id.alt' | translate"
     (click)="copyToClipboard(conference); $event.stopPropagation()"
   />
 </div>

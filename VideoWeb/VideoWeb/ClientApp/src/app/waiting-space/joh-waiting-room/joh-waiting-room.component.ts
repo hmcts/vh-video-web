@@ -1,5 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -17,14 +18,14 @@ import { NotificationSoundsService } from '../services/notification-sounds.servi
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
-import { WaitingRoomBaseComponent } from '../waiting-room-shared/waiting-room-base.component';
+import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
 
 @Component({
     selector: 'app-joh-waiting-room',
     templateUrl: './joh-waiting-room.component.html',
     styleUrls: ['../waiting-room-global-styles.scss', './joh-waiting-room.component.scss']
 })
-export class JohWaitingRoomComponent extends WaitingRoomBaseComponent implements OnInit, OnDestroy {
+export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     private readonly loggerPrefixJOH = '[JOH WR] -';
 
     constructor(
@@ -44,7 +45,8 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseComponent implements
         protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
-        protected clockService: ClockService
+        protected clockService: ClockService,
+        protected translateService: TranslateService
     ) {
         super(
             route,
@@ -86,13 +88,13 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseComponent implements
         if (this.hearing.getConference().status === ConferenceStatus.NotStarted) {
             return '';
         } else if (this.hearing.isSuspended()) {
-            return 'is suspended';
+            return this.translateService.instant('joh-waiting-room.is-suspended');
         } else if (this.hearing.isPaused()) {
-            return 'is paused';
+            return this.translateService.instant('joh-waiting-room.is-paused');
         } else if (this.hearing.isClosed()) {
-            return 'is closed';
+            return this.translateService.instant('joh-waiting-room.is-closed');
         }
-        return 'is in session';
+        return this.translateService.instant('joh-waiting-room.is-in-session');
     }
 
     getCurrentTimeClass() {

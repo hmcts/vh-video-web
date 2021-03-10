@@ -35,6 +35,7 @@ import { ParticipantPanelModel } from '../models/participant-panel-model';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
 import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
 import { ParticipantsPanelComponent } from './participants-panel.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -51,11 +52,19 @@ describe('ParticipantsPanelComponent', () => {
     const videocallService = videoCallServiceSpy;
     const eventService = eventsServiceSpy;
     const logger = new MockLogger();
+    const translateService = translateServiceSpy;
 
     let component: ParticipantsPanelComponent;
 
     beforeEach(() => {
-        component = new ParticipantsPanelComponent(videoWebServiceSpy, activatedRoute, videocallService, eventService, logger);
+        component = new ParticipantsPanelComponent(
+            videoWebServiceSpy,
+            activatedRoute,
+            videocallService,
+            eventService,
+            logger,
+            translateService
+        );
         component.participants = new ParticipantPanelModelMapper().mapFromParticipantUserResponse(participants);
         component.conferenceId = conferenceId;
         component.witnessTransferTimeout = {};
@@ -64,6 +73,7 @@ describe('ParticipantsPanelComponent', () => {
             component.participants = component.participants.concat(new VideoEndpointPanelModel(endpoint));
         });
         videocallService.muteParticipant.calls.reset();
+        translateService.instant.calls.reset();
     });
 
     afterEach(() => {
@@ -564,19 +574,19 @@ describe('ParticipantsPanelComponent', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Available;
         const model = new ParticipantPanelModel(p);
-        expect(component.getPanelRowTooltipText(model)).toContain(p.display_name + ': Joining');
+        expect(component.getPanelRowTooltipText(model)).toContain(p.display_name + ': participants-panel.joining');
     });
     it('should getPanelRowTooltipText return "Not Joined" for participant not joined', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Joining;
         const model = new ParticipantPanelModel(p);
-        expect(component.getPanelRowTooltipText(model)).toContain(p.display_name + ': Not joined');
+        expect(component.getPanelRowTooltipText(model)).toContain(p.display_name + ': participants-panel.not-joined');
     });
     it('should getPanelRowTooltipText return "DISCONNECTED" for disconnected participant', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Disconnected;
         const model = new ParticipantPanelModel(p);
-        expect(component.getPanelRowTooltipText(model)).toContain(p.display_name + ': DISCONNECTED');
+        expect(component.getPanelRowTooltipText(model)).toContain(p.display_name + ': participants-panel.disconnected');
     });
     it('should getPanelRowTooltipText return displayname as default', () => {
         const p = participants[0];
@@ -595,7 +605,7 @@ describe('ParticipantsPanelComponent', () => {
         p.status = ParticipantStatus.InHearing;
         const model = new ParticipantPanelModel(p);
         expect(component.getPanelRowTooltipText(model)).toEqual(
-            `${p.display_name}<br/>${p.hearing_role} for ${p.representee}<br/>${p.case_type_group}`
+            `${p.display_name}<br/>${p.hearing_role} participants-panel.for ${p.representee}<br/>${p.case_type_group}`
         );
     });
     it('should getPanelRowTooltipAdditionalText return hearing role and case role for an observer', () => {

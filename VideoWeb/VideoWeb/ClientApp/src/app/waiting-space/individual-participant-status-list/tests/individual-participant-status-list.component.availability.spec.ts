@@ -21,6 +21,7 @@ import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consul
 import { eventsServiceSpy, participantStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('IndividualParticipantStatusListComponent Participant Status and Availability', () => {
     let component: IndividualParticipantStatusListComponent;
@@ -36,6 +37,8 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
     let participantsWinger: ParticipantResponseVho[];
     let activatedRoute: ActivatedRoute;
     let logged: LoggedParticipantResponse;
+    const translateService = translateServiceSpy;
+
     beforeAll(() => {
         conference = new ConferenceTestData().getConferenceDetailFuture();
         const testParticipant = conference.participants.filter(x => x.role === Role.Individual)[0];
@@ -58,6 +61,7 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
     });
 
     beforeEach(() => {
+        translateService.instant.calls.reset();
         activatedRoute = <any>{
             snapshot: { data: { loggedUser: logged } }
         };
@@ -69,7 +73,8 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
             eventsService,
             logger,
             videoWebService,
-            activatedRoute
+            activatedRoute,
+            translateService
         );
         conference = new ConferenceTestData().getConferenceDetailFuture();
         component.conference = conference;
@@ -86,13 +91,13 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
     });
 
     const participantStatusTestCases = [
-        { status: ParticipantStatus.Available, expected: 'Available' },
-        { status: ParticipantStatus.InConsultation, expected: 'Unavailable' },
-        { status: ParticipantStatus.InHearing, expected: 'Unavailable' },
-        { status: ParticipantStatus.Disconnected, expected: 'Unavailable' },
-        { status: ParticipantStatus.Joining, expected: 'Unavailable' },
-        { status: ParticipantStatus.NotSignedIn, expected: 'Unavailable' },
-        { status: ParticipantStatus.None, expected: 'Unavailable' }
+        { status: ParticipantStatus.Available, expected: 'individual-participant-status-list.available' },
+        { status: ParticipantStatus.InConsultation, expected: 'individual-participant-status-list.unavailable' },
+        { status: ParticipantStatus.InHearing, expected: 'individual-participant-status-list.unavailable' },
+        { status: ParticipantStatus.Disconnected, expected: 'individual-participant-status-list.unavailable' },
+        { status: ParticipantStatus.Joining, expected: 'individual-participant-status-list.unavailable' },
+        { status: ParticipantStatus.NotSignedIn, expected: 'individual-participant-status-list.unavailable' },
+        { status: ParticipantStatus.None, expected: 'individual-participant-status-list.unavailable' }
     ];
 
     participantStatusTestCases.forEach(test => {

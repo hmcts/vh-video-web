@@ -14,6 +14,7 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { adminTestProfile, judgeTestProfile } from '../../testing/data/test-profiles';
 import { VhoChatComponent } from './vho-chat.component';
 import { TranslateService } from '@ngx-translate/core';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('VhoChatComponent', () => {
     let component: VhoChatComponent;
@@ -27,7 +28,6 @@ describe('VhoChatComponent', () => {
     const adminProfile = adminTestProfile;
     const timer = jasmine.createSpyObj<NodeJS.Timeout>('NodeJS.Timeout', ['ref', 'unref']);
     let chatSub$: Subscription;
-    let translateServiceSpy: jasmine.SpyObj<TranslateService>;
 
     beforeAll(() => {
         adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
@@ -44,7 +44,6 @@ describe('VhoChatComponent', () => {
             'getProfileByUsername',
             'getUserProfile'
         ]);
-        translateServiceSpy = jasmine.createSpyObj<TranslateService>('TranslateService', ['instant']);
     });
 
     afterAll(() => {

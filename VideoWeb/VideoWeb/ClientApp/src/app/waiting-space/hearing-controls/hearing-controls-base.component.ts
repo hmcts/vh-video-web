@@ -1,4 +1,5 @@
 import { EventEmitter, Injectable, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
@@ -45,7 +46,8 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         protected videoCallService: VideoCallService,
         protected eventService: EventsService,
         protected deviceTypeService: DeviceTypeService,
-        protected logger: Logger
+        protected logger: Logger,
+        protected translateService: TranslateService
     ) {
         this.handRaised = false;
         this.remoteMuted = false;
@@ -128,14 +130,16 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     get handToggleText(): string {
         if (this.handRaised) {
-            return 'Lower my hand';
+            return this.translateService.instant('hearing-controls.lower-my-hand');
         } else {
-            return 'Raise my hand';
+            return this.translateService.instant('hearing-controls.raise-my-hand');
         }
     }
 
     get videoMutedText(): string {
-        return this.videoMuted ? 'Switch camera on' : 'Switch camera off';
+        return this.videoMuted
+            ? this.translateService.instant('hearing-controls.switch-camera-on')
+            : this.translateService.instant('hearing-controls.switch-camera-off');
     }
 
     get roomLocked(): boolean {

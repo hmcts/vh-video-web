@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -26,8 +27,9 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         protected videoCallService: VideoCallService,
         protected eventService: EventsService,
         protected deviceTypeService: DeviceTypeService,
-        protected logger: Logger
+        protected logger: Logger,
+        protected translateService: TranslateService
     ) {
-        super(videoCallService, eventService, deviceTypeService, logger);
+        super(videoCallService, eventService, deviceTypeService, logger, translateService);
     }
 }

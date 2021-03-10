@@ -23,9 +23,11 @@ import {
     videoWebService
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('ParticipantWaitingRoomComponent message and clock', () => {
     let component: ParticipantWaitingRoomComponent;
+    const translateService = translateServiceSpy;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -49,7 +51,8 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
-            clockService
+            clockService,
+            translateService
         );
     });
 

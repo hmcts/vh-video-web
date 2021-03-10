@@ -124,7 +124,7 @@ export class VideoCallService {
         };
 
         this.pexipAPI.onScreenshareStopped = function (reason) {
-            self.logger.info(`${self.loggerPrefix} Presentation disconnected : ${JSON.stringify(reason)}`);
+            self.logger.info(`${self.loggerPrefix} Screenshare stopped : ${JSON.stringify(reason)}`);
             self.onStoppedScreenshareSubject.next(new StoppedScreenshare(reason));
         };
     }

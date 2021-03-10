@@ -1,4 +1,5 @@
 import { Directive, Input } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
@@ -42,7 +43,8 @@ export abstract class WRParticipantStatusListDirective {
         protected consultationService: ConsultationService,
         protected eventService: EventsService,
         protected videoWebService: VideoWebService,
-        protected logger: Logger
+        protected logger: Logger,
+        protected translateService: TranslateService
     ) {}
 
     initParticipants() {
@@ -128,15 +130,22 @@ export abstract class WRParticipantStatusListDirective {
     }
 
     getHearingRole(participant: ParticipantResponse) {
+        const translatedHearingRole = this.translateService.instant('hearing-role.' + this.stringToTranslateId(participant.hearing_role));
+        const translatedFor = this.translateService.instant('wr-participant-list-shared.for');
+        const translatedRepresentative = this.translateService.instant('wr-participant-list-shared.representative');
         if (participant.hearing_role === HearingRole.INTERPRETER) {
             const interpreteeName = this.getInterpreteeName(participant.id);
-            return `${participant.hearing_role} for <br><strong>${interpreteeName}</strong>`;
+            return `${translatedHearingRole} ${translatedFor} <br><strong>${interpreteeName}</strong>`;
         }
         if (participant.representee) {
-            const hearingRoleText = this.isCaseTypeNone(participant) ? participant.hearing_role : 'Representative';
-            return `${hearingRoleText} for <br><strong>${participant.representee}</strong>`;
+            const hearingRoleText = this.isCaseTypeNone(participant) ? translatedHearingRole : translatedRepresentative;
+            return `${hearingRoleText} ${translatedFor} <br><strong>${participant.representee}</strong>`;
         }
-        return `${participant.hearing_role}`;
+        return `${translatedHearingRole}`;
+    }
+
+    stringToTranslateId(str: string) {
+        return str.replace(/\s/g, '-').toLowerCase();
     }
 
     getInterpreteeName(interpreterId: string) {

@@ -15,7 +15,7 @@
                                      height="48"
                                      width="48"
                                      class="govuk-!-margin-right-2"
-                                     alt="{{ browser.name }} browser logo" />
+                                     [attr.alt]="'unsupported-browser.supported-browser-alt' | translate:{ browserName: browser.name } " />
                             </div>
                             <div class="govuk-grid-column-three-quarters" style="padding-top: 15px;">
                                 <p>{{ browser.displayName }}</p>
