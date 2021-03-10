@@ -12,6 +12,80 @@ describe('LinkedParticipantPanelModel', () => {
         participants = new ConferenceTestData().getListOfLinkedParticipants();
     });
 
+    it('should update status for participant', () => {
+        const participantId = participants[0].id;
+        createLinkedModel();
+        model.updateStatus(ParticipantStatus.Available, participantId);
+        expect(model.participants.find(x => x.id === participantId).isAvailable()).toBeTruthy();
+    });
+
+    it('should update device status for participant', () => {
+        const participantId = participants[0].id;
+        createLinkedModel();
+
+        model.updateParticipantDeviceStatus(true, true, participantId);
+
+        const updatedParticipant = model.participants.find(x => x.id === participantId);
+        expect(updatedParticipant.isLocalMicMuted()).toBeTruthy();
+        expect(updatedParticipant.isLocalCameraOff()).toBeTruthy();
+    });
+
+    it('should return isInHearing: true when at least one participant is in hearing', () => {
+        createLinkedModel();
+        model.participants[0].updateStatus(ParticipantStatus.InHearing);
+        expect(model.isInHearing()).toBeTruthy();
+    });
+
+    it('should return isInHearing: false when no participant is in hearing', () => {
+        createLinkedModel();
+        model.participants.forEach(p => p.updateStatus(ParticipantStatus.Available));
+        expect(model.isInHearing()).toBeFalsy();
+    });
+
+    it('should return isLocalMicMuted: true when all participants are locally muted', () => {
+        participants.forEach(p => (p.status = ParticipantStatus.InHearing));
+        createLinkedModel();
+        const micMuted = true;
+        const videoMuted = false;
+        model.participants.forEach(p => p.updateParticipantDeviceStatus(micMuted, videoMuted));
+
+        expect(model.isLocalMicMuted()).toBeTruthy();
+    });
+
+    it('should return isLocalMicMuted: false when only one participants is locally muted', () => {
+        participants.forEach(p => (p.status = ParticipantStatus.InHearing));
+        createLinkedModel();
+        const micMuted = true;
+        const videoMuted = false;
+
+        model.participants[0].updateParticipantDeviceStatus(micMuted, videoMuted);
+        model.participants[1].updateParticipantDeviceStatus(false, false);
+
+        expect(model.isLocalMicMuted()).toBeFalsy();
+    });
+
+    it('should return isLocalCameraOff: true when all participants have camera off', () => {
+        participants.forEach(p => (p.status = ParticipantStatus.InHearing));
+        createLinkedModel();
+        const micMuted = false;
+        const videoMuted = true;
+        model.participants.forEach(p => p.updateParticipantDeviceStatus(micMuted, videoMuted));
+
+        expect(model.isLocalCameraOff()).toBeTruthy();
+    });
+
+    it('should return isLocalCameraOff: false when only one participants has camera off', () => {
+        participants.forEach(p => (p.status = ParticipantStatus.InHearing));
+        createLinkedModel();
+        const micMuted = false;
+        const videoMuted = true;
+
+        model.participants[0].updateParticipantDeviceStatus(micMuted, videoMuted);
+        model.participants[1].updateParticipantDeviceStatus(false, false);
+
+        expect(model.isLocalCameraOff()).toBeFalsy();
+    });
+
     it('should return isDisconnected: false when only one participant is disconnected', () => {
         participants[0].status = ParticipantStatus.Disconnected;
         createLinkedModel();
