@@ -720,18 +720,21 @@ describe('ParticipantsPanelComponent', () => {
         expect(updatedPat.isLocalCameraOff()).toBe(mediaStatus.is_local_video_muted);
     });
 
-    it('should not process eventhub device status message for participant not in list', () => {
+    it('should not process eventhub device status message for participant not in list', fakeAsync(() => {
         component.setupEventhubSubscribers();
         const mediaStatus = new ParticipantMediaStatus(true, true);
         const message = new ParticipantMediaStatusMessage(conferenceId, Guid.create().toString(), mediaStatus);
+        const beforeMicCount = component.participants.filter(x => x.isLocalMicMuted()).length;
+        const beforeCamCount = component.participants.filter(x => x.isLocalCameraOff()).length;
 
         participantMediaStatusSubjectMock.next(message);
+        flushMicrotasks();
 
         const updatedAudioCount = component.participants.filter(x => x.isLocalMicMuted()).length;
         const updatedVideoCount = component.participants.filter(x => x.isLocalCameraOff()).length;
-        expect(updatedAudioCount).toBe(0);
-        expect(updatedVideoCount).toBe(0);
-    });
+        expect(updatedAudioCount).toBe(beforeMicCount);
+        expect(updatedVideoCount).toBe(beforeCamCount);
+    }));
 
     it('should process event hub hand raise message for participant in hearing', () => {
         component.setupEventhubSubscribers();
