@@ -74,7 +74,7 @@
   <div class="video-background">
     <div class="transferMessage">
       <img class="transferFeedImage" id="transferFeedImage" src="/assets/images/UkGovCrestWhite.png"
-        alt="{{'participant-waiting-room.witness-transferring-warning-image' | translate}}" />
+        [attr.alt]="'participant-waiting-room.witness-transferring-warning-image' | translate" />
       <h2 class="govuk-heading-m white govuk-!-margin-top-5" [innerHTML]="'participant-waiting-room.hearing-ready' | translate">
       </h2>
       <video id="outgoingFeedVideoTransfer" [muted]="true" [srcObject]="outgoingStream" autoplay height="auto">
@@ -235,7 +235,7 @@
   </div>
 
   <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': !showExtraContent }">
-    <app-individual-participant-status-list aria-label="list of participants in hearing"
+    <app-individual-participant-status-list [attr.aria-label]="'participant-waiting-room.individual-participant-status-list-label' | translate"
       [conference]="hearing.getConference()">
     </app-individual-participant-status-list>
   </div>

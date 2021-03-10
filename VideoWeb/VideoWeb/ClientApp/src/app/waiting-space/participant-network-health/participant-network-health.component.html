@@ -1,7 +1,7 @@
 <div *ngIf="isNetworkPoor" class="govuk-grid-row right-align-text">
   <div class="govuk-grid-column-full">
     <span class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-0 govuk-!-margin-right-2">
-      <img id="network-bad-img" class="networkIcon lower" src="/assets/images/alert-1.png" alt="{{'participant-network-health.good-network-icon' | translate}}" />
+      <img id="network-bad-img" class="networkIcon lower" src="/assets/images/alert-1.png" [attr.alt]="'participant-network-health.good-network-icon' | translate" />
         {{'participant-network-health.your-connection-is-poor' | translate}}
     </span>
     <a class="govuk-body-s health-text--info" [ngClass]="{ 'vh-block': !showDetail }" (click)="displayGuidanceModal()"

@@ -29,7 +29,7 @@
              id="start-screenshare-img"
              class="icon-button"
              src="/assets/images/share-screen.png"
-             alt="{{ 'private-consultation-room-controls.start-sharing-screen' | translate }}"
+             [attr.alt]="'private-consultation-room-controls.start-sharing-screen' | translate"
              (click)="startScreenShare()" />
         <img *ngIf="screenShareStream"
              appTooltip
@@ -38,7 +38,7 @@
              id="stop-screenshare-img"
              class="icon-button"
              src="/assets/images/stop-share.png"
-             alt="{{ 'private-consultation-room-controls.stop-sharing-screen' | translate }}"
+             [attr.alt]="'private-consultation-room-controls.stop-sharing-screen' | translate"
              (click)="stopScreenShare()" />
 
         <div class="flexBar"></div>

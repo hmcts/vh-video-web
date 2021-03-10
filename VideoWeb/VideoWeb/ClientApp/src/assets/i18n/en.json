@@ -50,7 +50,8 @@
     "chat-body-window": {
         "error": "Error:",
         "failed": "message failed to send",
-        "try-again": "try again"
+        "try-again": "try again",
+        "alerts-icon": "alerts icon"
     },
     "chat-input-box": {
         "send": "Send",
@@ -111,7 +112,8 @@
     "header": {
         "hm-courts": "HM Courts",
         "tribunals-service": "Tribunals Service",
-        "sign-out": "Sign out"
+        "sign-out": "Sign out",
+        "crest-image-alt": "HMCTS logo crest image"
     },
     "not-found": {
         "page-not-found": "Page not found",
@@ -142,7 +144,8 @@
         "using-unsupported-browser": "You've signed in using an unsupported browser",
         "it-looks-like": "It looks like you've signed in using",
         "unfortunately-this-browser": "Unfortunately this browser is not currently supported.",
-        "please-sign-out": "Please sign out and sign in again using any of the following."
+        "please-sign-out": "Please sign out and sign in again using any of the following.",
+        "supported-browser-alt": "{{browserName}} browser logo"
     },
     "unsupported-device": {
         "use-different-device": "Please use a different device",
@@ -338,7 +341,8 @@
         "participants": "Participants",
         "observers": "Observers",
         "video-access-points": "Video access points",
-        "for": "for"
+        "for": "for",
+        "crest-icon-alt": "HM Courts & Tribunals Service crest"
     },
     "joh-waiting-room": {
         "hearing": "Hearing",
@@ -362,7 +366,8 @@
         "enter-consultation-room": "Enter consultation room",
         "video-hearing-team-contact": "Video hearings team: {{phone}}",
         "switch-to-main-screen": "Switch to main screen",
-        "browser-doesnt-support-video": "Your browser does not support Video"
+        "browser-doesnt-support-video": "Your browser does not support Video",
+        "judge-participant-status-list-label": "list of participants in hearing"
     },
     "judge-context-menu": {
         "context-menu-icon": "Context menu icon",
@@ -425,7 +430,8 @@
             "false": "The audio of this hearing is NOT being recorded.",
             "image-true": "Recording on image",
             "image-false": "Recording off image"
-        }
+        },
+        "judge-participant-status-list-label": "list of participants in hearing"
     },
     "participant-alert": {
         "disconnected": "Disconnected",
@@ -499,7 +505,8 @@
             "guide3": "If a meeting room is locked you'll need to be invited by someone in the meeting",
             "guide4": "If you wish to have a private conversation during the hearing you'll need to ask the judge's permission."
         },
-        "vh-team": "Video hearings team: {{phone}}"
+        "vh-team": "Video hearings team: {{phone}}",
+        "individual-participant-status-list-label": "list of participants in hearing"
     },
     "invite-participant": {
         "invite-this-person": "Invite this person to the meeting"
@@ -531,7 +538,8 @@
         "no-answer": "No Answer",
         "transferring": "Transferring",
         "Calling": "Calling",
-        "not-available": "Not available"
+        "not-available": "Not available",
+        "crest-icon-alt": "Crest"
     },
     "participants-panel": {
         "joining": "Joining",
@@ -586,6 +594,10 @@
     },
     "select-hearing-layout": {
         "choose-hearing-layout": "Choose hearing layout"
+    },
+    "hearing-layout": {
+      "layout-image-alt": "Layout image for {{layout}}",
+      "recommended": "recommended"
     },
     "hearing-role": {
         "app": "App",
@@ -696,5 +708,48 @@
         "cancel": "Cancel",
         "resume": "resume",
         "start": "start"
+    },
+    "copy-telephone-id": {
+      "alt": "Copy joining by phone details to clipboard"
+    },
+    "participant-network-status": {
+      "icon-alt": "Open instant messaging chat window arrow"
+    },
+    "pending-tasks": {
+      "alert-icon": "alerts icon"
+    },
+    "audio-alert": {
+      "warning-icon": "warning exclamation mark",
+      "title": "Warning",
+      "message": "There’s a problem with recording. Some or all of the audio for this hearing may not be recorded."
+    },
+    "unread-messages": {
+      "im-image-alt": "instant message icon"
+    },
+    "vho-hearing-list": {
+      "crest-icon-alt": "crest icon"
+    },
+    "court-room-filters": {
+      "apply-filters-alt": "Apply selected filters",
+      "cancel-filters-alt": "Cancel filters"
+    },
+    "copy-id": {
+      "alt": "Copy conference id icon"
+    },
+    "admin-im-list": {
+      "judge-icon-alt": "Judge icon",
+      "representing": "Representing",
+      "unavailable": "Unavailable"
+    },
+    "confirm-close-hearing-popup": {
+      "title": "You are about to close this hearing",
+      "message": "Close the hearing if you have completed proceedings. Once closed, the hearing is ended and cannot be re-opened.",
+      "close-hearing": "Close hearing",
+      "close-hearing-label": "Confirm closing the hearing",
+      "cancel-close": "Keep hearing open",
+      "cancel-close-label": "Cancel closing the hearing"
+    },
+    "venue-list": {
+      "label": "Venue name {{name}}"
     }
 }

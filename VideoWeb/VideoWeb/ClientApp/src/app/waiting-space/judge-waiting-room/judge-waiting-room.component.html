@@ -159,7 +159,7 @@
                 <img id="recording-on-img"
                      class="audio-icon"
                      src="/assets/images/{{ conference.audio_recording_required ? 'audio_on' : 'audio_off' }}.png"
-                     alt="{{'judge-waiting-room.hearing-is-being-recorded.image-' + conference.audio_recording_required | translate}}" />
+                     [attr.alt]="'judge-waiting-room.hearing-is-being-recorded.image-' + conference.audio_recording_required | translate" />
             </span>
             <strong class="govuk-!-padding-1">
                 {{'judge-waiting-room.hearing-is-being-recorded.' + conference.audio_recording_required | translate}}
@@ -203,7 +203,7 @@
     </div>
 
     <div class="govuk-grid-column-one-third" [ngClass]="{ 'no-mass': showVideo }">
-        <app-judge-participant-status-list aria-label="list of participants in hearing" [conference]="conference">
+        <app-judge-participant-status-list [attr.aria-label]="'judge-waiting-room.judge-participant-status-list-label' | translate" [conference]="conference">
         </app-judge-participant-status-list>
     </div>
 </div>

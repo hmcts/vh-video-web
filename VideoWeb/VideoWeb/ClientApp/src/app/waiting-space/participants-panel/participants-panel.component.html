@@ -29,7 +29,7 @@
                  [text]="getPanelRowTooltipText(participant)"
                  [colour]="getPanelRowTooltipColour(participant)">
                 <span *ngIf="participant.isJudge">
-                    <img src="/assets/images/UkGovCrestWhite.png" class="panel-icon panel-icon-crest" alt="{{ 'participants-panel.crest' | translate }}" />
+                    <img src="/assets/images/UkGovCrestWhite.png" class="panel-icon panel-icon-crest" [attr.alt]="'participants-panel.crest' | translate" />
                     <br />
                 </span>
                 <span *ngIf="isEndpoint(participant)">
@@ -56,7 +56,7 @@
                                  colour="grey"
                                  [src]="participant.isMicRemoteMuted() ? '/assets/images/mic_remote_mute.png' : '/assets/images/mic.png'"
                                  class="panel-icon"
-                                 alt="participant.isMicRemoteMuted() ? '{{ 'participants-panel.microphone-muted-icon' | translate }}' : '{{ 'participants-panel.microphone-on-icon' | translate }}'"
+                                 [attr.alt]="(participant.isMicRemoteMuted() ? 'participants-panel.microphone-muted-icon' : 'participants-panel.microphone-on-icon') | translate"
                                  (click)="toggleMuteParticipant(participant); $event.stopPropagation()" />
                             <span *ngIf="!participant.isMicRemoteMuted()"
                                   style="padding-top: 0.3vh;"

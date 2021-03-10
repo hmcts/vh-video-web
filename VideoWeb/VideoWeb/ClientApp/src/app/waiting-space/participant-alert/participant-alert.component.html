@@ -1,7 +1,7 @@
 <div *ngIf="isNetworkPoor">
   <span 
     appTooltip
-    attr.text="{{'participant-alert.network-connection-is-poor' | translate}}"
+    [text]="'participant-alert.network-connection-is-poor' | translate"
     colour="yellow"
     class="far fa-exclamation-triangle yellow panel-icon">
   </span>
@@ -9,7 +9,7 @@
 <div *ngIf="isDisconnected">
   <span 
     appTooltip
-     attr.text="{{'participant-alert.disconnected' | translate}}"
+    [text]="'participant-alert.disconnected' | translate"
     colour="red"
     class="far fa-exclamation-circle red panel-icon">
   </span>

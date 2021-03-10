@@ -3,7 +3,7 @@
     <p class="govuk-body health-text govuk-!-margin-bottom-0">
       {{'waiting-room-monitor.your-internet-connection-is-poor' | translate}}
       <span class="govuk-button__start-icon">
-        <img id="hearing-network-bad-img" class="networkIcon" src="/assets/images/alert-1.png" alt="{{'waiting-room-monitor.good-network-icon-in-hearing' | translate}}" />
+        <img id="hearing-network-bad-img" class="networkIcon" src="/assets/images/alert-1.png" [attr.alt]="'waiting-room-monitor.good-network-icon-in-hearing' | translate" />
       </span>
     </p>
     <p class="govuk-body-s health-text no-m">{{'waiting-room-monitor.trouble-seeing' | translate}}</p>

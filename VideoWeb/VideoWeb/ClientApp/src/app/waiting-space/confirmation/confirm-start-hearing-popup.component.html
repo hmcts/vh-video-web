@@ -12,7 +12,7 @@
       class="govuk-button govuk-!-margin-right-1"
       type="button"
       data-module="govuk-button"
-      attr.aria-label="{{ 'confirm-start-hearing-popup.confirm-start-hearing' | translate }}"
+      [attr.aria-label]="'confirm-start-hearing-popup.confirm-start-hearing' | translate"
       (click)="respondWithYes()"
     >
       {{ action | titlecase }} {{ 'confirm-start-hearing-popup.hearing' | translate }}
@@ -23,7 +23,7 @@
       class="govuk-button govuk-button--secondary govuk-!-margin-left-2"
       type="button"
       data-module="govuk-button"
-      attr.aria-label="{{ 'confirm-start-hearing-popup.cancel-start-hearing' | translate }}"
+      [attr.aria-label]="'confirm-start-hearing-popup.cancel-start-hearing' | translate"
       (click)="respondWithNo()"
     >
       {{ 'confirm-start-hearing-popup.cancel' | translate }}
