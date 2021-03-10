@@ -27,7 +27,7 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         protected route: ActivatedRoute,
         protected translateService: TranslateService
     ) {
-        super(adalService, consultationService, eventService, videoWebService, logger);
+        super(adalService, consultationService, eventService, videoWebService, logger, translateService);
     }
 
     ngOnInit() {

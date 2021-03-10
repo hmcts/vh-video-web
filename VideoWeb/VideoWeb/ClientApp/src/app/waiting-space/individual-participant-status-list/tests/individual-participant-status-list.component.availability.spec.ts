@@ -91,20 +91,19 @@ describe('IndividualParticipantStatusListComponent Participant Status and Availa
     });
 
     const participantStatusTestCases = [
-        { status: ParticipantStatus.Available, expected: 'Available' },
-        { status: ParticipantStatus.InConsultation, expected: 'Unavailable' },
-        { status: ParticipantStatus.InHearing, expected: 'Unavailable' },
-        { status: ParticipantStatus.Disconnected, expected: 'Unavailable' },
-        { status: ParticipantStatus.Joining, expected: 'Unavailable' },
-        { status: ParticipantStatus.NotSignedIn, expected: 'Unavailable' },
-        { status: ParticipantStatus.None, expected: 'Unavailable' }
+        { status: ParticipantStatus.Available, expected: 'individual-participant-status-list.available' },
+        { status: ParticipantStatus.InConsultation, expected: 'individual-participant-status-list.unavailable' },
+        { status: ParticipantStatus.InHearing, expected: 'individual-participant-status-list.unavailable' },
+        { status: ParticipantStatus.Disconnected, expected: 'individual-participant-status-list.unavailable' },
+        { status: ParticipantStatus.Joining, expected: 'individual-participant-status-list.unavailable' },
+        { status: ParticipantStatus.NotSignedIn, expected: 'individual-participant-status-list.unavailable' },
+        { status: ParticipantStatus.None, expected: 'individual-participant-status-list.unavailable' }
     ];
 
     participantStatusTestCases.forEach(test => {
         it(`should return text "${test.expected}" when participant status is ${test.status}`, () => {
             const pat = component.conference.participants[0];
             pat.status = test.status;
-            translateServiceSpy.instant.and.returnValues(test.expected);
             expect(component.getParticipantStatusText(pat)).toBe(test.expected);
         });
     });

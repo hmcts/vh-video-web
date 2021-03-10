@@ -43,9 +43,9 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         protected logger: Logger,
         protected videoWebService: VideoWebService,
         protected route: ActivatedRoute,
-        private translateService: TranslateService
+        protected translateService: TranslateService
     ) {
-        super(adalService, consultationService, eventService, videoWebService, logger);
+        super(adalService, consultationService, eventService, videoWebService, logger, translateService);
     }
 
     ngOnInit() {

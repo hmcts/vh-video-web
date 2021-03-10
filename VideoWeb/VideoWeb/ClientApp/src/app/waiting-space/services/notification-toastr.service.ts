@@ -8,6 +8,7 @@ import { ConsultationAnswer, VideoEndpointResponse } from 'src/app/services/clie
 import { NotificationSoundsService } from './notification-sounds.service';
 import { Guid } from 'guid-typescript';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable()
 export class NotificationToastrService {
@@ -16,7 +17,8 @@ export class NotificationToastrService {
         private logger: Logger,
         private toastr: ToastrService,
         private consultationService: ConsultationService,
-        private notificationSoundService: NotificationSoundsService
+        private notificationSoundService: NotificationSoundsService,
+        private translateService: TranslateService
     ) {
         this.notificationSoundService.initConsultationRequestRingtone();
     }
@@ -43,9 +45,14 @@ export class NotificationToastrService {
             this.notificationSoundService.playConsultationRequestRingtone();
         }
 
-        const requesterDisplayName = requestedBy === undefined || requestedBy === null ? `Video hearings officer` : requestedBy.displayName;
+        const requesterDisplayName =
+            requestedBy === undefined || requestedBy === null
+                ? this.translateService.instant('notification-toastr.invite.video-hearing-officer')
+                : requestedBy.displayName;
         const requestedById = requestedBy === undefined || requestedBy === null ? Guid.EMPTY : requestedBy.id;
-        let message = `<span class="govuk-!-font-weight-bold">Call from ${requesterDisplayName}</span>`;
+        let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('notification-toastr.invite.call-from', {
+            name: requesterDisplayName
+        })}</span>`;
         const participantsList = participants
             .filter(p => p.id !== requestedById)
             .map(p => p.displayName)
@@ -55,7 +62,7 @@ export class NotificationToastrService {
             .map(p => p.display_name)
             .join('<br/>');
         if (participantsList || endpointsList) {
-            message += `<br/>with`;
+            message += '<br/>' + this.translateService.instant('notification-toastr.invite.with');
         }
         if (participantsList) {
             message += `<br/>${participantsList}`;
@@ -92,7 +99,7 @@ export class NotificationToastrService {
             },
             buttons: [
                 {
-                    label: 'Accept',
+                    label: this.translateService.instant('notification-toastr.invite.accept'),
                     hoverColour: 'green',
                     action: async () => {
                         respondToConsultationRequest(ConsultationAnswer.Accepted);
@@ -100,7 +107,7 @@ export class NotificationToastrService {
                     }
                 },
                 {
-                    label: 'Decline',
+                    label: this.translateService.instant('notification-toastr.invite.decline'),
                     hoverColour: 'red',
                     action: async () => {
                         respondToConsultationRequest(ConsultationAnswer.Rejected);
@@ -132,8 +139,10 @@ export class NotificationToastrService {
         this.activeHeartbeatReport.push(heartbeatKey);
         this.logger.debug(`${this.loggerPrefix} creating 'poor network connection' toastr notification`);
 
-        let message = `<span class="govuk-!-font-weight-bold">Alert</span>`;
-        message += `<br/>Your internet connection is poor. People may have trouble seeing and hearing you.<br/>`;
+        let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant(
+            'notification-toastr.poor-connection.title'
+        )}</span>`;
+        message += `<br/>${this.translateService.instant('notification-toastr.poor-connection.message')}<br/>`;
         const toast = this.toastr.show('', '', {
             timeOut: 120000,
             tapToDismiss: false,
@@ -147,7 +156,7 @@ export class NotificationToastrService {
             },
             buttons: [
                 {
-                    label: 'Dismiss',
+                    label: this.translateService.instant('notification-toastr.poor-connection.dismiss'),
                     hoverColour: 'green',
                     action: async () => {
                         this.toastr.remove(toast.toastId);
