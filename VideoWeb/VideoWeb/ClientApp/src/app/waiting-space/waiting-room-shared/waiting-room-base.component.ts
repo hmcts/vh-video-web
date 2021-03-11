@@ -701,11 +701,8 @@ export abstract class WaitingRoomBaseDirective {
         if (message.status !== ParticipantStatus.InConsultation && isMe) {
             this.isAdminConsultation = false;
         }
-        if (message.status == ParticipantStatus.Disconnected) {
-            const participant = this.conference.participants.find(p => p.id === message.participantId);
-            if (participant) {
-                participant.current_room = null;
-            }
+        if (message.status === ParticipantStatus.Disconnected && participant) {
+            participant.current_room = null;
         }
     }
 
@@ -714,17 +711,14 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
 
-        const index = this.hearing.getEndpoints().findIndex(x => x.id === message.endpointId);
-        if (index === -1) {
+        const endpoint = this.conference.endpoints.find(p => p.id === message.endpointId);
+        if (!endpoint) {
             return;
         }
-        this.hearing.getEndpoints()[index].status = message.status;
-        
-        if (message.status == EndpointStatus.Disconnected) {
-            const endpoint = this.conference.endpoints.find(p => p.id === message.endpointId);
-            if (endpoint) {
-                endpoint.current_room = null;
-            }
+
+        endpoint.status = message.status;
+        if (message.status === EndpointStatus.Disconnected) {
+            endpoint.current_room = null;
         }
     }
 

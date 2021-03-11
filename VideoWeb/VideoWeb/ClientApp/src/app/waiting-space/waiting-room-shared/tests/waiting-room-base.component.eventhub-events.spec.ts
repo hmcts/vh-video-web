@@ -226,7 +226,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         expect(component.isAdminConsultation).toBeFalsy();
         expect(component.showVideo).toBeFalsy();
     });
-    
+
     it('should set room to null on disconnect for participant in conference', fakeAsync(() => {
         const status = ParticipantStatus.Disconnected;
         const message = new ParticipantStatusMessage(globalParticipant.id, '', globalConference.id, status);
@@ -382,7 +382,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         const endpoint = component.hearing.getEndpoints().find(x => x.id === message.endpointId);
         expect(endpoint.status === message.status).toBeTruthy();
     }));
-    
+
     it('should set room to null on disconnect for endpoint in conference', fakeAsync(() => {
         const status = EndpointStatus.Disconnected;
         const message = new EndpointStatusMessage(globalEndpoint.id, globalConference.id, status);
