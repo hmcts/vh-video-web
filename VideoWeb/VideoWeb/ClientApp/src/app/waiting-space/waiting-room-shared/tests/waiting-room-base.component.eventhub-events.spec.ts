@@ -226,6 +226,16 @@ describe('WaitingRoomComponent EventHub Call', () => {
         expect(component.isAdminConsultation).toBeFalsy();
         expect(component.showVideo).toBeFalsy();
     });
+    
+    it('should set room to null on disconnect for participant in conference', fakeAsync(() => {
+        const status = ParticipantStatus.Disconnected;
+        const message = new ParticipantStatusMessage(globalParticipant.id, '', globalConference.id, status);
+
+        participantStatusSubject.next(message);
+
+        const participant = component.hearing.getConference().participants.find(x => x.id === message.participantId);
+        expect(participant.current_room).toBeNull();
+    }));
 
     it('should update logged in participant status to in consultation', () => {
         const status = ParticipantStatus.InConsultation;
@@ -371,6 +381,16 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
         const endpoint = component.hearing.getEndpoints().find(x => x.id === message.endpointId);
         expect(endpoint.status === message.status).toBeTruthy();
+    }));
+    
+    it('should set room to null on disconnect for endpoint in conference', fakeAsync(() => {
+        const status = EndpointStatus.Disconnected;
+        const message = new EndpointStatusMessage(globalEndpoint.id, globalConference.id, status);
+
+        endpointStatusSubject.next(message);
+
+        const endpoint = component.hearing.getEndpoints().find(x => x.id === message.endpointId);
+        expect(endpoint.current_room).toBeNull();
     }));
 
     it('should receive requested consultation message', fakeAsync(() => {
