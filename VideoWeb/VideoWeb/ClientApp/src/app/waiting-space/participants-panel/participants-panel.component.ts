@@ -176,7 +176,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     handleHearingTransferChange(message: HearingTransfer) {
-        const participant = this.participants.find(x => x.id === message.participantId);
+        const participant = this.participants.find(x => x.hasParticipant(message.participantId));
         if (!participant) {
             return;
         }
@@ -185,7 +185,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             participant: participant.id,
             transferDirection: message.transferDirection
         });
-        participant.transferringIn = message.transferDirection === TransferDirection.In;
+        participant.updateTransferringInStatus(message.transferDirection === TransferDirection.In, message.participantId);
     }
 
     handleUpdatedConferenceVideoCall(updatedConference: ConferenceUpdated): void {
@@ -230,7 +230,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             status: message.status
         });
         participant.updateStatus(message.status, message.participantId);
-        participant.transferringIn = false;
+        participant.updateTransferringInStatus(false, message.participantId);
     }
 
     handleEndpointStatusChange(message: EndpointStatusMessage) {
@@ -371,7 +371,17 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             conference: this.conferenceId,
             participant: participant.id
         });
-        await this.eventService.sendTransferRequest(this.conferenceId, participant.id, TransferDirection.In);
+
+        if (participant instanceof LinkedParticipantPanelModel) {
+            console.log('is a linked participant');
+            const linkedParticipants = participant as LinkedParticipantPanelModel;
+            linkedParticipants.participants.forEach(async p => {
+                await this.eventService.sendTransferRequest(this.conferenceId, p.id, TransferDirection.In);
+            });
+        } else {
+            console.log('is not a linked participant');
+            await this.eventService.sendTransferRequest(this.conferenceId, participant.id, TransferDirection.In);
+        }
         this.witnessTransferTimeout[participant.id] = setTimeout(() => {
             this.initiateTransfer(participant);
         }, 10000);
@@ -386,7 +396,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                 conference: this.conferenceId
             });
         } catch (error) {
-            participant.transferringIn = false;
+            participant.updateTransferringInStatus(false);
             this.logger.error(`${this.loggerPrefix} Failed to raise request to call witness into hearing`, error, {
                 witness: participant.id,
                 conference: this.conferenceId
