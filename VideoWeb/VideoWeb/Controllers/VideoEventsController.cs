@@ -70,7 +70,7 @@ namespace VideoWeb.Controllers
                     events = request.CreateEventsForParticipantsInRoom(conference, roomId);
                 }
 
-                var callbackEvents = events.Select(e => TransformAndPublishEventToUi(e, conference)).ToList();
+                var callbackEvents = events.Select(e => TransformAndMapRequest(e, conference)).ToList();
                 await Task.WhenAll(events.Select(SendEventToVideoApi));
                 await Task.WhenAll(callbackEvents.Select(PublishEventToUi));
                 return NoContent();
@@ -96,7 +96,7 @@ namespace VideoWeb.Controllers
             return _videoApiClient.RaiseVideoEventAsync(request);
         }
 
-        private CallbackEvent TransformAndPublishEventToUi(ConferenceEventRequest request, Conference conference)
+        private CallbackEvent TransformAndMapRequest(ConferenceEventRequest request, Conference conference)
         {
             var isPhoneEvent = string.IsNullOrEmpty(request.Phone);
             if (!isPhoneEvent)
