@@ -234,24 +234,11 @@
           "Microsoft.Win32.SystemEvents": "5.0.0"
         }
       },
-      "TestApi.Client": {
-        "type": "Direct",
-        "requested": "[1.24.9, )",
-        "resolved": "1.24.9",
-        "contentHash": "tuprdSa0IextmvSVacqSs1+f58fNcIW6T3SeCvgzV9gcIv0ho6GJGdh7b4ng5uxsLw+M0+gr0KOtz4GIjzdBVg==",
-        "dependencies": {
-          "BookingsApi.Client": "1.24.17",
-          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
-          "Newtonsoft.Json": "12.0.3",
-          "UserApi.Client": "1.24.2",
-          "VideoApi.Client": "1.23.47"
-        }
-      },
       "VH.AcceptanceTests.Common": {
         "type": "Direct",
-        "requested": "[1.21.21, )",
-        "resolved": "1.21.21",
-        "contentHash": "bGTAj9PVMYMxSdcDQKfFAaaF+t3oeus9+lcSAiW+JcCV2HkhZXpMIpOT47pleNGZ6WjRrJEy5ejMQDw8LjiLPA==",
+        "requested": "[1.21.20, )",
+        "resolved": "1.21.20",
+        "contentHash": "k9JdNyJ/dWwI9x0B3cadaxb1tRbMcGJ+WgKzl5MEooRoGEymR3PxU9kRoeDfoyIGAbPGoVPWpHLuqopnExAiJQ==",
         "dependencies": {
           "Appium.WebDriver": "4.2.1",
           "Azure.Storage.Blobs": "12.7.0",
@@ -329,15 +316,6 @@
         "type": "Transitive",
         "resolved": "1.4.1",
         "contentHash": "x1D7r5VDm7zog+3DlyOo1fXas1RhYmw9e/wIemdjcTeHV4fp4OoGb0Jz4i2E9RShPoOItUfFklm3nxTLcLLwSg=="
-      },
-      "BookingsApi.Client": {
-        "type": "Transitive",
-        "resolved": "1.24.17",
-        "contentHash": "oFYSJJL+qsGv7ZZkc5PVfR/0FrumeI98aTIPhw9ohr4Skj6OdTHivYSkYUaW4lelwb145fyPTaCVqaUBTVKBpw==",
-        "dependencies": {
-          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
-          "Newtonsoft.Json": "12.0.3"
-        }
       },
       "Castle.Core": {
         "type": "Transitive",
@@ -1102,6 +1080,11 @@
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.1.0"
         }
+      },
+      "NSwag.MSBuild": {
+        "type": "Transitive",
+        "resolved": "13.2.2",
+        "contentHash": "KzhIzjvj7XNbdcLgxaqAtOoaiSn54vQ3lYH+TfNj261WwlbVj8/TQDF6xLUf7wShfeVR30k2aMWVqaA8X6zI7g=="
       },
       "NuGet.Frameworks": {
         "type": "Transitive",
@@ -2378,20 +2361,34 @@
       "videoweb.contract": {
         "type": "Project",
         "dependencies": {
-          "VideoWeb.Common": "1.0.0"
+          "VideoWeb.Common": "1.0.0",
+          "VideoWeb.Services": "1.0.0"
         }
       },
       "videoweb.eventhub": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "1.24.17",
           "Microsoft.ApplicationInsights.AspNetCore": "2.16.0",
           "Microsoft.AspNetCore.SignalR": "1.1.0",
           "Microsoft.Extensions.Caching.Abstractions": "3.1.10",
           "System.Text.Json": "4.7.1",
-          "UserApi.Client": "1.24.2",
-          "VideoApi.Client": "1.23.51",
-          "VideoWeb.Common": "1.0.0"
+          "VideoWeb.Common": "1.0.0",
+          "VideoWeb.Services": "1.0.0"
+        }
+      },
+      "videoweb.services": {
+        "type": "Project",
+        "dependencies": {
+          "Microsoft.Extensions.Options": "3.1.10",
+          "Newtonsoft.Json": "12.0.3",
+          "VideoWeb.Services.Generator": "1.0.0"
+        }
+      },
+      "videoweb.services.generator": {
+        "type": "Project",
+        "dependencies": {
+          "NSwag.MSBuild": "13.2.2",
+          "Newtonsoft.Json": "12.0.3"
         }
       }
     }

@@ -79,7 +79,7 @@ Scenario: Judge has a hearing on the hearing list with wingers
 	Then the user is on the Waiting Room page
 
 @VIH-4156 @VIH-4507 @Smoketest
-Scenario: Video Hearings Officer has 1 or more hearings
+Scenario: Video Hearings Officer has 1 or more hearings smoke test
   Given the Video Hearings Officer user has progressed to the VHO Hearing List page
 	Then the VHO can see a list of hearings including the new hearing
 	When the VHO selects the hearing
