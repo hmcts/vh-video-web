@@ -119,19 +119,11 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     @HostListener('window:beforeunload')
     async ngOnDestroy(): Promise<void> {
-        this.logger.debug(`${this.loggerPrefixJudge} Clearing intervals and subscriptions for judge waiting room`, {
-            conference: this.conferenceId
-        });
-        this.executeEndHearingSequence();
-        this.eventHubSubscription$.unsubscribe();
-        this.videoCallSubscription$.unsubscribe();
+        clearInterval(this.audioRecordingInterval);
+        this.executeWaitingRoomCleanup();
     }
 
     executeEndHearingSequence() {
-        this.stopHeartbeat();
-        clearTimeout(this.callbackTimeout);
-        clearInterval(this.audioRecordingInterval);
-        this.disconnect();
     }
 
     getConferenceStatusText() {

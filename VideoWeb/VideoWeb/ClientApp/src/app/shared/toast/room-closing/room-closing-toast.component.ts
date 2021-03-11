@@ -32,7 +32,6 @@ export class RoomClosingToastComponent extends Toast implements OnInit {
     calcTimeLeft(now: Date): string {
         const milliSecondsUntilExpired = this.expiryDate.valueOf() - now.valueOf();
         if (milliSecondsUntilExpired <= 0) {
-            this.dismiss.next();
             return 'This room is closed';
         }
 
