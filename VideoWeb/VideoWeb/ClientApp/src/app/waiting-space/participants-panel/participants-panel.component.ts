@@ -478,7 +478,10 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     private getCaseRole(participant: PanelModel): string {
-        return this.showCaseRole(participant) ? `<br/>${participant.caseTypeGroup}` : '';
+        const translatedCaseTypeGroup = this.translateService.instant(
+            'case-type-group.' + participant.caseTypeGroup.toLowerCase().split(' ').join('-')
+        );
+        return this.showCaseRole(participant) ? `<br/>${translatedCaseTypeGroup}` : '';
     }
 
     private showCaseRole(participant: PanelModel) {
