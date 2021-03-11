@@ -171,6 +171,10 @@ export class ConferenceTestData {
         const id1 = Guid.create().toString();
         const id2 = Guid.create().toString();
         const room = new RoomSummaryResponse({ id: '123', label: 'Interpreter1', locked: false });
+        if (isWitness) {
+            room.id = '321';
+            room.label = 'Interpreter2';
+        }
 
         const participant1 = new ParticipantForUserResponse({
             id: id1,
@@ -202,7 +206,14 @@ export class ConferenceTestData {
         });
 
         if (isWitness) {
+            participant1.display_name = 'Witness Interpreter';
+            participant1.first_name = 'Witness Interpreter';
+            participant1.tiled_display_name = `W2;Interpretee;${id1}`;
+
             participant2.hearing_role = HearingRole.WITNESS;
+            participant2.first_name = 'Witness Interpretee';
+            participant2.display_name = 'Witness Interpretee';
+            participant2.tiled_display_name = `W2;Interpretee;${id2}`;
         }
 
         participants.push(participant1);

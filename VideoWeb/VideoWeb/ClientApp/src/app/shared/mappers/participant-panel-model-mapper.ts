@@ -8,7 +8,7 @@ export class ParticipantPanelModelMapper {
         const participants: PanelModel[] = [];
         pats.forEach(x => {
             if (x.linked_participants?.length > 0) {
-                if (!this.doesListHaveLinkedParticipant(participants, x)) {
+                if (!this.isLinkAlreadyProcessed(participants, x)) {
                     const linkedParticipants = this.mapLinkedParticipant(x, pats);
                     const room = this.getVmrFromRoom(linkedParticipants, pats);
                     const participant = LinkedParticipantPanelModel.fromListOfPanelModels(linkedParticipants, room?.label, room?.id);
@@ -21,20 +21,21 @@ export class ParticipantPanelModelMapper {
         });
         return participants;
     }
-    getVmrFromRoom(linkedParticipants: ParticipantPanelModel[], pats: ParticipantForUserResponse[]): RoomSummaryResponse {
+
+    private getVmrFromRoom(linkedParticipants: ParticipantPanelModel[], pats: ParticipantForUserResponse[]): RoomSummaryResponse {
         const participantWithRooms = pats.filter(p => p.current_room !== null);
         const linkedIds = linkedParticipants.map(lp => lp.id);
         const room = participantWithRooms.find(p => linkedIds.includes(p.id) && p.current_room);
         return room?.current_room;
     }
 
-    private doesListHaveLinkedParticipant(pats: PanelModel[], participant: ParticipantForUserResponse): boolean {
+    private isLinkAlreadyProcessed(pats: PanelModel[], participant: ParticipantForUserResponse): boolean {
         const filtered = pats.filter(x => x instanceof LinkedParticipantPanelModel);
         if (!filtered) {
             return false;
         }
         const linkedPanels = filtered as LinkedParticipantPanelModel[];
-        return linkedPanels.some(x => x.participants.filter(p => p.id === participant.id));
+        return linkedPanels.some(x => x.hasParticipant(participant.id));
     }
 
     private mapLinkedParticipant(participant: ParticipantForUserResponse, pats: ParticipantForUserResponse[]): ParticipantPanelModel[] {
