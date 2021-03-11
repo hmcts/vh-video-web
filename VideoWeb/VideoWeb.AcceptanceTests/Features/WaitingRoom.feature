@@ -5,7 +5,7 @@ Feature: Waiting Room
 	So that I am ready for the video hearing to begin
 
 @VIH-4233 @Smoketest @Smoketest-Extended
-Scenario: Participant waiting room
+Scenario: Participant waiting room smoke test
 	Given the Participant user has progressed to the Waiting Room page
 	Then the user is on the Waiting Room page
 	And a phone number for help is provided
@@ -25,7 +25,7 @@ Scenario: Participant waiting room with Interpreter
   And the Interpreter below their own entry in the participant list
 
 @VIH-4610 @Smoketest @Smoketest-Extended
-Scenario: Judge waiting room
+Scenario: Judge waiting room smoke test
 	Given the Judge user has progressed to the Waiting Room page
 	Then the user is on the Waiting Room page
 	And a phone number for help is provided
