@@ -29,7 +29,8 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
                 .AddTypedParameters<SharedParticipantRoomMapper>()
                 .Build();
 
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<SharedParticipantRoomResponse, Guid, SharedParticipantRoom>())
+            _mocker.Mock<IMapperFactory>()
+                .Setup(x => x.Get<SharedParticipantRoomResponse, Guid, bool, SharedParticipantRoom>())
                 .Returns(_mocker.Create<SharedParticipantRoomMapper>(parameters));
             
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
@@ -50,7 +51,7 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
         {
             var vmr = new SharedParticipantRoomResponse()
             {
-                Label = "Test",
+                Label = "Interpreter1",
                 ParticipantJoinUri = "pat_join__interpreter",
                 PexipNode = "sip.unit.test.com"
             };
@@ -70,7 +71,7 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
         {
             var vmr = new SharedParticipantRoomResponse()
             {
-                Label = "Test",
+                Label = "Interpreter1",
                 ParticipantJoinUri = "pat_join__interpreter",
                 PexipNode = "sip.unit.test.com"
             };
