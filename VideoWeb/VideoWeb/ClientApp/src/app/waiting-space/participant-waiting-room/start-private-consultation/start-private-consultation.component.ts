@@ -25,9 +25,10 @@ export class StartPrivateConsultationComponent {
 
     participantHearingRoleText(participant: ParticipantResponse): string {
         const translatedtext = this.translateService.instant('start-private-consultation.for');
-        return participant.representee
-            ? `${participant.hearing_role} ${translatedtext} ${participant.representee}`
-            : participant.hearing_role;
+        const hearingRoleText = this.translateService.instant(
+            'hearing-role.' + participant.hearing_role.toLowerCase().split(' ').join('-')
+        );
+        return participant.representee ? `${hearingRoleText} ${translatedtext} ${participant.representee}` : hearingRoleText;
     }
 
     participantSelected(id: string): boolean {
