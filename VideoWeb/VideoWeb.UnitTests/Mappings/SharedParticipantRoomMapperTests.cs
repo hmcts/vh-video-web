@@ -23,7 +23,7 @@ namespace VideoWeb.UnitTests.Mappings
             result.PexipNode.Should().Be(testVmr.PexipNode);
             result.ParticipantJoinUri.Should().Be(testVmr.ParticipantJoinUri);
             result.DisplayName.Should().Be(testVmr.Label);
-            result.TileDisplayName.Should().Be($"I1;Interpreter1;{participantId}");
+            result.TileDisplayName.Should().Be($"T201;Interpreter1;{participantId}");
         }
     }
 }

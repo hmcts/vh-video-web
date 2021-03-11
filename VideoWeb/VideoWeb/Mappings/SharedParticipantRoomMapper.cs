@@ -11,8 +11,8 @@ namespace VideoWeb.Mappings
         public SharedParticipantRoom Map(SharedParticipantRoomResponse input, Guid participantId)
         {
             var node = input.PexipNode.Replace("https://", string.Empty);
-            var tilePosition = new String(input.Label.Where(char.IsDigit).ToArray());
-            var tileDisplayName = $"I{tilePosition};{input.Label};{participantId}";
+            var tilePosition = int.Parse(new string(input.Label.Where(char.IsDigit).ToArray()));
+            var tileDisplayName = $"T{200+tilePosition};{input.Label};{participantId}";
             return new SharedParticipantRoom
             {
                 PexipNode = node,
