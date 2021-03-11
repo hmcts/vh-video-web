@@ -711,7 +711,7 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
 
-        const endpoint = this.conference.endpoints.find(p => p.id === message.endpointId);
+        const endpoint = this.hearing.getEndpoints().find(p => p.id === message.endpointId);
         if (!endpoint) {
             return;
         }
