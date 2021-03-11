@@ -43,8 +43,8 @@ namespace VideoWeb.Controllers
                         participantId),
                     _ => await _videoApiClient.GetInterpreterRoomForParticipantAsync(conferenceId, participantId)
                 };
-                var mapper = _mapperFactory.Get<SharedParticipantRoomResponse, Guid, SharedParticipantRoom>();
-                var response = mapper.Map(room, participantId);
+                var mapper = _mapperFactory.Get<SharedParticipantRoomResponse, Guid, bool, SharedParticipantRoom>();
+                var response = mapper.Map(room, participantId, participantType == "Witness");
                 return Ok(response);
             }
             catch (VideoApiException e)

@@ -302,6 +302,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     toggleMuteParticipant(participant: PanelModel) {
+        console.warn('attempting to toggle mute participant');
+        console.warn(participant);
         const hearingParticipants = this.participants.filter(x => x.isInHearing());
         const mutedParticipants = hearingParticipants.filter(x => x.isMicRemoteMuted());
         const p = this.participants.find(x => x.id === participant.id);
