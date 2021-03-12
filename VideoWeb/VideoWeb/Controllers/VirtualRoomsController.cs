@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,8 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common.Caching;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.Controllers
 {
@@ -20,12 +23,14 @@ namespace VideoWeb.Controllers
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<VirtualRoomsController> _logger;
         private readonly IMapperFactory _mapperFactory;
+        private readonly IConferenceCache _conferenceCache;
 
         public VirtualRoomsController(IVideoApiClient videoApiClient, IMapperFactory mapperFactory,
-            ILogger<VirtualRoomsController> logger)
+            IConferenceCache conferenceCache, ILogger<VirtualRoomsController> logger)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
+            _conferenceCache = conferenceCache;
             _mapperFactory = mapperFactory;
         }
 
@@ -43,8 +48,10 @@ namespace VideoWeb.Controllers
                         participantId),
                     _ => await _videoApiClient.GetInterpreterRoomForParticipantAsync(conferenceId, participantId)
                 };
-                var mapper = _mapperFactory.Get<SharedParticipantRoomResponse, Guid, bool, SharedParticipantRoom>();
-                var response = mapper.Map(room, participantId, participantType == "Witness");
+                var conference = await GetConference(conferenceId);
+                var participant = conference.Participants.First(x => x.Id == participantId);
+                var mapper = _mapperFactory.Get<SharedParticipantRoomResponse, Participant, bool, SharedParticipantRoom>();
+                var response = mapper.Map(room, participant, participantType == "Witness");
                 return Ok(response);
             }
             catch (VideoApiException e)
@@ -54,6 +61,13 @@ namespace VideoWeb.Controllers
                     participantId, conferenceId);
                 return StatusCode(e.StatusCode, e.Response);
             }
+        }
+        
+        private async Task<Conference> GetConference(Guid conferenceId)
+        {
+            var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
+                () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
+            return conference;
         }
     }
 }

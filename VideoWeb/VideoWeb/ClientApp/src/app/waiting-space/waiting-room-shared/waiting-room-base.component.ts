@@ -549,10 +549,10 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     isOrHasWitnessLink(): boolean {
-        if (this.participant.hearing_role.toUpperCase() === HearingRole.WITNESS.toUpperCase()) {
+        if (this.participant?.hearing_role.toUpperCase() === HearingRole.WITNESS.toUpperCase()) {
             return true;
         }
-        if (!this.participant.linked_participants) {
+        if (!this.participant?.linked_participants) {
             return false;
         }
         const linkedParticipants = this.conference.participants.filter(p =>
@@ -731,7 +731,9 @@ export abstract class WaitingRoomBaseDirective {
         if (isMe) {
             this.isTransferringIn = false;
             this.isTransferringIn = message.transferDirection === TransferDirection.In;
-            this.notificationSoundsService.playHearingAlertSound();
+            if (this.isTransferringIn) {
+                this.notificationSoundsService.playHearingAlertSound();
+            }
             this.logger.info(`${this.loggerPrefix} updating transfer status`, {
                 conference: message.conferenceId,
                 transferDirection: message.transferDirection,

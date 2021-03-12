@@ -30,6 +30,14 @@ describe('LinkedParticipantPanelModel', () => {
         expect(updatedParticipant.isLocalCameraOff()).toBeTruthy();
     });
 
+    it('should dismiss all participants', () => {
+        createLinkedModel();
+        model.participants.forEach(p => p.updateParticipant(false, true, true));
+        model.dimissed();
+        expect(model.hasHandRaised()).toBeFalsy();
+        expect(model.hasSpotlight()).toBeFalsy();
+    });
+
     it('should return isInHearing: true when at least one participant is in hearing', () => {
         createLinkedModel();
         model.participants[0].updateStatus(ParticipantStatus.InHearing);
