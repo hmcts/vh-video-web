@@ -549,10 +549,10 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     isOrHasWitnessLink(): boolean {
-        if (this.participant.hearing_role.toUpperCase() === HearingRole.WITNESS.toUpperCase()) {
+        if (this.participant?.hearing_role.toUpperCase() === HearingRole.WITNESS.toUpperCase()) {
             return true;
         }
-        if (!this.participant.linked_participants) {
+        if (!this.participant?.linked_participants) {
             return false;
         }
         const linkedParticipants = this.conference.participants.filter(p =>
