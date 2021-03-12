@@ -30,7 +30,7 @@
 
 .status-disconnected {
   grid-column-start: 2;
-  grid-column-end: 6;
+  grid-column-end: 7;
 }
 
 .type-icon {
@@ -41,7 +41,7 @@
   font-family: 'GDS Transport', arial, sans-serif;
   color: govuk-colour('white');
   display: grid;
-  grid-template-columns: auto 35px 35px 35px 35px;
+  grid-template-columns: auto 30px 30px 30px 30px 30px;
   > div {
     padding-top: 15px;
     padding-bottom: 15px;

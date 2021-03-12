@@ -42,6 +42,14 @@
           <div *ngIf="isParticipantInHearing(participant)">
             <app-participant-alert *ngIf="!isEndpoint(participant)"
               [participant]="mapParticipantToParticipantResponse(participant)"></app-participant-alert>
+          </div>
+        </div>
+
+        <!-- Column 3 -->
+        <div>
+          <div *ngIf="isParticipantInHearing(participant)">
+            <app-participant-alert *ngIf="!isEndpoint(participant)"
+              [participant]="mapParticipantToParticipantResponse(participant)"></app-participant-alert>
             <ng-container *ngIf="!participant.isJudge">
               <img *ngIf="participant.isMicRemoteMuted()" appTooltip
                 [text]="(participant.isMicRemoteMuted() ? 'participants-panel.unmute-lock' : 'participants-panel.mute-participant') | translate"
@@ -70,7 +78,7 @@
           </div>
         </div>
 
-        <!-- Column 3 -->
+        <!-- Column 4 -->
         <div>
           <div *ngIf="!participant.isJudge && participant.hasHandRaised()" class="icon-button" appTooltip
             [text]="'participants-panel.lower-hand' | translate" colour="grey"
@@ -79,7 +87,7 @@
           </div>
         </div>
 
-        <!-- Column 4 -->
+        <!-- Column 5 -->
         <div>
           <div *ngIf="isParticipantInHearing(participant) && !participant.isLocalCameraOff()" class="icon-button"
             appTooltip [text]="participant.hasSpotlight() 
@@ -95,7 +103,7 @@
           </div>
         </div>
 
-        <!-- Column 5 -->
+        <!-- Column 6 -->
         <div>
           <app-judge-context-menu [participantInput]="participant" *ngIf="!participant.isJudge"
             [hidden]="!isParticipantInHearing(participant) && !participant.isAvailable()"

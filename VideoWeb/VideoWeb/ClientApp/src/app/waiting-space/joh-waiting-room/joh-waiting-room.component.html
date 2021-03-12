@@ -76,8 +76,7 @@
       <tbody class="govuk-table__body">
         <tr class="govuk-table__row">
           <td class="govuk-table__cell hearing-details-col1-width">
-            <strong>{{ hearing.caseName }}</strong> ({{ hearing.caseType }}) <span>{{'joh-waiting-room.case-number' |
-              translate}}</span>:
+            <strong>{{ hearing.caseName }}</strong> ({{ 'case-type.' + stringToTranslateId(hearing.caseType) | translate }}) <span>{{'joh-waiting-room.case-number' | translate}}</span>:
             <strong>{{ hearing.caseNumber }}</strong>
           </td>
           <td class="govuk-table__cell hearing-details-col2-width">
@@ -140,6 +139,13 @@
         </span>
       </button>
     </div>
+    <div *ngIf="!connected" class="govuk-warning-text">
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <strong class="govuk-warning-text__text">
+          <span class="govuk-warning-text__assistive">{{'joh-waiting-room.warning' | translate}}</span>
+          {{'joh-waiting-room.please-wait-while-we-connect-you' | translate}}
+      </strong>
+  </div>
     <div class="govuk-!-margin-top-9">
       <p class="govuk-body"><strong>{{'joh-waiting-room.video-hearing-team-contact' | translate:{ phone: '0300 303 0655'
           } }}</strong></p>
