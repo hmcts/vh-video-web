@@ -70,8 +70,9 @@ namespace VideoWeb.Controllers
                     events = request.CreateEventsForParticipantsInRoom(conference, roomId);
                 }
 
+                var callbackEvents = events.Select(e => TransformAndMapRequest(e, conference)).ToList();
                 await Task.WhenAll(events.Select(SendEventToVideoApi));
-                await Task.WhenAll(events.Select(e => PublishEventToUi(e, conference)));
+                await Task.WhenAll(callbackEvents.Select(PublishEventToUi));
                 return NoContent();
             }
             catch (VideoApiException e)
@@ -82,29 +83,43 @@ namespace VideoWeb.Controllers
             }
         }
 
-        private async Task SendEventToVideoApi(ConferenceEventRequest request)
+        private Task SendEventToVideoApi(ConferenceEventRequest request)
         {
-            if (request.EventType != EventType.VhoCall)
+            if (request.EventType == EventType.VhoCall)
             {
-                _logger.LogTrace("Raising video event: ConferenceId: {ConferenceId}, EventType: {EventType}",
-                        request.ConferenceId, request.EventType);
-
-                await _videoApiClient.RaiseVideoEventAsync(request);
+                return Task.CompletedTask;
             }
+
+            _logger.LogTrace("Raising video event: ConferenceId: {ConferenceId}, EventType: {EventType}",
+                    request.ConferenceId, request.EventType);
+
+            return _videoApiClient.RaiseVideoEventAsync(request);
         }
 
-        private async Task PublishEventToUi(ConferenceEventRequest request, Conference conference)
+        private CallbackEvent TransformAndMapRequest(ConferenceEventRequest request, Conference conference)
         {
-            if (!string.IsNullOrEmpty(request.Phone))
+            var isPhoneEvent = string.IsNullOrEmpty(request.Phone);
+            if (!isPhoneEvent)
             {
-                return;
+                return null;
             }
             
             var callbackEventMapper = _mapperFactory.Get<ConferenceEventRequest, Conference, CallbackEvent>();
             var callbackEvent = callbackEventMapper.Map(request, conference);
             request.EventType = Enum.Parse<EventType>(callbackEvent.EventType.ToString());
+
+            return callbackEvent;
+        }
+
+        private Task PublishEventToUi(CallbackEvent callbackEvent)
+        {
+            if (callbackEvent == null)
+            {
+                return Task.CompletedTask;
+            }
+
             var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
-            await handler.HandleAsync(callbackEvent);
+            return handler.HandleAsync(callbackEvent);
         }
 
         /// <summary>

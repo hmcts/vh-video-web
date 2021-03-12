@@ -9,6 +9,10 @@ export class VideoEndpointPanelModel extends PanelModel {
         this.status = endpoint.status;
     }
 
+    get isWitnessReadyToJoin(): boolean {
+        return false;
+    }
+
     isInHearing(): boolean {
         return this.status === EndpointStatus.Connected;
     }

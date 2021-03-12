@@ -44,7 +44,7 @@ export abstract class PanelModel {
     /**
      * Is participant transferring into a hearing
      */
-    public transferringIn: boolean;
+    private _transferringIn: boolean;
 
     /**
      * Has participant locally muted microphone
@@ -80,6 +80,8 @@ export abstract class PanelModel {
     abstract isAvailable(): boolean;
     abstract isInConsultation(): boolean;
 
+    abstract get isWitnessReadyToJoin(): boolean;
+
     /**
      * Determines if the panel is hosting the given participant by id
      * @param participantId participant id by VH
@@ -93,6 +95,14 @@ export abstract class PanelModel {
 
     get isWitness(): boolean {
         return this.hearingRole === HearingRole.WITNESS;
+    }
+
+    get transferringIn(): boolean {
+        return this._transferringIn;
+    }
+
+    updateTransferringInStatus(isTransferringIn: boolean, participantId?: string) {
+        this._transferringIn = isTransferringIn;
     }
 
     dimissed() {

@@ -183,7 +183,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     get isWitness(): boolean {
-        return this.participant?.hearing_role === HearingRole.WITNESS;
+        return this.isOrHasWitnessLink();
     }
 
     get isObserver(): boolean {

@@ -1,24 +1,25 @@
 using System;
 using System.Linq;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
 {
-    public class SharedParticipantRoomMapper : IMapTo<SharedParticipantRoomResponse, Guid, bool, SharedParticipantRoom>
+    public class SharedParticipantRoomMapper : IMapTo<SharedParticipantRoomResponse, Participant, bool, SharedParticipantRoom>
     {
-        public SharedParticipantRoom Map(SharedParticipantRoomResponse input, Guid participantId, bool isWitness)
+        public SharedParticipantRoom Map(SharedParticipantRoomResponse sharedRoom, Participant participant, bool isWitness)
         {
-            var node = input.PexipNode.Replace("https://", string.Empty);
-            var tilePosition = int.Parse(new string(input.Label.Where(char.IsDigit).ToArray()));
+            var node = sharedRoom.PexipNode.Replace("https://", string.Empty);
+            var tilePosition = int.Parse(new string(sharedRoom.Label.Where(char.IsDigit).ToArray()));
             var tilePrefix = isWitness ? "W" : "T";
-            var tileDisplayName = $"{tilePrefix}{200+tilePosition};{input.Label};{participantId}";
+            var tileDisplayName = $"{tilePrefix}{200+tilePosition};{participant.DisplayName};{participant.Id}";
             return new SharedParticipantRoom
             {
                 PexipNode = node,
-                ParticipantJoinUri = input.ParticipantJoinUri,
-                DisplayName = input.Label,
+                ParticipantJoinUri = sharedRoom.ParticipantJoinUri,
+                DisplayName = sharedRoom.Label,
                 TileDisplayName = tileDisplayName
             };
         }
