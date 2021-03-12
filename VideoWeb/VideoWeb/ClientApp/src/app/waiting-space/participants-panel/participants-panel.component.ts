@@ -482,13 +482,16 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     private getHearingRole(participant: PanelModel): string {
-        return participant.representee
-            ? `<br/>${participant.hearingRole} ${this.getTranslatedText('for')} ${participant.representee}`
-            : `<br/>${participant.hearingRole}`;
+        const translatedtext = this.getTranslatedText('for');
+        const hearingRoleText = this.translateService.instant('hearing-role.' + participant.hearingRole.toLowerCase().split(' ').join('-'));
+        return participant.representee ? `<br/>${hearingRoleText} ${translatedtext} ${participant.representee}` : `<br/>${hearingRoleText}`;
     }
 
     private getCaseRole(participant: PanelModel): string {
-        return this.showCaseRole(participant) ? `<br/>${participant.caseTypeGroup}` : '';
+        const translatedCaseTypeGroup = this.translateService.instant(
+            'case-type-group.' + participant.caseTypeGroup.toLowerCase().split(' ').join('-')
+        );
+        return this.showCaseRole(participant) ? `<br/>${translatedCaseTypeGroup}` : '';
     }
 
     private showCaseRole(participant: PanelModel) {
