@@ -17,7 +17,8 @@ import {
     Role,
     RoomSummaryResponse,
     TokenResponse,
-    VideoEndpointResponse
+    VideoEndpointResponse,
+    EndpointStatus
 } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
@@ -302,6 +303,7 @@ export abstract class WaitingRoomBaseDirective {
                             : new RoomSummaryResponse({ label: roomTransfer.to_room });
                     }
                 } else if (endpoint) {
+                    endpoint.current_room = null;
                     if (roomTransfer.to_room.toLowerCase().indexOf('consultation') >= 0) {
                         const room = this.conferenceRooms.find(r => r.label === roomTransfer.to_room);
                         endpoint.current_room = room
@@ -699,6 +701,9 @@ export abstract class WaitingRoomBaseDirective {
         if (message.status !== ParticipantStatus.InConsultation && isMe) {
             this.isAdminConsultation = false;
         }
+        if (message.status === ParticipantStatus.Disconnected && participant) {
+            participant.current_room = null;
+        }
     }
 
     handleEndpointStatusChange(message: EndpointStatusMessage) {
@@ -706,11 +711,15 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
 
-        const index = this.hearing.getEndpoints().findIndex(x => x.id === message.endpointId);
-        if (index === -1) {
+        const endpoint = this.hearing.getEndpoints().find(p => p.id === message.endpointId);
+        if (!endpoint) {
             return;
         }
-        this.hearing.getEndpoints()[index].status = message.status;
+
+        endpoint.status = message.status;
+        if (message.status === EndpointStatus.Disconnected) {
+            endpoint.current_room = null;
+        }
     }
 
     handleHearingTransferChange(message: HearingTransfer) {

@@ -88,7 +88,7 @@ describe('StartPrivateConsultationComponent', () => {
     });
 
     it('should return participant hearing role text', () => {
-        expect(component.participantHearingRoleText(conference.participants[0])).toEqual('Litigant in person');
+        expect(component.participantHearingRoleText(conference.participants[0])).toEqual('hearing-role.litigant-in-person');
     });
 
     it('should return participant representee hearing role text', () => {
@@ -98,7 +98,9 @@ describe('StartPrivateConsultationComponent', () => {
         participant.representee = representee;
         participant.hearing_role = representive;
         translateService.instant.calls.reset();
-        expect(component.participantHearingRoleText(participant)).toEqual(`${representive} start-private-consultation.for ${representee}`);
+        expect(component.participantHearingRoleText(participant)).toEqual(
+            `hearing-role.representative start-private-consultation.for ${representee}`
+        );
     });
 
     it('should return unavailable status class for disconnected', () => {

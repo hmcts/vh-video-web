@@ -368,7 +368,9 @@
     "video-hearing-team-contact": "Video hearings team: {{phone}}",
     "switch-to-main-screen": "Switch to main screen",
     "browser-doesnt-support-video": "Your browser does not support Video",
-    "judge-participant-status-list-label": "list of participants in hearing"
+    "judge-participant-status-list-label": "list of participants in hearing",
+    "warning": "Warning",
+    "please-wait-while-we-connect-you": "Please wait while we connect you..."
   },
   "judge-context-menu": {
     "context-menu-icon": "Context menu icon",
@@ -541,7 +543,6 @@
     "failed": "Failed",
     "no-answer": "No Answer",
     "transferring": "Transferring",
-    "Calling": "Calling",
     "not-available": "Not available",
     "crest-icon-alt": "Crest"
   },
