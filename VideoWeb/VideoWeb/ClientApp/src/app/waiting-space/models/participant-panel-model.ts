@@ -17,6 +17,10 @@ export class ParticipantPanelModel extends PanelModel {
         this.status = participant.status;
     }
 
+    get isWitnessReadyToJoin(): boolean {
+        return this.isWitness && !this.isInHearing();
+    }
+
     isInHearing(): boolean {
         return this.status === ParticipantStatus.InHearing;
     }
