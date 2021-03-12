@@ -8,6 +8,7 @@ import { ParticipantStatusMessage } from '../../services/models/participant-stat
 import { Subscription } from 'rxjs';
 import { EventsService } from '../../services/events.service';
 import { ParticipantStatusReader } from '../../shared/models/participant-status-reader';
+import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
 @Component({
     selector: 'app-participant-status',
@@ -138,11 +139,11 @@ export class ParticipantStatusComponent implements OnInit {
     }
 
     private sortParticipants() {
-        const judges = this.participants.filter(participant => participant.hearingRole === 'Judge');
+        const judges = this.participants.filter(participant => participant.hearingRole === HearingRole.JUDGE);
         const panelMembersAndWingers = this.participants.filter(participant =>
-            ['Panel Member', 'Winger'].includes(participant.hearingRole)
+            [HearingRole.PANEL_MEMBER.toString(), HearingRole.WINGER.toString()].includes(participant.hearingRole)
         );
-        const observers = this.participants.filter(participant => participant.hearingRole === 'Observer');
+        const observers = this.participants.filter(participant => participant.hearingRole === HearingRole.OBSERVER);
         const interpretersAndInterpretees = this.participants.filter(participant => participant.isInterpreterOrInterpretee);
         const others = this.participants.filter(
             participant =>
