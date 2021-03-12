@@ -432,7 +432,7 @@ namespace VideoWeb.EventHub.Hub
                 Task.WaitAll(
                     linkedParticipants.Select(linkedParticipant => Clients
                         .Group(linkedParticipant.Username.ToLowerInvariant())
-                        .ParticipantRemoteMuteMessage(participantId, conferenceId, isRemoteMuted)).ToArray());
+                        .ParticipantRemoteMuteMessage(linkedParticipant.Id, conferenceId, isRemoteMuted)).ToArray());
 
             }
             catch (Exception ex)
@@ -463,14 +463,18 @@ namespace VideoWeb.EventHub.Hub
                     .ParticipantHandRaiseMessage(participantId, conferenceId, isRaised);
                 await Clients.Group(participant.Username.ToLowerInvariant())
                     .ParticipantHandRaiseMessage(participantId, conferenceId, isRaised);
-                Task.WaitAll(
-                    linkedParticipants.Select(linkedParticipant => Clients
-                        .Group(linkedParticipant.Username.ToLowerInvariant())
-                        .ParticipantHandRaiseMessage(participantId, conferenceId, isRaised)).ToArray());
                 _logger.LogTrace(
                     "Participant hand status updated: Participant Id: {ParticipantId} | Conference Id: {ConferenceId} to {IsHandRaised}",
                     participantId, conferenceId, isRaised);
-
+                foreach (var linkedParticipant in linkedParticipants)
+                {
+                    await Clients
+                        .Group(linkedParticipant.Username.ToLowerInvariant())
+                        .ParticipantHandRaiseMessage(linkedParticipant.Id, conferenceId, isRaised);
+                    _logger.LogTrace(
+                        "Participant hand status updated: Participant Id: {ParticipantId} | Conference Id: {ConferenceId} to {IsHandRaised}",
+                        linkedParticipant.Id, conferenceId, isRaised);
+                }
             }
             catch (Exception ex)
             {

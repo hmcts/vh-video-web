@@ -184,7 +184,7 @@ export class ConferenceTestData {
             representee: null,
             case_type_group: 'applicant',
             tiled_display_name: `T2;Interpreter;${id1}`,
-            hearing_role: 'Interpreter',
+            hearing_role: HearingRole.INTERPRETER,
             first_name: 'Interpreter',
             last_name: 'Doe',
             linked_participants: [new LinkedParticipantResponse({ link_type: LinkType.Interpreter, linked_id: id2 })]
@@ -198,7 +198,7 @@ export class ConferenceTestData {
             representee: null,
             case_type_group: 'applicant',
             tiled_display_name: `T2;Interpretee;${id2}`,
-            hearing_role: 'Litigant in person',
+            hearing_role: HearingRole.LITIGANT_IN_PERSON,
             first_name: 'Interpretee',
             last_name: 'Doe',
             linked_participants: [new LinkedParticipantResponse({ link_type: LinkType.Interpreter, linked_id: id1 })],
@@ -236,7 +236,7 @@ export class ConferenceTestData {
             representee: null,
             case_type_group: 'applicant',
             tiled_display_name: `T7;Interpreter 2;${id3}`,
-            hearing_role: 'Interpreter',
+            hearing_role: HearingRole.INTERPRETER,
             first_name: 'Tim',
             last_name: 'Jones',
             linked_participants: [new LinkedParticipantResponse({ link_type: LinkType.Interpreter, linked_id: id4 })]
@@ -250,7 +250,7 @@ export class ConferenceTestData {
             representee: null,
             case_type_group: 'applicant',
             tiled_display_name: `T7;Interpretee 2;${id4}`,
-            hearing_role: 'Litigant in person',
+            hearing_role: HearingRole.LITIGANT_IN_PERSON,
             first_name: 'Bob',
             last_name: 'Smith',
             linked_participants: [new LinkedParticipantResponse({ link_type: LinkType.Interpreter, linked_id: id3 })],
@@ -277,7 +277,7 @@ export class ConferenceTestData {
             representee: 'James Green',
             case_type_group: 'applicant',
             tiled_display_name: 'T4;Mr Chris Green;1111-1111-1111-1111',
-            hearing_role: 'Litigant in person',
+            hearing_role: HearingRole.INTERPRETER,
             linked_participants: []
         });
 
@@ -288,7 +288,7 @@ export class ConferenceTestData {
             role: Role.Individual,
             case_type_group: 'applicant',
             tiled_display_name: 'T2;J Green;2222-2222-2222-2222',
-            hearing_role: 'Litigant in person',
+            hearing_role: HearingRole.INTERPRETER,
             linked_participants: []
         });
 
@@ -301,7 +301,7 @@ export class ConferenceTestData {
             first_name: 'judge',
             last_name: 'fudge',
             tiled_display_name: 'T1;Judge Fudge;3333-3333-3333-3333',
-            hearing_role: 'Judge',
+            hearing_role: HearingRole.JUDGE,
             linked_participants: []
         });
 
@@ -313,7 +313,7 @@ export class ConferenceTestData {
             representee: 'J Doe',
             case_type_group: 'respondent',
             tiled_display_name: 'T4;J Doe;4444-4444-4444-4444',
-            hearing_role: 'Litigant in person',
+            hearing_role: HearingRole.INTERPRETER,
             linked_participants: []
         });
 
@@ -324,7 +324,7 @@ export class ConferenceTestData {
             role: Role.Individual,
             case_type_group: 'respondent',
             tiled_display_name: 'T5;Ms J Doe;5555-5555-5555-5555',
-            hearing_role: 'Litigant in person',
+            hearing_role: HearingRole.INTERPRETER,
             linked_participants: []
         });
 
@@ -335,7 +335,7 @@ export class ConferenceTestData {
             role: Role.Individual,
             case_type_group: 'observer',
             tiled_display_name: 'T6;Observer Doe O;6666-6666-6666-6666',
-            hearing_role: 'Observer',
+            hearing_role: HearingRole.OBSERVER,
             linked_participants: []
         });
 
@@ -345,7 +345,7 @@ export class ConferenceTestData {
             display_name: 'Panel Mem Doe PM',
             role: Role.JudicialOfficeHolder,
             case_type_group: 'panelmember',
-            hearing_role: 'Panel Member',
+            hearing_role: HearingRole.PANEL_MEMBER,
             tiled_display_name: 'T7;Panel Mem Doe PM;7777-7777-7777-7777',
             linked_participants: []
         });
@@ -356,7 +356,7 @@ export class ConferenceTestData {
             display_name: 'J Doe WINGER',
             role: Role.JudicialOfficeHolder,
             case_type_group: 'None',
-            hearing_role: 'Winger',
+            hearing_role: HearingRole.WINGER,
             linked_participants: []
         });
 
@@ -366,7 +366,7 @@ export class ConferenceTestData {
             display_name: 'J Doe WITNESS',
             role: Role.Individual,
             case_type_group: 'None',
-            hearing_role: 'Witness',
+            hearing_role: HearingRole.WITNESS,
             linked_participants: []
         });
 
@@ -621,7 +621,7 @@ export class ConferenceTestData {
             name: 'Observer Test 1',
             status: ParticipantStatus.Available,
             role: Role.Individual,
-            hearing_role: 'Observer',
+            hearing_role: HearingRole.OBSERVER,
             case_type_group: 'Observer',
             display_name: 'Greeno',
             tiled_display_name: 'T100;Observer Test 1;abd18c35-884d-430e-9569-415cafe30afb'
@@ -633,7 +633,7 @@ export class ConferenceTestData {
             representee: 'Chris Green',
             status: ParticipantStatus.NotSignedIn,
             role: Role.Individual,
-            hearing_role: 'Observer',
+            hearing_role: HearingRole.OBSERVER,
             display_name: 'James Green',
             case_type_group: 'Observer',
             tiled_display_name: 'T101;Observer Test 2;2ccddb9f-887c-47f9-82b3-896eec0a2595'
@@ -644,7 +644,7 @@ export class ConferenceTestData {
             name: 'Panel Mem 1',
             status: ParticipantStatus.Available,
             role: Role.JudicialOfficeHolder,
-            hearing_role: 'Panel Member',
+            hearing_role: HearingRole.PANEL_MEMBER,
             display_name: 'Panel Mem 1',
             case_type_group: 'PanelMember',
             tiled_display_name: 'T102;Panel Mem 1;e698a672-8925-46e6-907d-21f1bc3b8bbf'
@@ -666,7 +666,7 @@ export class ConferenceTestData {
             case_type_group: 'None',
             display_name: 'Chris Winger',
             tiled_display_name: 'T200;Chris Winger;c8c33015-d164-4a46-a5c9-6b58e892511b',
-            hearing_role: 'Winger'
+            hearing_role: HearingRole.WINGER
         });
         participants.push(participant1);
         return participants;
@@ -682,7 +682,7 @@ export class ConferenceTestData {
             case_type_group: 'None',
             display_name: 'Chris Witness',
             tiled_display_name: 'W201;Chris Witness;c8c33015-d164-4a46-a5c9-6b58e892511a',
-            hearing_role: 'Witness'
+            hearing_role: HearingRole.WITNESS
         });
         participants.push(participant1);
         return participants;
