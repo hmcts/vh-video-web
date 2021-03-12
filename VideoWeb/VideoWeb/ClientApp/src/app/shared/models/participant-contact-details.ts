@@ -99,4 +99,8 @@ export class ParticipantContactDetails {
             ? false
             : true;
     }
+
+    get isInterpreterOrInterpretee(): boolean {
+        return this.participant.hearing_role === 'Interpreter' || this.participant.linked_participants.length > 0;
+    }
 }

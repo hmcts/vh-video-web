@@ -8,6 +8,7 @@ import { ParticipantStatusMessage } from '../../services/models/participant-stat
 import { Subscription } from 'rxjs';
 import { EventsService } from '../../services/events.service';
 import { ParticipantStatusReader } from '../../shared/models/participant-status-reader';
+import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
 @Component({
     selector: 'app-participant-status',
@@ -18,6 +19,7 @@ export class ParticipantStatusComponent implements OnInit {
     loadingData: boolean;
     hearingVenueName: string;
     participants: ParticipantContactDetails[];
+    sortedParticipants: ParticipantContactDetails[];
     eventHubSubscriptions: Subscription = new Subscription();
 
     @Input() conferenceId: string;
@@ -48,7 +50,7 @@ export class ParticipantStatusComponent implements OnInit {
 
             return participant;
         });
-
+        this.participants = this.sortParticipants();
         this.loadingData = false;
     }
 
@@ -134,5 +136,24 @@ export class ParticipantStatusComponent implements OnInit {
             default:
                 return 'participant-default-status';
         }
+    }
+
+    private sortParticipants() {
+        const judges = this.participants.filter(participant => participant.hearingRole === HearingRole.JUDGE);
+        const panelMembersAndWingers = this.participants.filter(participant =>
+            [HearingRole.PANEL_MEMBER.toString(), HearingRole.WINGER.toString()].includes(participant.hearingRole)
+        );
+        const observers = this.participants.filter(participant => participant.hearingRole === HearingRole.OBSERVER);
+        const interpretersAndInterpretees = this.participants.filter(participant => participant.isInterpreterOrInterpretee);
+        const others = this.participants.filter(
+            participant =>
+                !judges.includes(participant) &&
+                !panelMembersAndWingers.includes(participant) &&
+                !interpretersAndInterpretees.includes(participant) &&
+                !observers.includes(participant)
+        );
+
+        this.sortedParticipants = [...judges, ...panelMembersAndWingers, ...others, ...interpretersAndInterpretees, ...observers];
+        return this.sortedParticipants;
     }
 }
