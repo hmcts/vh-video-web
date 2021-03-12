@@ -372,19 +372,21 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             participant: participant.id
         });
 
-        if (participant instanceof LinkedParticipantPanelModel) {
-            console.log('is a linked participant');
-            const linkedParticipants = participant as LinkedParticipantPanelModel;
-            linkedParticipants.participants.forEach(async p => {
-                await this.eventService.sendTransferRequest(this.conferenceId, p.id, TransferDirection.In);
-            });
-        } else {
-            console.log('is not a linked participant');
-            await this.eventService.sendTransferRequest(this.conferenceId, participant.id, TransferDirection.In);
-        }
+        await this.sendTransferDirection(participant, TransferDirection.In);
         this.witnessTransferTimeout[participant.id] = setTimeout(() => {
             this.initiateTransfer(participant);
         }, 10000);
+    }
+
+    private async sendTransferDirection(participant: PanelModel, direction: TransferDirection) {
+        if (participant instanceof LinkedParticipantPanelModel) {
+            const linkedParticipants = participant as LinkedParticipantPanelModel;
+            linkedParticipants.participants.forEach(async p => {
+                await this.eventService.sendTransferRequest(this.conferenceId, p.id, direction);
+            });
+        } else {
+            await this.eventService.sendTransferRequest(this.conferenceId, participant.id, direction);
+        }
     }
 
     async initiateTransfer(participant: PanelModel) {
@@ -397,6 +399,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             });
         } catch (error) {
             participant.updateTransferringInStatus(false);
+            await this.sendTransferDirection(participant, TransferDirection.Out);
             this.logger.error(`${this.loggerPrefix} Failed to raise request to call witness into hearing`, error, {
                 witness: participant.id,
                 conference: this.conferenceId
