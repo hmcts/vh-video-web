@@ -598,27 +598,29 @@ describe('ParticipantsPanelComponent', () => {
         const p = participants[1];
         p.status = ParticipantStatus.InHearing;
         const model = new ParticipantPanelModel(p);
-        expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>${p.hearing_role}<br/>${p.case_type_group}`);
+        expect(component.getPanelRowTooltipText(model)).toEqual(
+            `${p.display_name}<br/>hearing-role.litigant-in-person<br/>case-type-group.applicant`
+        );
     });
     it('should getPanelRowTooltipAdditionalText return hearing role and case role for a representative', () => {
         const p = participants[0];
         p.status = ParticipantStatus.InHearing;
         const model = new ParticipantPanelModel(p);
         expect(component.getPanelRowTooltipText(model)).toEqual(
-            `${p.display_name}<br/>${p.hearing_role} participants-panel.for ${p.representee}<br/>${p.case_type_group}`
+            `${p.display_name}<br/>hearing-role.witness participants-panel.for ${p.representee}<br/>case-type-group.applicant`
         );
     });
     it('should getPanelRowTooltipAdditionalText return hearing role and case role for an observer', () => {
         const p = participants[5];
         p.status = ParticipantStatus.InHearing;
         const model = new ParticipantPanelModel(p);
-        expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>${p.hearing_role}`);
+        expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>hearing-role.observer`);
     });
     it('should getPanelRowTooltipAdditionalText return hearing role and case role for a panel member', () => {
         const p = participants[6];
         p.status = ParticipantStatus.InHearing;
         const model = new ParticipantPanelModel(p);
-        expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>${p.hearing_role}`);
+        expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>hearing-role.panel-member`);
     });
     it('should getPanelRowTooltipAdditionalText return display name for judge', () => {
         const p = participants[2];

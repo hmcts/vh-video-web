@@ -114,8 +114,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
             Mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == eventType)), Times.Once);
-            Mocker.Mock<IVideoApiClient>().Verify(x =>
-                x.RaiseVideoEventAsync(It.Is<ConferenceEventRequest>(r => r.EventType == expectedEventType)));
+            Mocker.Mock<IVideoApiClient>().Verify(x => x.RaiseVideoEventAsync(It.Is<ConferenceEventRequest>(r => r.EventType == expectedEventType)), Times.Once);
         }
 
         [TestCase(EventType.Joined)]
