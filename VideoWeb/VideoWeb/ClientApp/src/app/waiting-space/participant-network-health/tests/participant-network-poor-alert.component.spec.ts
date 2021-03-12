@@ -41,7 +41,7 @@ describe('ParticipantNetworkPoorAlertComponent', () => {
         component.handleHeartbeat(payload);
         expect(notificationToastrService.reportPoorConnection).toHaveBeenCalled();
     });
-    it('should show not alert if network connection is poor if participant is not in consultation', () => {
+    it('should not show alert if network connection is poor for participant is in hearing', () => {
         globalParticipant.status = ParticipantStatus.InHearing;
         component.participant = globalParticipant;
         notificationToastrService.reportPoorConnection.calls.reset();
@@ -56,7 +56,7 @@ describe('ParticipantNetworkPoorAlertComponent', () => {
         );
         heartbeatSubject.next(payload);
         component.handleHeartbeat(payload);
-        expect(notificationToastrService.reportPoorConnection).toHaveBeenCalledTimes(0);
+        expect(notificationToastrService.reportPoorConnection).toHaveBeenCalled();
     });
     it('should not handle heartbeat if participant is not user', () => {
         globalParticipant.status = ParticipantStatus.InHearing;
