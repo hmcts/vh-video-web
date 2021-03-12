@@ -23,6 +23,14 @@ export class LinkedParticipantPanelModel extends PanelModel {
         return this.participants.some(p => p.isWitness);
     }
 
+    get isWitnessReadyToJoin(): boolean {
+        return this.participants.some(p => p.isWitness && p.isAvailable());
+    }
+
+    get transferringIn(): boolean {
+        return this.participants.some(p => p.transferringIn);
+    }
+
     private get participantsInHearing(): PanelModel[] {
         return this.participants.filter(p => p.isInHearing());
     }
@@ -32,7 +40,7 @@ export class LinkedParticipantPanelModel extends PanelModel {
     }
 
     isDisconnected(): boolean {
-        return this.participants.filter(p => p.isDisconnected()).length === this.participants.length;
+        return this.participants.every(p => p.isDisconnected());
     }
 
     isAvailable(): boolean {
@@ -48,7 +56,7 @@ export class LinkedParticipantPanelModel extends PanelModel {
     }
 
     updateStatus(status: ParticipantStatus, participantId?: string) {
-        if (this.participants.some(p => p.id === participantId)) {
+        if (this.hasParticipant(participantId)) {
             this.participants.find(p => p.id === participantId).updateStatus(status);
         }
     }
@@ -62,8 +70,21 @@ export class LinkedParticipantPanelModel extends PanelModel {
     }
 
     updateParticipantDeviceStatus(isAudioMuted: boolean, isVideoMuted: boolean, participantId?: string) {
-        if (this.participants.some(p => p.id === participantId)) {
+        if (this.hasParticipant(participantId)) {
             this.participants.find(p => p.id === participantId).updateParticipantDeviceStatus(isAudioMuted, isVideoMuted);
         }
+    }
+
+    updateTransferringInStatus(isTransferringIn: boolean, participantId?: string) {
+        if (this.hasParticipant(participantId)) {
+            this.participants.find(p => p.id === participantId).updateTransferringInStatus(isTransferringIn, participantId);
+        }
+        if (!participantId) {
+            this.participants.forEach(p => p.updateTransferringInStatus(isTransferringIn));
+        }
+    }
+
+    dimissed() {
+        this.participants.forEach(p => p.dimissed());
     }
 }
