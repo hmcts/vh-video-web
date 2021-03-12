@@ -78,3 +78,16 @@
   border-right: solid transparent 10px;
   border-bottom: solid gray 10px;
 }
+
+.participant-icon:empty {
+  margin-left: 20px;
+}
+
+.status-box-display {
+  display: flex;
+}
+
+.vh-participant-icon {
+  height: 20px;
+  width: 20px;
+}
