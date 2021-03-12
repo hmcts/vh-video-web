@@ -6,7 +6,7 @@ using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Builders
 {
-    public class ParticipantDetailsResponseBuilder 
+    public class ParticipantDetailsResponseBuilder
     {
         private readonly ISingleObjectBuilder<ParticipantDetailsResponse> _participant;
 
@@ -17,7 +17,8 @@ namespace VideoWeb.UnitTests.Builders
                 .With(x => x.CurrentStatus = ParticipantState.Available)
                 .With(x => x.CaseTypeGroup = caseTypeGroup)
                 .With(x => x.UserRole = role)
-                .With(x=> x.LinkedParticipants = new List<LinkedParticipantResponse>());
+                .With(x => x.LinkedParticipants = new List<LinkedParticipantResponse>
+                    { new LinkedParticipantResponse() { LinkedId = Guid.NewGuid(), Type = LinkedParticipantType.Interpreter } });
         }
 
         public ParticipantDetailsResponseBuilder WithStatus(ParticipantState state)
