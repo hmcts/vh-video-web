@@ -262,6 +262,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             this.participants.sort((x, z) => {
                 return x.orderInTheList === z.orderInTheList ? 0 : +(x.orderInTheList > z.orderInTheList) || -1;
             });
+
+            console.warn(this.participants);
         } catch (err) {
             this.logger.error(`${this.loggerPrefix} Failed to get participants / endpoints`, err, { conference: this.conferenceId });
         }

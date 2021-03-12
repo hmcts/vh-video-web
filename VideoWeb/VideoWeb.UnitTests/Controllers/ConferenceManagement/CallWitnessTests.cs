@@ -155,5 +155,25 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                     It.Is<TransferParticipantRequest>(r =>
                         r.RoomId == room.Id && r.TransferType == TransferType.Call)), Times.Once);
         }
+
+        [Test]
+        public async Task should_return_unauthorised_when_interpreter_is_called_before_witness_joins()
+        {
+            var judge = TestConference.GetJudge();
+            var room = TestConference.CivilianRooms.First();
+            var witnessIds = TestConference.Participants.Where(p => p.IsWitness()).Select(p => p.Id).ToList();
+            room.Participants = room.Participants.Where(p => !witnessIds.Contains(p)).ToList();
+            var user = new ClaimsPrincipalBuilder()
+                .WithUsername(judge.Username)
+                .WithRole(AppRoles.JudgeRole).Build();
+            Controller = SetupControllerWithClaims(user);
+            
+            var result = await Controller.CallWitnessAsync(TestConference.Id, room.Id.ToString());
+            
+            result.Should().BeOfType<UnauthorizedObjectResult>();
+            var typedResult = (UnauthorizedObjectResult) result;
+            typedResult.Should().NotBeNull();
+            typedResult.Value.Should().Be("Participant is not a witness");
+        }
     }
 }

@@ -23,6 +23,10 @@ export class LinkedParticipantPanelModel extends PanelModel {
         return this.participants.some(p => p.isWitness);
     }
 
+    get isWitnessReadyToJoin(): boolean {
+        return this.participants.some(p => p.isWitness && p.isAvailable());
+    }
+
     get transferringIn(): boolean {
         return this.participants.some(p => p.transferringIn);
     }
