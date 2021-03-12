@@ -1,4 +1,4 @@
-import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -41,7 +41,7 @@ describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
     const conferenceId = '1111-1111-1111';
     let participants = testData.getListOfParticipants();
-    participants = participants.concat(testData.getListOfLinkedParticipants());
+    participants = participants.concat(testData.getListOfLinkedParticipants().concat(testData.getListOfLinkedParticipants(true)));
     const endpoints = testData.getListOfEndpoints();
     const videoCallTestData = new VideoCallTestData();
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
@@ -81,7 +81,7 @@ describe('ParticipantsPanelComponent', () => {
     });
 
     it('should get participant sorted list, the judge is first, then panel members and finally observers are the last one', fakeAsync(() => {
-        const expectedCount = endpoints.length + participants.length - 1; // take away 1 for linked participants
+        const expectedCount = endpoints.length + participants.length - 2; // take away 2 interpreters
 
         component.participants = [];
         component.ngOnInit();
@@ -245,13 +245,27 @@ describe('ParticipantsPanelComponent', () => {
     });
 
     it('should call participant in when participant is a witness and available', async () => {
-        const p = participants[0];
-        p.hearing_role = HearingRole.WITNESS;
-        p.status = ParticipantStatus.Available;
-        const pat = new ParticipantPanelModel(p);
+        const pat = component.participants.find(p => p.isWitness);
+        pat.updateStatus(ParticipantStatus.Available);
         await component.callWitnessIntoHearing(pat);
-        expect(component.witnessTransferTimeout[p.id]).toBeDefined();
+        expect(component.witnessTransferTimeout[pat.id]).toBeDefined();
     });
+
+    it('should call all linked witness participants when is a witness and available', fakeAsync(async () => {
+        const pat = component.participants.find(
+            p => p instanceof LinkedParticipantPanelModel && p.isWitness
+        ) as LinkedParticipantPanelModel;
+        pat.participants.forEach(p => pat.updateStatus(ParticipantStatus.Available, p.id));
+        pat.updateStatus(ParticipantStatus.Available);
+        await component.callWitnessIntoHearing(pat);
+        expect(component.witnessTransferTimeout[pat.id]).toBeDefined();
+        pat.participants.forEach(p => {
+            expect(eventService.sendTransferRequest).toHaveBeenCalledWith(component.conferenceId, p.id, TransferDirection.In);
+        });
+
+        tick(10000);
+        expect(videoCallServiceSpy.callParticipantIntoHearing).toHaveBeenCalledWith(component.conferenceId, pat.id);
+    }));
 
     it('should not call a participant in when participant is not a witness', async () => {
         const p = participants[0];
@@ -273,67 +287,55 @@ describe('ParticipantsPanelComponent', () => {
 
     it('should dismiss participant in when participant is a witness and in hearing', async () => {
         videocallService.dismissParticipantFromHearing.calls.reset();
-        const p = participants[0];
-        p.hearing_role = HearingRole.WITNESS;
-        p.status = ParticipantStatus.InHearing;
-        const pat = new ParticipantPanelModel(p);
+        const pat = component.participants.find(p => p.isWitness);
+        pat.updateStatus(ParticipantStatus.InHearing);
         await component.dismissWitnessFromHearing(pat);
-        expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, p.id);
+        expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, pat.id);
     });
 
     it('should dismiss participant in when participant is a witness and in hearing and lower hand', async () => {
         videocallService.dismissParticipantFromHearing.calls.reset();
-        const p = participants[0];
-        p.hearing_role = HearingRole.WITNESS;
-        p.status = ParticipantStatus.InHearing;
-        const pat = new ParticipantPanelModel(p);
+        const pat = component.participants.find(p => p.isWitness);
+        pat.updateStatus(ParticipantStatus.InHearing);
         pat.updateParticipant(false, true, false);
         await component.dismissWitnessFromHearing(pat);
         expect(pat.hasHandRaised()).toBeFalse();
-        expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, p.id);
+        expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, pat.id);
     });
 
     it('should dismiss participant in when participant is a witness and in hearing and unpin', async () => {
         videocallService.dismissParticipantFromHearing.calls.reset();
-        const p = participants[0];
-        p.hearing_role = HearingRole.WITNESS;
-        p.status = ParticipantStatus.InHearing;
-        const pat = new ParticipantPanelModel(p);
+        const pat = component.participants.find(p => p.isWitness);
+        pat.updateStatus(ParticipantStatus.InHearing);
         pat.updateParticipant(false, false, true);
         await component.dismissWitnessFromHearing(pat);
         expect(pat.hasSpotlight()).toBeFalse();
-        expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, p.id);
+        expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, pat.id);
     });
 
-    it('should dismiss participant in when participant is a witness and in hearing', async () => {
+    it('should dismiss participant in when participant is a witness and in hearing and catch error', async () => {
         spyOn(logger, 'error');
         const error = { status: 401, isApiException: true };
         videocallService.dismissParticipantFromHearing.calls.reset();
         videocallService.dismissParticipantFromHearing.and.returnValue(Promise.reject(error));
-        const p = participants[0];
-        p.hearing_role = HearingRole.WITNESS;
-        p.status = ParticipantStatus.InHearing;
-        const pat = new ParticipantPanelModel(p);
+        const pat = component.participants.find(p => p.isWitness);
+        pat.updateStatus(ParticipantStatus.InHearing);
         await component.dismissWitnessFromHearing(pat);
         expect(logger.error).toHaveBeenCalled();
     });
 
     it('should not dismiss a participant in when participant is not a witness', async () => {
         videocallService.dismissParticipantFromHearing.calls.reset();
-        const p = participants[0];
-        p.hearing_role = HearingRole.LITIGANT_IN_PERSON;
-        p.status = ParticipantStatus.InHearing;
-        const pat = new ParticipantPanelModel(p);
+        const pat = component.participants.find(p => !p.isWitness);
+        pat.updateStatus(ParticipantStatus.InHearing);
         await component.dismissWitnessFromHearing(pat);
         expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledTimes(0);
     });
 
     it('should not dismiss a participant in when participant is a witness but not in hearing', async () => {
         videocallService.dismissParticipantFromHearing.calls.reset();
-        const p = participants[0];
-        p.hearing_role = HearingRole.WITNESS;
-        p.status = ParticipantStatus.Available;
-        const pat = new ParticipantPanelModel(p);
+        const pat = component.participants.find(p => p.isWitness);
+        pat.updateStatus(ParticipantStatus.Available);
         await component.dismissWitnessFromHearing(pat);
         expect(videocallService.dismissParticipantFromHearing).toHaveBeenCalledTimes(0);
     });
@@ -598,27 +600,29 @@ describe('ParticipantsPanelComponent', () => {
         const p = participants[1];
         p.status = ParticipantStatus.InHearing;
         const model = new ParticipantPanelModel(p);
-        expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>${p.hearing_role}<br/>${p.case_type_group}`);
+        expect(component.getPanelRowTooltipText(model)).toEqual(
+            `${p.display_name}<br/>hearing-role.litigant-in-person<br/>case-type-group.applicant`
+        );
     });
     it('should getPanelRowTooltipAdditionalText return hearing role and case role for a representative', () => {
         const p = participants[0];
         p.status = ParticipantStatus.InHearing;
         const model = new ParticipantPanelModel(p);
         expect(component.getPanelRowTooltipText(model)).toEqual(
-            `${p.display_name}<br/>${p.hearing_role} participants-panel.for ${p.representee}<br/>${p.case_type_group}`
+            `${p.display_name}<br/>hearing-role.witness participants-panel.for ${p.representee}<br/>case-type-group.applicant`
         );
     });
     it('should getPanelRowTooltipAdditionalText return hearing role and case role for an observer', () => {
         const p = participants[5];
         p.status = ParticipantStatus.InHearing;
         const model = new ParticipantPanelModel(p);
-        expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>${p.hearing_role}`);
+        expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>hearing-role.observer`);
     });
     it('should getPanelRowTooltipAdditionalText return hearing role and case role for a panel member', () => {
         const p = participants[6];
         p.status = ParticipantStatus.InHearing;
         const model = new ParticipantPanelModel(p);
-        expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>${p.hearing_role}`);
+        expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>hearing-role.panel-member`);
     });
     it('should getPanelRowTooltipAdditionalText return display name for judge', () => {
         const p = participants[2];

@@ -176,7 +176,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     handleHearingTransferChange(message: HearingTransfer) {
-        const participant = this.participants.find(x => x.id === message.participantId);
+        const participant = this.participants.find(x => x.hasParticipant(message.participantId));
         if (!participant) {
             return;
         }
@@ -185,7 +185,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             participant: participant.id,
             transferDirection: message.transferDirection
         });
-        participant.transferringIn = message.transferDirection === TransferDirection.In;
+        participant.updateTransferringInStatus(message.transferDirection === TransferDirection.In, message.participantId);
     }
 
     handleUpdatedConferenceVideoCall(updatedConference: ConferenceUpdated): void {
@@ -230,7 +230,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             status: message.status
         });
         participant.updateStatus(message.status, message.participantId);
-        participant.transferringIn = false;
+        participant.updateTransferringInStatus(false, message.participantId);
     }
 
     handleEndpointStatusChange(message: EndpointStatusMessage) {
@@ -262,6 +262,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             this.participants.sort((x, z) => {
                 return x.orderInTheList === z.orderInTheList ? 0 : +(x.orderInTheList > z.orderInTheList) || -1;
             });
+
+            console.warn(this.participants);
         } catch (err) {
             this.logger.error(`${this.loggerPrefix} Failed to get participants / endpoints`, err, { conference: this.conferenceId });
         }
@@ -371,10 +373,22 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             conference: this.conferenceId,
             participant: participant.id
         });
-        await this.eventService.sendTransferRequest(this.conferenceId, participant.id, TransferDirection.In);
+
+        await this.sendTransferDirection(participant, TransferDirection.In);
         this.witnessTransferTimeout[participant.id] = setTimeout(() => {
             this.initiateTransfer(participant);
         }, 10000);
+    }
+
+    private async sendTransferDirection(participant: PanelModel, direction: TransferDirection) {
+        if (participant instanceof LinkedParticipantPanelModel) {
+            const linkedParticipants = participant as LinkedParticipantPanelModel;
+            linkedParticipants.participants.forEach(async p => {
+                await this.eventService.sendTransferRequest(this.conferenceId, p.id, direction);
+            });
+        } else {
+            await this.eventService.sendTransferRequest(this.conferenceId, participant.id, direction);
+        }
     }
 
     async initiateTransfer(participant: PanelModel) {
@@ -386,7 +400,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                 conference: this.conferenceId
             });
         } catch (error) {
-            participant.transferringIn = false;
+            participant.updateTransferringInStatus(false);
+            await this.sendTransferDirection(participant, TransferDirection.Out);
             this.logger.error(`${this.loggerPrefix} Failed to raise request to call witness into hearing`, error, {
                 witness: participant.id,
                 conference: this.conferenceId
@@ -472,13 +487,16 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     private getHearingRole(participant: PanelModel): string {
-        return participant.representee
-            ? `<br/>${participant.hearingRole} ${this.getTranslatedText('for')} ${participant.representee}`
-            : `<br/>${participant.hearingRole}`;
+        const translatedtext = this.getTranslatedText('for');
+        const hearingRoleText = this.translateService.instant('hearing-role.' + participant.hearingRole.toLowerCase().split(' ').join('-'));
+        return participant.representee ? `<br/>${hearingRoleText} ${translatedtext} ${participant.representee}` : `<br/>${hearingRoleText}`;
     }
 
     private getCaseRole(participant: PanelModel): string {
-        return this.showCaseRole(participant) ? `<br/>${participant.caseTypeGroup}` : '';
+        const translatedCaseTypeGroup = this.translateService.instant(
+            'case-type-group.' + participant.caseTypeGroup.toLowerCase().split(' ').join('-')
+        );
+        return this.showCaseRole(participant) ? `<br/>${translatedCaseTypeGroup}` : '';
     }
 
     private showCaseRole(participant: PanelModel) {
