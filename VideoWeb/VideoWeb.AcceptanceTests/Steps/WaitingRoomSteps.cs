@@ -144,8 +144,9 @@ namespace VideoWeb.AcceptanceTests.Steps
             
             foreach (var interpreter in interpreters)
             {
+                var interpretee = _c.Test.ConferenceParticipants.FirstOrDefault(p => p.Id == interpreter.LinkedParticipants.FirstOrDefault().LinkedId);
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantName(user, interpreter.Id)).Text.Trim().Should().Be(interpreter.Name);
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantHearingRole(user, interpreter.Id)).Text.Trim().Should().Contain(interpreter.HearingRole);
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantHearingRole(user, interpreter.Id)).Text.Trim().Should().Contain($"{interpreter.HearingRole} for\r\n{interpretee.Name}");
                 if (!interpreter.CaseTypeGroup.ToLower().Equals("none"))
                 {
                     _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantCaseType(user, interpreter.Id)).Text.Trim().Should().Be(interpreter.CaseTypeGroup);
@@ -340,6 +341,11 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _browsers[_c.CurrentUser].ScrollTo(JudgeParticipantPanel.ParticipantStatus(user.Id));
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantStatus(user.Id)).Text.ToUpper().Trim()
                     .Should().BeOneOf("CONNECTED", "IN CONSULTATION");
+                if(user.HearingRole.ToLower() == "interpreter")
+                {
+                   var interpretee = loggedInParticipants.FirstOrDefault(p => p.Id == user.LinkedParticipants.FirstOrDefault().LinkedId);
+                    _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantHearingRole("Participant", user.Id)).Text.Trim().Should().Contain($"{user.HearingRole} for\r\n{interpretee.Name}");          
+                }
             }
         }
 
