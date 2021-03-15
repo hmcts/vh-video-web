@@ -1,5 +1,6 @@
 import { ParticipantStatus, Role, ParticipantContactDetailsResponseVho } from 'src/app/services/clients/api-client';
 import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
+import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
 export class ParticipantContactDetails {
     private participant: ParticipantContactDetailsResponseVho;
@@ -101,6 +102,6 @@ export class ParticipantContactDetails {
     }
 
     get isInterpreterOrInterpretee(): boolean {
-        return this.participant.hearing_role === 'Interpreter' || this.participant.linked_participants.length > 0;
+        return this.participant.hearing_role === HearingRole.INTERPRETER || this.participant.linked_participants.length > 0;
     }
 }

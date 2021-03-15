@@ -1,4 +1,5 @@
 import { ParticipantResponse, ParticipantStatus, Role, ParticipantResponseVho } from 'src/app/services/clients/api-client';
+import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
 export class Participant {
     private participant: ParticipantResponseVho;
@@ -51,5 +52,12 @@ export class Participant {
 
     get hearingRoleText(): string {
         return this.representee ? `${this.base.hearing_role} for ${this.representee}` : this.base.hearing_role;
+    }
+
+    get isInterpreterOrInterpretee() {
+        return (
+            this.participant.hearing_role === HearingRole.INTERPRETER ||
+            (this.participant.linked_participants && this.participant.linked_participants.length > 0)
+        );
     }
 }
