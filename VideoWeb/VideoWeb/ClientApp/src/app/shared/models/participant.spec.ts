@@ -1,3 +1,4 @@
+import { LinkedParticipantResponse, LinkType } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { Participant } from './participant';
@@ -35,5 +36,25 @@ describe('Participant', () => {
         const p = new ConferenceTestData().getConferenceDetailFuture().participants[1];
         const participant = new Participant(p);
         expect(participant.hearingRoleText).toBe(`${HearingRole.REPRESENTATIVE} for ${p.representee}`);
+    });
+
+    it('should return true if an interpreter', () => {
+        const p = new ConferenceTestData().getConferenceDetailFuture().participants[2];
+        p.hearing_role = HearingRole.INTERPRETER;
+        const participant = new Participant(p);
+        expect(participant.isInterpreterOrInterpretee).toBe(true);
+    });
+
+    it('should return true if an interpretee', () => {
+        const linkedParticipants: LinkedParticipantResponse[] = [];
+        const linkedParticipant = new LinkedParticipantResponse();
+        linkedParticipant.link_type = LinkType.Interpreter;
+        linkedParticipant.linked_id = '200';
+        linkedParticipants.push(linkedParticipant);
+        const p = new ConferenceTestData().getConferenceDetailFuture().participants[0];
+        p.hearing_role = HearingRole.LITIGANT_IN_PERSON;
+        p.linked_participants = linkedParticipants;
+        const participant = new Participant(p);
+        expect(participant.isInterpreterOrInterpretee).toBe(true);
     });
 });
