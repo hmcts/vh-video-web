@@ -19,6 +19,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 {
                     Builder<Participant>.CreateNew()
                         .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
+                        .With(x => x.Username = "judge@hmcts.net")
                         .Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Id = Guid.NewGuid()).With(x => x.Username = "john@hmcts.net").Build(),
