@@ -29,6 +29,7 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
     }
 
     ngOnInit() {
+        console.log();
         this.setupSubscribers();
         this.logger.debug('[UnreadMessages] - Getting unread message count for conference', { conference: this.hearing.id });
         this.videoWebService
