@@ -1,4 +1,4 @@
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { OnInit, Component, Injectable } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { ReturnUrlService } from '../../services/return-url.service';
@@ -10,13 +10,7 @@ import { Logger } from '../../services/logging/logger-base';
 })
 @Injectable()
 export class LoginComponent implements OnInit {
-    constructor(
-        private adalSvc: AdalService,
-        private route: ActivatedRoute,
-        private router: Router,
-        private returnUrlService: ReturnUrlService,
-        private logger: Logger
-    ) {}
+    constructor(private adalSvc: AdalService, private router: Router, private returnUrlService: ReturnUrlService, private logger: Logger) {}
 
     ngOnInit() {
         this.checkAuthAndRedirect();
@@ -33,9 +27,7 @@ export class LoginComponent implements OnInit {
                 this.router.navigate(['/']);
             }
         } else {
-            const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-            this.returnUrlService.setUrl(returnUrl);
-            this.logger.debug('[Login] - User not authenticated. Logging in', { returnUrl });
+            this.logger.debug('[Login] - User not authenticated. Logging in');
             this.adalSvc.login();
         }
     }

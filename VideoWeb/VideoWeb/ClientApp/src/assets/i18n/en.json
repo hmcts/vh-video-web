@@ -989,5 +989,20 @@
     "judge-room-short": "Judge Room",
     "meeting-room": "Meeting Room",
     "meeting-room-short": "Room"
+  },
+  "idp-selection": {
+    "title": "Select your account type to sign in",
+    "description": "You'll need to select the correct option and have a valid email address and password to sign in.",
+    "ejud": {
+      "title": "Judicial Office Holder",
+      "description": "If you are a judge or panel member, select this option (your email will end with @ejudiciary.net)."
+    },
+    "vhaad": {
+      "title": "Hearing Participant",
+      "description": "If you are participating in a video hearing in any other capacity, select this option."
+    },
+    "next": "Next",
+    "error": "Error:",
+    "select-a-provider": "Select a provider to coninue"
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { AdalService } from 'adal-angular4';
+import { pageUrls } from '../shared/page-url.constants';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -10,7 +11,7 @@ export class AuthGuard implements CanActivate {
         if (this.adalSvc.userInfo.authenticated) {
             return true;
         }
-        this.router.navigate(['/login']);
+        this.router.navigate(['/' + pageUrls.IdpSelection]);
         return false;
     }
 }

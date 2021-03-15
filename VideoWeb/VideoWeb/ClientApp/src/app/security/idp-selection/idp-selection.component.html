@@ -1,0 +1,30 @@
+<div class="govuk-!-margin-bottom-2 govuk-!-margin-top-2">
+    <h1 class="govuk-heading-xl">{{ 'idp-selection.title' | translate }}</h1>
+    <div class="govuk-hint">{{ 'idp-selection.description' | translate }}</div>
+    <form class="govuk-form-group" (ngSubmit)="onSubmit()">
+        <div [ngClass]="showError() ? 'govuk-form-group--error' : 'govuk-form-group'">
+            <div *ngIf="showError()" class="govuk-error-message">
+                <span class="govuk-visually-hidden">{{ 'idp-selection.error' | translate }}</span>
+                {{ 'idp-selection.select-a-provider' | translate }}
+            </div>
+            <fieldset class="govuk-fieldset">
+                <div *ngFor="let provider of getProviders()" class="govuk-radios__item" (click)="selectProvider(provider);">
+                    <input [id]="provider" class="govuk-radios__input" name="provider" type="radio" value="government-gateway" [attr.aria-describedby]="provider + '-item-hint'">
+                    <label class="govuk-label govuk-radios__label" [attr.for]="provider">
+                        {{ 'idp-selection.' + provider + '.title' | translate }}
+                    </label>
+                    <div [id]="provider + '-item-hint'"  class="govuk-hint govuk-radios__hint">
+                        {{ 'idp-selection.' + provider + '.description' | translate }}
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="govuk-!-margin-top-6">
+            <button class="govuk-button" data-module="govuk-button" (click)="onSubmit();">
+                {{ 'idp-selection.next' | translate }}
+            </button>
+        </div>
+    </form>
+    <app-contact-us-folding></app-contact-us-folding>
+</div>
+  
