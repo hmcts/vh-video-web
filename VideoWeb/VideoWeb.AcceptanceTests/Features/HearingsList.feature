@@ -7,7 +7,7 @@ Feature: Hearing List
 Scenario: Participant has 1 or more hearings
 	Given I have a hearing
 	And a new browser is open for a Participant
-	When the user attempts to login with valid credentials
+	When they attempt to login with valid credentials
 	Then the user is on the Hearing List page
 	And the participant can see a list of hearings including the new hearing
 	And contact us details are available
@@ -17,7 +17,7 @@ Scenario: Participant has 1 or more hearings
 Scenario: Participant has a hearing more than 30 minutes in the future
 	Given I have a hearing in 31 minutes time
 	And a new browser is open for a Participant
-	When the user attempts to login with valid credentials
+	When they attempt to login with valid credentials
 	Then the user is on the Hearing List page
 	And the new hearing isn't available to join yet
 	And when the hearing is ready to start the hearing button appears
@@ -26,7 +26,7 @@ Scenario: Participant has a hearing more than 30 minutes in the future
 
 Scenario: Participant has no hearings
 	Given a new browser is open for a Participant
-	When the user attempts to login with valid credentials
+	When they attempt to login with valid credentials
 	Then the user is on the Hearing List page
 	And a warning message appears indicating the participant has no hearings scheduled
 	And contact us details are available
@@ -34,7 +34,7 @@ Scenario: Participant has no hearings
 @VIH-4607
 Scenario: Judge has no hearings
 	Given a new browser is open for a Judge
-	When the user attempts to login with valid credentials
+	When they attempt to login with valid credentials
 	Then the user is on the Hearing List page
 	And a warning message appears indicating the Judge has no hearings scheduled
 	And contact us details for the Judge are available
@@ -43,7 +43,7 @@ Scenario: Judge has no hearings
 Scenario: Judge has 1 or more hearings
 	Given I have a hearing
 	And a new browser is open for a Judge
-	When the user attempts to login with valid credentials
+	When they attempt to login with valid credentials
 	Then the user is on the Hearing List page
 	And a phone number for help is provided
 	And the user can see their details at the top of the hearing list 
@@ -56,7 +56,7 @@ Scenario: Judge has 1 or more hearings
 Scenario: Judge has a hearing with observers and panel members
 	Given I have a hearing with an Observer and Panel Member
 	And a new browser is open for a Judge
-	When the user attempts to login with valid credentials
+	When they attempt to login with valid credentials
 	Then the user is on the Hearing List page
 	And a phone number for help is provided
 	And the user can see their details at the top of the hearing list 
@@ -69,7 +69,7 @@ Scenario: Judge has a hearing with observers and panel members
 Scenario: Judge has a hearing on the hearing list with wingers
 	Given I have a CACD hearing with a Winger
 	And a new browser is open for a Judge
-	When the user attempts to login with valid credentials
+	When they attempt to login with valid credentials
 	Then the user is on the Hearing List page
 	And a phone number for help is provided
 	And the user can see their details at the top of the hearing list 
@@ -93,7 +93,7 @@ Scenario: Video Hearings Officer can see all hearings for today only
 	And I have a hearing in 1 days time
 	And I have another hearing in 2 days time
 	And a new browser is open for a Video Hearings Officer
-	When the user attempts to login with valid credentials
+	When they attempt to login with valid credentials
   And the VHO selects all the venues
 	Then the Video Hearings Officer should only see hearings for today
 
@@ -113,7 +113,7 @@ Scenario: Participant can access Closed hearing within 30 minutes
 Scenario: Panel Member has 1 or more hearings
 	Given I have a hearing with an Observer and Panel Member
 	And a new browser is open for a PanelMember
-	When the user attempts to login with valid credentials
+	When they attempt to login with valid credentials
 	Then the user is on the Hearing List page
 	And the participant can see a list of hearings including the new hearing
 	And contact us details are available
@@ -123,7 +123,7 @@ Scenario: Panel Member has 1 or more hearings
 Scenario: Panel Member has a hearing more than 30 minutes in the future
 	Given I have a hearing with an Observer and Panel Member in 31 minutes time
 	And a new browser is open for a PanelMember
-	When the user attempts to login with valid credentials
+	When they attempt to login with valid credentials
 	Then the user is on the Hearing List page
 	And the new hearing isn't available to join yet
 	And when the hearing is ready to start the hearing button appears
@@ -134,7 +134,7 @@ Scenario: Panel Member has a hearing more than 30 minutes in the future
   Scenario: Winger has 1 or more hearings
 	Given I have a CACD hearing with a Winger
 	And a new browser is open for a Winger
-	When the user attempts to login with valid credentials
+	When they attempt to login with valid credentials
 	Then the user is on the Hearing List page
 	And the participant can see a list of hearings including the new hearing
 	And contact us details are available
@@ -145,7 +145,7 @@ Scenario: Panel Member has a hearing more than 30 minutes in the future
 Scenario: Winger has a hearing more than 30 minutes in the future
 	Given I have a CACD hearing with a winger in 31 minutes time
 	And a new browser is open for a Winger
-	When the user attempts to login with valid credentials
+	When they attempt to login with valid credentials
 	Then the user is on the Hearing List page
 	And the new hearing isn't available to join yet
 	And when the hearing is ready to start the hearing button appears
