@@ -10,7 +10,7 @@ export class ParticipantPanelModelMapper {
             if (x.linked_participants?.length > 0) {
                 if (!this.isLinkAlreadyProcessed(participants, x)) {
                     const linkedParticipants = this.mapLinkedParticipant(x, pats);
-                    const room = this.getVmrFromRoom(linkedParticipants, pats);
+                    const room = this.getInterpreterRoom(linkedParticipants, pats);
                     const participant = LinkedParticipantPanelModel.fromListOfPanelModels(linkedParticipants, room?.label, room?.id);
                     participants.push(participant);
                 }
@@ -22,11 +22,11 @@ export class ParticipantPanelModelMapper {
         return participants;
     }
 
-    private getVmrFromRoom(linkedParticipants: ParticipantPanelModel[], pats: ParticipantForUserResponse[]): RoomSummaryResponse {
-        const participantWithRooms = pats.filter(p => p.current_room !== null);
+    private getInterpreterRoom(linkedParticipants: ParticipantPanelModel[], pats: ParticipantForUserResponse[]): RoomSummaryResponse {
+        const participantWithRooms = pats.filter(p => p.interpreter_room !== null);
         const linkedIds = linkedParticipants.map(lp => lp.id);
-        const room = participantWithRooms.find(p => linkedIds.includes(p.id) && p.current_room);
-        return room?.current_room;
+        const participantWithRoom = participantWithRooms.find(p => linkedIds.includes(p.id) && p.interpreter_room);
+        return participantWithRoom?.interpreter_room;
     }
 
     private isLinkAlreadyProcessed(pats: PanelModel[], participant: ParticipantForUserResponse): boolean {
