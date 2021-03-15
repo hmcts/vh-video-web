@@ -34,17 +34,19 @@ Scenario: Judge pauses and closes hearing
 	And the hearing status changed to Closed
 
 @HearingTest @Smoketest-Extended @DisableLogging
-Scenario: Two participants join hearing
-	Given the first Individual user has progressed to the Waiting Room page
-	And the first Representative user has progressed to the Waiting Room page for the existing hearing
-	And the Judge user has progressed to the Waiting Room page for the existing hearing
+Scenario: Interpreter And Interpretee joins hearing
+  Given I have an Interpreter and have a hearing
+  And the first Individual user has progressed to the Waiting Room page for the existing hearing
+	And the first Interpreter user has progressed to the Waiting Room page for the existing hearing
+  And the Judge user has progressed to the Waiting Room page for the existing hearing
 	When the Judge starts the hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
+  Then the Judge can see interpreter and interpretee on participant list
 	Then the Judge is on the Hearing Room page for 1 minute
 	And the Judge can see the participants
 	And the first Individual can see the other participants
-	And the first Representative can see the other participants
+	And the first Interpreter can see the other participants
   When in the Judge's browser
   And the Judge closes the hearing
 	Then the user is on the Waiting Room page

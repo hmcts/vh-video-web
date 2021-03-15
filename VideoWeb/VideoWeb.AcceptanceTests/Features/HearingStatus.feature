@@ -9,7 +9,7 @@ Scenario Outline: VHO views hearing status
 	And I have another hearing
 	And the hearing status changes to <Status>
 	And a new browser is open for a Video Hearings Officer
-	When the user attempts to login with valid credentials
+	When they attempt to login with valid credentials
   And the VHO selects all the venues
   Then the user is on the Hearing List page
 	And the hearings should be in chronological order
@@ -27,7 +27,7 @@ Scenario: VHO views Delayed hearing status
 	And I have another hearing in -10 minutes time
 	And the hearing status changes to Delayed
 	And a new browser is open for a Video Hearings Officer
-	When the user attempts to login with valid credentials
+	When they attempt to login with valid credentials
   And the VHO selects all the venues
   Then the user is on the Hearing List page
 	And the hearings should be in chronological order
@@ -38,7 +38,7 @@ Scenario: VHO views closed hearings
 	Given I have a hearing
 	And the hearing status changes to Closed
 	And a new browser is open for a Video Hearings Officer
-	When the user attempts to login with valid credentials
+	When they attempt to login with valid credentials
   And the VHO selects all the venues
 	Then the user is on the Hearing List page
 	And the closedDate attribute should be populated

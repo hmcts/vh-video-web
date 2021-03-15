@@ -109,4 +109,12 @@ describe('ParticipantNetworkHealthComponent', () => {
         component.participant.status = ParticipantStatus.InConsultation;
         expect(component.isInConsultation).toBeTruthy();
     });
+    it('should indicate that participant is in hearing', () => {
+        component.participant.status = ParticipantStatus.InHearing;
+        expect(component.isInHearing).toBeTruthy();
+    });
+    it('should return isInHearing false when participant is not in hearing', () => {
+        component.participant.status = ParticipantStatus.Available;
+        expect(component.isInHearing).toBeFalsy();
+    });
 });

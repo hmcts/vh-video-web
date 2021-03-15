@@ -50,6 +50,11 @@ namespace VideoWeb.AcceptanceTests.Helpers
                 return GetAllUsersOfType(users, UserType.Representative)[index];
             }
 
+            if (user.Contains("interpreter"))
+            {
+                return GetAllUsersOfType(users, UserType.Interpreter)[index];
+            }
+
             if (user.Contains("panel member") ||
                 user.Contains("panelmember"))
             {
