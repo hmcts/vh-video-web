@@ -134,6 +134,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 case "participant":
                 case "individual":
                 case "representative":
+                case "interpreter":
                 case "observer":
                     return Journey.Participant;
                 case "panel member":
