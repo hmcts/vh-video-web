@@ -67,6 +67,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     });
 
     beforeEach(() => {
+        consultationService.consultationNameToString.calls.reset();
         logged = new LoggedParticipantResponse({
             participant_id: globalParticipant.id,
             display_name: globalParticipant.display_name,
@@ -296,8 +297,15 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         expect(component.hearingStartingAnnounced).toBeTruthy();
     }));
     it('should return "Meeting room" from getRoomName when room label is null', () => {
+        // Arrange
         component.participant = null;
-        expect(component.getRoomName()).toEqual('Meeting room');
+
+        // Act
+        const roomName = component.getRoomName();
+
+        // Assert
+        expect(roomName).toBeUndefined();
+        expect(consultationService.consultationNameToString).toHaveBeenCalledWith(undefined, false);
     });
     it('should set consultation modal when start is called', () => {
         component.openStartConsultationModal();
