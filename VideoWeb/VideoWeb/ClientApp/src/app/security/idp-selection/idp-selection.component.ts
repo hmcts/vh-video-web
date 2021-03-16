@@ -34,10 +34,10 @@ export class IdpSelectionComponent implements OnInit {
         if (this.isLoggedIn()) {
             const returnUrl = this.returnUrlService.popUrl() || '/';
             try {
-                this.logger.debug(`[Login] - User is authenticated. Returning to ${returnUrl}`);
+                this.logger.debug(`[IdpSelectionComponent] - User is authenticated. Returning to ${returnUrl}`);
                 this.router.navigateByUrl(returnUrl);
             } catch (e) {
-                this.logger.error('[Login] - Failed to log in', e);
+                this.logger.error('[IdpSelectionComponent] - Failed to log in', e);
                 this.router.navigate(['/']);
             }
         } else {
