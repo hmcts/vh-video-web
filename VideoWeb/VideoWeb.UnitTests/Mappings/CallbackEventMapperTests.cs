@@ -97,6 +97,60 @@ namespace VideoWeb.UnitTests.Mappings
             result.EventType.Should().Be(EventHub.Enums.EventType.EndpointTransfer);
         }
 
+        [Test]
+        public void should_map_room_participant_joined_to_joined()
+        {
+            var testConference = CreateTestConferenceForRoomParticipantEvent();
+            var room = testConference.CivilianRooms.First();
+            var participantId = room.Participants.First();
+            var conferenceEventRequest = Builder<ConferenceEventRequest>.CreateNew()
+                .With(x => x.ConferenceId = testConference.Id.ToString())
+                .With(x => x.ParticipantId = participantId.ToString())
+                .With(x => x.ParticipantRoomId = room.Id.ToString())
+                .With(x => x.EventType = EventType.RoomParticipantJoined)
+                .Build();
+            
+            var result = _sut.Map(conferenceEventRequest, testConference);
+            result.Should().NotBeNull();
+            result.EventType.Should().Be(EventHub.Enums.EventType.Joined);
+        }
+        
+        [Test]
+        public void should_map_room_participant_disconnected_to_disconnected()
+        {
+            var testConference = CreateTestConferenceForRoomParticipantEvent();
+            var room = testConference.CivilianRooms.First();
+            var participantId = room.Participants.First();
+            var conferenceEventRequest = Builder<ConferenceEventRequest>.CreateNew()
+                .With(x => x.ConferenceId = testConference.Id.ToString())
+                .With(x => x.ParticipantId = participantId.ToString())
+                .With(x => x.ParticipantRoomId = room.Id.ToString())
+                .With(x => x.EventType = EventType.RoomParticipantDisconnected)
+                .Build();
+            
+            var result = _sut.Map(conferenceEventRequest, testConference);
+            result.Should().NotBeNull();
+            result.EventType.Should().Be(EventHub.Enums.EventType.Disconnected);
+        }
+        
+        [Test]
+        public void should_map_room_participant_transfer_to_transfer()
+        {
+            var testConference = CreateTestConferenceForRoomParticipantEvent();
+            var room = testConference.CivilianRooms.First();
+            var participantId = room.Participants.First();
+            var conferenceEventRequest = Builder<ConferenceEventRequest>.CreateNew()
+                .With(x => x.ConferenceId = testConference.Id.ToString())
+                .With(x => x.ParticipantId = participantId.ToString())
+                .With(x => x.ParticipantRoomId = room.Id.ToString())
+                .With(x => x.EventType = EventType.Transfer)
+                .Build();
+            
+            var result = _sut.Map(conferenceEventRequest, testConference);
+            result.Should().NotBeNull();
+            result.EventType.Should().Be(EventHub.Enums.EventType.Transfer);
+        }
+        
         private static Conference CreateTestConferenceForEndpointEvent()
         {
             var testConference = new Conference
