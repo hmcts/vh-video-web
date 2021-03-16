@@ -44,8 +44,8 @@ namespace VideoWeb.UnitTests.Mappings
 
             var result = _sut.Map(conferenceEventRequest, testConference);
             result.Should().NotBeNull();
-            result.TransferFrom.Should().Be(conferenceEventRequest.TransferFrom.ToString());
-            result.TransferTo.Should().Be(conferenceEventRequest.TransferTo.ToString());
+            result.TransferFrom.Should().Be(conferenceEventRequest.TransferFrom);
+            result.TransferTo.Should().Be(conferenceEventRequest.TransferTo);
         }
 
         [Test]
@@ -116,6 +116,39 @@ namespace VideoWeb.UnitTests.Mappings
                 Endpoints = Builder<Endpoint>.CreateListOfSize(2).Build().ToList()
             };
             return testConference;
+        }
+        
+        private Conference CreateTestConferenceForRoomParticipantEvent()
+        {
+            var conference = new Conference
+            {
+                Id = Guid.NewGuid(),
+                HearingId = Guid.NewGuid(),
+                Participants = new List<Participant>()
+                {
+                    Builder<Participant>.CreateNew()
+                        .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid())
+                        .Build(),
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
+                        .With(x => x.Id = Guid.NewGuid()).Build(),
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
+                        .With(x => x.Id = Guid.NewGuid()).Build(),
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
+                        .With(x => x.Id = Guid.NewGuid()).Build(),
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
+                        .With(x => x.Id = Guid.NewGuid()).Build()
+                },
+                HearingVenueName = "Hearing Venue Test",
+                CivilianRooms = new List<CivilianRoom>
+                {
+                    new CivilianRoom {Id = 1, RoomLabel = "Interpreter1", Participants = new List<Guid>()}
+                }
+            };
+
+            conference.CivilianRooms.First().Participants.Add(conference.Participants[1].Id);
+            conference.CivilianRooms.First().Participants.Add(conference.Participants[2].Id);
+
+            return conference;
         }
     }
 }
