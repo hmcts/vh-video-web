@@ -75,10 +75,6 @@
         <!-- Column 3 -->
         <div>
           <div *ngIf="isParticipantInHearing(participant)">
-            <app-participant-alert
-              *ngIf="!isEndpoint(participant)"
-              [participant]="mapParticipantToParticipantResponse(participant)"
-            ></app-participant-alert>
             <ng-container *ngIf="!participant.isJudge">
               <img
                 *ngIf="participant.isMicRemoteMuted()"

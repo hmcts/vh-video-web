@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { ConsultationService } from 'src/app/services/api/consultation.service';
 import {
     AllowedEndpointResponse,
     EndpointStatus,
@@ -7,7 +8,6 @@ import {
     ParticipantStatus,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
-import { Logger } from 'src/app/services/logging/logger-base';
 @Component({
     selector: 'app-start-private-consultation',
     templateUrl: './start-private-consultation.component.html',
@@ -21,7 +21,7 @@ export class StartPrivateConsultationComponent {
     @Input() endpoints: VideoEndpointResponse[];
     @Output() continue = new EventEmitter<{ participants: string[]; endpoints: string[] }>();
     @Output() cancel = new EventEmitter();
-    constructor(protected logger: Logger, protected translateService: TranslateService) {}
+    constructor(private translateService: TranslateService, private consultationService: ConsultationService) {}
 
     participantHearingRoleText(participant: ParticipantResponse): string {
         const translatedtext = this.translateService.instant('start-private-consultation.for');
@@ -108,11 +108,7 @@ export class StartPrivateConsultationComponent {
             return (
                 this.translateService.instant('start-private-consultation.in') +
                 ' ' +
-                this.camelToSpaced(
-                    participant.current_room.label
-                        .replace('ParticipantConsultationRoom', 'MeetingRoom')
-                        .replace('JudgeJOHConsultationRoom', 'JudgeRoom')
-                ).toLowerCase() +
+                this.consultationService.consultationNameToString(participant.current_room.label, false).toLowerCase() +
                 (participant.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
             );
         }
@@ -126,19 +122,9 @@ export class StartPrivateConsultationComponent {
             return (
                 this.translateService.instant('start-private-consultation.in') +
                 ' ' +
-                this.camelToSpaced(endpoint.current_room.label.replace('ParticipantConsultationRoom', 'MeetingRoom')).toLowerCase() +
+                this.consultationService.consultationNameToString(endpoint.current_room.label, false).toLowerCase() +
                 (endpoint.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
             );
         }
-    }
-
-    protected camelToSpaced(word: string) {
-        const splitWord = word
-            .match(/[a-z]+|[^a-z]+/gi)
-            .join(' ')
-            .split(/(?=[A-Z])/)
-            .join(' ');
-        const lowcaseWord = splitWord.toLowerCase();
-        return lowcaseWord.charAt(0).toUpperCase() + lowcaseWord.slice(1);
     }
 }

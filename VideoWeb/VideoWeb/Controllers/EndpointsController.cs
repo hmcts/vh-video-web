@@ -68,9 +68,16 @@ namespace VideoWeb.Controllers
         {
             var username = User.Identity.Name?.ToLower().Trim();
             var conference = await GetConference(conferenceId);
-            var usersEndpoints = conference.Endpoints.Where(ep =>
-                ep.DefenceAdvocateUsername != null &&
-                ep.DefenceAdvocateUsername.Equals(username, StringComparison.CurrentCultureIgnoreCase)).ToList();
+            var isJudgeOrJoh = conference.Participants.Any(x => (x.Role == Role.Judge || x.Role == Role.JudicialOfficeHolder) &&
+                            x.Username.Equals(User.Identity.Name?.Trim(), StringComparison.InvariantCultureIgnoreCase));
+
+            var usersEndpoints = conference.Endpoints;
+            if(!isJudgeOrJoh)
+            {
+                usersEndpoints = usersEndpoints.Where(ep => ep.DefenceAdvocateUsername != null && 
+                                                            ep.DefenceAdvocateUsername.Equals(username, StringComparison.CurrentCultureIgnoreCase))
+                                            .ToList();
+            }
             var allowedEndpointResponseMapper = _mapperFactory.Get<Endpoint, AllowedEndpointResponse>();
             var response = usersEndpoints.Select(x => allowedEndpointResponseMapper.Map(x)).ToList();
             return Ok(response);

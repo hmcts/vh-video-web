@@ -173,9 +173,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     getRoomName(): string {
-        return this.camelToSpaced(
-            this.participant?.current_room?.label?.replace('ParticipantConsultationRoom', 'MeetingRoom') ?? 'MeetingRoom'
-        );
+        return this.consultationService.consultationNameToString(this.participant?.current_room?.label, false);
     }
 
     get isJohRoom(): boolean {
@@ -275,16 +273,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
     closeJoinPrivateConsultationModal() {
         this.displayJoinPrivateConsultationModal = false;
-    }
-
-    protected camelToSpaced(word: string) {
-        const splitWord = word
-            .match(/[a-z]+|[^a-z]+/gi)
-            .join(' ')
-            .split(/(?=[A-Z])/)
-            .join(' ');
-        const lowcaseWord = splitWord.toLowerCase();
-        return lowcaseWord.charAt(0).toUpperCase() + lowcaseWord.slice(1);
     }
 
     toggleAccordian() {
