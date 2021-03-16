@@ -29,6 +29,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         [Given(@"a new browser is open for (?:user|the|a|an) (.*)")]
         [Given(@"(?:the|an|a) (.*) is on the login page")]
+        [Given(@"(?:the|an|a) (.*) is on the account type selection page")]
         public void GivenANewBrowserIsOpenFor(string user)
         {
             SwitchCurrentUser(user);
