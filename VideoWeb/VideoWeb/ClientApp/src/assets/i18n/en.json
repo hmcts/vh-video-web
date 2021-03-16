@@ -1002,7 +1002,7 @@
       "description": "If you are participating in a video hearing in any other capacity, select this option."
     },
     "next": "Next",
-    "error": "Error:",
-    "select-a-provider": "Select a provider to coninue"
+    "error-title": "There is a problem:",
+    "select-a-provider": "Select an account type to continue."
   }
 }

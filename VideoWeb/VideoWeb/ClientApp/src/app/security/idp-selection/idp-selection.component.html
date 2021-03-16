@@ -1,17 +1,28 @@
-<div class="govuk-!-margin-bottom-2 govuk-!-margin-top-2">
-    <h1 class="govuk-heading-xl">{{ 'idp-selection.title' | translate }}</h1>
+<div class="govuk-!-margin-bottom-2 govuk-!-margin-top-8">
     <form class="govuk-form-group" (ngSubmit)="onSubmit()">
-        <div [ngClass]="showError() ? 'govuk-form-group--error' : 'govuk-form-group'">
-            <div *ngIf="showError()" class="govuk-error-message">
-                <span class="govuk-visually-hidden">{{ 'idp-selection.error' | translate }}</span>
-                {{ 'idp-selection.select-a-provider' | translate }}
+        <div *ngIf="showError()" class="govuk-error-summary" aria-labelledby="error-summary-title" role="alert" tabindex="-1" data-module="govuk-error-summary">
+            <h2 class="govuk-error-summary__title" id="error-summary-title">
+              {{ 'idp-selection.error-title' | translate }}
+            </h2>
+            <div class="govuk-error-summary__body">
+              <ul class="govuk-list govuk-error-summary__list">
+                <li class="govuk-error-message">
+                  {{ 'idp-selection.select-a-provider' | translate }}
+                </li>
+              </ul>
             </div>
+          </div>
+        <div [ngClass]="showError() ? 'govuk-form-group--error' : 'govuk-form-group'">
             <fieldset class="govuk-fieldset">
                 <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-                    <label class="govuk-body" for="provider">
-                        {{ 'idp-selection.description' | translate }}
-                    </label>
+                    <h1 class="govuk-fieldset__heading">
+                        {{ 'idp-selection.title' | translate }}
+                      </h1>
                   </legend>
+                <div class="govuk-hint">
+                    {{ 'idp-selection.description' | translate }}
+                </div>
+                <span *ngIf="showError()"  class="govuk-error-message">{{ 'idp-selection.select-a-provider' | translate }}</span>
                 <div *ngFor="let provider of getProviders()" class="govuk-radios__item" (click)="selectProvider(provider);">
                     <input [id]="provider" class="govuk-radios__input" name="provider" type="radio" value="government-gateway" [attr.aria-describedby]="provider + '-item-hint'">
                     <label class="govuk-label govuk-radios__label" [attr.for]="provider">
