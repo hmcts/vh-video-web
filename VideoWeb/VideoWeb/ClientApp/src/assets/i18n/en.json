@@ -544,7 +544,8 @@
     "no-answer": "No Answer",
     "transferring": "Transferring",
     "not-available": "Not available",
-    "crest-icon-alt": "Crest"
+    "crest-icon-alt": "Crest",
+    "participants": "Participants"
   },
   "participants-panel": {
     "for": "for",

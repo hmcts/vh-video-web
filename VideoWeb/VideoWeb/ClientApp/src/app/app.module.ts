@@ -26,6 +26,8 @@ import { ConfigSettingsResolveService } from 'src/app/services/config-settings-r
 import { TranslateModule, TranslateLoader, MissingTranslationHandler } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { DisplayMissingTranslationHandler } from './shared/display-missing-translation-handler';
+import { registerLocaleData } from '@angular/common';
+import localeCy from '@angular/common/locales/cy';
 
 export function createTranslateLoader() {
     // We cant inject a httpClient because it has a race condition with adal
@@ -77,4 +79,8 @@ export function getSettings(configService: ConfigService) {
     ],
     bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule {
+    constructor() {
+        registerLocaleData(localeCy, 'cy');
+    }
+}
