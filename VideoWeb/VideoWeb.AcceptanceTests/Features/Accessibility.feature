@@ -140,3 +140,8 @@ Scenario: VHO Command Centre Messages Tab page accessibility
 	Given the Video Hearings Officer user has progressed to the VHO Hearing List page
   And the VHO selects the Messages tab
 	Then the page should be accessible 
+
+@Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
+Scenario: Account Type Selection page accessibility
+  Given a Participant is on the account type selection page
+  Then the page should be accessible
