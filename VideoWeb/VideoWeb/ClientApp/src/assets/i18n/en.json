@@ -982,5 +982,11 @@
       "message": "Your internet connection is poor. People may have trouble seeing and hearing you.",
       "dismiss": "Dismiss"
     }
+  },
+  "consultation-service": {
+    "judge-room": "Judge Room",
+    "judge-room-short": "Judge Room",
+    "meeting-room": "Meeting Room",
+    "meeting-room-short": "Room"
   }
 }

@@ -76,6 +76,7 @@ namespace VideoWeb.UnitTests.Controllers.EndpointController
         [TestCase("rep1@hmcts.net", 1)]
         [TestCase("john@hmcts.net", 2)]
         [TestCase("NoEndpointUser@hmcts.net", 0)]
+        [TestCase("judge@hmcts.net", 3)]
         public async Task Should_return_ok_with_linked_endpoints(string username, int expectedCount)
         {
             // Arrange

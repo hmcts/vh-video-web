@@ -1,5 +1,6 @@
 import { of, throwError } from 'rxjs';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { NotificationSoundsService } from 'src/app/waiting-space/services/notification-sounds.service';
 import {
@@ -45,7 +46,7 @@ describe('ConsultationService', () => {
         timeout = jasmine.createSpyObj<NodeJS.Timeout>('NodeJS.Timeout', ['ref', 'unref']);
         spyOn(global, 'setTimeout').and.returnValue(<any>timeout);
 
-        service = new ConsultationService(apiClient, modalService, notificationSoundsService, logger);
+        service = new ConsultationService(apiClient, modalService, notificationSoundsService, logger, translateServiceSpy);
 
         modalService.closeAll.calls.reset();
         modalService.open.calls.reset();
@@ -134,12 +135,6 @@ describe('ConsultationService', () => {
         const participant = conference.participants.filter(x => x.role === Role.Judge)[0];
         apiClient.startOrJoinConsultation.and.callFake(() => throwError(error));
 
-        const request = new StartPrivateConsultationRequest({
-            conference_id: conference.id,
-            requested_by: participant.id,
-            room_type: VirtualCourtRoomType.JudgeJOH
-        });
-
         await expectAsync(service.createParticipantConsultationRoom(conference, participant, ['pat1', 'pat2'], [])).toBeRejectedWith(error);
 
         expect(modalService.open).toHaveBeenCalledWith(ConsultationService.ERROR_PC_MODAL);
@@ -157,5 +152,87 @@ describe('ConsultationService', () => {
         await service.leaveConsultation(conference, participant);
 
         expect(apiClient.leaveConsultation).toHaveBeenCalledWith(request);
+    });
+
+    it('should return correct room name for participant consultation - long', async () => {
+        // Arrange
+        const roomLabel = 'ParticipantConsultationRoom67';
+
+        // Act
+        const result = service.consultationNameToString(roomLabel, false);
+
+        // Assert
+        expect(result).toBe('consultation-service.meeting-room 67');
+    });
+
+    it('should return correct room name for participant consultation - short', async () => {
+        // Arrange
+        const roomLabel = 'ParticipantConsultationRoom67';
+
+        // Act
+        const result = service.consultationNameToString(roomLabel, true);
+
+        // Assert
+        expect(result).toBe('consultation-service.meeting-room-short 67');
+    });
+
+    it('should return correct room name for joh consultation - short', async () => {
+        // Arrange
+        const roomLabel = 'JudgeJOHConsultationRoom112';
+
+        // Act
+        const result = service.consultationNameToString(roomLabel, true);
+
+        // Assert
+        expect(result).toBe('consultation-service.judge-room-short 112');
+    });
+
+    it('should return correct room name for joh consultation - long', async () => {
+        // Arrange
+        const roomLabel = 'JudgeJOHConsultationRoom112';
+
+        // Act
+        const result = service.consultationNameToString(roomLabel, false);
+
+        // Assert
+        expect(result).toBe('consultation-service.judge-room 112');
+    });
+
+    it('should return correct room name for vho consultation - long', async () => {
+        // Arrange
+        const roomLabel = 'ConsultationRoom123';
+
+        // Act
+        const result = service.consultationNameToString(roomLabel, false);
+
+        // Assert
+        expect(result).toBe('consultation-service.meeting-room 123');
+    });
+
+    it('should return correct room name for vho consultation - short', async () => {
+        // Arrange
+        const roomLabel = 'ConsultationRoom123';
+
+        // Act
+        const result = service.consultationNameToString(roomLabel, true);
+
+        // Assert
+        expect(result).toBe('consultation-service.meeting-room-short 123');
+    });
+
+    it('should return meeting room if null - short', async () => {
+        // Act
+        const result = service.consultationNameToString(null, true);
+
+        // Assert
+        expect(result).toBe('consultation-service.meeting-room-short');
+    });
+
+    it('should return meeting room if null - long', async () => {
+        // Act
+        const result = service.consultationNameToString(null, false);
+
+        // Assert
+        expect(result).toBe('consultation-service.meeting-room');
     });
 });
