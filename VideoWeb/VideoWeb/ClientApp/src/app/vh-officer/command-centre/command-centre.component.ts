@@ -209,7 +209,6 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         this.loadingData = reload;
         this.conferencesSubscription = this.queryService.getConferencesForVHOfficer(this.venueAllocations).subscribe(
             async (data: ConferenceForVhOfficerResponse[]) => {
-                console.log('calling get conferences');
                 this.hearings = data.map(c => {
                     const h = new HearingSummary(c);
                     h.isJoinByPhone = this.isJoinByPhone(h);
