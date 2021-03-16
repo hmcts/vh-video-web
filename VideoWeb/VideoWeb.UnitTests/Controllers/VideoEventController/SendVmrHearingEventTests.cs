@@ -44,6 +44,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             var roomId = 999;
             var participantId = TestConference.Participants.Last().Id;
             var request = CreateRequest();
+            request.EventType = EventType.Joined;
             request.ParticipantRoomId = roomId.ToString();
             request.ParticipantId = participantId.ToString();
             

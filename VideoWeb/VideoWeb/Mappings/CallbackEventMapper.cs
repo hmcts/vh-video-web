@@ -12,6 +12,14 @@ namespace VideoWeb.Mappings
     {
         public CallbackEvent Map(ConferenceEventRequest request, Conference conference)
         {
+            request.EventType = request.EventType switch
+            {
+                VideoApi.Contract.Enums.EventType.RoomParticipantJoined => VideoApi.Contract.Enums.EventType.Joined,
+                VideoApi.Contract.Enums.EventType.RoomParticipantDisconnected => VideoApi.Contract.Enums.EventType
+                    .Disconnected,
+                VideoApi.Contract.Enums.EventType.RoomParticipantTransfer => VideoApi.Contract.Enums.EventType.Transfer,
+                _ => request.EventType
+            };
             var eventType = Enum.Parse<EventType>(request.EventType.ToString());
             var conferenceId = Guid.Parse(request.ConferenceId);
             Guid.TryParse(request.ParticipantId, out var participantId);

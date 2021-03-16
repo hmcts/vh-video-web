@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Castle.Core.Internal;
 using Newtonsoft.Json;
+using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common.Models;
 
@@ -32,8 +33,34 @@ namespace VideoWeb.Extensions
                 var participantEventRequest = JsonConvert.DeserializeObject<ConferenceEventRequest>(json);
                 participantEventRequest.ParticipantId = p.ToString();
                 participantEventRequest.ParticipantRoomId = roomId.ToString();
+                participantEventRequest.EventType = request.EventType switch
+                {
+                    EventType.Joined when !participantEventRequest.ParticipantRoomId.IsNullOrEmpty() => EventType
+                        .RoomParticipantJoined,
+                    EventType.Disconnected when !participantEventRequest.ParticipantRoomId.IsNullOrEmpty() => EventType
+                        .RoomParticipantDisconnected,
+                    EventType.Transfer when !participantEventRequest.ParticipantRoomId.IsNullOrEmpty() => EventType
+                        .RoomParticipantTransfer,
+                    _ => participantEventRequest.EventType
+                };
+
                 return participantEventRequest;
             }).ToList();
+        }
+
+        public static ConferenceEventRequest UpdateEventTypeForVideoApi(this ConferenceEventRequest request)
+        {
+            request.EventType = request.EventType switch
+            {
+                EventType.Joined when !request.ParticipantRoomId.IsNullOrEmpty() => EventType
+                    .RoomParticipantJoined,
+                EventType.Disconnected when !request.ParticipantRoomId.IsNullOrEmpty() => EventType
+                    .RoomParticipantDisconnected,
+                EventType.Transfer when !request.ParticipantRoomId.IsNullOrEmpty() => EventType
+                    .RoomParticipantTransfer,
+                _ => request.EventType
+            };
+            return request;
         }
     }
 }
