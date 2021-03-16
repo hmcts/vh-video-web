@@ -1,10 +1,10 @@
-import { HttpClient, HttpClientModule, HttpXhrBackend, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClient, HttpClientModule, HttpXhrBackend, HTTP_INTERCEPTORS, HttpXhrBackend } from '@angular/common/http';
 import { APP_INITIALIZER, ErrorHandler, LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
-import { AdalGuard, AdalInterceptor, AdalService } from 'adal-angular4';
+import { AdalGuard, AdalService } from 'adal-angular4';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
@@ -28,6 +28,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { DisplayMissingTranslationHandler } from './shared/display-missing-translation-handler';
 import { registerLocaleData } from '@angular/common';
 import localeCy from '@angular/common/locales/cy';
+import { AuthConfigModule } from './auth-config.module';
 
 export function createTranslateLoader() {
     // We cant inject a httpClient because it has a race condition with adal
@@ -63,7 +64,8 @@ export function getLocale() {
                 provide: TranslateLoader,
                 useFactory: createTranslateLoader
             }
-        })
+        }),
+        AuthConfigModule
     ],
     providers: [
         { provide: APP_INITIALIZER, useFactory: getSettings, deps: [ConfigService], multi: true },
@@ -74,7 +76,7 @@ export function getLocale() {
         { provide: LOCALE_ID, useFactory: getLocale },
         AdalService,
         AdalGuard,
-        { provide: HTTP_INTERCEPTORS, useClass: AdalInterceptor, multi: true },
+        // { provide: HTTP_INTERCEPTORS, useClass: AdalInterceptor, multi: true },
         { provide: ErrorHandler, useClass: GlobalErrorHandler },
         ConfigService,
         AuthGuard,
