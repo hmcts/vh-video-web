@@ -8,13 +8,13 @@ using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using TestApi.Contract.Dtos;
+using VideoWeb.AcceptanceTests.Pages;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
     [Binding]
     public sealed class LoginSteps : ISteps
     {
-        private const int ReachedThePageRetries = 2;
         private LoginSharedSteps _loginSharedSteps;
         private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
@@ -29,6 +29,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ProgressToNextPage()
         {
             if (_c.VideoWebConfig.TestConfig.TargetBrowser == TargetBrowser.Ie11) return;
+            _browsers[_c.CurrentUser].ClickRadioButton(AccountTypeSelectionPage.HearingParticipantRadioButton);
+            _browsers[_c.CurrentUser].Click(AccountTypeSelectionPage.NextButton);
             _loginSharedSteps = new LoginSharedSteps(_browsers[_c.CurrentUser], _c.CurrentUser.Username, _c.VideoWebConfig.TestConfig.TestUserPassword);
             _loginSharedSteps.ProgressToNextPage();
         }
@@ -39,7 +41,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].ClickLink(CommonPages.SignOutLink);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(CommonPages.SignOutMessage).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].ClickLink(CommonPages.SignInLink);
-            _browsers[_c.CurrentUser].Retry(() => _browsers[_c.CurrentUser].Driver.Title.Trim().Should().Be(LoginPage.SignInTitle), ReachedThePageRetries);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AccountTypeSelectionPage.Heading).Text.Trim().Should().Be(AccountTypeSelectionPage.HeadingText);
         }
 
         [Then(@"the sign out link is displayed")]

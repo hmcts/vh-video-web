@@ -1,5 +1,5 @@
 import { HttpClient, HttpClientModule, HttpXhrBackend, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
+import { APP_INITIALIZER, ErrorHandler, LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -40,6 +40,11 @@ export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
 }
 
+export function getLocale() {
+    const language = localStorage.getItem('language') ?? 'en';
+    return language === 'tl' ? 'cy' : language;
+}
+
 @NgModule({
     declarations: [AppComponent, HomeComponent],
     imports: [
@@ -66,6 +71,7 @@ export function getSettings(configService: ConfigService) {
         { provide: LOG_ADAPTER, useClass: ConsoleLogger, multi: true },
         { provide: LOG_ADAPTER, useClass: AppInsightsLoggerService, multi: true, deps: [ConfigService, Router, AdalService] },
         { provide: API_BASE_URL, useFactory: () => '.' },
+        { provide: LOCALE_ID, useFactory: getLocale },
         AdalService,
         AdalGuard,
         { provide: HTTP_INTERCEPTORS, useClass: AdalInterceptor, multi: true },
