@@ -1,13 +1,3 @@
-/*
-  Before the router is loaded, the page will be white.
-  To avoid this looking strange, we add in a padding that matches nicely with the page to be loaded.
-*/
-@media screen {
-  .pad-unactivated-router {
-    min-height: calc(90vh);
-  }
-}
-
 .govuk-main-wrapper {
   outline: none;
   padding: 0px;

@@ -1,4 +1,5 @@
 import { Router } from '@angular/router';
+import { pageUrls } from '../shared/page-url.constants';
 import { MockAdalService } from '../testing/mocks/MockAdalService';
 import { AuthGuard } from './auth.guard';
 
@@ -28,7 +29,7 @@ describe('authguard', () => {
         it('canActivate should return false', () => {
             adalSvc.setAuthenticated(false);
             expect(authGuard.canActivate()).toBeFalsy();
-            expect(router.navigate).toHaveBeenCalledWith(['/login']);
+            expect(router.navigate).toHaveBeenCalledWith([`/${pageUrls.IdpSelection}`]);
         });
     });
 });
