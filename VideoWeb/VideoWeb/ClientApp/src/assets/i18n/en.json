@@ -485,6 +485,7 @@
     "date": "Date",
     "case-number": "case number",
     "please-wait": "Please wait",
+    "please-wait-while-we-connect-you": "Please wait while we connect you...",
     "hearing-starting-at": "Your video hearing is scheduled to begin at",
     "hearing-status-messages": {
       "starting-title": "Please stay near your screen",
@@ -511,7 +512,8 @@
       "guide4": "If you wish to have a private conversation during the hearing you'll need to ask the judge's permission."
     },
     "vh-team": "Video hearings team: {{phone}}",
-    "individual-participant-status-list-label": "list of participants in hearing"
+    "individual-participant-status-list-label": "list of participants in hearing",
+    "warning": "Warning"
   },
   "invite-participant": {
     "invite-this-person": "Invite this person to the meeting"
