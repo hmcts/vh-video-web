@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Autofac;
 using Autofac.Extras.Moq;
 using FizzWare.NBuilder;
 using FluentAssertions;
@@ -21,6 +23,7 @@ using VideoWeb.Mappings.Requests;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
+using VideoWeb.Services;
 using VideoWeb.UnitTests.Builders;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;
 
@@ -38,7 +41,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _mocker = AutoMock.GetLoose();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
 
-            _testConference = ConsultationHelper.BuildConferenceForTest();
+            _testConference = new ConferenceCacheModelBuilder().WithLinkedParticipantsInRoom().Build();
 
             var context = new ControllerContext
             {
@@ -89,18 +92,17 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         public async Task Should_return_no_content_when_request_is_sent()
         {
             // Arrange
-            
+            var request = ConsultationHelper.GetConsultationRequest(_testConference);
             // Act
             var result =
-                await _controller.RespondToConsultationRequestAsync(
-                    ConsultationHelper.GetConsultationRequest(_testConference));
+                await _controller.RespondToConsultationRequestAsync(request);
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
-            _mocker.Mock<IEventHubClient>().Verify(
-                x => x.ConsultationRequestResponseMessage
-                    (It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<ConsultationAnswer>()),
-                Times.Exactly(_testConference.Participants.Count));
+            _mocker.Mock<IConsultationNotifier>()
+                .Verify(
+                    x => x.NotifyConsultationResponseAsync(_testConference, request.RoomLabel,
+                        request.RequestedForId, request.Answer), Times.Once);
         }
 
         [Test]
@@ -157,10 +159,12 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
-            _mocker.Mock<IEventHubClient>().Verify(x => x.ConsultationRequestResponseMessage(_testConference.Id, consultationRequest.RoomLabel, consultationRequest.RequestedForId, consultationRequest.Answer),
-                Times.Exactly(_testConference.Participants.Count));
+            _mocker.Mock<IConsultationNotifier>()
+                .Verify(
+                    x => x.NotifyConsultationResponseAsync(_testConference, consultationRequest.RoomLabel,
+                        consultationRequest.RequestedForId, consultationRequest.Answer), Times.Once);
         }
-
+        
         [Test]
         public void Should_throw_InvalidOperationException_two_participants_with_the_same_requeste_by_found()
         {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using FizzWare.NBuilder;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Enums;
@@ -53,10 +54,12 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
         public static PrivateConsultationRequest GetConsultationRequest(Conference conference)
         {
+            var participantsWithoutLinked =
+                conference.Participants.Where(x => !x.IsJudge() && !x.LinkedParticipants.Any()).ToList();
             return Builder<PrivateConsultationRequest>.CreateNew()
                 .With(x => x.ConferenceId = conference.Id)
-                .With(x => x.RequestedById = conference.Participants[1].Id)
-                .With(x => x.RequestedForId = conference.Participants[2].Id)
+                .With(x => x.RequestedById = participantsWithoutLinked[0].Id)
+                .With(x => x.RequestedForId = participantsWithoutLinked[1].Id)
                 .With(x => x.RoomLabel = "RoomLabel")
                 .With(x => x.Answer = ConsultationAnswer.None)
                 .Build();

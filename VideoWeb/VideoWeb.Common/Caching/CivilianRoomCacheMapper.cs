@@ -11,7 +11,7 @@ namespace VideoWeb.Common.Caching
             {
                 Id = civilianRoom.Id,
                 RoomLabel = civilianRoom.Label,
-                Participants = civilianRoom.Participants
+                Participants = civilianRoom.Participants,
             };
         }
     }
