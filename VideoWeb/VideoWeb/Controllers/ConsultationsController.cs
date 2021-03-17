@@ -257,7 +257,7 @@ namespace VideoWeb.Controllers
                 await _videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
                 {
                     ConferenceId = request.ConferenceId,
-                    DefenceAdvocateId = requestedBy.Id,
+                    RequestedById = requestedBy.Id,
                     EndpointId = request.EndpointId,
                     RoomLabel = request.RoomLabel
                 });
