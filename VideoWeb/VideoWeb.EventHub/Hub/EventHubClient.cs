@@ -198,7 +198,7 @@ namespace VideoWeb.EventHub.Hub
             if (isSenderAdmin)
             {
                 _logger.LogDebug("Admin has responded, notifying admin channel");
-                await Clients.Group(VhOfficersGroupName).AdminAnsweredChat(conferenceId, participantTo.ToLower());
+                await Clients.Group(VhOfficersGroupName).AdminAnsweredChat(conferenceId, to);
             }
         }
 
