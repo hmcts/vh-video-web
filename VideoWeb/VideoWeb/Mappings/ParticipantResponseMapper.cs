@@ -42,6 +42,7 @@ namespace VideoWeb.Mappings
                 LastName = participant.LastName,
                 HearingRole = participant.HearingRole,
                 CurrentRoom = _roomResponseMapper.Map(participant.CurrentRoom),
+                InterpreterRoom = _roomResponseMapper.Map(participant.CurrentInterpreterRoom),
                 LinkedParticipants = links
             };
 

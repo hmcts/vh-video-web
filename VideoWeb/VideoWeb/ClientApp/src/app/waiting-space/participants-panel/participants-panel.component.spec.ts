@@ -118,13 +118,13 @@ describe('ParticipantsPanelComponent', () => {
         component.setupEventhubSubscribers();
         const status = ParticipantStatus.InConsultation;
         const linkedParticipant = participants.filter(
-            x => x.role === Role.Individual && x.linked_participants.length > 0 && x.current_room
+            x => x.role === Role.Individual && x.linked_participants.length > 0 && x.interpreter_room
         )[0];
         const message = new ParticipantStatusMessage(linkedParticipant.id, '', conferenceId, status);
 
         participantStatusSubjectMock.next(message);
 
-        const updatedPat = component.participants.find(x => x.id === linkedParticipant.current_room.id);
+        const updatedPat = component.participants.find(x => x.id === linkedParticipant.interpreter_room.id);
         expect(updatedPat).toBeInstanceOf(LinkedParticipantPanelModel);
         const updatedLinked = updatedPat as LinkedParticipantPanelModel;
         expect(updatedLinked.isInConsultation()).toBe(true);

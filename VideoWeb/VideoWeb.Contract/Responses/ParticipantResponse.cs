@@ -70,6 +70,11 @@ namespace VideoWeb.Contract.Responses
         public RoomSummaryResponse CurrentRoom { get; set; }
         
         /// <summary>
+        /// Current interpreter room
+        /// </summary>
+        public RoomSummaryResponse InterpreterRoom { get; set; }
+        
+        /// <summary>
         /// List of participants linked this participant
         /// </summary>
         public List<LinkedParticipantResponse> LinkedParticipants { get; set; }
