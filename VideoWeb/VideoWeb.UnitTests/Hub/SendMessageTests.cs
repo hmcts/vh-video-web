@@ -146,7 +146,6 @@ namespace VideoWeb.UnitTests.Hub
                 .Build();
             UpdateUserIdentity(claims);
 
-
             var fromUsername = AdminUsername;
             var toJudgeId = JudgeParticipantId;
             var toUsername = JudgeUsername;
@@ -158,7 +157,7 @@ namespace VideoWeb.UnitTests.Hub
             AssertMessageSentToHub(fromUsername, toJudgeId.ToString(), message, messageUuid, JudgeGroupChannel);
             AssertMessageSentStatusToApi(fromUsername, toUsername, message, Times.Once());
 
-            AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id, JudgeUsername), Times.Once);
+            AdminGroupChannel.Verify(x => x.AdminAnsweredChat(Conference.Id, toJudgeId.ToString()), Times.Once);
         }
 
         [Test]
