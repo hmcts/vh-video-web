@@ -13,7 +13,7 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="3.1.10" />
     <PackageReference Include="System.Text.Json" Version="4.7.1" />
     <PackageReference Include="UserApi.Client" Version="1.24.2" />
-    <PackageReference Include="VideoApi.Client" Version="1.23.51" />
+    <PackageReference Include="VideoApi.Client" Version="1.23.56-pullrequest0368-0002" />
   </ItemGroup>
 
   <ItemGroup>
