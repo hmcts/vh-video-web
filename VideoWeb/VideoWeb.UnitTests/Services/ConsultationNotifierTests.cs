@@ -1,0 +1,196 @@
+using System.Linq;
+using System.Threading.Tasks;
+using Autofac;
+using Autofac.Extras.Moq;
+using Microsoft.AspNetCore.SignalR;
+using Moq;
+using NUnit.Framework;
+using VideoWeb.Common.Models;
+using VideoWeb.EventHub.Hub;
+using VideoWeb.EventHub.Models;
+using VideoWeb.Services;
+using VideoWeb.UnitTests.Builders;
+
+namespace VideoWeb.UnitTests.Services
+{
+    public class ConsultationNotifierTests
+    {
+        private AutoMock _mocker;
+        private Conference _conference;
+        private ConsultationNotifier _sut;
+        private IConsultationResponseTracker _consultationResponseTracker;
+
+        [SetUp]
+        public void Setup()
+        {
+            _conference = new ConferenceCacheModelBuilder().WithLinkedParticipantsInRoom().Build();
+
+            _consultationResponseTracker = new ConsultationResponseTracker();
+            _conference = new ConferenceCacheModelBuilder().WithLinkedParticipantsInRoom().Build();
+            _mocker = AutoMock.GetLoose(builder =>
+            {
+                builder.RegisterInstance(_consultationResponseTracker).As<IConsultationResponseTracker>();
+            });
+
+            _mocker.Mock<IHubClients<IEventHubClient>>().Setup(x => x.Group(It.IsAny<string>()))
+                .Returns(_mocker.Mock<IEventHubClient>().Object);
+            _mocker.Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>().Setup(x => x.Clients)
+                .Returns(_mocker.Mock<IHubClients<IEventHubClient>>().Object);
+
+            _sut = _mocker.Create<ConsultationNotifier>();
+        }
+
+        [Test]
+        public void should_update_all_participants_on_room_updates()
+        {
+            // arrange
+            var room = new Room {Label = "Consultation2", Locked = true, ConferenceId = _conference.Id};
+            
+            // act
+            _sut.NotifyRoomUpdateAsync(_conference, room);
+            
+            // assert
+            _mocker.Mock<IEventHubClient>()
+                .Verify(
+                    x => x.RoomUpdate(It.Is<Room>(r =>
+                        r.Locked == room.Locked && r.Label == room.Label && r.ConferenceId == room.ConferenceId)),
+                    Times.Exactly(_conference.Participants.Count));
+        }
+
+        [Test]
+        public void should_notify_participant_of_consultation_request()
+        {
+            // arrange
+            var allNonJudgeAndNonLinkedParticipants = _conference.Participants
+                .Where(x => !x.IsJudge() && !x.LinkedParticipants.Any()).ToList();
+            var roomLabel = "ConsultationRoom1";
+            var requestedFor = allNonJudgeAndNonLinkedParticipants[0];
+            var requestedBy = allNonJudgeAndNonLinkedParticipants[1];
+
+            // act
+            _sut.NotifyConsultationRequestAsync(_conference, roomLabel, requestedBy.Id, requestedFor.Id);
+            
+            // assert
+            _mocker.Mock<IEventHubClient>().Verify(
+                x => x.RequestedConsultationMessage(_conference.Id, roomLabel, requestedBy.Id, requestedFor.Id),
+                Times.Exactly(_conference.Participants.Count));
+        }
+        
+        [Test]
+        public void should_notify_participant_and_linked_participants_of_consultation_request()
+        {
+            // arrange
+            var allNonJudgeAndNonLinkedParticipants = _conference.Participants
+                .Where(x => !x.IsJudge() && !x.LinkedParticipants.Any()).ToList();
+            var linkedParticipant = _conference.Participants.First(x => !x.IsJudge() && x.LinkedParticipants.Any());
+            var linked = _conference.Participants
+                .Where(p => linkedParticipant.LinkedParticipants.Select(x => x.LinkedId).Contains(p.Id)).ToList();
+            var roomLabel = "ConsultationRoom1";
+            var requestedFor = linkedParticipant;
+            var requestedBy = allNonJudgeAndNonLinkedParticipants[0];
+
+            // act
+            _sut.NotifyConsultationRequestAsync(_conference, roomLabel, requestedBy.Id, requestedFor.Id);
+            
+            // assert
+            _mocker.Mock<IEventHubClient>().Verify(
+                x => x.RequestedConsultationMessage(_conference.Id, roomLabel, requestedBy.Id, requestedFor.Id),
+                Times.Exactly(_conference.Participants.Count));
+            
+            foreach (var lp in linked)
+            {
+                _mocker.Mock<IEventHubClient>().Verify(
+                    x => x.RequestedConsultationMessage(_conference.Id, roomLabel, requestedBy.Id, lp.Id),
+                    Times.Exactly(_conference.Participants.Count));
+            }
+        }
+        
+        [TestCase(ConsultationAnswer.None)]
+        [TestCase(ConsultationAnswer.Accepted)]
+        [TestCase(ConsultationAnswer.Rejected)]
+        public async Task should_send_message_to_other_party_when_participant_responds(ConsultationAnswer answer)
+        {
+            // arrange
+            var allNonJudgeAndNonLinkedParticipants = _conference.Participants
+                .Where(x => !x.IsJudge() && !x.LinkedParticipants.Any()).ToList();
+            var roomLabel = "ConsultationRoom1";
+            var requestedFor = allNonJudgeAndNonLinkedParticipants[0];
+
+            // act
+            await _sut.NotifyConsultationResponseAsync(_conference, roomLabel, requestedFor.Id, answer);
+
+            // assert
+            _mocker.Mock<IEventHubClient>().Verify(
+                x => x.ConsultationRequestResponseMessage(_conference.Id, roomLabel, requestedFor.Id, answer),
+                Times.Exactly(_conference.Participants.Count));
+        }
+
+        [Test]
+        public async Task should_not_send_message_to_other_party_when_not_all_linked_participant_respond()
+        {
+            // arrange
+            var linkedParticipant = _conference.Participants.First(x => !x.IsJudge() && x.LinkedParticipants.Any());
+            var roomLabel = "ConsultationRoom1";
+            var answer = ConsultationAnswer.Accepted;
+
+            // act
+            await _sut.NotifyConsultationResponseAsync(_conference, roomLabel, linkedParticipant.Id, answer);
+
+            // assert
+            _mocker.Mock<IEventHubClient>().Verify(
+                x => x.ConsultationRequestResponseMessage(_conference.Id, roomLabel, linkedParticipant.Id, answer),
+                Times.Never);
+        }
+
+        [Test]
+        public async Task should_send_message_to_other_party_when_all_linked_participant_respond_accept()
+        {
+            // arrange
+            var linkedParticipant = _conference.Participants.First(x => !x.IsJudge() && x.LinkedParticipants.Any());
+            var linked = _conference.Participants
+                .Where(p => linkedParticipant.LinkedParticipants.Select(x => x.LinkedId).Contains(p.Id)).ToList();
+            var roomLabel = "ConsultationRoom1";
+            var answer = ConsultationAnswer.Accepted;
+
+            foreach (var lParticipant in linked)
+            {
+                _consultationResponseTracker.UpdateConsultationResponse(_conference, lParticipant.Id,
+                    ConsultationAnswer.Accepted);
+            }
+
+            // act
+            await _sut.NotifyConsultationResponseAsync(_conference, roomLabel, linkedParticipant.Id, answer);
+
+            // assert
+            _mocker.Mock<IEventHubClient>()
+                .Verify(
+                    x => x.ConsultationRequestResponseMessage(_conference.Id, roomLabel, linkedParticipant.Id, answer),
+                    Times.Exactly(_conference.Participants.Count));
+
+            foreach (var lParticipant in linked)
+            {
+                _mocker.Mock<IEventHubClient>().Verify(
+                    x => x.ConsultationRequestResponseMessage(_conference.Id, roomLabel,
+                        lParticipant.Id, answer),
+                    Times.Exactly(_conference.Participants.Count));
+            }
+        }
+
+        [Test]
+        public async Task should_notify_endpoint_transferring()
+        {
+            // arrange
+            var roomLabel = "ConsultationRoom1";
+            var endpoint = _conference.Endpoints.First();
+            
+            // act
+            await _sut.NotifyConsultationResponseAsync(_conference, roomLabel, endpoint.Id, ConsultationAnswer.Transferring);
+            
+            // assert
+            _mocker.Mock<IEventHubClient>()
+                .Verify(
+                    x => x.ConsultationRequestResponseMessage(_conference.Id, roomLabel, endpoint.Id, ConsultationAnswer.Transferring),
+                    Times.Exactly(_conference.Participants.Count));
+        }
+    }
+}
