@@ -2,7 +2,13 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConsultationAnswer, ParticipantResponse, ParticipantStatus, VideoEndpointResponse } from 'src/app/services/clients/api-client';
+import {
+    ConsultationAnswer,
+    LinkType,
+    ParticipantResponse,
+    ParticipantStatus,
+    VideoEndpointResponse
+} from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-participant-list-shared.component';
@@ -112,9 +118,18 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         if (this.roomLabel?.toLowerCase().includes('judgejohconsultationroom')) {
             return this.participantsInConsultation;
         } else {
-            return this.participantsInConsultation.filter(
-                p => p.hearing_role !== HearingRole.WITNESS && p.hearing_role !== HearingRole.OBSERVER
-            );
+            return this.participantsInConsultation
+                .filter(p => p.hearing_role !== HearingRole.WITNESS && p.hearing_role !== HearingRole.OBSERVER)
+                .filter(p => p.hearing_role !== HearingRole.INTERPRETER)
+                .map(p => {
+                    const interpreterLink = p.linked_participants.find(x => x.link_type === LinkType.Interpreter);
+                    // TODO (phill) type this properly
+                    const participant: any = { ...p };
+                    if (p.linked_participants && interpreterLink) {
+                        participant.interpreter = this.participantsInConsultation.find(x => x.id === interpreterLink.linked_id);
+                    }
+                    return participant;
+                });
         }
     }
 

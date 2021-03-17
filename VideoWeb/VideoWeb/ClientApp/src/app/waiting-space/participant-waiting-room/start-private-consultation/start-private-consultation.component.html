@@ -1,51 +1,82 @@
 <!-- The Modal -->
-<div id="start-private-consultation-modal" class="modal">
+<div id="start-private-consultation-modal"
+  class="modal">
   <!-- Modal content -->
   <div class="modal-content">
     <div class="govuk-width-container">
-      <h2 class="govuk-heading-l govuk-!-margin-top-6 govuk-!-margin-bottom-6">{{'start-private-consultation.invite' | translate}}</h2>
+      <h2 class="govuk-heading-l govuk-!-margin-top-6 govuk-!-margin-bottom-6">{{'start-private-consultation.invite' |
+        translate}}</h2>
       <div class="govuk-warning-text">
-        <span aria-hidden="true" class="govuk-warning-text__icon">!</span>
+        <span aria-hidden="true"
+          class="govuk-warning-text__icon">!</span>
         <span class="govuk-warning-text__text">
-            <span class="govuk-warning-text__assistive">{{'start-private-consultation.warning' | translate}}</span> {{'start-private-consultation.confidential-declaration' | translate}}
+          <span class="govuk-warning-text__assistive">{{'start-private-consultation.warning' | translate}}</span>
+          {{'start-private-consultation.confidential-declaration' | translate}}
         </span>
       </div>
       <div class="vh-scroll-wrap">
-        <div *ngFor="let participant of participants" class="govuk-checkboxes--small govuk-checkboxes__item">
-          <input class="govuk-checkboxes__input" id="{{participant.id}}" name="{{participant.id}}" type="checkbox"
-            [checked]="participantSelected(participant.id)" [disabled]="getParticipantDisabled(participant)"
-            (change)="toggleParticipant(participant.id)" />
-          <label class="govuk-label govuk-checkboxes__label" for="{{participant.id}}">
-            <span class="govuk-!-font-weight-bold">{{participant.display_name}}</span>
-            {{participantHearingRoleText(participant)}}
-            <br />
-            <label id="p-{{ participant.id }}-status-participant"
-              class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
-              [innerHTML]="getParticipantStatus(participant)">
-            </label>
-          </label>
-        </div>
-        <div *ngFor="let endpoint of allowedFilter(endpoints)" class="govuk-checkboxes--small govuk-checkboxes__item">
-          <input class="govuk-checkboxes__input" id="{{endpoint.id}}" name="{{endpoint.id}}" type="checkbox"
-            [checked]="endpointSelected(endpoint.id)" [disabled]="getEndpointDisabled(endpoint)"
-            (change)="toggleEndpoint(endpoint.id)" />
-          <label class="govuk-label govuk-checkboxes__label" for="{{endpoint.id}}">
-              <span class="govuk-!-font-weight-bold">{{endpoint.display_name}}</span>
-              {{'start-private-consultation.video-access-point' | translate}}
-              <br />
-              <label id="p-{{ endpoint.id }}-status-participant"
-                     class="govuk-body-s label-status label-status--{{ getEndpointStatusCss(endpoint) }}"
-                     [innerHTML]="getEndpointStatus(endpoint)">
+
+        <ng-container *ngFor="let participant of filteredParticipants; trackBy: trackParticipant">
+          <div class="govuk-checkboxes--small govuk-checkboxes__item">
+            <input class="govuk-checkboxes__input"
+              id="{{participant.id}}"
+              name="{{participant.id}}"
+              type="checkbox"
+              [checked]="participantSelected(participant.id)"
+              [disabled]="getParticipantDisabled(participant)"
+              (change)="toggleParticipant(participant.id)" />
+            <label class="govuk-label govuk-checkboxes__label"
+              for="{{participant.id}}">
+              <span class="govuk-!-font-weight-bold">{{participant.display_name}}</span>
+              {{participantHearingRoleText(participant)}}
+              <br>
+              <ng-container class="interpreter"
+                *ngIf="participant.interpreter">
+                <span class="govuk-!-font-weight-bold">{{participant.interpreter.display_name}}</span>
+                {{participantHearingRoleText(participant.interpreter)}} for {{participant.display_name}}
+                <br>
+              </ng-container>
+              <label id="p-{{ participant.id }}-status-participant"
+                class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
+                [innerHTML]="getParticipantStatus(participant)">
               </label>
+            </label>
+          </div>
+
+        </ng-container>
+
+        <div *ngFor="let endpoint of allowedFilter(endpoints)"
+          class="govuk-checkboxes--small govuk-checkboxes__item">
+          <input class="govuk-checkboxes__input"
+            id="{{endpoint.id}}"
+            name="{{endpoint.id}}"
+            type="checkbox"
+            [checked]="endpointSelected(endpoint.id)"
+            [disabled]="getEndpointDisabled(endpoint)"
+            (change)="toggleEndpoint(endpoint.id)" />
+          <label class="govuk-label govuk-checkboxes__label"
+            for="{{endpoint.id}}">
+            <span class="govuk-!-font-weight-bold">{{endpoint.display_name}}</span>
+            {{'start-private-consultation.video-access-point' | translate}}
+            <br>
+            <label id="p-{{ endpoint.id }}-status-participant"
+              class="govuk-body-s label-status label-status--{{ getEndpointStatusCss(endpoint) }}"
+              [innerHTML]="getEndpointStatus(endpoint)">
+            </label>
           </label>
         </div>
       </div>
       <div class="buttons">
-        <button id="continue-btn" class="govuk-button govuk-!-margin-right-5" data-module="govuk-button"
-          [disabled]="(selectedParticipants.length+selectedEndpoints.length)===0" (click)="onContinue()">
+        <button id="continue-btn"
+          class="govuk-button govuk-!-margin-right-5"
+          data-module="govuk-button"
+          [disabled]="(selectedParticipants.length+selectedEndpoints.length)===0"
+          (click)="onContinue()">
           {{'start-private-consultation.continue' | translate}}
         </button>
-        <button id="cancel-btn" class="govuk-button govuk-button--secondary" data-module="govuk-button"
+        <button id="cancel-btn"
+          class="govuk-button govuk-button--secondary"
+          data-module="govuk-button"
           (click)="onCancel()">
           {{'start-private-consultation.close' | translate}}
         </button>

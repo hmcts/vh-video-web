@@ -1,13 +1,20 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, SimpleChange, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import {
     AllowedEndpointResponse,
     EndpointStatus,
+    LinkType,
     ParticipantResponse,
     ParticipantStatus,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
+import { HearingRole } from '../../models/hearing-role-model';
+
+interface ParticipantListItem extends Omit<ParticipantResponse, 'init' | 'toJSON'> {
+    interpreter?: ParticipantResponse;
+}
+
 @Component({
     selector: 'app-start-private-consultation',
     templateUrl: './start-private-consultation.component.html',
@@ -17,11 +24,20 @@ export class StartPrivateConsultationComponent {
     selectedParticipants = Array<string>();
     selectedEndpoints = Array<string>();
     @Input() participants: ParticipantResponse[];
+
+    filteredParticipants: ParticipantListItem[] = [];
+
     @Input() allowedEndpoints: AllowedEndpointResponse[];
     @Input() endpoints: VideoEndpointResponse[];
     @Output() continue = new EventEmitter<{ participants: string[]; endpoints: string[] }>();
     @Output() cancel = new EventEmitter();
     constructor(private translateService: TranslateService, private consultationService: ConsultationService) {}
+
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.participants) {
+            this.filteredParticipants = this.mapParticipants(changes.participants.currentValue);
+        }
+    }
 
     participantHearingRoleText(participant: ParticipantResponse): string {
         const translatedtext = this.translateService.instant('start-private-consultation.for');
@@ -126,5 +142,22 @@ export class StartPrivateConsultationComponent {
                 (endpoint.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
             );
         }
+    }
+
+    trackParticipant(index: number, item: ParticipantListItem) {
+        return item.status;
+    }
+
+    private mapParticipants(participantResponses: ParticipantResponse[]): ParticipantListItem[] {
+        return participantResponses
+            .filter(p => p.hearing_role !== HearingRole.INTERPRETER && p.hearing_role !== HearingRole.MACKENZIE_FRIEND)
+            .map(p => {
+                const interpreterLink = p.linked_participants.find(x => x.link_type === LinkType.Interpreter);
+                const participant: ParticipantListItem = { ...p };
+                if (p.linked_participants && interpreterLink) {
+                    participant.interpreter = participantResponses.find(x => x.id === interpreterLink.linked_id);
+                }
+                return participant;
+            });
     }
 }
