@@ -42,7 +42,7 @@ namespace VideoWeb.UnitTests.Hub
                 var linkedPat = conference.Participants.Single(p => p.Id == lp.LinkedId);
                 EventHubClientMock.Verify(
                     x => x.Group(linkedPat.Username.ToLowerInvariant())
-                        .ParticipantHandRaiseMessage(participant.Id, conference.Id, handRaised), Times.Once);
+                        .ParticipantHandRaiseMessage(lp.LinkedId, conference.Id, handRaised), Times.Once);
             }
         }
 
