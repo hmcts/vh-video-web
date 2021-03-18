@@ -3,15 +3,17 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { HearingLayout } from 'src/app/services/clients/api-client';
 import { SelectHearingLayoutComponent } from './select-hearing-layout.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
 describe('SelectHearingLayoutComponent', () => {
     let component: SelectHearingLayoutComponent;
     const videoCallService = videoCallServiceSpy;
     let conference: ConferenceResponse;
+    const translateService = translateServiceSpy;
 
     beforeEach(() => {
         conference = new ConferenceTestData().getConferenceDetailNow();
-        component = new SelectHearingLayoutComponent(videoCallService);
+        component = new SelectHearingLayoutComponent(videoCallService, translateService);
         component.conference = conference;
         (<any>window).GOVUKFrontend = { initAll() {} };
     });
