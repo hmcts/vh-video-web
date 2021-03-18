@@ -14,6 +14,7 @@
     {{ participant.displayName }}
   </div>
 
+  <span *ngIf="participant.isInterpreterOrInterpretee" class="vh-interpreter-icon"><span class="far fa-1x fa-language"></span></span>
   <ng-container *ngIf="participant.role === roles.Representative">
     <div class="rep list-item">{{'admin-im-list.representing' | translate}}</div>
     <div class="repname list-item">{{ participant.representee }}</div>

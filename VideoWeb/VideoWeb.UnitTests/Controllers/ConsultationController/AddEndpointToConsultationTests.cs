@@ -100,7 +100,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             // Assert
             result.Should().BeOfType<AcceptedResult>();
 
-            _mocker.Mock<IVideoApiClient>().Verify(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r => r.EndpointId == request.EndpointId && r.ConferenceId == request.ConferenceId && r.DefenceAdvocateId == _testConference.Participants[1].Id)), Times.Once);
+            _mocker.Mock<IVideoApiClient>().Verify(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r => r.EndpointId == request.EndpointId && r.ConferenceId == request.ConferenceId && r.RequestedById == _testConference.Participants[1].Id)), Times.Once);
             _mocker.Mock<IEventHubClient>().Verify(x => x.ConsultationRequestResponseMessage(_testConference.Id, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring), Times.Exactly(_testConference.Participants.Count));
         }
 
@@ -117,7 +117,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             };
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id", null, default, null);
-            _mocker.Mock<IVideoApiClient>().Setup(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r => r.EndpointId == request.EndpointId && r.ConferenceId == request.ConferenceId && r.DefenceAdvocateId == _testConference.Participants[1].Id)))
+            _mocker.Mock<IVideoApiClient>().Setup(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r => r.EndpointId == request.EndpointId && r.ConferenceId == request.ConferenceId && r.RequestedById == _testConference.Participants[1].Id)))
                 .Throws(apiException);
 
             // Act
@@ -128,7 +128,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var statusCodeResult = result as StatusCodeResult;
             statusCodeResult.StatusCode.Should().Be(apiException.StatusCode);
 
-            _mocker.Mock<IVideoApiClient>().Verify(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r => r.EndpointId == request.EndpointId && r.ConferenceId == request.ConferenceId && r.DefenceAdvocateId == _testConference.Participants[1].Id)), Times.Once);
+            _mocker.Mock<IVideoApiClient>().Verify(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r => r.EndpointId == request.EndpointId && r.ConferenceId == request.ConferenceId && r.RequestedById == _testConference.Participants[1].Id)), Times.Once);
             _mocker.Mock<IEventHubClient>().Verify(x => x.ConsultationRequestResponseMessage(_testConference.Id, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring), Times.Exactly(_testConference.Participants.Count));
             _mocker.Mock<IEventHubClient>().Verify(x => x.ConsultationRequestResponseMessage(_testConference.Id, request.RoomLabel, request.EndpointId, ConsultationAnswer.Failed), Times.Exactly(_testConference.Participants.Count));
         }

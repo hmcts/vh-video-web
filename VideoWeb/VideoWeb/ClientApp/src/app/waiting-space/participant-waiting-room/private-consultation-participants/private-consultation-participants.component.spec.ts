@@ -28,7 +28,6 @@ import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { PrivateConsultationParticipantsComponent } from './private-consultation-participants.component';
 import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { globalConference, globalParticipant } from '../../waiting-room-shared/tests/waiting-room-base-setup';
 import { HearingRole } from '../../models/hearing-role-model';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 
@@ -50,7 +49,6 @@ describe('PrivateConsultationParticipantsComponent', () => {
         adalService = mockAdalService;
 
         consultationService = consultationServiceSpyFactory();
-
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
 
@@ -58,6 +56,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
     });
 
     beforeEach(() => {
+        consultationService.consultationNameToString.calls.reset();
         conference = new ConferenceTestData().getConferenceDetailFuture();
         conference.participants.forEach(p => {
             p.status = ParticipantStatus.Available;
@@ -314,7 +313,8 @@ describe('PrivateConsultationParticipantsComponent', () => {
         const result = component.getParticipantStatus(participant);
 
         // Assert
-        expect(result).toBe('Room 10');
+        expect(result).toBe('ParticipantConsultationRoom10');
+        expect(consultationService.consultationNameToString).toHaveBeenCalledWith('ParticipantConsultationRoom10', true);
     });
 
     it('should get participant status Judge Room', () => {
@@ -329,7 +329,8 @@ describe('PrivateConsultationParticipantsComponent', () => {
         const result = component.getParticipantStatus(participant);
 
         // Assert
-        expect(result).toBe('Judge room 10');
+        expect(result).toBe('JudgeJOHConsultationRoom10');
+        expect(consultationService.consultationNameToString).toHaveBeenCalledWith('JudgeJOHConsultationRoom10', true);
     });
 
     it('should get participant status disconnected', () => {

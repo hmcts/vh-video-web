@@ -6,7 +6,7 @@ Feature: Error Pages
 
 Scenario: Page not found error
 	Given a new browser is open for a Participant
-	When the user attempts to login with valid credentials
+	When they attempt to login with valid credentials
 	Then the user is on the Hearing List page
 	When the user attempts to navigate to a nonexistent page
 	Then the user is on the Not Found page
@@ -16,7 +16,7 @@ Scenario: Page not found error
 @VIH-5235
 Scenario: Unauthorised error page
 	Given a new browser is open for a Case admin
-	When the user attempts to login with valid credentials
+	When they attempt to login with valid credentials
 	Then the user is on the Unauthorised page
 	And the Unauthorised error page displays text of how to rectify the problem
 

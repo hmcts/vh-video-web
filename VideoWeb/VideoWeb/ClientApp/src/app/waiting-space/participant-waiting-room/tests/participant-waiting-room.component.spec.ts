@@ -5,6 +5,8 @@ import { Subscription } from 'rxjs';
 import {
     ConferenceResponse,
     ConferenceStatus,
+    LinkedParticipantResponse,
+    LinkType,
     LoggedParticipantResponse,
     ParticipantResponse,
     Role
@@ -67,6 +69,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
     });
 
     beforeEach(() => {
+        consultationService.consultationNameToString.calls.reset();
         logged = new LoggedParticipantResponse({
             participant_id: globalParticipant.id,
             display_name: globalParticipant.display_name,
@@ -222,11 +225,55 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         [
             [HearingRole.REPRESENTATIVE, true],
             [HearingRole.WITNESS, false],
-            [HearingRole.OBSERVER, false]
+            [HearingRole.OBSERVER, false],
+            [HearingRole.INTERPRETER, false]
         ].forEach(([hearingRole, expected]) => {
             component.participant.hearing_role = hearingRole as HearingRole;
             expect(component.canStartJoinConsultation).toBe(expected as boolean);
         });
+    });
+
+    it('should return false if the participant is a individual with interpreter - canStartJoinConsultation', () => {
+        component.participant.hearing_role = HearingRole.LITIGANT_IN_PERSON;
+        const linkedParticipant = new LinkedParticipantResponse();
+        linkedParticipant.link_type = LinkType.Interpreter;
+        component.participant.linked_participants = [linkedParticipant];
+        expect(component.canStartJoinConsultation).toBeFalsy();
+    });
+
+    it('should return if participant is an interpreter - isInterpreter', () => {
+        [
+            [HearingRole.INTERPRETER, true],
+            [HearingRole.EXPERT, false]
+        ].forEach(([hearingRole, expected]) => {
+            component.participant.hearing_role = hearingRole as HearingRole;
+            expect(component.isInterpreter).toBe(expected as boolean);
+        });
+    });
+
+    it('should return false when the participant is null -  - isInterpreter', () => {
+        component.participant = null;
+        expect(component.isInterpreter).toBeFalsy();
+    });
+
+    it('should return if participant is an interpreter - isInterpreter', () => {
+        [
+            [HearingRole.LITIGANT_IN_PERSON, true],
+            [HearingRole.INTERPRETER, false]
+        ].forEach(([hearingRole, expected]) => {
+            component.participant.hearing_role = hearingRole as HearingRole;
+            if (component.participant.hearing_role === HearingRole.LITIGANT_IN_PERSON) {
+                const linkedParticipant = new LinkedParticipantResponse();
+                linkedParticipant.link_type = LinkType.Interpreter;
+                component.participant.linked_participants = [linkedParticipant];
+            }
+            expect(component.isInterpretee).toBe(expected as boolean);
+        });
+    });
+
+    it('should return false when the participant is null -  - isInterpretee', () => {
+        component.participant = null;
+        expect(component.isInterpretee).toBeFalsy();
     });
 
     it('should return if the participant is a witness or not - isWitness', () => {
@@ -296,8 +343,15 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         expect(component.hearingStartingAnnounced).toBeTruthy();
     }));
     it('should return "Meeting room" from getRoomName when room label is null', () => {
+        // Arrange
         component.participant = null;
-        expect(component.getRoomName()).toEqual('Meeting room');
+
+        // Act
+        const roomName = component.getRoomName();
+
+        // Assert
+        expect(roomName).toBeUndefined();
+        expect(consultationService.consultationNameToString).toHaveBeenCalledWith(undefined, false);
     });
     it('should set consultation modal when start is called', () => {
         component.openStartConsultationModal();

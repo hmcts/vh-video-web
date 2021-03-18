@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { NotificationSoundsService } from 'src/app/waiting-space/services/notification-sounds.service';
 import {
     AddEndpointConsultationRequest,
@@ -27,7 +28,8 @@ export class ConsultationService {
         private apiClient: ApiClient,
         private modalService: ModalService,
         private notificationSoundService: NotificationSoundsService,
-        private logger: Logger
+        private logger: Logger,
+        private translateService: TranslateService
     ) {
         this.initCallRingingSound();
     }
@@ -240,5 +242,16 @@ export class ConsultationService {
     clearModals() {
         this.logger.debug('[ConsultationService] - Closing all modals.');
         this.modalService.closeAll();
+    }
+
+    consultationNameToString(roomLabel: string, shortName: boolean): string {
+        const meetingRoom = this.translateService.instant(`consultation-service.meeting-room${shortName ? '-short' : ''}`) + ' ';
+        const judgeRoom = this.translateService.instant(`consultation-service.judge-room${shortName ? '-short' : ''}`) + ' ';
+
+        const roomName = roomLabel
+            ?.replace('ParticipantConsultationRoom', meetingRoom)
+            .replace('JudgeJOHConsultationRoom', judgeRoom)
+            .replace('ConsultationRoom', meetingRoom);
+        return roomName ?? meetingRoom.trimEnd();
     }
 }

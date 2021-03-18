@@ -100,7 +100,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             // Assert
             VideoApiClientMock.Verify(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r => 
             r.ConferenceId == conference.Id &&
-            r.DefenceAdvocateId == Guid.Empty &&
+            r.RequestedById == Guid.Empty &&
             r.EndpointId == endpointForEvent.Id &&
             r.RoomLabel == callbackEvent.TransferTo)), Times.Once);
         }

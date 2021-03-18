@@ -1,5 +1,5 @@
 import { HttpClient, HttpClientModule, HttpXhrBackend, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
+import { APP_INITIALIZER, ErrorHandler, LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -26,6 +26,8 @@ import { ConfigSettingsResolveService } from 'src/app/services/config-settings-r
 import { TranslateModule, TranslateLoader, MissingTranslationHandler } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { DisplayMissingTranslationHandler } from './shared/display-missing-translation-handler';
+import { registerLocaleData } from '@angular/common';
+import localeCy from '@angular/common/locales/cy';
 
 export function createTranslateLoader() {
     // We cant inject a httpClient because it has a race condition with adal
@@ -36,6 +38,11 @@ export function createTranslateLoader() {
 
 export function getSettings(configService: ConfigService) {
     return () => configService.loadConfig();
+}
+
+export function getLocale() {
+    const language = localStorage.getItem('language') ?? 'en';
+    return language === 'tl' ? 'cy' : language;
 }
 
 @NgModule({
@@ -64,6 +71,7 @@ export function getSettings(configService: ConfigService) {
         { provide: LOG_ADAPTER, useClass: ConsoleLogger, multi: true },
         { provide: LOG_ADAPTER, useClass: AppInsightsLoggerService, multi: true, deps: [ConfigService, Router, AdalService] },
         { provide: API_BASE_URL, useFactory: () => '.' },
+        { provide: LOCALE_ID, useFactory: getLocale },
         AdalService,
         AdalGuard,
         { provide: HTTP_INTERCEPTORS, useClass: AdalInterceptor, multi: true },
@@ -77,4 +85,8 @@ export function getSettings(configService: ConfigService) {
     ],
     bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule {
+    constructor() {
+        registerLocaleData(localeCy, 'cy');
+    }
+}

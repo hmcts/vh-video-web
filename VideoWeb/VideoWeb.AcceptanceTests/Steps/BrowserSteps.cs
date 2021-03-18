@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using AcceptanceTests.Common.Api.Helpers;
 using AcceptanceTests.Common.Driver.Drivers;
-using AcceptanceTests.Common.Driver.Enums;
 using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
@@ -30,6 +29,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         [Given(@"a new browser is open for (?:user|the|a|an) (.*)")]
         [Given(@"(?:the|an|a) (.*) is on the login page")]
+        [Given(@"(?:the|an|a) (.*) is on the account type selection page")]
         public void GivenANewBrowserIsOpenFor(string user)
         {
             SwitchCurrentUser(user);
@@ -42,9 +42,6 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             _browsers[_c.CurrentUser].LaunchBrowser();
             _browsers[_c.CurrentUser].NavigateToPage();
-
-            if (_c.VideoWebConfig.TestConfig.TargetBrowser != TargetBrowser.Ie11)
-                _browsers[_c.CurrentUser].PageUrl(_c.Test.CommonData.CommonUris.LoginUri);
         }
 
         [Given(@"in (.*)'s browser")]

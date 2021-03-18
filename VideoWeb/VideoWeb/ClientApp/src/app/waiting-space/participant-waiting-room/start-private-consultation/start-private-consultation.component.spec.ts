@@ -7,23 +7,23 @@ import {
     Role,
     RoomSummaryResponse
 } from 'src/app/services/clients/api-client';
-import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { StartPrivateConsultationComponent } from './start-private-consultation.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
+import { ConsultationService } from 'src/app/services/api/consultation.service';
 
 describe('StartPrivateConsultationComponent', () => {
     let component: StartPrivateConsultationComponent;
     let conference: ConferenceResponse;
-    let logger: jasmine.SpyObj<Logger>;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
+    let consultationService: jasmine.SpyObj<ConsultationService>;
     let logged: LoggedParticipantResponse;
     const translateService = translateServiceSpy;
 
     beforeAll(() => {
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
-        logger = jasmine.createSpyObj<Logger>('Logger', ['debug', 'info', 'warn', 'event', 'error']);
     });
 
     beforeEach(() => {
@@ -39,7 +39,8 @@ describe('StartPrivateConsultationComponent', () => {
             role: Role.Judge
         });
 
-        component = new StartPrivateConsultationComponent(logger, translateService);
+        consultationService = consultationServiceSpyFactory();
+        component = new StartPrivateConsultationComponent(translateService, consultationService);
     });
 
     it('should create', () => {
@@ -154,7 +155,6 @@ describe('StartPrivateConsultationComponent', () => {
     it('should return unavailable participant status', () => {
         const participant = conference.participants[0];
         participant.status = ParticipantStatus.Disconnected;
-        translateService.instant.calls.reset();
         const expectedText = 'start-private-consultation.unavailable';
         expect(component.getParticipantStatus(participant)).toEqual(expectedText);
     });
@@ -163,8 +163,8 @@ describe('StartPrivateConsultationComponent', () => {
         const participant = conference.participants[0];
         participant.status = ParticipantStatus.InConsultation;
         participant.current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
-        translateService.instant.calls.reset();
-        expect(component.getParticipantStatus(participant)).toContain('start-private-consultation.in meeting room 1');
+        expect(component.getParticipantStatus(participant)).toContain('start-private-consultation.in participantconsultationroom1');
+        expect(consultationService.consultationNameToString).toHaveBeenCalledWith('ParticipantConsultationRoom1', false);
     });
 
     it('should return in judge consultaion participant status', () => {
@@ -172,7 +172,8 @@ describe('StartPrivateConsultationComponent', () => {
         participant.status = ParticipantStatus.InConsultation;
         participant.current_room = new RoomSummaryResponse({ label: 'JudgeJOHConsultationRoom1' });
         translateService.instant.calls.reset();
-        expect(component.getParticipantStatus(participant)).toContain('start-private-consultation.in judge room 1');
+        expect(component.getParticipantStatus(participant)).toContain('start-private-consultation.in judgejohconsultationroom1');
+        expect(consultationService.consultationNameToString).toHaveBeenCalledWith('JudgeJOHConsultationRoom1', false);
     });
 
     it('should return unavailable endpoint status', () => {
@@ -187,7 +188,6 @@ describe('StartPrivateConsultationComponent', () => {
         const endpoint = conference.endpoints[0];
         endpoint.status = EndpointStatus.InConsultation;
         endpoint.current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
-        translateService.instant.calls.reset();
-        expect(component.getEndpointStatus(endpoint)).toContain('start-private-consultation.in meeting room 1');
+        expect(component.getEndpointStatus(endpoint)).toContain('start-private-consultation.in participantconsultationroom1');
     });
 });

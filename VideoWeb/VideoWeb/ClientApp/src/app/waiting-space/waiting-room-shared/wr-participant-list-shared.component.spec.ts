@@ -220,7 +220,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         component.loggedInUser.role = Role.JudicialOfficeHolder;
         component.initParticipants();
 
-        expect(component.participantsInConsultation.length).toBe(4);
+        expect(component.participantsInConsultation.length).toBe(6);
     });
     it('should get list of participants for user participant', () => {
         component.loggedInUser.role = Role.Individual;

@@ -15,6 +15,7 @@ using TestApi.Contract.Enums;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Enums;
 using TestApi.Contract.Dtos;
+using OpenQA.Selenium;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -157,6 +158,22 @@ namespace VideoWeb.AcceptanceTests.Steps
             
             SwitchToDefaultContent();
         }
+
+        [Then(@"the Judge can see interpreter and interpretee on participant list")]
+        public void ThenTheJudgeCanSeeInterpreterAndInterpreteeOnParticipantList()
+        {
+            var interpreter = _c.Test.ConferenceParticipants.FirstOrDefault(x => x.HearingRole.ToLower() == "interpreter");
+            var interpretee = _c.Test.ConferenceParticipants.FirstOrDefault(x => x.Id == interpreter.LinkedParticipants.FirstOrDefault().LinkedId);
+
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.InterPreterName(interpreter.DisplayName)).Text.Should().Contain($"{interpretee.DisplayName}");
+        }
+
+
+        [Then(@"the user can see interpreter and interpretee")]
+        public void ThenTheUserCanSeeInterpreterAndInterpretee()
+        {
+        }
+
 
         [Then(@"the Judge can close the hearing")]
         public void ThenTheJudgeCanCloseTheHearing()

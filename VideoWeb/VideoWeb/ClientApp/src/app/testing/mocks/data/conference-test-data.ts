@@ -202,7 +202,7 @@ export class ConferenceTestData {
             first_name: 'Interpretee',
             last_name: 'Doe',
             linked_participants: [new LinkedParticipantResponse({ link_type: LinkType.Interpreter, linked_id: id1 })],
-            current_room: room
+            interpreter_room: room
         });
 
         if (isWitness) {
@@ -254,7 +254,7 @@ export class ConferenceTestData {
             first_name: 'Bob',
             last_name: 'Smith',
             linked_participants: [new LinkedParticipantResponse({ link_type: LinkType.Interpreter, linked_id: id3 })],
-            current_room: room
+            interpreter_room: room
         });
 
         if (isWitness) {

@@ -69,7 +69,6 @@ namespace VideoWeb.Controllers
                     request.ParticipantId = null;
                     events = request.CreateEventsForParticipantsInRoom(conference, roomId);
                 }
-
                 var callbackEvents = events.Select(e => TransformAndMapRequest(e, conference)).ToList();
                 await Task.WhenAll(events.Select(SendEventToVideoApi));
                 await Task.WhenAll(callbackEvents.Select(PublishEventToUi));
@@ -89,6 +88,8 @@ namespace VideoWeb.Controllers
             {
                 return Task.CompletedTask;
             }
+
+            request = request.UpdateEventTypeForVideoApi();
 
             _logger.LogTrace("Raising video event: ConferenceId: {ConferenceId}, EventType: {EventType}",
                     request.ConferenceId, request.EventType);
