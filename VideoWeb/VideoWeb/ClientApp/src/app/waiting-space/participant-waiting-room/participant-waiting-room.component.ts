@@ -188,17 +188,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         return this.participant?.hearing_role === HearingRole.OBSERVER;
     }
 
-    get isInterpreter(): boolean {
-        return this.participant?.hearing_role === HearingRole.INTERPRETER;
-    }
-
-    get isInterpretee(): boolean {
-        return (
-            this.participant?.hearing_role !== HearingRole.INTERPRETER &&
-            this.participant?.linked_participants?.some(par => par.link_type === LinkType.Interpreter)
-        );
-    }
-
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
         super.handleConferenceStatusChange(message);
         if (!this.validateIsForConference(message.conferenceId)) {
@@ -239,7 +228,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     get canStartJoinConsultation() {
-        return !this.isWitness && !this.isObserver && !this.isInterpreter && !this.isInterpretee;
+        return !this.isWitness && !this.isObserver &&
+            (!this.participant.linked_participants || !this.participant.linked_participants.length);
     }
 
     async startPrivateConsultation(participants: string[], endpoints: string[]) {
