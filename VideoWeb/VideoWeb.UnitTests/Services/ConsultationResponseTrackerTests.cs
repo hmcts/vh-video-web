@@ -1,9 +1,12 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Common.Models;
 using VideoWeb.Services;
 using VideoWeb.UnitTests.Builders;
+using VideoWeb.UnitTests.Extensions;
 
 namespace VideoWeb.UnitTests.Services
 {
@@ -29,7 +32,7 @@ namespace VideoWeb.UnitTests.Services
             _sut.UpdateConsultationResponse(_conference, participant.Id, ConsultationAnswer.Accepted);
             
             // assert
-            _sut.AcceptedConsultations.Count.Should().Be(0);
+            _sut.RetrieveAcceptedConsultations().Should().BeEmpty();
         }
         
         [Test]
