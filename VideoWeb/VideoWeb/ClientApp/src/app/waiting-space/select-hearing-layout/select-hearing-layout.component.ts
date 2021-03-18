@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { ConferenceResponse, HearingLayout } from 'src/app/services/clients/api-client';
 import { VideoCallService } from '../services/video-call.service';
 
@@ -10,9 +11,12 @@ export class SelectHearingLayoutComponent implements OnInit {
     availableLayouts = HearingLayout;
     selectedLayout: HearingLayout;
     @Input() conference: ConferenceResponse;
-    constructor(private videoCallService: VideoCallService) {}
+    constructor(private videoCallService: VideoCallService, protected translateService: TranslateService) {}
 
     ngOnInit(): void {
+        document.getElementById('accordion-choose-layout-heading').innerHTML = this.translateService.instant(
+            'select-hearing-layout.choose-hearing-layout'
+        );
         this.selectedLayout = this.videoCallService.getPreferredLayout(this.conference.id);
         if (!this.selectedLayout) {
             this.selectedLayout = this.recommendedLayout();
