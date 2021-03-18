@@ -4,7 +4,7 @@ import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceStatus, ParticipantResponse, Role } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, LinkType, ParticipantResponse, Role } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -188,6 +188,17 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         return this.participant?.hearing_role === HearingRole.OBSERVER;
     }
 
+    get isInterpreter(): boolean {
+        return this.participant?.hearing_role === HearingRole.INTERPRETER;
+    }
+
+    get isInterpretee(): boolean {
+        return (
+            this.participant?.hearing_role !== HearingRole.INTERPRETER &&
+            this.participant?.linked_participants?.some(par => par.link_type === LinkType.Interpreter)
+        );
+    }
+
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
         super.handleConferenceStatusChange(message);
         if (!this.validateIsForConference(message.conferenceId)) {
@@ -228,7 +239,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     get canStartJoinConsultation() {
-        return !this.isWitness && !this.isObserver;
+        return !this.isWitness && !this.isObserver && !this.isInterpreter && !this.isInterpretee;
     }
 
     async startPrivateConsultation(participants: string[], endpoints: string[]) {

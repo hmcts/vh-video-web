@@ -33,7 +33,7 @@ namespace VideoWeb.EventHub.Handlers
                 return _videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
                 {
                     ConferenceId = SourceConference.Id,
-                    DefenceAdvocateId = Guid.Empty,
+                    RequestedById = Guid.Empty,
                     EndpointId = SourceEndpoint.Id,
                     RoomLabel = targetRoom
                 });
