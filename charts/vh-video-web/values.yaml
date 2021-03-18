@@ -54,7 +54,7 @@ java:
     VHSERVICES__VIDEOWEBRESOURCEID: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net
     VHSERVICES__VIDEOWEBURL: https://vh-video-web.{{ .Values.global.environment }}.platform.hmcts.net
     VideoAppUrl: https://vh-video-web.{{ .Values.global.environment }}.hearings.reform.hmcts.net/
-    WOWZACONFIGURATION__STORAGEACCOUNTNAME: vhwowza{{ .Values.global.environment }}
+    WOWZACONFIGURATION__STORAGEACCOUNTNAME: vhinfrawowza{{ .Values.global.environment }}
     WOWZACONFIGURATION__STORAGECONTAINERNAME: recordings
     Logging__LogLevel__Default: debug
     Logging__LogLevel__System: debug
