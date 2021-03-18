@@ -230,9 +230,12 @@ export abstract class WaitingRoomBaseDirective {
 
         this.logger.debug(`${this.loggerPrefix} Subscribing to ConsultationRequestResponseMessage`);
         this.eventHubSubscription$.add(
-            this.eventService.getConsultationRequestResponseMessage().subscribe(message => {
+            this.eventService.getConsultationRequestResponseMessage().subscribe(async message => {
                 if (message.answer && message.answer === ConsultationAnswer.Accepted && message.requestedFor === this.participant.id) {
-                    this.onConsultationAccepted();
+                    await this.onConsultationAccepted();
+                }
+                if (message.answer && message.answer === ConsultationAnswer.Rejected && message.requestedFor === this.participant.id) {
+                    this.onConsultationRejected();
                 }
             })
         );
@@ -369,6 +372,10 @@ export abstract class WaitingRoomBaseDirective {
             this.userMediaStreamService.stopStream(preferredMicrophoneStream);
             this.displayDeviceChangeModal = false;
         }
+    }
+
+    onConsultationRejected() {
+        this.notificationToastrService.clearAllToastNotifications();
     }
 
     async handleEventHubDisconnection(reconnectionAttempt: number) {

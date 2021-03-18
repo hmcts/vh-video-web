@@ -13,7 +13,7 @@ namespace VideoWeb.Services
 
     public class ConsultationResponseTracker : IConsultationResponseTracker
     {
-        public readonly Dictionary<long, List<Guid>> AcceptedConsultations = new Dictionary<long, List<Guid>>();
+        private readonly Dictionary<long, List<Guid>> _acceptedConsultations = new Dictionary<long, List<Guid>>();
         
         public void UpdateConsultationResponse(Conference conference, Guid participantId, ConsultationAnswer answer)
         {
@@ -30,19 +30,19 @@ namespace VideoWeb.Services
                 StopTrackingResponsesForInterpreterRoom(interpreterRoom.Id);
             }
 
-            if (AcceptedConsultations.ContainsKey(interpreterRoom.Id))
+            if (_acceptedConsultations.ContainsKey(interpreterRoom.Id))
             {
-                AcceptedConsultations[interpreterRoom.Id].Add(participantId);
+                _acceptedConsultations[interpreterRoom.Id].Add(participantId);
             }
             else
             {
-                AcceptedConsultations.Add(interpreterRoom.Id, new List<Guid>{participantId});
+                _acceptedConsultations.Add(interpreterRoom.Id, new List<Guid>{participantId});
             }
         }
         
         private void StopTrackingResponsesForInterpreterRoom(long interpreterRoomId)
         {
-            AcceptedConsultations.Remove(interpreterRoomId);
+            _acceptedConsultations.Remove(interpreterRoomId);
         }
 
         public bool HaveAllParticipantsAccepted(Conference conference, Guid participantId)
@@ -54,18 +54,23 @@ namespace VideoWeb.Services
             }
 
             var interpreterRoom = GetRoomForParticipant(conference, participant);
-            if (!AcceptedConsultations.ContainsKey(interpreterRoom.Id))
+            if (!_acceptedConsultations.ContainsKey(interpreterRoom.Id))
             {
                 return false;
             }
 
-            var participantsAccepted = AcceptedConsultations[interpreterRoom.Id];
+            var participantsAccepted = _acceptedConsultations[interpreterRoom.Id];
             return interpreterRoom.Participants.All(participantsAccepted.Contains);
         }
 
         private CivilianRoom GetRoomForParticipant(Conference conference, Participant participant)
         {
             return conference.CivilianRooms.First(r => r.Participants.Contains(participant.Id));
+        }
+
+        public Dictionary<long, List<Guid>> RetrieveAcceptedConsultations()
+        {
+            return _acceptedConsultations;
         }
     }
 }
