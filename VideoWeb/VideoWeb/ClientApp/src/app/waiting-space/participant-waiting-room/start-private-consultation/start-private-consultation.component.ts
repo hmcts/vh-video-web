@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, SimpleChange, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import {
@@ -31,7 +31,7 @@ export class StartPrivateConsultationComponent {
     @Input() endpoints: VideoEndpointResponse[];
     @Output() continue = new EventEmitter<{ participants: string[]; endpoints: string[] }>();
     @Output() cancel = new EventEmitter();
-    constructor(private translateService: TranslateService, private consultationService: ConsultationService) {}
+    constructor(private translateService: TranslateService, private consultationService: ConsultationService) { }
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes.participants) {
