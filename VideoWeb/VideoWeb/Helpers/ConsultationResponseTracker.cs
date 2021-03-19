@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 
-namespace VideoWeb.Services
+namespace VideoWeb.Helpers
 {
     public interface IConsultationResponseTracker
     {

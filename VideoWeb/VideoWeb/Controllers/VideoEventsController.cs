@@ -16,7 +16,7 @@ using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
-using VideoWeb.Services;
+using VideoWeb.Helpers;
 
 namespace VideoWeb.Controllers
 {

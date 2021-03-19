@@ -6,7 +6,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
 
-namespace VideoWeb.Services
+namespace VideoWeb.Helpers
 {
     public interface IConsultationNotifier
     {

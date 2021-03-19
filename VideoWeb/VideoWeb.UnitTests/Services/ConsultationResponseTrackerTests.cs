@@ -4,7 +4,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
-using VideoWeb.Services;
+using VideoWeb.Helpers;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Services

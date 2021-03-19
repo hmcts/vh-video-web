@@ -10,7 +10,7 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Services;
+using VideoWeb.Helpers;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Services

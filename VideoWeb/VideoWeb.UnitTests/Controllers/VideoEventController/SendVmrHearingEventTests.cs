@@ -9,7 +9,7 @@ using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Services;
+using VideoWeb.Helpers;
 
 namespace VideoWeb.UnitTests.Controllers.VideoEventController
 {

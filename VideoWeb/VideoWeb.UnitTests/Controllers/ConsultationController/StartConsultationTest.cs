@@ -21,7 +21,7 @@ using VideoWeb.Mappings.Requests;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
-using VideoWeb.Services;
+using VideoWeb.Helpers;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
