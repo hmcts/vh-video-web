@@ -103,7 +103,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             request.ParticipantRoomId = string.Empty;
             request.EventType = EventType.Transfer;
             request.TransferFrom = "WaitingRoom";
-            request.TransferTo = "HearingRoom";
+            request.TransferTo = "ParticipantConsultationRoom7";
 
             // Act
             var result = await Sut.SendHearingEventAsync(request);

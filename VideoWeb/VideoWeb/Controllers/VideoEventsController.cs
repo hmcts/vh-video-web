@@ -39,7 +39,7 @@ namespace VideoWeb.Controllers
             IEventHandlerFactory eventHandlerFactory,
             IConferenceCache conferenceCache,
             ILogger<VideoEventsController> logger,
-            IMapperFactory mapperFactory, 
+            IMapperFactory mapperFactory,
             IConsultationResponseTracker consultationResponseTracker)
         {
             _videoApiClient = videoApiClient;
@@ -73,8 +73,9 @@ namespace VideoWeb.Controllers
                     request.ParticipantId = null;
                     events = request.CreateEventsForParticipantsInRoom(conference, roomId);
                 }
+
                 var callbackEvents = events.Select(e => TransformAndMapRequest(e, conference)).ToList();
-                await Task.WhenAll(events.Select(SendEventToVideoApi));
+                // await Task.WhenAll(events.Select(SendEventToVideoApi));
                 await Task.WhenAll(callbackEvents.Select(PublishEventToUi));
                 return NoContent();
             }
@@ -96,7 +97,7 @@ namespace VideoWeb.Controllers
             request = request.UpdateEventTypeForVideoApi();
 
             _logger.LogTrace("Raising video event: ConferenceId: {ConferenceId}, EventType: {EventType}",
-                    request.ConferenceId, request.EventType);
+                request.ConferenceId, request.EventType);
 
             return _videoApiClient.RaiseVideoEventAsync(request);
         }
@@ -108,7 +109,7 @@ namespace VideoWeb.Controllers
             {
                 return null;
             }
-            
+
             var callbackEventMapper = _mapperFactory.Get<ConferenceEventRequest, Conference, CallbackEvent>();
             var callbackEvent = callbackEventMapper.Map(request, conference);
             request.EventType = Enum.Parse<EventType>(callbackEvent.EventType.ToString());
@@ -139,9 +140,10 @@ namespace VideoWeb.Controllers
             {
                 return;
             }
+
             var roomId = long.Parse(request.ParticipantRoomId);
             var participantId = Guid.Parse(request.ParticipantId);
-            
+
 
             switch (request.EventType)
             {

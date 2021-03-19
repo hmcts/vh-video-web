@@ -109,7 +109,7 @@ namespace VideoWeb.Controllers
                     await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Transferring);
                 }
 
-                if (haveAllResponded)
+                if (request.Answer != ConsultationAnswer.Accepted || haveAllResponded)
                 {
                     await _videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
                 }

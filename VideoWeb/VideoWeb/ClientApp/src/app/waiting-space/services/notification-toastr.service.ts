@@ -42,7 +42,7 @@ export class NotificationToastrService {
         this.activeRoomInviteRequests.push(inviteKey);
         this.logger.debug(`${this.loggerPrefix} creating 'showConsultationInvite' toastr notification`);
         if (!inHearing) {
-            // this.notificationSoundService.playConsultationRequestRingtone();
+            this.notificationSoundService.playConsultationRequestRingtone();
         }
 
         const requesterDisplayName =
