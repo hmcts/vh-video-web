@@ -9,6 +9,7 @@ using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
+using VideoWeb.Services;
 
 namespace VideoWeb.UnitTests.Controllers.VideoEventController
 {
@@ -79,6 +80,8 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             
             // Assert
             Mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
+            Mocker.Mock<IConsultationResponseTracker>()
+                .Verify(x => x.ClearResponses(TestConference, participantId), Times.Once);
             result.Should().BeOfType<NoContentResult>();
             var typedResult = (NoContentResult) result;
             typedResult.Should().NotBeNull();
