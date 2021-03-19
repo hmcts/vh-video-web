@@ -16,6 +16,7 @@ using VideoWeb.EventHub.Hub;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
+using VideoWeb.Helpers;
 using VideoWeb.UnitTests.Builders;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;
 
@@ -101,7 +102,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             result.Should().BeOfType<AcceptedResult>();
 
             _mocker.Mock<IVideoApiClient>().Verify(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r => r.EndpointId == request.EndpointId && r.ConferenceId == request.ConferenceId && r.RequestedById == _testConference.Participants[1].Id)), Times.Once);
-            _mocker.Mock<IEventHubClient>().Verify(x => x.ConsultationRequestResponseMessage(_testConference.Id, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring), Times.Exactly(_testConference.Participants.Count));
+            _mocker.Mock<IConsultationNotifier>().Verify(x=> x.NotifyConsultationResponseAsync(_testConference, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring));
         }
 
         [Test]
@@ -115,9 +116,12 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 EndpointId = Guid.NewGuid(),
                 RoomLabel = "RoomLabel"
             };
-            var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int)HttpStatusCode.BadRequest,
+            var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
                 "Please provide a valid conference Id", null, default, null);
-            _mocker.Mock<IVideoApiClient>().Setup(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r => r.EndpointId == request.EndpointId && r.ConferenceId == request.ConferenceId && r.RequestedById == _testConference.Participants[1].Id)))
+            _mocker.Mock<IVideoApiClient>().Setup(x =>
+                    x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r =>
+                        r.EndpointId == request.EndpointId && r.ConferenceId == request.ConferenceId &&
+                        r.RequestedById == _testConference.Participants[1].Id)))
                 .Throws(apiException);
 
             // Act
@@ -128,9 +132,16 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var statusCodeResult = result as StatusCodeResult;
             statusCodeResult.StatusCode.Should().Be(apiException.StatusCode);
 
-            _mocker.Mock<IVideoApiClient>().Verify(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r => r.EndpointId == request.EndpointId && r.ConferenceId == request.ConferenceId && r.RequestedById == _testConference.Participants[1].Id)), Times.Once);
-            _mocker.Mock<IEventHubClient>().Verify(x => x.ConsultationRequestResponseMessage(_testConference.Id, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring), Times.Exactly(_testConference.Participants.Count));
-            _mocker.Mock<IEventHubClient>().Verify(x => x.ConsultationRequestResponseMessage(_testConference.Id, request.RoomLabel, request.EndpointId, ConsultationAnswer.Failed), Times.Exactly(_testConference.Participants.Count));
+            _mocker.Mock<IVideoApiClient>().Verify(
+                x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r =>
+                    r.EndpointId == request.EndpointId && r.ConferenceId == request.ConferenceId &&
+                    r.RequestedById == _testConference.Participants[1].Id)), Times.Once);
+
+            _mocker.Mock<IConsultationNotifier>().Verify(x => x.NotifyConsultationResponseAsync(_testConference,
+                request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring));
+            
+            _mocker.Mock<IConsultationNotifier>().Verify(x => x.NotifyConsultationResponseAsync(_testConference,
+                request.RoomLabel, request.EndpointId, ConsultationAnswer.Failed));
         }
 
         private void SetupControllerWithClaims(string username)

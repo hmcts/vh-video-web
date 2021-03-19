@@ -10,35 +10,36 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Moq;
 using NUnit.Framework;
+using VideoApi.Client;
+using VideoApi.Contract.Requests;
+using VideoApi.Contract.Responses;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Hub;
+using VideoWeb.Helpers;
 using VideoWeb.Mappings;
 using VideoWeb.Mappings.Requests;
-using VideoApi.Client;
-using VideoApi.Contract.Responses;
-using VideoApi.Contract.Requests;
 using VideoWeb.UnitTests.Builders;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
 {
-    public class RequestConsultationTests
+    public class RespondToConsultationTests
     {
         private AutoMock _mocker;
         private ConsultationsController _controller;
         private Conference _testConference;
-
+        
         [SetUp]
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
 
-            _testConference = ConsultationHelper.BuildConferenceForTest();
+            _testConference = new ConferenceCacheModelBuilder().WithLinkedParticipantsInRoom().Build();
 
             var context = new ControllerContext
             {
@@ -64,7 +65,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             _controller = _mocker.Create<ConsultationsController>();
             _controller.ControllerContext = context;
         }
-
+        
         [Test]
         public async Task Should_return_participant_not_found_when_request_is_sent()
         {
@@ -84,59 +85,60 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             // Assert
             result.Should().BeOfType<NotFoundResult>();
         }
-
+        
         [Test]
         public async Task Should_return_no_content_when_request_is_sent()
         {
             // Arrange
-            
+            var request = ConsultationHelper.GetConsultationRequest(_testConference);
             // Act
             var result =
-                await _controller.RespondToConsultationRequestAsync(
-                    ConsultationHelper.GetConsultationRequest(_testConference));
+                await _controller.RespondToConsultationRequestAsync(request);
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
-            _mocker.Mock<IEventHubClient>().Verify(
-                x => x.ConsultationRequestResponseMessage
-                    (It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<ConsultationAnswer>()),
-                Times.Exactly(_testConference.Participants.Count));
+            _mocker.Mock<IConsultationNotifier>()
+                .Verify(
+                    x => x.NotifyConsultationResponseAsync(_testConference, request.RoomLabel,
+                        request.RequestedForId, request.Answer), Times.Once);
         }
-
+        
         [Test]
         public async Task Should_return_bad_request()
         {
             // Arrange
+            var request = ConsultationHelper.GetConsultationRequest(_testConference);
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
                 "{\"ConsultationRoom\":[\"No consultation room available\"]}", null, default, null);
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.RespondToConsultationRequestAsync(It.IsAny<ConsultationRequestResponse>()))
                 .ThrowsAsync(apiException);
+            _mocker.Mock<IConsultationResponseTracker>()
+                .Setup(x => x.HaveAllParticipantsAccepted(_testConference, request.RequestedForId)).ReturnsAsync(true);
 
             // Act
-            var result =
-                await _controller.RespondToConsultationRequestAsync(
-                    ConsultationHelper.GetConsultationRequest(_testConference));
+            var result = await _controller.RespondToConsultationRequestAsync(request);
 
             // Assert
             var typedResult = (ObjectResult) result;
             typedResult.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
         }
-
+        
         [Test]
         public async Task Should_return_exception()
         {
             // Arrange
+            var request = ConsultationHelper.GetConsultationRequest(_testConference);
             var apiException = new VideoApiException("Internal Server Error",
                 (int) HttpStatusCode.InternalServerError, "The server collapse due to unhandled error", default, null);
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.RespondToConsultationRequestAsync(It.IsAny<ConsultationRequestResponse>()))
                 .ThrowsAsync(apiException);
+            _mocker.Mock<IConsultationResponseTracker>()
+                .Setup(x => x.HaveAllParticipantsAccepted(_testConference, request.RequestedForId)).ReturnsAsync(true);
             
             // Act
-            var result =
-                await _controller.RespondToConsultationRequestAsync(
-                    ConsultationHelper.GetConsultationRequest(_testConference));
+            var result = await _controller.RespondToConsultationRequestAsync(request);
 
             // Assert
             var typedResult = (ObjectResult) result;
@@ -148,7 +150,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         [TestCase(ConsultationAnswer.Rejected)]
         public async Task Should_send_message_to_other_party_when_answered(ConsultationAnswer answer)
         {
-            // Arange
+            // Arrange
             var consultationRequest = ConsultationHelper.GetConsultationRequest(_testConference);
             consultationRequest.Answer = answer;
 
@@ -157,12 +159,14 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             // Assert
             result.Should().BeOfType<NoContentResult>();
-            _mocker.Mock<IEventHubClient>().Verify(x => x.ConsultationRequestResponseMessage(_testConference.Id, consultationRequest.RoomLabel, consultationRequest.RequestedForId, consultationRequest.Answer),
-                Times.Exactly(_testConference.Participants.Count));
+            _mocker.Mock<IConsultationNotifier>()
+                .Verify(
+                    x => x.NotifyConsultationResponseAsync(_testConference, consultationRequest.RoomLabel,
+                        consultationRequest.RequestedForId, consultationRequest.Answer), Times.Once);
         }
-
+        
         [Test]
-        public void Should_throw_InvalidOperationException_two_participants_with_the_same_requeste_by_found()
+        public void Should_throw_InvalidOperationException_two_participants_with_the_same_requestee_by_found()
         {
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.RespondToConsultationRequestAsync(It.IsAny<ConsultationRequestResponse>()))
@@ -195,5 +199,35 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             result.Should().BeOfType<NotFoundResult>();
         }
 
+        [Test]
+        public async Task should_notify_other_party_participant_is_transferring_when_participant_has_responded()
+        {
+            // Arrange
+            var consultationRequest = ConsultationHelper.GetConsultationRequest(_testConference);
+            consultationRequest.Answer = ConsultationAnswer.Accepted;
+            _mocker.Mock<IConsultationResponseTracker>().Setup(x =>
+                    x.HaveAllParticipantsAccepted(_testConference, consultationRequest.RequestedForId))
+                .ReturnsAsync(true);
+
+            // Act
+            var result = await _controller.RespondToConsultationRequestAsync(consultationRequest);
+
+            // Assert
+            result.Should().BeOfType<NoContentResult>();
+            _mocker.Mock<IConsultationNotifier>()
+                .Verify(
+                    x => x.NotifyConsultationResponseAsync(_testConference, consultationRequest.RoomLabel,
+                        consultationRequest.RequestedForId, consultationRequest.Answer), Times.Once);
+            
+            _mocker.Mock<IConsultationNotifier>()
+                .Verify(
+                    x => x.NotifyConsultationResponseAsync(_testConference, consultationRequest.RoomLabel,
+                        consultationRequest.RequestedForId, consultationRequest.Answer), Times.Once);
+            
+            _mocker.Mock<IConsultationNotifier>()
+                .Verify(
+                    x => x.NotifyConsultationResponseAsync(_testConference, consultationRequest.RoomLabel,
+                        consultationRequest.RequestedForId, ConsultationAnswer.Transferring), Times.Once);
+        }
     }
 }

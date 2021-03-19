@@ -122,7 +122,10 @@ export function initAllWRDependencies() {
         'playConsultationRequestRingtone',
         'stopConsultationRequestRingtone'
     ]);
-    notificationToastrService = jasmine.createSpyObj<NotificationToastrService>('NotificationToastrService', ['showConsultationInvite']);
+    notificationToastrService = jasmine.createSpyObj<NotificationToastrService>('NotificationToastrService', [
+        'showConsultationInvite',
+        'clearAllToastNotifications'
+    ]);
     toastrService = jasmine.createSpyObj<ToastrService>('ToastrService', ['show', 'clear', 'remove']);
     roomClosingToastrService = jasmine.createSpyObj<RoomClosingToastrService>('RoomClosingToastrService', [
         'showRoomClosingAlert',
