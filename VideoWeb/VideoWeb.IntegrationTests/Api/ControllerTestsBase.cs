@@ -13,7 +13,7 @@ namespace VideoWeb.IntegrationTests.Api
 {
     public abstract class ControllerTestsBase
     {
-        protected TestServer Server;
+        private TestServer _server;
         private string _bearerToken;
 
         [OneTimeSetUp]
@@ -23,7 +23,7 @@ namespace VideoWeb.IntegrationTests.Api
                 .UseKestrel(c => c.AddServerHeader = false)
                 .UseEnvironment("Development")
                 .UseStartup<Startup>();
-            Server = new TestServer(webHostBuilder);
+            _server = new TestServer(webHostBuilder);
             GetClientAccessTokenForApi();
         }
         
@@ -43,35 +43,35 @@ namespace VideoWeb.IntegrationTests.Api
 
         protected async Task<HttpResponseMessage> SendGetRequestAsync(string uri)
         {
-            using var client = Server.CreateClient();
+            using var client = _server.CreateClient();
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_bearerToken}");
             return await client.GetAsync(uri);
         }
 
         protected async Task<HttpResponseMessage> SendPostRequestAsync(string uri, HttpContent httpContent)
         {
-            using var client = Server.CreateClient();
+            using var client = _server.CreateClient();
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_bearerToken}");
             return await client.PostAsync(uri, httpContent);
         }
 
         protected async Task<HttpResponseMessage> SendPatchRequestAsync(string uri, StringContent httpContent)
         {
-            using var client = Server.CreateClient();
+            using var client = _server.CreateClient();
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_bearerToken}");
             return await client.PatchAsync(uri, httpContent);
         }
 
         protected async Task<HttpResponseMessage> SendPutRequestAsync(string uri, StringContent httpContent)
         {
-            using var client = Server.CreateClient();
+            using var client = _server.CreateClient();
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_bearerToken}");
             return await client.PutAsync(uri, httpContent);
         }
 
         protected async Task<HttpResponseMessage> SendDeleteRequestAsync(string uri)
         {
-            using var client = Server.CreateClient();
+            using var client = _server.CreateClient();
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_bearerToken}");
             return await client.DeleteAsync(uri);
         }
@@ -79,7 +79,7 @@ namespace VideoWeb.IntegrationTests.Api
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
-            Server.Dispose();
+            _server.Dispose();
         }
     }
 }
