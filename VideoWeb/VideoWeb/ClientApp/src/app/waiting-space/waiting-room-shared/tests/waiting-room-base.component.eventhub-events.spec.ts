@@ -57,6 +57,7 @@ import { RequestedConsultationMessage } from 'src/app/services/models/requested-
 import { Room } from '../../../shared/models/room';
 import { RoomTransfer } from '../../../shared/models/room-transfer';
 import { ElementRef } from '@angular/core';
+import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 
 describe('WaitingRoomComponent EventHub Call', () => {
     let component: WRTestComponent;
@@ -280,6 +281,22 @@ describe('WaitingRoomComponent EventHub Call', () => {
         expect(userMediaService.getPreferredMicrophone).toHaveBeenCalledTimes(0);
         expect(userMediaStreamService.getStreamForCam).toHaveBeenCalledTimes(0);
         expect(userMediaStreamService.getStreamForMic).toHaveBeenCalledTimes(0);
+    }));
+
+    it('should set consultation toast to rejected', fakeAsync(() => {
+        const roomLabel = 'ConsultationRoom';
+        const toast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
+        component.consultationInviteToasts[roomLabel] = toast;
+        const message = new ConsultationRequestResponseMessage(
+            globalConference.id,
+            roomLabel,
+            globalParticipant.id,
+            ConsultationAnswer.Rejected
+        );
+        consultationRequestResponseMessageSubject.next(message);
+        flushMicrotasks();
+        const updatedToast = component.consultationInviteToasts[roomLabel];
+        expect(updatedToast.declinedByThirdParty).toBeTruthy();
     }));
 
     it('should close start and join modal set preferred devices when participant accepts consultation', fakeAsync(async () => {
