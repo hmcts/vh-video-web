@@ -15,6 +15,7 @@ import { WRParticipantStatusListDirective } from '../../waiting-room-shared/wr-p
 import { ActivatedRoute } from '@angular/router';
 import { HearingRole } from '../../models/hearing-role-model';
 import { TranslateService } from '@ngx-translate/core';
+import { ParticipantListItem } from '../participant-list-item';
 
 @Component({
     selector: 'app-private-consultation-participants',
@@ -114,7 +115,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         );
     }
 
-    getPrivateConsultationParticipants(): ParticipantResponse[] {
+    getPrivateConsultationParticipants(): ParticipantListItem[] {
         if (this.roomLabel?.toLowerCase().includes('judgejohconsultationroom')) {
             return this.participantsInConsultation;
         } else {
@@ -123,8 +124,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
                 .filter(p => p.hearing_role !== HearingRole.INTERPRETER)
                 .map(p => {
                     const interpreterLink = p.linked_participants.find(x => x.link_type === LinkType.Interpreter);
-                    // TODO (phill) type this properly
-                    const participant: any = { ...p };
+                    const participant: ParticipantListItem = { ...p };
                     if (p.linked_participants && interpreterLink) {
                         participant.interpreter = this.participantsInConsultation.find(x => x.id === interpreterLink.linked_id);
                     }

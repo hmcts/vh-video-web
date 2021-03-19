@@ -11,11 +11,7 @@ import {
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { HearingRole } from '../../models/hearing-role-model';
-
-interface ParticipantListItem extends Omit<ParticipantResponse, 'init' | 'toJSON'> {
-    interpreter?: ParticipantResponse;
-}
-
+import { ParticipantListItem } from '../participant-list-item';
 @Component({
     selector: 'app-start-private-consultation',
     templateUrl: './start-private-consultation.component.html',
