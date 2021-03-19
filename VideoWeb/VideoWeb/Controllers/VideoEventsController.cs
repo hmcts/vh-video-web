@@ -75,7 +75,7 @@ namespace VideoWeb.Controllers
                 }
 
                 var callbackEvents = events.Select(e => TransformAndMapRequest(e, conference)).ToList();
-                // await Task.WhenAll(events.Select(SendEventToVideoApi));
+                await Task.WhenAll(events.Select(SendEventToVideoApi));
                 await Task.WhenAll(callbackEvents.Select(PublishEventToUi));
                 return NoContent();
             }
