@@ -36,7 +36,7 @@ namespace VideoWeb.UnitTests.Hub
                 var linkedPat = conference.Participants.Single(p => p.Id == lp.LinkedId);
                 EventHubClientMock.Verify(
                     x => x.Group(linkedPat.Username.ToLowerInvariant())
-                        .ParticipantRemoteMuteMessage(participant.Id, conference.Id, isRemoteMuted), Times.Once);
+                        .ParticipantRemoteMuteMessage(lp.LinkedId, conference.Id, isRemoteMuted), Times.Once);
             }
         }
 
