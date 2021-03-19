@@ -2,9 +2,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extras.Moq;
+using FluentAssertions;
 using Microsoft.AspNetCore.SignalR;
 using Moq;
 using NUnit.Framework;
+using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
@@ -19,13 +21,15 @@ namespace VideoWeb.UnitTests.Services
         private Conference _conference;
         private ConsultationNotifier _sut;
         private IConsultationResponseTracker _consultationResponseTracker;
+        private DictionaryConsultationResponseCache _dictionaryCache;
 
         [SetUp]
         public void Setup()
         {
+            _dictionaryCache = new DictionaryConsultationResponseCache();
             _conference = new ConferenceCacheModelBuilder().WithLinkedParticipantsInRoom().Build();
 
-            _consultationResponseTracker = new ConsultationResponseTracker();
+            _consultationResponseTracker = new ConsultationResponseTracker(_dictionaryCache);
             _conference = new ConferenceCacheModelBuilder().WithLinkedParticipantsInRoom().Build();
             _mocker = AutoMock.GetLoose(builder =>
             {
@@ -154,7 +158,7 @@ namespace VideoWeb.UnitTests.Services
 
             foreach (var lParticipant in linked)
             {
-                _consultationResponseTracker.UpdateConsultationResponse(_conference, lParticipant.Id,
+                await _consultationResponseTracker.UpdateConsultationResponse(_conference, lParticipant.Id,
                     ConsultationAnswer.Accepted);
             }
 
@@ -174,6 +178,40 @@ namespace VideoWeb.UnitTests.Services
                         lParticipant.Id, answer),
                     Times.Exactly(_conference.Participants.Count));
             }
+            
+            var room = _conference.CivilianRooms.First(x => x.Participants.Contains(linkedParticipant.Id));
+            var cache = _dictionaryCache.GetCache();
+            cache.ContainsKey(room.Id).Should().BeTrue();
+            var accepted = cache[room.Id];
+            accepted.Should().Contain(linkedParticipant.Id);
+            accepted.Should().Contain(linked.Select(p => p.Id));
+        }
+
+        [Test]
+        public async Task should_clear_responses_when_participant_is_being_transferred()
+        {
+            // arrange
+            var linkedParticipant = _conference.Participants.First(x => !x.IsJudge() && x.LinkedParticipants.Any());
+            var linked = _conference.Participants
+                .Where(p => linkedParticipant.LinkedParticipants.Select(x => x.LinkedId).Contains(p.Id)).ToList();
+            var roomLabel = "ConsultationRoom1";
+            var answer = ConsultationAnswer.Transferring;
+            
+            await _consultationResponseTracker.UpdateConsultationResponse(_conference, linkedParticipant.Id,
+                ConsultationAnswer.Accepted);
+            foreach (var lParticipant in linked)
+            {
+                await _consultationResponseTracker.UpdateConsultationResponse(_conference, lParticipant.Id,
+                    ConsultationAnswer.Accepted);
+            }
+            
+            // act
+            await _sut.NotifyConsultationResponseAsync(_conference, roomLabel, linkedParticipant.Id, answer);
+            
+            // assert
+            var room = _conference.CivilianRooms.First(x => x.Participants.Contains(linkedParticipant.Id));
+            var cache = _dictionaryCache.GetCache();
+            cache.ContainsKey(room.Id).Should().BeFalse();
         }
 
         [Test]

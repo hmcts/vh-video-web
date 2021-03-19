@@ -108,6 +108,7 @@ namespace VideoWeb.Extensions
             services.AddScoped<IHeartbeatRequestMapper, HeartbeatRequestMapper>();
             services.AddSingleton<IUserCache, DistributedUserCache>();
             services.AddScoped<ILoggingDataExtractor, LoggingDataExtractor>();
+            services.AddScoped<IConsultationResponseCache, DistributedConsultationResponseCache>();
             services.AddScoped<IConsultationResponseTracker, ConsultationResponseTracker>();
             services.AddScoped<IConsultationNotifier, ConsultationNotifier>();
 

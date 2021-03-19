@@ -109,16 +109,17 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         public async Task Should_return_bad_request()
         {
             // Arrange
+            var request = ConsultationHelper.GetConsultationRequest(_testConference);
             var apiException = new VideoApiException<ProblemDetails>("Bad Request", (int) HttpStatusCode.BadRequest,
                 "{\"ConsultationRoom\":[\"No consultation room available\"]}", null, default, null);
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.RespondToConsultationRequestAsync(It.IsAny<ConsultationRequestResponse>()))
                 .ThrowsAsync(apiException);
+            _mocker.Mock<IConsultationResponseTracker>()
+                .Setup(x => x.HaveAllParticipantsAccepted(_testConference, request.RequestedForId)).ReturnsAsync(true);
 
             // Act
-            var result =
-                await _controller.RespondToConsultationRequestAsync(
-                    ConsultationHelper.GetConsultationRequest(_testConference));
+            var result = await _controller.RespondToConsultationRequestAsync(request);
 
             // Assert
             var typedResult = (ObjectResult) result;
@@ -129,16 +130,17 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         public async Task Should_return_exception()
         {
             // Arrange
+            var request = ConsultationHelper.GetConsultationRequest(_testConference);
             var apiException = new VideoApiException("Internal Server Error",
                 (int) HttpStatusCode.InternalServerError, "The server collapse due to unhandled error", default, null);
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.RespondToConsultationRequestAsync(It.IsAny<ConsultationRequestResponse>()))
                 .ThrowsAsync(apiException);
+            _mocker.Mock<IConsultationResponseTracker>()
+                .Setup(x => x.HaveAllParticipantsAccepted(_testConference, request.RequestedForId)).ReturnsAsync(true);
             
             // Act
-            var result =
-                await _controller.RespondToConsultationRequestAsync(
-                    ConsultationHelper.GetConsultationRequest(_testConference));
+            var result = await _controller.RespondToConsultationRequestAsync(request);
 
             // Assert
             var typedResult = (ObjectResult) result;

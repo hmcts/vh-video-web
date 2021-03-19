@@ -70,9 +70,10 @@ namespace VideoWeb.Services
             }
             
             var participantFor = conference.Participants.First(x => x.Id == requestedForId);
-            _consultationResponseTracker.UpdateConsultationResponse(conference, participantFor.Id, answer);
-            if (answer == ConsultationAnswer.Accepted &&
-                !_consultationResponseTracker.HaveAllParticipantsAccepted(conference, participantFor.Id))
+            await _consultationResponseTracker.UpdateConsultationResponse(conference, participantFor.Id, answer);
+            var haveAllAccepted =
+                await _consultationResponseTracker.HaveAllParticipantsAccepted(conference, participantFor.Id);
+            if (answer == ConsultationAnswer.Accepted && !haveAllAccepted)
             {
                 return;
             }
@@ -81,6 +82,11 @@ namespace VideoWeb.Services
             if (participantFor.LinkedParticipants.Any())
             {
                 await NotifyLinkedParticipantsOfConsultationResponseAsync(conference, participantFor, roomLabel, answer);
+            }
+
+            if (answer == ConsultationAnswer.Transferring)
+            {
+                await _consultationResponseTracker.ClearResponses(conference, requestedForId);
             }
         }
         

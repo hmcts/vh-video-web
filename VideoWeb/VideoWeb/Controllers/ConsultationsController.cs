@@ -25,6 +25,7 @@ namespace VideoWeb.Controllers
         private readonly IVideoApiClient _videoApiClient;
         private readonly IConferenceCache _conferenceCache;
         private readonly IConsultationNotifier _consultationNotifier;
+        private readonly IConsultationResponseTracker _consultationResponseTracker;
         private readonly ILogger<ConsultationsController> _logger;
         private readonly IMapperFactory _mapperFactory;
 
@@ -32,20 +33,21 @@ namespace VideoWeb.Controllers
             IVideoApiClient videoApiClient,
             IConferenceCache conferenceCache,
             ILogger<ConsultationsController> logger,
-            IMapperFactory mapperFactory, IConsultationNotifier consultationNotifier)
+            IMapperFactory mapperFactory, IConsultationNotifier consultationNotifier, IConsultationResponseTracker consultationResponseTracker)
         {
             _videoApiClient = videoApiClient;
             _conferenceCache = conferenceCache;
             _logger = logger;
             _mapperFactory = mapperFactory;
             _consultationNotifier = consultationNotifier;
+            _consultationResponseTracker = consultationResponseTracker;
         }
 
         [HttpPost("leave")]
         [SwaggerOperation(OperationId = "LeaveConsultation")]
-        [ProducesResponseType((int) HttpStatusCode.NoContent)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> LeaveConsultationAsync(LeavePrivateConsultationRequest request)
         {
             var participant = new Participant();
@@ -81,9 +83,9 @@ namespace VideoWeb.Controllers
 
         [HttpPost("respond")]
         [SwaggerOperation(OperationId = "RespondToConsultationRequest")]
-        [ProducesResponseType((int) HttpStatusCode.NoContent)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> RespondToConsultationRequestAsync(PrivateConsultationRequest request)
         {
             var conference = await GetConference(request.ConferenceId);
@@ -99,13 +101,19 @@ namespace VideoWeb.Controllers
 
             try
             {
-                if (request.Answer == ConsultationAnswer.Accepted)
+                await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedForId, request.Answer);
+                var haveAllResponded =
+                    await _consultationResponseTracker.HaveAllParticipantsAccepted(conference, request.RequestedForId);
+                if (request.Answer == ConsultationAnswer.Accepted && haveAllResponded)
                 {
                     await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Transferring);
                 }
 
-                await _videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
-                await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedForId, request.Answer);
+                if (haveAllResponded)
+                {
+                    await _videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
+                }
+
                 return NoContent();
             }
             catch (VideoApiException e)
@@ -118,9 +126,9 @@ namespace VideoWeb.Controllers
 
         [HttpPost("start")]
         [SwaggerOperation(OperationId = "StartOrJoinConsultation")]
-        [ProducesResponseType((int) HttpStatusCode.Accepted)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> StartConsultationAsync(StartPrivateConsultationRequest request)
         {
             try
@@ -200,7 +208,7 @@ namespace VideoWeb.Controllers
                 await _videoApiClient.LockRoomAsync(mappedRequest);
 
                 await _consultationNotifier.NotifyRoomUpdateAsync(conference,
-                    new Room {Label = request.RoomLabel, Locked = request.Lock, ConferenceId = conference.Id});
+                    new Room { Label = request.RoomLabel, Locked = request.Lock, ConferenceId = conference.Id });
 
                 return NoContent();
             }
