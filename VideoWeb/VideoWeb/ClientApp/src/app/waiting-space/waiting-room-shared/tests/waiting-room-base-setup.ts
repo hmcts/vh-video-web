@@ -1,5 +1,4 @@
 import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
 import { of } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -41,7 +40,6 @@ export const globalEndpoint = globalConference.endpoints[0];
 export const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: globalConference.id }) } };
 export let videoWebService: jasmine.SpyObj<VideoWebService>;
 export const eventsService = eventsServiceSpy;
-export let adalService: jasmine.SpyObj<AdalService>;
 export let errorService: jasmine.SpyObj<ErrorService>;
 export let clockService: jasmine.SpyObj<ClockService>;
 export let router: jasmine.SpyObj<Router>;
@@ -77,9 +75,6 @@ export function initAllWRDependencies() {
     videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
     videoWebService.getJwToken.and.resolveTo(jwToken);
     videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(new LoggedParticipantResponse({})));
-    adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
-        userInfo: <adal.User>{ userName: 'chris.green@hearings.net', authenticated: true }
-    });
     errorService = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError', 'handleApiError', 'handlePexipError']);
 
     clockService = jasmine.createSpyObj<ClockService>('ClockService', ['getClock']);

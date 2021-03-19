@@ -1,5 +1,4 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConsultationAnswer, ParticipantResponse, ParticipantStatus, VideoEndpointResponse } from 'src/app/services/clients/api-client';
@@ -20,7 +19,6 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     participantCallStatuses = {};
 
     constructor(
-        protected adalService: AdalService,
         protected consultationService: ConsultationService,
         protected eventService: EventsService,
         protected logger: Logger,
@@ -28,7 +26,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         protected route: ActivatedRoute,
         protected translateService: TranslateService
     ) {
-        super(adalService, consultationService, eventService, videoWebService, logger, translateService);
+        super(consultationService, eventService, videoWebService, logger, translateService);
         this.loggerPrefix = '[PrivateConsultationParticipantsComponent] - ';
     }
 

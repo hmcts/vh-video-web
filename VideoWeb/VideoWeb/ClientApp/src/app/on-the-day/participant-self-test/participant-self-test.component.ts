@@ -1,6 +1,5 @@
 import { Component, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { TestCallScoreResponse, AddSelfTestFailureEventRequest, SelfTestFailureReason } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -23,11 +22,10 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,
         protected errorService: ErrorService,
-        protected adalService: AdalService,
         protected logger: Logger,
         private participantStatusUpdateService: ParticipantStatusUpdateService
     ) {
-        super(route, videoWebService, errorService, adalService, logger);
+        super(route, videoWebService, errorService, logger);
     }
 
     onSelfTestCompleted(testcallScore: TestCallScoreResponse): void {

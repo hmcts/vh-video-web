@@ -6,7 +6,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceLite } from 'src/app/services/models/conference-lite';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { VideoCheckComponent } from './video-check.component';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
@@ -20,8 +19,6 @@ describe('VideoCheckComponent', () => {
     const activatedRoute: any = { snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
     const formBuilder = new FormBuilder();
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    const mockAdalService = new MockAdalService();
-    let adalService;
     let errorService: jasmine.SpyObj<ErrorService>;
     const logger: Logger = new MockLogger();
     let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
@@ -33,7 +30,6 @@ describe('VideoCheckComponent', () => {
             'raiseSelfTestFailureEvent'
         ]);
         videoWebServiceSpy.getActiveIndividualConference.and.returnValue(confLite);
-        adalService = mockAdalService;
 
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
 
@@ -54,7 +50,6 @@ describe('VideoCheckComponent', () => {
             activatedRoute,
             formBuilder,
             videoWebServiceSpy,
-            adalService,
             errorService,
             logger,
             participantStatusUpdateService,

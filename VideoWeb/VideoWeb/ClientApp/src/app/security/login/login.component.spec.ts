@@ -1,23 +1,23 @@
 import { Router } from '@angular/router';
 import { ReturnUrlService } from '../../services/return-url.service';
-import { MockAdalService } from '../../testing/mocks/MockAdalService';
+import { MockOidcSecurityService } from '../../testing/mocks/MockOidcSecurityService';
 import { MockLogger } from '../../testing/mocks/MockLogger';
 import { LoginComponent } from './login.component';
 
 describe('LoginComponent', () => {
     let component: LoginComponent;
-    const mockAdalService = new MockAdalService();
-    let adalService;
+    const mockOidcSecurityService = new MockOidcSecurityService();
+    let oidcSecurityService;
     const returnUrlService = new ReturnUrlService();
     let router: jasmine.SpyObj<Router>;
 
     beforeAll(() => {
-        adalService = mockAdalService;
+        oidcSecurityService = mockOidcSecurityService;
         router = jasmine.createSpyObj<Router>('Router', ['navigate', 'navigateByUrl']);
     });
 
     beforeEach(() => {
-        component = new LoginComponent(adalService, router, returnUrlService, new MockLogger());
+        component = new LoginComponent(router, returnUrlService, new MockLogger(), oidcSecurityService);
     });
 
     it('should create', () => {
@@ -25,21 +25,21 @@ describe('LoginComponent', () => {
     });
 
     it('should use saved return url', () => {
-        adalService.setAuthenticated(true);
+        oidcSecurityService.setAuthenticated(true);
         spyOn(returnUrlService, 'popUrl').and.returnValue('testurl');
         component.ngOnInit();
         expect(router.navigateByUrl).toHaveBeenCalledWith('testurl');
     });
 
     it('should return to root url if no return path is given', () => {
-        adalService.setAuthenticated(true);
+        oidcSecurityService.setAuthenticated(true);
         component.ngOnInit();
         expect(router.navigateByUrl).toHaveBeenCalledWith('/');
     });
 
     it('should fallback to root url if return url is invalid', () => {
         spyOn(returnUrlService, 'popUrl').and.returnValue('');
-        adalService.setAuthenticated(true);
+        oidcSecurityService.setAuthenticated(true);
         router.navigateByUrl.and.callFake(() => {
             throw new Error('Invalid URL');
         });

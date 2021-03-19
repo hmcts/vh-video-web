@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
-import { AdalService } from 'adal-angular4';
 import { Observable, Subject } from 'rxjs';
 import { ErrorService } from 'src/app/services/error.service';
 import { Heartbeat } from '../shared/models/heartbeat';
@@ -25,6 +24,7 @@ import { ParticipantStatusMessage } from './models/participant-status-message';
 import { RoomTransfer } from '../shared/models/room-transfer';
 import { ParticipantHandRaisedMessage } from '../shared/models/participant-hand-raised-message';
 import { ParticipantRemoteMuteMessage } from '../shared/models/participant-remote-mute-message';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Injectable({
     providedIn: 'root'
@@ -59,7 +59,7 @@ export class EventsService {
     reconnectionPromise: Promise<any>;
 
     constructor(
-        private adalService: AdalService,
+        private oidcSecurityService: OidcSecurityService,
         private configService: ConfigService,
         private logger: Logger,
         private errorService: ErrorService
@@ -70,7 +70,7 @@ export class EventsService {
             .configureLogging(signalR.LogLevel.Debug)
             .withAutomaticReconnect(this.reconnectionTimes)
             .withUrl(eventhubPath, {
-                accessTokenFactory: () => this.adalService.userInfo.token
+                accessTokenFactory: () => this.oidcSecurityService.getToken()
             })
             .build();
         this.connection.serverTimeoutInMilliseconds = this.serverTimeoutTime;
@@ -81,39 +81,39 @@ export class EventsService {
             return this.reconnectionPromise;
         }
 
-        if (
-            !this.isConnectedToHub &&
-            this.adalService.userInfo.authenticated &&
-            this.connection.state !== signalR.HubConnectionState.Disconnecting
-        ) {
-            this.reconnectionAttempt++;
-            return this.connection
-                .start()
-                .then(() => {
-                    this.reconnectionAttempt = 0;
-                    this.logger.info('[EventsService] - Successfully connected to EventHub');
-                    this.connection.onreconnecting(error => this.onEventHubReconnecting(error));
-                    this.connection.onreconnected(() => this.onEventHubReconnected());
-                    this.connection.onclose(error => this.onEventHubErrorOrClose(error));
-                    this.registerHandlers();
-                })
-                .catch(async err => {
-                    this.logger.warn(`[EventsService] - Failed to connect to EventHub ${err}`);
-                    this.onEventHubErrorOrClose(err);
-                    if (this.reconnectionTimes.length >= this.reconnectionAttempt) {
-                        const delayMs = this.reconnectionTimes[this.reconnectionAttempt - 1];
-                        this.logger.info(`[EventsService] - Reconnecting in ${delayMs}ms`);
-                        this.reconnectionPromise = this.delay(delayMs).then(() => {
-                            this.reconnectionPromise = null;
-                            this.start();
+        if (!this.isConnectedToHub && this.connection.state !== signalR.HubConnectionState.Disconnecting) {
+            this.oidcSecurityService.isAuthenticated$.subscribe(authenticated => {
+                if (authenticated) {
+                    this.reconnectionAttempt++;
+                    return this.connection
+                        .start()
+                        .then(() => {
+                            this.reconnectionAttempt = 0;
+                            this.logger.info('[EventsService] - Successfully connected to EventHub');
+                            this.connection.onreconnecting(error => this.onEventHubReconnecting(error));
+                            this.connection.onreconnected(() => this.onEventHubReconnected());
+                            this.connection.onclose(error => this.onEventHubErrorOrClose(error));
+                            this.registerHandlers();
+                        })
+                        .catch(async err => {
+                            this.logger.warn(`[EventsService] - Failed to connect to EventHub ${err}`);
+                            this.onEventHubErrorOrClose(err);
+                            if (this.reconnectionTimes.length >= this.reconnectionAttempt) {
+                                const delayMs = this.reconnectionTimes[this.reconnectionAttempt - 1];
+                                this.logger.info(`[EventsService] - Reconnecting in ${delayMs}ms`);
+                                this.reconnectionPromise = this.delay(delayMs).then(() => {
+                                    this.reconnectionPromise = null;
+                                    this.start();
+                                });
+                            } else {
+                                this.logger.info(
+                                    `[EventsService] - Failed to connect too many times (#${this.reconnectionAttempt}), going to service error`
+                                );
+                                this.errorService.goToServiceError('Your connection was lost');
+                            }
                         });
-                    } else {
-                        this.logger.info(
-                            `[EventsService] - Failed to connect too many times (#${this.reconnectionAttempt}), going to service error`
-                        );
-                        this.errorService.goToServiceError('Your connection was lost');
-                    }
-                });
+                }
+            });
         }
     }
 

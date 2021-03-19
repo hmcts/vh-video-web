@@ -11,9 +11,8 @@ import {
     ViewChild
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AdalService } from 'adal-angular4';
 import { Guid } from 'guid-typescript';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ChatResponse } from 'src/app/services/clients/api-client';
@@ -24,6 +23,8 @@ import { ChatBaseComponent } from 'src/app/shared/chat/chat-base.component';
 import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { TranslateService } from '@ngx-translate/core';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export abstract class ChatWindowBaseComponent extends ChatBaseComponent implements OnInit, OnDestroy, AfterViewChecked {
@@ -45,16 +46,18 @@ export abstract class ChatWindowBaseComponent extends ChatBaseComponent implemen
         protected profileService: ProfileService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected adalService: AdalService,
+        protected oidcSecurityService: OidcSecurityService,
         protected imHelper: ImHelper,
         protected route: ActivatedRoute,
         protected translateService: TranslateService
     ) {
-        super(videoWebService, profileService, eventService, logger, adalService, imHelper, translateService);
+        super(videoWebService, profileService, eventService, logger, oidcSecurityService, imHelper, translateService);
     }
 
-    get participantUsername() {
-        return this.adalService.userInfo.userName.toLowerCase();
+    _participantUsername: string;
+
+    get participantUsername(): string {
+        return this._participantUsername;
     }
 
     get participantId() {
@@ -71,6 +74,8 @@ export abstract class ChatWindowBaseComponent extends ChatBaseComponent implemen
         this.retrieveChatForConference(this.loggedInUser.participant_id).then(messages => {
             this.handleChatHistoryResponse(messages);
         });
+
+        this.oidcSecurityService.userData$.subscribe(ud => (this._participantUsername = ud.preferred_username.toLowerCase()));
     }
 
     ngAfterViewChecked(): void {

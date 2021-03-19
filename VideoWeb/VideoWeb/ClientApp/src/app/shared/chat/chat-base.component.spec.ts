@@ -1,5 +1,4 @@
 import { ElementRef } from '@angular/core';
-import { AdalService } from 'adal-angular4';
 import { Guid } from 'guid-typescript';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -16,6 +15,8 @@ import { Hearing } from '../models/hearing';
 import { ChatBaseComponent } from './chat-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { MockOidcSecurityService } from 'src/app/testing/mocks/MockOidcSecurityService';
 
 class ChatBaseTest extends ChatBaseComponent {
     content: ElementRef<HTMLElement>;
@@ -27,11 +28,11 @@ class ChatBaseTest extends ChatBaseComponent {
         protected profileService: ProfileService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected adalService: AdalService,
+        protected oidcSecurityService: OidcSecurityService,
         protected imHelper: ImHelper,
         protected translateService: TranslateService
     ) {
-        super(videoWebService, profileService, eventService, logger, adalService, imHelper, translateService);
+        super(videoWebService, profileService, eventService, logger, oidcSecurityService, imHelper, translateService);
     }
 
     sendMessage(messageBody: string): void {
@@ -51,21 +52,24 @@ class ChatBaseTest extends ChatBaseComponent {
     }
 }
 
+const mockOidcSecurityService = new MockOidcSecurityService();
+
 describe('ChatBaseComponent', () => {
     let component: ChatBaseComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     const eventsService = eventsServiceSpy;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
-    let adalService: jasmine.SpyObj<AdalService>;
     let conference: ConferenceResponse;
     let hearing: Hearing;
     const adminProfile = adminTestProfile;
     let contentElement: HTMLDivElement;
 
     beforeAll(() => {
-        adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
-            userInfo: <adal.User>{ userName: adminProfile.username, authenticated: true }
+        mockOidcSecurityService.setUserData({
+            preferred_username: adminProfile.username
         });
+        mockOidcSecurityService.setAuthenticated(true);
+
         conference = new ConferenceTestData().getConferenceDetailFuture();
         hearing = new Hearing(conference);
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
@@ -85,7 +89,7 @@ describe('ChatBaseComponent', () => {
             profileServiceSpy,
             eventsService,
             new MockLogger(),
-            adalService,
+            mockOidcSecurityService as any,
             new ImHelper(),
             translateServiceSpy
         );

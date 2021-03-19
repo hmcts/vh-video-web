@@ -1,8 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
-import { async, ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { AdalService } from 'adal-angular4';
 import { configureTestSuite } from 'ng-bullet';
 import { AppComponent } from './app.component';
 import { ConfigService } from './services/api/config.service';
@@ -25,7 +24,6 @@ import { translateServiceSpy } from './testing/mocks/mock-translation-service';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
-    let adalServiceSpy: jasmine.SpyObj<AdalService>;
     let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
     let locationServiceSpy: jasmine.SpyObj<LocationService>;
@@ -49,8 +47,6 @@ describe('AppComponent', () => {
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['clientSettings', 'getClientSettings', 'loadConfig']);
         configServiceSpy.getClientSettings.and.returnValue(clientSettings);
 
-        adalServiceSpy = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut']);
-
         deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isSupportedBrowser']);
 
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
@@ -68,7 +64,6 @@ describe('AppComponent', () => {
             imports: [HttpClientModule, RouterTestingModule],
             declarations: [AppComponent, HeaderStubComponent, FooterStubComponent, BetaBannerStubComponent],
             providers: [
-                { provide: AdalService, useValue: adalServiceSpy },
                 { provide: ConfigService, useValue: configServiceSpy },
                 { provide: Logger, useClass: MockLogger },
                 { provide: DeviceTypeService, useValue: deviceTypeServiceSpy },

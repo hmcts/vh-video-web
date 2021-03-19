@@ -1,13 +1,18 @@
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { AuthModule, LogLevel, OidcConfigService, OidcSecurityService } from 'angular-auth-oidc-client';
+import { AuthInterceptor, AuthModule, LogLevel, OidcConfigService, OidcSecurityService } from 'angular-auth-oidc-client';
+import { ConfigService } from './services/api/config.service';
 
-export function loadConfig(oidcConfigService: OidcConfigService) {
-    return () =>
-        oidcConfigService.withConfig({
-            stsServer: 'https://login.microsoftonline.com/fb6e0e22-0da3-4c35-972a-9d61eb256508/v2.0',
-            // authWellknownEndpoint: 'https://login.microsoftonline.com/fb6e0e22-0da3-4c35-972a-9d61eb256508',
-            redirectUrl: 'https://localhost:5800/home',
-            clientId: '3edd22df-cee5-4109-8e96-703e280b25f6',
+export function loadConfig(configService: ConfigService, oidcConfigService: OidcConfigService) {
+    return () => {
+        const clientSettings = configService.getClientSettings();
+        console.log('****Client Info****');
+        console.error(clientSettings);
+        return oidcConfigService.withConfig({
+            stsServer: `https://login.microsoftonline.com/${clientSettings.tenant_id}/v2.0`,
+            // authWellknownEndpoint: `https://login.microsoftonline.com/${clientSettings.tenant_id}`,
+            redirectUrl: clientSettings.redirect_uri,
+            clientId: clientSettings.client_id,
             scope: 'openid profile',
             responseType: 'code',
             silentRenew: true,
@@ -16,23 +21,26 @@ export function loadConfig(oidcConfigService: OidcConfigService) {
             autoUserinfo: false,
             // silentRenewUrl: window.location.origin + '/silent-renew.html',
             useRefreshToken: true,
-            logLevel: LogLevel.Debug
+            logLevel: LogLevel.Debug,
+            secureRoutes: ['https://localhost/', 'hearings.reform.hmcts.net/']
         });
+    };
 }
 
 @NgModule({
-    imports: [AuthModule.forRoot()],
+    imports: [AuthModule.forRoot(), HttpClientModule],
     providers: [
         OidcSecurityService,
         OidcConfigService,
+        ConfigService,
         {
             provide: APP_INITIALIZER,
             useFactory: loadConfig,
-            deps: [OidcConfigService],
+            deps: [ConfigService, OidcConfigService],
             multi: true
-        }
+        },
+        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
     ],
     exports: [AuthModule]
 })
-export class AuthConfigModule {
-}
+export class AuthConfigModule {}

@@ -1,10 +1,9 @@
-import { HttpClient, HttpClientModule, HttpXhrBackend, HTTP_INTERCEPTORS, HttpXhrBackend } from '@angular/common/http';
+import { HttpClient, HttpClientModule, HttpXhrBackend } from '@angular/common/http';
 import { APP_INITIALIZER, ErrorHandler, LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
-import { AdalGuard, AdalService } from 'adal-angular4';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
@@ -29,6 +28,7 @@ import { DisplayMissingTranslationHandler } from './shared/display-missing-trans
 import { registerLocaleData } from '@angular/common';
 import localeCy from '@angular/common/locales/cy';
 import { AuthConfigModule } from './auth-config.module';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 export function createTranslateLoader() {
     // We cant inject a httpClient because it has a race condition with adal
@@ -71,12 +71,9 @@ export function getLocale() {
         { provide: APP_INITIALIZER, useFactory: getSettings, deps: [ConfigService], multi: true },
         { provide: Logger, useClass: LoggerService },
         { provide: LOG_ADAPTER, useClass: ConsoleLogger, multi: true },
-        { provide: LOG_ADAPTER, useClass: AppInsightsLoggerService, multi: true, deps: [ConfigService, Router, AdalService] },
+        { provide: LOG_ADAPTER, useClass: AppInsightsLoggerService, multi: true, deps: [ConfigService, Router, OidcSecurityService] },
         { provide: API_BASE_URL, useFactory: () => '.' },
         { provide: LOCALE_ID, useFactory: getLocale },
-        AdalService,
-        AdalGuard,
-        // { provide: HTTP_INTERCEPTORS, useClass: AdalInterceptor, multi: true },
         { provide: ErrorHandler, useClass: GlobalErrorHandler },
         ConfigService,
         AuthGuard,

@@ -1,7 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { AdalService } from 'adal-angular4';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -48,7 +47,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,
         protected eventService: EventsService,
-        protected adalService: AdalService,
         protected logger: Logger,
         protected errorService: ErrorService,
         protected heartbeatMapper: HeartbeatModelMapper,
@@ -69,7 +67,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             route,
             videoWebService,
             eventService,
-            adalService,
             logger,
             errorService,
             heartbeatMapper,

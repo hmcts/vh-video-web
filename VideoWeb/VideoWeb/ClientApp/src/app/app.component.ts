@@ -1,10 +1,8 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
-import { Subscription } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
-// import { ConfigService } from './services/api/config.service';
+import { NEVER, Observable, Subscription } from 'rxjs';
+import { catchError, filter, map } from 'rxjs/operators';
 import { ProfileService } from './services/api/profile.service';
 import { Role } from './services/clients/api-client';
 import { DeviceTypeService } from './services/device-type.service';
@@ -36,8 +34,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
     subscriptions = new Subscription();
     constructor(
-        private adalService: AdalService,
-        // private configService: ConfigService,
         private router: Router,
         private deviceTypeService: DeviceTypeService,
         private profileService: ProfileService,
@@ -54,7 +50,6 @@ export class AppComponent implements OnInit, OnDestroy {
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
-        // this.initAuthentication();
 
         const language = localStorage.getItem('language') ?? 'en';
         translate.setDefaultLang(language);
@@ -64,29 +59,25 @@ export class AppComponent implements OnInit, OnDestroy {
         pageTracker.trackPreviousPage(router);
     }
 
-    // private initAuthentication() {
-    //     const clientSettings = this.configService.getClientSettings();
-    //     const config = {
-    //         tenant: clientSettings.tenant_id,
-    //         clientId: clientSettings.client_id,
-    //         postLogoutRedirectUri: clientSettings.post_logout_redirect_uri,
-    //         redirectUri: clientSettings.redirect_uri,
-    //         cacheLocation: 'sessionStorage'
-    //     };
-    //     this.adalService.init(config);
-    // }
-
     async ngOnInit() {
-        const isLoggedIn = await this.oidcSecurityService.checkAuth().toPromise();
-        console.log('***** checkAuth: is authenticated 1', isLoggedIn);
-        this.oidcSecurityService.checkAuth().subscribe((auth) => console.log('***** ngOnInit: is authenticated 2', auth));
-        this.checkAuth().then(() => {
+        this.checkAuth().subscribe(async loggedIn => {
+            await this.attemptRetrieveProfile(loggedIn);
             this.checkBrowser();
             this.setPageTitle();
             this.setupSubscribers();
             this.eventsService.start();
             this.connectionStatusService.start();
         });
+    }
+
+    private async attemptRetrieveProfile(loggedIn: boolean) {
+        if (!loggedIn) {
+            console.log('*** [AppComponent] - going to login');
+            const currentUrl = this.locationService.getCurrentUrl();
+            this.router.navigate([`/${pageUrls.IdpSelection}`], { queryParams: { returnUrl: currentUrl } });
+        } else {
+            await this.retrieveProfileRole();
+        }
     }
 
     private setupSubscribers() {
@@ -111,32 +102,14 @@ export class AppComponent implements OnInit, OnDestroy {
         }
     }
 
-    async checkAuth(): Promise<void> {
-        const currentUrl = this.locationService.getCurrentUrl();
-        if (
-            this.locationService.getCurrentPathName() !== `/${pageUrls.Logout}` &&
-            !this.locationService.getCurrentPathName().toLowerCase().startsWith(`/${pageUrls.IdpSelection}`)
-        ) {
-            console.log('***** checkAuth:Start');
-            const isLoggedIn = await this.oidcSecurityService.checkAuth().toPromise();
-            console.log('***** checkAuth: isLoggedIn', isLoggedIn);
-            console.log('***** checkAuth:TOKEN: ' + this.oidcSecurityService.getIdToken());
-
-            this.oidcSecurityService.checkAuth().subscribe(async (auth) => {
-                this.loggedIn = auth;
-                console.log('***** checkAuth: is authenticated', auth);
-
-                // this.adalService.handleWindowCallback();
-                // this.loggedIn = this.adalService.userInfo.authenticated;
-                if (!this.loggedIn) {
-                    console.log('***** checkAuth: going to login');
-                    this.router.navigate([`/${pageUrls.IdpSelection}`], { queryParams: { returnUrl: currentUrl } });
-                    return;
-                }
-                await this.retrieveProfileRole();
-            });
-            console.log('***** checkAuth:Finish');
-        }
+    checkAuth(): Observable<boolean> {
+        return this.oidcSecurityService.checkAuth().pipe(
+            catchError(err => {
+                console.error('[AppComponent] - Check Auth Error', err);
+                this.router.navigate(['/']);
+                return NEVER;
+            })
+        );
     }
 
     async retrieveProfileRole(): Promise<void> {
@@ -153,7 +126,7 @@ export class AppComponent implements OnInit, OnDestroy {
     logOut() {
         this.loggedIn = false;
         sessionStorage.clear();
-        this.adalService.logOut();
+        this.oidcSecurityService.logoffAndRevokeTokens();
     }
 
     skipToContent() {

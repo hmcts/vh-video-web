@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveEnd, Router, RouterEvent } from '@angular/router';
 import { ApplicationInsights, ITelemetryItem, SeverityLevel } from '@microsoft/applicationinsights-web';
-import { AdalService } from 'adal-angular4';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { filter } from 'rxjs/operators';
 import { ConfigService } from '../../api/config.service';
 import { LogAdapter } from '../log-adapter';
@@ -14,14 +14,14 @@ export class AppInsightsLoggerService implements LogAdapter {
     router: Router;
     appInsights: ApplicationInsights;
 
-    constructor(configService: ConfigService, router: Router, adalService: AdalService) {
+    constructor(configService: ConfigService, router: Router, oidcSecurityService: OidcSecurityService) {
         this.router = router;
-        this.setupAppInsights(configService, adalService).then(() => {
+        this.setupAppInsights(configService, oidcSecurityService).then(() => {
             this.trackNavigation();
         });
     }
 
-    private async setupAppInsights(configService: ConfigService, adalService: AdalService) {
+    private async setupAppInsights(configService: ConfigService, oidcSecurityService: OidcSecurityService) {
         await configService.loadConfig();
         const config = configService.getClientSettings();
         this.appInsights = new ApplicationInsights({
@@ -30,9 +30,11 @@ export class AppInsightsLoggerService implements LogAdapter {
             }
         });
         this.appInsights.loadAppInsights();
-        this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
-            envelope.tags['ai.cloud.role'] = 'vh-video-web';
-            envelope.tags['ai.user.id'] = adalService.userInfo.userName.toLowerCase();
+        oidcSecurityService.userData$.subscribe(ud => {
+            this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
+                envelope.tags['ai.cloud.role'] = 'vh-video-web';
+                envelope.tags['ai.user.id'] = ud.preferred_username.toLowerCase();
+            });
         });
     }
 

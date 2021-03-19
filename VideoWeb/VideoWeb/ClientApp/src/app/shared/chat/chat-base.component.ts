@@ -1,6 +1,5 @@
 import { ElementRef } from '@angular/core';
-import { AdalService } from 'adal-angular4';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { LoggedParticipantResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
@@ -10,6 +9,7 @@ import { InstantMessage } from 'src/app/services/models/instant-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ImHelper } from '../im-helper';
 import { TranslateService } from '@ngx-translate/core';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 export abstract class ChatBaseComponent {
     protected hearing: Hearing;
@@ -26,7 +26,7 @@ export abstract class ChatBaseComponent {
         protected profileService: ProfileService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected adalService: AdalService,
+        protected oidcSecurityService: OidcSecurityService,
         protected imHelper: ImHelper,
         protected translateService: TranslateService
     ) {}
@@ -35,7 +35,6 @@ export abstract class ChatBaseComponent {
     abstract sendMessage(messageBody: string): void;
     abstract get participantUsername(): string;
     abstract get participantId(): string;
-
     get pendingMessagesForConversation(): InstantMessage[] {
         if (this.pendingMessages.has(this.participantUsername)) {
             return this.pendingMessages.get(this.participantUsername);
@@ -67,21 +66,23 @@ export abstract class ChatBaseComponent {
             return;
         }
 
-        const from = message.from.toUpperCase();
-        const username =
-            this.loggedInUser && this.loggedInUser.participant_id && this.loggedInUser.participant_id !== this.emptyGuid
-                ? this.loggedInUser.participant_id
-                : this.adalService.userInfo.userName.toUpperCase();
-        if (from === username.toUpperCase()) {
-            message.from_display_name = this.translateService.instant('chat-base.you');
-            message.is_user = true;
-        } else {
-            message = await this.verifySender(message);
-            this.handleIncomingOtherMessage(message);
-        }
+        this.oidcSecurityService.userData$.subscribe(async ud => {
+            const from = message.from.toUpperCase();
+            const username =
+                this.loggedInUser && this.loggedInUser.participant_id && this.loggedInUser.participant_id !== this.emptyGuid
+                    ? this.loggedInUser.participant_id
+                    : ud.preferred_username.toUpperCase();
+            if (from === username.toUpperCase()) {
+                message.from_display_name = this.translateService.instant('chat-base.you');
+                message.is_user = true;
+            } else {
+                message = await this.verifySender(message);
+                this.handleIncomingOtherMessage(message);
+            }
 
-        this.removeMessageFromPending(message);
-        this.messages.push(message);
+            this.removeMessageFromPending(message);
+            this.messages.push(message);
+        });
     }
 
     addMessageToPending(message: InstantMessage) {

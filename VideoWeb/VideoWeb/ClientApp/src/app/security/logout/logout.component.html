@@ -1,7 +1,7 @@
-<p class="govuk-body govuk-!-padding-top-2 govuk-!-margin-bottom-1" *ngIf="loggedIn">
+<p class="govuk-body govuk-!-padding-top-2 govuk-!-margin-bottom-1" *ngIf="loggedIn | async">
     {{'logout.signing-out' | translate}}...
 </p>
-<p class="govuk-body govuk-!-margin-bottom-1 govuk-!-margin-top-5" *ngIf="!loggedIn">
+<p class="govuk-body govuk-!-margin-bottom-1 govuk-!-margin-top-5" *ngIf="!(loggedIn | async)">
     <span>{{'logout.signed-out-successfully' | translate}} </span>
   <a [routerLink]="[loginPath]">{{'logout.here' | translate}} </a>
   <span>{{'logout.log-back-in' | translate}}</span>

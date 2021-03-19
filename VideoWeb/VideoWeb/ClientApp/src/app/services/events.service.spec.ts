@@ -1,7 +1,7 @@
 import * as signalR from '@microsoft/signalr';
 import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
-import { MockAdalService } from '../testing/mocks/MockAdalService';
+import { MockOidcSecurityService } from '../testing/mocks/MockOidcSecurityService';
 import { MockLogger } from '../testing/mocks/MockLogger';
 import { ConfigService } from './api/config.service';
 import { ClientSettingsResponse } from './clients/api-client';
@@ -22,8 +22,8 @@ describe('EventsService', () => {
     let configService: jasmine.SpyObj<ConfigService>;
     let errorServiceSpy: jasmine.SpyObj<ErrorService>;
     let service: EventsService;
-    const mockAdalService = new MockAdalService();
-    let adalService;
+    const mockOidcSecurityService = new MockOidcSecurityService();
+    let oidcSecurityService;
     const logger: Logger = new MockLogger();
 
     const subscription$ = new Subscription();
@@ -32,14 +32,14 @@ describe('EventsService', () => {
         configService = jasmine.createSpyObj<ConfigService>('ConfigService', ['clientSettings', 'getClientSettings', 'loadConfig']);
         errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError', 'goToUnauthorised', 'goToServiceError']);
         configService.getClientSettings.and.returnValue(clientSettings);
-        adalService = mockAdalService;
-        service = new EventsService(adalService, configService, logger, errorServiceSpy);
+        oidcSecurityService = mockOidcSecurityService;
+        service = new EventsService(oidcSecurityService, configService, logger, errorServiceSpy);
 
         service.connection = new signalR.HubConnectionBuilder()
             .configureLogging(signalR.LogLevel.Debug)
             .withAutomaticReconnect([0])
             .withUrl('eventhub-karma-tests', {
-                accessTokenFactory: () => mockAdalService.userInfo.token
+                accessTokenFactory: () => mockOidcSecurityService.getToken()
             })
             .build();
     });
@@ -142,7 +142,7 @@ describe('EventsService', () => {
     });
 
     it('should not reconnect if signalR disonnected and user is not logged in', () => {
-        adalService.userInfo.authenticated = false;
+        mockOidcSecurityService.setAuthenticated(false);
         const spy = spyOnProperty(service.connection, 'state').and.returnValue(signalR.HubConnectionState.Disconnected);
         spyOn(service.connection, 'start').and.callFake(() => {
             spy.and.returnValue(signalR.HubConnectionState.Connected);

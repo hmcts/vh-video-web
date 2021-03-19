@@ -1,6 +1,5 @@
 import { Directive, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -39,7 +38,6 @@ export abstract class WRParticipantStatusListDirective {
     loggerPrefix = '[WRParticipantStatusListDirective] -';
 
     protected constructor(
-        protected adalService: AdalService,
         protected consultationService: ConsultationService,
         protected eventService: EventsService,
         protected videoWebService: VideoWebService,
@@ -56,10 +54,6 @@ export abstract class WRParticipantStatusListDirective {
         this.filterParticipantInConsultation();
         this.endpoints = this.conference.endpoints;
     }
-
-    abstract setupSubscribers(): void;
-    abstract canCallParticipant(participant: ParticipantResponse): boolean;
-    abstract canCallEndpoint(endpoint: VideoEndpointResponse): boolean;
 
     get participantCount(): number {
         return this.nonJudgeParticipants.length + this.observers.length + this.panelMembers.length + this.wingers.length;

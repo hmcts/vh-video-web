@@ -1,34 +1,34 @@
 import { Router } from '@angular/router';
 import { pageUrls } from '../shared/page-url.constants';
-import { MockAdalService } from '../testing/mocks/MockAdalService';
+import { MockOidcSecurityService } from '../testing/mocks/MockOidcSecurityService';
 import { AuthGuard } from './auth.guard';
 
 describe('authguard', () => {
     let authGuard: AuthGuard;
-    let adalSvc;
-    const mockAdalService = new MockAdalService();
+    let oidcSecurityService;
+    const mockOidcSecurityService = new MockOidcSecurityService();
     let router: jasmine.SpyObj<Router>;
 
     beforeAll(() => {
-        adalSvc = mockAdalService;
+        oidcSecurityService = mockOidcSecurityService;
         router = jasmine.createSpyObj<Router>('Router', ['navigate']);
     });
 
     beforeEach(() => {
-        authGuard = new AuthGuard(adalSvc, router);
+        authGuard = new AuthGuard(oidcSecurityService, router);
     });
 
     describe('when logged in with successful authentication', () => {
         it('canActivate should return true', () => {
-            adalSvc.setAuthenticated(true);
-            expect(authGuard.canActivate()).toBeTruthy();
+            oidcSecurityService.setAuthenticated(true);
+            expect(authGuard.canActivate(null, null)).toBeTruthy();
         });
     });
 
     describe('when login failed with unsuccessful authentication', () => {
         it('canActivate should return false', () => {
-            adalSvc.setAuthenticated(false);
-            expect(authGuard.canActivate()).toBeFalsy();
+            oidcSecurityService.setAuthenticated(false);
+            expect(authGuard.canActivate(null, null)).toBeFalsy();
             expect(router.navigate).toHaveBeenCalledWith([`/${pageUrls.IdpSelection}`]);
         });
     });

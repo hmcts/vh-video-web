@@ -1,5 +1,6 @@
 import { Component, Injectable, OnInit } from '@angular/core';
-import { AdalService } from 'adal-angular4';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { Observable, observable } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -13,19 +14,21 @@ import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
 export class LogoutComponent implements OnInit {
     private readonly judgeAllocationStorage: SessionStorage<string[]>;
     readonly loginPath = '../' + pageUrls.IdpSelection;
-    constructor(private adalSvc: AdalService, private profileService: ProfileService) {
+    constructor(private oidcSecurityService: OidcSecurityService, private profileService: ProfileService) {
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
     }
 
     ngOnInit() {
-        if (this.adalSvc.userInfo.authenticated) {
-            this.profileService.clearUserProfile();
-            this.judgeAllocationStorage.clear();
-            this.adalSvc.logOut();
-        }
+        this.oidcSecurityService.isAuthenticated$.subscribe(authenticated => {
+            if (authenticated) {
+                this.profileService.clearUserProfile();
+                this.judgeAllocationStorage.clear();
+                this.oidcSecurityService.logoffAndRevokeTokens();
+            }
+        });
     }
 
-    get loggedIn(): boolean {
-        return this.adalSvc.userInfo.authenticated;
+    get loggedIn(): Observable<boolean> {
+        return this.oidcSecurityService.isAuthenticated$;
     }
 }
