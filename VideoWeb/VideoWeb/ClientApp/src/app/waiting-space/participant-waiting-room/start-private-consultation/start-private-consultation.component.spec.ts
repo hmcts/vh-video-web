@@ -140,23 +140,23 @@ describe('StartPrivateConsultationComponent', () => {
         expect(component.getEndpointStatusCss(endpoint)).toEqual('in-consultation');
     });
 
-    it('should return true from should display label', () => {
-        const participant = conference.participants[0];
-        participant.status = ParticipantStatus.InConsultation;
-        expect(component.getShouldDisplayLabel(participant)).toBeTruthy();
-    });
-
-    it('should return false from should display label', () => {
-        const participant = conference.participants[0];
-        participant.status = ParticipantStatus.Disconnected;
-        expect(component.getShouldDisplayLabel(participant)).toBeTruthy();
-    });
-
     it('should return unavailable participant status', () => {
         const participant = conference.participants[0];
         participant.status = ParticipantStatus.Disconnected;
         const expectedText = 'start-private-consultation.unavailable';
         expect(component.getParticipantStatus(participant)).toEqual(expectedText);
+    });
+
+    it('should return enabled for participant with all linked participants available', () => {
+        const participant = { status: ParticipantStatus.Available, linked_participants: [{ linked_id: '12345' }] };
+        component.participants = [{ id: '12345', status: ParticipantStatus.Available }] as any[];
+        expect(component.getParticipantDisabled(participant as any)).toBe(false);
+    });
+
+    it('should return disabled for participant with some linked participants unavailable', () => {
+        const participant = { status: ParticipantStatus.Available, linked_participants: [{ linked_id: '12345' }] };
+        component.participants = [{ id: '12345', status: ParticipantStatus.NotSignedIn }] as any[];
+        expect(component.getParticipantDisabled(participant as any)).toBe(true);
     });
 
     it('should return in consultaion participant status', () => {

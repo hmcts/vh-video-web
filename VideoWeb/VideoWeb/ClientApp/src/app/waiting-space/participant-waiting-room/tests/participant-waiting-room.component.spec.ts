@@ -225,8 +225,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         [
             [HearingRole.REPRESENTATIVE, true],
             [HearingRole.WITNESS, false],
-            [HearingRole.OBSERVER, false],
-            [HearingRole.INTERPRETER, false]
+            [HearingRole.OBSERVER, false]
         ].forEach(([hearingRole, expected]) => {
             component.participant.hearing_role = hearingRole as HearingRole;
             expect(component.canStartJoinConsultation).toBe(expected as boolean);
@@ -239,41 +238,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
         linkedParticipant.link_type = LinkType.Interpreter;
         component.participant.linked_participants = [linkedParticipant];
         expect(component.canStartJoinConsultation).toBeFalsy();
-    });
-
-    it('should return if participant is an interpreter - isInterpreter', () => {
-        [
-            [HearingRole.INTERPRETER, true],
-            [HearingRole.EXPERT, false]
-        ].forEach(([hearingRole, expected]) => {
-            component.participant.hearing_role = hearingRole as HearingRole;
-            expect(component.isInterpreter).toBe(expected as boolean);
-        });
-    });
-
-    it('should return false when the participant is null -  - isInterpreter', () => {
-        component.participant = null;
-        expect(component.isInterpreter).toBeFalsy();
-    });
-
-    it('should return if participant is an interpreter - isInterpreter', () => {
-        [
-            [HearingRole.LITIGANT_IN_PERSON, true],
-            [HearingRole.INTERPRETER, false]
-        ].forEach(([hearingRole, expected]) => {
-            component.participant.hearing_role = hearingRole as HearingRole;
-            if (component.participant.hearing_role === HearingRole.LITIGANT_IN_PERSON) {
-                const linkedParticipant = new LinkedParticipantResponse();
-                linkedParticipant.link_type = LinkType.Interpreter;
-                component.participant.linked_participants = [linkedParticipant];
-            }
-            expect(component.isInterpretee).toBe(expected as boolean);
-        });
-    });
-
-    it('should return false when the participant is null -  - isInterpretee', () => {
-        component.participant = null;
-        expect(component.isInterpretee).toBeFalsy();
     });
 
     it('should return if the participant is a witness or not - isWitness', () => {
