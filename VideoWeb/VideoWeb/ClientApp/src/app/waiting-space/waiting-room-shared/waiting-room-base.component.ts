@@ -157,6 +157,7 @@ export abstract class WaitingRoomBaseDirective {
             .then((data: ConferenceResponse) => {
                 this.errorCount = 0;
                 this.loadingData = false;
+                this.countdownComplete = data.status === ConferenceStatus.InSession;
                 this.hearing = new Hearing(data);
                 this.conference = this.hearing.getConference();
                 this.videoWebService.getAllowedEndpointsForConference(this.conferenceId).then((endpoints: AllowedEndpointResponse[]) => {
