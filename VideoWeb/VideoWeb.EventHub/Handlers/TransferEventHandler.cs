@@ -48,7 +48,12 @@ namespace VideoWeb.EventHub.Handlers
             {
                 return ParticipantState.InHearing;
             }
-            
+
+            if (transferTo == RoomType.ConsultationRoom)
+            {
+                return ParticipantState.InConsultation;
+            }
+
             throw new RoomTransferException(callbackEvent.TransferFrom, callbackEvent.TransferTo);
         }
     }
