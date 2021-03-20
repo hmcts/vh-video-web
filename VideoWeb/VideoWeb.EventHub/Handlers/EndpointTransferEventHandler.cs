@@ -49,6 +49,11 @@ namespace VideoWeb.EventHub.Handlers
                 return EndpointState.Connected;
             }
 
+            if (transferTo == VHRoom.ConsultationRoom)
+            {
+                return EndpointState.InConsultation;
+            }
+
             throw new RoomTransferException(callbackEvent.TransferFrom, callbackEvent.TransferTo);
         }
     }
