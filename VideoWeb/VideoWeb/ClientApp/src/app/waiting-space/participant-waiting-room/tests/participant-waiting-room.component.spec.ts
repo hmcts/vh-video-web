@@ -228,6 +228,7 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             [HearingRole.OBSERVER, false]
         ].forEach(([hearingRole, expected]) => {
             component.participant.hearing_role = hearingRole as HearingRole;
+            component.participant.linked_participants = [];
             expect(component.canStartJoinConsultation).toBe(expected as boolean);
         });
     });
@@ -249,14 +250,14 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             [HearingRole.JUDGE, false]
         ].forEach(([hearingRole, expected]) => {
             component.participant.hearing_role = hearingRole as HearingRole;
-            expect(component.isOrHasWitnessLink).toBe(expected as boolean);
+            expect(component.isOrHasWitnessLink()).toBe(expected as boolean);
         });
     });
 
     it('should return false when the participant is null - isWitness', () => {
         component.participant = null;
 
-        expect(component.isOrHasWitnessLink).toBeFalsy();
+        expect(component.isOrHasWitnessLink()).toBeFalsy();
     });
 
     it('should return if the participant is a witness or not - isObserver', () => {
