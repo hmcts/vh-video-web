@@ -25,15 +25,15 @@ export class SelectHearingLayoutComponent implements OnInit {
         }
 
         (<any>window).GOVUKFrontend.initAll();
-        document.getElementById('accordion-choose-layout-heading').onclick = (e) => this.setAccordionText(e);
+        document.getElementById('accordion-choose-layout-heading').onclick = e => this.setAccordionText(e);
         this.accordionOpenAllElement = document.getElementsByClassName('govuk-accordion__open-all').item(0) as HTMLButtonElement;
-        this.accordionOpenAllElement.onclick = (e) => this.setAccordionText(e);
+        this.accordionOpenAllElement.onclick = e => this.setAccordionText(e);
         this.setAccordionText({} as MouseEvent);
     }
-    
+
     setAccordionText(event: MouseEvent) {
-        const element = event.target as HTMLButtonElement
-        if (element?.id == 'accordion-choose-layout-heading') {
+        const element = event.target as HTMLButtonElement;
+        if (element?.id === 'accordion-choose-layout-heading') {
             setTimeout(() => this.setAccordionText({} as MouseEvent), 1);
         }
 
