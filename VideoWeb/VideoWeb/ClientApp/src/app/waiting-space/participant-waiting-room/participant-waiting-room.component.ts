@@ -153,19 +153,19 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     getCurrentTimeClass() {
-        if (!this.isWitness && (this.hearing.isOnTime() || this.hearing.isPaused() || this.hearing.isClosed())) {
+        if (!this.isOrHasWitnessLink && (this.hearing.isOnTime() || this.hearing.isPaused() || this.hearing.isClosed())) {
             return 'hearing-on-time';
         }
-        if (!this.isWitness && (this.hearing.isStarting() || this.hearing.isInSession())) {
+        if (!this.isOrHasWitnessLink && (this.hearing.isStarting() || this.hearing.isInSession())) {
             return 'hearing-near-start';
         }
-        if (!this.isWitness && this.hearing.isDelayed()) {
+        if (!this.isOrHasWitnessLink && this.hearing.isDelayed()) {
             return 'hearing-delayed';
         }
         if (this.hearing.isSuspended()) {
             return 'hearing-delayed';
         }
-        if (this.isWitness && this.hearing.isInSession()) {
+        if (this.isOrHasWitnessLink && this.hearing.isInSession()) {
             return 'hearing-near-start';
         } else {
             return 'hearing-on-time';
@@ -180,10 +180,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         return this.participant?.current_room?.label.startsWith('JudgeJOH');
     }
 
-    get isWitness(): boolean {
-        return this.isOrHasWitnessLink();
-    }
-
     get isObserver(): boolean {
         return this.participant?.hearing_role === HearingRole.OBSERVER;
     }
@@ -193,12 +189,12 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         if (!this.validateIsForConference(message.conferenceId)) {
             return;
         }
-        if (message.status === ConferenceStatus.InSession && !this.isWitness) {
+        if (message.status === ConferenceStatus.InSession && !this.isOrHasWitnessLink) {
             this.notificationSoundsService.playHearingAlertSound();
         } else {
             this.notificationSoundsService.stopHearingAlertSound();
         }
-        if (message.status === ConferenceStatus.InSession && this.isWitness) {
+        if (message.status === ConferenceStatus.InSession && this.isOrHasWitnessLink) {
             this.consultationService.leaveConsultation(this.conference, this.participant).then(() => {
                 this.logger.info(`[ParticipantWaitingRoomComponent] - moving witness to waiting room for hearing start`, {
                     conference: this.conference?.id,
@@ -229,7 +225,9 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
 
     get canStartJoinConsultation() {
         return (
-            !this.isWitness && !this.isObserver && (!this.participant.linked_participants || !this.participant.linked_participants.length)
+            !this.isOrHasWitnessLink &&
+            !this.isObserver &&
+            (!this.participant.linked_participants || !this.participant.linked_participants.length)
         );
     }
 
