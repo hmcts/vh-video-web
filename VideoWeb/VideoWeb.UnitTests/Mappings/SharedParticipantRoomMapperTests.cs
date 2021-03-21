@@ -28,7 +28,34 @@ namespace VideoWeb.UnitTests.Mappings
             result.PexipNode.Should().Be(testVmr.PexipNode);
             result.ParticipantJoinUri.Should().Be(testVmr.ParticipantJoinUri);
             result.DisplayName.Should().Be(testVmr.Label);
-            result.TileDisplayName.Should().Be($"T201;{participant.DisplayName};{participant.Id}");
+            result.TileDisplayName.Should().EndWith($"{participant.DisplayName};{participant.Id}");
+        }
+        
+        [Test]
+        public void should_have_unique_tile_positions()
+        {
+            var participantA = new Participant
+            {
+                Id = Guid.NewGuid(),
+                DisplayName = "Interpreter Doe"
+            };
+            
+            var participantB = new Participant
+            {
+                Id = Guid.NewGuid(),
+                DisplayName = "Interpretee Doe"
+            };
+            var testVmr = new SharedParticipantRoomResponse
+            {
+                Label = "Interpreter1",
+                ParticipantJoinUri = "joidshfdsf",
+                PexipNode = "sip.unit.test.com"
+            };
+
+            var resultA = _sut.Map(testVmr, participantA, false);
+            var resultB = _sut.Map(testVmr, participantB, false);
+
+            resultA.TileDisplayName.Should().NotMatch(resultB.TileDisplayName);
         }
         
         [Test]
@@ -50,7 +77,8 @@ namespace VideoWeb.UnitTests.Mappings
             result.PexipNode.Should().Be(testVmr.PexipNode);
             result.ParticipantJoinUri.Should().Be(testVmr.ParticipantJoinUri);
             result.DisplayName.Should().Be(testVmr.Label);
-            result.TileDisplayName.Should().Be($"W201;{participant.DisplayName};{participant.Id}");
+            result.TileDisplayName.Should().EndWith($"{participant.DisplayName};{participant.Id}");
+            result.TileDisplayName.Should().StartWith("W");
         }
     }
 }

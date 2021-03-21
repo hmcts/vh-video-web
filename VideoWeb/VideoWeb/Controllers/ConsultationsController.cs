@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
@@ -9,11 +8,11 @@ using System.Threading.Tasks;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
-using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
+using VideoWeb.Helpers;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;
 
 namespace VideoWeb.Controllers
@@ -24,30 +23,31 @@ namespace VideoWeb.Controllers
     public class ConsultationsController : Controller
     {
         private readonly IVideoApiClient _videoApiClient;
-        private readonly IHubContext<EventHub.Hub.EventHub, IEventHubClient> _hubContext;
         private readonly IConferenceCache _conferenceCache;
+        private readonly IConsultationNotifier _consultationNotifier;
+        private readonly IConsultationResponseTracker _consultationResponseTracker;
         private readonly ILogger<ConsultationsController> _logger;
         private readonly IMapperFactory _mapperFactory;
 
         public ConsultationsController(
             IVideoApiClient videoApiClient,
-            IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext,
             IConferenceCache conferenceCache,
             ILogger<ConsultationsController> logger,
-            IMapperFactory mapperFactory)
+            IMapperFactory mapperFactory, IConsultationNotifier consultationNotifier, IConsultationResponseTracker consultationResponseTracker)
         {
             _videoApiClient = videoApiClient;
-            _hubContext = hubContext;
             _conferenceCache = conferenceCache;
             _logger = logger;
             _mapperFactory = mapperFactory;
+            _consultationNotifier = consultationNotifier;
+            _consultationResponseTracker = consultationResponseTracker;
         }
 
         [HttpPost("leave")]
         [SwaggerOperation(OperationId = "LeaveConsultation")]
-        [ProducesResponseType((int) HttpStatusCode.NoContent)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> LeaveConsultationAsync(LeavePrivateConsultationRequest request)
         {
             var participant = new Participant();
@@ -70,7 +70,7 @@ namespace VideoWeb.Controllers
             {
                 if (participant != null)
                 {
-                    _logger.LogError(e, "Participant: {participant.Username} was not able to leave the private consultation. An error occured", participant.Username);
+                    _logger.LogError(e, "Participant: {Username} was not able to leave the private consultation. An error occured", participant.Username);
                 }
                 else
                 {
@@ -83,9 +83,9 @@ namespace VideoWeb.Controllers
 
         [HttpPost("respond")]
         [SwaggerOperation(OperationId = "RespondToConsultationRequest")]
-        [ProducesResponseType((int) HttpStatusCode.NoContent)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> RespondToConsultationRequestAsync(PrivateConsultationRequest request)
         {
             var conference = await GetConference(request.ConferenceId);
@@ -101,18 +101,24 @@ namespace VideoWeb.Controllers
 
             try
             {
-                if (request.Answer == ConsultationAnswer.Accepted)
+                await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedForId, request.Answer);
+                var haveAllResponded =
+                    await _consultationResponseTracker.HaveAllParticipantsAccepted(conference, request.RequestedForId);
+                if (request.Answer == ConsultationAnswer.Accepted && haveAllResponded)
                 {
-                    await NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Transferring);
+                    await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Transferring);
                 }
 
-                await _videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
-                await NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedForId, request.Answer);
+                if (request.Answer != ConsultationAnswer.Accepted || haveAllResponded)
+                {
+                    await _videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
+                }
+
                 return NoContent();
             }
             catch (VideoApiException e)
             {
-                await NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Failed);
+                await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Failed);
                 _logger.LogError(e, "Consultation request could not be responded to");
                 return StatusCode(e.StatusCode, e.Response);
             }
@@ -120,9 +126,9 @@ namespace VideoWeb.Controllers
 
         [HttpPost("start")]
         [SwaggerOperation(OperationId = "StartOrJoinConsultation")]
-        [ProducesResponseType((int) HttpStatusCode.Accepted)]
-        [ProducesResponseType((int) HttpStatusCode.NotFound)]
-        [ProducesResponseType((int) HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.Accepted)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> StartConsultationAsync(StartPrivateConsultationRequest request)
         {
             try
@@ -133,7 +139,7 @@ namespace VideoWeb.Controllers
                 var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedBy && x.Username == username);
                 if (requestedBy == null)
                 {
-                    _logger.LogWarning("The participant with Id: {requestedBy} and username: {username} is not found", request.RequestedBy, username);
+                    _logger.LogWarning("The participant with Id: {RequestedBy} and username: {Username} is not found", request.RequestedBy, username);
                     return NotFound();
                 }
 
@@ -143,15 +149,15 @@ namespace VideoWeb.Controllers
                 if (request.RoomType == Contract.Enums.VirtualCourtRoomType.Participant)
                 {
                     var room = await _videoApiClient.CreatePrivateConsultationAsync(mappedRequest);
-                    await NotifyRoomUpdateAsync(conference, new Room { Label = room.Label, Locked = room.Locked, ConferenceId = conference.Id });
+                    await _consultationNotifier.NotifyRoomUpdateAsync(conference, new Room { Label = room.Label, Locked = room.Locked, ConferenceId = conference.Id });
                     foreach (var participantId in request.InviteParticipants.Where(participantId => conference.Participants.Any(p => p.Id == participantId)))
                     {
-                        await NotifyConsultationRequestAsync(conference, room.Label, request.RequestedBy, participantId);
+                        await _consultationNotifier.NotifyConsultationRequestAsync(conference, room.Label, request.RequestedBy, participantId);
                     }
 
                     var validSelectedEndpoints = request.InviteEndpoints
                         .Select(endpointId => conference.Endpoints.SingleOrDefault(p => p.Id == endpointId))
-                        .Where(x => x.DefenceAdvocateUsername.Equals(username, StringComparison.OrdinalIgnoreCase));
+                        .Where(x => x != null && x.DefenceAdvocateUsername.Equals(username, StringComparison.OrdinalIgnoreCase));
                     foreach (var endpoint in validSelectedEndpoints)
                     {
                         try
@@ -167,8 +173,8 @@ namespace VideoWeb.Controllers
                         }
                         catch (VideoApiException e)
                         {
-                            await NotifyConsultationResponseAsync(conference, room.Label, endpoint.Id, ConsultationAnswer.Failed);
-                            _logger.LogError(e, "Unable to add {endpointId} to consultation", endpoint.Id);
+                            await _consultationNotifier.NotifyConsultationResponseAsync(conference, room.Label, endpoint.Id, ConsultationAnswer.Failed);
+                            _logger.LogError(e, "Unable to add {EndpointId} to consultation", endpoint.Id);
                         }
                     }
                 }
@@ -201,7 +207,8 @@ namespace VideoWeb.Controllers
                 var mappedRequest = lockRequestMapper.Map(request);
                 await _videoApiClient.LockRoomAsync(mappedRequest);
 
-                await NotifyRoomUpdateAsync(conference, new Room { Label = request.RoomLabel, Locked = request.Lock, ConferenceId = conference.Id });
+                await _consultationNotifier.NotifyRoomUpdateAsync(conference,
+                    new Room { Label = request.RoomLabel, Locked = request.Lock, ConferenceId = conference.Id });
 
                 return NoContent();
             }
@@ -229,7 +236,7 @@ namespace VideoWeb.Controllers
                 return Unauthorized("You must be a VHO or a member of the conference");
             }
 
-            await NotifyConsultationRequestAsync(conference, request.RoomLabel, requestedBy?.Id ?? Guid.Empty, request.ParticipantId);
+            await _consultationNotifier.NotifyConsultationRequestAsync(conference, request.RoomLabel, requestedBy?.Id ?? Guid.Empty, request.ParticipantId);
 
             return Accepted();
         }
@@ -253,7 +260,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                await NotifyConsultationResponseAsync(conference, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring);
+                await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring);
                 await _videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
                 {
                     ConferenceId = request.ConferenceId,
@@ -264,7 +271,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                await NotifyConsultationResponseAsync(conference, request.RoomLabel, request.EndpointId, ConsultationAnswer.Failed);
+                await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.RoomLabel, request.EndpointId, ConsultationAnswer.Failed);
                 _logger.LogError(e, "Join endpoint to consultation error");
                 return StatusCode(e.StatusCode);
             }
@@ -276,32 +283,6 @@ namespace VideoWeb.Controllers
         {
             return _conferenceCache.GetOrAddConferenceAsync(conferenceId,
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
-        }
-
-        private async Task NotifyConsultationRequestAsync(Conference conference, string roomLabel, Guid requestedById,
-            Guid requestedForId)
-        {
-            var tasks = conference.Participants.Select(p =>
-                _hubContext.Clients.Group(p.Username.ToLowerInvariant())
-                .RequestedConsultationMessage(conference.Id, roomLabel, requestedById, requestedForId));
-            await Task.WhenAll(tasks);
-        }
-
-        private async Task NotifyConsultationResponseAsync(Conference conference, string roomLabel,
-            Guid requestedForId, ConsultationAnswer answer)
-        {
-            var tasks = conference.Participants.Select(p => 
-                _hubContext.Clients?.Group(p.Username.ToLowerInvariant())
-                    .ConsultationRequestResponseMessage(conference.Id, roomLabel, requestedForId, answer) ?? Task.CompletedTask);
-            await Task.WhenAll(tasks);
-        }
-
-        private async Task NotifyRoomUpdateAsync(Conference conference, Room room)
-        {
-            var tasks = conference.Participants.Select(p =>
-                _hubContext.Clients?.Group(p.Username.ToLowerInvariant())
-                .RoomUpdate(room) ?? Task.CompletedTask);
-            await Task.WhenAll(tasks);
         }
     }
 }

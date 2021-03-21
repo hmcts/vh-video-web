@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using FizzWare.NBuilder;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -11,6 +9,7 @@ using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
 using VideoApi.Client;
+using VideoWeb.UnitTests.Builders;
 using EventComponentHelper = VideoWeb.UnitTests.Builders.EventComponentHelper;
 
 namespace VideoWeb.UnitTests.EventHandlers
@@ -26,7 +25,7 @@ namespace VideoWeb.UnitTests.EventHandlers
         
         protected Mock<IVideoApiClient> VideoApiClientMock { get; private set; }
 
-        protected Conference TestConference { get; private set; }
+        protected Conference TestConference { get; set; }
         
         [SetUp]
         public void Setup()
@@ -40,43 +39,10 @@ namespace VideoWeb.UnitTests.EventHandlers
             LoggerMock = helper.EventHandlerBaseMock;
             VideoApiClientMock = helper.VideoApiClientMock;
 
-            TestConference = BuildConferenceForTest();
+            TestConference = new ConferenceCacheModelBuilder().WithLinkedParticipantsInRoom().Build();
             MemoryCache.Set(TestConference.Id, TestConference);
             
             helper.RegisterUsersForHubContext(TestConference.Participants);
-        }
-
-        private static Conference BuildConferenceForTest()
-        {
-            return new Conference
-            {
-                Id = Guid.NewGuid(),
-                HearingId = Guid.NewGuid(),
-                Participants = new List<Participant>
-                {
-                    Builder<Participant>.CreateNew()
-                        .With(x => x.Role = Role.Judge).With(x => x.Id = Guid.NewGuid()).With(x => x.Username = "one")
-                        .Build(),
-                    Builder<Participant>.CreateNew()
-                        .With(x => x.Role = Role.Individual).With(x => x.Id = Guid.NewGuid()).With(x => x.Username = "two")
-                        .Build(),
-                    Builder<Participant>.CreateNew()
-                        .With(x => x.Role = Role.Representative).With(x => x.Id = Guid.NewGuid()).With(x => x.Username = "three")
-                        .Build(),
-                    Builder<Participant>.CreateNew()
-                        .With(x => x.Role = Role.Individual).With(x => x.Id = Guid.NewGuid()).With(x => x.Username = "four")
-                        .Build(),
-                    Builder<Participant>.CreateNew()
-                        .With(x => x.Role = Role.Representative).With(x => x.Id = Guid.NewGuid()).With(x => x.Username = "five")
-                        .Build()
-                },
-                Endpoints = new List<Endpoint>
-                {
-                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP1").Build(),
-                    Builder<Endpoint>.CreateNew().With(x => x.Id = Guid.NewGuid()).With(x => x.DisplayName = "EP2").Build()
-                },
-                HearingVenueName = "Automated unit test venue"
-            };
         }
     }
 }
