@@ -1,27 +1,40 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import {
     AllowedEndpointResponse,
     EndpointStatus,
+    LinkedParticipantResponse,
+    LinkType,
     ParticipantResponse,
     ParticipantStatus,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
+import { HearingRole } from '../../models/hearing-role-model';
+import { ParticipantListItem } from '../participant-list-item';
 @Component({
     selector: 'app-start-private-consultation',
     templateUrl: './start-private-consultation.component.html',
     styleUrls: ['./start-private-consultation.component.scss']
 })
-export class StartPrivateConsultationComponent {
+export class StartPrivateConsultationComponent implements OnChanges {
     selectedParticipants = Array<string>();
     selectedEndpoints = Array<string>();
     @Input() participants: ParticipantResponse[];
+
+    filteredParticipants: ParticipantListItem[] = [];
+
     @Input() allowedEndpoints: AllowedEndpointResponse[];
     @Input() endpoints: VideoEndpointResponse[];
     @Output() continue = new EventEmitter<{ participants: string[]; endpoints: string[] }>();
     @Output() cancel = new EventEmitter();
     constructor(private translateService: TranslateService, private consultationService: ConsultationService) {}
+
+    ngOnChanges(changes: SimpleChanges) {
+        if (changes.participants) {
+            this.filteredParticipants = this.mapParticipants(changes.participants.currentValue);
+        }
+    }
 
     participantHearingRoleText(participant: ParticipantResponse): string {
         const translatedtext = this.translateService.instant('start-private-consultation.for');
@@ -77,7 +90,17 @@ export class StartPrivateConsultationComponent {
     }
 
     getParticipantDisabled(participant: ParticipantResponse): boolean {
-        return participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation;
+        const someLinkedParticipantsUnavailable =
+            participant.linked_participants &&
+            participant.linked_participants.some(lp => {
+                const p = this.getParticipantFromLinkedParticipant(lp);
+                return p.status !== ParticipantStatus.Available;
+            });
+
+        return (
+            someLinkedParticipantsUnavailable ||
+            (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation)
+        );
     }
 
     getEndpointStatusCss(endpoint: VideoEndpointResponse): string {
@@ -89,15 +112,11 @@ export class StartPrivateConsultationComponent {
     }
 
     getParticipantStatusCss(participant: ParticipantResponse): string {
-        if (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) {
+        if (this.getParticipantDisabled(participant)) {
             return 'unavailable';
         } else if (participant.status === ParticipantStatus.InConsultation) {
             return 'in-consultation';
         }
-    }
-
-    getShouldDisplayLabel(participant: ParticipantResponse): boolean {
-        return this.getParticipantDisabled(participant) || participant.status === ParticipantStatus.InConsultation;
     }
 
     getParticipantStatus(participant: ParticipantResponse): string {
@@ -126,5 +145,26 @@ export class StartPrivateConsultationComponent {
                 (endpoint.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
             );
         }
+    }
+
+    trackParticipant(index: number, item: ParticipantListItem) {
+        return item.status;
+    }
+
+    private mapParticipants(participantResponses: ParticipantResponse[]): ParticipantListItem[] {
+        return participantResponses
+            .filter(p => p.hearing_role !== HearingRole.INTERPRETER && p.hearing_role !== HearingRole.MACKENZIE_FRIEND)
+            .map(p => {
+                const interpreterLink = p.linked_participants.find(x => x.link_type === LinkType.Interpreter);
+                const participant: ParticipantListItem = { ...p };
+                if (p.linked_participants && interpreterLink) {
+                    participant.interpreter = participantResponses.find(x => x.id === interpreterLink.linked_id);
+                }
+                return participant;
+            });
+    }
+
+    private getParticipantFromLinkedParticipant(linkedParticipant: LinkedParticipantResponse) {
+        return this.participants.find(x => x.id === linkedParticipant.linked_id);
     }
 }
