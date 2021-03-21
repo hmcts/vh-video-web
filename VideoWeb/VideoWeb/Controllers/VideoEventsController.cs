@@ -75,8 +75,17 @@ namespace VideoWeb.Controllers
                 }
 
                 var callbackEvents = events.Select(e => TransformAndMapRequest(e, conference)).ToList();
-                await Task.WhenAll(events.Select(SendEventToVideoApi));
-                await Task.WhenAll(callbackEvents.Select(PublishEventToUi));
+                // DO NOT USE Task.WhenAll because the handlers are not thread safe and will overwrite Source<Variable> for each run
+                foreach (var e in events)
+                {
+                    await SendEventToVideoApi(e);
+                }
+
+                foreach (var cb in callbackEvents)
+                {
+                    await PublishEventToUi(cb);
+                }
+
                 return NoContent();
             }
             catch (VideoApiException e)
