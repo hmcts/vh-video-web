@@ -82,8 +82,7 @@
           <td class="govuk-table__cell hearing-details-col2-width">
             {{ hearing.scheduledStartTime | date: 'dd MMMM yyyy' }}
             <span class="govuk-!-font-weight-bold">
-              {{ hearing.scheduledStartTime | date: 'HH:mm' }} to
-              {{ hearing.scheduledEndTime | date: 'HH:mm' }}
+              {{ hearing.scheduledStartTime | date: 'HH:mm' }} {{'joh-waiting-room.to' | translate}} {{ hearing.scheduledEndTime | date: 'HH:mm' }}
             </span>
           </td>
         </tr>
@@ -96,8 +95,7 @@
       <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="getCurrentTimeClass()">
         <div *ngIf="hearing.isOnTime() || hearing.isStarting() || hearing.isDelayed()">
           <h2 class="govuk-heading-m white">{{ 'joh-waiting-room.please-wait' | translate}}</h2>
-          <p class="white">{{ 'joh-waiting-room.hearing-starting-at' | translate: { date: hearing.scheduledStartTime |
-            date: 'HH:mm' } }}</p>
+          <p class="white">{{ 'joh-waiting-room.hearing-starting-at' | translate: { date: hearing.scheduledStartTime | date: 'HH:mm' } }}</p>
         </div>
 
         <div *ngIf="hearing.isClosed()">
