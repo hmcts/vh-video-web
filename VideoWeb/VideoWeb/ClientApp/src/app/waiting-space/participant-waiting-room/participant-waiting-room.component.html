@@ -64,7 +64,7 @@
       *ngIf="presentationStream"
       (click)="switchStreamWindows()"
       appTooltip
-      text="Switch to main screen"
+      [text]="'participant-waiting-room.switch-to-main-screen' | translate"
       colour="grey">
       <video [srcObject]="presentationStream && !streamInMain ? stream : presentationStream"
         autoplay
@@ -154,8 +154,7 @@
           <td class="govuk-table__cell hearing-details-col2-width">
             {{ hearing.scheduledStartTime | date: 'dd MMMM yyyy' }}
             <span class="govuk-!-font-weight-bold">
-              {{ hearing.scheduledStartTime | date: 'HH:mm' }} to
-              {{ hearing.scheduledEndTime | date: 'HH:mm' }}
+              {{ hearing.scheduledStartTime | date: 'HH:mm' }} {{'participant-waiting-room.to' | translate}} {{ hearing.scheduledEndTime | date: 'HH:mm' }}
             </span>
           </td>
         </tr>
