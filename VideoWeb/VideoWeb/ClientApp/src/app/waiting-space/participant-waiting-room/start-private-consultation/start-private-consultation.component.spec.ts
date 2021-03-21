@@ -2,7 +2,9 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
     EndpointStatus,
+    LinkType,
     LoggedParticipantResponse,
+    ParticipantResponse,
     ParticipantStatus,
     Role,
     RoomSummaryResponse
@@ -12,6 +14,8 @@ import { StartPrivateConsultationComponent } from './start-private-consultation.
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
+import { HearingRole } from '../../models/hearing-role-model';
+import { SimpleChange, SimpleChanges } from '@angular/core';
 
 describe('StartPrivateConsultationComponent', () => {
     let component: StartPrivateConsultationComponent;
@@ -140,23 +144,23 @@ describe('StartPrivateConsultationComponent', () => {
         expect(component.getEndpointStatusCss(endpoint)).toEqual('in-consultation');
     });
 
-    it('should return true from should display label', () => {
-        const participant = conference.participants[0];
-        participant.status = ParticipantStatus.InConsultation;
-        expect(component.getShouldDisplayLabel(participant)).toBeTruthy();
-    });
-
-    it('should return false from should display label', () => {
-        const participant = conference.participants[0];
-        participant.status = ParticipantStatus.Disconnected;
-        expect(component.getShouldDisplayLabel(participant)).toBeTruthy();
-    });
-
     it('should return unavailable participant status', () => {
         const participant = conference.participants[0];
         participant.status = ParticipantStatus.Disconnected;
         const expectedText = 'start-private-consultation.unavailable';
         expect(component.getParticipantStatus(participant)).toEqual(expectedText);
+    });
+
+    it('should return enabled for participant with all linked participants available', () => {
+        const participant = { status: ParticipantStatus.Available, linked_participants: [{ linked_id: '12345' }] };
+        component.participants = [{ id: '12345', status: ParticipantStatus.Available }] as any[];
+        expect(component.getParticipantDisabled(participant as any)).toBe(false);
+    });
+
+    it('should return disabled for participant with some linked participants unavailable', () => {
+        const participant = { status: ParticipantStatus.Available, linked_participants: [{ linked_id: '12345' }] };
+        component.participants = [{ id: '12345', status: ParticipantStatus.NotSignedIn }] as any[];
+        expect(component.getParticipantDisabled(participant as any)).toBe(true);
     });
 
     it('should return in consultaion participant status', () => {
@@ -189,5 +193,34 @@ describe('StartPrivateConsultationComponent', () => {
         endpoint.status = EndpointStatus.InConsultation;
         endpoint.current_room = new RoomSummaryResponse({ label: 'ParticipantConsultationRoom1' });
         expect(component.getEndpointStatus(endpoint)).toContain('start-private-consultation.in participantconsultationroom1');
+    });
+
+    it('should filter and sort participants', () => {
+        const participantResponses: any[] = [
+            {
+                id: '1',
+                hearing_role: HearingRole.INTERPRETER,
+                linked_participants: []
+            },
+            {
+                hearing_role: HearingRole.MACKENZIE_FRIEND,
+                linked_participants: []
+            },
+            {
+                id: '2',
+                linked_participants: [{ linked_id: '1', link_type: LinkType.Interpreter }]
+            },
+            {
+                id: '3',
+                linked_participants: []
+            }
+        ];
+
+        const changes: any = { participants: { currentValue: participantResponses } };
+        component.ngOnChanges(changes);
+        expect(component.filteredParticipants.length).toBe(2);
+        expect(component.filteredParticipants[0].id).toBe('2');
+        expect(component.filteredParticipants[0].interpreter.id).toBe('1');
+        expect(component.filteredParticipants[1].id).toBe('3');
     });
 });
