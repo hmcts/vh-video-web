@@ -19,16 +19,18 @@ describe('authguard', () => {
     });
 
     describe('when logged in with successful authentication', () => {
-        it('canActivate should return true', () => {
+        it('canActivate should return true', async () => {
             oidcSecurityService.setAuthenticated(true);
-            expect(authGuard.canActivate(null, null)).toBeTruthy();
+            const result = await authGuard.canActivate(null, null).toPromise();
+            expect(result).toBeTruthy();
         });
     });
 
     describe('when login failed with unsuccessful authentication', () => {
-        it('canActivate should return false', () => {
+        it('canActivate should return false', async () => {
             oidcSecurityService.setAuthenticated(false);
-            expect(authGuard.canActivate(null, null)).toBeFalsy();
+            const result = await authGuard.canActivate(null, null).toPromise();
+            expect(result).toBeFalsy();
             expect(router.navigate).toHaveBeenCalledWith([`/${pageUrls.IdpSelection}`]);
         });
     });

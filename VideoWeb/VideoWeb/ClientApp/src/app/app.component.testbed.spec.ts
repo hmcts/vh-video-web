@@ -21,6 +21,8 @@ import { EventsService } from './services/events.service';
 import { TestLanguageService } from './shared/test-language.service';
 import { TranslateService } from '@ngx-translate/core';
 import { translateServiceSpy } from './testing/mocks/mock-translation-service';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { MockOidcSecurityService } from './testing/mocks/MockOidcSecurityService';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -66,6 +68,7 @@ describe('AppComponent', () => {
             providers: [
                 { provide: ConfigService, useValue: configServiceSpy },
                 { provide: Logger, useClass: MockLogger },
+                { provide: OidcSecurityService, useClass: MockOidcSecurityService },
                 { provide: DeviceTypeService, useValue: deviceTypeServiceSpy },
                 { provide: DeviceTypeService, useValue: deviceTypeServiceSpy },
                 { provide: ProfileService, useValue: profileServiceSpy },

@@ -31,7 +31,7 @@ namespace VideoWeb.Extensions
                             ? "Callback" : "Default")
                 .AddJwtBearer("Default", options =>
                 {
-                    options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}/";
+                    options.Authority = "https://login.microsoftonline.com/fb6e0e22-0da3-4c35-972a-9d61eb256508/v2.0"; //$"{ securitySettings.Authority}{securitySettings.TenantId}/";
                     options.TokenValidationParameters.ValidateLifetime = true;
                     options.TokenValidationParameters.ValidateAudience = false;
                     options.Audience = securitySettings.ClientId;
@@ -42,8 +42,15 @@ namespace VideoWeb.Extensions
                     {
                         OnMessageReceived = context =>
                         {
+                            // https://docs.microsoft.com/en-us/aspnet/core/signalr/configuration?view=aspnetcore-5.0&tabs=dotnet
+                            // In the JavaScript client, the access token is used as a Bearer token,
+                            // except in a few cases where browser APIs restrict the ability to apply headers (specifically, in Server-Sent Events and WebSockets requests).
+                            // In these cases, the access token is provided as a query string value access_token
                             var accessToken = context.Request.Query["accessToken"];
-                            if (string.IsNullOrEmpty(accessToken)) return Task.CompletedTask;
+                            if (string.IsNullOrEmpty(accessToken))
+                            {
+                                return Task.CompletedTask;
+                            }
 
                             var path = context.HttpContext.Request.Path;
                             if (path.StartsWithSegments(eventhubPath))
@@ -54,13 +61,11 @@ namespace VideoWeb.Extensions
                             return Task.CompletedTask;
                         }
                     };
-                    options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}";
-                    options.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        ClockSkew = TimeSpan.Zero,
-                        ValidateLifetime = true,
-                        ValidAudience = securitySettings.ClientId
-                    };
+                    options.Authority = "https://login.microsoftonline.com/fb6e0e22-0da3-4c35-972a-9d61eb256508/v2.0"; //$"{ securitySettings.Authority}{securitySettings.TenantId}/";
+                    options.TokenValidationParameters.ValidateLifetime = true;
+                    options.TokenValidationParameters.ValidateAudience = false;
+                    options.Audience = securitySettings.ClientId;
+                    options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
                 }).AddJwtBearer("Callback", options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -96,7 +101,7 @@ namespace VideoWeb.Extensions
 
             options.AddPolicy("EventHubUser", new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
-                .RequireRole(allRoles)
+                //.RequireRole(allRoles)
                 .AddAuthenticationSchemes("EventHubUser")
                 .Build());
 

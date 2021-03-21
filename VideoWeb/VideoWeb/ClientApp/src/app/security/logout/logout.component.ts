@@ -1,6 +1,6 @@
 import { Component, Injectable, OnInit } from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { Observable, observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { pageUrls } from 'src/app/shared/page-url.constants';

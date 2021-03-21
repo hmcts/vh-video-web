@@ -1,5 +1,5 @@
 import { ElementRef } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { LoggedParticipantResponse, UserProfileResponse } from 'src/app/services/clients/api-client';

@@ -31,4 +31,13 @@ export class MockOidcSecurityService {
     getToken(): string {
         return 'MockToken';
     }
+
+    checkAuth(url?: string): Observable<boolean> {
+        return of(this.authenticated);
+    }
+
+    logoffAndRevokeTokens() {
+        this.setAuthenticated(false);
+        this.setUserData(null);
+    }
 }

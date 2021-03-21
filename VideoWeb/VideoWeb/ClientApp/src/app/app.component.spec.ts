@@ -174,7 +174,7 @@ describe('AppComponent', () => {
         locationServiceSpy.getCurrentUrl.and.returnValue(pageUrls.AdminVenueList);
         locationServiceSpy.getCurrentPathName.and.returnValue(`/${pageUrls.AdminVenueList}`);
         mockOidcSecurityService.setAuthenticated(true);
-        await component.checkAuth();
+        await component.ngOnInit();
         expect(profileServiceSpy.getUserProfile).toHaveBeenCalled();
     });
 
@@ -182,7 +182,7 @@ describe('AppComponent', () => {
         locationServiceSpy.getCurrentUrl.and.returnValue(pageUrls.AdminVenueList);
         locationServiceSpy.getCurrentPathName.and.returnValue(`/${pageUrls.AdminVenueList}`);
         mockOidcSecurityService.setAuthenticated(false);
-        await component.checkAuth();
+        await component.ngOnInit();
         expect(profileServiceSpy.getUserProfile).toHaveBeenCalledTimes(0);
         expect(routerSpy.navigate).toHaveBeenCalledWith([`/${pageUrls.IdpSelection}`], {
             queryParams: { returnUrl: pageUrls.AdminVenueList }

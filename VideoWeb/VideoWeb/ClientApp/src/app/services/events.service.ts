@@ -70,7 +70,7 @@ export class EventsService {
             .configureLogging(signalR.LogLevel.Debug)
             .withAutomaticReconnect(this.reconnectionTimes)
             .withUrl(eventhubPath, {
-                accessTokenFactory: () => this.oidcSecurityService.getToken()
+                accessTokenFactory: () => this.oidcSecurityService.getIdToken()
             })
             .build();
         this.connection.serverTimeoutInMilliseconds = this.serverTimeoutTime;

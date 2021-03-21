@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Guid } from 'guid-typescript';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ChatResponse } from 'src/app/services/clients/api-client';
@@ -24,7 +24,6 @@ import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { TranslateService } from '@ngx-translate/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { map } from 'rxjs/operators';
 
 @Injectable()
 export abstract class ChatWindowBaseComponent extends ChatBaseComponent implements OnInit, OnDestroy, AfterViewChecked {

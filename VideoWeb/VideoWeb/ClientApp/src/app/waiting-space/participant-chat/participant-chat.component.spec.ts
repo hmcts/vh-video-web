@@ -91,9 +91,11 @@ describe('ParticipantChatComponent', () => {
         expect(component.messages.length).toBeGreaterThan(0);
     }));
 
-    it('should return logged participant Id username as participant username', () => {
+    it('should return logged participant Id username as participant username', fakeAsync(() => {
+        component.ngOnInit();
+        tick();
         expect(component.participantUsername).toEqual(judgeUsername.toLowerCase());
-    });
+    }));
 
     it('should toggle show chat state', () => {
         component.showChat = false;
