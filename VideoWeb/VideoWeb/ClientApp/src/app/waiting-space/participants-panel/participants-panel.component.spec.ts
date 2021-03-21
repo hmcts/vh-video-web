@@ -264,7 +264,17 @@ describe('ParticipantsPanelComponent', () => {
         });
 
         tick(10000);
-        expect(videoCallServiceSpy.callParticipantIntoHearing).toHaveBeenCalledWith(component.conferenceId, pat.id);
+        expect(videoCallServiceSpy.callParticipantIntoHearing).toHaveBeenCalledWith(component.conferenceId, pat.witnessParticipant.id);
+    }));
+
+    it('should dismiss all linked witness participants when is a witness dismissed from a hearing', fakeAsync(async () => {
+        const pat = component.participants.find(
+            p => p instanceof LinkedParticipantPanelModel && p.isWitness
+        ) as LinkedParticipantPanelModel;
+        pat.participants.forEach(p => pat.updateStatus(ParticipantStatus.InHearing, p.id));
+        pat.updateStatus(ParticipantStatus.InHearing);
+        await component.dismissWitnessFromHearing(pat);
+        expect(videoCallServiceSpy.dismissParticipantFromHearing).toHaveBeenCalledWith(component.conferenceId, pat.witnessParticipant.id);
     }));
 
     it('should not call a participant in when participant is not a witness', async () => {
