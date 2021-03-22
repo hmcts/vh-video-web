@@ -425,7 +425,7 @@
       "suspended": "The video hearings team has been alerted and we're informing the participants. Please call us now on <strong>{{phone}}</strong>.",
       "closed": "The consultation room is available for up to 30 minutes after the hearing has finished.",
       "warning": "Warning",
-      "consultation-room-will-close-at": "The consultation room will close at "
+      "consultation-room-will-close-at": "The consultation room will close at"
     },
     "buttons": {
       "start-video-hearing": "Start video hearing",
