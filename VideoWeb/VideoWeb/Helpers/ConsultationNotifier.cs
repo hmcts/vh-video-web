@@ -84,7 +84,7 @@ namespace VideoWeb.Helpers
                 await NotifyLinkedParticipantsOfConsultationResponseAsync(conference, participantFor, roomLabel, answer);
             }
 
-            if (answer == ConsultationAnswer.Transferring)
+            if (answer == ConsultationAnswer.Transferring && participantFor.LinkedParticipants.Any())
             {
                 await _consultationResponseTracker.ClearResponses(conference, requestedForId);
             }
