@@ -699,6 +699,7 @@
     "tribunal": "Tribunal"
   },
   "case-type-group": {
+    "state": "State",
     "observer": "Observer",
     "panelmember": "PanelMember",
     "none": "None",
