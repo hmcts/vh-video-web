@@ -138,7 +138,7 @@
           </p>
         </div>
 
-        <div *ngIf="!isWitness && hearing.isStarting()">
+        <div *ngIf="!isOrHasWitnessLink() && hearing.isStarting()">
           <h2 class="govuk-heading-m white">{{'participant-waiting-room.hearing-status-messages.starting-title' |
             translate}}</h2>
           <p class="white">{{'participant-waiting-room.hearing-status-messages.starting-body' | translate}}</p>
