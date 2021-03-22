@@ -29,13 +29,14 @@ export class VhToastComponent extends Toast {
     }
     vhToastOptions: VhToastOptions;
     actioned = false;
+    declinedByThirdParty = false;
 
     constructor(protected toastrService: ToastrService, public toastPackage: ToastPackage) {
         super(toastrService, toastPackage);
     }
 
     remove() {
-        if (!this.actioned) {
+        if (!this.actioned && !this.declinedByThirdParty) {
             this.vhToastOptions.onNoAction();
         }
 

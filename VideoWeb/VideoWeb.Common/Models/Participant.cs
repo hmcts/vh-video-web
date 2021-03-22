@@ -5,6 +5,10 @@ namespace VideoWeb.Common.Models
 {
     public class Participant
     {
+        public Participant()
+        {
+            LinkedParticipants = new List<LinkedParticipant>();
+        }
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string FirstName { get; set; }

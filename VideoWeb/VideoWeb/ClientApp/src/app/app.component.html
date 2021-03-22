@@ -1,7 +1,7 @@
 <div>
   <div #skipLink tabindex="0"></div>
   <div role="navigation">
-    <a href="javascript:void(0)" class="govuk-skip-link" (click)="skipToContent()">Skip to main content</a>
+    <a href="javascript:void(0)" class="govuk-skip-link" (click)="skipToContent()">{{ 'app.skip-to-main-content' | translate }}</a>
   </div>
   <app-header class="govuk-!-display-none-print" [loggedIn]="loggedIn"></app-header>
 

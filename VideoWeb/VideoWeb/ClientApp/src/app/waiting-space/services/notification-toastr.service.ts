@@ -118,6 +118,7 @@ export class NotificationToastrService {
                 }
             ]
         };
+        return toast.toastRef.componentInstance as VhToastComponent;
     }
 
     clearAllToastNotifications() {

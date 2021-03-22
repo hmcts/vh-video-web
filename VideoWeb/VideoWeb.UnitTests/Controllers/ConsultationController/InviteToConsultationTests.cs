@@ -14,6 +14,7 @@ using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Hub;
 using VideoApi.Contract.Responses;
+using VideoWeb.Helpers;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
@@ -85,8 +86,10 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             // Assert
             result.Should().BeOfType<AcceptedResult>();
-            _mocker.Mock<IEventHubClient>().Verify(x => x.RequestedConsultationMessage(_testConference.Id, "Room1", Guid.Empty, _testConference.Participants[0].Id),
-                Times.Exactly(_testConference.Participants.Count));
+            _mocker.Mock<IConsultationNotifier>()
+                .Verify(
+                    x => x.NotifyConsultationRequestAsync(_testConference, "Room1", Guid.Empty,
+                        _testConference.Participants[0].Id), Times.Once);
         }
 
         [Test]
@@ -109,8 +112,10 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
 
             // Assert
             result.Should().BeOfType<AcceptedResult>();
-            _mocker.Mock<IEventHubClient>().Verify(x => x.RequestedConsultationMessage(_testConference.Id, "Room1", _testConference.Participants[2].Id, _testConference.Participants[0].Id),
-                Times.Exactly(_testConference.Participants.Count));
+            _mocker.Mock<IConsultationNotifier>()
+                .Verify(
+                    x => x.NotifyConsultationRequestAsync(_testConference, "Room1", _testConference.Participants[2].Id,
+                        _testConference.Participants[0].Id), Times.Once);
         }
 
         private ConsultationsController SetupControllerWithClaims(ClaimsPrincipal claimsPrincipal)

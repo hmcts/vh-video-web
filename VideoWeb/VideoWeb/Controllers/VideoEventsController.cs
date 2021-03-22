@@ -16,6 +16,7 @@ using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
+using VideoWeb.Helpers;
 
 namespace VideoWeb.Controllers
 {
@@ -30,6 +31,7 @@ namespace VideoWeb.Controllers
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<VideoEventsController> _logger;
         private readonly IMapperFactory _mapperFactory;
+        private readonly IConsultationResponseTracker _consultationResponseTracker;
 
 
         public VideoEventsController(
@@ -37,13 +39,15 @@ namespace VideoWeb.Controllers
             IEventHandlerFactory eventHandlerFactory,
             IConferenceCache conferenceCache,
             ILogger<VideoEventsController> logger,
-            IMapperFactory mapperFactory)
+            IMapperFactory mapperFactory,
+            IConsultationResponseTracker consultationResponseTracker)
         {
             _videoApiClient = videoApiClient;
             _eventHandlerFactory = eventHandlerFactory;
             _conferenceCache = conferenceCache;
             _logger = logger;
             _mapperFactory = mapperFactory;
+            _consultationResponseTracker = consultationResponseTracker;
         }
 
         [HttpPost]
@@ -69,9 +73,19 @@ namespace VideoWeb.Controllers
                     request.ParticipantId = null;
                     events = request.CreateEventsForParticipantsInRoom(conference, roomId);
                 }
+
                 var callbackEvents = events.Select(e => TransformAndMapRequest(e, conference)).ToList();
-                await Task.WhenAll(events.Select(SendEventToVideoApi));
-                await Task.WhenAll(callbackEvents.Select(PublishEventToUi));
+                // DO NOT USE Task.WhenAll because the handlers are not thread safe and will overwrite Source<Variable> for each run
+                foreach (var e in events)
+                {
+                    await SendEventToVideoApi(e);
+                }
+
+                foreach (var cb in callbackEvents)
+                {
+                    await PublishEventToUi(cb);
+                }
+
                 return NoContent();
             }
             catch (VideoApiException e)
@@ -92,7 +106,7 @@ namespace VideoWeb.Controllers
             request = request.UpdateEventTypeForVideoApi();
 
             _logger.LogTrace("Raising video event: ConferenceId: {ConferenceId}, EventType: {EventType}",
-                    request.ConferenceId, request.EventType);
+                request.ConferenceId, request.EventType);
 
             return _videoApiClient.RaiseVideoEventAsync(request);
         }
@@ -104,7 +118,7 @@ namespace VideoWeb.Controllers
             {
                 return null;
             }
-            
+
             var callbackEventMapper = _mapperFactory.Get<ConferenceEventRequest, Conference, CallbackEvent>();
             var callbackEvent = callbackEventMapper.Map(request, conference);
             request.EventType = Enum.Parse<EventType>(callbackEvent.EventType.ToString());
@@ -135,9 +149,10 @@ namespace VideoWeb.Controllers
             {
                 return;
             }
+
             var roomId = long.Parse(request.ParticipantRoomId);
             var participantId = Guid.Parse(request.ParticipantId);
-            
+
 
             switch (request.EventType)
             {
@@ -145,6 +160,7 @@ namespace VideoWeb.Controllers
                     conference.AddParticipantToRoom(roomId, participantId);
                     break;
                 case EventType.Disconnected:
+                    await _consultationResponseTracker.ClearResponses(conference, participantId);
                     conference.RemoveParticipantFromRoom(roomId, participantId);
                     break;
                 default: return;

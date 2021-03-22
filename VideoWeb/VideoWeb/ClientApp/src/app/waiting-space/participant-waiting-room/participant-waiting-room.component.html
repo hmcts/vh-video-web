@@ -49,19 +49,20 @@
       {{'participant-waiting-room.browser-support' | translate}}
     </video>
     <div id="secondIncomingFeed" *ngIf="presentationStream" (click)="switchStreamWindows()" appTooltip
-      text="Switch to main screen" colour="grey">
+      [text]="'participant-waiting-room.switch-to-main-screen' | translate" colour="grey">
       <video [srcObject]="presentationStream && !streamInMain ? stream : presentationStream" autoplay height="auto"
         poster="/assets/images/empty_crest.jpg" class="fill-container">
         {{'participant-waiting-room.browser-support' | translate}}
       </video>
     </div>
   </div>
+
   <div *ngIf="isSupportedBrowserForNetworkHealth" id="hearing-monitor-container">
     <app-participant-network-alert [participant]="participant"></app-participant-network-alert>
   </div>
 </div>
 
-<div *ngIf="isWitness && isTransferringIn">
+<div *ngIf="isOrHasWitnessLink() && isTransferringIn">
   <div class="video-background">
     <div class="transferMessage">
       <img class="transferFeedImage" id="transferFeedImage" src="/assets/images/UkGovCrestWhite.png"
@@ -117,8 +118,8 @@
           <td class="govuk-table__cell hearing-details-col2-width">
             {{ hearing.scheduledStartTime | date: 'dd MMMM yyyy' }}
             <span class="govuk-!-font-weight-bold">
-              {{ hearing.scheduledStartTime | date: 'HH:mm' }} to
-              {{ hearing.scheduledEndTime | date: 'HH:mm' }}
+              {{ hearing.scheduledStartTime | date: 'HH:mm' }} {{'participant-waiting-room.to' | translate}} {{
+              hearing.scheduledEndTime | date: 'HH:mm' }}
             </span>
           </td>
         </tr>
@@ -129,9 +130,10 @@
   <div class="govuk-grid-column-two-thirds" *ngIf="showExtraContent">
     <div *ngIf="currentTime" class="govuk-panel" [ngClass]="getCurrentTimeClass()">
       <div class="govuk-body govuk-!-margin-bottom-0" [ngClass]="getCurrentTimeClass()">
-        <div *ngIf="!isWitness && hearing.isOnTime()">
+        <div *ngIf="!isOrHasWitnessLink() && hearing.isOnTime()">
           <h2 class="govuk-heading-m white">{{'participant-waiting-room.please-wait' | translate}}</h2>
-          <p class="white">{{'participant-waiting-room.hearing-starting-at' | translate}} {{ hearing.scheduledStartTime
+          <p class="white">{{'participant-waiting-room.hearing-starting-at' | translate}} {{
+            hearing.scheduledStartTime
             | date: 'HH:mm' }}
           </p>
         </div>
@@ -142,28 +144,29 @@
           <p class="white">{{'participant-waiting-room.hearing-status-messages.starting-body' | translate}}</p>
         </div>
 
-        <div *ngIf="!isWitness && hearing.isDelayed()">
+        <div *ngIf="!isOrHasWitnessLink() && hearing.isDelayed()">
           <h2 class="govuk-heading-m">{{'participant-waiting-room.hearing-status-messages.delayed-title' | translate}}
           </h2>
           <p>{{'participant-waiting-room.hearing-status-messages.delayed-body' | translate}}</p>
         </div>
 
-        <div *ngIf="!isWitness && hearing.isClosed()">
+        <div *ngIf="!isOrHasWitnessLink() && hearing.isClosed()">
           <h2 class="govuk-heading-m white">{{'participant-waiting-room.hearing-status-messages.closed' | translate}}
           </h2>
         </div>
 
-        <div *ngIf="!isWitness && hearing.isPaused()" class="hearing-title-mt--20">
+        <div *ngIf="!isOrHasWitnessLink() && hearing.isPaused()" class="hearing-title-mt--20">
           <p class="white">{{'participant-waiting-room.hearing-status-messages.paused' | translate}}</p>
         </div>
 
         <div *ngIf="hearing.isSuspended()">
-          <h2 class="govuk-heading-m">{{'participant-waiting-room.hearing-status-messages.suspended-title' | translate}}
+          <h2 class="govuk-heading-m">{{'participant-waiting-room.hearing-status-messages.suspended-title' |
+            translate}}
           </h2>
           <p>{{'participant-waiting-room.hearing-status-messages.suspended-body' | translate}}</p>
         </div>
 
-        <div *ngIf="isWitness && hearing.isInSession()">
+        <div *ngIf="isOrHasWitnessLink() && hearing.isInSession()">
           <h2 class="govuk-heading-m white">{{'participant-waiting-room.hearing-status-messages.in-session-title' |
             translate}}</h2>
           <p class="white">
@@ -171,7 +174,7 @@
           </p>
         </div>
 
-        <div *ngIf="isWitness && (hearing.isOnTime() || hearing.isStarting() || hearing.isDelayed())">
+        <div *ngIf="isOrHasWitnessLink() && (hearing.isOnTime() || hearing.isStarting() || hearing.isDelayed())">
           <h2 class="govuk-heading-m white">{{'participant-waiting-room.please-wait' | translate}}</h2>
           <p class="white">
             {{'participant-waiting-room.hearing-about-to-start' | translate}}
@@ -182,13 +185,13 @@
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-one-half">
           <div class="govuk-panel__body govuk-!-margin-top-4">
-            <app-analogue-clock [hearing]="hearing" [isWitness]="isWitness"></app-analogue-clock>
+            <app-analogue-clock [hearing]="hearing" [isWitness]="isOrHasWitnessLink()"></app-analogue-clock>
           </div>
         </div>
         <div class="govuk-grid-column-one-half">
           <div class="govuk-body" [ngClass]="getCurrentTimeClass()">
-            <p class="govuk-!-margin-bottom-4" [ngClass]="getCurrentTimeClass()">{{'participant-waiting-room.time-now' |
-              translate}}</p>
+            <p class="govuk-!-margin-bottom-4" [ngClass]="getCurrentTimeClass()">{{'participant-waiting-room.time-now'
+              | translate}}</p>
             <p class="govuk-panel__body govuk-!-margin-top-4 govuk-!-font-size-80" [ngClass]="getCurrentTimeClass()">
               <strong>{{ currentTime | date: 'HH:mm' }}</strong>
             </p>
@@ -217,6 +220,7 @@
         {{'participant-waiting-room.please-wait-while-we-connect-you' | translate}}
       </strong>
     </div>
+
     <div *ngIf="canStartJoinConsultation">
       <details class="govuk-details" data-module="govuk-details">
         <summary class="govuk-details__summary" (click)="toggleAccordian()" tabindex="0" role="button"

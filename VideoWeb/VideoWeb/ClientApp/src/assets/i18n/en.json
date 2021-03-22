@@ -1,4 +1,7 @@
 {
+  "app": {
+    "skip-to-main-content": "Skip to main content"
+  },
   "hearing-list-table": {
     "date-and-time": "Date & time",
     "hearing-details": "Hearing details",
@@ -51,7 +54,8 @@
     "error": "Error:",
     "failed": "message failed to send",
     "try-again": "try again",
-    "alerts-icon": "alerts icon"
+    "alerts-icon": "alerts icon",
+    "at": "at"
   },
   "chat-input-box": {
     "send": "Send",
@@ -348,6 +352,7 @@
   "joh-waiting-room": {
     "hearing": "Hearing",
     "date": "Date",
+    "to": "to",
     "is-suspended": "is suspended",
     "is-paused": "is paused",
     "is-closed": "is closed",
@@ -411,6 +416,7 @@
     "details-of-the-hearing": "Details of the hearing",
     "hearing": "Hearing",
     "date": "Date",
+    "to": "to",
     "case-number": "case number",
     "is-everyone-connected": "Is everyone connected?",
     "hearing-messages": {
@@ -463,6 +469,7 @@
     "trouble-seeing": "Others may have trouble seeing and hearing you."
   },
   "participant-waiting-room": {
+    "switch-to-main-screen": "Switch to main screen",
     "locked": "locked",
     "unlocked": "unlocked",
     "is-suspended": "is suspended",
@@ -482,6 +489,7 @@
     "choose-camera-and-microphone-aria-label": "Choose camera and microphone dialog",
     "details-of-the-hearing": "Details of the hearing",
     "hearing": "Hearing",
+    "to": "to",
     "date": "Date",
     "case-number": "case number",
     "please-wait": "Please wait",
@@ -602,7 +610,9 @@
     "stop-sharing-screen": "Stop sharing screen"
   },
   "select-hearing-layout": {
-    "choose-hearing-layout": "Choose hearing layout"
+    "choose-hearing-layout": "Choose hearing layout",
+    "open-all": "Open all",
+    "close-all": "Close all"
   },
   "hearing-layout": {
     "layout-image-alt": "Layout image for {{layout}}",
