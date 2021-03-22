@@ -22,6 +22,7 @@ import { EventsService } from './services/events.service';
 import { TestLanguageService } from './shared/test-language.service';
 import { TranslateService } from '@ngx-translate/core';
 import { translateServiceSpy } from './testing/mocks/mock-translation-service';
+import { TranslatePipeMock } from './testing/mocks/mock-translation-pipe';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -66,7 +67,7 @@ describe('AppComponent', () => {
 
         TestBed.configureTestingModule({
             imports: [HttpClientModule, RouterTestingModule],
-            declarations: [AppComponent, HeaderStubComponent, FooterStubComponent, BetaBannerStubComponent],
+            declarations: [AppComponent, HeaderStubComponent, FooterStubComponent, BetaBannerStubComponent, TranslatePipeMock],
             providers: [
                 { provide: AdalService, useValue: adalServiceSpy },
                 { provide: ConfigService, useValue: configServiceSpy },
@@ -95,6 +96,6 @@ describe('AppComponent', () => {
 
     it('should have a tag Skip to main content', () => {
         const compiled = fixture.debugElement.nativeElement;
-        expect(compiled.querySelector('a').textContent).toContain('Skip to main content');
+        expect(compiled.querySelector('.govuk-skip-link').innerHTML).toBe('');
     });
 });
