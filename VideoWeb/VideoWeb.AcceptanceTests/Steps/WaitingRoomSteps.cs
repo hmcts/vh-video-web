@@ -326,7 +326,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the judge waiting room displays consultation room is available")]
         public void ThenTheJudgeWaitingRoomDisplaysConsultationRoomIsAvailable()
         {
-            var closeTime = _c.TimeZone.Adjust(DateTime.Now.AddMinutes(30)).ToString(DateFormats.WaitingRoomPageTime);
+            var closeTime = _c.TimeZone.Adjust(_c.Test.HearingClosedTime.AddMinutes(30)).ToString(DateFormats.WaitingRoomPageTime);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.ConsultationRoomText).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.ConsultationRoomCloseText(closeTime)).Displayed.Should().BeTrue();
         }
