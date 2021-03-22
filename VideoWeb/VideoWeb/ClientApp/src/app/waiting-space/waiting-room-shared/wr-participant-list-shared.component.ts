@@ -45,7 +45,7 @@ export abstract class WRParticipantStatusListDirective {
         protected videoWebService: VideoWebService,
         protected logger: Logger,
         protected translateService: TranslateService
-    ) {}
+    ) { }
 
     initParticipants() {
         this.filterNonJudgeParticipants();
@@ -206,7 +206,7 @@ export abstract class WRParticipantStatusListDirective {
         if (this.loggedInUser.role !== Role.Judge && this.loggedInUser.role !== Role.JudicialOfficeHolder) {
             return !loggedParticipant.current_room?.label.startsWith('JudgeJOH');
         } else {
-            return true;
+            return !loggedParticipant.linked_participants.length;
         }
     }
 
