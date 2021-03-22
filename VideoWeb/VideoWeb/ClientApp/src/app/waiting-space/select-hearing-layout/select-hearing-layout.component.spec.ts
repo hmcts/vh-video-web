@@ -3,16 +3,29 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
 import { HearingLayout } from 'src/app/services/clients/api-client';
 import { SelectHearingLayoutComponent } from './select-hearing-layout.component';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { fakeAsync, tick } from '@angular/core/testing';
 
 describe('SelectHearingLayoutComponent', () => {
     let component: SelectHearingLayoutComponent;
     const videoCallService = videoCallServiceSpy;
     let conference: ConferenceResponse;
+    const translateService = translateServiceSpy;
+    const headingButton = document.createElement('button');
+    const textButton = document.createElement('button');
 
     beforeEach(() => {
         conference = new ConferenceTestData().getConferenceDetailNow();
-        component = new SelectHearingLayoutComponent(videoCallService);
+        component = new SelectHearingLayoutComponent(videoCallService, translateService);
         component.conference = conference;
+        textButton.innerHTML = 'Open all';
+        document.getElementById = jasmine.createSpy('accordion-choose-layout-heading').and.returnValue(headingButton);
+        document.getElementsByClassName = jasmine.createSpy('govuk-accordion__open-all').and.returnValue({
+            item() {
+                return textButton;
+            }
+        });
+
         (<any>window).GOVUKFrontend = { initAll() {} };
     });
 
@@ -22,6 +35,28 @@ describe('SelectHearingLayoutComponent', () => {
         component.ngOnInit();
         expect(component.selectedLayout).toBe(layout);
     });
+
+    it('should translate button text on text click', () => {
+        component.ngOnInit();
+        textButton.innerHTML = 'Close all';
+        textButton.click();
+        expect(textButton.innerHTML).toBe('<span>select-hearing-layout.close-all</span>');
+    });
+
+    it('should translate button text on header click', () => {
+        component.ngOnInit();
+        textButton.innerHTML = 'Close all';
+        headingButton.click();
+        expect(textButton.innerHTML).toBe('<span>select-hearing-layout.close-all</span>');
+    });
+
+    it('should translate button text on after time for header click', fakeAsync(() => {
+        component.ngOnInit();
+        component.setAccordionText({ target: { id: 'accordion-choose-layout-heading' } as any } as MouseEvent);
+        textButton.innerHTML = 'Close all';
+        tick(10);
+        expect(textButton.innerHTML).toBe('<span>select-hearing-layout.close-all</span>');
+    }));
 
     it('should use recommended layout when cached layout preference is empty on init', () => {
         const layout = HearingLayout.OnePlus7;

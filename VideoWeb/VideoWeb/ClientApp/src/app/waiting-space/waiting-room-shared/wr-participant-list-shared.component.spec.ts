@@ -124,7 +124,7 @@ describe('WaitingRoom ParticipantList Base', () => {
             id: '9F681318-4955-49AF-A887-DED64554429Q',
             name: 'John Witness',
             case_type_group: 'Applicant',
-            hearing_role: 'Witness'
+            hearing_role: HearingRole.WITNESS
         });
         expect(component.isWitness(pat)).toBeTruthy();
     });

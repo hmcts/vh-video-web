@@ -12,7 +12,7 @@
       {{ message.message }}
     </div>
     <div class="message-meta">
-    <span class="message-meta-sender">{{ message.from_display_name }}</span> at <span class="message-meta-timestamp">{{ message.timestamp | date: 'shortTime' }}</span>
+    <span class="message-meta-sender">{{ message.from_display_name }}</span> {{'chat-body-window.at' | translate}} <span class="message-meta-timestamp">{{ message.timestamp | date: 'shortTime' }}</span>
     </div>
   </div>
   <div class="message-item spacer"></div>

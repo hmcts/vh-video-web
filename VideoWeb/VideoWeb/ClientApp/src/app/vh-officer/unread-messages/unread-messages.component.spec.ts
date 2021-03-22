@@ -102,12 +102,16 @@ describe('UnreadMessagesComponent', () => {
     });
 
     it('should return IM image if are unread messages', () => {
-        component.unreadMessages = [new UnreadAdminMessageResponse({ participant_username: 'test@1.com', number_of_unread_messages: 5 })];
+        component.unreadMessages = [
+            new UnreadAdminMessageResponse({ participant_id: conference.participants[0].id, number_of_unread_messages: 5 })
+        ];
         expect(component.getIMStatus()).toBe('IM_icon.png');
     });
 
     it('should return empty image if there are no unread messages', () => {
-        component.unreadMessages = [new UnreadAdminMessageResponse({ participant_username: 'test@1.com', number_of_unread_messages: 0 })];
+        component.unreadMessages = [
+            new UnreadAdminMessageResponse({ participant_id: conference.participants[0].id, number_of_unread_messages: 0 })
+        ];
         expect(component.getIMStatus()).toBe('IM-empty.png');
     });
 

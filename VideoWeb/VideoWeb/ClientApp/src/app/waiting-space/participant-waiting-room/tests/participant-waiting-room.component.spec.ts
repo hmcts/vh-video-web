@@ -5,6 +5,8 @@ import { Subscription } from 'rxjs';
 import {
     ConferenceResponse,
     ConferenceStatus,
+    LinkedParticipantResponse,
+    LinkType,
     LoggedParticipantResponse,
     ParticipantResponse,
     Role
@@ -224,8 +226,17 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             [HearingRole.OBSERVER, false]
         ].forEach(([hearingRole, expected]) => {
             component.participant.hearing_role = hearingRole as HearingRole;
+            component.participant.linked_participants = [];
             expect(component.canStartJoinConsultation).toBe(expected as boolean);
         });
+    });
+
+    it('should return false if the participant is a individual with interpreter - canStartJoinConsultation', () => {
+        component.participant.hearing_role = HearingRole.LITIGANT_IN_PERSON;
+        const linkedParticipant = new LinkedParticipantResponse();
+        linkedParticipant.link_type = LinkType.Interpreter;
+        component.participant.linked_participants = [linkedParticipant];
+        expect(component.canStartJoinConsultation).toBeFalsy();
     });
 
     it('should return if the participant is a witness or not - isWitness', () => {
@@ -237,14 +248,14 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             [HearingRole.JUDGE, false]
         ].forEach(([hearingRole, expected]) => {
             component.participant.hearing_role = hearingRole as HearingRole;
-            expect(component.isWitness).toBe(expected as boolean);
+            expect(component.isOrHasWitnessLink()).toBe(expected as boolean);
         });
     });
 
     it('should return false when the participant is null - isWitness', () => {
         component.participant = null;
 
-        expect(component.isWitness).toBeFalsy();
+        expect(component.isOrHasWitnessLink()).toBeFalsy();
     });
 
     it('should return if the participant is a witness or not - isObserver', () => {

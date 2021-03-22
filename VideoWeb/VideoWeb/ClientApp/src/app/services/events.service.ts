@@ -193,8 +193,8 @@ export class EventsService {
             }
         );
 
-        this.connection.on('AdminAnsweredChat', (conferenceId: string, participantUsername: string) => {
-            const payload = new ConferenceMessageAnswered(conferenceId, participantUsername);
+        this.connection.on('AdminAnsweredChat', (conferenceId: string, participantId: string) => {
+            const payload = new ConferenceMessageAnswered(conferenceId, participantId);
             this.logger.debug('[EventsService] - AdminAnsweredChat received', payload);
             this.adminAnsweredChatSubject.next(payload);
         });

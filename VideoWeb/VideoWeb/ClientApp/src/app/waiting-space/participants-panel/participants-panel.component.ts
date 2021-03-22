@@ -262,8 +262,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             this.participants.sort((x, z) => {
                 return x.orderInTheList === z.orderInTheList ? 0 : +(x.orderInTheList > z.orderInTheList) || -1;
             });
-
-            console.warn(this.participants);
         } catch (err) {
             this.logger.error(`${this.loggerPrefix} Failed to get participants / endpoints`, err, { conference: this.conferenceId });
         }
@@ -394,7 +392,11 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     async initiateTransfer(participant: PanelModel) {
         try {
             this.resetWitnessTransferTimeout(participant.id);
-            await this.videoCallService.callParticipantIntoHearing(this.conferenceId, participant.id);
+            let participantId = participant.id;
+            if (participant instanceof LinkedParticipantPanelModel) {
+                participantId = participant.witnessParticipant.id;
+            }
+            await this.videoCallService.callParticipantIntoHearing(this.conferenceId, participantId);
             this.logger.debug(`${this.loggerPrefix} 10 second wait completed, initiating witneses transfer now`, {
                 witness: participant.id,
                 conference: this.conferenceId
@@ -422,7 +424,11 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         participant.dimissed();
 
         try {
-            await this.videoCallService.dismissParticipantFromHearing(this.conferenceId, participant.id);
+            let participantId = participant.id;
+            if (participant instanceof LinkedParticipantPanelModel) {
+                participantId = participant.witnessParticipant.id;
+            }
+            await this.videoCallService.dismissParticipantFromHearing(this.conferenceId, participantId);
         } catch (error) {
             this.logger.error(`${this.loggerPrefix} Failed to raise request to dismiss witness out of hearing`, error, {
                 witness: participant.id,

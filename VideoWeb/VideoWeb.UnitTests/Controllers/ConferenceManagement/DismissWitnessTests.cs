@@ -35,7 +35,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.DismissWitnessAsync(TestConference.Id, participant.Id.ToString());
+            var result = await Controller.DismissWitnessAsync(TestConference.Id, participant.Id);
             var typedResult = (UnauthorizedObjectResult) result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().Be("Participant is not a witness");
@@ -56,7 +56,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.DismissWitnessAsync(TestConference.Id, Guid.NewGuid().ToString());
+            var result = await Controller.DismissWitnessAsync(TestConference.Id, Guid.NewGuid());
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().Be("Participant is not a witness");
@@ -76,7 +76,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.DismissWitnessAsync(TestConference.Id, participant.Id.ToString());
+            var result = await Controller.DismissWitnessAsync(TestConference.Id, participant.Id);
             var typedResult = (UnauthorizedObjectResult)result;
             typedResult.Should().NotBeNull();
             typedResult.Value.Should().Be("User must be a Judge");
@@ -106,7 +106,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.IsAny<TransferParticipantRequest>())).ThrowsAsync(apiException);
 
-            var result = await Controller.DismissWitnessAsync(TestConference.Id,witness.Id.ToString());
+            var result = await Controller.DismissWitnessAsync(TestConference.Id,witness.Id);
             result.Should().BeOfType<ObjectResult>();
             var typedResult = (ObjectResult) result;
             typedResult.Value.Should().Be(responseMessage);
@@ -124,7 +124,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.DismissWitnessAsync(TestConference.Id, witness.Id.ToString());
+            var result = await Controller.DismissWitnessAsync(TestConference.Id, witness.Id);
             var typedResult = (AcceptedResult) result;
             typedResult.Should().NotBeNull();
 
@@ -145,7 +145,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
 
             Controller = SetupControllerWithClaims(user);
 
-            var result = await Controller.DismissWitnessAsync(TestConference.Id, witness.Id.ToString());
+            var result = await Controller.DismissWitnessAsync(TestConference.Id, witness.Id);
             var typedResult = (AcceptedResult)result;
             typedResult.Should().NotBeNull();
 
@@ -165,14 +165,14 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 .WithRole(AppRoles.JudgeRole).Build();
             Controller = SetupControllerWithClaims(user);
             
-            var result = await Controller.DismissWitnessAsync(TestConference.Id, room.Id.ToString());
+            var result = await Controller.DismissWitnessAsync(TestConference.Id, witness.Id);
             var typedResult = (AcceptedResult)result;
             typedResult.Should().NotBeNull();
             
             VideoApiClientMock.Verify(
                 x => x.TransferParticipantAsync(TestConference.Id,
                     It.Is<TransferParticipantRequest>(r =>
-                        r.RoomId == room.Id && r.TransferType == TransferType.Dismiss)), Times.Once);
+                        r.ParticipantId == witness.Id && r.TransferType == TransferType.Dismiss)), Times.Once);
             
             VideoApiClientMock.Verify(x => x.AddTaskAsync(TestConference.Id, 
                     It.Is<AddTaskRequest>(r => r.ParticipantId == witness.Id && r.Body == "Witness dismissed" && r.TaskType == TaskType.Participant)), 
@@ -199,7 +199,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceManagement
                 x => x.AddTaskAsync(TestConference.Id,
                     It.IsAny<AddTaskRequest>())).ThrowsAsync(apiException);
 
-            var result = await Controller.DismissWitnessAsync(TestConference.Id, witness.Id.ToString());
+            var result = await Controller.DismissWitnessAsync(TestConference.Id, witness.Id);
             result.Should().BeOfType<ObjectResult>();
             var typedResult = (ObjectResult)result;
             typedResult.Value.Should().Be(responseMessage);

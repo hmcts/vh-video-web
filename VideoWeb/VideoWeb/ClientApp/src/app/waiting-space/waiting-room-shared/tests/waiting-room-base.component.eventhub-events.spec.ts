@@ -56,6 +56,7 @@ import { RequestedConsultationMessage } from 'src/app/services/models/requested-
 import { Room } from '../../../shared/models/room';
 import { RoomTransfer } from '../../../shared/models/room-transfer';
 import { ElementRef } from '@angular/core';
+import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 
 describe('WaitingRoomComponent EventHub Call', () => {
     let component: WRTestComponent;
@@ -213,17 +214,18 @@ describe('WaitingRoomComponent EventHub Call', () => {
         expect(participant.status === message.status).toBeFalsy();
     }));
 
-    it('should update participant status to available', () => {
+    it('should update participant status to available', fakeAsync(() => {
         const status = ParticipantStatus.Available;
         const message = new ParticipantStatusMessage(globalParticipant.id, '', globalConference.id, status);
 
         participantStatusSubject.next(message);
+        flushMicrotasks();
 
         const participant = component.hearing.getConference().participants.find(x => x.id === message.participantId);
         expect(participant.status).toBe(message.status);
         expect(component.isAdminConsultation).toBeFalsy();
         expect(component.showVideo).toBeFalsy();
-    });
+    }));
 
     it('should set room to null on disconnect for participant in conference', fakeAsync(() => {
         const status = ParticipantStatus.Disconnected;
@@ -235,31 +237,33 @@ describe('WaitingRoomComponent EventHub Call', () => {
         expect(participant.current_room).toBeNull();
     }));
 
-    it('should update logged in participant status to in consultation', () => {
+    it('should update logged in participant status to in consultation', fakeAsync(() => {
         const status = ParticipantStatus.InConsultation;
         const participant = globalParticipant;
         const message = new ParticipantStatusMessage(participant.id, '', globalConference.id, status);
         component.connected = true;
 
         participantStatusSubject.next(message);
+        flushMicrotasks();
 
         expect(component.participant.status).toBe(message.status);
         expect(component.showVideo).toBeTruthy();
         expect(component.isAdminConsultation).toBeFalsy();
-    });
+    }));
 
-    it('should update non logged in participant status to in consultation', () => {
+    it('should update non logged in participant status to in consultation', fakeAsync(() => {
         const status = ParticipantStatus.InConsultation;
         const participant = globalConference.participants.filter(x => x.id !== globalParticipant.id)[0];
         const message = new ParticipantStatusMessage(participant.id, '', globalConference.id, status);
         component.connected = true;
         component.participant.status = ParticipantStatus.Available;
         participantStatusSubject.next(message);
+        flushMicrotasks();
 
         const postUpdateParticipant = component.hearing.getConference().participants.find(p => p.id === message.participantId);
         expect(postUpdateParticipant.status).toBe(message.status);
         expect(component.showVideo).toBeFalsy();
-    });
+    }));
 
     it('should not set preferred devices when participant has rejected consultation', fakeAsync(async () => {
         const message = new ConsultationRequestResponseMessage(
@@ -269,11 +273,28 @@ describe('WaitingRoomComponent EventHub Call', () => {
             ConsultationAnswer.Rejected
         );
         consultationRequestResponseMessageSubject.next(message);
+        flushMicrotasks();
         expect(component.isAdminConsultation).toBeFalsy();
         expect(userMediaService.getPreferredCamera).toHaveBeenCalledTimes(0);
         expect(userMediaService.getPreferredMicrophone).toHaveBeenCalledTimes(0);
         expect(userMediaStreamService.getStreamForCam).toHaveBeenCalledTimes(0);
         expect(userMediaStreamService.getStreamForMic).toHaveBeenCalledTimes(0);
+    }));
+
+    it('should set consultation toast to rejected', fakeAsync(() => {
+        const roomLabel = 'ConsultationRoom';
+        const toast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
+        component.consultationInviteToasts[roomLabel] = toast;
+        const message = new ConsultationRequestResponseMessage(
+            globalConference.id,
+            roomLabel,
+            globalParticipant.id,
+            ConsultationAnswer.Rejected
+        );
+        consultationRequestResponseMessageSubject.next(message);
+        flushMicrotasks();
+        const updatedToast = component.consultationInviteToasts[roomLabel];
+        expect(updatedToast.declinedByThirdParty).toBeTruthy();
     }));
 
     it('should close start and join modal set preferred devices when participant accepts consultation', fakeAsync(async () => {

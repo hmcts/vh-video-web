@@ -23,6 +23,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { translateServiceSpy } from './testing/mocks/mock-translation-service';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { MockOidcSecurityService } from './testing/mocks/MockOidcSecurityService';
+import { TranslatePipeMock } from './testing/mocks/mock-translation-pipe';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -64,7 +65,7 @@ describe('AppComponent', () => {
 
         TestBed.configureTestingModule({
             imports: [HttpClientModule, RouterTestingModule],
-            declarations: [AppComponent, HeaderStubComponent, FooterStubComponent, BetaBannerStubComponent],
+            declarations: [AppComponent, HeaderStubComponent, FooterStubComponent, BetaBannerStubComponent, TranslatePipeMock],
             providers: [
                 { provide: ConfigService, useValue: configServiceSpy },
                 { provide: Logger, useClass: MockLogger },
@@ -93,6 +94,6 @@ describe('AppComponent', () => {
 
     it('should have a tag Skip to main content', () => {
         const compiled = fixture.debugElement.nativeElement;
-        expect(compiled.querySelector('a').textContent).toContain('Skip to main content');
+        expect(compiled.querySelector('.govuk-skip-link').innerHTML).toBe('');
     });
 });

@@ -66,7 +66,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             };
 
             var expectedStatus = ParticipantState.InConsultation;
-            
+
             await _eventHandler.HandleAsync(callbackEvent);
 
             // Verify messages sent to event hub clients
@@ -74,7 +74,7 @@ namespace VideoWeb.UnitTests.EventHandlers
                 x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
                     expectedStatus), Times.Exactly(participantCount));
         }
-        
+
         [Test]
         public async Task should_send_participant_status_when_transferring_from_new_consultation_room()
         {
@@ -97,7 +97,38 @@ namespace VideoWeb.UnitTests.EventHandlers
             };
 
             var expectedStatus = ParticipantState.Available;
-            
+
+            await _eventHandler.HandleAsync(callbackEvent);
+
+            // Verify messages sent to event hub clients
+            EventHubClientMock.Verify(
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
+                    expectedStatus), Times.Exactly(participantCount));
+        }
+
+        [Test]
+        public async Task should_send_participant_status_when_transferring_a_linked_participant()
+        {
+            _eventHandler = new TransferEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
+                VideoApiClientMock.Object);
+
+            var conference = TestConference;
+            var participantForEvent = conference.Participants.First(x => x.LinkedParticipants.Any() && x.Role == Role.Individual);
+            var participantCount = conference.Participants.Count + 1; // plus one for admin
+
+            var callbackEvent = new CallbackEvent
+            {
+                EventType = EventType.Transfer,
+                EventId = Guid.NewGuid().ToString(),
+                ConferenceId = conference.Id,
+                ParticipantId = participantForEvent.Id,
+                TransferFrom = RoomType.WaitingRoom.ToString(),
+                TransferTo = "ParticipantConsultationRoom3",
+                TimeStampUtc = DateTime.UtcNow
+            };
+
+            var expectedStatus = ParticipantState.InConsultation;
+
             await _eventHandler.HandleAsync(callbackEvent);
 
             // Verify messages sent to event hub clients
