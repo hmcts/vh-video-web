@@ -15,9 +15,8 @@ export class SelectHearingLayoutComponent implements OnInit {
     constructor(private videoCallService: VideoCallService, protected translateService: TranslateService) {}
 
     ngOnInit(): void {
-        document.getElementById('accordion-choose-layout-heading').innerHTML = this.translateService.instant(
-            'select-hearing-layout.choose-hearing-layout'
-        );
+        const headingElement = document.getElementById('accordion-choose-layout-heading');
+        headingElement.innerHTML = this.translateService.instant('select-hearing-layout.choose-hearing-layout');
         this.selectedLayout = this.videoCallService.getPreferredLayout(this.conference.id);
         if (!this.selectedLayout) {
             this.selectedLayout = this.recommendedLayout();
@@ -25,7 +24,7 @@ export class SelectHearingLayoutComponent implements OnInit {
         }
 
         (<any>window).GOVUKFrontend.initAll();
-        document.getElementById('accordion-choose-layout-heading').onclick = e => this.setAccordionText(e);
+        headingElement.onclick = e => this.setAccordionText(e);
         this.accordionOpenAllElement = document.getElementsByClassName('govuk-accordion__open-all').item(0) as HTMLButtonElement;
         this.accordionOpenAllElement.onclick = e => this.setAccordionText(e);
         this.setAccordionText({} as MouseEvent);
