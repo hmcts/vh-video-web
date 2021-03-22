@@ -589,7 +589,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(component.canCallEndpoint(endpoint)).toBeFalse();
     });
 
-    fit('should return participant status', () => {
+    it('should return participant status', () => {
         expect(component.trackParticipant(0, { status: ParticipantStatus.Available })).toBe(ParticipantStatus.Available);
     });
 });

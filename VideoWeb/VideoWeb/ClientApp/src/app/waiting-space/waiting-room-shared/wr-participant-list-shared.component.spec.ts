@@ -250,6 +250,7 @@ describe('WaitingRoom ParticipantList Base', () => {
     });
     it('should be allowed to invite in consultation if the participant is in a Judge or JOH ', () => {
         const indivUser = conference.participants.find(x => x.role === Role.JudicialOfficeHolder);
+        indivUser.linked_participants = [];
         indivUser.current_room = new RoomSummaryResponse({ label: 'JudgeJOHCourtRoom' });
         component.loggedInUser.participant_id = indivUser.id;
         component.loggedInUser.role = Role.JudicialOfficeHolder;
@@ -257,6 +258,17 @@ describe('WaitingRoom ParticipantList Base', () => {
         component.conference = conference;
 
         expect(component.canInvite).toBe(true);
+    });
+    it('should be not allowed to invite if the logged in user has linked participants ', () => {
+        const indivUser = conference.participants.find(x => x.role === Role.JudicialOfficeHolder);
+        indivUser.linked_participants = [{} as any];
+        indivUser.current_room = new RoomSummaryResponse({ label: 'JudgeJOHCourtRoom' });
+        component.loggedInUser.participant_id = indivUser.id;
+        component.loggedInUser.role = Role.JudicialOfficeHolder;
+
+        component.conference = conference;
+
+        expect(component.canInvite).toBe(false);
     });
 
     describe('ParticipantStatusListSupportForInterpreter', () => {

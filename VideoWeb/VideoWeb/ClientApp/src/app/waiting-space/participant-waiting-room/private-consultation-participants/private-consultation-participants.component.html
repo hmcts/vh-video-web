@@ -41,22 +41,24 @@
         </ng-container>
 
         <ng-container *ngFor="let endpoint of endpoints">
-            <div [class]="getRowClasses(endpoint)">
-                <app-invite-participant *ngIf="canCallEndpoint(endpoint)"
-                    [endpointId]="endpoint.id"
-                    [conferenceId]="conference.id"
-                    [roomLabel]="roomLabel">
-                </app-invite-participant>
-                <span *ngIf="isParticipantInCurrentRoom(endpoint)"
-                    class="fas fa-check"
-                    aria-hidden="true"></span>
-            </div>
-            <div [class]="getRowClasses(endpoint)"><span
-                    [class]="participantNameClass(endpoint)">{{endpoint.display_name}}</span></div>
-            <div [class]="getRowClasses(endpoint)"
-                class="text-right">
-                <span [class]="getParticipantStatusClasses(endpoint)"
-                    [innerHTML]="getParticipantStatus(endpoint)"></span>
+            <div class="endpoint-row">
+                <div [class]="getRowClasses(endpoint)">
+                    <app-invite-participant *ngIf="canCallEndpoint(endpoint)"
+                        [endpointId]="endpoint.id"
+                        [conferenceId]="conference.id"
+                        [roomLabel]="roomLabel">
+                    </app-invite-participant>
+                    <span *ngIf="isParticipantInCurrentRoom(endpoint)"
+                        class="fas fa-check"
+                        aria-hidden="true"></span>
+                </div>
+                <div [class]="getRowClasses(endpoint)"><span
+                        [class]="participantNameClass(endpoint)">{{endpoint.display_name}}</span></div>
+                <div [class]="getRowClasses(endpoint)"
+                    class="text-right">
+                    <span [class]="getParticipantStatusClasses(endpoint)"
+                        [innerHTML]="getParticipantStatus(endpoint)"></span>
+                </div>
             </div>
         </ng-container>
     </div>
