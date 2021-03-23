@@ -231,21 +231,19 @@ describe('WaitingRoom ParticipantList Base', () => {
     it('should be allowed to invite in consultation if the participant is in the participants room', () => {
         const indivUser = conference.participants.find(x => x.role === Role.Individual);
         indivUser.current_room = new RoomSummaryResponse({ label: 'ParticipantCourtRoom' });
+        indivUser.linked_participants = [];
         component.loggedInUser.participant_id = indivUser.id;
         component.loggedInUser.role = Role.Individual;
-
         component.conference = conference;
-
         expect(component.canInvite).toBe(true);
     });
     it('should not be allowed to invite in consultation if the participant is in the JOH room', () => {
         const indivUser = conference.participants.find(x => x.role === Role.Individual);
         indivUser.current_room = new RoomSummaryResponse({ label: 'JudgeJOHCourtRoom' });
+        indivUser.linked_participants = [];
         component.loggedInUser.participant_id = indivUser.id;
         component.loggedInUser.role = Role.Individual;
-
         component.conference = conference;
-
         expect(component.canInvite).toBe(false);
     });
     it('should be allowed to invite in consultation if the participant is in a Judge or JOH ', () => {
@@ -254,20 +252,25 @@ describe('WaitingRoom ParticipantList Base', () => {
         indivUser.current_room = new RoomSummaryResponse({ label: 'JudgeJOHCourtRoom' });
         component.loggedInUser.participant_id = indivUser.id;
         component.loggedInUser.role = Role.JudicialOfficeHolder;
-
         component.conference = conference;
-
         expect(component.canInvite).toBe(true);
     });
-    it('should be not allowed to invite if the logged in user has linked participants ', () => {
+    it('should be allowed to invite if the logged in user is a Judge or JOH and has linked participants ', () => {
         const indivUser = conference.participants.find(x => x.role === Role.JudicialOfficeHolder);
         indivUser.linked_participants = [{} as any];
         indivUser.current_room = new RoomSummaryResponse({ label: 'JudgeJOHCourtRoom' });
         component.loggedInUser.participant_id = indivUser.id;
         component.loggedInUser.role = Role.JudicialOfficeHolder;
-
         component.conference = conference;
-
+        expect(component.canInvite).toBe(true);
+    });
+    it('should not be allowed to invite if the logged in user is not a Judge or JOH and has linked participants ', () => {
+        const indivUser = conference.participants.find(x => x.role === Role.Individual);
+        indivUser.linked_participants = [{} as any];
+        indivUser.current_room = new RoomSummaryResponse({ label: 'JudgeJOHCourtRoom' });
+        component.loggedInUser.participant_id = indivUser.id;
+        component.loggedInUser.role = Role.Individual;
+        component.conference = conference;
         expect(component.canInvite).toBe(false);
     });
 
