@@ -146,7 +146,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 var interpretee = _c.Test.ConferenceParticipants.FirstOrDefault(p => p.Id == interpreter.LinkedParticipants.FirstOrDefault().LinkedId);
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantName(user, interpreter.Id)).Text.Trim().Should().Be(interpreter.Name);
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantHearingRole(user, interpreter.Id)).Text.Trim().Should().Contain($"{interpreter.HearingRole} for\r\n{interpretee.Name}");
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantHearingRole(user, interpreter.Id)).Text.Trim().Should().Contain($"{interpreter.HearingRole} for\n{interpretee.Name}");
                 if (!interpreter.CaseTypeGroup.ToLower().Equals("none"))
                 {
                     _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantCaseType(user, interpreter.Id)).Text.Trim().Should().Be(interpreter.CaseTypeGroup);
@@ -344,7 +344,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 if(user.HearingRole.ToLower() == "interpreter")
                 {
                    var interpretee = loggedInParticipants.FirstOrDefault(p => p.Id == user.LinkedParticipants.FirstOrDefault().LinkedId);
-                    _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantHearingRole("Participant", user.Id)).Text.Trim().Should().Contain($"{user.HearingRole} for\r\n{interpretee.Name}");          
+                    _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantHearingRole("Participant", user.Id)).Text.Trim().Should().Contain($"{user.HearingRole} for\n{interpretee.Name}");          
                 }
             }
         }
