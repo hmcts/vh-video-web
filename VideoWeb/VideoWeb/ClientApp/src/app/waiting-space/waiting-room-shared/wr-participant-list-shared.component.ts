@@ -45,7 +45,7 @@ export abstract class WRParticipantStatusListDirective {
         protected videoWebService: VideoWebService,
         protected logger: Logger,
         protected translateService: TranslateService
-    ) { }
+    ) {}
 
     initParticipants() {
         this.filterNonJudgeParticipants();
