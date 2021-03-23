@@ -234,9 +234,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         indivUser.linked_participants = [];
         component.loggedInUser.participant_id = indivUser.id;
         component.loggedInUser.role = Role.Individual;
-
         component.conference = conference;
-
         expect(component.canInvite).toBe(true);
     });
     it('should not be allowed to invite in consultation if the participant is in the JOH room', () => {
@@ -245,9 +243,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         indivUser.linked_participants = [];
         component.loggedInUser.participant_id = indivUser.id;
         component.loggedInUser.role = Role.Individual;
-
         component.conference = conference;
-
         expect(component.canInvite).toBe(false);
     });
     it('should be allowed to invite in consultation if the participant is in a Judge or JOH ', () => {
@@ -256,9 +252,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         indivUser.current_room = new RoomSummaryResponse({ label: 'JudgeJOHCourtRoom' });
         component.loggedInUser.participant_id = indivUser.id;
         component.loggedInUser.role = Role.JudicialOfficeHolder;
-
         component.conference = conference;
-
         expect(component.canInvite).toBe(true);
     });
     it('should be allowed to invite if the logged in user is a Judge or JOH and has linked participants ', () => {
@@ -267,9 +261,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         indivUser.current_room = new RoomSummaryResponse({ label: 'JudgeJOHCourtRoom' });
         component.loggedInUser.participant_id = indivUser.id;
         component.loggedInUser.role = Role.JudicialOfficeHolder;
-
         component.conference = conference;
-
         expect(component.canInvite).toBe(true);
     });
     it('should not be allowed to invite if the logged in user is not a Judge or JOH and has linked participants ', () => {
@@ -278,9 +270,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         indivUser.current_room = new RoomSummaryResponse({ label: 'JudgeJOHCourtRoom' });
         component.loggedInUser.participant_id = indivUser.id;
         component.loggedInUser.role = Role.Individual;
-
         component.conference = conference;
-
         expect(component.canInvite).toBe(false);
     });
 
