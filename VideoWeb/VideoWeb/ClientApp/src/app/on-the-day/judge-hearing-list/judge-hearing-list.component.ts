@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceForJudgeResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { ConferenceForJudgeResponse, LoggedParticipantResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -30,7 +30,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
     interval: any;
     today = new Date();
     profile: UserProfileResponse;
-
+    loggedUser: LoggedParticipantResponse;
     eventHubSubscriptions: Subscription = new Subscription();
 
     constructor(
@@ -97,7 +97,16 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
 
     onConferenceSelected(conference: ConferenceForJudgeResponse) {
         this.logger.debug('[JudgeHearingList] - Signing into judge waiting room', { conference: conference.id });
-        this.router.navigate([pageUrls.JudgeWaitingRoom, conference.id]);
+        this.videoWebService.getCurrentParticipant(conference.id).then(x => {
+            const result = conference.participants.find(
+                p => p.id === x.participant_id && (p.hearing_role === 'Panel Member' || p.hearing_role === 'Winger')
+            );
+            if (result) {
+                this.router.navigate([pageUrls.JOHWaitingRoom, conference.id]);
+            } else {
+                this.router.navigate([pageUrls.JudgeWaitingRoom, conference.id]);
+            }
+        });
     }
 
     goToEquipmentCheck() {

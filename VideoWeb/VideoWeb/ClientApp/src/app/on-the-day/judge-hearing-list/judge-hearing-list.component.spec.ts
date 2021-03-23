@@ -1,4 +1,4 @@
-import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of, Subscription, throwError } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
@@ -11,7 +11,7 @@ import { ScreenHelper } from 'src/app/shared/screen-helper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy, hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
-import { ConferenceStatus, Role, UserProfileResponse } from '../../services/clients/api-client';
+import { ConferenceStatus, LoggedParticipantResponse, Role, UserProfileResponse } from '../../services/clients/api-client';
 import { JudgeHearingListComponent } from './judge-hearing-list.component';
 
 describe('JudgeHearingListComponent', () => {
@@ -36,7 +36,7 @@ describe('JudgeHearingListComponent', () => {
     const eventsService = eventsServiceSpy;
 
     beforeAll(() => {
-        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForJudge']);
+        videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferencesForJudge', 'getCurrentParticipant']);
 
         errorService = jasmine.createSpyObj<ErrorService>('ErrorService', [
             'goToServiceError',
@@ -65,7 +65,6 @@ describe('JudgeHearingListComponent', () => {
         );
         component.conferences = conferences;
         videoWebService.getConferencesForJudge.and.returnValue(of(conferences));
-
         screenHelper.enableFullScreen.calls.reset();
     });
 
@@ -122,12 +121,23 @@ describe('JudgeHearingListComponent', () => {
         expect(component.courtName).toBe(``);
     });
 
-    it('should navigate to judge waiting room when conference is selected', () => {
+    it('should navigate to judge waiting room when conference is selected for user as a judge in the conference', fakeAsync(() => {
         const conference = conferences[0];
-        component.onConferenceSelected(conference);
-        expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeWaitingRoom, conference.id]);
-    });
+        const judge = conference.participants.find(x => x.role === Role.Judge);
+        videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(new LoggedParticipantResponse({ participant_id: judge.id })));
 
+        component.onConferenceSelected(conference);
+        tick();
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeWaitingRoom, conference.id]);
+    }));
+    it('should navigate to panel member waiting room when conference is selected for user as a panel member in the conference', fakeAsync(() => {
+        const conference = conferences[0];
+        const part = conference.participants.find(x => x.role === Role.JudicialOfficeHolder);
+        videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(new LoggedParticipantResponse({ participant_id: part.id })));
+        component.onConferenceSelected(conference);
+        tick();
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.JOHWaitingRoom, conference.id]);
+    }));
     it('should update conference status when message arrives', () => {
         const conference = conferences[0];
         const message = new ConferenceStatusMessage(conference.id, ConferenceStatus.Closed);
