@@ -37,14 +37,13 @@ export class IdpSelectionComponent implements OnInit {
             .checkAuth()
             .pipe(
                 catchError(err => {
-                    this.logger.error('*** [Idp Selection] - Check Auth Error', err);
+                    this.logger.error('[Idp Selection] - Check Auth Error', err);
                     this.router.navigate(['/']);
                     return NEVER;
                 })
             )
             .subscribe(loggedIn => {
-                this.logger.debug('*** [IdpSelectionComponent] - isLoggedIn ' + loggedIn);
-                this.logger.debug('*** [IdpSelectionComponent] - TOKEN: ' + this.oidcSecurityService.getToken());
+                this.logger.debug('[IdpSelectionComponent] - isLoggedIn ' + loggedIn);
                 if (loggedIn) {
                     const returnUrl = this.returnUrlService.popUrl() || '/';
                     try {

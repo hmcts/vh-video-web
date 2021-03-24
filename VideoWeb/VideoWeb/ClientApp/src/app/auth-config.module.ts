@@ -15,16 +15,13 @@ export function loadConfig(configService: ConfigService, oidcConfigService: Oidc
             scope: 'openid profile api://3edd22df-cee5-4109-8e96-703e280b25f6/feapi',
             responseType: 'code',
             maxIdTokenIatOffsetAllowedInSeconds: 600,
-            issValidationOff: true, // Make it possible to turn the iss validation off per configuration. You should not turn this off!
             autoUserinfo: false,
             logLevel: LogLevel.Debug,
             secureRoutes: ['.'],
             
             tokenRefreshInSeconds: 5,
-            silentRenewUrl: 'https://login.microsoftonline.com/fb6e0e22-0da3-4c35-972a-9d61eb256508/oauth2/v2.0/token',
             silentRenew: true,
-            useRefreshToken: true,
-            customTokenParams: { 'scope': 'openid profile api://3edd22df-cee5-4109-8e96-703e280b25f6/feapi' }
+            useRefreshToken: true
         });
     });
   }
