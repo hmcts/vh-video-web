@@ -15,6 +15,7 @@ using VideoWeb.AcceptanceTests.Pages;
 using TestApi.Contract.Dtos;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Responses;
+using FluentAssertions.Execution;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -145,26 +146,39 @@ namespace VideoWeb.AcceptanceTests.Steps
             foreach (var interpreter in interpreters)
             {
                 var interpretee = _c.Test.ConferenceParticipants.FirstOrDefault(p => p.Id == interpreter.LinkedParticipants.FirstOrDefault().LinkedId);
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantName(user, interpreter.Id)).Text.Trim().Should().Be(interpreter.Name);
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantHearingRole(user, interpreter.Id)).Text.Trim().Should().Contain($"{interpreter.HearingRole} for\n{interpretee.Name}");
-                if (!interpreter.CaseTypeGroup.ToLower().Equals("none"))
-                {
-                    _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantCaseType(user, interpreter.Id)).Text.Trim().Should().Be(interpreter.CaseTypeGroup);
-                }
+                VerifyInterpreterOrRepresentative(user, interpreter, interpretee.Name, false);                
             }
 
             foreach (var representative in representatives)
-            {
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantName(user, representative.Id)).Text.Trim().Should().Be(representative.Name);
-                if (representative.CaseTypeGroup.ToLower().Equals("none")) continue;
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantCaseType(user, representative.Id)).Text.Trim().Should().Be(representative.CaseTypeGroup);
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantHearingRole(user, representative.Id)).Text.Trim().Should().Be($"Representative for\n{representative.Representee}");
+            { 
+                VerifyInterpreterOrRepresentative(user, representative, representative.Representee);
             }
 
             foreach (var observer in observers)
             {
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetObserverName(user, observer.Id)).Text.Trim().Should().Be(observer.Name);
             }
+        }
+
+        private void VerifyInterpreterOrRepresentative(string user, ParticipantDetailsResponse participant, string forUserName, bool representative = true)
+        {
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantName(user, participant.Id)).Text.Trim().Should().Be(participant.Name);
+            var invalidCaseType = participant.CaseTypeGroup.ToLower().Equals("none");
+
+            if (invalidCaseType && representative) 
+                return;
+
+            if (!invalidCaseType)
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantCaseType(user, participant.Id)).Text.Trim().Should().Be(participant.CaseTypeGroup);
+
+            ShouldInterpretOrRepresentFor(user, participant, forUserName);
+        }
+
+        private void ShouldInterpretOrRepresentFor(string user, ParticipantDetailsResponse participant, string forUserName)
+        {
+            var representOrInterpretFor = _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantHearingRole(user, participant.Id)).Text.Trim();
+            representOrInterpretFor.Should().Contain($"{participant.HearingRole} for");
+            representOrInterpretFor.Should().Contain($"{forUserName}");
         }
         
         [Then(@"the (.*) below their own entry in the participant list")]
@@ -344,7 +358,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 if(user.HearingRole.ToLower() == "interpreter")
                 {
                    var interpretee = loggedInParticipants.FirstOrDefault(p => p.Id == user.LinkedParticipants.FirstOrDefault().LinkedId);
-                    _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantHearingRole("Participant", user.Id)).Text.Trim().Should().Contain($"{user.HearingRole} for\n{interpretee.Name}");          
+                    ShouldInterpretOrRepresentFor("Participant", user, interpretee.Name);
                 }
             }
         }

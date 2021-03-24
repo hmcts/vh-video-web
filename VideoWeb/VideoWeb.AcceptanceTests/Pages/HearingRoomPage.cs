@@ -12,6 +12,9 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly By IncomingVideoFeed = By.CssSelector("video[id^='incomingFeed']");
         public static readonly By SelfView = By.Id("outgoingFeedVideo");
         public static readonly By ToggleAudioMuteLocked = By.Id("toggle-audio-mute-locked-img");
+        public static readonly By ToggleHandRaised = By.Id("toggle-hand-raised-img");
+        public static readonly By HandRaised = By.ClassName($"fa-hand-paper");
+        public static readonly By ParticipantPanel = By.Id($"panelList");
         public static By InterPreterName(string displayName) => By.XPath($"//span[contains(text(),'{displayName}')]");
     }
 }
