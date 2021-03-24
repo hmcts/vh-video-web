@@ -498,4 +498,10 @@ describe('HearingControlsBaseComponent', () => {
             expect(component.canShowScreenShareButton).toBeFalsy();
         });
     });
+
+    it('should emit when change device button has been clicked', () => {
+        spyOn(component.changeDeviceToggle, 'emit');
+        component.changeDeviceSelected();
+        expect(component.changeDeviceToggle.emit).toHaveBeenCalled();
+    });
 });
