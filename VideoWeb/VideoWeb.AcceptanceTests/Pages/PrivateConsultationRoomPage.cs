@@ -20,6 +20,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly By ParticipantsInRoom = By.CssSelector(".participant-grid span.yellow");
 
         public static By StatusOfUser(string name) => By.XPath(
-            $"//h4[text()='Participants']/following-sibling::div/div[./span[text()='{name}']]/following-sibling::div/span[@class='red']");
+            $"//h2[text()='Participants']/following-sibling::div/div/div[./span[text()='{name}']]/following-sibling::div/span[@class='red']");
     }
 }
