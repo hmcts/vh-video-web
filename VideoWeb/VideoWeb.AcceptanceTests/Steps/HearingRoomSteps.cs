@@ -179,7 +179,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             interpreterText.Should().Contain($"{interpretee.DisplayName}");
         }
 
-
         [Then(@"the Judge can see interpreter hand (.*)")]
         public void ThenTheJudgeCanSeeInterpreterHandRaised(string status)
         {
@@ -188,8 +187,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             else
                 _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(HearingRoomPage.HandRaised).Should().BeTrue();
         }
-
-
 
         [Then(@"the Judge can close the hearing")]
         public void ThenTheJudgeCanCloseTheHearing()
