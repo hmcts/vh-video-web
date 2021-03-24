@@ -9,6 +9,7 @@ describe('LoginComponent', () => {
     const mockAdalService = new MockAdalService();
     let adalService;
     const returnUrlService = new ReturnUrlService();
+    const activatedRoute: any = { snapshot: { url: [{ path: 'foo' }], queryParams: {} } };
     let router: jasmine.SpyObj<Router>;
 
     beforeAll(() => {
@@ -17,11 +18,19 @@ describe('LoginComponent', () => {
     });
 
     beforeEach(() => {
-        component = new LoginComponent(adalService, router, returnUrlService, new MockLogger());
+        component = new LoginComponent(adalService, activatedRoute, router, returnUrlService, new MockLogger());
     });
 
     it('should create', () => {
         expect(component).toBeTruthy();
+    });
+
+    it('should store return url if supplied', () => {
+        spyOn(returnUrlService, 'setUrl');
+        adalService.setAuthenticated(false);
+        activatedRoute.snapshot.queryParams['returnUrl'] = '/returnPath';
+        component.ngOnInit();
+        expect(returnUrlService.setUrl).toHaveBeenCalledWith('/returnPath');
     });
 
     it('should use saved return url', () => {

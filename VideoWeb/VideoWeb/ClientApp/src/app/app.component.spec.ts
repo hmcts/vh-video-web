@@ -185,9 +185,7 @@ describe('AppComponent', () => {
         mockAdalService.setAuthenticated(false);
         await component.checkAuth();
         expect(profileServiceSpy.getUserProfile).toHaveBeenCalledTimes(0);
-        expect(routerSpy.navigate).toHaveBeenCalledWith([`/${pageUrls.IdpSelection}`], {
-            queryParams: { returnUrl: pageUrls.AdminVenueList }
-        });
+        expect(routerSpy.navigate).toHaveBeenCalledWith(['/login'], { queryParams: { returnUrl: pageUrls.AdminVenueList } });
     });
 
     it('should not check auth or get profile on logout', async () => {

@@ -31,7 +31,6 @@ export const pageUrls = {
     // security
     Login: 'login',
     Logout: 'logout',
-    IdpSelection: 'idp-selection',
     // Errors
     ServiceError: 'service-error',
     NotFound: 'not-found',
