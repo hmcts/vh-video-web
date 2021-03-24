@@ -540,7 +540,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     needsInterpreterRoom(): boolean {
-        if (!this.participant.linked_participants) {
+        if (!this.participant.linked_participants.length) {
             return false;
         }
 
@@ -566,7 +566,7 @@ export abstract class WaitingRoomBaseDirective {
         if (this.participant?.hearing_role.toUpperCase() === HearingRole.WITNESS.toUpperCase()) {
             return true;
         }
-        if (!this.participant?.linked_participants) {
+        if (!this.participant?.linked_participants.length) {
             return false;
         }
         const linkedParticipants = this.conference.participants.filter(p =>
