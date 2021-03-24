@@ -5,6 +5,6 @@ namespace VideoWeb.AcceptanceTests.Pages
 {
     public static class RulesPage
     {
-        public static By HmctsLogo = CommonLocators.ImageWithAltTags("HM Courts & Tribunals Service crest");
+        public static By HmctsLogo = CommonLocators.ImageWithAltTags("HM Courts &amp; Tribunals Service crest");
     }
 }

@@ -43,12 +43,16 @@ Scenario: Interpreter And Interpretee joins hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
   Then the Judge can see interpreter and interpretee on participant list
-	Then the Judge is on the Hearing Room page for 1 minute
 	And the Judge can see the participants
 	And the first Individual can see the other participants
 	And the first Interpreter can see the other participants
+  And the first Interpreter clicks raise hand 
   When in the Judge's browser
-  And the Judge closes the hearing
+  Then the Judge can see interpreter hand raised
+  And the first Individual clicks raise hand 
+  When in the Judge's browser
+  Then the Judge can see interpreter hand lowered
+  When the Judge closes the hearing
 	Then the user is on the Waiting Room page
 	And the hearing status changed to Closed
 	When in the first Individual's browser
