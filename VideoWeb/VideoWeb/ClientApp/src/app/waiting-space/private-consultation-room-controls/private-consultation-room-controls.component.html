@@ -53,6 +53,17 @@
 
     <div
       class="icon-button"
+      id="toggle-media-device-img"
+      appTooltip
+      [text]="'private-consultation-room-controls.change-camera-mic' | translate"
+      colour="grey"
+      (click)="changeDeviceSelected()"
+    >
+      <span class="fa fa-caret-square-o-down"></span>
+    </div>
+
+    <div
+      class="icon-button"
       id="toggle-self-view-img"
       appTooltip
       *ngIf="!audioOnly"

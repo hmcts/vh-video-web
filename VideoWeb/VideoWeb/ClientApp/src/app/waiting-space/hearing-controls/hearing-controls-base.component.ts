@@ -29,6 +29,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     @Output() public leaveConsultation = new EventEmitter();
     @Output() public lockConsultation = new EventEmitter<boolean>();
     @Output() public togglePanel = new EventEmitter<string>();
+    @Output() public changeDeviceToggle = new EventEmitter();
 
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
@@ -329,5 +330,9 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     togglePanelStatus(panelName: string) {
         this.togglePanel.emit(panelName);
+    }
+
+    changeDeviceSelected() {
+        this.changeDeviceToggle.emit();
     }
 }
