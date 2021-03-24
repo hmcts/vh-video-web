@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveEnd, Router, RouterEvent } from '@angular/router';
 import { ApplicationInsights, ITelemetryItem, SeverityLevel } from '@microsoft/applicationinsights-web';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { filter } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { ConfigService } from '../../api/config.service';
 import { LogAdapter } from '../log-adapter';
 
@@ -16,26 +17,28 @@ export class AppInsightsLoggerService implements LogAdapter {
 
     constructor(configService: ConfigService, router: Router, oidcSecurityService: OidcSecurityService) {
         this.router = router;
-        this.setupAppInsights(configService, oidcSecurityService).then(() => {
+        this.setupAppInsights(configService, oidcSecurityService).subscribe(() => {
             this.trackNavigation();
         });
     }
 
-    private async setupAppInsights(configService: ConfigService, oidcSecurityService: OidcSecurityService) {
-        await configService.loadConfig();
-        const config = configService.getClientSettings();
-        this.appInsights = new ApplicationInsights({
-            config: {
-                instrumentationKey: config.app_insights_instrumentation_key
-            }
-        });
-        this.appInsights.loadAppInsights();
-        oidcSecurityService.userData$.subscribe(ud => {
-            this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
-                envelope.tags['ai.cloud.role'] = 'vh-video-web';
-                envelope.tags['ai.user.id'] = ud.preferred_username.toLowerCase();
+    private setupAppInsights(configService: ConfigService, oidcSecurityService: OidcSecurityService) : Observable<void> {
+        configService.loadConfig();
+        return configService.getClientSettingsObservable().pipe(
+            map(configSettings => {
+            this.appInsights = new ApplicationInsights({
+                config: {
+                    instrumentationKey: configSettings.app_insights_instrumentation_key
+                }
             });
-        });
+            this.appInsights.loadAppInsights();
+            oidcSecurityService.userData$.subscribe(ud => {
+                this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
+                    envelope.tags['ai.cloud.role'] = 'vh-video-web';
+                    envelope.tags['ai.user.id'] = ud.preferred_username.toLowerCase();
+                });
+            });
+        }));
     }
 
     debug(message: string, properties: any = null): void {

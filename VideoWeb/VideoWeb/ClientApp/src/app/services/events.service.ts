@@ -65,15 +65,17 @@ export class EventsService {
         private errorService: ErrorService
     ) {
         this.reconnectionAttempt = 0;
-        const eventhubPath = this.configService.getClientSettings().event_hub_path;
-        this.connection = new signalR.HubConnectionBuilder()
+        this.configService.getClientSettingsObservable().subscribe(configSettings => {
+            const eventhubPath = configSettings.event_hub_path;
+            this.connection = new signalR.HubConnectionBuilder()
             .configureLogging(signalR.LogLevel.Debug)
             .withAutomaticReconnect(this.reconnectionTimes)
             .withUrl(eventhubPath, {
                 accessTokenFactory: () => this.oidcSecurityService.getIdToken()
             })
             .build();
-        this.connection.serverTimeoutInMilliseconds = this.serverTimeoutTime;
+            this.connection.serverTimeoutInMilliseconds = this.serverTimeoutTime;
+        });
     }
 
     start() {

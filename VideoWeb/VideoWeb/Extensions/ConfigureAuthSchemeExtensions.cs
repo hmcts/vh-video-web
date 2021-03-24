@@ -33,7 +33,7 @@ namespace VideoWeb.Extensions
                 {
                     options.Authority = "https://login.microsoftonline.com/fb6e0e22-0da3-4c35-972a-9d61eb256508/v2.0"; //$"{ securitySettings.Authority}{securitySettings.TenantId}/";
                     options.TokenValidationParameters.ValidateLifetime = true;
-                    options.TokenValidationParameters.ValidateAudience = false;
+                    options.TokenValidationParameters.NameClaimType = "preferred_username";
                     options.Audience = securitySettings.ClientId;
                     options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
                 }).AddJwtBearer("EventHubUser", options =>
@@ -63,7 +63,7 @@ namespace VideoWeb.Extensions
                     };
                     options.Authority = "https://login.microsoftonline.com/fb6e0e22-0da3-4c35-972a-9d61eb256508/v2.0"; //$"{ securitySettings.Authority}{securitySettings.TenantId}/";
                     options.TokenValidationParameters.ValidateLifetime = true;
-                    options.TokenValidationParameters.ValidateAudience = false;
+                    options.TokenValidationParameters.NameClaimType = "preferred_username";
                     options.Audience = securitySettings.ClientId;
                     options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
                 }).AddJwtBearer("Callback", options =>

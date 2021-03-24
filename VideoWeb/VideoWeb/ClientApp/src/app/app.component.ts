@@ -15,6 +15,7 @@ import { pageUrls } from './shared/page-url.constants';
 import { TestLanguageService } from './shared/test-language.service';
 import { TranslateService } from '@ngx-translate/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { ConfigService } from './services/api/config.service';
 
 @Component({
     selector: 'app-root',
@@ -46,7 +47,8 @@ export class AppComponent implements OnInit, OnDestroy {
         pageTracker: PageTrackerService,
         testLanguageService: TestLanguageService,
         translate: TranslateService,
-        private oidcSecurityService: OidcSecurityService
+        private oidcSecurityService: OidcSecurityService,
+        private configService: ConfigService
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
@@ -60,13 +62,15 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     async ngOnInit() {
-        this.checkAuth().subscribe(async loggedIn => {
-            await this.attemptRetrieveProfile(loggedIn);
-            this.checkBrowser();
-            this.setPageTitle();
-            this.setupSubscribers();
-            this.eventsService.start();
-            this.connectionStatusService.start();
+        this.configService.getClientSettingsObservable().subscribe(() => {
+            this.checkAuth().subscribe(async loggedIn => {
+                await this.attemptRetrieveProfile(loggedIn);
+                this.checkBrowser();
+                this.setPageTitle();
+                this.setupSubscribers();
+                this.eventsService.start();
+                this.connectionStatusService.start();
+            });
         });
     }
 

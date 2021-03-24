@@ -1,49 +1,53 @@
 import { Injectable } from '@angular/core';
 import { ClientSettingsResponse } from '../clients/api-client';
 import { HttpClient, HttpBackend } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { SessionStorage } from '../session-storage';
-import { from, Observable, of } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 
 @Injectable()
 export class ConfigService {
-    clientSettings: ClientSettingsResponse;
+    clientSettingsLoaded$ = new BehaviorSubject(false);
+    private httpClient: HttpClient; 
     private SETTINGS_KEY = 'vh.client.settings';
     private readonly clientSettingCache: SessionStorage<ClientSettingsResponse>;
-    private httpClient: HttpClient;
 
     constructor(handler: HttpBackend) {
         this.httpClient = new HttpClient(handler);
         this.clientSettingCache = new SessionStorage<ClientSettingsResponse>(this.SETTINGS_KEY);
     }
+    
+    loadConfig() {
+        if (this.getConfig()) {
+            this.clientSettingsLoaded$.next(true);
+            return;
+        }
 
-    async loadConfig() {
         try {
-            const result1 = await this.retrieveConfigFromApi();
-            this.clientSettings = result1;
-            this.clientSettingCache.set(result1);
-            return Promise.resolve(result1);
+            this.retrieveConfigFromApi().subscribe(result => {
+                this.clientSettingCache.set(result);
+                this.clientSettingsLoaded$.next(true);
+            });
         } catch (err) {
             console.error(`failed to read configuration: ${err}`);
             throw err;
         }
     }
-
-    getClientSettings(): ClientSettingsResponse {
-        return this.clientSettingCache.get();
+    
+    getClientSettingsObservable(): Observable<ClientSettingsResponse> {
+        return this.clientSettingsLoaded$.pipe(
+            filter(Boolean),
+            map(() => this.getConfig())
+        );
     }
 
-    getClientSettingsAs(): Observable<ClientSettingsResponse> {
-        const settings = this.getClientSettings();
-        if (!settings) {
-            return from(this.retrieveConfigFromApi());
-        } else {
-            return of(settings);
-        }
+    getConfig(): ClientSettingsResponse {
+        return this.clientSettingCache.get()
     }
 
-    private retrieveConfigFromApi(): Promise<ClientSettingsResponse> {
+    private retrieveConfigFromApi(): Observable<ClientSettingsResponse> {
         let url = '/config';
         url = url.replace(/[?&]$/, '');
-        return this.httpClient.get<ClientSettingsResponse>(url).toPromise();
+        return this.httpClient.get<ClientSettingsResponse>(url);
     }
 }

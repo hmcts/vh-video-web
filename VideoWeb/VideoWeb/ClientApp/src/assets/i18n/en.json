@@ -607,6 +607,10 @@
     "stop-sharing-my-screen": "Stop sharing my screen",
     "stop-sharing-screen": "Stop sharing screen"
   },
+  "chat-panel": {
+    "heading": "VH Officer messages",
+    "loading": "Loading..."
+  },
   "select-hearing-layout": {
     "choose-hearing-layout": "Choose hearing layout",
     "open-all": "Open all",

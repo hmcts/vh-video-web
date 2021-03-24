@@ -1,53 +1,33 @@
-import { HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { APP_INITIALIZER, Injectable, NgModule } from '@angular/core';
-import { AuthModule, LoggerService, LogLevel, OidcConfigService, OidcSecurityService } from 'angular-auth-oidc-client';
-import { Observable } from 'rxjs';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { AuthInterceptor, AuthModule, LogLevel, OidcConfigService, OidcSecurityService } from 'angular-auth-oidc-client';
 import { ConfigService } from './services/api/config.service';
 
-@Injectable()
-export class AuthInterceptor2 implements HttpInterceptor {
-  constructor(
-    private oidcSecurityService: OidcSecurityService,
-    private loggerService: LoggerService
-  ) {}
-
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const token = this.oidcSecurityService.getIdToken();
-
-    if (!token) {
-      this.loggerService.logDebug(`Wanted to add token to ${req.url} but found no token: '${token}'`);
-      return next.handle(req);
-    }
-
-    req = req.clone({
-      headers: req.headers.set('Authorization', 'Bearer ' + token),
-    });
-
-    return next.handle(req);
-  }
-}
-
-export function loadConfig(configService: ConfigService, oidcConfigService: OidcConfigService) {
+export function loadConfig(configService: ConfigService, oidcConfigService: OidcConfigService) : Function
+{
     return () => {
-        const clientSettings = configService.getClientSettings();
-        console.log('****Client Info****');
-        console.error(clientSettings);
-        return oidcConfigService.withConfig({
+        configService.getClientSettingsObservable().subscribe(clientSettings => {
+          // https://github.com/damienbod/angular-auth-oidc-client/blob/8b66484755ad815948d5bc0711e8d9c69ac6661f/docs/configuration.md
+          oidcConfigService.withConfig({
             stsServer: `https://login.microsoftonline.com/${clientSettings.tenant_id}/v2.0`,
-            // authWellknownEndpoint: `https://login.microsoftonline.com/${clientSettings.tenant_id}`,
             redirectUrl: clientSettings.redirect_uri,
             clientId: clientSettings.client_id,
-            scope: 'openid profile',
+            scope: 'openid profile api://3edd22df-cee5-4109-8e96-703e280b25f6/feapi',
             responseType: 'code',
-            silentRenew: true,
             maxIdTokenIatOffsetAllowedInSeconds: 600,
-            issValidationOff: true,
-            autoUserinfo: true,
-            useRefreshToken: true,
+            issValidationOff: true, // Make it possible to turn the iss validation off per configuration. You should not turn this off!
+            autoUserinfo: false,
             logLevel: LogLevel.Debug,
-            secureRoutes: ['.']
+            secureRoutes: ['.'],
+            
+            tokenRefreshInSeconds: 5,
+            silentRenewUrl: 'https://login.microsoftonline.com/fb6e0e22-0da3-4c35-972a-9d61eb256508/oauth2/v2.0/token',
+            silentRenew: true,
+            useRefreshToken: true,
+            customTokenParams: { 'scope': 'openid profile api://3edd22df-cee5-4109-8e96-703e280b25f6/feapi' }
         });
-    };
+    });
+  }
 }
 
 @NgModule({
@@ -62,8 +42,7 @@ export function loadConfig(configService: ConfigService, oidcConfigService: Oidc
             deps: [ConfigService, OidcConfigService],
             multi: true
         },
-        //{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor2, multi: true }
+        { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
     ],
     exports: [AuthModule]
 })
