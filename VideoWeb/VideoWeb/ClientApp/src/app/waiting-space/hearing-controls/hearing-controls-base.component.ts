@@ -181,7 +181,10 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             return false;
         }
         this.remoteMuted = updatedParticipant.isRemoteMuted;
-        this.handRaised = updatedParticipant.handRaised;
+        // hands being raised/lowered for LinkedParticipants are managed by SignalR
+        if (!this.participant.linked_participants.length) {
+            this.handRaised = updatedParticipant.handRaised;
+        }
         if (this.remoteMuted && !this.audioMuted) {
             this.logger.info(`${this.loggerPrefix} Participant has been remote muted, muting locally too`, this.logPayload);
             this.toggleMute();
