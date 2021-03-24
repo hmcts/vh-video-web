@@ -128,7 +128,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Driver.WaitUntilElementClickable(HearingRoomPage.ToggleHandRaised).Click();
         }
 
-
         [Then(@"an audio recording of the hearing has been created")]
         public void ThenAnAudioRecordingOfTheHearingHasBeenCreated()
         {
