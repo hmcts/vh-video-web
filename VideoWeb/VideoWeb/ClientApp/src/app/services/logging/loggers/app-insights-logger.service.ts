@@ -22,23 +22,24 @@ export class AppInsightsLoggerService implements LogAdapter {
         });
     }
 
-    private setupAppInsights(configService: ConfigService, oidcSecurityService: OidcSecurityService) : Observable<void> {
+    private setupAppInsights(configService: ConfigService, oidcSecurityService: OidcSecurityService): Observable<void> {
         configService.loadConfig();
         return configService.getClientSettingsObservable().pipe(
             map(configSettings => {
-            this.appInsights = new ApplicationInsights({
-                config: {
-                    instrumentationKey: configSettings.app_insights_instrumentation_key
-                }
-            });
-            this.appInsights.loadAppInsights();
-            oidcSecurityService.userData$.subscribe(ud => {
-                this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
-                    envelope.tags['ai.cloud.role'] = 'vh-video-web';
-                    envelope.tags['ai.user.id'] = ud.preferred_username.toLowerCase();
+                this.appInsights = new ApplicationInsights({
+                    config: {
+                        instrumentationKey: configSettings.app_insights_instrumentation_key
+                    }
                 });
-            });
-        }));
+                this.appInsights.loadAppInsights();
+                oidcSecurityService.userData$.subscribe(ud => {
+                    this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
+                        envelope.tags['ai.cloud.role'] = 'vh-video-web';
+                        envelope.tags['ai.user.id'] = ud.preferred_username.toLowerCase();
+                    });
+                });
+            })
+        );
     }
 
     debug(message: string, properties: any = null): void {

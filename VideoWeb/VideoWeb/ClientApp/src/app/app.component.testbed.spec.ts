@@ -24,6 +24,7 @@ import { translateServiceSpy } from './testing/mocks/mock-translation-service';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { MockOidcSecurityService } from './testing/mocks/MockOidcSecurityService';
 import { TranslatePipeMock } from './testing/mocks/mock-translation-pipe';
+import { of } from 'rxjs';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -47,8 +48,8 @@ describe('AppComponent', () => {
     let router: Router;
 
     configureTestSuite(() => {
-        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['clientSettings', 'getClientSettings', 'loadConfig']);
-        configServiceSpy.getClientSettings.and.returnValue(clientSettings);
+        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettingsObservable', 'loadConfig']);
+        configServiceSpy.getClientSettingsObservable.and.returnValue(of(clientSettings));
 
         deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isSupportedBrowser']);
 

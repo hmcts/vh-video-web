@@ -8,15 +8,13 @@ import { filter, map } from 'rxjs/operators';
 @Injectable()
 export class ConfigService {
     clientSettingsLoaded$ = new BehaviorSubject(false);
-    private httpClient: HttpClient; 
     private SETTINGS_KEY = 'vh.client.settings';
     private readonly clientSettingCache: SessionStorage<ClientSettingsResponse>;
 
-    constructor(handler: HttpBackend) {
-        this.httpClient = new HttpClient(handler);
+    constructor(private httpClient: HttpClient) {
         this.clientSettingCache = new SessionStorage<ClientSettingsResponse>(this.SETTINGS_KEY);
     }
-    
+
     loadConfig() {
         if (this.getConfig()) {
             this.clientSettingsLoaded$.next(true);
@@ -33,7 +31,7 @@ export class ConfigService {
             throw err;
         }
     }
-    
+
     getClientSettingsObservable(): Observable<ClientSettingsResponse> {
         return this.clientSettingsLoaded$.pipe(
             filter(Boolean),
@@ -42,7 +40,7 @@ export class ConfigService {
     }
 
     getConfig(): ClientSettingsResponse {
-        return this.clientSettingCache.get()
+        return this.clientSettingCache.get();
     }
 
     private retrieveConfigFromApi(): Observable<ClientSettingsResponse> {

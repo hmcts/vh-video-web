@@ -76,7 +76,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
     private async attemptRetrieveProfile(loggedIn: boolean) {
         if (!loggedIn) {
-            console.log('*** [AppComponent] - going to login');
             const currentUrl = this.locationService.getCurrentUrl();
             this.router.navigate([`/${pageUrls.IdpSelection}`], { queryParams: { returnUrl: currentUrl } });
         } else {

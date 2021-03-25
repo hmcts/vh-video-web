@@ -2,7 +2,7 @@ import { ElementRef } from '@angular/core';
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, convertToParamMap, Event, NavigationEnd, Router } from '@angular/router';
-import { Subject, Subscription } from 'rxjs';
+import { of, Subject, Subscription } from 'rxjs';
 import { AppComponent } from './app.component';
 import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
@@ -50,8 +50,8 @@ describe('AppComponent', () => {
             firstChild: <any>{ snapshot: { data: convertToParamMap({ title: 'test-title' }) } }
         });
 
-        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['clientSettings', 'getClientSettings', 'loadConfig']);
-        configServiceSpy.getClientSettings.and.returnValue(clientSettings);
+        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettingsObservable', 'loadConfig']);
+        configServiceSpy.getClientSettingsObservable.and.returnValue(of(clientSettings));
         oidcSecurityService = mockOidcSecurityService;
         deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isSupportedBrowser']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
@@ -82,7 +82,8 @@ describe('AppComponent', () => {
             pageTrackerServiceSpy,
             testLanguageServiceSpy,
             translateServiceSpy,
-            oidcSecurityService
+            oidcSecurityService,
+            configServiceSpy
         );
 
         document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(dummyElement);

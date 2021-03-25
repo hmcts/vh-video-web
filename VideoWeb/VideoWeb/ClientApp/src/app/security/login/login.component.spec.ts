@@ -3,6 +3,7 @@ import { ReturnUrlService } from '../../services/return-url.service';
 import { MockOidcSecurityService } from '../../testing/mocks/MockOidcSecurityService';
 import { MockLogger } from '../../testing/mocks/MockLogger';
 import { LoginComponent } from './login.component';
+import { fakeAsync, tick } from '@angular/core/testing';
 
 describe('LoginComponent', () => {
     let component: LoginComponent;
@@ -37,13 +38,14 @@ describe('LoginComponent', () => {
         expect(router.navigateByUrl).toHaveBeenCalledWith('/');
     });
 
-    it('should fallback to root url if return url is invalid', () => {
+    it('should fallback to root url if return url is invalid', fakeAsync(() => {
         spyOn(returnUrlService, 'popUrl').and.returnValue('');
         oidcSecurityService.setAuthenticated(true);
         router.navigateByUrl.and.callFake(() => {
             throw new Error('Invalid URL');
         });
         component.ngOnInit();
+        tick();
         expect(router.navigate).toHaveBeenCalledWith(['/']);
-    });
+    }));
 });

@@ -24,24 +24,28 @@ export class LoginComponent implements OnInit {
             .checkAuth()
             .pipe(
                 catchError(err => {
-                    this.logger.error('*** [Login] - Check Auth Error', err);
+                    this.logger.error('[Login] - Check Auth Error', err);
                     this.router.navigate(['/']);
                     return NEVER;
                 })
             )
             .subscribe(loggedIn => {
-                this.logger.debug('*** [Login] - isLoggedIn ' + loggedIn);
-                this.logger.debug('*** [Login] - TOKEN: ' + this.oidcSecurityService.getToken());
+                this.logger.debug('[Login] - isLoggedIn ' + loggedIn);
                 if (loggedIn) {
-                    const returnUrl = this.returnUrlService.popUrl() || '/';
-                    this.logger.debug(`*** [Login] - User is authenticated. Returning to ${returnUrl}`);
-                    this.router.navigateByUrl(returnUrl);
+                    try {
+                        const returnUrl = this.returnUrlService.popUrl() || '/';
+                        this.logger.debug(`[Login] - User is authenticated. Returning to ${returnUrl}`);
+                        this.router.navigateByUrl(returnUrl);
+                    } catch (err) {
+                        this.logger.error('[Login] - Redirect Failed', err);
+                        this.router.navigate(['/']);
+                    }
                 } else {
-                    this.logger.debug('*** [Login] - User not authenticated. Logging in');
+                    this.logger.debug('[Login] - User not authenticated. Logging in');
                     try {
                         this.oidcSecurityService.authorize();
                     } catch (err) {
-                        this.logger.error('*** [Login] - Authorize Failed', err);
+                        this.logger.error('[Login] - Authorize Failed', err);
                     }
                 }
             });
