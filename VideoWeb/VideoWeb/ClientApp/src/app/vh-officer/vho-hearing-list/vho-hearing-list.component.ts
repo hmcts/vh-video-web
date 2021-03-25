@@ -52,4 +52,8 @@ export class VhoHearingListComponent implements OnInit {
             .map(x => new ParticipantResponseVho({ id: x.id, name: x.displayName, role: x.role }));
         return this.mapToHearing(conference, participants);
     }
+
+    trackConference(conference: HearingSummary) {
+        return conference.id;
+    }
 }
