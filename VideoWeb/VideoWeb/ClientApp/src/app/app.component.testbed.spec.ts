@@ -48,8 +48,8 @@ describe('AppComponent', () => {
     let router: Router;
 
     configureTestSuite(() => {
-        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettingsObservable', 'loadConfig']);
-        configServiceSpy.getClientSettingsObservable.and.returnValue(of(clientSettings));
+        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings', 'loadConfig']);
+        configServiceSpy.getClientSettings.and.returnValue(of(clientSettings));
 
         deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isSupportedBrowser']);
 

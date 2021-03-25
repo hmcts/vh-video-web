@@ -50,8 +50,8 @@ describe('AppComponent', () => {
             firstChild: <any>{ snapshot: { data: convertToParamMap({ title: 'test-title' }) } }
         });
 
-        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettingsObservable', 'loadConfig']);
-        configServiceSpy.getClientSettingsObservable.and.returnValue(of(clientSettings));
+        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings', 'loadConfig']);
+        configServiceSpy.getClientSettings.and.returnValue(of(clientSettings));
         oidcSecurityService = mockOidcSecurityService;
         deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isSupportedBrowser']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);

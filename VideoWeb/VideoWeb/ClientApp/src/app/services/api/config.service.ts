@@ -10,8 +10,10 @@ export class ConfigService {
     clientSettingsLoaded$ = new BehaviorSubject(false);
     private SETTINGS_KEY = 'vh.client.settings';
     private readonly clientSettingCache: SessionStorage<ClientSettingsResponse>;
+    private httpClient: HttpClient;
 
-    constructor(private httpClient: HttpClient) {
+    constructor(handler: HttpBackend) {
+        this.httpClient = new HttpClient(handler);
         this.clientSettingCache = new SessionStorage<ClientSettingsResponse>(this.SETTINGS_KEY);
     }
 
@@ -32,7 +34,7 @@ export class ConfigService {
         }
     }
 
-    getClientSettingsObservable(): Observable<ClientSettingsResponse> {
+    getClientSettings(): Observable<ClientSettingsResponse> {
         return this.clientSettingsLoaded$.pipe(
             filter(Boolean),
             map(() => this.getConfig())

@@ -62,8 +62,9 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.configService.getClientSettingsObservable().subscribe(() => {
+        this.configService.getClientSettings().subscribe(() => {
             this.checkAuth().subscribe(async loggedIn => {
+                this.loggedIn = loggedIn;
                 await this.attemptRetrieveProfile(loggedIn);
                 this.checkBrowser();
                 this.setPageTitle();

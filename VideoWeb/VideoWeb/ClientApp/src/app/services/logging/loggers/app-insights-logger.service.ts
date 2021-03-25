@@ -24,7 +24,7 @@ export class AppInsightsLoggerService implements LogAdapter {
 
     private setupAppInsights(configService: ConfigService, oidcSecurityService: OidcSecurityService): Observable<void> {
         configService.loadConfig();
-        return configService.getClientSettingsObservable().pipe(
+        return configService.getClientSettings().pipe(
             map(configSettings => {
                 this.appInsights = new ApplicationInsights({
                     config: {

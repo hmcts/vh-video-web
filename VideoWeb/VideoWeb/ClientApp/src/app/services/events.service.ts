@@ -66,7 +66,7 @@ export class EventsService {
         private errorService: ErrorService
     ) {
         this.reconnectionAttempt = 0;
-        this.configService.getClientSettingsObservable().subscribe(configSettings => {
+        this.configService.getClientSettings().subscribe(configSettings => {
             const eventhubPath = configSettings.event_hub_path;
             this.connection = new signalR.HubConnectionBuilder()
                 .configureLogging(signalR.LogLevel.Debug)

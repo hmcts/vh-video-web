@@ -29,9 +29,9 @@ describe('EventsService', () => {
     const subscription$ = new Subscription();
 
     beforeAll(() => {
-        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettingsObservable', 'loadConfig']);
+        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings', 'loadConfig']);
         errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError', 'goToUnauthorised', 'goToServiceError']);
-        configServiceSpy.getClientSettingsObservable.and.returnValue(of(clientSettings));
+        configServiceSpy.getClientSettings.and.returnValue(of(clientSettings));
         oidcSecurityService = mockOidcSecurityService;
         service = new EventsService(oidcSecurityService, configServiceSpy, logger, errorServiceSpy);
 

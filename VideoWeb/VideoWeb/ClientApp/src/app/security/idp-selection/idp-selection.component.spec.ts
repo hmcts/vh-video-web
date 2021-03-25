@@ -3,6 +3,8 @@ import { ReturnUrlService } from '../../services/return-url.service';
 import { MockOidcSecurityService } from '../../testing/mocks/MockOidcSecurityService';
 import { MockLogger } from '../../testing/mocks/MockLogger';
 import { IdpSelectionComponent } from './idp-selection.component';
+import { ConfigService } from 'src/app/services/api/config.service';
+import { of } from 'rxjs';
 
 describe('IdpSelectionComponent', () => {
     let component: IdpSelectionComponent;
@@ -11,15 +13,25 @@ describe('IdpSelectionComponent', () => {
     const returnUrlService = new ReturnUrlService();
     const activatedRoute: any = { snapshot: { url: [{ path: 'foo' }], queryParams: {} } };
     let router: jasmine.SpyObj<Router>;
+    let configServiceSpy: jasmine.SpyObj<ConfigService>;
 
     beforeAll(() => {
         oidcSecurityService = mockOidcSecurityService;
         router = jasmine.createSpyObj<Router>('Router', ['navigate', 'navigateByUrl']);
+        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
     });
 
     beforeEach(() => {
         router.navigate.calls.reset();
-        component = new IdpSelectionComponent(oidcSecurityService, activatedRoute, router, returnUrlService, new MockLogger());
+        component = new IdpSelectionComponent(
+            oidcSecurityService,
+            activatedRoute,
+            router,
+            returnUrlService,
+            new MockLogger(),
+            configServiceSpy
+        );
+        configServiceSpy.getClientSettings.and.returnValue(of(null));
     });
 
     it('should create', () => {
