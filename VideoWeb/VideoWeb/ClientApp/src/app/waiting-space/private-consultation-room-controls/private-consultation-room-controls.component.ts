@@ -20,7 +20,7 @@ import { VideoCallService } from '../services/video-call.service';
         'showConsultationControls',
         'unreadMessageCount'
     ],
-    outputs: ['leaveConsultation', 'lockConsultation', 'togglePanel']
+    outputs: ['leaveConsultation', 'lockConsultation', 'togglePanel', 'changeDeviceToggle']
 })
 export class PrivateConsultationRoomControlsComponent extends HearingControlsBaseComponent {
     constructor(

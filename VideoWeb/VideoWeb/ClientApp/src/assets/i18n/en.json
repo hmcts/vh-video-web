@@ -607,7 +607,8 @@
     "share-my-screen": "Share my screen",
     "start-sharing-screen": "Start sharing screen",
     "stop-sharing-my-screen": "Stop sharing my screen",
-    "stop-sharing-screen": "Stop sharing screen"
+    "stop-sharing-screen": "Stop sharing screen",
+    "change-camera-mic": "Change your camera and microphone"
   },
   "select-hearing-layout": {
     "choose-hearing-layout": "Choose hearing layout",
