@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ConferenceResponseVho, ParticipantResponseVho } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { HearingSummary } from 'src/app/shared/models/hearing-summary';
@@ -9,15 +9,11 @@ import { ParticipantSummary } from '../../shared/models/participant-summary';
     templateUrl: './vho-hearing-list.component.html',
     styleUrls: ['./vho-hearing-list.component.scss', '../vho-global-styles.scss', '../hearing-status/hearing-status.component.scss']
 })
-export class VhoHearingListComponent implements OnInit {
+export class VhoHearingListComponent {
     @Input() conferences: HearingSummary[];
     @Output() selectedConference = new EventEmitter<HearingSummary>();
 
     currentConference: HearingSummary;
-
-    constructor() {}
-
-    ngOnInit() {}
 
     isCurrentConference(conference: HearingSummary): boolean {
         return this.currentConference != null && this.currentConference.id === conference.id;
