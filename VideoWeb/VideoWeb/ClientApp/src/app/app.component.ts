@@ -61,7 +61,7 @@ export class AppComponent implements OnInit, OnDestroy {
         pageTracker.trackPreviousPage(router);
     }
 
-    async ngOnInit() {
+    ngOnInit() {
         this.configService.getClientSettingsObservable().subscribe(() => {
             this.checkAuth().subscribe(async loggedIn => {
                 await this.attemptRetrieveProfile(loggedIn);
