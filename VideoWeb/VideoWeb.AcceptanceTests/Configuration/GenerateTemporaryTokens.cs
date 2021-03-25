@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
@@ -8,7 +9,8 @@ namespace VideoWeb.AcceptanceTests.Configuration
     public static class GenerateTemporaryTokens
     {
         private const int TokenExpiresInMinutes = 10;
-        public static string SetDefaultVideoWebBearerToken(AzureAdConfiguration azureAdConfiguration)
+
+        public static Task<string> SetDefaultVideoWebBearerToken(AzureAdConfiguration azureAdConfiguration)
         {
             return new TokenProvider(Options.Create(azureAdConfiguration)).GetClientAccessToken(
                 azureAdConfiguration.ClientId, azureAdConfiguration.ClientSecret, azureAdConfiguration.ClientId);

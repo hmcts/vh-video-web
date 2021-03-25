@@ -29,9 +29,9 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
         {
             var securitySettings = new AzureAdConfiguration
             {
-                ClientId = "ClientId",
+                ClientIdV2 = "ClientId",
+                ClientSecretV2 = "ClientSecret",
                 TenantId = "TenantId",
-                ClientSecret = "ClientSecret",
                 Authority = "Authority",
                 ApplicationInsights = new ApplicationInsightsConfiguration { InstrumentationKey = "AiKey" }
             };
