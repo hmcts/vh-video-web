@@ -121,6 +121,13 @@ namespace VideoWeb.AcceptanceTests.Steps
             new VerifyVideoIsPlayingBuilder(_browsers[_c.CurrentUser]).Feed(HearingRoomPage.IncomingVideoFeed);
         }
 
+        [Then(@"the (.*) clicks raise hand")]
+        public void ThenTheParticipantClicksRaiseHand(string user)
+        {
+            _browserSteps.GivenInTheUsersBrowser(user);
+            _browsers[_c.CurrentUser].Driver.WaitUntilElementClickable(HearingRoomPage.ToggleHandRaised).Click();
+        }
+
         [Then(@"an audio recording of the hearing has been created")]
         public void ThenAnAudioRecordingOfTheHearingHasBeenCreated()
         {
@@ -164,16 +171,21 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var interpreter = _c.Test.ConferenceParticipants.FirstOrDefault(x => x.HearingRole.ToLower() == "interpreter");
             var interpretee = _c.Test.ConferenceParticipants.FirstOrDefault(x => x.Id == interpreter.LinkedParticipants.FirstOrDefault().LinkedId);
-
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.InterPreterName(interpreter.DisplayName)).Text.Should().Contain($"{interpretee.DisplayName}");
+            
+            var interpreterText = _browsers[_c.CurrentUser].Driver
+                                    .WaitUntilElementExists(HearingRoomPage.ParticipantPanel)
+                                    .FindElement(HearingRoomPage.InterPreterName(interpreter.DisplayName)).Text.Trim();
+            interpreterText.Should().Contain($"{interpretee.DisplayName}");
         }
 
-
-        [Then(@"the user can see interpreter and interpretee")]
-        public void ThenTheUserCanSeeInterpreterAndInterpretee()
+        [Then(@"the Judge can see interpreter hand (.*)")]
+        public void ThenTheJudgeCanSeeInterpreterHandRaised(string status)
         {
+            if (status == "raised")
+                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(HearingRoomPage.HandRaised).Displayed.Should().BeTrue();
+            else
+                _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(HearingRoomPage.HandRaised).Should().BeTrue();
         }
-
 
         [Then(@"the Judge can close the hearing")]
         public void ThenTheJudgeCanCloseTheHearing()

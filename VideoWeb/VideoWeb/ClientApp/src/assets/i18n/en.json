@@ -425,7 +425,7 @@
       "suspended": "The video hearings team has been alerted and we're informing the participants. Please call us now on <strong>{{phone}}</strong>.",
       "closed": "The consultation room is available for up to 30 minutes after the hearing has finished.",
       "warning": "Warning",
-      "consultation-room-will-close-at": "The consultation room will close at "
+      "consultation-room-will-close-at": "The consultation room will close at"
     },
     "buttons": {
       "start-video-hearing": "Start video hearing",
@@ -493,6 +493,7 @@
     "date": "Date",
     "case-number": "case number",
     "please-wait": "Please wait",
+    "please-wait-while-we-connect-you": "Please wait while we connect you...",
     "hearing-starting-at": "Your video hearing is scheduled to begin at",
     "hearing-status-messages": {
       "starting-title": "Please stay near your screen",
@@ -519,7 +520,8 @@
       "guide4": "If you wish to have a private conversation during the hearing you'll need to ask the judge's permission."
     },
     "vh-team": "Video hearings team: {{phone}}",
-    "individual-participant-status-list-label": "list of participants in hearing"
+    "individual-participant-status-list-label": "list of participants in hearing",
+    "warning": "Warning"
   },
   "invite-participant": {
     "invite-this-person": "Invite this person to the meeting"
@@ -605,7 +607,8 @@
     "share-my-screen": "Share my screen",
     "start-sharing-screen": "Start sharing screen",
     "stop-sharing-my-screen": "Stop sharing my screen",
-    "stop-sharing-screen": "Stop sharing screen"
+    "stop-sharing-screen": "Stop sharing screen",
+    "change-camera-mic": "Change your camera and microphone"
   },
   "chat-panel": {
     "heading": "VH Officer messages",
@@ -701,6 +704,7 @@
     "tribunal": "Tribunal"
   },
   "case-type-group": {
+    "state": "State",
     "observer": "Observer",
     "panelmember": "PanelMember",
     "none": "None",

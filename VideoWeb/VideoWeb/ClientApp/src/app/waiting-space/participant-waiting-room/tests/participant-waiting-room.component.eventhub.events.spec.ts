@@ -28,7 +28,6 @@ import {
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
 import { ParticipantWaitingRoomComponent } from '../participant-waiting-room.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
-import { HearingRole } from '../../models/hearing-role-model';
 
 describe('ParticipantWaitingRoomComponent event hub events', () => {
     let component: ParticipantWaitingRoomComponent;
@@ -68,7 +67,6 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
         component.connected = true; // assume connected to pexip
         component.startEventHubSubscribers();
         videoWebService.getConferenceById.calls.reset();
-        consultationService.leaveConsultation.calls.reset();
     });
 
     afterEach(() => {
@@ -90,33 +88,6 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
 
         expect(component.displayDeviceChangeModal).toBeFalsy();
         expect(notificationSoundsService.playHearingAlertSound).toHaveBeenCalled();
-    }));
-
-    it('should move witness to waiting room when "in session" message received', fakeAsync(() => {
-        const status = ConferenceStatus.InSession;
-        const message = new ConferenceStatusMessage(globalConference.id, status);
-        component.participant.hearing_role = HearingRole.WITNESS;
-        hearingStatusSubject.next(message);
-        flushMicrotasks();
-        expect(consultationService.leaveConsultation).toHaveBeenCalled();
-    }));
-
-    it('should not move witness to waiting room when "not started" message received', fakeAsync(() => {
-        const status = ConferenceStatus.NotStarted;
-        const message = new ConferenceStatusMessage(globalConference.id, status);
-        component.participant.hearing_role = HearingRole.WITNESS;
-        hearingStatusSubject.next(message);
-        flushMicrotasks();
-        expect(consultationService.leaveConsultation).toHaveBeenCalledTimes(0);
-    }));
-
-    it('should not move non witness to waiting room when "in session" message received', fakeAsync(() => {
-        const status = ConferenceStatus.InSession;
-        const message = new ConferenceStatusMessage(globalConference.id, status);
-        component.participant.hearing_role = HearingRole.JUDGE;
-        hearingStatusSubject.next(message);
-        flushMicrotasks();
-        expect(consultationService.leaveConsultation).toHaveBeenCalledTimes(0);
     }));
 
     it('should ignore hearing message received for other conferences', fakeAsync(() => {

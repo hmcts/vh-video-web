@@ -214,4 +214,8 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     canCallParticipant(participant: ParticipantResponse): boolean {
         return !this.isParticipantInCurrentRoom(participant) && participant.status === ParticipantStatus.Available;
     }
+
+    trackParticipant(index: number, item: ParticipantListItem) {
+        return item.status;
+    }
 }

@@ -587,4 +587,8 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
         expect(component.canCallEndpoint(endpoint)).toBeFalse();
     });
+
+    it('should return participant status', () => {
+        expect(component.trackParticipant(0, { status: ParticipantStatus.Available })).toBe(ParticipantStatus.Available);
+    });
 });

@@ -29,6 +29,7 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     @Output() public leaveConsultation = new EventEmitter();
     @Output() public lockConsultation = new EventEmitter<boolean>();
     @Output() public togglePanel = new EventEmitter<string>();
+    @Output() public changeDeviceToggle = new EventEmitter();
 
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
@@ -181,7 +182,10 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
             return false;
         }
         this.remoteMuted = updatedParticipant.isRemoteMuted;
-        this.handRaised = updatedParticipant.handRaised;
+        // hands being raised/lowered for LinkedParticipants are managed by SignalR
+        if (!this.participant.linked_participants.length) {
+            this.handRaised = updatedParticipant.handRaised;
+        }
         if (this.remoteMuted && !this.audioMuted) {
             this.logger.info(`${this.loggerPrefix} Participant has been remote muted, muting locally too`, this.logPayload);
             this.toggleMute();
@@ -326,5 +330,9 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     togglePanelStatus(panelName: string) {
         this.togglePanel.emit(panelName);
+    }
+
+    changeDeviceSelected() {
+        this.changeDeviceToggle.emit();
     }
 }

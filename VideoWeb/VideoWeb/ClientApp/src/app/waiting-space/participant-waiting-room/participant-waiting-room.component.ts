@@ -191,14 +191,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         } else {
             this.notificationSoundsService.stopHearingAlertSound();
         }
-        if (message.status === ConferenceStatus.InSession && this.isOrHasWitnessLink()) {
-            this.consultationService.leaveConsultation(this.conference, this.participant).then(() => {
-                this.logger.info(`[ParticipantWaitingRoomComponent] - moving witness to waiting room for hearing start`, {
-                    conference: this.conference?.id,
-                    participant: this.participant.id
-                });
-            });
-        }
     }
 
     openStartConsultationModal() {

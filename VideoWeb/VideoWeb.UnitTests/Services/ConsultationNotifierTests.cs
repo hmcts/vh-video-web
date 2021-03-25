@@ -178,7 +178,7 @@ namespace VideoWeb.UnitTests.Services
                         lParticipant.Id, answer),
                     Times.Exactly(_conference.Participants.Count));
             }
-            
+
             var room = _conference.CivilianRooms.First(x => x.Participants.Contains(linkedParticipant.Id));
             var cache = _dictionaryCache.GetCache();
             cache.ContainsKey(room.Id).Should().BeTrue();
@@ -212,6 +212,8 @@ namespace VideoWeb.UnitTests.Services
             var room = _conference.CivilianRooms.First(x => x.Participants.Contains(linkedParticipant.Id));
             var cache = _dictionaryCache.GetCache();
             cache.ContainsKey(room.Id).Should().BeFalse();
+
+            _dictionaryCache.GetCache().ContainsKey(room.Id).Should().BeFalse();
         }
 
         [Test]

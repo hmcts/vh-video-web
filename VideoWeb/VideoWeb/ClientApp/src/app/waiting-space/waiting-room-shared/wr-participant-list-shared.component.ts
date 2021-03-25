@@ -195,12 +195,16 @@ export abstract class WRParticipantStatusListDirective {
     }
 
     get canInvite(): boolean {
-        const loggedParticipant = this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
+        const isJudicialUser = this.loggedInUser.role === Role.Judge || this.loggedInUser.role === Role.JudicialOfficeHolder;
 
-        if (this.loggedInUser.role !== Role.Judge && this.loggedInUser.role !== Role.JudicialOfficeHolder) {
-            return !loggedParticipant.current_room?.label.startsWith('JudgeJOH');
-        } else {
+        if (isJudicialUser) {
             return true;
+        } else {
+            const loggedInParticipant = this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
+            const hasLinkedParticipants = loggedInParticipant.linked_participants.length;
+            const currentRoomIsJudicial = loggedInParticipant.current_room?.label.startsWith('JudgeJOH');
+
+            return !currentRoomIsJudicial && !hasLinkedParticipants;
         }
     }
 
