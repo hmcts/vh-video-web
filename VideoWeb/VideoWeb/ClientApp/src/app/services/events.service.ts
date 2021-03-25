@@ -25,7 +25,6 @@ import { RoomTransfer } from '../shared/models/room-transfer';
 import { ParticipantHandRaisedMessage } from '../shared/models/participant-hand-raised-message';
 import { ParticipantRemoteMuteMessage } from '../shared/models/participant-remote-mute-message';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { promises } from 'dns';
 
 @Injectable({
     providedIn: 'root'
