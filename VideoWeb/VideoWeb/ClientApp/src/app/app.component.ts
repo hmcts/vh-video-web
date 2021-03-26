@@ -93,7 +93,8 @@ export class AppComponent implements OnInit, OnDestroy {
                         this.eventsService.start();
                         this.scrollToTop();
                     }
-                }
+                },
+                error: err => {}
             })
         );
     }
@@ -156,8 +157,11 @@ export class AppComponent implements OnInit, OnDestroy {
                         return applTitle;
                     })
                 )
-                .subscribe((appendTitle: string) => {
-                    this.titleService.setTitle(applTitle + appendTitle);
+                .subscribe({
+                    next: (appendTitle: string) => {
+                        this.titleService.setTitle(applTitle + appendTitle);
+                    },
+                    error: err => {}
                 })
         );
     }
