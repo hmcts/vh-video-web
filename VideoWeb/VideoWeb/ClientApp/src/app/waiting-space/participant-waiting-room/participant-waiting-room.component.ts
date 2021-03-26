@@ -4,7 +4,7 @@ import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceStatus, LinkType, ParticipantResponse, Role } from 'src/app/services/clients/api-client';
+import { ConferenceStatus, ParticipantResponse, Role } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -153,19 +153,19 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     getCurrentTimeClass() {
-        if (!this.isWitness && (this.hearing.isOnTime() || this.hearing.isPaused() || this.hearing.isClosed())) {
+        if (!this.isOrHasWitnessLink() && (this.hearing.isOnTime() || this.hearing.isPaused() || this.hearing.isClosed())) {
             return 'hearing-on-time';
         }
-        if (!this.isWitness && (this.hearing.isStarting() || this.hearing.isInSession())) {
+        if (!this.isOrHasWitnessLink() && (this.hearing.isStarting() || this.hearing.isInSession())) {
             return 'hearing-near-start';
         }
-        if (!this.isWitness && this.hearing.isDelayed()) {
+        if (!this.isOrHasWitnessLink() && this.hearing.isDelayed()) {
             return 'hearing-delayed';
         }
         if (this.hearing.isSuspended()) {
             return 'hearing-delayed';
         }
-        if (this.isWitness && this.hearing.isInSession()) {
+        if (this.isOrHasWitnessLink() && this.hearing.isInSession()) {
             return 'hearing-near-start';
         } else {
             return 'hearing-on-time';
@@ -180,23 +180,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         return this.participant?.current_room?.label.startsWith('JudgeJOH');
     }
 
-    get isWitness(): boolean {
-        return this.isOrHasWitnessLink();
-    }
-
     get isObserver(): boolean {
         return this.participant?.hearing_role === HearingRole.OBSERVER;
-    }
-
-    get isInterpreter(): boolean {
-        return this.participant?.hearing_role === HearingRole.INTERPRETER;
-    }
-
-    get isInterpretee(): boolean {
-        return (
-            this.participant?.hearing_role !== HearingRole.INTERPRETER &&
-            this.participant?.linked_participants?.some(par => par.link_type === LinkType.Interpreter)
-        );
     }
 
     handleConferenceStatusChange(message: ConferenceStatusMessage) {
@@ -204,18 +189,10 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         if (!this.validateIsForConference(message.conferenceId)) {
             return;
         }
-        if (message.status === ConferenceStatus.InSession && !this.isWitness) {
+        if (message.status === ConferenceStatus.InSession && !this.isOrHasWitnessLink()) {
             this.notificationSoundsService.playHearingAlertSound();
         } else {
             this.notificationSoundsService.stopHearingAlertSound();
-        }
-        if (message.status === ConferenceStatus.InSession && this.isWitness) {
-            this.consultationService.leaveConsultation(this.conference, this.participant).then(() => {
-                this.logger.info(`[ParticipantWaitingRoomComponent] - moving witness to waiting room for hearing start`, {
-                    conference: this.conference?.id,
-                    participant: this.participant.id
-                });
-            });
         }
     }
 
@@ -239,7 +216,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     get canStartJoinConsultation() {
-        return !this.isWitness && !this.isObserver && !this.isInterpreter && !this.isInterpretee;
+        return !this.isOrHasWitnessLink() && !this.isObserver && !this.participant.linked_participants.length;
     }
 
     async startPrivateConsultation(participants: string[], endpoints: string[]) {

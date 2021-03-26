@@ -69,4 +69,12 @@ describe('VhoHearingListComponent', () => {
         expect(result.status).toEqual(summary.status);
         expect(result.participants.length).toBeGreaterThan(0);
     });
+    it('should return conference id', () => {
+        const conference = new ConferenceTestData().getConferenceFuture();
+        const summary = new HearingSummary(conference);
+
+        const id = component.trackConference(summary);
+
+        expect(id).toEqual(conference.id);
+    });
 });

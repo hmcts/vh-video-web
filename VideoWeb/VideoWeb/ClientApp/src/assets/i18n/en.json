@@ -1,4 +1,7 @@
 {
+  "app": {
+    "skip-to-main-content": "Skip to main content"
+  },
   "hearing-list-table": {
     "date-and-time": "Date & time",
     "hearing-details": "Hearing details",
@@ -51,7 +54,8 @@
     "error": "Error:",
     "failed": "message failed to send",
     "try-again": "try again",
-    "alerts-icon": "alerts icon"
+    "alerts-icon": "alerts icon",
+    "at": "at"
   },
   "chat-input-box": {
     "send": "Send",
@@ -348,6 +352,7 @@
   "joh-waiting-room": {
     "hearing": "Hearing",
     "date": "Date",
+    "to": "to",
     "is-suspended": "is suspended",
     "is-paused": "is paused",
     "is-closed": "is closed",
@@ -411,6 +416,7 @@
     "details-of-the-hearing": "Details of the hearing",
     "hearing": "Hearing",
     "date": "Date",
+    "to": "to",
     "case-number": "case number",
     "is-everyone-connected": "Is everyone connected?",
     "hearing-messages": {
@@ -419,7 +425,7 @@
       "suspended": "The video hearings team has been alerted and we're informing the participants. Please call us now on <strong>{{phone}}</strong>.",
       "closed": "The consultation room is available for up to 30 minutes after the hearing has finished.",
       "warning": "Warning",
-      "consultation-room-will-close-at": "The consultation room will close at "
+      "consultation-room-will-close-at": "The consultation room will close at"
     },
     "buttons": {
       "start-video-hearing": "Start video hearing",
@@ -463,6 +469,7 @@
     "trouble-seeing": "Others may have trouble seeing and hearing you."
   },
   "participant-waiting-room": {
+    "switch-to-main-screen": "Switch to main screen",
     "locked": "locked",
     "unlocked": "unlocked",
     "is-suspended": "is suspended",
@@ -482,9 +489,11 @@
     "choose-camera-and-microphone-aria-label": "Choose camera and microphone dialog",
     "details-of-the-hearing": "Details of the hearing",
     "hearing": "Hearing",
+    "to": "to",
     "date": "Date",
     "case-number": "case number",
     "please-wait": "Please wait",
+    "please-wait-while-we-connect-you": "Please wait while we connect you...",
     "hearing-starting-at": "Your video hearing is scheduled to begin at",
     "hearing-status-messages": {
       "starting-title": "Please stay near your screen",
@@ -511,7 +520,8 @@
       "guide4": "If you wish to have a private conversation during the hearing you'll need to ask the judge's permission."
     },
     "vh-team": "Video hearings team: {{phone}}",
-    "individual-participant-status-list-label": "list of participants in hearing"
+    "individual-participant-status-list-label": "list of participants in hearing",
+    "warning": "Warning"
   },
   "invite-participant": {
     "invite-this-person": "Invite this person to the meeting"
@@ -597,10 +607,13 @@
     "share-my-screen": "Share my screen",
     "start-sharing-screen": "Start sharing screen",
     "stop-sharing-my-screen": "Stop sharing my screen",
-    "stop-sharing-screen": "Stop sharing screen"
+    "stop-sharing-screen": "Stop sharing screen",
+    "change-camera-mic": "Change your camera and microphone"
   },
   "select-hearing-layout": {
-    "choose-hearing-layout": "Choose hearing layout"
+    "choose-hearing-layout": "Choose hearing layout",
+    "open-all": "Open all",
+    "close-all": "Close all"
   },
   "hearing-layout": {
     "layout-image-alt": "Layout image for {{layout}}",
@@ -687,6 +700,7 @@
     "tribunal": "Tribunal"
   },
   "case-type-group": {
+    "state": "State",
     "observer": "Observer",
     "panelmember": "PanelMember",
     "none": "None",

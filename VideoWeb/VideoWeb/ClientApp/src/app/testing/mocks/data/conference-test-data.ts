@@ -393,7 +393,8 @@ export class ConferenceTestData {
             display_name: 'Greeno',
             tiled_display_name: 'T1;Greeno;9F681318-4955-49AF-A887-DED64554429D',
             hearing_role: HearingRole.LITIGANT_IN_PERSON,
-            current_room: new RoomSummaryResponse()
+            current_room: new RoomSummaryResponse(),
+            linked_participants: []
         });
 
         const participant2 = new ParticipantResponseVho({
@@ -406,7 +407,8 @@ export class ConferenceTestData {
             case_type_group: 'Defendent',
             tiled_display_name: 'T2;James Green;9F681318-4955-49AF-A887-DED64554429J',
             hearing_role: HearingRole.REPRESENTATIVE,
-            current_room: new RoomSummaryResponse()
+            current_room: new RoomSummaryResponse(),
+            linked_participants: []
         });
 
         const participant3 = new ParticipantResponseVho({
@@ -418,7 +420,8 @@ export class ConferenceTestData {
             case_type_group: 'Judge',
             tiled_display_name: 'T0;Judge Fudge;9F681318-4955-49AF-A887-DED64554429T',
             hearing_role: HearingRole.JUDGE,
-            current_room: new RoomSummaryResponse()
+            current_room: new RoomSummaryResponse(),
+            linked_participants: []
         });
 
         participants.push(participant1);
@@ -624,7 +627,8 @@ export class ConferenceTestData {
             hearing_role: HearingRole.OBSERVER,
             case_type_group: 'Observer',
             display_name: 'Greeno',
-            tiled_display_name: 'T100;Observer Test 1;abd18c35-884d-430e-9569-415cafe30afb'
+            tiled_display_name: 'T100;Observer Test 1;abd18c35-884d-430e-9569-415cafe30afb',
+            linked_participants: []
         });
 
         const participant2 = new ParticipantResponseVho({
@@ -636,7 +640,8 @@ export class ConferenceTestData {
             hearing_role: HearingRole.OBSERVER,
             display_name: 'James Green',
             case_type_group: 'Observer',
-            tiled_display_name: 'T101;Observer Test 2;2ccddb9f-887c-47f9-82b3-896eec0a2595'
+            tiled_display_name: 'T101;Observer Test 2;2ccddb9f-887c-47f9-82b3-896eec0a2595',
+            linked_participants: []
         });
 
         const participant3 = new ParticipantResponseVho({
@@ -647,7 +652,8 @@ export class ConferenceTestData {
             hearing_role: HearingRole.PANEL_MEMBER,
             display_name: 'Panel Mem 1',
             case_type_group: 'PanelMember',
-            tiled_display_name: 'T102;Panel Mem 1;e698a672-8925-46e6-907d-21f1bc3b8bbf'
+            tiled_display_name: 'T102;Panel Mem 1;e698a672-8925-46e6-907d-21f1bc3b8bbf',
+            linked_participants: []
         });
 
         participants.push(participant1);
@@ -666,7 +672,8 @@ export class ConferenceTestData {
             case_type_group: 'None',
             display_name: 'Chris Winger',
             tiled_display_name: 'T200;Chris Winger;c8c33015-d164-4a46-a5c9-6b58e892511b',
-            hearing_role: HearingRole.WINGER
+            hearing_role: HearingRole.WINGER,
+            linked_participants: []
         });
         participants.push(participant1);
         return participants;
@@ -682,7 +689,8 @@ export class ConferenceTestData {
             case_type_group: 'None',
             display_name: 'Chris Witness',
             tiled_display_name: 'W201;Chris Witness;c8c33015-d164-4a46-a5c9-6b58e892511a',
-            hearing_role: HearingRole.WITNESS
+            hearing_role: HearingRole.WITNESS,
+            linked_participants: []
         });
         participants.push(participant1);
         return participants;
