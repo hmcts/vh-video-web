@@ -41,7 +41,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].ClickLink(CommonPages.SignOutLink);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(CommonPages.SignOutMessage).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].ClickLink(CommonPages.SignInLink);
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AccountTypeSelectionPage.Heading).Text.Trim().Should().Be(AccountTypeSelectionPage.HeadingText);
+            _browsers[_c.CurrentUser].TextOf(AccountTypeSelectionPage.Heading).Should().Be(AccountTypeSelectionPage.HeadingText);
         }
 
         [Then(@"the sign out link is displayed")]

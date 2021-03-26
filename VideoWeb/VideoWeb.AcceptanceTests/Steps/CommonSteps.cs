@@ -74,7 +74,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the (.*) error message appears")]
         public void ThenTheErrorMessageAppears(string errorText)
         {
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(CommonLocators.ErrorMessage).Text.Replace("Error:", "").Should().Contain(errorText);
+            _browsers[_c.CurrentUser].TextOf(CommonLocators.ErrorMessage).Replace("Error:", "").Should().Contain(errorText);
         }
 
         [Then(@"the (.*) button is disabled")]

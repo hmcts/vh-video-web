@@ -147,11 +147,11 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Refresh();
             _browsers[_c.CurrentUser].Driver.WaitForAngular();
             Scrolling.ScrollToTheHearing(_browsers[_c.CurrentUser], _c.Test.Conference.Id);
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.StatusBadge(_c.Test.Conference.Id)).Text.Trim().Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
+            _browsers[_c.CurrentUser].TextOf(VhoHearingListPage.StatusBadge(_c.Test.Conference.Id)).Should().Be(notification.Equals("Suspended") ? notification : "Not Started");
             _browsers[_c.CurrentUser].Click(VhoHearingListPage.SelectHearingButton(_c.Test.Conference.Id));
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.TaskDetails(_c.Test.TaskId)).Text.Trim().Should().Be(alertType);
+            _browsers[_c.CurrentUser].TextOf(AdminPanelPage.TaskDetails(_c.Test.TaskId)).Should().Be(alertType);
 
             var timeOfAlert = _c.TimeZone.Adjust(_c.Test.AlertTime).ToString(DateFormats.AlertMessageTimestamp);
             var timeOfAlertMinusAMinute = _c.TimeZone.Adjust(_c.Test.AlertTime).AddMinutes(-1).ToString(DateFormats.AlertMessageTimestamp);
@@ -159,12 +159,12 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(AdminPanelPage.TaskCheckbox(_c.Test.TaskId)).Selected.Should().BeFalse();
             _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(AdminPanelPage.TaskCheckbox(_c.Test.TaskId)).Enabled.Should().BeTrue();
-            
-            var timestamp = _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.TaskCreatedDate(_c.Test.TaskId)).Text.Trim();
+
+            var timestamp = _browsers[_c.CurrentUser].TextOf(AdminPanelPage.TaskCreatedDate(_c.Test.TaskId));
             timestamp.Should().BeOneOf(timeOfAlert, timeOfAlertMinusAMinute, timeOfAlertPlusAMinute);
 
             if (alertType.ToLower().Contains("failed self-test") || alertType.ToLower().Equals("disconnected"))
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.TaskFromUser(_c.Test.TaskId)).Text.Trim().Should().Be(_c.Test.Participant.Name);
+                _browsers[_c.CurrentUser].TextOf(AdminPanelPage.TaskFromUser(_c.Test.TaskId)).Should().Be(_c.Test.Participant.Name);
         }
 
         [Then(@"the alert checkbox is no longer enabled")]
@@ -201,7 +201,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var time = _c.TimeZone.Adjust(DateTime.Now).ToString(DateFormats.AlertMessageTimestamp);
             var timeMinusAMinute = _c.TimeZone.Adjust(DateTime.Now).AddMinutes(-1).ToString(DateFormats.AlertMessageTimestamp);
             var timePlusAMinute = _c.TimeZone.Adjust(DateTime.Now).AddMinutes(1).ToString(DateFormats.AlertMessageTimestamp);
-            var actionedDetails = _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.TaskActionedBy(_c.Test.TaskId)).Text.Trim();
+            var actionedDetails = _browsers[_c.CurrentUser].TextOf(AdminPanelPage.TaskActionedBy(_c.Test.TaskId));
             actionedDetails.Should().ContainAny(time, timeMinusAMinute, timePlusAMinute);
             actionedDetails.ToLower().Should().Contain(_c.CurrentUser.Username.WithoutDomain().ToLower());
         }

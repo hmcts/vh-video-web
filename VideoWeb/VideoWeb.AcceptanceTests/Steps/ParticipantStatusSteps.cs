@@ -112,7 +112,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             for (var i = 0; i < MaxRetries; i++)
             {
-                var status = _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatus(participant.Id)).Text.Trim();
+                var status = _browsers[_c.CurrentUser].TextOf(AdminPanelPage.ParticipantStatus(participant.Id));
                 if (status.Equals(expectedStatus))
                 {
                     return status;

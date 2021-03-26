@@ -49,9 +49,9 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.CaseNumber(hearingThatShouldBeVisible.Id)).Displayed.Should().BeTrue();
             var timespan = TimeSpan.FromMinutes(hearingThatShouldBeVisible.ScheduledDuration);
             var listedFor = DateTimeToString.GetListedForTimeAsString(timespan);
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.HearingTime(hearingThatShouldBeVisible.Id)).Text.Trim()
+            _browsers[_c.CurrentUser].TextOf(VhoHearingListPage.HearingTime(hearingThatShouldBeVisible.Id))
                 .Should().Be($"{_c.TimeZone.Adjust(hearingThatShouldBeVisible.ScheduledDateTime):HH:mm}");
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.ListedFor(hearingThatShouldBeVisible.Id)).Text.Trim()
+            _browsers[_c.CurrentUser].TextOf(VhoHearingListPage.ListedFor(hearingThatShouldBeVisible.Id))
                 .Should().Be($"{listedFor}");
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
         }
@@ -81,9 +81,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         private void TheToolTipDetailsAreDisplayed(ParticipantDetailsResponse participant, ParticipantResponse hearingParticipant)
         {
             var participantEmailAndRole = $"{participant.Name}";
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.ParticipantContactName(participant.Id)).Text.Trim().Should().Be(participantEmailAndRole);
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.ParticipantContactEmail(participant.Id)).Text.Trim().Should().Be(hearingParticipant.ContactEmail);
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(VhoHearingListPage.ParticipantContactPhone(participant.Id)).Text.Trim().Should().Be(hearingParticipant.TelephoneNumber);
+            _browsers[_c.CurrentUser].TextOf(VhoHearingListPage.ParticipantContactName(participant.Id)).Should().Be(participantEmailAndRole);
+            _browsers[_c.CurrentUser].TextOf(VhoHearingListPage.ParticipantContactEmail(participant.Id)).Should().Be(hearingParticipant.ContactEmail);
+            _browsers[_c.CurrentUser].TextOf(VhoHearingListPage.ParticipantContactPhone(participant.Id)).Should().Be(hearingParticipant.TelephoneNumber);
         }
     }
 }
