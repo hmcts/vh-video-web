@@ -51,18 +51,18 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
 
     retrieveHearingsForUser() {
         this.logger.debug('[ParticipantHearings] - Updating hearing list');
-        this.conferencesSubscription = this.videoWebService.getConferencesForIndividual().subscribe(
-            (data: ConferenceForIndividualResponse[]) => {
+        this.conferencesSubscription = this.videoWebService.getConferencesForIndividual().subscribe({
+            next: (data: ConferenceForIndividualResponse[]) => {
                 this.logger.debug('[ParticipantHearings] - Got updated list');
                 this.errorCount = 0;
                 this.loadingData = false;
                 this.conferences = data;
             },
-            error => {
+            error:(error) => {
                 this.logger.warn('[ParticipantHearings] - Error retrieving conferences for individual', error);
                 this.handleApiError(error);
             }
-        );
+        });
     }
 
     handleApiError(error) {

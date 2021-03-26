@@ -68,8 +68,8 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
     retrieveHearingsForUser() {
         this.logger.debug('[JudgeHearingList] - Updating hearing list');
         this.conferencesSubscription.add(
-            this.videoWebService.getConferencesForJudge().subscribe(
-                (data: ConferenceForJudgeResponse[]) => {
+            this.videoWebService.getConferencesForJudge().subscribe({
+                next: (data: ConferenceForJudgeResponse[]) => {
                     this.logger.debug('[JudgeHearingList] - Got updated list');
                     this.loadingData = false;
                     this.conferences = data;
@@ -77,13 +77,13 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
                         this.screenHelper.enableFullScreen(true);
                     }
                 },
-                error => {
+                error: error => {
                     this.logger.warn('[JudgeHearingList] - There was a problem updating the hearing list');
                     this.loadingData = false;
                     this.screenHelper.enableFullScreen(false);
                     this.errorService.handleApiError(error);
                 }
-            )
+            })
         );
     }
 
@@ -114,8 +114,10 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
 
     setupSubscribers() {
         this.eventHubSubscriptions.add(
-            this.eventsService.getHearingStatusMessage().subscribe(message => {
-                this.handleConferenceStatusChange(message);
+            this.eventsService.getHearingStatusMessage().subscribe({
+                next: message => {
+                    this.handleConferenceStatusChange(message);
+                }
             })
         );
     }
