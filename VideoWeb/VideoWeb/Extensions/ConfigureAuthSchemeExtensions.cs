@@ -116,6 +116,12 @@ namespace VideoWeb.Extensions
                 .AddAuthenticationSchemes("Default")
                 .Build());
 
+            options.AddPolicy("Judicial", new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .RequireRole(AppRoles.JudgeRole, AppRoles.JudicialOfficeHolderRole)
+                .AddAuthenticationSchemes("Default")
+                .Build());
+
             options.AddPolicy("Individual", new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .RequireRole(AppRoles.CitizenRole, AppRoles.RepresentativeRole)
