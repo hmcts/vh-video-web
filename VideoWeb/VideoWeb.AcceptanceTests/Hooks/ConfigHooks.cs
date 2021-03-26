@@ -57,8 +57,8 @@ namespace VideoWeb.AcceptanceTests.Hooks
         private void RegisterAzureSecrets(TestContext context)
         {
             context.VideoWebConfig.AzureAdConfiguration = Options.Create(_configRoot.GetSection("AzureAd").Get<AzureAdConfiguration>()).Value;
-            context.VideoWebConfig.AzureAdConfiguration.ClientIdV2.Should().NotBeNull();
-            context.VideoWebConfig.AzureAdConfiguration.ClientSecretV2.Should().NotBeNull();
+            context.VideoWebConfig.AzureAdConfiguration.ClientId.Should().NotBeNull();
+            context.VideoWebConfig.AzureAdConfiguration.ClientSecret.Should().NotBeNull();
             context.VideoWebConfig.AzureAdConfiguration.Authority.Should().NotBeNull();
             context.VideoWebConfig.AzureAdConfiguration.TenantId.Should().NotBeNull();
         }

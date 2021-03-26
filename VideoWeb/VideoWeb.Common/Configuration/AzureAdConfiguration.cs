@@ -4,10 +4,8 @@ namespace VideoWeb.Common.Configuration
 {
     public class AzureAdConfiguration
     {
-        public string ClientIdV2 { get; set; }
-        public string ClientSecretV2 { get; set; }
-        public string ClientId => ClientIdV2;
-        public string ClientSecret => ClientSecretV2;
+        public string ClientId { get; set; }
+        public string ClientSecret { get; set; }
         public string Authority { get; set; }
         public string TenantId { get; set; }
         public string RedirectUri { get; set; }
