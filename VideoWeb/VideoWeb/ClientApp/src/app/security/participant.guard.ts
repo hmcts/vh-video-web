@@ -14,7 +14,7 @@ export class ParticipantGuard implements CanActivate {
         this.logger.debug(`[ParticipantGuard] Checking if user is a representative or individual.`);
         try {
             const profile = await this.userProfileService.getUserProfile();
-            if (profile.role === Role.Representative || profile.role === Role.Individual || profile.role === Role.JudicialOfficeHolder) {
+            if (profile.role === Role.Representative || profile.role === Role.Individual) {
                 this.logger.debug(`[ParticipantGuard] User is a representative or individual.`);
                 return true;
             } else {

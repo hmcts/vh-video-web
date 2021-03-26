@@ -30,15 +30,11 @@ export class HomeComponent implements OnInit {
     }
 
     navigateToHearingList(userProfile: UserProfileResponse) {
-        if (userProfile.role === Role.Judge) {
+        if (userProfile.role === Role.Judge || userProfile.role === Role.JudicialOfficeHolder) {
             this.router.navigate([pageUrls.JudgeHearingList]);
         } else if (userProfile.role === Role.VideoHearingsOfficer) {
             this.router.navigate([pageUrls.AdminVenueList]);
-        } else if (
-            userProfile.role === Role.Representative ||
-            userProfile.role === Role.Individual ||
-            userProfile.role === Role.JudicialOfficeHolder
-        ) {
+        } else if (userProfile.role === Role.Representative || userProfile.role === Role.Individual) {
             this.router.navigate([pageUrls.ParticipantHearingList]);
         } else {
             this.router.navigate([pageUrls.Unauthorised]);

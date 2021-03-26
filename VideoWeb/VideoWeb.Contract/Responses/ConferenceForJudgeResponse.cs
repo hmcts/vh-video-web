@@ -60,6 +60,11 @@ namespace VideoWeb.Contract.Responses
     public class ParticipantForJudgeResponse
     {
         /// <summary>
+        /// The participant Id
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
         /// The participant display name during a conference
         /// </summary>
         public string DisplayName { get; set; }

@@ -57,11 +57,11 @@ describe('ParticipantGuard', () => {
         expect(result).toBeTruthy();
     });
 
-    it('should be able to activate component if role is JudicialOfficeHolder', async () => {
+    it('should be not able to activate component if role is JudicialOfficeHolder', async () => {
         const profile = new UserProfileResponse({ role: Role.JudicialOfficeHolder });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
         const result = await guard.canActivate(null, null);
-        expect(result).toBeTruthy();
+        expect(result).toBeFalsy();
     });
 
     it('should logout when user profile cannot be retrieved', async () => {
