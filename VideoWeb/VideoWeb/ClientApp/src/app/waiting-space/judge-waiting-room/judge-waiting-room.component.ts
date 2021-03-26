@@ -120,8 +120,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.executeWaitingRoomCleanup();
     }
 
-    executeEndHearingSequence() {}
-
     getConferenceStatusText() {
         switch (this.conference.status) {
             case ConferenceStatus.NotStarted:

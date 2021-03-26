@@ -80,14 +80,14 @@ export class EventsService {
 
     async start(): Promise<any> {
         if (this.reconnectionPromise) {
-            return await this.reconnectionPromise;
+            return this.reconnectionPromise;
         }
 
         if (!this.isConnectedToHub && this.connection.state !== signalR.HubConnectionState.Disconnecting) {
             const authenticated = await this.oidcSecurityService.isAuthenticated$.toPromise();
             if (authenticated) {
                 this.reconnectionAttempt++;
-                return await this.connection
+                return this.connection
                     .start()
                     .then(() => {
                         this.reconnectionAttempt = 0;

@@ -53,12 +53,11 @@ export abstract class ChatBaseComponent {
                 });
         });
 
-        const sub = this.eventService.getChatMessage().subscribe({
+        return this.eventService.getChatMessage().subscribe({
             next: async message => {
                 await this.handleIncomingMessage(message);
             }
         });
-        return sub;
     }
 
     async handleIncomingMessage(message: InstantMessage) {
@@ -139,9 +138,9 @@ export abstract class ChatBaseComponent {
     private async getProfileForUser(username: string): Promise<UserProfileResponse> {
         const profile = this.profileService.checkCacheForProfileByUsername(username);
         if (profile) {
-            return profile;
+            return Promise.resolve(profile);
         }
-        return await this.profileService.getProfileByUsername(username);
+        return this.profileService.getProfileByUsername(username);
     }
 
     abstract handleIncomingOtherMessage(messsage: InstantMessage);

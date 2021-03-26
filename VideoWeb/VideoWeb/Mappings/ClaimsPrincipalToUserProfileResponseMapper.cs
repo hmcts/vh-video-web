@@ -24,7 +24,6 @@ namespace VideoWeb.Mappings
 
         private Role DetermineRoleFromClaims(ClaimsPrincipal user)
         {
-            //return Role.Judge;
             if (user.IsInRole(AppRoles.VhOfficerRole))
             {
                 return Role.VideoHearingsOfficer;
