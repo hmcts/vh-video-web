@@ -1,3 +1,4 @@
+import { PublicConfiguration } from 'angular-auth-oidc-client';
 import { Observable, of } from 'rxjs';
 interface UserData {
     preferred_username?: string;
@@ -12,6 +13,11 @@ interface UserData {
 export class MockOidcSecurityService {
     userData: UserData;
     authenticated: boolean;
+    configuration = {
+        configuration: {
+            scope: 'openid profile offline_access'
+        }
+    } as PublicConfiguration;
 
     setAuthenticated(authenticated: boolean) {
         this.authenticated = authenticated;
