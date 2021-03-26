@@ -72,8 +72,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheParticipantStatusOfUserIsDisplayed(string name, string status)
         {
             var user = Users.GetUserFromText(name, _c.Test.Users);
-            var participant = _c.Test.ConferenceParticipants.First(x => x.Username.ToLower().Equals(user.Username.ToLower()));
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantStatus(participant.Id)).Text.ToUpper().Trim().Should().Be(status.ToUpper());
+            var participant = _c.Test.ConferenceParticipants.Single(x => x.Username.ToLower().Equals(user.Username.ToLower()));
+            _browsers[_c.CurrentUser].TextOf(JudgeParticipantPanel.ParticipantStatus(participant.Id)).ToUpper().Should().Be(status.ToUpper());
         }
 
         [Then(@"the (.*) will see the status for (.*) is displayed as (.*)")]
@@ -89,12 +89,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.ReturnToHearingRoomLink).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.ContactVho).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.HearingTitle).Text.Should().Be($"{_c.Test.Case.Name} ({_c.Test.Hearing.CaseTypeName}) case number: {_c.Test.Hearing.Cases.First().Number}");
+            _browsers[_c.CurrentUser].TextOf(JudgeWaitingRoomPage.HearingTitle).Should().Be($"{_c.Test.Case.Name} ({_c.Test.Hearing.CaseTypeName}) case number: {_c.Test.Hearing.Cases.First().Number}");
             
             var startDate = _c.TimeZone.Adjust(_c.Test.Hearing.ScheduledDateTime);
             var dateAndStartTime = startDate.ToString(DateFormats.JudgeWaitingRoomPageTime);
             var endTime = startDate.AddMinutes(_c.Test.Hearing.ScheduledDuration).ToString(DateFormats.JudgeWaitingRoomPageTimeEnd);
-            var displayedTime = TextHelpers.RemoveSpacesOnSafari(_browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.HearingDateTime).Text);
+            var displayedTime = TextHelpers.RemoveSpacesOnSafari(_browsers[_c.CurrentUser].TextOf(JudgeWaitingRoomPage.HearingDateTime));
             displayedTime.Should().Be($"{dateAndStartTime} to {endTime}");
             
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.StartHearingText).Displayed.Should().BeTrue();
@@ -104,10 +104,10 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the participant can see information about their case")]
         public void ThenTheUserCanSeeInformationAboutTheirCase()
         {
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails).Text.Should().Contain(_c.Test.Case.Name);
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails).Text.Should().Contain($"case number: {_c.Test.Hearing.Cases.First().Number}");
+            _browsers[_c.CurrentUser].TextOf(WaitingRoomPage.HearingCaseDetails).Should().Contain(_c.Test.Case.Name);
+            _browsers[_c.CurrentUser].TextOf(WaitingRoomPage.HearingCaseDetails).Should().Contain($"case number: {_c.Test.Hearing.Cases.First().Number}");
             
-            var displayedDateTime = TextHelpers.RemoveSpacesOnSafari(_browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.HearingDate).Text);
+            var displayedDateTime = TextHelpers.RemoveSpacesOnSafari(_browsers[_c.CurrentUser].TextOf(WaitingRoomPage.HearingDate));
             displayedDateTime.Should().Contain(_c.TimeZone.Adjust(_c.Test.Hearing.ScheduledDateTime).ToString(DateFormats.WaitingRoomPageDate));
             displayedDateTime.Should().Contain(_c.TimeZone.Adjust(_c.Test.Hearing.ScheduledDateTime).ToString(DateFormats.WaitingRoomPageTime));
             
@@ -130,22 +130,22 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             foreach (var panelMember in panelMembers)
             {
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetPanelMemberName(user, panelMember.Id)).Text.Trim().Should().Be(panelMember.Name);
+                _browsers[_c.CurrentUser].TextOf(GetPanelMemberName(user, panelMember.Id)).Should().Be(panelMember.Name);
             }
 
             foreach (var individual in individuals)
             {
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantName(user, individual.Id)).Text.Trim().Should().Be(individual.Name);
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantHearingRole(user, individual.Id)).Text.Trim().Should().Be(individual.HearingRole);
+                _browsers[_c.CurrentUser].TextOf(GetParticipantName(user, individual.Id)).Should().Be(individual.Name);
+                _browsers[_c.CurrentUser].TextOf(GetParticipantHearingRole(user, individual.Id)).Should().Be(individual.HearingRole);
                 if (!individual.CaseTypeGroup.ToLower().Equals("none"))
                 {
-                    _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantCaseType(user, individual.Id)).Text.Trim().Should().Be(individual.CaseTypeGroup);
+                    _browsers[_c.CurrentUser].TextOf(GetParticipantCaseType(user, individual.Id)).Should().Be(individual.CaseTypeGroup);
                 }
             }
             
             foreach (var interpreter in interpreters)
             {
-                var interpretee = _c.Test.ConferenceParticipants.FirstOrDefault(p => p.Id == interpreter.LinkedParticipants.FirstOrDefault().LinkedId);
+                var interpretee = _c.Test.ConferenceParticipants.Single(p => p.Id == interpreter.LinkedParticipants.Single().LinkedId);
                 VerifyInterpreterOrRepresentative(user, interpreter, interpretee.Name, false);                
             }
 
@@ -156,27 +156,27 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             foreach (var observer in observers)
             {
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetObserverName(user, observer.Id)).Text.Trim().Should().Be(observer.Name);
+                _browsers[_c.CurrentUser].TextOf(GetObserverName(user, observer.Id)).Should().Be(observer.Name);
             }
         }
 
         private void VerifyInterpreterOrRepresentative(string user, ParticipantDetailsResponse participant, string forUserName, bool representative = true)
         {
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantName(user, participant.Id)).Text.Trim().Should().Be(participant.Name);
+            _browsers[_c.CurrentUser].TextOf(GetParticipantName(user, participant.Id)).Should().Be(participant.Name);
             var invalidCaseType = participant.CaseTypeGroup.ToLower().Equals("none");
 
             if (invalidCaseType && representative) 
                 return;
 
             if (!invalidCaseType)
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantCaseType(user, participant.Id)).Text.Trim().Should().Be(participant.CaseTypeGroup);
+                _browsers[_c.CurrentUser].TextOf(GetParticipantCaseType(user, participant.Id)).Should().Be(participant.CaseTypeGroup);
 
             ShouldInterpretOrRepresentFor(user, participant, forUserName);
         }
 
         private void ShouldInterpretOrRepresentFor(string user, ParticipantDetailsResponse participant, string forUserName)
         {
-            var representOrInterpretFor = _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantHearingRole(user, participant.Id)).Text.Trim();
+            var representOrInterpretFor = _browsers[_c.CurrentUser].TextOf(GetParticipantHearingRole(user, participant.Id));
             representOrInterpretFor.Should().Contain($"{participant.HearingRole} for");
             representOrInterpretFor.Should().Contain($"{forUserName}");
         }
@@ -184,50 +184,44 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the (.*) below their own entry in the participant list")]
         public void ThenTheUserBelowTheirOwnEntryInTheParticipantList(string user)
         {
-            var interpretee = _c.Test.ConferenceParticipants.SingleOrDefault(x => 
+            var interpretee = _c.Test.ConferenceParticipants.Single(x => 
                 x.UserRole==UserRole.Individual && x.HearingRole != "Interpreter" && x.LinkedParticipants.Any());
-            var interpreter = _c.Test.ConferenceParticipants.SingleOrDefault(x =>
+            var interpreter = _c.Test.ConferenceParticipants.Single(x =>
                 x.UserRole == UserRole.Individual && x.HearingRole == "Interpreter" && x.LinkedParticipants.Any());
 
-            var elementText = _browsers[_c.CurrentUser].Driver.WaitUntilVisible(GetParticipantWithInterpreter(user, interpretee.Id))
-                .Text.Trim();
-            elementText.Should().Contain(interpreter.HearingRole);
-            elementText.Should().Contain(interpretee.Name);
+            var participantText = _browsers[_c.CurrentUser].TextOf(GetParticipantWithInterpreter(user, interpretee.Id));
+            participantText.Should().Contain(interpreter.HearingRole);
+            participantText.Should().Contain(interpretee.Name);
         }
         
-        private By GetParticipantWithInterpreter(string user, Guid interpreteeId)
+        private static By GetParticipantWithInterpreter(string user, Guid interpreteeId)
         {
             return user == "Participant" 
                 ? ParticipantListPanel.ParticipantWithInterpreter(interpreteeId) 
                 : JudgeParticipantPanel.ParticipantWithInterpreter(interpreteeId);
         }
 
-        private By GetPanelMemberName(string user,Guid id)
+        private static By GetPanelMemberName(string user,Guid id)
         {
             return user == "Participant" ? ParticipantListPanel.PanelMemberName(id): JudgeParticipantPanel.PanelMemberName(id);           
         }
 
-        private By GetParticipantName(string user, Guid id)
+        private static By GetParticipantName(string user, Guid id)
         {
             return user == "Participant" ? ParticipantListPanel.ParticipantName(id) : JudgeParticipantPanel.ParticipantName(id);
         }
 
-        private By GetParticipantHearingRole(string user, Guid id)
+        private static By GetParticipantHearingRole(string user, Guid id)
         {
             return user == "Participant" ? ParticipantListPanel.ParticipantHearingRole(id) : JudgeParticipantPanel.ParticipantHearingRole(id);
         }
 
-        private By GetParticipantCaseType(string user, Guid id)
+        private static By GetParticipantCaseType(string user, Guid id)
         {
             return user == "Participant" ? ParticipantListPanel.ParticipantCaseTypeGroup(id) : JudgeParticipantPanel.ParticipantCaseType(id);
         }
 
-        private By GetRepresentativeRepresentee(string user, Guid id)
-        {
-            return user == "Participant" ? ParticipantListPanel.RepresentativeRepresentee(id) : JudgeParticipantPanel.RepresentativeRepresentee(id);
-        }
-
-        private By GetObserverName(string user, Guid id)
+        private static By GetObserverName(string user, Guid id)
         {
             return user == "Participant" ? ParticipantListPanel.ObserverName(id) : JudgeParticipantPanel.ObserverName(id);
         }
@@ -241,8 +235,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 participant.UserRole == UserRole.Representative);
             foreach (var participant in participants)
             {
-                _browsers[_c.CurrentUser].Driver
-                    .WaitUntilVisible(JudgeParticipantPanel.ParticipantStatus(participant.Id)).Text.Trim().ToUpperInvariant().Should()
+                _browsers[_c.CurrentUser].TextOf(JudgeParticipantPanel.ParticipantStatus(participant.Id)).ToUpperInvariant().Should()
                     .BeEquivalentTo("Not signed in".ToUpperInvariant());
             }
         }
@@ -333,7 +326,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the number of people in the consultation room is (.*)")]
         public void TheNumberOfPeopleInTheConsultationRoom(int numberOfPeople)
         {
-            int.Parse(_browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.NumberOfJohsInConsultaionRoom).Text).Should().Be(numberOfPeople);
+            int.Parse(_browsers[_c.CurrentUser].TextOf(JudgeWaitingRoomPage.NumberOfJohsInConsultaionRoom)).Should().Be(numberOfPeople);
         }
 
         
@@ -348,18 +341,17 @@ namespace VideoWeb.AcceptanceTests.Steps
         private void CheckParticipantsAreStillConnected()
         {
             var loggedInParticipants = LoggedInParticipants(_browsers.Keys, _c.Test.ConferenceParticipants);
-            foreach (var user in loggedInParticipants)
+            var participantDetailsResponses = loggedInParticipants as ParticipantDetailsResponse[] ?? loggedInParticipants.ToArray();
+            foreach (var user in participantDetailsResponses)
             {
                 if ((user.UserRole == UserRole.Judge)) continue;
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantStatus(user.Id));
                 _browsers[_c.CurrentUser].ScrollTo(JudgeParticipantPanel.ParticipantStatus(user.Id));
-                _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeParticipantPanel.ParticipantStatus(user.Id)).Text.ToUpper().Trim()
+                _browsers[_c.CurrentUser].TextOf(JudgeParticipantPanel.ParticipantStatus(user.Id)).ToUpper()
                     .Should().BeOneOf("CONNECTED", "IN CONSULTATION");
-                if(user.HearingRole.ToLower() == "interpreter")
-                {
-                   var interpretee = loggedInParticipants.FirstOrDefault(p => p.Id == user.LinkedParticipants.FirstOrDefault().LinkedId);
-                    ShouldInterpretOrRepresentFor("Participant", user, interpretee.Name);
-                }
+                if (user.HearingRole.ToLower() != "interpreter") continue;
+                var interpretee = participantDetailsResponses.Single(p => p.Id == user.LinkedParticipants.Single().LinkedId);
+                ShouldInterpretOrRepresentFor("Participant", user, interpretee.Name);
             }
         }
 
