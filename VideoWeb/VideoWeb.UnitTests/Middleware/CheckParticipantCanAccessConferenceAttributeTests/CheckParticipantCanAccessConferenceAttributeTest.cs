@@ -85,7 +85,6 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
                 new TestCaseData(AppRoles.CitizenRole),
                 new TestCaseData(AppRoles.JudgeRole),
                 new TestCaseData(AppRoles.JudicialOfficeHolderRole),
-
                 new TestCaseData(AppRoles.RepresentativeRole)
             };
 

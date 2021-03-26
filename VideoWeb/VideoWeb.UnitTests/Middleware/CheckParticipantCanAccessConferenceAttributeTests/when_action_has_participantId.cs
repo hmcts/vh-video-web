@@ -1,15 +1,14 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 
 namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttributeTests
 {
-    public class when_action_has_participantId : CheckParticipantCanAccessConferenceAttributeTest
+    public class When_action_has_participantId : CheckParticipantCanAccessConferenceAttributeTest
     {
         [TestCaseSource(nameof(AllNonVhoUsers))]
-        public async Task should_continue_with_other_middleware(string appRole)
+        public void Should_continue_with_other_middleware(string appRole)
         {
             // arrange
             var actionArguments = new Dictionary<string, object>
@@ -20,7 +19,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             SetupActionExecutingContext(actionArguments, user);
 
             // act
-            await _sut.OnActionExecutionAsync(_actionExecutingContext, async () => _actionExecutedContext);
+            _sut.OnActionExecuting(_actionExecutingContext);
 
             // assert
             _actionExecutingContext.Result.Should().BeOfType<OkResult>();
