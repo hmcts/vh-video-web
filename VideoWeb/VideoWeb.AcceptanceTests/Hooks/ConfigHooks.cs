@@ -16,6 +16,8 @@ using VideoWeb.Common.Security.HashGen;
 using TestApi.Contract.Dtos;
 using BookingsApi.Contract.Responses;
 using VideoApi.Contract.Responses;
+using VideoWeb.Common.Configuration;
+using VideoWeb.Common.Security;
 
 namespace VideoWeb.AcceptanceTests.Hooks
 {
@@ -54,9 +56,11 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         private void RegisterAzureSecrets(TestContext context)
         {
-            context.VideoWebConfig.AzureAdConfiguration = Options.Create(_configRoot.GetSection("AzureAd").Get<VideoWebSecurityConfiguration>()).Value;
-            context.VideoWebConfig.AzureAdConfiguration.Authority += context.VideoWebConfig.AzureAdConfiguration.TenantId;
-            ConfigurationManager.VerifyConfigValuesSet(context.VideoWebConfig.AzureAdConfiguration);
+            context.VideoWebConfig.AzureAdConfiguration = Options.Create(_configRoot.GetSection("AzureAd").Get<AzureAdConfiguration>()).Value;
+            context.VideoWebConfig.AzureAdConfiguration.ClientIdV2.Should().NotBeNull();
+            context.VideoWebConfig.AzureAdConfiguration.ClientSecretV2.Should().NotBeNull();
+            context.VideoWebConfig.AzureAdConfiguration.Authority.Should().NotBeNull();
+            context.VideoWebConfig.AzureAdConfiguration.TenantId.Should().NotBeNull();
         }
 
         private void RegisterCustomTokenSecrets(TestContext context)
@@ -134,8 +138,9 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         private static async Task GenerateBearerTokens(TestContext context)
         {
-            context.Tokens.TestApiBearerToken = await ConfigurationManager.GetBearerToken(
-                context.VideoWebConfig.AzureAdConfiguration, context.VideoWebConfig.VhServices.TestApiResourceId);
+            var azureAdConfigurationOptions = Options.Create(context.VideoWebConfig.AzureAdConfiguration);
+            var tokenProvider = new TokenProvider(azureAdConfigurationOptions);
+            context.Tokens.TestApiBearerToken = await tokenProvider.GetClientAccessToken(context.VideoWebConfig.AzureAdConfiguration.ClientId, context.VideoWebConfig.AzureAdConfiguration.ClientSecret, context.VideoWebConfig.VhServices.TestApiResourceId);
             context.Tokens.TestApiBearerToken.Should().NotBeNullOrEmpty();
 
             context.Tokens.CallbackBearerToken = GenerateTemporaryTokens.SetCustomJwTokenForCallback(context.VideoWebConfig.VideoWebKinlyConfiguration);
