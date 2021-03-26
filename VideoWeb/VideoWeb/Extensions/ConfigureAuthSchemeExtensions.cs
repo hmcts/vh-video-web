@@ -61,7 +61,7 @@ namespace VideoWeb.Extensions
                             return Task.CompletedTask;
                         }
                     };
-                    options.Authority = "https://login.microsoftonline.com/fb6e0e22-0da3-4c35-972a-9d61eb256508/v2.0"; //$"{ securitySettings.Authority}{securitySettings.TenantId}/";
+                    options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}/v2.0";
                     options.TokenValidationParameters.ValidateLifetime = true;
                     options.TokenValidationParameters.NameClaimType = "preferred_username";
                     options.Audience = securitySettings.ClientId;
@@ -101,7 +101,7 @@ namespace VideoWeb.Extensions
 
             options.AddPolicy("EventHubUser", new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
-                //.RequireRole(allRoles)
+                .RequireRole(allRoles)
                 .AddAuthenticationSchemes("EventHubUser")
                 .Build());
 
