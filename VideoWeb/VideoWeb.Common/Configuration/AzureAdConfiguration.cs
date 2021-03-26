@@ -1,3 +1,5 @@
+using System.Configuration;
+
 namespace VideoWeb.Common.Configuration
 {
     public class AzureAdConfiguration

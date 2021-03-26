@@ -30,18 +30,20 @@ namespace VideoWeb.Common.Security
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            var token = GetServiceToServiceToken();
+            var token = await GetServiceToServiceToken();
             request.Headers.Add("Authorization", $"Bearer {token}");
             return await base.SendAsync(request, cancellationToken);
         }
         
-        protected string GetServiceToServiceToken()
+        protected async Task<string> GetServiceToServiceToken()
         {
             var token = _memoryCache.Get<string>(TokenCacheKey);
-            if (!string.IsNullOrEmpty(token)) return token;
+            if (!string.IsNullOrEmpty(token))
+            {
+                return token;
+            }
             
-            var authenticationResult = _tokenProvider.GetAuthorisationResult(_azureAdConfiguration.ClientId,
-                _azureAdConfiguration.ClientSecret, ClientResource);
+            var authenticationResult = await _tokenProvider.GetAuthorisationResult(_azureAdConfiguration.ClientId, _azureAdConfiguration.ClientSecret, ClientResource);
             token = authenticationResult.AccessToken;
             var tokenExpireDateTime = authenticationResult.ExpiresOn.DateTime.AddMinutes(-1);
             _memoryCache.Set(TokenCacheKey, token, tokenExpireDateTime);

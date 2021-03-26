@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
 import { SelfTestFailureReason } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -21,13 +20,12 @@ export class CameraCheckComponent extends EquipmentCheckBaseComponentDirective i
         protected route: ActivatedRoute,
         protected fb: FormBuilder,
         protected videoWebService: VideoWebService,
-        protected adalService: AdalService,
         protected errorService: ErrorService,
         protected logger: Logger,
         protected participantStatusUpdateService: ParticipantStatusUpdateService,
         protected translateService: TranslateService
     ) {
-        super(router, route, fb, videoWebService, adalService, errorService, logger, participantStatusUpdateService);
+        super(router, route, fb, videoWebService, errorService, logger, participantStatusUpdateService);
     }
 
     ngOnInit() {

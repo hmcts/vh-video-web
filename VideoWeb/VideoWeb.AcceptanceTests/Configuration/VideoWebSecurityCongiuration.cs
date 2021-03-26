@@ -1,4 +1,4 @@
-﻿using AcceptanceTests.Common.Configuration;
+using AcceptanceTests.Common.Configuration;
 
 namespace VideoWeb.AcceptanceTests.Configuration
 {

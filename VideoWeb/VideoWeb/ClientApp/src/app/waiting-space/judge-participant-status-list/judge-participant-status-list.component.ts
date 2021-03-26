@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -37,7 +36,6 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     hearing: Hearing;
 
     constructor(
-        protected adalService: AdalService,
         protected consultationService: ConsultationService,
         protected eventService: EventsService,
         protected logger: Logger,
@@ -45,14 +43,14 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         protected route: ActivatedRoute,
         protected translateService: TranslateService
     ) {
-        super(adalService, consultationService, eventService, videoWebService, logger, translateService);
+        super(consultationService, eventService, videoWebService, logger, translateService);
     }
 
     ngOnInit() {
         this.hearing = new Hearing(this.conference);
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.initParticipants();
-        this.setupSubscribers();
+        this.addSharedEventHubSubcribers();
     }
 
     ngOnDestroy() {
@@ -63,18 +61,6 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
         super.initParticipants();
         this.filterRepresentatives();
         this.isUserJudge = this.loggedInUser.role === Role.Judge;
-    }
-
-    setupSubscribers(): void {
-        this.addSharedEventHubSubcribers();
-    }
-
-    canCallParticipant(participant: ParticipantResponse): boolean {
-        return false;
-    }
-
-    canCallEndpoint(endpoint: VideoEndpointResponse): boolean {
-        return false;
     }
 
     getParticipantStatus(participant: ParticipantResponse): string {

@@ -22,7 +22,6 @@ import {
 } from '../../models/video-call-models';
 import {
     activatedRoute,
-    adalService,
     clockService,
     consultationService,
     deviceTypeService,
@@ -68,7 +67,6 @@ describe('WaitingRoomComponent Video Call', () => {
             activatedRoute,
             videoWebService,
             eventsService,
-            adalService,
             logger,
             errorService,
             heartbeatModelMapper,

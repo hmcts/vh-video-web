@@ -1,23 +1,29 @@
 import { Router } from '@angular/router';
 import { ReturnUrlService } from '../../services/return-url.service';
-import { MockAdalService } from '../../testing/mocks/MockAdalService';
+import { MockOidcSecurityService } from '../../testing/mocks/MockOidcSecurityService';
 import { MockLogger } from '../../testing/mocks/MockLogger';
 import { LoginComponent } from './login.component';
+import { fakeAsync, tick } from '@angular/core/testing';
+import { ConfigService } from 'src/app/services/api/config.service';
+import { of } from 'rxjs';
 
 describe('LoginComponent', () => {
     let component: LoginComponent;
-    const mockAdalService = new MockAdalService();
-    let adalService;
+    const mockOidcSecurityService = new MockOidcSecurityService();
+    let oidcSecurityService;
     const returnUrlService = new ReturnUrlService();
     let router: jasmine.SpyObj<Router>;
+    let configServiceSpy: jasmine.SpyObj<ConfigService>;
 
     beforeAll(() => {
-        adalService = mockAdalService;
+        oidcSecurityService = mockOidcSecurityService;
         router = jasmine.createSpyObj<Router>('Router', ['navigate', 'navigateByUrl']);
+        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
     });
 
     beforeEach(() => {
-        component = new LoginComponent(adalService, router, returnUrlService, new MockLogger());
+        component = new LoginComponent(router, returnUrlService, new MockLogger(), oidcSecurityService, configServiceSpy);
+        configServiceSpy.getClientSettings.and.returnValue(of(null));
     });
 
     it('should create', () => {
@@ -25,25 +31,26 @@ describe('LoginComponent', () => {
     });
 
     it('should use saved return url', () => {
-        adalService.setAuthenticated(true);
+        oidcSecurityService.setAuthenticated(true);
         spyOn(returnUrlService, 'popUrl').and.returnValue('testurl');
         component.ngOnInit();
         expect(router.navigateByUrl).toHaveBeenCalledWith('testurl');
     });
 
     it('should return to root url if no return path is given', () => {
-        adalService.setAuthenticated(true);
+        oidcSecurityService.setAuthenticated(true);
         component.ngOnInit();
         expect(router.navigateByUrl).toHaveBeenCalledWith('/');
     });
 
-    it('should fallback to root url if return url is invalid', () => {
+    it('should fallback to root url if return url is invalid', fakeAsync(() => {
         spyOn(returnUrlService, 'popUrl').and.returnValue('');
-        adalService.setAuthenticated(true);
+        oidcSecurityService.setAuthenticated(true);
         router.navigateByUrl.and.callFake(() => {
             throw new Error('Invalid URL');
         });
         component.ngOnInit();
+        tick();
         expect(router.navigate).toHaveBeenCalledWith(['/']);
-    });
+    }));
 });

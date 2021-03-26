@@ -34,15 +34,11 @@ export abstract class ParticipantNetworkHealthBaseDirective implements OnInit, O
     }
 
     ngOnInit() {
-        this.setupSubscribers();
+        this.eventSubscriptions$.add(this.eventsService.getHeartbeat().subscribe(heartbeat => this.handleHeartbeat(heartbeat)));
     }
 
     ngOnDestroy(): void {
         this.eventSubscriptions$.unsubscribe();
-    }
-
-    setupSubscribers() {
-        this.eventSubscriptions$.add(this.eventsService.getHeartbeat().subscribe(heartbeat => this.handleHeartbeat(heartbeat)));
     }
 
     handleHeartbeat(heartbeat: ParticipantHeartbeat): void {

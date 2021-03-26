@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveEnd, Router, RouterEvent } from '@angular/router';
 import { ApplicationInsights, ITelemetryItem, SeverityLevel } from '@microsoft/applicationinsights-web';
-import { AdalService } from 'adal-angular4';
-import { filter } from 'rxjs/operators';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { Observable } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { ConfigService } from '../../api/config.service';
 import { LogAdapter } from '../log-adapter';
 
@@ -14,26 +15,31 @@ export class AppInsightsLoggerService implements LogAdapter {
     router: Router;
     appInsights: ApplicationInsights;
 
-    constructor(configService: ConfigService, router: Router, adalService: AdalService) {
+    constructor(configService: ConfigService, router: Router, oidcSecurityService: OidcSecurityService) {
         this.router = router;
-        this.setupAppInsights(configService, adalService).then(() => {
+        this.setupAppInsights(configService, oidcSecurityService).subscribe(() => {
             this.trackNavigation();
         });
     }
 
-    private async setupAppInsights(configService: ConfigService, adalService: AdalService) {
-        await configService.loadConfig();
-        const config = configService.getClientSettings();
-        this.appInsights = new ApplicationInsights({
-            config: {
-                instrumentationKey: config.app_insights_instrumentation_key
-            }
-        });
-        this.appInsights.loadAppInsights();
-        this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
-            envelope.tags['ai.cloud.role'] = 'vh-video-web';
-            envelope.tags['ai.user.id'] = adalService.userInfo.userName.toLowerCase();
-        });
+    private setupAppInsights(configService: ConfigService, oidcSecurityService: OidcSecurityService): Observable<void> {
+        configService.loadConfig();
+        return configService.getClientSettings().pipe(
+            map(configSettings => {
+                this.appInsights = new ApplicationInsights({
+                    config: {
+                        instrumentationKey: configSettings.app_insights_instrumentation_key
+                    }
+                });
+                this.appInsights.loadAppInsights();
+                oidcSecurityService.userData$.subscribe(ud => {
+                    this.appInsights.addTelemetryInitializer((envelope: ITelemetryItem) => {
+                        envelope.tags['ai.cloud.role'] = 'vh-video-web';
+                        envelope.tags['ai.user.id'] = ud.preferred_username.toLowerCase();
+                    });
+                });
+            })
+        );
     }
 
     debug(message: string, properties: any = null): void {

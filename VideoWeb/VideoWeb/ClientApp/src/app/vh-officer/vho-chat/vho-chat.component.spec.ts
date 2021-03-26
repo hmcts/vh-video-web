@@ -1,10 +1,9 @@
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
-import { AdalService } from 'adal-angular4';
 import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceResponse, LoggedParticipantResponse, ParticipantResponse, Role } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, LoggedParticipantResponse, Role } from 'src/app/services/clients/api-client';
 import { InstantMessage } from 'src/app/services/models/instant-message';
 import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
@@ -13,15 +12,15 @@ import { eventsServiceSpy, messageSubjectMock } from 'src/app/testing/mocks/mock
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { adminTestProfile, judgeTestProfile } from '../../testing/data/test-profiles';
 import { VhoChatComponent } from './vho-chat.component';
-import { TranslateService } from '@ngx-translate/core';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { MockOidcSecurityService } from 'src/app/testing/mocks/MockOidcSecurityService';
 
 describe('VhoChatComponent', () => {
     let component: VhoChatComponent;
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
     const eventsService = eventsServiceSpy;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
-    let adalService: jasmine.SpyObj<AdalService>;
+    const oidcSecurityService = new MockOidcSecurityService();
     let conference: ConferenceResponse;
     let hearing: Hearing;
     const judgeProfile = judgeTestProfile;
@@ -30,9 +29,8 @@ describe('VhoChatComponent', () => {
     let chatSub$: Subscription;
 
     beforeAll(() => {
-        adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
-            userInfo: <adal.User>{ userName: adminProfile.username, authenticated: true }
-        });
+        oidcSecurityService.setUserData({ preferred_username: adminProfile.username });
+        oidcSecurityService.setAuthenticated(true);
         conference = new ConferenceTestData().getConferenceDetailFuture();
         hearing = new Hearing(conference);
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
@@ -58,7 +56,7 @@ describe('VhoChatComponent', () => {
             admin_username: 'admin@hmcts.net',
             role: Role.VideoHearingsOfficer
         });
-        adalService.userInfo.userName = adminProfile.username;
+        oidcSecurityService.setUserData({ preferred_username: adminProfile.username });
 
         profileServiceSpy.checkCacheForProfileByUsername.and.callFake(() => null);
         profileServiceSpy.getProfileByUsername.and.returnValue(Promise.resolve(judgeProfile));
@@ -72,7 +70,7 @@ describe('VhoChatComponent', () => {
             profileServiceSpy,
             eventsService,
             new MockLogger(),
-            adalService,
+            oidcSecurityService as any,
             new ImHelper(),
             translateServiceSpy
         );
@@ -203,7 +201,7 @@ describe('VhoChatComponent', () => {
     it('should use participant name when message is not from admin', async () => {
         const judgeUsername = hearing.judge.id;
         const adminUsername = 'admin@hmcts.net';
-        adalService.userInfo.userName = judgeUsername;
+        oidcSecurityService.setUserData({ preferred_username: judgeUsername });
         const instantMessage = new InstantMessage({
             conferenceId: conference.id,
             id: Guid.create().toString(),
@@ -239,7 +237,7 @@ describe('VhoChatComponent', () => {
     it('should update failed property if im has not sent after 3 seconds', () => {
         const judgeUsername = hearing.judge.id;
         const adminUsername = 'admin@hmcts.net';
-        adalService.userInfo.userName = adminUsername;
+        oidcSecurityService.setUserData({ preferred_username: adminUsername });
         const instantMessage = new InstantMessage({
             conferenceId: conference.id,
             id: Guid.create().toString(),
@@ -262,7 +260,7 @@ describe('VhoChatComponent', () => {
     it('should not update failed property if im could not be found', () => {
         const judgeUsername = hearing.judge.id;
         const adminUsername = 'admin@hmcts.net';
-        adalService.userInfo.userName = adminUsername;
+        oidcSecurityService.setUserData({ preferred_username: adminUsername });
         const instantMessage = new InstantMessage({
             conferenceId: conference.id,
             id: Guid.create().toString(),
@@ -295,7 +293,7 @@ describe('VhoChatComponent', () => {
     it('should handle pending IMs already processed', () => {
         const judgeUsername = hearing.judge.id;
         const adminUsername = 'admin@hmcts.net';
-        adalService.userInfo.userName = adminUsername;
+        oidcSecurityService.setUserData({ preferred_username: adminUsername });
         const im = new InstantMessage({
             conferenceId: conference.id,
             id: Guid.create().toString(),

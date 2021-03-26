@@ -22,7 +22,7 @@ import {
     requestedConsultationMessageSubjectMock,
     participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
+import { MockOidcSecurityService } from 'src/app/testing/mocks/MockOidcSecurityService';
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 
 import { PrivateConsultationParticipantsComponent } from './private-consultation-participants.component';
@@ -34,9 +34,9 @@ import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-serv
 describe('PrivateConsultationParticipantsComponent', () => {
     let component: PrivateConsultationParticipantsComponent;
     let conference: ConferenceResponse;
-    const mockAdalService = new MockAdalService();
+    const mockOidcSecurityService = new MockOidcSecurityService();
     const eventsService = eventsServiceSpy;
-    let adalService;
+    let oidcSecurityService;
     let consultationService: jasmine.SpyObj<ConsultationService>;
     let logger: jasmine.SpyObj<Logger>;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
@@ -46,7 +46,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
     const translateService = translateServiceSpy;
 
     beforeAll(() => {
-        adalService = mockAdalService;
+        oidcSecurityService = mockOidcSecurityService;
 
         consultationService = consultationServiceSpyFactory();
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName']);
@@ -72,7 +72,6 @@ describe('PrivateConsultationParticipantsComponent', () => {
             snapshot: { data: { loggedUser: logged } }
         };
         component = new PrivateConsultationParticipantsComponent(
-            adalService,
             consultationService,
             eventsService,
             logger,

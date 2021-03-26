@@ -5,7 +5,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { IndependentSelfTestComponent } from './independent-self-test.component';
 
@@ -18,13 +17,10 @@ describe('IndependentSelfTestComponent', () => {
     const activatedRoute: any = { snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
     const logger: Logger = new MockLogger();
     let videoWebService: jasmine.SpyObj<VideoWebService>;
-    const mockAdalService = new MockAdalService();
-    let adalService;
     let errorService: jasmine.SpyObj<ErrorService>;
 
     beforeAll(() => {
         selfTestComponent = jasmine.createSpyObj<SelfTestComponent>('SelfTestComponent', ['replayVideo']);
-        adalService = mockAdalService;
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'getPexipConfig']);
 
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
@@ -37,7 +33,7 @@ describe('IndependentSelfTestComponent', () => {
     });
 
     beforeEach(() => {
-        component = new IndependentSelfTestComponent(router, activatedRoute, videoWebService, errorService, adalService, logger);
+        component = new IndependentSelfTestComponent(router, activatedRoute, videoWebService, errorService, logger);
         component.selfTestComponent = selfTestComponent;
     });
 

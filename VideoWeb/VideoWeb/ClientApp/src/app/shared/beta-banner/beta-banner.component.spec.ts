@@ -3,7 +3,6 @@ import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angul
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TranslateService } from '@ngx-translate/core';
-import { AdalService } from 'adal-angular4';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus, Role, UserProfileResponse } from 'src/app/services/clients/api-client';
@@ -13,9 +12,10 @@ import { ConferenceStatusMessage } from 'src/app/services/models/conference-stat
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy, hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
+import { MockOidcSecurityService } from 'src/app/testing/mocks/MockOidcSecurityService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { BetaBannerComponent } from './beta-banner.component';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({ selector: 'app-mock-component', template: '' })
 class Mock1Component {}
@@ -32,7 +32,7 @@ describe('BetaBannerComponent', () => {
     let component: BetaBannerComponent;
     let fixture: ComponentFixture<BetaBannerComponent>;
     let router: Router;
-    let adalService: MockAdalService;
+    let oidcSecurityService: MockOidcSecurityService;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
     profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
     const profile = new UserProfileResponse({ role: Role.Representative });
@@ -51,7 +51,7 @@ describe('BetaBannerComponent', () => {
                     { provide: ProfileService, useValue: profileServiceSpy },
                     { provide: Logger, useClass: MockLogger },
                     { provide: VideoWebService, useValue: videoWebServiceSpy },
-                    { provide: AdalService, useClass: MockAdalService },
+                    { provide: OidcSecurityService, useClass: MockOidcSecurityService },
                     { provide: TranslateService, useValue: translateServiceSpy },
                     { provide: EventsService, useValue: eventsServiceSpy }
                 ],
@@ -61,7 +61,7 @@ describe('BetaBannerComponent', () => {
     );
 
     beforeEach(() => {
-        adalService = TestBed.inject<MockAdalService>(AdalService as any);
+        oidcSecurityService = TestBed.inject<MockOidcSecurityService>(OidcSecurityService as any);
         router = TestBed.inject(Router);
         fixture = TestBed.createComponent(BetaBannerComponent);
         component = fixture.componentInstance;

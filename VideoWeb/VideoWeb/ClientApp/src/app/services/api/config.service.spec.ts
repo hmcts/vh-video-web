@@ -1,40 +1,46 @@
-import { TestBed } from '@angular/core/testing';
-import { configureTestSuite } from 'ng-bullet';
+import { HttpBackend, HttpClient, HttpResponse } from '@angular/common/http';
+import { fakeAsync, tick } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { SharedModule } from '../../shared/shared.module';
-import { ApiClient, ClientSettingsResponse } from '../clients/api-client';
+import { ClientSettingsResponse } from '../clients/api-client';
+import { SessionStorage } from '../session-storage';
 import { ConfigService } from './config.service';
 
 describe('ConfigService', () => {
-    let apiClientSpy: jasmine.SpyObj<ApiClient>;
+    let httpBackendSpy: jasmine.SpyObj<HttpBackend>;
     let clientSettings: ClientSettingsResponse;
     let configService: ConfigService;
-
-    configureTestSuite(() => {
-        TestBed.configureTestingModule({
-            imports: [SharedModule],
-            providers: [ConfigService, { provide: ApiClient, useValue: apiClientSpy }]
-        });
-    });
+    let clientSettingCache: SessionStorage<ClientSettingsResponse>;
 
     beforeEach(() => {
-        apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['getClientConfigurationSettings']);
+        httpBackendSpy = jasmine.createSpyObj<HttpBackend>('HttpBackend', ['handle']);
+        clientSettingCache = new SessionStorage<ClientSettingsResponse>('vh.client.settings');
         clientSettings = new ClientSettingsResponse();
         clientSettings.tenant_id = 'tenantId';
         clientSettings.client_id = 'clientId';
         clientSettings.post_logout_redirect_uri = '/dashboard';
         clientSettings.redirect_uri = '/dashboard';
-        apiClientSpy.getClientConfigurationSettings.and.returnValue(of(clientSettings));
-        configService = TestBed.inject(ConfigService);
+        httpBackendSpy.handle.and.returnValue(of(new HttpResponse({ body: clientSettings })));
+        configService = new ConfigService(httpBackendSpy);
     });
 
     afterEach(() => {
-        sessionStorage.clear();
+        clientSettingCache.clear();
     });
 
-    it('should not have called method on api client', () => {
-        sessionStorage.setItem('clientSettings', JSON.stringify(clientSettings));
-        configService.getClientSettings();
-        expect(apiClientSpy.getClientConfigurationSettings).not.toHaveBeenCalled();
-    });
+    it('should have called method on httpClient', fakeAsync(() => {
+        configService.loadConfig();
+        tick();
+        configService.getClientSettings().toPromise();
+        tick();
+        expect(httpBackendSpy.handle).toHaveBeenCalled();
+    }));
+
+    it('should not have called method on httpClient', fakeAsync(() => {
+        clientSettingCache.set(clientSettings);
+        configService.loadConfig();
+        tick();
+        configService.getClientSettings().toPromise();
+        tick();
+        expect(httpBackendSpy.handle).not.toHaveBeenCalled();
+    }));
 });

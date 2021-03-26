@@ -1,6 +1,5 @@
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { AddSelfTestFailureEventRequest, SelfTestFailureReason } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -26,7 +25,6 @@ export abstract class EquipmentCheckBaseComponentDirective extends ParticipantSt
         protected route: ActivatedRoute,
         protected fb: FormBuilder,
         protected videoWebService: VideoWebService,
-        protected adalService: AdalService,
         protected errorService: ErrorService,
         protected logger: Logger,
         protected participantStatusUpdateService: ParticipantStatusUpdateService

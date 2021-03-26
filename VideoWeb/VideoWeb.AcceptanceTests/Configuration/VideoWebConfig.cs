@@ -1,4 +1,5 @@
 using AcceptanceTests.Common.Configuration;
+using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
 
 namespace VideoWeb.AcceptanceTests.Configuration
@@ -6,7 +7,7 @@ namespace VideoWeb.AcceptanceTests.Configuration
     public class VideoWebConfig
     {
         public bool IsLive { get; set; }
-        public VideoWebSecurityConfiguration AzureAdConfiguration { get; set; }
+        public AzureAdConfiguration AzureAdConfiguration { get; set; }
         public KinlyConfiguration VideoWebKinlyConfiguration { get; set; }
         public VideoWebTestConfig TestConfig { get; set; }
         public VideoWebVhServicesConfig VhServices { get; set; }

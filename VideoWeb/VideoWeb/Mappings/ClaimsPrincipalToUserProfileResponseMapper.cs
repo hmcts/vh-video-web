@@ -13,11 +13,11 @@ namespace VideoWeb.Mappings
         {
             var response = new UserProfileResponse
             {
+                Role = DetermineRoleFromClaims(user),
                 FirstName = user.Claims.First(c => c.Type == ClaimTypes.GivenName).Value,
                 LastName = user.Claims.First(c => c.Type == ClaimTypes.Surname).Value,
                 DisplayName = user.Claims.First(c => c.Type == "name").Value,
-                Username = user.Identity?.Name?.ToLower().Trim(),
-                Role = DetermineRoleFromClaims(user)
+                Username = user.Claims.First(c => c.Type == "preferred_username").Value.ToLower().Trim()
             };
             return response;
         }

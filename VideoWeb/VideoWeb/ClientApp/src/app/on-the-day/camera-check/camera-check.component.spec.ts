@@ -7,7 +7,6 @@ import { ConferenceLite } from 'src/app/services/models/conference-lite';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { CameraCheckComponent } from './camera-check.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
@@ -21,15 +20,12 @@ describe('CameraCheckComponent', () => {
     const activatedRoute: any = { snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
     const formBuilder = new FormBuilder();
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
-    const mockAdalService = new MockAdalService();
-    let adalService;
     let errorService: jasmine.SpyObj<ErrorService>;
     const logger: Logger = new MockLogger();
     let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
     const translateService = translateServiceSpy;
 
     beforeAll(() => {
-        adalService = mockAdalService;
         videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getActiveIndividualConference',
             'raiseSelfTestFailureEvent'
@@ -55,7 +51,6 @@ describe('CameraCheckComponent', () => {
             activatedRoute,
             formBuilder,
             videoWebServiceSpy,
-            adalService,
             errorService,
             logger,
             participantStatusUpdateService,
