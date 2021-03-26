@@ -58,7 +58,7 @@ export class ParticipantHearingsComponent implements OnInit, OnDestroy {
                 this.loadingData = false;
                 this.conferences = data;
             },
-            error:(error) => {
+            error: error => {
                 this.logger.warn('[ParticipantHearings] - Error retrieving conferences for individual', error);
                 this.handleApiError(error);
             }
