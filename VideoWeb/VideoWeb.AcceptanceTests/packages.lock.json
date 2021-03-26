@@ -145,9 +145,9 @@
       },
       "Selenium.Axe": {
         "type": "Direct",
-        "requested": "[2.0.2, )",
-        "resolved": "2.0.2",
-        "contentHash": "Bs61oGHGAxCAPus4HyAoGD4s3xvBJuVU7DmsJIqRqBD2+Zlu2WsuKZwxGitLPsBgbvajIKyVDjH6Ahtpz0SLAA==",
+        "requested": "[2.0.3, )",
+        "resolved": "2.0.3",
+        "contentHash": "jEDJgRpnG2qAwefj7QVGeMiGA0HI1BctNUwMLUkjXBFRdb7ozATSWeRYGvIEFH4q5UXYNxmD5NF5+MnIRrx+gQ==",
         "dependencies": {
           "HtmlAgilityPack": "1.11.30",
           "Newtonsoft.Json": "12.0.3",
@@ -236,15 +236,15 @@
       },
       "TestApi.Client": {
         "type": "Direct",
-        "requested": "[1.24.9, )",
-        "resolved": "1.24.9",
-        "contentHash": "tuprdSa0IextmvSVacqSs1+f58fNcIW6T3SeCvgzV9gcIv0ho6GJGdh7b4ng5uxsLw+M0+gr0KOtz4GIjzdBVg==",
+        "requested": "[1.25.0, )",
+        "resolved": "1.25.0",
+        "contentHash": "uAjxNQ/veS2s6wBk4yg0Xuy0qKXPj6er+jdFTYTGxAZc1/uy7l4u7RIiDnzH1OW651d2FiDUrS5asm+GxsSXLg==",
         "dependencies": {
-          "BookingsApi.Client": "1.24.17",
+          "BookingsApi.Client": "1.24.26",
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "Newtonsoft.Json": "12.0.3",
-          "UserApi.Client": "1.24.2",
-          "VideoApi.Client": "1.23.47"
+          "UserApi.Client": "1.24.3",
+          "VideoApi.Client": "1.23.57"
         }
       },
       "VH.AcceptanceTests.Common": {
@@ -332,8 +332,8 @@
       },
       "BookingsApi.Client": {
         "type": "Transitive",
-        "resolved": "1.24.17",
-        "contentHash": "oFYSJJL+qsGv7ZZkc5PVfR/0FrumeI98aTIPhw9ohr4Skj6OdTHivYSkYUaW4lelwb145fyPTaCVqaUBTVKBpw==",
+        "resolved": "1.24.26",
+        "contentHash": "Ify+XcJoCVPr0p8H0OSbUJCJFnfqDTM4pwVHfj1Q1XQh98xUyRQn9jCn1jfSYDmp350nz6h5bv5LPRRFU3BLTw==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "Newtonsoft.Json": "12.0.3"
@@ -2333,8 +2333,8 @@
       },
       "UserApi.Client": {
         "type": "Transitive",
-        "resolved": "1.24.2",
-        "contentHash": "/vmNd/GVa2ikLwyiwJQprWomXW9aat5rH+nRaiQPM3Vn97DW9YZ3HQMDxOKemorA/y3hwtAUKglWOuY3wEyzmg==",
+        "resolved": "1.24.3",
+        "contentHash": "CbbYvdREAv1x4P2FBXJn9DkUOAyPn6yZcfOvWaT19wAjsziabV6qfITbUYiVGOWpwdqdB2H7lyOH/V//AC66fg==",
         "dependencies": {
           "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
           "Newtonsoft.Json": "12.0.3"
