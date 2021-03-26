@@ -32,8 +32,10 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
         {
             BuildConferenceForTest();
             _mocker = AutoMock.GetLoose();
-            
-            _mocker.Mock<IConferenceCache>().Setup(cache => cache.GetOrAddConferenceAsync(_testConference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+
+            _mocker.Mock<IConferenceCache>().Setup(cache =>
+                    cache.GetOrAddConferenceAsync(_testConference.Id,
+                        It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
                 .ReturnsAsync(_testConference);
             var parameters = new ParameterBuilder(_mocker)
@@ -43,7 +45,7 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
             _mocker.Mock<IMapperFactory>()
                 .Setup(x => x.Get<SharedParticipantRoomResponse, Participant, bool, SharedParticipantRoom>())
                 .Returns(_mocker.Create<SharedParticipantRoomMapper>(parameters));
-            
+
             var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
             var context = new ControllerContext
             {
@@ -52,7 +54,7 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
                     User = claimsPrincipal
                 }
             };
-            
+
             _controller = _mocker.Create<VirtualRoomsController>();
             _controller.ControllerContext = context;
         }
@@ -66,17 +68,18 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
                 ParticipantJoinUri = "pat_join__interpreter",
                 PexipNode = "sip.unit.test.com"
             };
-            var participantId = _testConference.Participants.First(x=> !x.IsWitness() && !x.IsJudge()).Id;
+            var participantId = _testConference.Participants.First(x => !x.IsWitness() && !x.IsJudge()).Id;
             var conferenceId = _testConference.Id;
-            
+
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetInterpreterRoomForParticipantAsync(conferenceId, participantId))
                 .ReturnsAsync(vmr);
 
-            var result = await _controller.GetInterpreterRoomForParticipant(conferenceId, participantId);
-            result.Should().BeAssignableTo<OkObjectResult>().Which.Value.Should().BeAssignableTo<SharedParticipantRoom>();
+            var result = await _controller.GetParticipantRoomForParticipant(conferenceId, participantId);
+            result.Should().BeAssignableTo<OkObjectResult>().Which.Value.Should()
+                .BeAssignableTo<SharedParticipantRoom>();
         }
-        
+
         [Test]
         public async Task should_return_call_get_witness_room_when_participant_type_is_Witness()
         {
@@ -86,16 +89,41 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
                 ParticipantJoinUri = "pat_join__interpreter",
                 PexipNode = "sip.unit.test.com"
             };
-            var participantId = _testConference.Participants.First(x=> x.IsWitness()).Id;
+            var participantId = _testConference.Participants.First(x => x.IsWitness()).Id;
             var conferenceId = _testConference.Id;
             var participantType = "Witness";
-            
+
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetWitnessRoomForParticipantAsync(conferenceId, participantId))
                 .ReturnsAsync(vmr);
 
-            var result = await _controller.GetInterpreterRoomForParticipant(conferenceId, participantId, participantType);
-            result.Should().BeAssignableTo<OkObjectResult>().Which.Value.Should().BeAssignableTo<SharedParticipantRoom>();
+            var result =
+                await _controller.GetParticipantRoomForParticipant(conferenceId, participantId, participantType);
+            result.Should().BeAssignableTo<OkObjectResult>().Which.Value.Should()
+                .BeAssignableTo<SharedParticipantRoom>();
+        }
+
+        [Test]
+        public async Task should_return_call_get_judicial_room_when_participant_type_is_joh()
+        {
+            var vmr = new SharedParticipantRoomResponse()
+            {
+                Label = "PanelMember1",
+                ParticipantJoinUri = "pat_join__panelmember",
+                PexipNode = "sip.unit.test.com"
+            };
+            var participantId = _testConference.Participants.First(x => x.Role == Role.JudicialOfficeHolder).Id;
+            var conferenceId = _testConference.Id;
+            var participantType = "Judicial";
+
+            _mocker.Mock<IVideoApiClient>()
+                .Setup(x => x.GetJudicialRoomForParticipantAsync(conferenceId, participantId))
+                .ReturnsAsync(vmr);
+
+            var result =
+                await _controller.GetParticipantRoomForParticipant(conferenceId, participantId, participantType);
+            result.Should().BeAssignableTo<OkObjectResult>().Which.Value.Should()
+                .BeAssignableTo<SharedParticipantRoom>();
         }
 
         [Test]
@@ -103,18 +131,18 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
         {
             var participantId = Guid.NewGuid();
             var conferenceId = Guid.NewGuid();
-            
+
             var apiException = new VideoApiException<ProblemDetails>("Internal Server Error",
                 (int) HttpStatusCode.NotFound,
                 "Stacktrace goes here", null, default, null);
             _mocker.Mock<IVideoApiClient>()
                 .Setup(x => x.GetInterpreterRoomForParticipantAsync(conferenceId, participantId))
                 .ThrowsAsync(apiException);
-            
-            var result = await _controller.GetInterpreterRoomForParticipant(conferenceId, participantId);
+
+            var result = await _controller.GetParticipantRoomForParticipant(conferenceId, participantId);
             result.Should().BeAssignableTo<ObjectResult>().Which.StatusCode.Should().Be(apiException.StatusCode);
         }
-        
+
         private void BuildConferenceForTest()
         {
             var conference = new Conference
@@ -128,15 +156,17 @@ namespace VideoWeb.UnitTests.Controllers.VirtualRoomController
                         .Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Id = Guid.NewGuid())
-                        .With(x=> x.HearingRole = "Witness").Build(),
+                        .With(x => x.HearingRole = "Witness").Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Individual)
                         .With(x => x.Id = Guid.NewGuid()).Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
+                        .With(x => x.Id = Guid.NewGuid()).Build(),
+                    Builder<Participant>.CreateNew().With(x => x.Role = Role.JudicialOfficeHolder)
                         .With(x => x.Id = Guid.NewGuid()).Build()
                 },
                 HearingVenueName = "Hearing Venue Test",
             };
-            
+
             _testConference = conference;
         }
     }

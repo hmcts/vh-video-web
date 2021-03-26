@@ -34,11 +34,12 @@ namespace VideoWeb.Controllers
             _mapperFactory = mapperFactory;
         }
 
-        [HttpGet("{conferenceId}/rooms/interpreter/{participantId}")]
-        [SwaggerOperation(OperationId = "GetInterpreterRoomForParticipant")]
+        [HttpGet("{conferenceId}/rooms/shared/{participantId}")]
+        [SwaggerOperation(OperationId = "GetParticipantRoomForParticipant")]
         [ProducesResponseType(typeof(SharedParticipantRoom), (int) HttpStatusCode.OK)]
         [ProducesResponseType(typeof(string), (int) HttpStatusCode.NotFound)]
-        public async Task<IActionResult> GetInterpreterRoomForParticipant(Guid conferenceId, Guid participantId, [FromQuery] string participantType = "Civilian")
+        public async Task<IActionResult> GetParticipantRoomForParticipant(Guid conferenceId, Guid participantId,
+            [FromQuery] string participantType = "Civilian")
         {
             try
             {
@@ -46,11 +47,14 @@ namespace VideoWeb.Controllers
                 {
                     "Witness" => await _videoApiClient.GetWitnessRoomForParticipantAsync(conferenceId,
                         participantId),
+                    "Judicial" => await _videoApiClient.GetJudicialRoomForParticipantAsync(conferenceId,
+                        participantId),
                     _ => await _videoApiClient.GetInterpreterRoomForParticipantAsync(conferenceId, participantId)
                 };
                 var conference = await GetConference(conferenceId);
                 var participant = conference.Participants.First(x => x.Id == participantId);
-                var mapper = _mapperFactory.Get<SharedParticipantRoomResponse, Participant, bool, SharedParticipantRoom>();
+                var mapper =
+                    _mapperFactory.Get<SharedParticipantRoomResponse, Participant, bool, SharedParticipantRoom>();
                 var response = mapper.Map(room, participant, participantType == "Witness");
                 return Ok(response);
             }
@@ -62,7 +66,7 @@ namespace VideoWeb.Controllers
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
-        
+
         private async Task<Conference> GetConference(Guid conferenceId)
         {
             var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId,

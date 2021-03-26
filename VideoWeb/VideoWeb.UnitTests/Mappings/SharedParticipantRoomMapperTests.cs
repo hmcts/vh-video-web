@@ -10,7 +10,7 @@ namespace VideoWeb.UnitTests.Mappings
     public class SharedParticipantRoomMapperTests : BaseMockerSutTestSetup<SharedParticipantRoomMapper>
     {
         [Test]
-        public void should_map_vmr_to_interpreter_rom()
+        public void should_map_vmr_to_interpreter_room()
         {
             var participant = new Participant
             {
@@ -30,7 +30,7 @@ namespace VideoWeb.UnitTests.Mappings
             result.DisplayName.Should().Be(testVmr.Label);
             result.TileDisplayName.Should().EndWith($"{participant.DisplayName};{participant.Id}");
         }
-        
+
         [Test]
         public void should_have_unique_tile_positions()
         {
@@ -39,7 +39,7 @@ namespace VideoWeb.UnitTests.Mappings
                 Id = Guid.NewGuid(),
                 DisplayName = "Interpreter Doe"
             };
-            
+
             var participantB = new Participant
             {
                 Id = Guid.NewGuid(),
@@ -57,9 +57,9 @@ namespace VideoWeb.UnitTests.Mappings
 
             resultA.TileDisplayName.Should().NotMatch(resultB.TileDisplayName);
         }
-        
+
         [Test]
-        public void should_map_witness_vmr_to_interpreter_rom()
+        public void should_map_witness_vmr_to_interpreter_room()
         {
             var participant = new Participant
             {
@@ -79,6 +79,29 @@ namespace VideoWeb.UnitTests.Mappings
             result.DisplayName.Should().Be(testVmr.Label);
             result.TileDisplayName.Should().EndWith($"{participant.DisplayName};{participant.Id}");
             result.TileDisplayName.Should().StartWith("W");
+        }
+
+        [Test]
+        public void should_map_panel_member_vmr_to_shared_room()
+        {
+            var participant = new Participant
+            {
+                Id = Guid.NewGuid(),
+                DisplayName = "Panel Doe"
+            };
+            var testVmr = new SharedParticipantRoomResponse
+            {
+                Label = "PanelMember1",
+                ParticipantJoinUri = "joidshfdsf",
+                PexipNode = "sip.unit.test.com"
+            };
+
+            var result = _sut.Map(testVmr, participant, false);
+            result.PexipNode.Should().Be(testVmr.PexipNode);
+            result.ParticipantJoinUri.Should().Be(testVmr.ParticipantJoinUri);
+            result.DisplayName.Should().Be(testVmr.Label);
+            result.TileDisplayName.Should().EndWith($"{participant.DisplayName};{participant.Id}");
+            result.TileDisplayName.Should().StartWith("T");
         }
     }
 }

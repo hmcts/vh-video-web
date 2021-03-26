@@ -427,6 +427,26 @@ describe('WaitingRoomComponent message and clock', () => {
         );
     });
 
+    it('should use judicial room when participant is a joh', async () => {
+        component.participant.role = Role.JudicialOfficeHolder;
+        const room = new SharedParticipantRoom({
+            participant_join_uri: 'patjoinuri',
+            pexip_node: 'sip.test.node',
+            display_name: 'foo',
+            tile_display_name: `T1;PanelMember;${component.participant.id}`
+        });
+        videoCallService.retrieveJudicialRoom.and.resolveTo(room);
+
+        await component.call();
+
+        expect(videoCallService.makeCall).toHaveBeenCalledWith(
+            room.pexip_node,
+            room.participant_join_uri,
+            room.tile_display_name,
+            component.maxBandwidth
+        );
+    });
+
     it('should mute video stream when hearing is in session and countdown is not complete', () => {
         component.countdownComplete = false;
         component.hearing.getConference().status = ConferenceStatus.InSession;
