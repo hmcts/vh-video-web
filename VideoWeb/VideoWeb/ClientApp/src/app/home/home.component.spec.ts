@@ -32,6 +32,12 @@ describe('HomeComponent', () => {
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeHearingList]);
     });
 
+    it('should go to judge hearing list if user is a JOH', async () => {
+        const profile = new UserProfileResponse({ role: Role.JudicialOfficeHolder });
+        component.navigateToHearingList(profile);
+        expect(router.navigate).toHaveBeenCalledWith([pageUrls.JudgeHearingList]);
+    });
+
     it('should go to admin venue list if user is a vho', () => {
         const profile = new UserProfileResponse({ role: Role.VideoHearingsOfficer });
         component.navigateToHearingList(profile);

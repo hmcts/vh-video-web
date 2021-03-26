@@ -33,7 +33,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
+            var claimsPrincipal = new ClaimsPrincipalBuilder().WithRole("Judge").Build();
             var context = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext

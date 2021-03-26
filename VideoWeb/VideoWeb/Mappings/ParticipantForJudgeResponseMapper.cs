@@ -11,7 +11,8 @@ namespace VideoWeb.Mappings
         public ParticipantForJudgeResponse Map(Participant participant)
         {
             return new ParticipantForJudgeResponse
-            {
+            {   
+                Id = participant.Id,
                 Role = Enum.Parse<Role>(participant.Role.ToString()),
                 DisplayName = participant.DisplayName,
                 Representee = participant.Representee,
