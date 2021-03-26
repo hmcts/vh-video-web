@@ -31,8 +31,9 @@ namespace VideoWeb.Extensions
                             ? "Callback" : "Default")
                 .AddJwtBearer("Default", options =>
                 {
-                    options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}";
+                    options.Authority = $"{ securitySettings.Authority}{securitySettings.TenantId}/v2.0";
                     options.TokenValidationParameters.ValidateLifetime = true;
+                    options.TokenValidationParameters.NameClaimType = "preferred_username";
                     options.Audience = securitySettings.ClientId;
                     options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
                 }).AddJwtBearer("EventHubUser", options =>
@@ -41,8 +42,15 @@ namespace VideoWeb.Extensions
                     {
                         OnMessageReceived = context =>
                         {
+                            // https://docs.microsoft.com/en-us/aspnet/core/signalr/configuration?view=aspnetcore-5.0&tabs=dotnet
+                            // In the JavaScript client, the access token is used as a Bearer token,
+                            // except in a few cases where browser APIs restrict the ability to apply headers (specifically, in Server-Sent Events and WebSockets requests).
+                            // In these cases, the access token is provided as a query string value access_token
                             var accessToken = context.Request.Query["accessToken"];
-                            if (string.IsNullOrEmpty(accessToken)) return Task.CompletedTask;
+                            if (string.IsNullOrEmpty(accessToken))
+                            {
+                                return Task.CompletedTask;
+                            }
 
                             var path = context.HttpContext.Request.Path;
                             if (path.StartsWithSegments(eventhubPath))
@@ -53,13 +61,11 @@ namespace VideoWeb.Extensions
                             return Task.CompletedTask;
                         }
                     };
-                    options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}";
-                    options.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        ClockSkew = TimeSpan.Zero,
-                        ValidateLifetime = true,
-                        ValidAudience = securitySettings.ClientId
-                    };
+                    options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}/v2.0";
+                    options.TokenValidationParameters.ValidateLifetime = true;
+                    options.TokenValidationParameters.NameClaimType = "preferred_username";
+                    options.Audience = securitySettings.ClientId;
+                    options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
                 }).AddJwtBearer("Callback", options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -113,6 +119,12 @@ namespace VideoWeb.Extensions
             options.AddPolicy(AppRoles.VhOfficerRole, new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .RequireRole(AppRoles.VhOfficerRole)
+                .AddAuthenticationSchemes("Default")
+                .Build());
+
+            options.AddPolicy("Judicial", new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .RequireRole(AppRoles.JudgeRole, AppRoles.JudicialOfficeHolderRole)
                 .AddAuthenticationSchemes("Default")
                 .Build());
 

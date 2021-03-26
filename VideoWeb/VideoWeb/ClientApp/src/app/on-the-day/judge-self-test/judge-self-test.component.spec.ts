@@ -6,7 +6,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { JudgeSelfTestComponent } from './judge-self-test.component';
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
@@ -18,8 +17,6 @@ describe('JudgeSelfTestComponent', () => {
     let router: jasmine.SpyObj<Router>;
     const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
     let videoWebService: jasmine.SpyObj<VideoWebService>;
-    const mockAdalService = new MockAdalService();
-    let adalService;
     let errorService: jasmine.SpyObj<ErrorService>;
     const logger: Logger = new MockLogger();
 
@@ -28,8 +25,6 @@ describe('JudgeSelfTestComponent', () => {
     });
 
     beforeAll(() => {
-        adalService = mockAdalService;
-        adalService = mockAdalService;
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getConferenceById', 'getPexipConfig']);
 
         videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
@@ -45,7 +40,7 @@ describe('JudgeSelfTestComponent', () => {
     });
 
     beforeEach(() => {
-        component = new JudgeSelfTestComponent(router, activatedRoute, videoWebService, errorService, adalService, logger);
+        component = new JudgeSelfTestComponent(router, activatedRoute, videoWebService, errorService, logger);
         component.conference = conference;
         component.conferenceId = conference.id;
         router.navigateByUrl.calls.reset();
@@ -65,7 +60,7 @@ describe('JudgeSelfTestComponent', () => {
 
     it('should get pexip config when when id is not found in params', fakeAsync(() => {
         const emptyParamsRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({}) } };
-        component = new JudgeSelfTestComponent(router, emptyParamsRoute, videoWebService, errorService, adalService, logger);
+        component = new JudgeSelfTestComponent(router, emptyParamsRoute, videoWebService, errorService, logger);
 
         component.ngOnInit();
         flushMicrotasks();

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Common.Helpers;
@@ -12,11 +13,11 @@ namespace VideoWeb.IntegrationTests.Api
     public class TokenControllerTests : ControllerTestsBase
     {
         [Test]
-        public void Should_get_token_when_requested_with_correct_participant_id()
+        public async Task Should_get_token_when_requested_with_correct_participant_id()
         {
-            var responseMessage = SendGetRequestAsync($"/participants/{Guid.NewGuid()}/selftesttoken").Result;
+            var responseMessage = await SendGetRequestAsync($"/participants/{Guid.NewGuid()}/selftesttoken");
 
-            var receiveStream = responseMessage.Content.ReadAsStreamAsync().Result;
+            var receiveStream = await responseMessage.Content.ReadAsStreamAsync();
             var readStream = new StreamReader(receiveStream, Encoding.UTF8);
             var json = readStream.ReadToEnd();
             var tokenResponse = ApiRequestHelper.Deserialise<TokenResponse>(json);
@@ -27,18 +28,18 @@ namespace VideoWeb.IntegrationTests.Api
         }
 
         [Test]
-        public void Should_return_bad_request_when_requested_with_incorrect_participant_id()
+        public async Task Should_return_bad_request_when_requested_with_incorrect_participant_id()
         {
-            var responseMessage = SendGetRequestAsync($"/participants/{Guid.Empty}/selftesttoken").Result;
+            var responseMessage = await SendGetRequestAsync($"/participants/{Guid.Empty}/selftesttoken");
             responseMessage.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
         [Test]
-        public void Should_get_Jwt_token_when_requested_with_correct_participant_id()
+        public async Task Should_get_Jwt_token_when_requested_with_correct_participant_id()
         {
-            var responseMessage = SendGetRequestAsync($"/participants/{Guid.NewGuid()}/jwtoken").Result;
+            var responseMessage = await SendGetRequestAsync($"/participants/{Guid.NewGuid()}/jwtoken");
 
-            var receiveStream = responseMessage.Content.ReadAsStreamAsync().Result;
+            var receiveStream = await responseMessage.Content.ReadAsStreamAsync();
             var readStream = new StreamReader(receiveStream, Encoding.UTF8);
             var json = readStream.ReadToEnd();
             var tokenResponse = ApiRequestHelper.Deserialise<TokenResponse>(json);
@@ -49,9 +50,9 @@ namespace VideoWeb.IntegrationTests.Api
         }
 
         [Test]
-        public void Should_return_bad_request_when_requested_with_incorrect_participant_id_for_jwt_token()
+        public async Task Should_return_bad_request_when_requested_with_incorrect_participant_id_for_jwt_token()
         {
-            var responseMessage = SendGetRequestAsync($"/participants/{Guid.Empty}/jwtoken").Result;
+            var responseMessage = await SendGetRequestAsync($"/participants/{Guid.Empty}/jwtoken");
             responseMessage.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
     }

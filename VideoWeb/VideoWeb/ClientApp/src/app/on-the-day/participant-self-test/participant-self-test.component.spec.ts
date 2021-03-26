@@ -6,7 +6,6 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { SelfTestComponent } from 'src/app/shared/self-test/self-test.component';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
 import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { ParticipantSelfTestComponent } from './participant-self-test.component';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
@@ -19,8 +18,6 @@ describe('ParticipantSelfTestComponent', () => {
     let router: jasmine.SpyObj<Router>;
     const activatedRoute: ActivatedRoute = <any>{ snapshot: { paramMap: convertToParamMap({ conferenceId: conference.id }) } };
     let videoWebService: jasmine.SpyObj<VideoWebService>;
-    const mockAdalService = new MockAdalService();
-    let adalService;
     let errorService: jasmine.SpyObj<ErrorService>;
     const logger: Logger = new MockLogger();
     let participantStatusUpdateService: jasmine.SpyObj<ParticipantStatusUpdateService>;
@@ -31,8 +28,6 @@ describe('ParticipantSelfTestComponent', () => {
     });
 
     beforeAll(() => {
-        adalService = mockAdalService;
-        adalService = mockAdalService;
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', [
             'getConferenceById',
             'getPexipConfig',
@@ -64,7 +59,6 @@ describe('ParticipantSelfTestComponent', () => {
             activatedRoute,
             videoWebService,
             errorService,
-            adalService,
             logger,
             participantStatusUpdateService
         );

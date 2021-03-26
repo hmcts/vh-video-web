@@ -4,7 +4,6 @@ import { ConferenceResponse, ConferenceStatus, LoggedParticipantResponse, Partic
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import {
-    adalService,
     clockService,
     consultationService,
     deviceTypeService,
@@ -51,7 +50,6 @@ describe('JohWaitingRoomComponent', () => {
             activatedRoute,
             videoWebService,
             eventsService,
-            adalService,
             logger,
             errorService,
             heartbeatModelMapper,

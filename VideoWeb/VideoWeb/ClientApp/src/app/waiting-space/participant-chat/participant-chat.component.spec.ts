@@ -1,5 +1,4 @@
 import { fakeAsync, tick } from '@angular/core/testing';
-import { AdalService } from 'adal-angular4';
 import { Guid } from 'guid-typescript';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -13,8 +12,8 @@ import { MockLogger } from 'src/app/testing/mocks/MockLogger';
 import { adminTestProfile, judgeTestProfile } from '../../testing/data/test-profiles';
 import { ParticipantChatComponent } from './participant-chat.component';
 import { ActivatedRoute } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { MockOidcSecurityService } from 'src/app/testing/mocks/MockOidcSecurityService';
 
 describe('ParticipantChatComponent', () => {
     let component: ParticipantChatComponent;
@@ -25,8 +24,9 @@ describe('ParticipantChatComponent', () => {
     const judgeUsername = judgeTestProfile.username;
     const eventsService = eventsServiceSpy;
     let profileService: jasmine.SpyObj<ProfileService>;
-    let adalService: jasmine.SpyObj<AdalService>;
     let activatedRoute: ActivatedRoute;
+
+    const oidcSecurityService = new MockOidcSecurityService();
 
     const judgeProfile = judgeTestProfile;
     const adminProfile = adminTestProfile;
@@ -42,14 +42,13 @@ describe('ParticipantChatComponent', () => {
             'getUserProfile'
         ]);
 
-        adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
-            userInfo: <adal.User>{ userName: judgeUsername, authenticated: true }
-        });
+        oidcSecurityService.setUserData({ preferred_username: judgeUsername });
+        oidcSecurityService.setAuthenticated(true);
     });
 
     beforeEach(() => {
         spyOn(global, 'setTimeout').and.returnValue(<any>timer);
-        adalService.userInfo.userName = judgeUsername;
+        oidcSecurityService.setUserData({ preferred_username: judgeUsername });
         const chatHistory = new ConferenceTestData().getChatHistory(judgeUsername, conference.id);
         const logged = new LoggedParticipantResponse({
             participant_id: hearing.participants[2].id,
@@ -70,10 +69,10 @@ describe('ParticipantChatComponent', () => {
             profileService,
             eventsService,
             new MockLogger(),
-            adalService,
             new ImHelper(),
             activatedRoute,
-            translateServiceSpy
+            translateServiceSpy,
+            oidcSecurityService as any
         );
         component.loggedInUserProfile = judgeProfile;
         component.hearing = hearing;
@@ -92,9 +91,11 @@ describe('ParticipantChatComponent', () => {
         expect(component.messages.length).toBeGreaterThan(0);
     }));
 
-    it('should return logged participant Id username as participant username', () => {
+    it('should return logged participant Id username as participant username', fakeAsync(() => {
+        component.ngOnInit();
+        tick();
         expect(component.participantUsername).toEqual(judgeUsername.toLowerCase());
-    });
+    }));
 
     it('should toggle show chat state', () => {
         component.showChat = false;
@@ -171,7 +172,7 @@ describe('ParticipantChatComponent', () => {
 
     it('should reset unread counter to number of messages since user never replied', () => {
         const othername = 'never@sent.com';
-        adalService.userInfo.userName = judgeUsername;
+        oidcSecurityService.setUserData({ preferred_username: judgeUsername });
         const messages = new ConferenceTestData().getChatHistory(othername, conference.id);
         const count = component.getCountSinceUsersLastMessage(messages);
         expect(count).toBe(messages.length);

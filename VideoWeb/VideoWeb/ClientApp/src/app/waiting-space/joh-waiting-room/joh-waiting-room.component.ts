@@ -1,7 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
@@ -32,7 +31,6 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,
         protected eventService: EventsService,
-        protected adalService: AdalService,
         protected logger: Logger,
         protected errorService: ErrorService,
         protected heartbeatMapper: HeartbeatModelMapper,
@@ -52,7 +50,6 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
             route,
             videoWebService,
             eventService,
-            adalService,
             logger,
             errorService,
             heartbeatMapper,

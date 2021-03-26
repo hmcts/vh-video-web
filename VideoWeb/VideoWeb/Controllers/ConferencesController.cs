@@ -53,10 +53,11 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(List<ConferenceForJudgeResponse>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         [SwaggerOperation(OperationId = "GetConferencesForJudge")]
-        [Authorize(AppRoles.JudgeRole)]
+        [Authorize("Judicial")]
         public async Task<ActionResult<List<ConferenceForJudgeResponse>>> GetConferencesForJudgeAsync()
         {
             _logger.LogDebug("GetConferencesForJudge");
+           
             try
             {
                 var conferenceForJudgeResponseMapper = _mapperFactory.Get<JudgeConference, ConferenceForJudgeResponse>();

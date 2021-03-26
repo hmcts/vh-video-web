@@ -1,6 +1,5 @@
 import { OnDestroy, OnInit } from '@angular/core';
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
-import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -16,7 +15,7 @@ import {
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { individualTestProfile, judgeTestProfile } from 'src/app/testing/data/test-profiles';
+import { judgeTestProfile } from 'src/app/testing/data/test-profiles';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
 import { eventsServiceSpy, participantStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
@@ -28,40 +27,28 @@ import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-serv
 
 class WrParticipantStatusListTest extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
     constructor(
-        protected adalService: AdalService,
         protected consultationService: ConsultationService,
         protected eventService: EventsService,
         protected logger: Logger,
         protected videoWebService: VideoWebService,
         protected translateService: TranslateService
     ) {
-        super(adalService, consultationService, eventService, videoWebService, logger, translateService);
+        super(consultationService, eventService, videoWebService, logger, translateService);
     }
 
     ngOnInit() {
         this.initParticipants();
-        this.setupSubscribers();
+        this.addSharedEventHubSubcribers();
     }
 
     ngOnDestroy(): void {
         this.executeTeardown();
-    }
-
-    setupSubscribers(): void {
-        this.addSharedEventHubSubcribers();
-    }
-    canCallParticipant(participant: ParticipantResponse): boolean {
-        return false;
-    }
-    canCallEndpoint(endpoint: VideoEndpointResponse): boolean {
-        return false;
     }
 }
 
 describe('WaitingRoom ParticipantList Base', () => {
     let component: WrParticipantStatusListTest;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
-    let adalService: jasmine.SpyObj<AdalService>;
     let consultationService: jasmine.SpyObj<ConsultationService>;
     const translateService = translateServiceSpy;
     const eventsService = eventsServiceSpy;
@@ -72,10 +59,6 @@ describe('WaitingRoom ParticipantList Base', () => {
 
     beforeAll(() => {
         consultationService = consultationServiceSpyFactory();
-
-        adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
-            userInfo: <adal.User>{ userName: judgeProfile.username, authenticated: true }
-        });
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails', 'getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('test username');
     });
@@ -91,14 +74,7 @@ describe('WaitingRoom ParticipantList Base', () => {
             role: loggedUser.role
         });
 
-        component = new WrParticipantStatusListTest(
-            adalService,
-            consultationService,
-            eventsService,
-            logger,
-            videoWebService,
-            translateService
-        );
+        component = new WrParticipantStatusListTest(consultationService, eventsService, logger, videoWebService, translateService);
         component.conference = conference;
         component.loggedInUser = userLogged;
         component.ngOnInit();
@@ -276,14 +252,11 @@ describe('WaitingRoom ParticipantList Base', () => {
 
     describe('ParticipantStatusListSupportForInterpreter', () => {
         const testData = new ConferenceTestData();
-        let userInfo: adal.User;
+        let userInfo: { userName: string; authenticated: boolean };
 
         beforeAll(() => {
             consultationService = consultationServiceSpyFactory();
-            userInfo = <adal.User>{ userName: judgeProfile.username, authenticated: true };
-            adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
-                userInfo: userInfo
-            });
+            userInfo = { userName: judgeProfile.username, authenticated: true };
             videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails', 'getObfuscatedName']);
             videoWebService.getObfuscatedName.and.returnValue('test username');
         });
@@ -303,14 +276,7 @@ describe('WaitingRoom ParticipantList Base', () => {
                 role: loggedUser.role
             });
 
-            component = new WrParticipantStatusListTest(
-                adalService,
-                consultationService,
-                eventsService,
-                logger,
-                videoWebService,
-                translateService
-            );
+            component = new WrParticipantStatusListTest(consultationService, eventsService, logger, videoWebService, translateService);
             component.conference = conference;
             component.loggedInUser = userLogged;
             component.ngOnInit();

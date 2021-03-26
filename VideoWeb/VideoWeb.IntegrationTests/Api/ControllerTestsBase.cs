@@ -17,17 +17,17 @@ namespace VideoWeb.IntegrationTests.Api
         private string _bearerToken;
 
         [OneTimeSetUp]
-        public void OneTimeSetup()
+        public async Task OneTimeSetup()
         {
             var webHostBuilder = WebHost.CreateDefaultBuilder()
                 .UseKestrel(c => c.AddServerHeader = false)
                 .UseEnvironment("Development")
                 .UseStartup<Startup>();
             _server = new TestServer(webHostBuilder);
-            GetClientAccessTokenForApi();
+            await GetClientAccessTokenForApi();
         }
         
-        private void GetClientAccessTokenForApi()
+        private async Task GetClientAccessTokenForApi()
         {
             var configRootBuilder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
@@ -37,8 +37,9 @@ namespace VideoWeb.IntegrationTests.Api
             var configRoot = configRootBuilder.Build();
             var azureAdConfigurationOptions = Options.Create(configRoot.GetSection("AzureAd").Get<AzureAdConfiguration>());
             var azureAdConfiguration = azureAdConfigurationOptions.Value;
-            _bearerToken = new TokenProvider(azureAdConfigurationOptions).GetClientAccessToken(
-                azureAdConfiguration.ClientId, azureAdConfiguration.ClientSecret, azureAdConfiguration.ClientId);
+
+            var tokenProvider = new TokenProvider(azureAdConfigurationOptions);
+            _bearerToken = await tokenProvider.GetClientAccessToken(azureAdConfiguration.ClientId, azureAdConfiguration.ClientSecret, azureAdConfiguration.ClientId);
         }
 
         protected async Task<HttpResponseMessage> SendGetRequestAsync(string uri)

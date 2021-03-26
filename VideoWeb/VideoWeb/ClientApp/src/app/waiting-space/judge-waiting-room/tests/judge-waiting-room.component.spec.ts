@@ -12,7 +12,6 @@ import {
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import {
-    adalService,
     clockService,
     consultationService,
     deviceTypeService,
@@ -62,7 +61,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             activatedRoute,
             videoWebService,
             eventsService,
-            adalService,
             logger,
             errorService,
             heartbeatModelMapper,

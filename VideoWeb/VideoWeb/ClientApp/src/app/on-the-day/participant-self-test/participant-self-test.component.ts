@@ -1,14 +1,17 @@
 import { Component, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { TestCallScoreResponse, AddSelfTestFailureEventRequest, SelfTestFailureReason } from 'src/app/services/clients/api-client';
+import {
+    TestCallScoreResponse,
+    AddSelfTestFailureEventRequest,
+    SelfTestFailureReason,
+    EventType
+} from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { BaseSelfTestComponentDirective } from '../models/base-self-test.component';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
-import { EventType } from 'src/app/services/clients/api-client';
 import { DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 
 @Component({
@@ -23,11 +26,10 @@ export class ParticipantSelfTestComponent extends BaseSelfTestComponentDirective
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,
         protected errorService: ErrorService,
-        protected adalService: AdalService,
         protected logger: Logger,
         private participantStatusUpdateService: ParticipantStatusUpdateService
     ) {
-        super(route, videoWebService, errorService, adalService, logger);
+        super(route, videoWebService, errorService, logger);
     }
 
     onSelfTestCompleted(testcallScore: TestCallScoreResponse): void {

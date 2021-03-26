@@ -1,8 +1,8 @@
 <div class="header-container">
-  <h4 class="govuk-heading-s white">VH Officer messages</h4>
+  <h4 class="govuk-heading-s white">{{ 'chat-panel.heading' | translate }}</h4>
 </div>
 <div #content id="chat-list" (scroll)="onScroll()">
-  <div *ngIf="loading" class="govuk-body">Loading...</div>
+  <div *ngIf="loading" class="govuk-body">{{ 'chat-panel.loading' | translate }}</div>
   <app-chat-body-window
     [messagesReceived]="messages"
     [pendingMessages]="pendingMessagesForConversation">

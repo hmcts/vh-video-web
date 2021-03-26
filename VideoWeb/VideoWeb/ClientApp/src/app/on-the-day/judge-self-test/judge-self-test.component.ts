@@ -1,6 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -21,10 +20,9 @@ export class JudgeSelfTestComponent extends BaseSelfTestComponentDirective {
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,
         protected errorService: ErrorService,
-        protected adalService: AdalService,
         protected logger: Logger
     ) {
-        super(route, videoWebService, errorService, adalService, logger);
+        super(route, videoWebService, errorService, logger);
     }
 
     equipmentWorksHandler() {

@@ -1,6 +1,5 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -38,7 +37,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,
         protected eventService: EventsService,
-        protected adalService: AdalService,
         protected logger: Logger,
         protected errorService: ErrorService,
         protected heartbeatMapper: HeartbeatModelMapper,
@@ -58,7 +56,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             route,
             videoWebService,
             eventService,
-            adalService,
             logger,
             errorService,
             heartbeatMapper,

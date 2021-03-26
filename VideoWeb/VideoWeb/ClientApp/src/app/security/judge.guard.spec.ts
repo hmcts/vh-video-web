@@ -33,7 +33,12 @@ describe('JudgeGuard', () => {
         const result = await guard.canActivate(null, null);
         expect(result).toBeTruthy();
     });
-
+    it('should be able to activate component if role is JudicialOfficeHolder', async () => {
+        const profile = new UserProfileResponse({ role: Role.JudicialOfficeHolder });
+        profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
+        const result = await guard.canActivate(null, null);
+        expect(result).toBeTruthy();
+    });
     it('should logout when user profile cannot be retrieved', async () => {
         profileServiceSpy.getUserProfile.and.callFake(() => Promise.reject({ status: 404, isApiException: true }));
         const result = await guard.canActivate(null, null);
