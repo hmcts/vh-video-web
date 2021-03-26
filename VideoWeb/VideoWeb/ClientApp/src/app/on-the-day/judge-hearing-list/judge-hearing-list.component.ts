@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { ConferenceForJudgeResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
+import { ConferenceForJudgeResponse, LoggedParticipantResponse, UserProfileResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -30,7 +30,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
     interval: any;
     today = new Date();
     profile: UserProfileResponse;
-
+    loggedUser: LoggedParticipantResponse;
     eventHubSubscriptions: Subscription = new Subscription();
 
     constructor(
@@ -68,8 +68,8 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
     retrieveHearingsForUser() {
         this.logger.debug('[JudgeHearingList] - Updating hearing list');
         this.conferencesSubscription.add(
-            this.videoWebService.getConferencesForJudge().subscribe(
-                (data: ConferenceForJudgeResponse[]) => {
+            this.videoWebService.getConferencesForJudge().subscribe({
+                next: (data: ConferenceForJudgeResponse[]) => {
                     this.logger.debug('[JudgeHearingList] - Got updated list');
                     this.loadingData = false;
                     this.conferences = data;
@@ -77,13 +77,13 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
                         this.screenHelper.enableFullScreen(true);
                     }
                 },
-                error => {
+                error: error => {
                     this.logger.warn('[JudgeHearingList] - There was a problem updating the hearing list');
                     this.loadingData = false;
                     this.screenHelper.enableFullScreen(false);
                     this.errorService.handleApiError(error);
                 }
-            )
+            })
         );
     }
 
@@ -97,7 +97,14 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
 
     onConferenceSelected(conference: ConferenceForJudgeResponse) {
         this.logger.debug('[JudgeHearingList] - Signing into judge waiting room', { conference: conference.id });
-        this.router.navigate([pageUrls.JudgeWaitingRoom, conference.id]);
+        this.videoWebService.getCurrentParticipant(conference.id).then(x => {
+            const result = conference.participants.find(p => p.id === x.participant_id && p.hearing_role === 'Judge');
+            if (result) {
+                this.router.navigate([pageUrls.JudgeWaitingRoom, conference.id]);
+            } else {
+                this.router.navigate([pageUrls.JOHWaitingRoom, conference.id]);
+            }
+        });
     }
 
     goToEquipmentCheck() {
@@ -107,8 +114,10 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
 
     setupSubscribers() {
         this.eventHubSubscriptions.add(
-            this.eventsService.getHearingStatusMessage().subscribe(message => {
-                this.handleConferenceStatusChange(message);
+            this.eventsService.getHearingStatusMessage().subscribe({
+                next: message => {
+                    this.handleConferenceStatusChange(message);
+                }
             })
         );
     }

@@ -11,10 +11,10 @@ using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttributeTests
 {
-    public class when_action_has_participantId_and_conferenceId : CheckParticipantCanAccessConferenceAttributeTest
+    public class When_action_has_participantId_and_conferenceId : CheckParticipantCanAccessConferenceAttributeTest
     {
         [TestCaseSource(nameof(AllNonVhoUsers))]
-        public async Task should_return_404_if_conference_does_not_exist(string appRole)
+        public async Task Should_return_404_if_conference_does_not_exist(string appRole)
         {
             // arrange
             var actionArguments = new Dictionary<string, object>
@@ -34,7 +34,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             SetupActionExecutingContext(actionArguments, user);
 
             // act
-            await _sut.OnActionExecutionAsync(_actionExecutingContext, async () => _actionExecutedContext);
+            await _sut.OnActionExecutionAsync(_actionExecutingContext, () => Task.FromResult(_actionExecutedContext));
 
             // assert
             _actionExecutingContext.Result.Should().BeOfType<NotFoundObjectResult>();
@@ -47,7 +47,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
 
 
         [TestCaseSource(nameof(AllNonVhoUsers))]
-        public async Task should_return_401_if_conference_exists_but_user_does_not_belong_to_it(string appRole)
+        public async Task Should_return_401_if_conference_exists_but_user_does_not_belong_to_it(string appRole)
         {
             // arrange
             var actionArguments = new Dictionary<string, object>
@@ -80,7 +80,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             SetupActionExecutingContext(actionArguments, user);
 
             // act
-            await _sut.OnActionExecutionAsync(_actionExecutingContext, async () => _actionExecutedContext);
+            await _sut.OnActionExecutionAsync(_actionExecutingContext, () => Task.FromResult(_actionExecutedContext));
 
             // assert
             _actionExecutingContext.Result.Should().BeOfType<UnauthorizedObjectResult>();
@@ -92,8 +92,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
         }
 
         [TestCaseSource(nameof(AllNonVhoUsers))]
-        public async Task
-            should_continue_with_other_middleware_if_conference_exists_and_conference_contains_participantId(
+        public async Task Should_continue_with_other_middleware_if_conference_exists_and_conference_contains_participantId(
                 string appRole)
         {
             // arrange
@@ -128,7 +127,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             SetupActionExecutingContext(actionArguments, user);
 
             // act
-            await _sut.OnActionExecutionAsync(_actionExecutingContext, async () => _actionExecutedContext);
+            await _sut.OnActionExecutionAsync(_actionExecutingContext, () => Task.FromResult(_actionExecutedContext));
 
             // assert
             _actionExecutingContext.Result.Should().BeOfType<OkResult>();

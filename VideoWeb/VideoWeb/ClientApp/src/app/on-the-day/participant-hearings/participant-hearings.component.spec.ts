@@ -121,18 +121,6 @@ describe('ParticipantHearingList', () => {
         expect(router.navigate).toHaveBeenCalledWith([pageUrls.Introduction, conference.id]);
     }));
 
-    it('should navigate to Waiting room page when conference is selected for panel member', fakeAsync(() => {
-        const conference = conferences[0];
-        videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
-        videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(mockPanelMemberUser));
-
-        component.onConferenceSelected(conference);
-        tick(100);
-        expect(videoWebService.setActiveIndividualConference).toHaveBeenCalledWith(conference);
-        expect(videoWebService.getConferenceById).toHaveBeenCalledWith(conference.id);
-        expect(router.navigate).toHaveBeenCalledWith([pageUrls.JOHWaitingRoom, conference.id]);
-    }));
-
     it('should navigate to Waiting room page when conference is selected for observer', fakeAsync(() => {
         const conference = conferences[0];
         videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
@@ -158,16 +146,4 @@ describe('ParticipantHearingList', () => {
         component.ngOnDestroy();
         expect(clearInterval).toHaveBeenCalledWith(interval);
     });
-
-    it('should navigate to Waiting room page when conference is selected for winger', fakeAsync(() => {
-        const conference = conferences[0];
-        videoWebService.getConferenceById.and.returnValue(Promise.resolve(conference));
-        videoWebService.getCurrentParticipant.and.returnValue(Promise.resolve(mockWingerUser));
-
-        component.onConferenceSelected(conference);
-        tick(100);
-        expect(videoWebService.setActiveIndividualConference).toHaveBeenCalledWith(conference);
-        expect(videoWebService.getConferenceById).toHaveBeenCalledWith(conference.id);
-        expect(router.navigate).toHaveBeenCalledWith([pageUrls.JOHWaitingRoom, conference.id]);
-    }));
 });
