@@ -1,6 +1,5 @@
 import { OnInit, ViewChild, Directive } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AdalService } from 'adal-angular4';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceResponse, ParticipantResponse, SelfTestPexipResponse, TestCallScoreResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
@@ -31,7 +30,6 @@ export abstract class BaseSelfTestComponentDirective implements OnInit {
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,
         protected errorService: ErrorService,
-        protected adalService: AdalService,
         protected logger: Logger
     ) {
         this.showEquipmentFaultMessage = false;

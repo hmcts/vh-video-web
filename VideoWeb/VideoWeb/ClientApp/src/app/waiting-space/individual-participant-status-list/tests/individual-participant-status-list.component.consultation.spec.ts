@@ -12,11 +12,10 @@ import {
     RoomSummaryResponse
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { Participant } from 'src/app/shared/models/participant';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
-import { requestedConsultationMessageSubjectMock, eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
-import { MockAdalService } from 'src/app/testing/mocks/MockAdalService';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
+import { MockOidcSecurityService } from 'src/app/testing/mocks/MockOidcSecurityService';
 import { HearingRole } from '../../models/hearing-role-model';
 import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
@@ -28,8 +27,8 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     let participantsWinger: ParticipantResponseVho[];
     let participantsWitness: ParticipantResponseVho[];
 
-    const mockAdalService = new MockAdalService();
-    let adalService;
+    const mockOidcSecurityService = new MockOidcSecurityService();
+    let oidcSecurityService;
     let consultationService: jasmine.SpyObj<ConsultationService>;
     const eventsService = eventsServiceSpy;
 
@@ -43,7 +42,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     const translateService = translateServiceSpy;
 
     beforeAll(() => {
-        adalService = mockAdalService;
+        oidcSecurityService = mockOidcSecurityService;
 
         consultationService = consultationServiceSpyFactory();
 
@@ -74,7 +73,6 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
 
         timer = jasmine.createSpyObj<NodeJS.Timer>('NodeJS.Timer', ['ref', 'unref']);
         component = new IndividualParticipantStatusListComponent(
-            adalService,
             consultationService,
             eventsService,
             logger,
@@ -86,7 +84,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         component.conference = conference;
 
         component.loggedInUser = logged;
-        component.setupSubscribers();
+        component.addSharedEventHubSubcribers();
     });
 
     afterEach(() => {
@@ -100,121 +98,9 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         expect(component.nonJudgeParticipants).toBeDefined();
     });
 
-    it('should not be able to call participant is user is judge', () => {
-        component.loggedInUser = logged;
-        const participant = new ParticipantResponse({
-            status: ParticipantStatus.InConsultation,
-            id: component.loggedInUser.participant_id
-        });
-        expect(component.canCallParticipant(participant)).toBeFalsy();
-    });
-
-    it('should not be able to call an unavailable participant', () => {
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, id: conference.participants[0].id });
-        expect(component.canCallParticipant(participant)).toBeFalsy();
-    });
-
-    it('should not be able to call self', () => {
-        component.loggedInUser = logged;
-        component.conference = new ConferenceTestData().getConferenceDetailFuture();
-        const participant = new ParticipantResponse({
-            status: ParticipantStatus.InConsultation,
-            id: component.loggedInUser.participant_id
-        });
-        expect(component.canCallParticipant(participant)).toBeFalsy();
-    });
-
-    it('should not be able to call when hearing is about to start', () => {
-        component.loggedInUser = logged;
-
-        const participant = new ParticipantResponse({
-            status: ParticipantStatus.InConsultation,
-            id: component.loggedInUser.participant_id
-        });
-        expect(component.canCallParticipant(participant)).toBeFalsy();
-    });
-
-    it('should not be able to call when hearing is delayed', () => {
-        component.loggedInUser = logged;
-
-        component.conference = new ConferenceTestData().getConferenceDetailPast();
-        const participant = new ParticipantResponse({
-            status: ParticipantStatus.InConsultation,
-            id: component.loggedInUser.participant_id
-        });
-        expect(component.canCallParticipant(participant)).toBeFalsy();
-    });
-
-    it('should not be able to call when hearing is suspended', () => {
-        component.loggedInUser = logged;
-
-        component.conference.status = ConferenceStatus.Suspended;
-        const participant = new ParticipantResponse({
-            status: ParticipantStatus.InConsultation,
-            id: component.loggedInUser.participant_id
-        });
-        expect(component.canCallParticipant(participant)).toBeFalsy();
-    });
-
-    it('should be able to call an available participant', () => {
-        const participant = new ParticipantResponse({ status: ParticipantStatus.Available, id: conference.participants[0].id });
-        expect(component.canCallParticipant(participant)).toBeTruthy();
-    });
-
     it('should close all modals when user clicks close on modal', () => {
         component.closeAllPCModals();
         expect(consultationService.clearModals).toHaveBeenCalledTimes(1);
-    });
-
-    it('should not be able to call participant if user is observer', () => {
-        component.conference.scheduled_date_time = new Date(new Date(Date.now()).getTime() + 31 * 60000);
-
-        participantsObserverPanelMember.forEach(x => {
-            component.conference.participants.push(x);
-        });
-        const observer = component.conference.participants.find(x => x.hearing_role === HearingRole.OBSERVER);
-        component.loggedInUser.participant_id = observer.id;
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, id: '12345' });
-        expect(component.canCallParticipant(participant)).toBeFalsy();
-    });
-
-    it('should not be able to call participant if user is panel member', () => {
-        component.conference.scheduled_date_time = new Date(new Date(Date.now()).getTime() + 31 * 60000);
-
-        participantsObserverPanelMember.forEach(x => {
-            component.conference.participants.push(x);
-        });
-        const panelMember = component.conference.participants.find(x => x.hearing_role === HearingRole.PANEL_MEMBER);
-        component.loggedInUser.participant_id = panelMember.id;
-
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, id: '12345' });
-        expect(component.canCallParticipant(participant)).toBeFalsy();
-    });
-
-    it('should not be able to call participant if user is winger', () => {
-        component.conference.scheduled_date_time = new Date(new Date(Date.now()).getTime() + 31 * 60000);
-
-        participantsWinger.forEach(x => {
-            component.conference.participants.push(x);
-        });
-        const wingerMember = component.conference.participants.find(x => x.hearing_role === HearingRole.WINGER);
-        component.loggedInUser.participant_id = wingerMember.id;
-
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, id: '12345' });
-        expect(component.canCallParticipant(participant)).toBeFalsy();
-    });
-
-    it('should not be able to call participant if user is a witness', () => {
-        component.conference.scheduled_date_time = new Date(new Date(Date.now()).getTime() + 31 * 60000);
-
-        participantsWitness.forEach(x => {
-            component.conference.participants.push(x);
-        });
-        const witnessMember = component.conference.participants.find(x => x.hearing_role === HearingRole.WITNESS);
-        component.loggedInUser.participant_id = witnessMember.id;
-
-        const participant = new ParticipantResponse({ status: ParticipantStatus.InConsultation, id: '1234' });
-        expect(component.canCallParticipant(participant)).toBeFalsy();
     });
 
     it('should return participant unavailable status css class', () => {

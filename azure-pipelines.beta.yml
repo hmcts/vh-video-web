@@ -171,10 +171,10 @@ stages:
 
           # AzureAd
           - name: AzureAd:ClientId
-            value: vh-video-web-appid
+            value: vh-video-web-appid-v2
             secret: true
           - name: AzureAd:ClientSecret
-            value: vh-video-web-key
+            value: vh-video-web-key-v2
             secret: true
           - name: AzureAd:PostLogoutRedirectUri
             slot:
@@ -257,10 +257,10 @@ stages:
             value: tenantid
             secret: true
           - name: AzureAd:ClientId
-            value: vh-video-web-appid
+            value: vh-video-web-appid-v2
             secret: true
           - name: AzureAd:ClientSecret
-            value: vh-video-web-key
+            value: vh-video-web-key-v2
             secret: true
           - name: AzureAd:VhVideoApiResourceId
             value: vh-video-web-identifieruris

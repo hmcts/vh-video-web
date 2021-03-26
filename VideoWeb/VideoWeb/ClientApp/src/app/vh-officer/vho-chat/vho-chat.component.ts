@@ -11,7 +11,6 @@ import {
     ViewChild
 } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { AdalService } from 'adal-angular4';
 import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
 import { ProfileService } from 'src/app/services/api/profile.service';
@@ -26,6 +25,7 @@ import { Participant } from 'src/app/shared/models/participant';
 import { LoggedParticipantResponse, Role } from '../../services/clients/api-client';
 import { ConferenceUnreadMessageCount } from './vho-conference-unread_message-count.model';
 import { TranslateService } from '@ngx-translate/core';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
     selector: 'app-vho-chat',
@@ -53,6 +53,8 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         return this._participant;
     }
 
+    username: string;
+
     @Input() hearing: Hearing;
     @Output() unreadMessageCount = new EventEmitter<ConferenceUnreadMessageCount>();
 
@@ -61,11 +63,11 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         protected profileService: ProfileService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected adalService: AdalService,
+        protected oidcSecurityService: OidcSecurityService,
         protected imHelper: ImHelper,
         protected translateService: TranslateService
     ) {
-        super(videoWebService, profileService, eventService, logger, adalService, imHelper, translateService);
+        super(videoWebService, profileService, eventService, logger, oidcSecurityService, imHelper, translateService);
     }
 
     get participantUsername() {
@@ -85,7 +87,10 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
         this.initForm();
         this.setupChatSubscription().then(sub => (this.chatHubSubscription = sub));
         this.updateChatWindow();
-        this.setLoggedAdminUser();
+        this.oidcSecurityService.userData$.subscribe(ud => {
+            this.username = ud.preferred_username;
+            this.setLoggedAdminUser();
+        });
     }
 
     updateChatWindow() {
@@ -99,7 +104,7 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
 
     setLoggedAdminUser() {
         this.loggedInUser = new LoggedParticipantResponse({
-            admin_username: this.adalService.userInfo.userName.toUpperCase(),
+            admin_username: this.username.toUpperCase(),
             display_name: this.DEFAULT_ADMIN_USERNAME,
             role: Role.VideoHearingsOfficer
         });
@@ -114,7 +119,7 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
             conferenceId: this.hearing.id,
             id: Guid.create().toString(),
             to: this.participant.id,
-            from: this.adalService.userInfo.userName,
+            from: this.username,
             from_display_name: 'You',
             message: messageBody,
             is_user: true,

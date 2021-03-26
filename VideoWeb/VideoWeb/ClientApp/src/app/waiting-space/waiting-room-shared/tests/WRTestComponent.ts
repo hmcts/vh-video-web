@@ -1,5 +1,4 @@
 import { ActivatedRoute, Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ClockService } from 'src/app/services/clock.service';
@@ -21,7 +20,6 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,
         protected eventService: EventsService,
-        protected adalService: AdalService,
         protected logger: Logger,
         protected errorService: ErrorService,
         protected heartbeatMapper: HeartbeatModelMapper,
@@ -40,7 +38,6 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
             route,
             videoWebService,
             eventService,
-            adalService,
             logger,
             errorService,
             heartbeatMapper,

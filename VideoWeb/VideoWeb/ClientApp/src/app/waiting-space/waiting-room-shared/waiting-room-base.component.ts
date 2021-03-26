@@ -1,6 +1,5 @@
 import { Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -106,7 +105,6 @@ export abstract class WaitingRoomBaseDirective {
         protected route: ActivatedRoute,
         protected videoWebService: VideoWebService,
         protected eventService: EventsService,
-        protected adalService: AdalService,
         protected logger: Logger,
         protected errorService: ErrorService,
         protected heartbeatMapper: HeartbeatModelMapper,

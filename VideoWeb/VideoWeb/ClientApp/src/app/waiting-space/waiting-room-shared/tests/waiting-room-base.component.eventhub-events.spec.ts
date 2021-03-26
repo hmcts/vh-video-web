@@ -30,7 +30,6 @@ import {
     hearingCountdownCompleteSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import {
-    adalService,
     clockService,
     consultationService,
     deviceTypeService,
@@ -90,7 +89,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
             activatedRoute,
             videoWebService,
             eventsService,
-            adalService,
             logger,
             errorService,
             heartbeatModelMapper,

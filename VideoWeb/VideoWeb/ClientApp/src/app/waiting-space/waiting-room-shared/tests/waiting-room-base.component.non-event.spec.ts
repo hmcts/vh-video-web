@@ -22,7 +22,6 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
 import {
     activatedRoute,
-    adalService,
     clockService,
     consultationService,
     deviceTypeService,
@@ -71,7 +70,6 @@ describe('WaitingRoomComponent message and clock', () => {
             activatedRoute,
             videoWebService,
             eventsService,
-            adalService,
             logger,
             errorService,
             heartbeatModelMapper,

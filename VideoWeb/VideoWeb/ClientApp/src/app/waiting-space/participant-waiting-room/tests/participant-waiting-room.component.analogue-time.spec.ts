@@ -4,7 +4,6 @@ import { Hearing } from '../../../shared/models/hearing';
 import { HearingRole } from '../../models/hearing-role-model';
 import {
     activatedRoute,
-    adalService,
     clockService,
     consultationService,
     deviceTypeService,
@@ -38,7 +37,6 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
             activatedRoute,
             videoWebService,
             eventsService,
-            adalService,
             logger,
             errorService,
             heartbeatModelMapper,

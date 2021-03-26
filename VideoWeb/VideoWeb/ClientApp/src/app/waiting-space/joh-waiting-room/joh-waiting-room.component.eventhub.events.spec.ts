@@ -4,10 +4,8 @@ import { ConferenceResponse, ConferenceStatus, ParticipantResponse } from 'src/a
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
-import { Room } from '../../shared/models/room';
 import {
     activatedRoute,
-    adalService,
     clockService,
     consultationService,
     deviceTypeService,
@@ -44,7 +42,6 @@ describe('JohWaitingRoomComponent eventhub events', () => {
             activatedRoute,
             videoWebService,
             eventsService,
-            adalService,
             logger,
             errorService,
             heartbeatModelMapper,
@@ -60,8 +57,6 @@ describe('JohWaitingRoomComponent eventhub events', () => {
             clockService,
             translateService
         );
-        adalService.userInfo.userName = 'chris.green@hearings.net';
-
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
         component.hearing = new Hearing(conference);

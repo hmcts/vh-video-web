@@ -1,6 +1,5 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
-import { AdalService } from 'adal-angular4';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import {
     ConferenceResponse,
@@ -9,7 +8,6 @@ import {
     ParticipantStatus,
     Role
 } from 'src/app/services/clients/api-client';
-import { individualTestProfile, judgeTestProfile } from 'src/app/testing/data/test-profiles';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
@@ -24,23 +22,15 @@ describe('JudgeParticipantStatusListComponent', () => {
 
     let component: JudgeParticipantStatusListComponent;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
-    let adalService: jasmine.SpyObj<AdalService>;
     let consultationService: jasmine.SpyObj<ConsultationService>;
     const eventsService = eventsServiceSpy;
-    const judgeProfile = judgeTestProfile;
-    const individualProfile = individualTestProfile;
     const logger: Logger = new MockLogger();
     let conference: ConferenceResponse;
-    let userInfo: adal.User;
     let activatedRoute: ActivatedRoute;
     const translateService = translateServiceSpy;
 
     beforeAll(() => {
         consultationService = consultationServiceSpyFactory();
-        userInfo = <adal.User>{ userName: judgeProfile.username, authenticated: true };
-        adalService = jasmine.createSpyObj<AdalService>('AdalService', ['init', 'handleWindowCallback', 'userInfo', 'logOut'], {
-            userInfo: userInfo
-        });
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['updateParticipantDetails', 'getObfuscatedName']);
         const logged = new LoggedParticipantResponse({
             participant_id: '1111-1111',
@@ -60,7 +50,6 @@ describe('JudgeParticipantStatusListComponent', () => {
         const participantWinger = new ConferenceTestData().getListOfParticipantsWingers();
         participantWinger.forEach(x => conference.participants.push(x));
         component = new JudgeParticipantStatusListComponent(
-            adalService,
             consultationService,
             eventsService,
             logger,
@@ -220,7 +209,6 @@ describe('JudgeParticipantStatusListComponent', () => {
             snapshot: { data: { loggedUser: logged } }
         };
         component = new JudgeParticipantStatusListComponent(
-            adalService,
             consultationService,
             eventsService,
             logger,
@@ -232,12 +220,4 @@ describe('JudgeParticipantStatusListComponent', () => {
         component.ngOnInit();
         expect(component.isUserJudge).toBeTruthy();
     }));
-
-    it('should not be able to call participants', () => {
-        expect(component.canCallParticipant(component.conference.participants[0])).toBeFalsy();
-    });
-
-    it('should not be able to call endpoints', () => {
-        expect(component.canCallEndpoint(component.conference.endpoints[0])).toBeFalsy();
-    });
 });

@@ -1,6 +1,5 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AdalService } from 'adal-angular4';
 import { ProfileService } from 'src/app/services/api/profile.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -8,6 +7,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ImHelper } from 'src/app/shared/im-helper';
 import { ChatWindowBaseComponent } from './chat-window-base';
 import { TranslateService } from '@ngx-translate/core';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
     selector: 'app-participant-chat',
@@ -25,11 +25,11 @@ export class ParticipantChatComponent extends ChatWindowBaseComponent {
         protected profileService: ProfileService,
         protected eventService: EventsService,
         protected logger: Logger,
-        protected adalService: AdalService,
         protected imHelper: ImHelper,
         protected route: ActivatedRoute,
-        protected translateService: TranslateService
+        protected translateService: TranslateService,
+        protected oidcSecurityService: OidcSecurityService
     ) {
-        super(videoWebService, profileService, eventService, logger, adalService, imHelper, route, translateService);
+        super(videoWebService, profileService, eventService, logger, oidcSecurityService, imHelper, route, translateService);
     }
 }

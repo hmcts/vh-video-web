@@ -2,7 +2,7 @@ import { ElementRef } from '@angular/core';
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, convertToParamMap, Event, NavigationEnd, Router } from '@angular/router';
-import { Subject, Subscription } from 'rxjs';
+import { of, Subject, Subscription } from 'rxjs';
 import { AppComponent } from './app.component';
 import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
@@ -13,7 +13,7 @@ import { LocationService } from './services/location.service';
 import { PageTrackerService } from './services/page-tracker.service';
 import { ConnectionStatusService } from './services/connection-status.service';
 import { pageUrls } from './shared/page-url.constants';
-import { MockAdalService } from './testing/mocks/MockAdalService';
+import { MockOidcSecurityService } from './testing/mocks/MockOidcSecurityService';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { TestLanguageService } from './shared/test-language.service';
 import { translateServiceSpy } from './testing/mocks/mock-translation-service';
@@ -29,8 +29,8 @@ describe('AppComponent', () => {
     let connectionStatusServiceSpy: jasmine.SpyObj<ConnectionStatusService>;
     let pageTrackerServiceSpy: jasmine.SpyObj<PageTrackerService>;
     let testLanguageServiceSpy: jasmine.SpyObj<TestLanguageService>;
-    const mockAdalService = new MockAdalService();
-    let adalService;
+    const mockOidcSecurityService = new MockOidcSecurityService();
+    let oidcSecurityService;
     const clientSettings = new ClientSettingsResponse({
         tenant_id: 'tenantid',
         client_id: 'clientid',
@@ -50,9 +50,9 @@ describe('AppComponent', () => {
             firstChild: <any>{ snapshot: { data: convertToParamMap({ title: 'test-title' }) } }
         });
 
-        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['clientSettings', 'getClientSettings', 'loadConfig']);
-        configServiceSpy.getClientSettings.and.returnValue(clientSettings);
-        adalService = mockAdalService;
+        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings', 'loadConfig']);
+        configServiceSpy.getClientSettings.and.returnValue(of(clientSettings));
+        oidcSecurityService = mockOidcSecurityService;
         deviceTypeServiceSpy = jasmine.createSpyObj<DeviceTypeService>(['isSupportedBrowser']);
         profileServiceSpy = jasmine.createSpyObj<ProfileService>('ProfileService', ['getUserProfile']);
         const profile = new UserProfileResponse({ role: Role.Representative });
@@ -70,8 +70,6 @@ describe('AppComponent', () => {
 
     beforeEach(() => {
         component = new AppComponent(
-            adalService,
-            configServiceSpy,
             routerSpy,
             deviceTypeServiceSpy,
             profileServiceSpy,
@@ -83,7 +81,9 @@ describe('AppComponent', () => {
             connectionStatusServiceSpy,
             pageTrackerServiceSpy,
             testLanguageServiceSpy,
-            translateServiceSpy
+            translateServiceSpy,
+            oidcSecurityService,
+            configServiceSpy
         );
 
         document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(dummyElement);
@@ -98,13 +98,13 @@ describe('AppComponent', () => {
     });
 
     afterEach(() => {
-        mockAdalService.setAuthenticated(false);
+        mockOidcSecurityService.setAuthenticated(false);
     });
 
     it('should start connection status service if authenticated oninit', fakeAsync(() => {
         locationServiceSpy.getCurrentUrl.and.returnValue(pageUrls.AdminVenueList);
         locationServiceSpy.getCurrentPathName.and.returnValue(`/${pageUrls.AdminVenueList}`);
-        mockAdalService.setAuthenticated(true);
+        mockOidcSecurityService.setAuthenticated(true);
         component.ngOnInit();
         flushMicrotasks();
         expect(connectionStatusServiceSpy.start).toHaveBeenCalled();
@@ -113,7 +113,7 @@ describe('AppComponent', () => {
     it('should start event service if authenticated oninit', fakeAsync(() => {
         locationServiceSpy.getCurrentUrl.and.returnValue(pageUrls.AdminVenueList);
         locationServiceSpy.getCurrentPathName.and.returnValue(`/${pageUrls.AdminVenueList}`);
-        mockAdalService.setAuthenticated(true);
+        mockOidcSecurityService.setAuthenticated(true);
         component.ngOnInit();
         flushMicrotasks();
         expect(eventsServiceSpy.start).toHaveBeenCalled();
@@ -137,10 +137,10 @@ describe('AppComponent', () => {
     });
 
     it('should log out of adal', () => {
-        spyOn(adalService, 'logOut');
+        spyOn(oidcSecurityService, 'logoffAndRevokeTokens');
         component.logOut();
         expect(component.loggedIn).toBeFalsy();
-        expect(adalService.logOut).toHaveBeenCalled();
+        expect(oidcSecurityService.logoffAndRevokeTokens).toHaveBeenCalled();
     });
 
     it('should set to true when user profile is a representative', async () => {
@@ -174,16 +174,16 @@ describe('AppComponent', () => {
     it('should retrieve profile when on not on logout and authenticated', async () => {
         locationServiceSpy.getCurrentUrl.and.returnValue(pageUrls.AdminVenueList);
         locationServiceSpy.getCurrentPathName.and.returnValue(`/${pageUrls.AdminVenueList}`);
-        mockAdalService.setAuthenticated(true);
-        await component.checkAuth();
+        mockOidcSecurityService.setAuthenticated(true);
+        await component.ngOnInit();
         expect(profileServiceSpy.getUserProfile).toHaveBeenCalled();
     });
 
     it('should navigate to login not on logout and not authenticated', async () => {
         locationServiceSpy.getCurrentUrl.and.returnValue(pageUrls.AdminVenueList);
         locationServiceSpy.getCurrentPathName.and.returnValue(`/${pageUrls.AdminVenueList}`);
-        mockAdalService.setAuthenticated(false);
-        await component.checkAuth();
+        mockOidcSecurityService.setAuthenticated(false);
+        await component.ngOnInit();
         expect(profileServiceSpy.getUserProfile).toHaveBeenCalledTimes(0);
         expect(routerSpy.navigate).toHaveBeenCalledWith([`/${pageUrls.IdpSelection}`], {
             queryParams: { returnUrl: pageUrls.AdminVenueList }
@@ -193,7 +193,7 @@ describe('AppComponent', () => {
     it('should not check auth or get profile on logout', async () => {
         locationServiceSpy.getCurrentUrl.and.returnValue(pageUrls.Logout);
         locationServiceSpy.getCurrentPathName.and.returnValue(`/${pageUrls.Logout}`);
-        mockAdalService.setAuthenticated(true);
+        mockOidcSecurityService.setAuthenticated(true);
         await component.checkAuth();
         expect(routerSpy.navigate).toHaveBeenCalledTimes(0);
         expect(profileServiceSpy.getUserProfile).toHaveBeenCalledTimes(0);

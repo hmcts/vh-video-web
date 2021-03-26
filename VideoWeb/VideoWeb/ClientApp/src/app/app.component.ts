@@ -1,10 +1,8 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { AdalService } from 'adal-angular4';
-import { Subscription } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
-import { ConfigService } from './services/api/config.service';
+import { NEVER, Observable, Subscription } from 'rxjs';
+import { catchError, filter, map } from 'rxjs/operators';
 import { ProfileService } from './services/api/profile.service';
 import { Role } from './services/clients/api-client';
 import { DeviceTypeService } from './services/device-type.service';
@@ -16,6 +14,8 @@ import { ConnectionStatusService } from './services/connection-status.service';
 import { pageUrls } from './shared/page-url.constants';
 import { TestLanguageService } from './shared/test-language.service';
 import { TranslateService } from '@ngx-translate/core';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { ConfigService } from './services/api/config.service';
 
 @Component({
     selector: 'app-root',
@@ -35,8 +35,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
     subscriptions = new Subscription();
     constructor(
-        private adalService: AdalService,
-        private configService: ConfigService,
         private router: Router,
         private deviceTypeService: DeviceTypeService,
         private profileService: ProfileService,
@@ -48,11 +46,12 @@ export class AppComponent implements OnInit, OnDestroy {
         private connectionStatusService: ConnectionStatusService,
         pageTracker: PageTrackerService,
         testLanguageService: TestLanguageService,
-        translate: TranslateService
+        translate: TranslateService,
+        private oidcSecurityService: OidcSecurityService,
+        private configService: ConfigService
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
-        this.initAuthentication();
 
         const language = localStorage.getItem('language') ?? 'en';
         translate.setDefaultLang(language);
@@ -62,26 +61,27 @@ export class AppComponent implements OnInit, OnDestroy {
         pageTracker.trackPreviousPage(router);
     }
 
-    private initAuthentication() {
-        const clientSettings = this.configService.getClientSettings();
-        const config = {
-            tenant: clientSettings.tenant_id,
-            clientId: clientSettings.client_id,
-            postLogoutRedirectUri: clientSettings.post_logout_redirect_uri,
-            redirectUri: clientSettings.redirect_uri,
-            cacheLocation: 'sessionStorage'
-        };
-        this.adalService.init(config);
+    ngOnInit() {
+        this.configService.getClientSettings().subscribe(() => {
+            this.checkAuth().subscribe(async loggedIn => {
+                this.loggedIn = loggedIn;
+                await this.attemptRetrieveProfile(loggedIn);
+                this.checkBrowser();
+                this.setPageTitle();
+                this.setupSubscribers();
+                this.eventsService.start();
+                this.connectionStatusService.start();
+            });
+        });
     }
 
-    ngOnInit() {
-        this.checkAuth().then(() => {
-            this.checkBrowser();
-            this.setPageTitle();
-            this.setupSubscribers();
-            this.eventsService.start();
-            this.connectionStatusService.start();
-        });
+    private async attemptRetrieveProfile(loggedIn: boolean) {
+        if (!loggedIn) {
+            const currentUrl = this.locationService.getCurrentUrl();
+            this.router.navigate([`/${pageUrls.IdpSelection}`], { queryParams: { returnUrl: currentUrl } });
+        } else {
+            await this.retrieveProfileRole();
+        }
     }
 
     private setupSubscribers() {
@@ -108,20 +108,14 @@ export class AppComponent implements OnInit, OnDestroy {
         }
     }
 
-    async checkAuth(): Promise<void> {
-        const currentUrl = this.locationService.getCurrentUrl();
-        if (
-            this.locationService.getCurrentPathName() !== `/${pageUrls.Logout}` &&
-            !this.locationService.getCurrentPathName().toLowerCase().startsWith(`/${pageUrls.IdpSelection}`)
-        ) {
-            this.adalService.handleWindowCallback();
-            this.loggedIn = this.adalService.userInfo.authenticated;
-            if (!this.loggedIn) {
-                this.router.navigate([`/${pageUrls.IdpSelection}`], { queryParams: { returnUrl: currentUrl } });
-                return;
-            }
-            await this.retrieveProfileRole();
-        }
+    checkAuth(): Observable<boolean> {
+        return this.oidcSecurityService.checkAuth().pipe(
+            catchError(err => {
+                console.error('[AppComponent] - Check Auth Error', err);
+                this.router.navigate(['/']);
+                return NEVER;
+            })
+        );
     }
 
     async retrieveProfileRole(): Promise<void> {
@@ -138,7 +132,7 @@ export class AppComponent implements OnInit, OnDestroy {
     logOut() {
         this.loggedIn = false;
         sessionStorage.clear();
-        this.adalService.logOut();
+        this.oidcSecurityService.logoffAndRevokeTokens();
     }
 
     skipToContent() {

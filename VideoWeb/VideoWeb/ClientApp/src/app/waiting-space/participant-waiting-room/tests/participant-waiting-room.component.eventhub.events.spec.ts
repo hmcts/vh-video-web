@@ -6,7 +6,6 @@ import { hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-serv
 import { Hearing } from '../../../shared/models/hearing';
 import {
     activatedRoute,
-    adalService,
     clockService,
     consultationService,
     deviceTypeService,
@@ -44,7 +43,6 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
             activatedRoute,
             videoWebService,
             eventsService,
-            adalService,
             logger,
             errorService,
             heartbeatModelMapper,
@@ -60,7 +58,6 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
             clockService,
             translateService
         );
-        adalService.userInfo.userName = 'chris.green@hearings.net';
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
@@ -105,7 +102,6 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
     }));
 
     it('should not play hearing starting sound when "in session" message received and participant is a witness', fakeAsync(() => {
-        adalService.userInfo.userName = 'chris.green@hearings.net';
         component.participant = globalWitness;
         const status = ConferenceStatus.InSession;
         component.displayDeviceChangeModal = true;

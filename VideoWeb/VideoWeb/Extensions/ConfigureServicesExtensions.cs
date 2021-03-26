@@ -139,7 +139,12 @@ namespace VideoWeb.Extensions
             };
 
             var connectionStrings = container.GetService<ConnectionStrings>();
-            services.AddSignalR().AddAzureSignalR(connectionStrings.SignalR)
+            services.AddSignalR()
+                .AddAzureSignalR(options =>
+                {
+                    options.ConnectionString = connectionStrings.SignalR;
+                    options.ClaimsProvider = context => context.User.Claims;
+                })
                 .AddNewtonsoftJsonProtocol(options =>
                 {
                     options.PayloadSerializerSettings.Formatting = Formatting.None;

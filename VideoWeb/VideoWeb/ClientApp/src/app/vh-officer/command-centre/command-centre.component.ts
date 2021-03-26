@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { ConferenceForVhOfficerResponse } from 'src/app/services/clients/api-client';
+import { ClientSettingsResponse, ConferenceForVhOfficerResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -20,6 +20,7 @@ import { VhoStorageKeys } from '../services/models/session-keys';
 import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-bus.service';
 import { CourtRoomsAccounts } from '../services/models/court-rooms-accounts';
 import { ParticipantSummary } from '../../shared/models/participant-summary';
+import { ConfigService } from 'src/app/services/api/config.service';
 
 @Component({
     selector: 'app-command-centre',
@@ -49,6 +50,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     participantsHeartBeat: Map<string, ParticipantHeartbeat> = new Map<string, ParticipantHeartbeat>();
 
     loadingData: boolean;
+    configSettings: ClientSettingsResponse;
 
     displayFilters = false;
     private readonly loggerPrefix = '[CommandCentre] -';
@@ -61,7 +63,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
         private router: Router,
         private screenHelper: ScreenHelper,
         private eventbus: EventBusService,
-        private route: ActivatedRoute
+        private configService: ConfigService
     ) {
         this.loadingData = false;
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
@@ -69,6 +71,10 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.configService.getClientSettings().subscribe(data => {
+            this.configSettings = data;
+        });
+
         this.selectedMenu = this.menuOption.Hearing;
         this.screenHelper.enableFullScreen(true);
         this.setupEventHubSubscribers();
@@ -237,9 +243,7 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     isJoinByPhone(hearing: HearingSummary): boolean {
-        const config = this.route.snapshot.data['configSettings'];
-
-        const datePhone = config.join_by_phone_from_date;
+        const datePhone = this.configSettings.join_by_phone_from_date;
         this.logger.debug(`${this.loggerPrefix} Join by date from settings is: ${datePhone}`);
 
         if (!datePhone || datePhone.length === 0) {

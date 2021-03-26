@@ -18,7 +18,6 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { HearingRole } from '../../models/hearing-role-model';
 import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
 import {
-    adalService,
     clockService,
     consultationService,
     deviceTypeService,
@@ -83,7 +82,6 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             activatedRoute,
             videoWebService,
             eventsService,
-            adalService,
             logger,
             errorService,
             heartbeatModelMapper,
