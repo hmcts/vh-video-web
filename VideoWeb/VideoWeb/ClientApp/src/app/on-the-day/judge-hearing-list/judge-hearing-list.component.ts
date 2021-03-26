@@ -99,12 +99,12 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         this.logger.debug('[JudgeHearingList] - Signing into judge waiting room', { conference: conference.id });
         this.videoWebService.getCurrentParticipant(conference.id).then(x => {
             const result = conference.participants.find(
-                p => p.id === x.participant_id && (p.hearing_role === 'Panel Member' || p.hearing_role === 'Winger')
+                p => p.id === x.participant_id && p.hearing_role === 'Judge'
             );
             if (result) {
-                this.router.navigate([pageUrls.JOHWaitingRoom, conference.id]);
-            } else {
                 this.router.navigate([pageUrls.JudgeWaitingRoom, conference.id]);
+            } else {
+                this.router.navigate([pageUrls.JOHWaitingRoom, conference.id]);
             }
         });
     }
