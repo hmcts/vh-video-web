@@ -7,10 +7,10 @@ using VideoWeb.Common.Models;
 
 namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttributeTests
 {
-    public class when_user_has_VhOfficerRole : CheckParticipantCanAccessConferenceAttributeTest
+    public class When_user_has_VhOfficerRole : CheckParticipantCanAccessConferenceAttributeTest
     {
         [Test]
-        public async Task should_continue_with_other_middleware()
+        public async Task Should_continue_with_other_middleware()
         {
             // arrange
             var actionArguments = new Dictionary<string, object>();
@@ -23,7 +23,7 @@ namespace VideoWeb.UnitTests.Middleware.CheckParticipantCanAccessConferenceAttri
             SetupActionExecutingContext(actionArguments, vhoUser);
 
             // act
-            await _sut.OnActionExecutionAsync(_actionExecutingContext, async () => _actionExecutedContext);
+            await _sut.OnActionExecutionAsync(_actionExecutingContext, () => Task.FromResult(_actionExecutedContext));
 
             // assert
             _actionExecutingContext.Result.Should().BeOfType<OkResult>();
