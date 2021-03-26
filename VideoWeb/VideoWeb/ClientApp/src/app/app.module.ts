@@ -21,7 +21,6 @@ import { ParticipantStatusUpdateService } from './services/participant-status-up
 import { GlobalErrorHandler } from './shared/providers/global-error-handler';
 import { SharedModule } from './shared/shared.module';
 import { WaitingSpaceModule } from './waiting-space/waiting-space.module';
-import { ConfigSettingsResolveService } from 'src/app/services/config-settings-resolve.service';
 import { TranslateModule, TranslateLoader, MissingTranslationHandler } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { DisplayMissingTranslationHandler } from './shared/display-missing-translation-handler';
@@ -79,8 +78,7 @@ export function getLocale() {
         AuthGuard,
         Title,
         PageTrackerService,
-        ParticipantStatusUpdateService,
-        ConfigSettingsResolveService
+        ParticipantStatusUpdateService
     ],
     bootstrap: [AppComponent]
 })

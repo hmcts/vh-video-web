@@ -1,6 +1,7 @@
 import { discardPeriodicTasks, fakeAsync, tick } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
+import { ConfigService } from 'src/app/services/api/config.service';
 import { ClientSettingsResponse, ConferenceResponse } from 'src/app/services/clients/api-client';
 import { ErrorService } from 'src/app/services/error.service';
 import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-bus.service';
@@ -25,6 +26,7 @@ describe('CommandCentreComponent - Core', () => {
 
     let vhoQueryService: jasmine.SpyObj<VhoQueryService>;
     let screenHelper: jasmine.SpyObj<ScreenHelper>;
+    let configService: jasmine.SpyObj<ConfigService>;
     const logger: Logger = new MockLogger();
     const conferences = new ConferenceTestData().getTestData();
     const hearings = conferences.map(c => new HearingSummary(c));
@@ -33,13 +35,13 @@ describe('CommandCentreComponent - Core', () => {
     let eventBusServiceSpy: jasmine.SpyObj<EventBusService>;
 
     const conferenceDetail = new ConferenceTestData().getConferenceDetailFuture();
-    let activatedRoute: ActivatedRoute;
 
     beforeAll(() => {
         TestFixtureHelper.setupVenues();
 
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
         screenHelper = jasmine.createSpyObj<ScreenHelper>('ScreenHelper', ['enableFullScreen']);
+        configService = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
 
         vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', [
             'startQuery',
@@ -55,12 +57,9 @@ describe('CommandCentreComponent - Core', () => {
         ]);
 
         eventBusServiceSpy = jasmine.createSpyObj<EventBusService>('EventBusService', ['emit', 'on']);
+
         const config = new ClientSettingsResponse({ join_by_phone_from_date: '2021-02-09' });
-        activatedRoute = <any>{
-            snapshot: {
-                data: { configSettings: config }
-            }
-        };
+        configService.getClientSettings.and.returnValue(of(config));
     });
 
     afterEach(() => {
@@ -83,7 +82,7 @@ describe('CommandCentreComponent - Core', () => {
             router,
             screenHelper,
             eventBusServiceSpy,
-            activatedRoute
+            configService
         );
         component.hearings = hearings;
         screenHelper.enableFullScreen.calls.reset();
@@ -96,7 +95,7 @@ describe('CommandCentreComponent - Core', () => {
         component.conferencesSubscription = undefined;
 
         component.ngOnInit();
-        discardPeriodicTasks();
+        tick();
 
         expect(screenHelper.enableFullScreen).toHaveBeenCalledWith(true);
         expect(component.hearings.length).toBeGreaterThan(0);
