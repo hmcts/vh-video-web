@@ -654,7 +654,8 @@
     "special-counsel": "Special Counsel",
     "state-lip": "State LIP",
     "winger": "Winger",
-    "witness": "Witness"
+    "witness": "Witness",
+    "intermediary": "Intermediary"
   },
   "case-role": {
     "appellant": "Appellant",
