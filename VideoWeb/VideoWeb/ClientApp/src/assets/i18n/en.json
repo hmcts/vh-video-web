@@ -367,7 +367,7 @@
     "hearing-closed": "This hearing has finished. You may now sign out.",
     "hearing-paused": "The judge will restart the hearing when they are ready. Please stay near your screen.",
     "hearing-suspended-technical-title": "We're having technical issues",
-    "hearing-suspended--message": "All participants are affected. Stay near your screen for further updates. There's no need to call us.",
+    "hearing-suspended-message": "All participants are affected. Stay near your screen for further updates. There's no need to call us.",
     "time-now": "The time now is:",
     "enter-consultation-room": "Enter consultation room",
     "video-hearing-team-contact": "Video hearings team: {{phone}}",
@@ -649,7 +649,8 @@
     "special-counsel": "Special Counsel",
     "state-lip": "State LIP",
     "winger": "Winger",
-    "witness": "Witness"
+    "witness": "Witness",
+    "intermediary": "Intermediary"
   },
   "case-role": {
     "appellant": "Appellant",
@@ -693,6 +694,7 @@
     "leasehold-enfranchisement": "Leasehold Enfranchisement",
     "leasehold-management": "Leasehold Management",
     "park-homes": "Park Homes",
+    "placement": "Placement",
     "rents": "Rents",
     "right-to-buy": "Right to buy",
     "tax": "Tax",
