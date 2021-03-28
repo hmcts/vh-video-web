@@ -62,17 +62,31 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.configService.getClientSettings().subscribe(() => {
-            this.checkAuth().subscribe(async loggedIn => {
-                this.loggedIn = loggedIn;
-                await this.attemptRetrieveProfile(loggedIn);
-                this.checkBrowser();
-                this.setPageTitle();
-                this.setupSubscribers();
-                this.eventsService.start();
-                this.connectionStatusService.start();
-            });
+        this.configService.getClientSettings().subscribe({
+            next: async () => {
+                await this.postConfigSetup();
+            },
+            error: err => {}
         });
+    }
+
+    private postConfigSetup() {
+        this.checkAuth().subscribe({
+            next: async (loggedIn: boolean) => {
+                await this.postAuthSetup(loggedIn);
+            },
+            error: err => {}
+        });
+    }
+
+    private async postAuthSetup(loggedIn: boolean) {
+        this.loggedIn = loggedIn;
+        await this.attemptRetrieveProfile(loggedIn);
+        this.checkBrowser();
+        this.setPageTitle();
+        this.setupSubscribers();
+        this.eventsService.start();
+        this.connectionStatusService.start();
     }
 
     private async attemptRetrieveProfile(loggedIn: boolean) {
