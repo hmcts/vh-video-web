@@ -424,6 +424,12 @@ namespace VideoWeb.EventHub.Hub
                         .Contains(p.Id)
                     ).ToList();
 
+                if (participant.IsJudicialOfficeHolder())
+                {
+                    linkedParticipants = conference.Participants
+                        .Where(x => x.IsJudicialOfficeHolder() && x.Id != participantId).ToList();
+                }
+
                 await Clients.Group(participant.Username.ToLowerInvariant())
                     .ParticipantRemoteMuteMessage(participantId, conferenceId, isRemoteMuted);
                 _logger.LogTrace(
@@ -458,6 +464,12 @@ namespace VideoWeb.EventHub.Hub
                         .Contains(p.Id)
                     ).ToList();
 
+                if (participant.IsJudicialOfficeHolder())
+                {
+                    linkedParticipants = conference.Participants
+                        .Where(x => x.IsJudicialOfficeHolder() && x.Id != participantId).ToList();
+                }
+                
                 var judge = conference.Participants.Single(x => x.IsJudge());
                 await Clients.Group(judge.Username.ToLowerInvariant())
                     .ParticipantHandRaiseMessage(participantId, conferenceId, isRaised);
