@@ -1,4 +1,4 @@
-import { ParticipantForUserResponse, RoomSummaryResponse } from 'src/app/services/clients/api-client';
+import { ParticipantForUserResponse, Role, RoomSummaryResponse } from 'src/app/services/clients/api-client';
 import { LinkedParticipantPanelModel } from 'src/app/waiting-space/models/linked-participant-panel-model';
 import { PanelModel } from 'src/app/waiting-space/models/panel-model-base';
 import { ParticipantPanelModel } from 'src/app/waiting-space/models/participant-panel-model';
@@ -10,8 +10,15 @@ export class ParticipantPanelModelMapper {
             if (x.linked_participants?.length > 0) {
                 if (!this.isLinkAlreadyProcessed(participants, x)) {
                     const linkedParticipants = this.mapLinkedParticipant(x, pats);
-                    const room = this.getInterpreterRoom(linkedParticipants, pats);
+                    const room = this.getParticipantRoom(linkedParticipants, pats);
                     const participant = LinkedParticipantPanelModel.fromListOfPanelModels(linkedParticipants, room?.label, room?.id);
+                    participants.push(participant);
+                }
+            } else if (x.role === Role.JudicialOfficeHolder) {
+                if (!this.isLinkAlreadyProcessed(participants, x)) {
+                    const johs = this.mapJohs(pats);
+                    const room = this.getParticipantRoom(johs, pats);
+                    const participant = LinkedParticipantPanelModel.forJudicialHolders(johs, room?.label, room?.id);
                     participants.push(participant);
                 }
             } else {
@@ -22,7 +29,7 @@ export class ParticipantPanelModelMapper {
         return participants;
     }
 
-    private getInterpreterRoom(linkedParticipants: ParticipantPanelModel[], pats: ParticipantForUserResponse[]): RoomSummaryResponse {
+    private getParticipantRoom(linkedParticipants: ParticipantPanelModel[], pats: ParticipantForUserResponse[]): RoomSummaryResponse {
         const participantWithRooms = pats.filter(p => p.interpreter_room !== null);
         const linkedIds = linkedParticipants.map(lp => lp.id);
         const participantWithRoom = participantWithRooms.find(p => linkedIds.includes(p.id) && p.interpreter_room);
@@ -36,6 +43,11 @@ export class ParticipantPanelModelMapper {
         }
         const linkedPanels = filtered as LinkedParticipantPanelModel[];
         return linkedPanels.some(x => x.hasParticipant(participant.id));
+    }
+
+    private mapJohs(pats: ParticipantForUserResponse[]): ParticipantPanelModel[] {
+        const johs = pats.filter(x => x.role === Role.JudicialOfficeHolder);
+        return johs.map(j => new ParticipantPanelModel(j));
     }
 
     private mapLinkedParticipant(participant: ParticipantForUserResponse, pats: ParticipantForUserResponse[]): ParticipantPanelModel[] {

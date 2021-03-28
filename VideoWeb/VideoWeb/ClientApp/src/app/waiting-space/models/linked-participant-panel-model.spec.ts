@@ -7,9 +7,12 @@ import { ParticipantPanelModel } from './participant-panel-model';
 describe('LinkedParticipantPanelModel', () => {
     let model: LinkedParticipantPanelModel;
     let participants: ParticipantForUserResponse[];
+    let johs: ParticipantForUserResponse[];
+    const testData = new ConferenceTestData();
 
     beforeEach(() => {
-        participants = new ConferenceTestData().getListOfLinkedParticipants();
+        participants = testData.getListOfLinkedParticipants();
+        johs = testData.getListOfParticipants().filter(x => x.role === Role.JudicialOfficeHolder);
     });
 
     it('should update status for participant', () => {
@@ -154,10 +157,22 @@ describe('LinkedParticipantPanelModel', () => {
         expect(model.isWitness).toBeTruthy();
     });
 
+    it('should return true when all participants are JOHs', () => {
+        createLinkedJohs();
+        expect(model.isJudicalOfficeHolder).toBeTruthy();
+    });
+
     function createLinkedModel() {
         const pats = participants.map(p => new ParticipantPanelModel(p));
         const roomLabel = 'Interpreter1';
         const roomId = '787';
         model = LinkedParticipantPanelModel.fromListOfPanelModels(pats, roomLabel, roomId);
+    }
+
+    function createLinkedJohs() {
+        const pats = johs.map(p => new ParticipantPanelModel(p));
+        const roomLabel = 'PanelMember1';
+        const roomId = '788';
+        model = LinkedParticipantPanelModel.forJudicialHolders(pats, roomLabel, roomId);
     }
 });
