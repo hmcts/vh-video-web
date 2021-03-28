@@ -64,9 +64,8 @@ export class AppComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.configService.getClientSettings().subscribe({
             next: async () => {
-                await this.postConfigSetup();
-            },
-            error: err => {}
+                this.postConfigSetup();
+            }
         });
     }
 
