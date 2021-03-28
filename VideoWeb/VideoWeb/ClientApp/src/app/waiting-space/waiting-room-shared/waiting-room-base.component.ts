@@ -533,6 +533,15 @@ export abstract class WaitingRoomBaseDirective {
             displayName = interpreterRoom.tile_display_name;
         }
 
+        if (this.needsJudicialRoom()) {
+            this.logger.debug(`${this.loggerPrefix} calling judicial room`, logPayload);
+            const judicialRoom = await this.retrieveJudicialRoom();
+            this.linkedParticipantRoom = judicialRoom;
+            pexipNode = judicialRoom.pexip_node;
+            conferenceAlias = judicialRoom.participant_join_uri;
+            displayName = judicialRoom.tile_display_name;
+        }
+
         this.logger.debug(`${this.loggerPrefix} Calling ${pexipNode} - ${conferenceAlias} as ${displayName}`, logPayload);
         this.videoCallService.makeCall(pexipNode, conferenceAlias, displayName, this.maxBandwidth);
     }
@@ -543,6 +552,10 @@ export abstract class WaitingRoomBaseDirective {
         }
 
         return this.participant.linked_participants.some(x => x.link_type === LinkType.Interpreter);
+    }
+
+    needsJudicialRoom(): boolean {
+        return this.participant.role === Role.JudicialOfficeHolder;
     }
 
     retrieveInterpreterRoom(): Promise<SharedParticipantRoom> {
@@ -558,6 +571,16 @@ export abstract class WaitingRoomBaseDirective {
             this.logger.debug(`${this.loggerPrefix} getting standard interpreter room for participant`, logPayload);
             return this.videoCallService.retrieveInterpreterRoom(this.conference.id, this.participant.id);
         }
+    }
+
+    retrieveJudicialRoom(): Promise<SharedParticipantRoom> {
+        const logPayload = {
+            conference: this.conferenceId,
+            participant: this.participant.id
+        };
+
+        this.logger.debug(`${this.loggerPrefix} getting judicial room for participant`, logPayload);
+        return this.videoCallService.retrieveJudicialRoom(this.conference.id, this.participant.id);
     }
 
     isOrHasWitnessLink(): boolean {

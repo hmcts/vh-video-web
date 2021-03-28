@@ -391,7 +391,7 @@ export class VideoCallService {
             participant: participantId
         });
 
-        return this.apiClient.getInterpreterRoomForParticipant(conferenceId, participantId, 'Civilian').toPromise();
+        return this.apiClient.getParticipantRoomForParticipant(conferenceId, participantId, 'Civilian').toPromise();
     }
 
     retrieveWitnessInterpreterRoom(conferenceId: string, participantId: string): Promise<SharedParticipantRoom> {
@@ -400,6 +400,15 @@ export class VideoCallService {
             participant: participantId
         });
 
-        return this.apiClient.getInterpreterRoomForParticipant(conferenceId, participantId, 'Witness').toPromise();
+        return this.apiClient.getParticipantRoomForParticipant(conferenceId, participantId, 'Witness').toPromise();
+    }
+
+    retrieveJudicialRoom(conferenceId: string, participantId: string): Promise<SharedParticipantRoom> {
+        this.logger.info(`${this.loggerPrefix} Attempting to retrieve judicial room for participant`, {
+            conference: conferenceId,
+            participant: participantId
+        });
+
+        return this.apiClient.getParticipantRoomForParticipant(conferenceId, participantId, 'Judicial').toPromise();
     }
 }
