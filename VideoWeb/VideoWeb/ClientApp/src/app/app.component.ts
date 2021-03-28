@@ -73,8 +73,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.checkAuth().subscribe({
             next: async (loggedIn: boolean) => {
                 await this.postAuthSetup(loggedIn);
-            },
-            error: err => {}
+            }
         });
     }
 
@@ -106,8 +105,7 @@ export class AppComponent implements OnInit, OnDestroy {
                         this.eventsService.start();
                         this.scrollToTop();
                     }
-                },
-                error: err => {}
+                }
             })
         );
     }
@@ -173,8 +171,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 .subscribe({
                     next: (appendTitle: string) => {
                         this.titleService.setTitle(applTitle + appendTitle);
-                    },
-                    error: err => {}
+                    }
                 })
         );
     }
