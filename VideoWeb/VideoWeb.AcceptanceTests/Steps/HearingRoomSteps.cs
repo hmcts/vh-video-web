@@ -169,12 +169,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the Judge can see interpreter and interpretee on participant list")]
         public void ThenTheJudgeCanSeeInterpreterAndInterpreteeOnParticipantList()
         {
-            var interpreter = _c.Test.ConferenceParticipants.FirstOrDefault(x => x.HearingRole.ToLower() == "interpreter");
-            var interpretee = _c.Test.ConferenceParticipants.FirstOrDefault(x => x.Id == interpreter.LinkedParticipants.FirstOrDefault().LinkedId);
-            
-            var interpreterText = _browsers[_c.CurrentUser].Driver
-                                    .WaitUntilElementExists(HearingRoomPage.ParticipantPanel)
-                                    .FindElement(HearingRoomPage.InterPreterName(interpreter.DisplayName)).Text.Trim();
+            var interpreter = _c.Test.ConferenceParticipants.First(x => x.HearingRole.ToLower() == "interpreter");
+            interpreter.Should().NotBeNull();
+            interpreter.LinkedParticipants.Should().NotBeNullOrEmpty();
+            var interpretee = _c.Test.ConferenceParticipants.Single(x => x.Id == interpreter.LinkedParticipants.Single().LinkedId);
+            _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(HearingRoomPage.ParticipantPanel);
+            var interpreterText = _browsers[_c.CurrentUser].TextOf(HearingRoomPage.InterPreterName(interpreter.DisplayName));
             interpreterText.Should().Contain($"{interpretee.DisplayName}");
         }
 

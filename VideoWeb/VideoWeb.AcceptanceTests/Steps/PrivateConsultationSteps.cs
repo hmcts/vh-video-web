@@ -81,7 +81,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var user = Users.GetUserFromText(text, _c.Test.Users);
             var participant = _c.Test.ConferenceParticipants.First(x => x.Username.ToLower().Contains(user.Username.ToLower()));
             _browsers[_c.CurrentUser].ClickLink(ParticipantListPanel.PrivateConsultationLink(participant.Id));
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateCallPopupPage.OutgoingCallMessage).Text.Should().Contain(participant.Name);
+            _browsers[_c.CurrentUser].TextOf(PrivateCallPopupPage.OutgoingCallMessage).Should().Contain(participant.Name);
         }
 
         [When(@"the (.*) accepts the private consultation invite from the (.*)")]
@@ -91,7 +91,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserSteps.GivenInTheUsersBrowser(user);
             Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitToCallAndAnswer));
             var fromUser = Users.GetUserFromText(from, _c.Test.Users);
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateCallPopupPage.IncomingCallMessage).Text.Should().Contain(fromUser.DisplayName);
+            _browsers[_c.CurrentUser].TextOf(PrivateCallPopupPage.IncomingCallMessage).Should().Contain(fromUser.DisplayName);
             _browsers[_c.CurrentUser].Click(PrivateCallPopupPage.AcceptPrivateCall);
         }
 
@@ -101,7 +101,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browserSteps.GivenInTheUsersBrowser(user);
             Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitToCallAndAnswer));
             var fromUser = Users.GetUserFromText(from, _c.Test.Users);
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateCallPopupPage.IncomingCallMessage).Text.Should().Contain(fromUser.DisplayName);
+            _browsers[_c.CurrentUser].TextOf(PrivateCallPopupPage.IncomingCallMessage).Should().Contain(fromUser.DisplayName);
             _browsers[_c.CurrentUser].Click(PrivateCallPopupPage.DeclinePrivateCall);
         }
 
@@ -236,8 +236,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browserSteps.GivenInTheUsersBrowser(user1);
             var otherUser = Users.GetUserFromText(user2, _c.Test.Users);
-            _browsers[_c.CurrentUser].Driver
-                .WaitUntilVisible(PrivateConsultationRoomPage.StatusOfUser(otherUser.DisplayName)).Text.Should().Be("Declined");
+            _browsers[_c.CurrentUser].TextOf(PrivateConsultationRoomPage.StatusOfUser(otherUser.DisplayName)).Should().Be("Declined");
         }
 
         [Then(@"the (.*) will not be able to join the meeting room containing the (.*)")]
@@ -253,10 +252,10 @@ namespace VideoWeb.AcceptanceTests.Steps
         private string TheMeetingRoomUserIsIn(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            return _browsers[_c.CurrentUser].Driver.FindElement(PrivateConsultationRoomPage.RoomTitle).Text;
+            return _browsers[_c.CurrentUser].TextOf(PrivateConsultationRoomPage.RoomTitle);
         }
 
-        private List<string> TheUsersListedInTheMeetingRoomSeenBy(string user)
+        private IEnumerable<string> TheUsersListedInTheMeetingRoomSeenBy(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
             var elements = _browsers[_c.CurrentUser].Driver

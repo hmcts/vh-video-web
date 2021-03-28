@@ -136,7 +136,7 @@ namespace VideoWeb.Controllers
                 var username = User.Identity.Name?.ToLower().Trim();
                 var conference = await GetConference(request.ConferenceId);
 
-                var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedBy && x.Username == username);
+                var requestedBy = conference.Participants?.SingleOrDefault(x => x.Id == request.RequestedBy && x.Username.Trim().Equals(username, StringComparison.CurrentCultureIgnoreCase));
                 if (requestedBy == null)
                 {
                     _logger.LogWarning("The participant with Id: {RequestedBy} and username: {Username} is not found", request.RequestedBy, username);

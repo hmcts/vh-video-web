@@ -68,7 +68,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the hearing status should be displayed as Closed on the hearing list page")]
         public void ThenTheHearingStatusShouldBeDisplayedAsClosedOnTheHearingListPage()
         {
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeHearingListPage.Status(_c.Test.Conference.Id)).Text.Trim().Should().Be("Closed");
+            _browsers[_c.CurrentUser].TextOf(JudgeHearingListPage.Status(_c.Test.Conference.Id)).Should().Be("Closed");
         }
 
         [Then(@"the Judge is unable to access the Waiting Room")]
@@ -100,15 +100,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheParticipantCanSeeAListOfHearingsIncludingTheNewHearing()
         {
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantHearingListPage.CaseNumber(_c.Test.Conference.Id)).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantHearingListPage.HearingDate(_c.Test.Conference.Id)).Text.Should().Be($"{_c.TimeZone.Adjust(_c.Test.Hearing.ScheduledDateTime).ToString(DateFormats.HearingListPageDate)}");
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantHearingListPage.HearingTime(_c.Test.Conference.Id)).Text.Should().Be($"{_c.TimeZone.Adjust(_c.Test.Hearing.ScheduledDateTime):HH:mm}");
+            _browsers[_c.CurrentUser].TextOf(ParticipantHearingListPage.HearingDate(_c.Test.Conference.Id)).Should().Be($"{_c.TimeZone.Adjust(_c.Test.Hearing.ScheduledDateTime).ToString(DateFormats.HearingListPageDate)}");
+            _browsers[_c.CurrentUser].TextOf(ParticipantHearingListPage.HearingTime(_c.Test.Conference.Id)).Should().Be($"{_c.TimeZone.Adjust(_c.Test.Hearing.ScheduledDateTime):HH:mm}");
         }
 
         [Then(@"the user can see their details at the top of the hearing list")]
         public void ThenTheUserCanSeeTheirDetailsAtTheTopOfTheHearingList()
         {
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeHearingListPage.HearingListTitle).Text
-                .Should().Be($"Video hearings for {_c.CurrentUser.FirstName}, {_c.CurrentUser.LastName}");
+            _browsers[_c.CurrentUser].TextOf(JudgeHearingListPage.HearingListTitle).Should().Be($"Video hearings for {_c.CurrentUser.FirstName}, {_c.CurrentUser.LastName}");
         }
 
         [Then(@"the Judge can see a list of hearings including the new hearing")]
@@ -142,8 +141,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the new hearing isn't available to join yet")]
         public void ThenTheNewHearingIsnTAvailableToJoinYet()
         {
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantHearingListPage.SignInDate(_c.Test.Conference.Id)).Text.Trim().Should().Contain("Today");
-            var signInTime = _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantHearingListPage.SignInTime(_c.Test.Conference.Id)).Text.Trim();
+            _browsers[_c.CurrentUser].TextOf(ParticipantHearingListPage.SignInDate(_c.Test.Conference.Id)).Should().Contain("Today");
+            var signInTime = _browsers[_c.CurrentUser].TextOf(ParticipantHearingListPage.SignInTime(_c.Test.Conference.Id));
             signInTime = signInTime.Replace("from ", "");
             CheckIfHearingTimeIsWithinTolerance(signInTime);
         }
