@@ -419,16 +419,7 @@ namespace VideoWeb.EventHub.Hub
             {
                 var conference = await GetConference(conferenceId);
                 var participant = conference.Participants.Single(x => x.Id == participantId);
-                var linkedParticipants = conference.Participants
-                    .Where(p => participant.LinkedParticipants.Select(x => x.LinkedId)
-                        .Contains(p.Id)
-                    ).ToList();
-
-                if (participant.IsJudicialOfficeHolder())
-                {
-                    linkedParticipants = conference.Participants
-                        .Where(x => x.IsJudicialOfficeHolder() && x.Id != participantId).ToList();
-                }
+                var linkedParticipants = GetLinkedParticipants(conference, participant);
 
                 await Clients.Group(participant.Username.ToLowerInvariant())
                     .ParticipantRemoteMuteMessage(participantId, conferenceId, isRemoteMuted);
@@ -459,16 +450,7 @@ namespace VideoWeb.EventHub.Hub
             {
                 var conference = await GetConference(conferenceId);
                 var participant = conference.Participants.Single(x => x.Id == participantId);
-                var linkedParticipants = conference.Participants
-                    .Where(p => participant.LinkedParticipants.Select(x => x.LinkedId)
-                        .Contains(p.Id)
-                    ).ToList();
-
-                if (participant.IsJudicialOfficeHolder())
-                {
-                    linkedParticipants = conference.Participants
-                        .Where(x => x.IsJudicialOfficeHolder() && x.Id != participantId).ToList();
-                }
+                var linkedParticipants = GetLinkedParticipants(conference, participant);
                 
                 var judge = conference.Participants.Single(x => x.IsJudge());
                 await Clients.Group(judge.Username.ToLowerInvariant())
@@ -494,6 +476,20 @@ namespace VideoWeb.EventHub.Hub
                     "Error occured when updating participant {ParticipantId} in conference {ConferenceId} hand status to {IsHandRaised}",
                     participantId, conferenceId, isRaised);
             }
+        }
+
+        private List<Participant> GetLinkedParticipants(Conference conference, Participant participant)
+        {
+            if (participant.IsJudicialOfficeHolder())
+            {
+                return conference.Participants
+                    .Where(x => x.IsJudicialOfficeHolder() && x.Id != participant.Id).ToList();
+            }
+
+            return conference.Participants
+                .Where(p => participant.LinkedParticipants.Select(x => x.LinkedId)
+                    .Contains(p.Id)
+                ).ToList();
         }
 
         private async Task<string> GetParticipantUsernameByIdAsync(Guid conferenceId, string participantId)
