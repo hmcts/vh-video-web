@@ -26,16 +26,33 @@ namespace VideoWeb.Extensions
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 }).AddPolicyScheme(JwtBearerDefaults.AuthenticationScheme, "Handler", options =>
-                    options.ForwardDefaultSelector = context =>
-                        context.Request.Path.StartsWithSegments("/callback")
-                            ? "Callback" : "Default")
-                .AddJwtBearer("Default", options =>
                 {
-                    options.Authority = $"{ securitySettings.Authority}{securitySettings.TenantId}/v2.0";
+                    options.ForwardDefaultSelector = context =>
+                    {
+                        if (context.Request.Path.StartsWithSegments("/callback"))
+                        {
+                            return "Callback";
+                        }
+                        var foundHeader = context.Request.Headers.TryGetValue("oidc-provider", out var authType);
+                        return foundHeader ? authType.ToString() : "vhaad";
+                    };
+                })
+                .AddJwtBearer("vhaad", options =>
+                {
+                    options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}/v2.0";
                     options.TokenValidationParameters.ValidateLifetime = true;
                     options.TokenValidationParameters.NameClaimType = "preferred_username";
                     options.Audience = securitySettings.ClientId;
                     options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
+                })
+                .AddJwtBearer("ejud", options =>
+                {
+                    options.Authority = "https://login.microsoftonline.com/0b90379d-18de-426a-ae94-7f62441231e0/v2.0";
+                    options.TokenValidationParameters.ValidateLifetime = true;
+                    options.TokenValidationParameters.NameClaimType = "preferred_username";
+                    options.Audience = "a6596b93-7bd6-4363-81a4-3e6d9aa2df2b";
+                    options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
+                    // TODO: On token validation get roles from userapi
                 }).AddJwtBearer("EventHubUser", options =>
                 {
                     options.Events = new JwtBearerEvents
@@ -93,10 +110,16 @@ namespace VideoWeb.Extensions
                 AppRoles.CitizenRole, AppRoles.JudgeRole, AppRoles.RepresentativeRole, AppRoles.CaseAdminRole,
                 AppRoles.VhOfficerRole, AppRoles.JudicialOfficeHolderRole
             };
-            options.AddPolicy("Default", new AuthorizationPolicyBuilder()
+            options.AddPolicy("vhaad", new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .RequireRole(allRoles)
-                .AddAuthenticationSchemes("Default")
+                .AddAuthenticationSchemes("vhaad")
+                .Build());
+
+            options.AddPolicy("ejud", new AuthorizationPolicyBuilder()
+                .RequireAuthenticatedUser()
+                .RequireRole(allRoles)
+                .AddAuthenticationSchemes("ejud")
                 .Build());
 
             options.AddPolicy("EventHubUser", new AuthorizationPolicyBuilder()
@@ -113,37 +136,43 @@ namespace VideoWeb.Extensions
             options.AddPolicy(AppRoles.JudgeRole, new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .RequireRole(AppRoles.JudgeRole)
-                .AddAuthenticationSchemes("Default")
+                .AddAuthenticationSchemes("vhaad")
+                .AddAuthenticationSchemes("ejud")
                 .Build());
 
             options.AddPolicy(AppRoles.VhOfficerRole, new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .RequireRole(AppRoles.VhOfficerRole)
-                .AddAuthenticationSchemes("Default")
+                .AddAuthenticationSchemes("vhaad")
+                .AddAuthenticationSchemes("ejud")
                 .Build());
 
             options.AddPolicy("Judicial", new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .RequireRole(AppRoles.JudgeRole, AppRoles.JudicialOfficeHolderRole)
-                .AddAuthenticationSchemes("Default")
+                .AddAuthenticationSchemes("vhaad")
+                .AddAuthenticationSchemes("ejud")
                 .Build());
 
             options.AddPolicy("Individual", new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .RequireRole(AppRoles.CitizenRole, AppRoles.RepresentativeRole)
-                .AddAuthenticationSchemes("Default")
+                .AddAuthenticationSchemes("vhaad")
+                .AddAuthenticationSchemes("ejud")
                 .Build());
 
             options.AddPolicy(AppRoles.RepresentativeRole, new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .RequireRole(AppRoles.RepresentativeRole)
-                .AddAuthenticationSchemes("Default")
+                .AddAuthenticationSchemes("vhaad")
+                .AddAuthenticationSchemes("ejud")
                 .Build());
 
             options.AddPolicy(AppRoles.CitizenRole, new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .RequireRole(AppRoles.CitizenRole)
-                .AddAuthenticationSchemes("Default")
+                .AddAuthenticationSchemes("vhaad")
+                .AddAuthenticationSchemes("ejud")
                 .Build());
         }
 

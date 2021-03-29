@@ -1,4 +1,4 @@
-import { HttpBackend, HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpBackend, HttpResponse } from '@angular/common/http';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { ClientSettingsResponse } from '../clients/api-client';
