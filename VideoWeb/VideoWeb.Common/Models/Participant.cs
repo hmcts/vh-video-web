@@ -30,6 +30,11 @@ namespace VideoWeb.Common.Models
         {
             return Role == Role.Judge;
         }
+        
+        public bool IsJudicialOfficeHolder()
+        {
+            return Role == Role.JudicialOfficeHolder;
+        }
 
         public bool IsWitness()
         {

@@ -3886,12 +3886,12 @@ export class ApiClient {
      * @param participantType (optional)
      * @return Success
      */
-    getInterpreterRoomForParticipant(
+    getParticipantRoomForParticipant(
         conferenceId: string,
         participantId: string,
         participantType: string | undefined
     ): Observable<SharedParticipantRoom> {
-        let url_ = this.baseUrl + '/conferences/{conferenceId}/rooms/interpreter/{participantId}?';
+        let url_ = this.baseUrl + '/conferences/{conferenceId}/rooms/shared/{participantId}?';
         if (conferenceId === undefined || conferenceId === null) throw new Error("The parameter 'conferenceId' must be defined.");
         url_ = url_.replace('{conferenceId}', encodeURIComponent('' + conferenceId));
         if (participantId === undefined || participantId === null) throw new Error("The parameter 'participantId' must be defined.");
@@ -3912,14 +3912,14 @@ export class ApiClient {
             .request('get', url_, options_)
             .pipe(
                 _observableMergeMap((response_: any) => {
-                    return this.processGetInterpreterRoomForParticipant(response_);
+                    return this.processGetParticipantRoomForParticipant(response_);
                 })
             )
             .pipe(
                 _observableCatch((response_: any) => {
                     if (response_ instanceof HttpResponseBase) {
                         try {
-                            return this.processGetInterpreterRoomForParticipant(<any>response_);
+                            return this.processGetParticipantRoomForParticipant(<any>response_);
                         } catch (e) {
                             return <Observable<SharedParticipantRoom>>(<any>_observableThrow(e));
                         }
@@ -3928,7 +3928,7 @@ export class ApiClient {
             );
     }
 
-    protected processGetInterpreterRoomForParticipant(response: HttpResponseBase): Observable<SharedParticipantRoom> {
+    protected processGetParticipantRoomForParticipant(response: HttpResponseBase): Observable<SharedParticipantRoom> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;

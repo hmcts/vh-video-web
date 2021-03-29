@@ -62,17 +62,29 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.configService.getClientSettings().subscribe(() => {
-            this.checkAuth().subscribe(async loggedIn => {
-                this.loggedIn = loggedIn;
-                await this.attemptRetrieveProfile(loggedIn);
-                this.checkBrowser();
-                this.setPageTitle();
-                this.setupSubscribers();
-                this.eventsService.start();
-                this.connectionStatusService.start();
-            });
+        this.configService.getClientSettings().subscribe({
+            next: async () => {
+                this.postConfigSetup();
+            }
         });
+    }
+
+    private postConfigSetup() {
+        this.checkAuth().subscribe({
+            next: async (loggedIn: boolean) => {
+                await this.postAuthSetup(loggedIn);
+            }
+        });
+    }
+
+    private async postAuthSetup(loggedIn: boolean) {
+        this.loggedIn = loggedIn;
+        await this.attemptRetrieveProfile(loggedIn);
+        this.checkBrowser();
+        this.setPageTitle();
+        this.setupSubscribers();
+        this.eventsService.start();
+        this.connectionStatusService.start();
     }
 
     private async attemptRetrieveProfile(loggedIn: boolean) {
@@ -86,11 +98,13 @@ export class AppComponent implements OnInit, OnDestroy {
 
     private setupSubscribers() {
         this.subscriptions.add(
-            this.router.events.subscribe((event: NavigationEnd) => {
-                if (event instanceof NavigationEnd) {
-                    // If the connection has failed and passed the max number of retries, we need to trigger a manual reconnect attempt.
-                    this.eventsService.start();
-                    this.scrollToTop();
+            this.router.events.subscribe({
+                next: (event: NavigationEnd) => {
+                    if (event instanceof NavigationEnd) {
+                        // If the connection has failed and passed the max number of retries, we need to trigger a manual reconnect attempt.
+                        this.eventsService.start();
+                        this.scrollToTop();
+                    }
                 }
             })
         );
@@ -154,8 +168,10 @@ export class AppComponent implements OnInit, OnDestroy {
                         return applTitle;
                     })
                 )
-                .subscribe((appendTitle: string) => {
-                    this.titleService.setTitle(applTitle + appendTitle);
+                .subscribe({
+                    next: (appendTitle: string) => {
+                        this.titleService.setTitle(applTitle + appendTitle);
+                    }
                 })
         );
     }

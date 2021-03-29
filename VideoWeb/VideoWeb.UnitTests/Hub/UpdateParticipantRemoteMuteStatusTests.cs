@@ -41,6 +41,33 @@ namespace VideoWeb.UnitTests.Hub
         }
 
         [Test]
+        public async Task should_publish_remote_mute_status_to_all_johs_when_one_joh_is_muted()
+        {
+            var participantUsername = "individual@hmcts.net";
+            var conference = CreateTestConference(participantUsername, true);
+            var conferenceId = conference.Id;
+            var allJohs = conference.Participants.Where(x => x.IsJudicialOfficeHolder()).ToList();
+            var participant = conference.Participants.First(x => x.IsJudicialOfficeHolder());
+            var isRemoteMuted = true;
+            
+            SetupEventHubClientsForAllParticipantsInConference(conference, false);
+
+            ConferenceCacheMock.Setup(cache =>
+                    cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+                .ReturnsAsync(conference);
+            
+            await Hub.UpdateParticipantRemoteMuteStatus(conferenceId, participant.Id, isRemoteMuted);
+
+            foreach (var joh in allJohs)
+            {
+                EventHubClientMock.Verify(
+                    x => x.Group(joh.Username.ToLowerInvariant())
+                        .ParticipantRemoteMuteMessage(joh.Id, conference.Id, isRemoteMuted), Times.Once);
+            }
+        }
+        
+        [Test]
         public async Task should_not_publish_when_participant_does_not_exist()
         {
             var participantUsername = "individual@hmcts.net";
