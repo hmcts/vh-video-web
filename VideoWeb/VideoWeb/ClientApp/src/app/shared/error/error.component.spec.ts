@@ -7,7 +7,7 @@ import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { PageTrackerService } from 'src/app/services/page-tracker.service';
 import { eventsServiceSpy, isConnectedSpy } from 'src/app/testing/mocks/mock-events-service';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { ContactUsFoldingComponent } from '../contact-us-folding/contact-us-folding.component';
 import { ErrorMessage } from '../models/error-message';
 import { ErrorComponent } from './error.component';
@@ -15,7 +15,7 @@ import { ErrorService } from 'src/app/services/error.service';
 import { ConnectionStatusService } from 'src/app/services/connection-status.service';
 import { connectionStatusServiceSpyFactory } from 'src/app/testing/mocks/mock-connection-status.service';
 import { TranslateService } from '@ngx-translate/core';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { TranslatePipeMock } from 'src/app/testing/mocks/mock-translation-pipe';
 
 class MockRouter {

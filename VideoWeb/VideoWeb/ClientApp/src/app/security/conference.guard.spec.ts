@@ -2,7 +2,7 @@ import { convertToParamMap, Router } from '@angular/router';
 import { VideoWebService } from '../services/api/video-web.service';
 import { ConferenceResponse, ConferenceStatus } from '../services/clients/api-client';
 import { pageUrls } from '../shared/page-url.constants';
-import { MockLogger } from '../testing/mocks/MockLogger';
+import { MockLogger } from '../testing/mocks/mock-logger';
 import { ConferenceGuard } from './conference.guard';
 
 describe('ConferenceGuard', () => {

@@ -1,4 +1,4 @@
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { NotificationSoundsService } from './notification-sounds.service';
 
 describe('NotificationSoundsService', () => {

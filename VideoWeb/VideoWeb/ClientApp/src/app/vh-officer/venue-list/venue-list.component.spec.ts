@@ -8,7 +8,7 @@ import { JudgeNameListResponse, CourtRoomsAccountResponse } from 'src/app/servic
 import { CourtRoomsAccounts } from '../services/models/court-rooms-accounts';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { Logger } from 'src/app/services/logging/logger-base';
 
 describe('VenueListComponent', () => {

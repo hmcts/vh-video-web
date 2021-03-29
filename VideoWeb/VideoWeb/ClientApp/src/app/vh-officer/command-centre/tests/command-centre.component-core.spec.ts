@@ -13,7 +13,7 @@ import { ScreenHelper } from 'src/app/shared/screen-helper';
 import { TestFixtureHelper } from 'src/app/testing/Helper/test-fixture-helper';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { SessionStorage } from '../../../services/session-storage';
 import { MenuOption } from '../../models/menus-options';
 import { CourtRoomsAccounts } from '../../services/models/court-rooms-accounts';

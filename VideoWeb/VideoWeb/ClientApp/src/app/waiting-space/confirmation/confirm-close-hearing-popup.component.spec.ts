@@ -1,5 +1,5 @@
 import { ConfirmStartHearingPopupComponent } from './confirm-start-hearing-popup.component';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 
 describe('ConfirmStartHearingPopupComponent', () => {
     let component: ConfirmStartHearingPopupComponent;

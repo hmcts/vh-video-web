@@ -10,7 +10,7 @@ import {
     onPresentationConnectedMock,
     onPresentationDisconnectedMock,
     onPresentationMock
-} from 'src/app/testing/mocks/mock-video-call-service';
+} from 'src/app/testing/mocks/mock-video-call.service';
 import {
     CallSetup,
     ConnectedCall,

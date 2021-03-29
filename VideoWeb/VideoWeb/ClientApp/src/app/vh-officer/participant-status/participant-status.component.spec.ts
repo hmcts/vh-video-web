@@ -8,7 +8,7 @@ import { ErrorService } from '../../services/error.service';
 import { ParticipantStatusMessage } from '../../services/models/participant-status-message';
 import { ParticipantContactDetails } from '../../shared/models/participant-contact-details';
 import { ParticipantStatusReader } from '../../shared/models/participant-status-reader';
-import { MockLogger } from '../../testing/mocks/MockLogger';
+import { MockLogger } from '../../testing/mocks/mock-logger';
 import { ParticipantStatusComponent } from './participant-status.component';
 
 describe('ParticipantStatusComponent', () => {

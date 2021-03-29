@@ -2,7 +2,7 @@ import { async } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { ProfileService } from '../services/api/profile.service';
 import { Role, UserProfileResponse } from '../services/clients/api-client';
-import { MockLogger } from '../testing/mocks/MockLogger';
+import { MockLogger } from '../testing/mocks/mock-logger';
 import { ParticipantGuard } from './participant.guard';
 
 describe('ParticipantGuard', () => {

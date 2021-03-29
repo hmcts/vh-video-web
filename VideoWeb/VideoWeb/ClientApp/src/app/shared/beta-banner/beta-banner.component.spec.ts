@@ -11,9 +11,9 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy, hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
-import { MockOidcSecurityService } from 'src/app/testing/mocks/MockOidcSecurityService';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { BetaBannerComponent } from './beta-banner.component';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 

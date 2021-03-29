@@ -1,8 +1,8 @@
 import * as signalR from '@microsoft/signalr';
 import { Guid } from 'guid-typescript';
 import { of, Subscription } from 'rxjs';
-import { MockOidcSecurityService } from '../testing/mocks/MockOidcSecurityService';
-import { MockLogger } from '../testing/mocks/MockLogger';
+import { MockOidcSecurityService } from '../testing/mocks/mock-oidc-security.service';
+import { MockLogger } from '../testing/mocks/mock-logger';
 import { ConfigService } from './api/config.service';
 import { ClientSettingsResponse } from './clients/api-client';
 import { EventsService } from './events.service';

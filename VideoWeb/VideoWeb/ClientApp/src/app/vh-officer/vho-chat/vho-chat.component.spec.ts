@@ -9,11 +9,11 @@ import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy, messageSubjectMock } from 'src/app/testing/mocks/mock-events-service';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { adminTestProfile, judgeTestProfile } from '../../testing/data/test-profiles';
 import { VhoChatComponent } from './vho-chat.component';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
-import { MockOidcSecurityService } from 'src/app/testing/mocks/MockOidcSecurityService';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
 
 describe('VhoChatComponent', () => {
     let component: VhoChatComponent;

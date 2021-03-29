@@ -3,8 +3,8 @@ import { ConsultationAnswer } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Participant } from 'src/app/shared/models/participant';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import {
     consultationService,

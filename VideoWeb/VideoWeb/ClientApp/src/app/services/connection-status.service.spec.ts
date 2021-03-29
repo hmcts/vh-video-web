@@ -1,5 +1,5 @@
 import { fakeAsync, tick } from '@angular/core/testing';
-import { MockLoggerToConsole } from '../testing/mocks/MockLoggerToConsole';
+import { MockLoggerToConsole } from '../testing/mocks/mock-logger-to-console';
 import { Logger } from './logging/logger-base';
 import { ConnectionStatusService } from '../services/connection-status.service';
 import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';

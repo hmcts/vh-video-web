@@ -15,7 +15,8 @@ export class MockOidcSecurityService {
     authenticated: boolean;
     configuration = {
         configuration: {
-            scope: 'openid profile offline_access'
+            scope: 'openid profile offline_access',
+            secureRoutes: ['.']
         }
     } as PublicConfiguration;
 

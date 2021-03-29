@@ -22,8 +22,8 @@ import {
     onErrorSubjectMock,
     onSetupSubjectMock,
     videoCallServiceSpy
-} from 'src/app/testing/mocks/mock-video-call-service';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+} from 'src/app/testing/mocks/mock-video-call.service';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { CallError, CallSetup, ConnectedCall, DisconnectedCall } from 'src/app/waiting-space/models/video-call-models';
 import { SelectedUserMediaDevice } from '../models/selected-user-media-device';
 import { SelfTestComponent } from './self-test.component';
