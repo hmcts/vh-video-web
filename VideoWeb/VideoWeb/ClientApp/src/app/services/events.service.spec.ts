@@ -9,6 +9,7 @@ import { EventsService } from './events.service';
 import { Logger } from './logging/logger-base';
 import { InstantMessage } from './models/instant-message';
 import { ErrorService } from '../services/error.service';
+import { fakeAsync, tick } from '@angular/core/testing';
 
 describe('EventsService', () => {
     const clientSettings = new ClientSettingsResponse({
@@ -44,7 +45,10 @@ describe('EventsService', () => {
             .build();
     });
 
-    afterEach(() => subscription$.unsubscribe());
+    afterEach(() => {
+        subscription$.unsubscribe();
+        service.reconnectionPromise = null;
+    });
 
     it('should init observables', () => {
         subscription$.add(service.getServiceReconnected().subscribe());
@@ -58,58 +62,63 @@ describe('EventsService', () => {
         expect(subscription$).toBeTruthy();
     });
 
-    it('should start if not connected', async () => {
+    it('should start if not connected', fakeAsync(() => {
         mockOidcSecurityService.setAuthenticated(true);
         spyOn(service.connection, 'start').and.callFake(() => Promise.resolve());
-        await service.start();
+        service.start();
+        tick();
         expect(service.reconnectionAttempt).toBe(0);
-    });
+    }));
 
-    it('should retry to connect on failure', async () => {
+    it('should retry to connect on failure', fakeAsync(() => {
         mockOidcSecurityService.setAuthenticated(true);
         service.reconnectionAttempt = 0;
         spyOn(service.connection, 'start').and.returnValues(Promise.reject('Unable to connect auto test'), Promise.resolve());
         subscription$.add(service.getServiceDisconnected().subscribe());
-        await service.start();
-        expect(service.reconnectionAttempt).toBe(1);
-        if (service.reconnectionPromise) {
-            await service.reconnectionPromise;
-            expect(service.connection.start).toHaveBeenCalledTimes(2);
-        }
-    });
+        service.start();
+        tick();
+        expect(service.reconnectionAttempt).toBe(0);
+        expect(service.connection.start).toHaveBeenCalledTimes(2);
+    }));
 
-    it('should goto service error on 8th failure', async () => {
+    it('should goto service error on 8th failure', fakeAsync(() => {
         mockOidcSecurityService.setAuthenticated(true);
         service.reconnectionTimes[6] = 0;
         service.reconnectionAttempt = 7;
         spyOn(service.connection, 'start').and.returnValues(Promise.reject('Unable to connect auto test'));
         subscription$.add(service.getServiceDisconnected().subscribe());
-        await service.start();
+        service.start();
+        tick();
         expect(errorServiceSpy.goToServiceError).toHaveBeenCalledWith('Your connection was lost');
-    });
+    }));
 
-    it('should not start if connected', async () => {
+    it('should not start if connected', fakeAsync(() => {
         mockOidcSecurityService.setAuthenticated(true);
         const spy = spyOnProperty(service.connection, 'state').and.returnValue(signalR.HubConnectionState.Disconnected);
         spyOn(service.connection, 'start').and.callFake(() => {
             spy.and.returnValue(signalR.HubConnectionState.Connected);
             return Promise.resolve();
         });
-        await service.start();
-        await service.start();
+        service.start();
+        tick();
+        service.start();
+        tick();
         expect(service.connection.start).toHaveBeenCalledTimes(1);
-    });
-    it('should not start if in Disconnecting stat', async () => {
+    }));
+
+    it('should not start if in Disconnecting stat', fakeAsync(() => {
         mockOidcSecurityService.setAuthenticated(true);
         const spy = spyOnProperty(service.connection, 'state').and.returnValue(signalR.HubConnectionState.Disconnecting);
         spyOn(service.connection, 'start').and.callFake(() => {
             spy.and.returnValue(signalR.HubConnectionState.Disconnecting);
             return Promise.resolve();
         });
-        await service.start();
-        await service.start();
+        service.start();
+        tick();
+        service.start();
+        tick();
         expect(service.connection.start).toHaveBeenCalledTimes(0);
-    });
+    }));
 
     it('should stop eventhub connection if connected to eventhub', () => {
         spyOn(service.connection, 'stop').and.callFake(() => Promise.resolve());
@@ -146,15 +155,17 @@ describe('EventsService', () => {
         expect(service.connection.send).toHaveBeenCalledWith('SendMessage', imTest.conferenceId, imTest.message, imTest.to, imTest.id);
     });
 
-    it('should not reconnect if signalR disonnected and user is not logged in', async () => {
+    it('should not reconnect if signalR disonnected and user is not logged in', fakeAsync(() => {
         mockOidcSecurityService.setAuthenticated(false);
         const spy = spyOnProperty(service.connection, 'state').and.returnValue(signalR.HubConnectionState.Disconnected);
         spyOn(service.connection, 'start').and.callFake(() => {
             spy.and.returnValue(signalR.HubConnectionState.Connected);
             return Promise.resolve();
         });
-        await service.start();
-        await service.start();
+        service.start();
+        tick();
+        service.start();
+        tick();
         expect(service.connection.start).toHaveBeenCalledTimes(0);
-    });
+    }));
 });

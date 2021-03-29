@@ -71,50 +71,51 @@ export class EventsService {
                 .configureLogging(signalR.LogLevel.Debug)
                 .withAutomaticReconnect(this.reconnectionTimes)
                 .withUrl(eventhubPath, {
-                    accessTokenFactory: () => this.oidcSecurityService.getIdToken()
+                    accessTokenFactory: () => this.oidcSecurityService.getToken()
                 })
                 .build();
             this.connection.serverTimeoutInMilliseconds = this.serverTimeoutTime;
         });
     }
 
-    async start(): Promise<any> {
+    start() {
         if (this.reconnectionPromise) {
-            return this.reconnectionPromise;
+            return;
         }
 
         if (!this.isConnectedToHub && this.connection.state !== signalR.HubConnectionState.Disconnecting) {
-            const authenticated = await this.oidcSecurityService.isAuthenticated$.toPromise();
-            if (authenticated) {
-                this.reconnectionAttempt++;
-                return this.connection
-                    .start()
-                    .then(() => {
-                        this.reconnectionAttempt = 0;
-                        this.logger.info('[EventsService] - Successfully connected to EventHub');
-                        this.connection.onreconnecting(error => this.onEventHubReconnecting(error));
-                        this.connection.onreconnected(() => this.onEventHubReconnected());
-                        this.connection.onclose(error => this.onEventHubErrorOrClose(error));
-                        this.registerHandlers();
-                    })
-                    .catch(async err => {
-                        this.logger.warn(`[EventsService] - Failed to connect to EventHub ${err}`);
-                        this.onEventHubErrorOrClose(err);
-                        if (this.reconnectionTimes.length >= this.reconnectionAttempt) {
-                            const delayMs = this.reconnectionTimes[this.reconnectionAttempt - 1];
-                            this.logger.info(`[EventsService] - Reconnecting in ${delayMs}ms`);
-                            this.reconnectionPromise = this.delay(delayMs).then(() => {
-                                this.reconnectionPromise = null;
-                                this.start();
-                            });
-                        } else {
-                            this.logger.info(
-                                `[EventsService] - Failed to connect too many times (#${this.reconnectionAttempt}), going to service error`
-                            );
-                            this.errorService.goToServiceError('Your connection was lost');
-                        }
-                    });
-            }
+            this.oidcSecurityService.isAuthenticated$.subscribe(authenticated => {
+                if (authenticated) {
+                    this.reconnectionAttempt++;
+                    return this.connection
+                        .start()
+                        .then(() => {
+                            this.reconnectionAttempt = 0;
+                            this.logger.info('[EventsService] - Successfully connected to EventHub');
+                            this.connection.onreconnecting(error => this.onEventHubReconnecting(error));
+                            this.connection.onreconnected(() => this.onEventHubReconnected());
+                            this.connection.onclose(error => this.onEventHubErrorOrClose(error));
+                            this.registerHandlers();
+                        })
+                        .catch(async err => {
+                            this.logger.warn(`[EventsService] - Failed to connect to EventHub ${err}`);
+                            this.onEventHubErrorOrClose(err);
+                            if (this.reconnectionTimes.length >= this.reconnectionAttempt) {
+                                const delayMs = this.reconnectionTimes[this.reconnectionAttempt - 1];
+                                this.logger.info(`[EventsService] - Reconnecting in ${delayMs}ms`);
+                                this.reconnectionPromise = this.delay(delayMs).then(() => {
+                                    this.reconnectionPromise = null;
+                                    this.start();
+                                });
+                            } else {
+                                this.logger.info(
+                                    `[EventsService] - Failed to connect too many times (#${this.reconnectionAttempt}), going to service error`
+                                );
+                                this.errorService.goToServiceError('Your connection was lost');
+                            }
+                        });
+                }
+            });
         }
     }
 
