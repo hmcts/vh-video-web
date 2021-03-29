@@ -47,6 +47,39 @@ namespace VideoWeb.UnitTests.Hub
         }
 
         [Test]
+        public async Task should_publish_hand_raised_to_all_johs_when_one_joh_is_is_raised()
+        {
+            var participantUsername = "individual@hmcts.net";
+            var conference = CreateTestConference(participantUsername, true);
+            var conferenceId = conference.Id;
+            var allJohs = conference.Participants.Where(x => x.IsJudicialOfficeHolder()).ToList();
+            var participant = conference.Participants.First(x => x.IsJudicialOfficeHolder());
+            var handRaised = true;
+            
+            SetupEventHubClientsForAllParticipantsInConference(conference, false);
+
+            ConferenceCacheMock.Setup(cache =>
+                    cache.GetOrAddConferenceAsync(conference.Id, It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
+                .Callback(async (Guid anyGuid, Func<Task<ConferenceDetailsResponse>> factory) => await factory())
+                .ReturnsAsync(conference);
+            
+            await Hub.UpdateParticipantHandStatus(conferenceId, participant.Id, handRaised);
+
+            
+            var judge = conference.Participants.Single(x => x.IsJudge());
+            EventHubClientMock.Verify(
+                x => x.Group(judge.Username.ToLowerInvariant())
+                    .ParticipantHandRaiseMessage(participant.Id, conference.Id, handRaised),  Times.Once);
+            
+            foreach (var joh in allJohs)
+            {
+                EventHubClientMock.Verify(
+                    x => x.Group(joh.Username.ToLowerInvariant())
+                        .ParticipantHandRaiseMessage(joh.Id, conference.Id, handRaised), Times.Once);
+            }
+        }
+        
+        [Test]
         public async Task should_not_send_message_when_participant_does_not_exist()
         {
             var participantUsername = "individual@hmcts.net";

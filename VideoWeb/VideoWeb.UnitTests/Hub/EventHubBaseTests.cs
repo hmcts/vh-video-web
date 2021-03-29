@@ -110,10 +110,11 @@ namespace VideoWeb.UnitTests.Hub
         protected Conference CreateTestConference(string participantUsername, bool withLinked = false)
         {
             var conferenceId = Guid.NewGuid();
-            var participants = Builder<Participant>.CreateListOfSize(3)
+            var participants = Builder<Participant>.CreateListOfSize(5)
                 .All().With(x=> x.Id = Guid.NewGuid()).With(x=>x.Username = Faker.Internet.Email())
                 .With(x => x.LinkedParticipants = new List<LinkedParticipant>())
                 .TheFirst(1).With(x => x.Role = Role.Judge)
+                .TheNext(2).With(x=> x.Role = Role.JudicialOfficeHolder)
                 .TheNext(1).With(x => x.Role = Role.Individual).With(x => x.Username = participantUsername)
                 .TheNext(1).With(x => x.Role = Role.Individual)
                 .Build().ToList();
