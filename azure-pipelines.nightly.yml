@@ -75,24 +75,6 @@ parameters:
       DeviceType: Desktop
       DeviceName:
       TestCaseFilter: TestCategory=UnsupportedBrowser
-    - OS: Android
-      Browser: Chrome
-      BrowserVersion:
-      DeviceType: Tablet
-      DeviceName:
-      TestCaseFilter: TestCategory=UnsupportedDeviceTablet
-    - OS: iOS
-      Browser: Safari
-      BrowserVersion:
-      DeviceType: Mobile
-      DeviceName:
-      TestCaseFilter: TestCategory=UnsupportedDeviceMobile
-    - OS: Android
-      Browser: Chrome
-      BrowserVersion:
-      DeviceType: Mobile
-      DeviceName:
-      TestCaseFilter: TestCategory=UnsupportedDeviceMobile      
 
 - name: prodEnvs
   displayName: Environments Using Prod Subscription
