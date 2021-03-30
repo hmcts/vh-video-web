@@ -1,4 +1,4 @@
-import { ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { HearingRole } from './hearing-role-model';
 import { PanelModel } from './panel-model-base';
 
@@ -19,12 +19,29 @@ export class LinkedParticipantPanelModel extends PanelModel {
         return model;
     }
 
+    static forJudicialHolders(participants: PanelModel[], pexipDisplayName: string, roomid: string): LinkedParticipantPanelModel {
+        const joh = participants.find(x => x.role === Role.JudicialOfficeHolder);
+        const pexipName = pexipDisplayName;
+        const displayName = participants.map(x => x.displayName).join(', ');
+        const role = joh.role;
+        const caseTypeGroup = joh.caseTypeGroup;
+        const hearingRole = joh.hearingRole;
+
+        const model = new LinkedParticipantPanelModel(roomid, displayName, role, caseTypeGroup, pexipName, hearingRole, null);
+        model.participants = participants;
+        return model;
+    }
+
+    get isJudicalOfficeHolder(): boolean {
+        return this.participants.every(x => x.role === Role.JudicialOfficeHolder);
+    }
+
     get isWitness(): boolean {
         return this.participants.some(p => p.isWitness);
     }
 
     get isWitnessReadyToJoin(): boolean {
-        return this.participants.some(p => p.isWitness && p.isAvailable());
+        return this.participants.every(p => p.isAvailable());
     }
 
     get witnessParticipant(): PanelModel {

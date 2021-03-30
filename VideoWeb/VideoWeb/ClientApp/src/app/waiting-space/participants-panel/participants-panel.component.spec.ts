@@ -81,7 +81,8 @@ describe('ParticipantsPanelComponent', () => {
     });
 
     it('should get participant sorted list, the judge is first, then panel members and finally observers are the last one', fakeAsync(() => {
-        const expectedCount = endpoints.length + participants.length - 2; // take away 2 interpreters
+        const allJOHs = participants.filter(x => x.role === Role.JudicialOfficeHolder);
+        const expectedCount = endpoints.length + participants.length - 2 - (allJOHs.length - 1); // take away 2 interpreters and additional joh
 
         component.participants = [];
         component.ngOnInit();
