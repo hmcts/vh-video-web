@@ -219,6 +219,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             WhenTheUserLeavesThePrivateConsultationRoom(user2);
         }
 
+        [Then(@"the (.*) has left the private consultation room")]
+        public void ThenTheUserHasLeftThePrivateConsultationRoom(string user)
+        {
+            _browserSteps.GivenInTheUsersBrowser(user);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.HearingCaseDetails).Displayed.Should().BeTrue();
+        }
+
+
         [Then(@"the continue button will be disabled")]
         public void ThenTheContinueButtonWillBeDisabled()
         {
