@@ -268,6 +268,7 @@ export class ConferenceTestData {
 
     getListOfParticipants(): ParticipantForUserResponse[] {
         const participants: ParticipantForUserResponse[] = [];
+        const panelMemberRoom = new RoomSummaryResponse({ id: '234', label: 'PanelMember1', locked: false });
 
         const participant1 = new ParticipantForUserResponse({
             id: '1111-1111-1111-1111',
@@ -347,7 +348,8 @@ export class ConferenceTestData {
             case_type_group: 'panelmember',
             hearing_role: HearingRole.PANEL_MEMBER,
             tiled_display_name: 'T7;Panel Mem Doe PM;7777-7777-7777-7777',
-            linked_participants: []
+            linked_participants: [],
+            interpreter_room: panelMemberRoom
         });
 
         const participant8 = new ParticipantForUserResponse({
@@ -357,7 +359,8 @@ export class ConferenceTestData {
             role: Role.JudicialOfficeHolder,
             case_type_group: 'None',
             hearing_role: HearingRole.WINGER,
-            linked_participants: []
+            linked_participants: [],
+            interpreter_room: panelMemberRoom
         });
 
         const participant9 = new ParticipantForUserResponse({
