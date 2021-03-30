@@ -163,7 +163,7 @@ describe('LinkedParticipantPanelModel', () => {
     }
 });
 
-describe('LinkedParticipantPanelModel', () => {
+describe('LinkedParticipantPanelModel - witness & interpreter', () => {
     let model: LinkedParticipantPanelModel;
     let participants: ParticipantForUserResponse[];
 
