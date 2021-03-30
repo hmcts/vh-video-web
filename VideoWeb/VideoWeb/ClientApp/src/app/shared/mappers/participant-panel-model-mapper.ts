@@ -38,7 +38,7 @@ export class ParticipantPanelModelMapper {
 
     private isLinkAlreadyProcessed(pats: PanelModel[], participant: ParticipantForUserResponse): boolean {
         const filtered = pats.filter(x => x instanceof LinkedParticipantPanelModel);
-        if (!filtered) {
+        if (!filtered.length) {
             return false;
         }
         const linkedPanels = filtered as LinkedParticipantPanelModel[];
