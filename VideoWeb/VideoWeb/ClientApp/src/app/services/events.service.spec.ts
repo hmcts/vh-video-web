@@ -26,7 +26,6 @@ describe('EventsService', () => {
     const mockOidcSecurityService = new MockOidcSecurityService();
     let oidcSecurityService;
     const logger: Logger = new MockLogger();
-
     const subscription$ = new Subscription();
 
     beforeAll(() => {

@@ -1,12 +1,15 @@
 using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using VideoWeb.AuthenticationSchemes;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Models;
 using VideoWeb.Common.Security.HashGen;
@@ -19,9 +22,16 @@ namespace VideoWeb.Extensions
         {
             var eventhubPath = configuration.GetValue<string>("VhServices:EventHubPath");
             var kinlyConfiguration = configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
-            var securitySettings = configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
-            var securityKey = Convert.FromBase64String(kinlyConfiguration.CallbackSecret);
-            serviceCollection.AddAuthentication(options =>
+            var azureAdConfiguration = configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
+            var kinlyCallbackSecret = Convert.FromBase64String(kinlyConfiguration.CallbackSecret);
+
+            var providerSchemes = new List<IProviderSchemes>
+            {
+                new VhAadScheme(azureAdConfiguration, eventhubPath),
+                new EJudiciaryScheme(eventhubPath)
+            };
+
+            var authenticationBuilder = serviceCollection.AddAuthentication(options =>
                 {
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -33,153 +43,95 @@ namespace VideoWeb.Extensions
                         {
                             return "Callback";
                         }
-                        var foundHeader = context.Request.Headers.TryGetValue("oidc-provider", out var authType);
-                        return foundHeader ? authType.ToString() : "vhaad";
-                    };
-                })
-                .AddJwtBearer("vhaad", options =>
-                {
-                    options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}/v2.0";
-                    options.TokenValidationParameters.ValidateLifetime = true;
-                    options.TokenValidationParameters.NameClaimType = "preferred_username";
-                    options.Audience = securitySettings.ClientId;
-                    options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
-                })
-                .AddJwtBearer("ejud", options =>
-                {
-                    options.Authority = "https://login.microsoftonline.com/0b90379d-18de-426a-ae94-7f62441231e0/v2.0";
-                    options.TokenValidationParameters.ValidateLifetime = true;
-                    options.TokenValidationParameters.NameClaimType = "preferred_username";
-                    options.Audience = "a6596b93-7bd6-4363-81a4-3e6d9aa2df2b";
-                    options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
-                    // TODO: On token validation get roles from userapi
-                }).AddJwtBearer("EventHubUser", options =>
-                {
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = context =>
-                        {
-                            // https://docs.microsoft.com/en-us/aspnet/core/signalr/configuration?view=aspnetcore-5.0&tabs=dotnet
-                            // In the JavaScript client, the access token is used as a Bearer token,
-                            // except in a few cases where browser APIs restrict the ability to apply headers (specifically, in Server-Sent Events and WebSockets requests).
-                            // In these cases, the access token is provided as a query string value access_token
-                            var accessToken = context.Request.Query["accessToken"];
-                            if (string.IsNullOrEmpty(accessToken))
-                            {
-                                return Task.CompletedTask;
-                            }
 
-                            var path = context.HttpContext.Request.Path;
-                            if (path.StartsWithSegments(eventhubPath))
-                            {
-                                context.Token = accessToken;
-                            }
-
-                            return Task.CompletedTask;
-                        }
+                        var isEventHubRequest = context.Request.Path.StartsWithSegments("/eventhub");
+                        var provider = GetProviderFromRequest(context.Request, providerSchemes);
+                        return providerSchemes.Single(s => s.Provider == provider).GetScheme(isEventHubRequest);
                     };
-                    options.Authority = $"{securitySettings.Authority}{securitySettings.TenantId}/v2.0";
-                    options.TokenValidationParameters.ValidateLifetime = true;
-                    options.TokenValidationParameters.NameClaimType = "preferred_username";
-                    options.Audience = securitySettings.ClientId;
-                    options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
-                }).AddJwtBearer("Callback", options =>
+                })                
+                .AddJwtBearer("Callback", options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = false,
                         ValidateAudience = false,
-                        IssuerSigningKey = new SymmetricSecurityKey(securityKey)
+                        IssuerSigningKey = new SymmetricSecurityKey(kinlyCallbackSecret)
                     };
                 });
 
+            foreach (var scheme in providerSchemes)
+            {
+                authenticationBuilder = scheme.AddSchemes(authenticationBuilder);
+            }
+
             serviceCollection.AddMemoryCache();
-            serviceCollection.AddAuthPolicies();
+            serviceCollection.AddAuthPolicies(providerSchemes);
         }
 
-        private static void AddAuthPolicies(this IServiceCollection serviceCollection)
+        public static AuthProvider GetProviderFromRequest(HttpRequest httpRequest, IList<IProviderSchemes> providerSchemes)
         {
-            serviceCollection.AddAuthorization(AddPolicies);
-            serviceCollection.AddMvc(AddMvcPolicies);
+            var defaultScheme = AuthProvider.VHAAD;
+            if (httpRequest.Headers.TryGetValue("Authorization", out var authHeader))
+            {
+                var jwtToken = new JwtSecurityToken(authHeader.ToString().Replace("Bearer ", string.Empty));
+                return providerSchemes.SingleOrDefault(s => s.BelongsToScheme(jwtToken))?.Provider ?? defaultScheme;
+            }
+
+            return defaultScheme;
         }
 
-        private static void AddPolicies(AuthorizationOptions options)
+        private static void AddAuthPolicies(this IServiceCollection serviceCollection, IList<IProviderSchemes> providerSchemes)
+        {
+            serviceCollection.AddAuthorization(options => AddPolicies(options, providerSchemes));
+            serviceCollection.AddMvc(options => options.Filters.Add(new AuthorizeFilter(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build())));
+        }
+
+        private static void AddPolicies(AuthorizationOptions options, IList<IProviderSchemes> schemes)
         {
             var allRoles = new[]
             {
                 AppRoles.CitizenRole, AppRoles.JudgeRole, AppRoles.RepresentativeRole, AppRoles.CaseAdminRole,
                 AppRoles.VhOfficerRole, AppRoles.JudicialOfficeHolderRole
             };
-            options.AddPolicy("vhaad", new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser()
-                .RequireRole(allRoles)
-                .AddAuthenticationSchemes("vhaad")
-                .Build());
 
-            options.AddPolicy("ejud", new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser()
-                .RequireRole(allRoles)
-                .AddAuthenticationSchemes("ejud")
-                .Build());
-
-            options.AddPolicy("EventHubUser", new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser()
-                .RequireRole(allRoles)
-                .AddAuthenticationSchemes("EventHubUser")
-                .Build());
+            var rolePolicies = new Dictionary<string, string[]>
+            {
+                [AppRoles.JudgeRole] = new[] { AppRoles.JudgeRole },
+                [AppRoles.VhOfficerRole] = new[] { AppRoles.VhOfficerRole },
+                ["Judicial"] = new[] { AppRoles.JudgeRole, AppRoles.JudicialOfficeHolderRole },
+                ["Individual"] = new[] { AppRoles.CitizenRole, AppRoles.RepresentativeRole },
+                [AppRoles.RepresentativeRole] = new[] { AppRoles.RepresentativeRole },
+                [AppRoles.CitizenRole] = new[] { AppRoles.CitizenRole }
+            };
 
             options.AddPolicy("Callback", new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .AddAuthenticationSchemes("Callback")
                 .Build());
 
-            options.AddPolicy(AppRoles.JudgeRole, new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser()
-                .RequireRole(AppRoles.JudgeRole)
-                .AddAuthenticationSchemes("vhaad")
-                .AddAuthenticationSchemes("ejud")
-                .Build());
+            foreach (var scheme in schemes.SelectMany(s => s.GetProviderSchemes()))
+            {
+                options.AddPolicy(scheme, new AuthorizationPolicyBuilder()
+               .RequireAuthenticatedUser()
+               .RequireRole(allRoles)
+               .AddAuthenticationSchemes(scheme)
+               .Build());
+            }
 
-            options.AddPolicy(AppRoles.VhOfficerRole, new AuthorizationPolicyBuilder()
+            foreach (var policy in rolePolicies)
+            {
+                var policyBuilder = new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
-                .RequireRole(AppRoles.VhOfficerRole)
-                .AddAuthenticationSchemes("vhaad")
-                .AddAuthenticationSchemes("ejud")
-                .Build());
+                .RequireRole(policy.Value);
 
-            options.AddPolicy("Judicial", new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser()
-                .RequireRole(AppRoles.JudgeRole, AppRoles.JudicialOfficeHolderRole)
-                .AddAuthenticationSchemes("vhaad")
-                .AddAuthenticationSchemes("ejud")
-                .Build());
+                // TODO: These didnt use to include the EventHubSchemes but should they have?
+                foreach (var schemeName in schemes.Select(s => s.SchemeName))
+                {
+                    policyBuilder = policyBuilder.AddAuthenticationSchemes(schemeName);
+                }
 
-            options.AddPolicy("Individual", new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser()
-                .RequireRole(AppRoles.CitizenRole, AppRoles.RepresentativeRole)
-                .AddAuthenticationSchemes("vhaad")
-                .AddAuthenticationSchemes("ejud")
-                .Build());
-
-            options.AddPolicy(AppRoles.RepresentativeRole, new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser()
-                .RequireRole(AppRoles.RepresentativeRole)
-                .AddAuthenticationSchemes("vhaad")
-                .AddAuthenticationSchemes("ejud")
-                .Build());
-
-            options.AddPolicy(AppRoles.CitizenRole, new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser()
-                .RequireRole(AppRoles.CitizenRole)
-                .AddAuthenticationSchemes("vhaad")
-                .AddAuthenticationSchemes("ejud")
-                .Build());
-        }
-
-        private static void AddMvcPolicies(MvcOptions options)
-        {
-            options.Filters.Add(new AuthorizeFilter(new AuthorizationPolicyBuilder()
-                .RequireAuthenticatedUser().Build()));
+                options.AddPolicy(policy.Key, policyBuilder.Build());
+            }            
         }
     }
 }

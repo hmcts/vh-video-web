@@ -19,7 +19,7 @@ export class OidcConfigSetupService {
                 stsServer: 'https://login.microsoftonline.com/0b90379d-18de-426a-ae94-7f62441231e0/v2.0',
                 redirectUrl: clientSettings.redirect_uri,
                 clientId: 'a6596b93-7bd6-4363-81a4-3e6d9aa2df2b',
-                scope: 'openid profile offline_access',
+                scope: 'openid profile offline_access api://a6596b93-7bd6-4363-81a4-3e6d9aa2df2b/feapi',
                 responseType: 'code',
                 maxIdTokenIatOffsetAllowedInSeconds: 600,
                 autoUserinfo: false,
