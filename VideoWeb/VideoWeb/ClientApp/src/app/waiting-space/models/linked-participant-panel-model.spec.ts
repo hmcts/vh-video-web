@@ -1,6 +1,7 @@
 import { Guid } from 'guid-typescript';
 import { ParticipantForUserResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { HearingRole } from './hearing-role-model';
 import { LinkedParticipantPanelModel } from './linked-participant-panel-model';
 import { ParticipantPanelModel } from './participant-panel-model';
 
@@ -158,6 +159,35 @@ describe('LinkedParticipantPanelModel', () => {
         const pats = participants.map(p => new ParticipantPanelModel(p));
         const roomLabel = 'Interpreter1';
         const roomId = '787';
+        model = LinkedParticipantPanelModel.fromListOfPanelModels(pats, roomLabel, roomId);
+    }
+});
+
+describe('LinkedParticipantPanelModel', () => {
+    let model: LinkedParticipantPanelModel;
+    let participants: ParticipantForUserResponse[];
+
+    beforeEach(() => {
+        participants = new ConferenceTestData().getListOfLinkedParticipants(true);
+    });
+
+    it('should return true when both participants are available', () => {
+        participants.forEach(p => (p.status = ParticipantStatus.Available));
+        createLinkedModel();
+        expect(model.isWitnessReadyToJoin).toBeTruthy();
+    });
+
+    it('should return false when one participant is not available', () => {
+        const participant = participants.find(p => p.hearing_role === HearingRole.INTERPRETER);
+        participant.status = ParticipantStatus.NotSignedIn;
+        createLinkedModel();
+        expect(model.isWitnessReadyToJoin).toBeFalsy();
+    });
+
+    function createLinkedModel() {
+        const pats = participants.map(p => new ParticipantPanelModel(p));
+        const roomLabel = 'Witness1';
+        const roomId = '788';
         model = LinkedParticipantPanelModel.fromListOfPanelModels(pats, roomLabel, roomId);
     }
 });
