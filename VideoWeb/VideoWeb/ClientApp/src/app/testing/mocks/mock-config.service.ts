@@ -7,7 +7,7 @@ export class MockConfigService {
         client_id: 'clientId',
         post_logout_redirect_uri: '/logout',
         redirect_uri: '/home',
-        video_api_url: 'http://vh-video-api/'
+        video_api_url: 'https://vh-video-api/'
     });
 
     getClientSettings(): Observable<ClientSettingsResponse> {
