@@ -62,6 +62,18 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
         }
 
         [Test]
+        public void ShouldGetCorrectScheme()
+        {
+            // Act
+            var scheme = (sut as IProviderSchemes).GetScheme(false);
+            var eventHubScheme = (sut as IProviderSchemes).GetScheme(true);
+
+            // Assert
+            scheme.Should().Be(sut.SchemeName);
+            eventHubScheme.Should().Be(sut.EventHubSchemeName);
+        }
+
+        [Test]
         public void ShouldSetSchemeOptions()
         {
             // Arrange
