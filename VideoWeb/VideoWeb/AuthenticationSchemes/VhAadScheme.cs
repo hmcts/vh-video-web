@@ -18,12 +18,11 @@ namespace VideoWeb.AuthenticationSchemes
 
         public bool BelongsToScheme(JwtSecurityToken jwtSecurityToken) => jwtSecurityToken.Issuer.Contains(_azureAdConfiguration.TenantId, StringComparison.InvariantCultureIgnoreCase);
 
-        protected override void SetJwtBearerOptions(JwtBearerOptions options)
+        public override void SetJwtBearerOptions(JwtBearerOptions options)
         {
             options.Authority = $"{_azureAdConfiguration.Authority}{_azureAdConfiguration.TenantId}/v2.0";
             options.Audience = _azureAdConfiguration.ClientId;
             options.TokenValidationParameters.NameClaimType = "preferred_username";
-            options.TokenValidationParameters.ValidateLifetime = true;
             options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
         }
     }

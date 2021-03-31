@@ -47,6 +47,6 @@ namespace VideoWeb.AuthenticationSchemes
             });
         }
 
-        protected abstract void SetJwtBearerOptions(JwtBearerOptions options);
+        public abstract void SetJwtBearerOptions(JwtBearerOptions options);
     }
 }
