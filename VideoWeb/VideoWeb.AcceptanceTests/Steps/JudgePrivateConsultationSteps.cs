@@ -80,6 +80,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             WhenTheyEnterPrivateConsultationRoom();
         }
 
+        [When(@"the (.*) invites the (.*) to the private consultation room")]
+        public void WhenTheJudgeInvitesTheParticipantToThePrivateConsultationRoom(string user1, string user2)
+        {
+            var participant = Users.GetUserFromText(user2, _c.Test.Users);
+            _browserSteps.GivenInTheUsersBrowser(user1);
+            _browsers[_c.CurrentUser].Click(PrivateConsultationRoomPage.PhoneParticipant(participant.DisplayName));
+        }
+
         [When(@"(?:he|she|they) (?:enter|enters) the private consultation room")]
         public void WhenTheyEnterPrivateConsultationRoom()
         {

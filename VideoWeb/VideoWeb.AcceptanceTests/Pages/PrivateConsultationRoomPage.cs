@@ -18,6 +18,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public const string ToggleSelfViewShow = "fa-eye";
         public static readonly By SelfViewVideo = By.Id("outgoingFeedVideo");
         public static readonly By ParticipantsInRoom = By.CssSelector(".participant-grid span.yellow");
+        public static By PhoneParticipant(string name) => By.XPath($"//div[./following-sibling::div/span[text()='{name}']]//span[contains(@class,'phone')]");
 
         public static By StatusOfUser(string name) => By.XPath(
             $"//h2[text()='Participants']/following-sibling::div/div/div[./span[text()='{name}']]/following-sibling::div/span[@class='red']");

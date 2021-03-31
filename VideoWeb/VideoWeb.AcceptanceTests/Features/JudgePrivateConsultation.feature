@@ -131,4 +131,13 @@ Scenario: Winger Can See Judge In Consultation
   Then the Winger will see the status for Judge is displayed as In Consultation
   And the number of people in the consultation room is 1
   And the Judge can leave the private consultation room
+
+@VIH-6857 @Video
+Scenario: Participant accepts invitation from Judge
+  Given the Judge user has entered the private consultation room
+  And the Individual user has progressed to the Waiting Room page for the existing hearing
+  When the Judge invites the Individual to the private consultation room
+  And Individual accepts the private consultation from Judge  
+  Then the Individual and the Judge will be in the same private consultation room
+  And the Individual and the Judge can both leave the private consultation room
   
