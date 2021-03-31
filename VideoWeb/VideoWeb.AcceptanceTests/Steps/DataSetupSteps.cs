@@ -67,10 +67,10 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Given(@"I have a hearing in (.*) minutes time")]
-        public void GivenIHaveAHearingAndAConferenceInMinutesTime(int minutes)
+        public void GivenIHaveAHearingAndAConferenceInMinutesTime(int minutes, bool interpreter = false)
         {
             CheckThatTheHearingWillBeCreatedForToday(_c.TimeZone.Adjust(DateTime.Now.ToUniversalTime().AddMinutes(minutes)));
-            var userTypes = CreateUserTypes();
+            var userTypes = interpreter ? CreateUserTypes(1,0,0,0,1) : CreateUserTypes();
             AllocateUsers(userTypes);
             GivenIHaveAHearing(minutes);
             CreateConference();
