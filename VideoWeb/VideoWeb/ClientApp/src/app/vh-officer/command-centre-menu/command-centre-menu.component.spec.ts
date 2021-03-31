@@ -1,5 +1,5 @@
 import { Logger } from 'src/app/services/logging/logger-base';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { MenuOption } from '../models/menus-options';
 import { CommandCentreMenuComponent } from './command-centre-menu.component';
 import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-bus.service';

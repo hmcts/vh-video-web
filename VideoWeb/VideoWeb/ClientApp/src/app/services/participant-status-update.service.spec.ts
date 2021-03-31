@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { ApiClient, EventType } from 'src/app/services/clients/api-client';
 import { of } from 'rxjs';
 

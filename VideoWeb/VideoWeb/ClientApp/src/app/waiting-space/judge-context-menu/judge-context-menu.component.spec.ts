@@ -1,5 +1,5 @@
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { ParticipantStatus } from '../../services/clients/api-client';
 import { ParticipantPanelModel } from '../models/participant-panel-model';
 import { JudgeContextMenuComponent } from './judge-context-menu.component';
@@ -11,7 +11,7 @@ import {
     DismissWitnessFromHearingEvent
 } from 'src/app/shared/models/participant-event';
 import { ElementRef } from '@angular/core';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 
 describe('JudgeContextMenuComponent', () => {
     const participants = new ConferenceTestData().getListOfParticipants();

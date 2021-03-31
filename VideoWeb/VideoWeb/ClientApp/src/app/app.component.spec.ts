@@ -13,10 +13,10 @@ import { LocationService } from './services/location.service';
 import { PageTrackerService } from './services/page-tracker.service';
 import { ConnectionStatusService } from './services/connection-status.service';
 import { pageUrls } from './shared/page-url.constants';
-import { MockOidcSecurityService } from './testing/mocks/MockOidcSecurityService';
+import { MockOidcSecurityService } from './testing/mocks/mock-oidc-security.service';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { TestLanguageService } from './shared/test-language.service';
-import { translateServiceSpy } from './testing/mocks/mock-translation-service';
+import { translateServiceSpy } from './testing/mocks/mock-translation.service';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;

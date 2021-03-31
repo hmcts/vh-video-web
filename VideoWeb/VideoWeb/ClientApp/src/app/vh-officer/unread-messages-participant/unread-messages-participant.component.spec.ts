@@ -2,7 +2,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { UnreadAdminMessageResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { Hearing } from '../../shared/models/hearing';
 import { UnreadMessagesParticipantComponent } from './unread-messages-participant.component';
 import { fakeAsync, tick } from '@angular/core/testing';

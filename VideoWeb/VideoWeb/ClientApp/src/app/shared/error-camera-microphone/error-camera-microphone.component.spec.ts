@@ -1,7 +1,7 @@
 import { ErrorCameraMicrophoneComponent } from './error-camera-microphone.component';
 import { PageTrackerService } from 'src/app/services/page-tracker.service';
 import { Router } from '@angular/router';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { ErrorService } from 'src/app/services/error.service';
 
 describe('ErrorComeraMicrophoneComponent', () => {

@@ -9,14 +9,14 @@ import { InstantMessage } from 'src/app/services/models/instant-message';
 import { adminTestProfile } from 'src/app/testing/data/test-profiles';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { ImHelper } from '../im-helper';
 import { Hearing } from '../models/hearing';
 import { ChatBaseComponent } from './chat-base.component';
 import { TranslateService } from '@ngx-translate/core';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { MockOidcSecurityService } from 'src/app/testing/mocks/MockOidcSecurityService';
+import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
 
 class ChatBaseTest extends ChatBaseComponent {
     content: ElementRef<HTMLElement>;

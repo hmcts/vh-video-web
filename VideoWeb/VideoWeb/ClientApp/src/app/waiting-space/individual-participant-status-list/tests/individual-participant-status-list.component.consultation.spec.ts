@@ -13,12 +13,12 @@ import {
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
+import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation.service';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
-import { MockOidcSecurityService } from 'src/app/testing/mocks/MockOidcSecurityService';
+import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
 import { HearingRole } from '../../models/hearing-role-model';
 import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 
 describe('IndividualParticipantStatusListComponent consultations', () => {
     let component: IndividualParticipantStatusListComponent;

@@ -4,7 +4,7 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
 
 @Injectable()
-export class RefreshTokenParameterIntercepter implements HttpInterceptor {
+export class RefreshTokenParameterInterceptor implements HttpInterceptor {
     constructor(private oidcSecurityService: OidcSecurityService) {}
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         if (

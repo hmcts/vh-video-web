@@ -4,9 +4,9 @@ import { BehaviorSubject } from 'rxjs';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { MediaDeviceTestData } from 'src/app/testing/mocks/data/media-device-test-data';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { SelectMediaDevicesComponent } from './select-media-devices.component';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 
 describe('SelectMediaDevicesComponent', () => {
     let component: SelectMediaDevicesComponent;

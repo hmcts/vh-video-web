@@ -1,7 +1,7 @@
 import { Router } from '@angular/router';
 import { ReturnUrlService } from '../../services/return-url.service';
-import { MockOidcSecurityService } from '../../testing/mocks/MockOidcSecurityService';
-import { MockLogger } from '../../testing/mocks/MockLogger';
+import { MockOidcSecurityService } from '../../testing/mocks/mock-oidc-security.service';
+import { MockLogger } from '../../testing/mocks/mock-logger';
 import { LoginComponent } from './login.component';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { ConfigService } from 'src/app/services/api/config.service';

@@ -22,7 +22,7 @@ import {
     heartbeatSubjectMock,
     participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { VhoQueryService } from '../../services/vho-query-service.service';
 import { CommandCentreComponent } from '../command-centre.component';
 

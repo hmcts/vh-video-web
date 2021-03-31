@@ -1,6 +1,6 @@
 import * as moment from 'moment';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { HearingListTableComponent } from './hearing-list-table.component';
 
 describe('HearingListTableComponent', () => {

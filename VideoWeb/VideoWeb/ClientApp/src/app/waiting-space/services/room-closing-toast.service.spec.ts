@@ -8,7 +8,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { RoomClosingToastComponent } from 'src/app/shared/toast/room-closing/room-closing-toast.component';
 import { ToastrTestingModule } from 'src/app/shared/toast/toastr-testing.module';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { RoomClosingToastrService } from './room-closing-toast.service';
 
 describe('RoomClosingToastrService', () => {

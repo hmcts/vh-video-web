@@ -26,8 +26,8 @@ import {
     participantMediaStatusSubjectMock,
     participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
-import { onConferenceUpdatedMock, onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { onConferenceUpdatedMock, onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { EndpointStatus, ParticipantStatus, Role } from '../../services/clients/api-client';
 import { HearingRole } from '../models/hearing-role-model';
 import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-model';
@@ -35,7 +35,7 @@ import { ParticipantPanelModel } from '../models/participant-panel-model';
 import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-models';
 import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
 import { ParticipantsPanelComponent } from './participants-panel.component';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();

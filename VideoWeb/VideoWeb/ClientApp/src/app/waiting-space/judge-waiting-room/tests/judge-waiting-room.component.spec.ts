@@ -32,7 +32,7 @@ import {
     videoWebService
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
 import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
