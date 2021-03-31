@@ -7,6 +7,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { Hearing } from '../../shared/models/hearing';
 import { UnreadMessagesComponentBase } from '../unread-messages-shared/unread-message-base.component';
 import { EventBusService, EmitEvent, VHEventType } from 'src/app/services/event-bus.service';
+import { InstantMessage } from 'src/app/services/models/instant-message';
 
 @Component({
     selector: 'app-unread-messages',
@@ -63,7 +64,24 @@ export class UnreadMessagesComponent extends UnreadMessagesComponentBase impleme
             const messageCount = this.unreadMessages.find(x => x.participant_id === participantId);
             if (messageCount) {
                 messageCount.number_of_unread_messages++;
+            } else {
+                const patFromHearing = this.hearing.participants.find(x => x.id === participantId);
+                if (!patFromHearing) {
+                    return;
+                }
+                this.unreadMessages.push(
+                    new UnreadAdminMessageResponse({
+                        number_of_unread_messages: 1,
+                        participant_id: participantId
+                    })
+                );
             }
+        }
+    }
+
+    handleImReceived(message: InstantMessage) {
+        if (this.getHearing().id === message.conferenceId) {
+            this.incrementUnreadCounter(message.conferenceId, message.from);
         }
     }
 
