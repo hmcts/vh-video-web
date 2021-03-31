@@ -68,7 +68,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"(?:a|an) (.*) and (?:a|an|their) (.*) are in the waiting room (.*) minutes before a hearing")]
         public void GivenTwoUsersAreInTheWaitingRoomForHearingInMinutesTime(string user1, string user2, int minutes)
         {
-            _dataSetupSteps.GivenIHaveAHearingAndAConferenceInMinutesTime(minutes);
+            var isInterpreter = user1.Contains("interpreter") || user2.Contains("interpreter");
+            _dataSetupSteps.GivenIHaveAHearingAndAConferenceInMinutesTime(minutes, isInterpreter);
             _browserSteps.GivenANewBrowserIsOpenFor(user1);
             Progression(FromString(user1), "Waiting Room");
             _browserSteps.GivenANewBrowserIsOpenFor(user2);
