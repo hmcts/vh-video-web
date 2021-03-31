@@ -2,7 +2,7 @@ import { async } from '@angular/core/testing';
 import { convertToParamMap, Router } from '@angular/router';
 import { VideoWebService } from '../services/api/video-web.service';
 import { ConferenceResponse, ConferenceStatus } from '../services/clients/api-client';
-import { MockLogger } from '../testing/mocks/MockLogger';
+import { MockLogger } from '../testing/mocks/mock-logger';
 import { ParticipantWaitingRoomGuard } from './participant-waiting-room.guard';
 
 describe('ParticipantWaitingRoomGuard', () => {

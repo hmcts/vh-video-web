@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { NavigationEnd } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Logger } from './logging/logger-base';
-import { MockLogger } from '../testing/mocks/MockLogger';
+import { MockLogger } from '../testing/mocks/mock-logger';
 
 class MockRouter {
     public ne = new NavigationEnd(0, '/testUrl', null);

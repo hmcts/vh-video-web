@@ -1,5 +1,5 @@
 import { HearingLayout } from 'src/app/services/clients/api-client';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { HearingLayoutComponent } from './hearing-layout.component';
 
 describe('HearingLayoutComponent', () => {

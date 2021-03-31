@@ -1,7 +1,7 @@
 import { of, throwError } from 'rxjs';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { NotificationSoundsService } from 'src/app/waiting-space/services/notification-sounds.service';
 import {
     ApiClient,

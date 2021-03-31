@@ -17,7 +17,7 @@ namespace VideoWeb.Mappings
                 FirstName = user.Claims.First(c => c.Type == ClaimTypes.GivenName).Value,
                 LastName = user.Claims.First(c => c.Type == ClaimTypes.Surname).Value,
                 DisplayName = user.Claims.First(c => c.Type == "name").Value,
-                Username = user.Claims.First(c => c.Type == "preferred_username").Value.ToLower().Trim()
+                Username = user.Identity.Name.ToLower().Trim()
             };
             return response;
         }

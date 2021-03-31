@@ -29,19 +29,16 @@ namespace VideoWeb.Common.Security
 
         public async Task<AuthenticationResult> GetAuthorisationResult(string clientId, string clientSecret, string clientResource)
         {
-            AuthenticationResult result;
             var credential = new ClientCredential(clientId, clientSecret);
             var authContext = new AuthenticationContext($"{_azureAdConfiguration.Authority}{_azureAdConfiguration.TenantId}");
             try
             {
-                result = await authContext.AcquireTokenAsync(clientResource, credential);
+                return await authContext.AcquireTokenAsync(clientResource, credential);
             }
             catch (AdalException)
             {
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedAccessException("Failed to acquire token");
             }
-
-            return result;
         }
     }
 }

@@ -14,12 +14,12 @@ import {
     onScreenshareConnectedMock,
     onScreenshareStoppedMock,
     videoCallServiceSpy
-} from 'src/app/testing/mocks/mock-video-call-service';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+} from 'src/app/testing/mocks/mock-video-call.service';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '../models/video-call-models';
 import { deviceTypeService } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { PrivateConsultationRoomControlsComponent } from './private-consultation-room-controls.component';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
     let component: PrivateConsultationRoomControlsComponent;

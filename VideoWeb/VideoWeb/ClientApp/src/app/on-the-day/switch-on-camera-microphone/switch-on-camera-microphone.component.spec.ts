@@ -7,7 +7,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { SwitchOnCameraMicrophoneComponent } from './switch-on-camera-microphone.component';
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';

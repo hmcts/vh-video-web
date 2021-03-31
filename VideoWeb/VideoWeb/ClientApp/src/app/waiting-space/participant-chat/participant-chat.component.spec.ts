@@ -8,12 +8,12 @@ import { ImHelper } from 'src/app/shared/im-helper';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { adminTestProfile, judgeTestProfile } from '../../testing/data/test-profiles';
 import { ParticipantChatComponent } from './participant-chat.component';
 import { ActivatedRoute } from '@angular/router';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
-import { MockOidcSecurityService } from 'src/app/testing/mocks/MockOidcSecurityService';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
 
 describe('ParticipantChatComponent', () => {
     let component: ParticipantChatComponent;

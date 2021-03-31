@@ -7,9 +7,9 @@ import { ConferenceLite } from 'src/app/services/models/conference-lite';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { CameraCheckComponent } from './camera-check.component';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 
 describe('CameraCheckComponent', () => {
     let component: CameraCheckComponent;

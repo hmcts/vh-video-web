@@ -4,18 +4,16 @@ import {
     EndpointStatus,
     LinkType,
     LoggedParticipantResponse,
-    ParticipantResponse,
     ParticipantStatus,
     Role,
     RoomSummaryResponse
 } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { StartPrivateConsultationComponent } from './start-private-consultation.component';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
-import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation-service';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { HearingRole } from '../../models/hearing-role-model';
-import { SimpleChange, SimpleChanges } from '@angular/core';
 
 describe('StartPrivateConsultationComponent', () => {
     let component: StartPrivateConsultationComponent;

@@ -1,10 +1,11 @@
 import { Router } from '@angular/router';
 import { ReturnUrlService } from '../../services/return-url.service';
-import { MockOidcSecurityService } from '../../testing/mocks/MockOidcSecurityService';
-import { MockLogger } from '../../testing/mocks/MockLogger';
+import { MockOidcSecurityService } from '../../testing/mocks/mock-oidc-security.service';
+import { MockLogger } from '../../testing/mocks/mock-logger';
 import { IdpSelectionComponent } from './idp-selection.component';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { of } from 'rxjs';
+import { OidcConfigSetupService } from '../oidc-config-setup.service';
 
 describe('IdpSelectionComponent', () => {
     let component: IdpSelectionComponent;
@@ -14,11 +15,13 @@ describe('IdpSelectionComponent', () => {
     const activatedRoute: any = { snapshot: { url: [{ path: 'foo' }], queryParams: {} } };
     let router: jasmine.SpyObj<Router>;
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
+    let oidcConfigSetupServiceSpy: jasmine.SpyObj<OidcConfigSetupService>;
 
     beforeAll(() => {
         oidcSecurityService = mockOidcSecurityService;
         router = jasmine.createSpyObj<Router>('Router', ['navigate', 'navigateByUrl']);
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
+        oidcConfigSetupServiceSpy = jasmine.createSpyObj<OidcConfigSetupService>('OidcConfigSetupService', ['setIdp']);
     });
 
     beforeEach(() => {
@@ -29,7 +32,8 @@ describe('IdpSelectionComponent', () => {
             router,
             returnUrlService,
             new MockLogger(),
-            configServiceSpy
+            configServiceSpy,
+            oidcConfigSetupServiceSpy
         );
         configServiceSpy.getClientSettings.and.returnValue(of(null));
     });
