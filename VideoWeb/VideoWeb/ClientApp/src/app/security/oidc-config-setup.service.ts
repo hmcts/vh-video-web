@@ -26,7 +26,7 @@ export class OidcConfigSetupService {
                 logLevel: LogLevel.Debug,
                 secureRoutes: ['.'],
                 ignoreNonceAfterRefresh: true,
-
+                postLogoutRedirectUri: clientSettings.post_logout_redirect_uri,
                 tokenRefreshInSeconds: 5,
                 silentRenew: true,
                 useRefreshToken: true
@@ -42,7 +42,7 @@ export class OidcConfigSetupService {
                 logLevel: LogLevel.Debug,
                 secureRoutes: ['.'],
                 ignoreNonceAfterRefresh: true,
-
+                postLogoutRedirectUri: clientSettings.post_logout_redirect_uri,
                 tokenRefreshInSeconds: 5,
                 silentRenew: true,
                 useRefreshToken: true

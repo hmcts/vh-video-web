@@ -14,6 +14,7 @@ namespace VideoWeb.AcceptanceTests.Pages
             Url = url;
         }
 
+        public static readonly Page IdpSelection = new Page("IDP Selection", "idp-selection");
         public static readonly Page Login = new Page("Login", "login.microsoftonline.com");
         public static readonly Page HearingList = new Page("Hearing List", "hearing-list");
         public static readonly Page VhoVenueList = new Page("VHO Venue List", "venue-list");

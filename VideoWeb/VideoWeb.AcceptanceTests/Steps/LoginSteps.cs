@@ -39,9 +39,8 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheyShouldHaveOptionToLogBackInAfterLogout()
         {
             _browsers[_c.CurrentUser].ClickLink(CommonPages.SignOutLink);
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(CommonPages.SignOutMessage).Displayed.Should().BeTrue();
-            _browsers[_c.CurrentUser].ClickLink(CommonPages.SignInLink);
-            _browsers[_c.CurrentUser].TextOf(AccountTypeSelectionPage.Heading).Should().Be(AccountTypeSelectionPage.HeadingText);
+            _browsers[_c.CurrentUser].Click(LogoutPage.ChooseWhoToSignOut(_c.CurrentUser.DisplayName));
+            _browsers[_c.CurrentUser].PageUrl(Page.IdpSelection.Url);
         }
 
         [Then(@"the sign out link is displayed")]
