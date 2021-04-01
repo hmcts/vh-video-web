@@ -48,7 +48,9 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
             this.hasUnavailableLinkedParticipants(participant)
         ) {
             return 'unavailable';
-        } else if (participant.status === ParticipantStatus.InConsultation) {
+        }
+
+        if (participant.status === ParticipantStatus.InConsultation) {
             return 'in-consultation';
         }
     }
@@ -84,8 +86,7 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
                     linkedParticipant.status !== ParticipantStatus.InConsultation
                 );
             });
-        } else {
-            return false;
         }
+        return false;
     }
 }
