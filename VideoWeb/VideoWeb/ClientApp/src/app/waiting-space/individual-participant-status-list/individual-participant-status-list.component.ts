@@ -76,7 +76,7 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
 
     private hasUnavailableLinkedParticipants(participant: ParticipantResponse) {
         if (participant.linked_participants.length) {
-            const unavailableLinkedParticipants = participant.linked_participants.some(lp => {
+            return participant.linked_participants.some(lp => {
                 const linkedParticipant = this.nonJudgeParticipants.find(p => p.id === lp.linked_id);
                 return (
                     linkedParticipant &&
@@ -84,8 +84,6 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
                     linkedParticipant.status !== ParticipantStatus.InConsultation
                 );
             });
-
-            return unavailableLinkedParticipants;
         } else {
             return false;
         }
