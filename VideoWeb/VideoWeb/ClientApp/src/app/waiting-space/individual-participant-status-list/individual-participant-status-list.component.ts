@@ -43,7 +43,10 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
     }
 
     getParticipantStatusCss(participant: ParticipantResponse): string {
-        if (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) {
+        if (
+            (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) ||
+            this.hasUnavailableLinkedParticipants(participant)
+        ) {
             return 'unavailable';
         } else if (participant.status === ParticipantStatus.InConsultation) {
             return 'in-consultation';
@@ -51,7 +54,10 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
     }
 
     getParticipantStatus(participant: ParticipantResponse): string {
-        if ((participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) || this.hasUnavailableLinkedParticipants(participant)) {
+        if (
+            (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) ||
+            this.hasUnavailableLinkedParticipants(participant)
+        ) {
             return 'Unavailable';
         }
 
@@ -72,7 +78,11 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
         if (participant.linked_participants.length) {
             const unavailableLinkedParticipants = participant.linked_participants.some(lp => {
                 const linkedParticipant = this.nonJudgeParticipants.find(p => p.id === lp.linked_id);
-                return linkedParticipant && (linkedParticipant.status !== ParticipantStatus.Available && linkedParticipant.status !== ParticipantStatus.InConsultation)
+                return (
+                    linkedParticipant &&
+                    linkedParticipant.status !== ParticipantStatus.Available &&
+                    linkedParticipant.status !== ParticipantStatus.InConsultation
+                );
             });
 
             return unavailableLinkedParticipants;
