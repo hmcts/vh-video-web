@@ -132,7 +132,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         expect(component.getParticipantStatus(participant)).toEqual('In meeting room 1');
     });
 
-    fit('should return unavailable status', () => {
+    it('should return unavailable status', () => {
         const participant = component.conference.participants[0];
         component.nonJudgeParticipants = [
             {
