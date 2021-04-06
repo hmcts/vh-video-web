@@ -84,3 +84,30 @@ Scenario: Video Hearings Officer Calls Winger
 	Then the Winger can see and hear the other user
 	When the Video Hearings Officer ends the call
 	Then the user is on the Hearing List page
+
+
+Scenario: Video Hearings Officer Calls Interpreter
+  Given I have an Interpreter and have a hearing
+  And the interpreter user has progressed to the Waiting Room page for the existing hearing
+	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
+	When the Video Hearings Officer starts a call with interpreter
+	And interpreter accepts the VHO call
+	Then the Video Hearings Officer can see and hear the other user
+	And the admin self view can be open and closed
+	Then the interpreter can see and hear the other user
+	When the Video Hearings Officer ends the call
+	Then the user is on the Hearing List page
+
+Scenario: Video Hearings Officer Calls Both Interpretee And Interpreter
+  Given I have an Interpreter and have a hearing
+  And the first individual user has progressed to the Waiting Room page for the existing hearing
+  And the interpreter user has progressed to the Waiting Room page for the existing hearing
+	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
+	When the Video Hearings Officer starts a call with interpreter
+  And first individual accepts the VHO call
+	And interpreter accepts the VHO call
+	Then the Video Hearings Officer can see and hear the other user
+	And the admin self view can be open and closed
+	Then the interpreter can see and hear the other user
+	When the Video Hearings Officer ends the call
+	Then the user is on the Hearing List page
