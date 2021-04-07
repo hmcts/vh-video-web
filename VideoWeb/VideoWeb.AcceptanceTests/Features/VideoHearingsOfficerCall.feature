@@ -3,18 +3,6 @@ Feature: Video Hearings Officer Call
 	As a VHO
 	I want to be able to call a participant
 
-@VIH-4611 @VIH-4613 @VIH-4730 @Smoketest-Extended @DisableLogging
-Scenario: Video Hearings Officer Call
-	Given the the first Individual user has progressed to the Waiting Room page with a hearing in 10 minutes time
-	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
-	When the Video Hearings Officer starts a call with the first Individual's
-	And the first Individual's accepts the VHO call
-	Then the Video Hearings Officer can see and hear the other user
-	And the admin self view can be open and closed
-	Then the the first Individual's can see and hear the other user
-	When the Video Hearings Officer ends the call
-	Then the user is on the Hearing List page
-
 @VIH-4613 @DisableLogging
 Scenario: No Answer on a Video Hearings Officer Call
 	Given the the first Individual user has progressed to the Waiting Room page with a hearing in 10 minutes time
@@ -46,58 +34,28 @@ Scenario: Video Hearings Officer cannot call users in a hearing
   And the Judge closes the hearing
 	Then the user is on the Waiting Room page
 
-@VIH-6132 @DisableLogging
-Scenario: Video Hearings Officer Calls Observer
-  Given I have a hearing with an Observer and Panel Member
-  And the Observer user has progressed to the Waiting Room page for the existing hearing
+@VIH-4611 @VIH-4613 @VIH-4730 @VIH-6132 @VIH-6420 @VIH-7413 @Smoketest-Extended @DisableLogging
+Scenario: Video Hearings Officer Calls Users
+  Given I have a hearing with a <User>
+  And the <User> user has progressed to the Waiting Room page for the existing hearing
 	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
-	When the Video Hearings Officer starts a call with Observer
-	And Observer accepts the VHO call
+	When the Video Hearings Officer starts a call with <User>
+	And <User> accepts the VHO call
 	Then the Video Hearings Officer can see and hear the other user
 	And the admin self view can be open and closed
-	Then the Observer can see and hear the other user
+	Then the <User> can see and hear the other user
 	When the Video Hearings Officer ends the call
 	Then the user is on the Hearing List page
-
-@VIH-6132 @DisableLogging
-Scenario: Video Hearings Officer Calls Panel Member
-  Given I have a hearing with an Observer and Panel Member
-  And the Panel Member user has progressed to the Waiting Room page for the existing hearing
-	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
-	When the Video Hearings Officer starts a call with PanelMember
-	And Panel Member accepts the VHO call
-	Then the Video Hearings Officer can see and hear the other user
-	And the admin self view can be open and closed
-	Then the Panel Member can see and hear the other user
-	When the Video Hearings Officer ends the call
-	Then the user is on the Hearing List page
-
-@VIH-6420 @DisableLogging
-Scenario: Video Hearings Officer Calls Winger
-  Given I have a CACD hearing with a Winger
-  And the Winger user has progressed to the Waiting Room page for the existing hearing
-	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
-	When the Video Hearings Officer starts a call with Winger
-	And Winger accepts the VHO call
-	Then the Video Hearings Officer can see and hear the other user
-	And the admin self view can be open and closed
-	Then the Winger can see and hear the other user
-	When the Video Hearings Officer ends the call
-	Then the user is on the Hearing List page
+    Examples: 
+  | User             |
+  | first Individual |
+	| Observer         |
+  | Panel Member     |
+  | Interpreter      |
+  | Winger           |
 
 
-Scenario: Video Hearings Officer Calls Interpreter
-  Given I have an Interpreter and have a hearing
-  And the interpreter user has progressed to the Waiting Room page for the existing hearing
-	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
-	When the Video Hearings Officer starts a call with interpreter
-	And interpreter accepts the VHO call
-	Then the Video Hearings Officer can see and hear the other user
-	And the admin self view can be open and closed
-	Then the interpreter can see and hear the other user
-	When the Video Hearings Officer ends the call
-	Then the user is on the Hearing List page
-
+@VIH-7413
 Scenario: Video Hearings Officer Calls Both Interpretee And Interpreter
   Given I have an Interpreter and have a hearing
   And the first individual user has progressed to the Waiting Room page for the existing hearing
