@@ -55,7 +55,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"a Panel Member is in the waiting room")]
         public void GivenAPanelMemberIsInTheWaitingRoom()
         {
-            _dataSetupSteps.GivenIHaveAHearingWithAPanelMember();
+            _dataSetupSteps.GivenIHaveAHearingWithUser("panel member");
             _progressionSteps.GivenHearingExistsAndIAmOnThePage("panel member", "Waiting Room");
         }
 
@@ -69,7 +69,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"a Winger is in the waiting room")]
         public void GivenAWingerIsInTheWaitingRoom()
         {
-            _dataSetupSteps.GivenIHaveAHearingWithAWinger();
+            _dataSetupSteps.GivenIHaveAHearingWithUser("winger");
             _progressionSteps.GivenHearingExistsAndIAmOnThePage("winger", "Waiting Room");
         }
         

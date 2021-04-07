@@ -10,6 +10,7 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using VideoWeb.AcceptanceTests.Pages;
 using TestApi.Contract.Dtos;
+using TestApi.Contract.Enums;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -38,14 +39,34 @@ namespace VideoWeb.AcceptanceTests.Steps
             Scrolling.ScrollToTheTopOfThePage(_browsers[_c.CurrentUser]);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantStatusTable, 60).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Driver.SwitchTo().Frame(AdminPanelPage.AdminIframeId);
-            var user = Users.GetUserFromText(text, _c.Test.Users);
-            var participant = _c.Test.ConferenceParticipants.First(x => x.Username.ToLower().Contains(user.Username.ToLower()));
             Thread.Sleep(TimeSpan.FromSeconds(SecondsDelayBeforeCallingTheParticipant));
-            _browsers[_c.CurrentUser].Click(AdminPanelPage.ParticipantInIframe(participant.DisplayName));
+            _browsers[_c.CurrentUser].Click(AdminPanelPage.ParticipantInIframe(GetParticipantDisplayName(text)));
             Thread.Sleep(TimeSpan.FromSeconds(SecondsDelayBeforeCallingTheParticipant));
-            _browsers[_c.CurrentUser].Click(AdminPanelPage.VhoPrivateConsultationLink(participant.Id));
+            _browsers[_c.CurrentUser].Click(AdminPanelPage.VhoPrivateConsultationLink);
             _browsers[_c.CurrentUser].LastWindowName = _browsers[_c.CurrentUser].SwitchTab("Private Consultation");
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.CloseButton).Displayed.Should().BeTrue();
+        }
+
+        private string GetParticipantDisplayName(string userType)
+        {
+            var user = Users.GetUserFromText(userType, _c.Test.Users);
+            var participantName = string.Empty;
+            var participant = _c.Test.ConferenceParticipants.First(x => x.Username.ToLower().Contains(user.Username.ToLower()));
+            switch (user.UserType)
+            {
+                case UserType.Interpreter:
+                    participantName = "Interpreter1";
+                    break;
+                case UserType.PanelMember:
+                case UserType.Winger:
+                    participantName = "Panel Member1";
+                    break;
+                default:
+                    participantName = participant.DisplayName;
+                    break;
+            }
+
+            return participantName;
         }
 
         [When(@"(.*) accepts the VHO call")]
@@ -106,7 +127,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             Thread.Sleep(TimeSpan.FromSeconds(SecondsDelayBeforeCallingTheParticipant));
             _browsers[_c.CurrentUser].Click(AdminPanelPage.ParticipantInIframe(participant.DisplayName));
             Thread.Sleep(TimeSpan.FromSeconds(SecondsDelayBeforeCallingTheParticipant));
-            _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(AdminPanelPage.VhoPrivateConsultationLink(participant.Id)).Should().BeTrue();
+            _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(AdminPanelPage.VhoPrivateConsultationLink).Should().BeTrue();
         }
     }
 }

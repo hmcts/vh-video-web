@@ -9,7 +9,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By ParticipantStatusTable = By.Id("participant-status-table");
         public static By ParticipantStatus(Guid participantId) => By.Id($"participant-status-{participantId}");
         public static By ParticipantInIframe(string displayName) => By.XPath($"//b[contains(text(),'{displayName}')]");
-        public static By VhoPrivateConsultationLink(Guid participantId) => By.XPath($"//a[contains(@href,'{participantId}') and @aria-label='Private consultation']");
+        public static By VhoPrivateConsultationLink => By.XPath($"//a[@aria-label='Private consultation']");
         public static By IncomingVideo = By.Id("incomingVideo");
         public static By IncomingFeed = By.Id("incomingFeedPrivate");
         public static By SelfViewVideo = By.Id("selfviewVideo");
