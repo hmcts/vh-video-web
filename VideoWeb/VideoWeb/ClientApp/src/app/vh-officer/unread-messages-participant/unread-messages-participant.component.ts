@@ -3,6 +3,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { UnreadAdminMessageResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { InstantMessage } from 'src/app/services/models/instant-message';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { Participant } from 'src/app/shared/models/participant';
 import { UnreadMessagesComponentBase } from '../unread-messages-shared/unread-message-base.component';
@@ -62,6 +63,12 @@ export class UnreadMessagesParticipantComponent extends UnreadMessagesComponentB
     incrementUnreadCounter(conferenceId: string, participantId: string): void {
         if (this.hearing.id === conferenceId && this.participant.id === participantId) {
             this.unreadMessages.number_of_unread_messages++;
+        }
+    }
+
+    handleImReceived(message: InstantMessage) {
+        if (this.getHearing().id === message.conferenceId && this.messageFromParticipant(message)) {
+            this.incrementUnreadCounter(message.conferenceId, message.from);
         }
     }
     openImChat() {}

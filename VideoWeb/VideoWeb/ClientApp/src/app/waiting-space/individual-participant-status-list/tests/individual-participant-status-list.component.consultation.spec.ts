@@ -3,9 +3,7 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
     ConferenceResponse,
-    ConferenceStatus,
     LoggedParticipantResponse,
-    ParticipantResponse,
     ParticipantResponseVho,
     ParticipantStatus,
     Role,
@@ -16,7 +14,6 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation.service';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
-import { HearingRole } from '../../models/hearing-role-model';
 import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 
@@ -133,5 +130,22 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
         participant.current_room = new RoomSummaryResponse();
         participant.current_room.label = 'MeetingRoom1';
         expect(component.getParticipantStatus(participant)).toEqual('In meeting room 1');
+    });
+
+    it('should return unavailable status', () => {
+        const participant = component.conference.participants[0];
+        component.nonJudgeParticipants = [
+            {
+                id: '1',
+                status: ParticipantStatus.NotSignedIn
+            } as any
+        ];
+        participant.status = ParticipantStatus.Available;
+        participant.linked_participants = [
+            {
+                linked_id: '1'
+            } as any
+        ];
+        expect(component.getParticipantStatus(participant)).toEqual('Unavailable');
     });
 });
