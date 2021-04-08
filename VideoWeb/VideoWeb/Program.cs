@@ -11,6 +11,8 @@ namespace VideoWeb
         public static void Main(string[] args)
         {
             CreateWebHostBuilder(args).Build().Run();
+
+
         }
 
         private static IHostBuilder CreateWebHostBuilder(string[] args)
