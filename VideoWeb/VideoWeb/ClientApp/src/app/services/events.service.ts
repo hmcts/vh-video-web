@@ -54,6 +54,7 @@ export class EventsService {
     private participantHandRaisedStatusSubject = new Subject<ParticipantHandRaisedMessage>();
     private roomUpdateSubject = new Subject<Room>();
     private roomTransferSubject = new Subject<RoomTransfer>();
+    public handlersRegistered = false;
 
     reconnectionAttempt: number;
     reconnectionPromise: Promise<any>;
@@ -135,6 +136,11 @@ export class EventsService {
     }
 
     registerHandlers(): void {
+        if (this.handlersRegistered) {
+            this.logger.info('[EventsService] - Handlers already registered. Skipping registering of handlers.');
+            return;
+        }
+
         this.connection.on(
             'ParticipantStatusMessage',
             (participantId: string, username: string, conferenceId: string, status: ParticipantStatus) => {
@@ -190,7 +196,7 @@ export class EventsService {
             (conferenceId: string, from: string, to: string, message: string, timestamp: Date, messageUuid: string) => {
                 const date = new Date(timestamp);
                 const chat = new InstantMessage({ conferenceId, id: messageUuid, to, from, message, timestamp: date });
-                this.logger.debug('[EventsService] - ReceiveMessage received', chat);
+                this.logger.info('[EventsService] - ReceiveMessage received', chat);
                 this.messageSubject.next(chat);
             }
         );
@@ -269,6 +275,8 @@ export class EventsService {
                 this.participantHeartbeat.next(heartbeat);
             }
         );
+
+        this.handlersRegistered = true;
     }
 
     stop() {

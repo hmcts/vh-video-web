@@ -137,6 +137,7 @@ describe('EventsService', () => {
         spyOnProperty(service.connection, 'state').and.returnValue(signalR.HubConnectionState.Disconnecting);
         expect(service.connection.stop).toHaveBeenCalledTimes(0);
     });
+
     it('should send im to "SendMessage" method', async () => {
         const imTest = new InstantMessage({
             conferenceId: Guid.create().toString(),
@@ -167,4 +168,18 @@ describe('EventsService', () => {
         tick();
         expect(service.connection.start).toHaveBeenCalledTimes(0);
     }));
+
+    it('should only register the SignalR message handlers once', () => {
+        // Arrange
+        service.handlersRegistered = false;
+        spyOn(service.connection, 'on');
+
+        // Act
+        service.registerHandlers();
+        service.registerHandlers();
+
+        // Assert
+        expect(service.connection.on).toHaveBeenCalledTimes(16);
+    });
+
 });
