@@ -671,10 +671,12 @@
     "state": "State"
   },
   "case-type": {
+    "adoption": "Adoption",
     "children-act": "Children Act",
     "civil": "Civil",
     "civil-money-claims": "Civil Money Claims",
     "court-of-appeal-criminal-division": "Court of Appeal Criminal Division",
+    "divorce": "Divorce",
     "employment-tribunal": "Employment Tribunal",
     "family-law-act": "Family Law Act",
     "financial-remedy": "Financial Remedy",
@@ -700,6 +702,8 @@
     "leasehold-management": "Leasehold Management",
     "park-homes": "Park Homes",
     "placement": "Placement",
+    "private-law": "Private Law",
+    "public-law---care": "Public Law - Care",
     "rents": "Rents",
     "right-to-buy": "Right to buy",
     "tax": "Tax",

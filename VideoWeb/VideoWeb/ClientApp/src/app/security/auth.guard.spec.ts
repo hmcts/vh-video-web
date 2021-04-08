@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { pageUrls } from '../shared/page-url.constants';
-import { MockOidcSecurityService } from '../testing/mocks/MockOidcSecurityService';
+import { MockOidcSecurityService } from '../testing/mocks/mock-oidc-security.service';
 import { AuthGuard } from './auth.guard';
 
 describe('authguard', () => {

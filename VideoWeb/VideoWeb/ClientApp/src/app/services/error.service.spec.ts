@@ -1,7 +1,7 @@
 import { Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { pageUrls } from '../shared/page-url.constants';
-import { MockLogger } from '../testing/mocks/MockLogger';
+import { MockLogger } from '../testing/mocks/mock-logger';
 import { CallError } from '../waiting-space/models/video-call-models';
 import { ErrorService } from './error.service';
 import { Logger } from './logging/logger-base';
@@ -11,7 +11,7 @@ import { ConnectionStatusService } from './connection-status.service';
 import { connectionStatusServiceSpyFactory } from '../testing/mocks/mock-connection-status.service';
 import { LocationService } from './location.service';
 import { of } from 'rxjs';
-import { translateServiceSpy } from '../testing/mocks/mock-translation-service';
+import { translateServiceSpy } from '../testing/mocks/mock-translation.service';
 
 describe('ErrorService', () => {
     const mockLogger: Logger = new MockLogger();

@@ -6,7 +6,7 @@ import { EmitEvent, EventBusService, VHEventType } from 'src/app/services/event-
 import { ConferenceMessageAnswered } from 'src/app/services/models/conference-message-answered';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { adminAnsweredChatSubjectMock, eventsServiceSpy, messageSubjectMock } from 'src/app/testing/mocks/mock-events-service';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { InstantMessage } from '../../services/models/instant-message';
 import { Hearing } from '../../shared/models/hearing';
 import { UnreadMessagesComponent } from './unread-messages.component';
@@ -116,6 +116,23 @@ describe('UnreadMessagesComponent', () => {
     });
 
     it('should increase unread count when non-admin sends a message', async () => {
+        component.hearing = new Hearing(conference);
+        const conferenceId = conference.id;
+        const participantId = conference.participants[0].id;
+        const expectedCount = component.unreadCount;
+        component.setupSubscribers();
+        messageSubjectMock.next(
+            new InstantMessage({
+                conferenceId: conferenceId,
+                from: participantId,
+                to: 'Admin'
+            })
+        );
+        expect(component.unreadCount).toBe(expectedCount + 1);
+    });
+
+    it('should increase unread count when non-admin sends first message', () => {
+        component.unreadMessages = [];
         component.hearing = new Hearing(conference);
         const conferenceId = conference.id;
         const participantId = conference.participants[0].id;

@@ -1,7 +1,7 @@
 import { Router, convertToParamMap } from '@angular/router';
 import { ProfileService } from '../services/api/profile.service';
 import { Role, UserProfileResponse } from '../services/clients/api-client';
-import { MockLogger } from '../testing/mocks/MockLogger';
+import { MockLogger } from '../testing/mocks/mock-logger';
 import { ParticipantStatusGuard } from './participant-status.guard';
 import { ParticipantStatusUpdateService } from '../services/participant-status-update.service';
 

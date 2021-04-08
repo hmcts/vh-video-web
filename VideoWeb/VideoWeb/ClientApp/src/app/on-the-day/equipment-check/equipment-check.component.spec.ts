@@ -3,7 +3,7 @@ import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { EquipmentCheckComponent } from './equipment-check.component';
 import { ParticipantStatusUpdateService } from 'src/app/services/participant-status-update.service';
-import { MockLogger } from 'src/app/testing/mocks/MockLogger';
+import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 
 describe('EquipmentCheckComponent', () => {
     let component: EquipmentCheckComponent;

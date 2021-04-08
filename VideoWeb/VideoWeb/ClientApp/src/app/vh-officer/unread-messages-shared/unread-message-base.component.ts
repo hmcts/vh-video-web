@@ -15,6 +15,7 @@ export abstract class UnreadMessagesComponentBase {
     abstract resetUnreadCounter(conferenceId: string, participantId: string): void;
     abstract incrementUnreadCounter(conferenceId: string, participantId: string): void;
     abstract openImChat();
+    abstract handleImReceived(message: InstantMessage);
 
     getIMStatus(): string {
         return this.unreadCount > 0 ? 'IM_icon.png' : 'IM-empty.png';
@@ -38,12 +39,6 @@ export abstract class UnreadMessagesComponentBase {
 
     handleAdminAnsweredChat(message: ConferenceMessageAnswered) {
         this.resetUnreadCounter(message.conferenceId, message.participantId);
-    }
-
-    handleImReceived(message: InstantMessage) {
-        if (this.getHearing().id === message.conferenceId && this.messageFromParticipant(message)) {
-            this.incrementUnreadCounter(message.conferenceId, message.from);
-        }
     }
 
     protected messageFromParticipant(message: InstantMessage): boolean {

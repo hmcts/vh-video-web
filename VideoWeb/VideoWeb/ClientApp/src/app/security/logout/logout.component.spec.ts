@@ -1,5 +1,5 @@
 import { ProfileService } from 'src/app/services/api/profile.service';
-import { MockOidcSecurityService } from '../../testing/mocks/MockOidcSecurityService';
+import { MockOidcSecurityService } from '../../testing/mocks/mock-oidc-security.service';
 import { LogoutComponent } from './logout.component';
 import { SessionStorage } from '../../services/session-storage';
 import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';

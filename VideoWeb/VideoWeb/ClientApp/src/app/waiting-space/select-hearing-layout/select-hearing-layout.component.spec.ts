@@ -1,9 +1,9 @@
 import { ConferenceResponse } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call-service';
+import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
 import { HearingLayout } from 'src/app/services/clients/api-client';
 import { SelectHearingLayoutComponent } from './select-hearing-layout.component';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { fakeAsync, tick } from '@angular/core/testing';
 
 describe('SelectHearingLayoutComponent', () => {

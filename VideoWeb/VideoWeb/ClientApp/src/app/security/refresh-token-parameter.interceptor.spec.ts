@@ -1,14 +1,14 @@
 import { HttpEvent, HttpHandler, HttpRequest } from '@angular/common/http';
 import { of } from 'rxjs';
-import { MockOidcSecurityService } from '../testing/mocks/MockOidcSecurityService';
-import { RefreshTokenParameterIntercepter } from './refresh-token-parameter.intercepter';
+import { MockOidcSecurityService } from '../testing/mocks/mock-oidc-security.service';
+import { RefreshTokenParameterInterceptor } from './refresh-token-parameter.interceptor';
 
-describe('ParticipantGuard', () => {
-    let sut: RefreshTokenParameterIntercepter;
+describe('RefreshTokenParameterInterceptor', () => {
+    let sut: RefreshTokenParameterInterceptor;
     const mockOidcSecurityService = new MockOidcSecurityService();
 
     beforeEach(() => {
-        sut = new RefreshTokenParameterIntercepter(mockOidcSecurityService as any);
+        sut = new RefreshTokenParameterInterceptor(mockOidcSecurityService as any);
     });
 
     it('should call next with updated body if token request post', async () => {

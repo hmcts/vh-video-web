@@ -1,6 +1,6 @@
 import { UserMediaDevice } from '../shared/models/user-media-device';
 import { MediaDeviceTestData } from '../testing/mocks/data/media-device-test-data';
-import { MockLogger } from '../testing/mocks/MockLogger';
+import { MockLogger } from '../testing/mocks/mock-logger';
 import { SessionStorage } from './session-storage';
 import { UserMediaService } from './user-media.service';
 import { ErrorService } from '../services/error.service';

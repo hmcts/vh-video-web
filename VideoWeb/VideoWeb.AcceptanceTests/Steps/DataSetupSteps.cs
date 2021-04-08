@@ -58,6 +58,41 @@ namespace VideoWeb.AcceptanceTests.Steps
             GivenIHaveAHearing();
             CreateConference();
         }
+         
+        [Given(@"I have a hearing with a (.*)")]
+        [Given(@"I have a hearing with an (.*)")]
+        [Given(@"I have a CACD hearing with a (.*)")]
+        public void GivenIHaveAHearingWithUser(string user)
+        {
+            var userTypes = GetUserType(user);
+            AllocateUsers(userTypes);
+            if(user.ToLower() == "winger")
+            {
+                CreateCACDHearing();
+            }
+            else
+            {
+                GivenIHaveAHearing();
+            }
+            CreateConference();
+        }
+
+        private List<UserType> GetUserType(string user)
+        {
+            switch(user.ToLower())
+            {
+                case "interpreter":
+                    return CreateUserTypes(0, 1, 0, 0, individualsAndInterpreters: 1);
+                case "observer":
+                case "panel member":
+                case "observer and panel member":
+                    return CreateUserTypes(2, 1, 1);
+                case "winger":
+                    return CreateUserTypes(2, 0, 0, 1);
+                default:
+                    return CreateUserTypes();
+            }
+        }
 
         [Given(@"I have another hearing")]
         public void GivenIHaveAnotherHearingAndAConference()
@@ -67,10 +102,10 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Given(@"I have a hearing in (.*) minutes time")]
-        public void GivenIHaveAHearingAndAConferenceInMinutesTime(int minutes)
+        public void GivenIHaveAHearingAndAConferenceInMinutesTime(int minutes, bool interpreter = false)
         {
             CheckThatTheHearingWillBeCreatedForToday(_c.TimeZone.Adjust(DateTime.Now.ToUniversalTime().AddMinutes(minutes)));
-            var userTypes = CreateUserTypes();
+            var userTypes = interpreter ? CreateUserTypes(1,0,0,0,1) : CreateUserTypes();
             AllocateUsers(userTypes);
             GivenIHaveAHearing(minutes);
             CreateConference();
@@ -116,24 +151,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             CreateConference();
         }
 
-        [Given(@"I have a hearing with an Observer and Panel Member")]
-        public void GivenIHaveAHearingWithAnObserverAndPanelMember()
-        {
-            var userTypes = CreateUserTypes(2, 1, 1);
-            AllocateUsers(userTypes);
-            GivenIHaveAHearing();
-            CreateConference();
-        }
-
-        [Given(@"I have a hearing with a Panel Member")]
-        public void GivenIHaveAHearingWithAPanelMember()
-        {
-            var userTypes = CreateUserTypes(2, 0, 1);
-            AllocateUsers(userTypes);
-            GivenIHaveAHearing();
-            CreateConference();
-        }
-
         [Given(@"I have a hearing with an Observer and Panel Member in (.*) minutes time")]
         public void GivenIHaveAHearingWithAnObserverAndPanelMemberIn(int minutes)
         {
@@ -144,19 +161,14 @@ namespace VideoWeb.AcceptanceTests.Steps
             _c.Test.DelayedStartTime = minutes;
         }
 
-        [Given(@"I have a CACD hearing with a Winger")]
-        public void GivenIHaveAHearingWithAWinger()
+        private void CreateCACDHearing()
         {
-            var userTypes = CreateUserTypes(2, 0,0,1);
-            AllocateUsers(userTypes);
-
             var request = new HearingRequestBuilder()
-                .WithUsers(_c.Test.Users)
-                .WithCACDCaseType()
-                .Build();
+          .WithUsers(_c.Test.Users)
+          .WithCACDCaseType()
+          .Build();
 
             SendTheHearingRequest(request);
-            CreateConference();
         }
 
         [Given(@"I have a CACD hearing with a winger in (.*) minutes time")]

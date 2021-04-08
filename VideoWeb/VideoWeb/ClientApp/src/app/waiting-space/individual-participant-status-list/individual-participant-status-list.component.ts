@@ -43,15 +43,23 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
     }
 
     getParticipantStatusCss(participant: ParticipantResponse): string {
-        if (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) {
+        if (
+            (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) ||
+            this.hasUnavailableLinkedParticipants(participant)
+        ) {
             return 'unavailable';
-        } else if (participant.status === ParticipantStatus.InConsultation) {
+        }
+
+        if (participant.status === ParticipantStatus.InConsultation) {
             return 'in-consultation';
         }
     }
 
     getParticipantStatus(participant: ParticipantResponse): string {
-        if (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) {
+        if (
+            (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) ||
+            this.hasUnavailableLinkedParticipants(participant)
+        ) {
             return 'Unavailable';
         }
 
@@ -66,5 +74,19 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
                 (participant.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
             );
         }
+    }
+
+    private hasUnavailableLinkedParticipants(participant: ParticipantResponse) {
+        if (participant.linked_participants.length) {
+            return participant.linked_participants.some(lp => {
+                const linkedParticipant = this.nonJudgeParticipants.find(p => p.id === lp.linked_id);
+                return (
+                    linkedParticipant &&
+                    linkedParticipant.status !== ParticipantStatus.Available &&
+                    linkedParticipant.status !== ParticipantStatus.InConsultation
+                );
+            });
+        }
+        return false;
     }
 }

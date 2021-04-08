@@ -1,5 +1,5 @@
 import { UserMediaDevice } from '../shared/models/user-media-device';
-import { MockLogger } from '../testing/mocks/MockLogger';
+import { MockLogger } from '../testing/mocks/mock-logger';
 import { ErrorService } from '../services/error.service';
 import { UserMediaStreamService } from './user-media-stream.service';
 

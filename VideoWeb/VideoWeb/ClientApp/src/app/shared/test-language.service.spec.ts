@@ -1,7 +1,7 @@
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { LangChangeEvent } from '@ngx-translate/core';
 import { from } from 'rxjs';
-import { translateServiceSpy } from '../testing/mocks/mock-translation-service';
+import { translateServiceSpy } from '../testing/mocks/mock-translation.service';
 import { TestLanguageService } from './test-language.service';
 
 describe('TestLanguageService', () => {

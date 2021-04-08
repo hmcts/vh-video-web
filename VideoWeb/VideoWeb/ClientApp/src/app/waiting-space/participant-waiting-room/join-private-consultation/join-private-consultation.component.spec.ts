@@ -1,5 +1,5 @@
 import { VideoWebService } from 'src/app/services/api/video-web.service';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation-service';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 
 import {
     ConferenceResponse,

@@ -7,6 +7,7 @@ import { ConfigService } from 'src/app/services/api/config.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ReturnUrlService } from 'src/app/services/return-url.service';
 import { pageUrls } from '../../shared/page-url.constants';
+import { OidcConfigSetupService } from '../oidc-config-setup.service';
 
 @Component({
     selector: 'app-idp-selection',
@@ -15,7 +16,7 @@ import { pageUrls } from '../../shared/page-url.constants';
 export class IdpSelectionComponent implements OnInit {
     identityProviders = {
         ejud: {
-            url: ''
+            url: '/' + pageUrls.Login
         },
         vhaad: {
             url: '/' + pageUrls.Login
@@ -31,7 +32,8 @@ export class IdpSelectionComponent implements OnInit {
         private router: Router,
         private returnUrlService: ReturnUrlService,
         private logger: Logger,
-        private configService: ConfigService
+        private configService: ConfigService,
+        private oidcConfigSetupService: OidcConfigSetupService
     ) {}
 
     ngOnInit(): void {
@@ -44,7 +46,7 @@ export class IdpSelectionComponent implements OnInit {
                         return NEVER;
                     })
                 )
-                .subscribe(loggedIn => {
+                .subscribe(async loggedIn => {
                     this.logger.debug('[IdpSelectionComponent] - isLoggedIn ' + loggedIn);
                     if (loggedIn) {
                         const returnUrl = this.returnUrlService.popUrl() || '/';
@@ -92,6 +94,7 @@ export class IdpSelectionComponent implements OnInit {
         }
 
         this.logger.info(`Sending to idp: ${provider}`);
+        this.oidcConfigSetupService.setIdp(provider);
         this.router.navigate([this.identityProviders[provider].url]);
         return true;
     }
