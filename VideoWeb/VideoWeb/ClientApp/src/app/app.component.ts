@@ -14,8 +14,8 @@ import { ConnectionStatusService } from './services/connection-status.service';
 import { pageUrls } from './shared/page-url.constants';
 import { TestLanguageService } from './shared/test-language.service';
 import { TranslateService } from '@ngx-translate/core';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { ConfigService } from './services/api/config.service';
+import { AuthService } from './services/security/auth.service';
 
 @Component({
     selector: 'app-root',
@@ -47,7 +47,7 @@ export class AppComponent implements OnInit, OnDestroy {
         pageTracker: PageTrackerService,
         testLanguageService: TestLanguageService,
         translate: TranslateService,
-        private oidcSecurityService: OidcSecurityService,
+        private authService: AuthService,
         private configService: ConfigService
     ) {
         this.loggedIn = false;
@@ -121,7 +121,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     checkAuth(): Observable<boolean> {
-        return this.oidcSecurityService.checkAuth().pipe(
+        return this.authService.checkAuth().pipe(
             catchError(err => {
                 console.error('[AppComponent] - Check Auth Error', err);
                 this.router.navigate(['/']);
@@ -144,7 +144,7 @@ export class AppComponent implements OnInit, OnDestroy {
     logOut() {
         this.loggedIn = false;
         sessionStorage.clear();
-        this.oidcSecurityService.logoffAndRevokeTokens();
+        this.authService.logout();
     }
 
     skipToContent() {

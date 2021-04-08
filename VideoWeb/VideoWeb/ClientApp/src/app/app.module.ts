@@ -28,6 +28,7 @@ import { registerLocaleData } from '@angular/common';
 import localeCy from '@angular/common/locales/cy';
 import { AuthConfigModule } from './auth-config.module';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { AuthService } from './services/security/auth.service';
 
 export function createTranslateLoader() {
     // We cant inject a httpClient because it has a race condition with adal
@@ -78,7 +79,8 @@ export function getLocale() {
         AuthGuard,
         Title,
         PageTrackerService,
-        ParticipantStatusUpdateService
+        ParticipantStatusUpdateService,
+        AuthService
     ],
     bootstrap: [AppComponent]
 })
