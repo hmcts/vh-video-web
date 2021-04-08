@@ -54,7 +54,7 @@ export class EventsService {
     private participantHandRaisedStatusSubject = new Subject<ParticipantHandRaisedMessage>();
     private roomUpdateSubject = new Subject<Room>();
     private roomTransferSubject = new Subject<RoomTransfer>();
-    public handlersRegistered = false;
+    private handlersRegistered = false;
 
     reconnectionAttempt: number;
     reconnectionPromise: Promise<any>;
@@ -196,7 +196,7 @@ export class EventsService {
             (conferenceId: string, from: string, to: string, message: string, timestamp: Date, messageUuid: string) => {
                 const date = new Date(timestamp);
                 const chat = new InstantMessage({ conferenceId, id: messageUuid, to, from, message, timestamp: date });
-                this.logger.info('[EventsService] - ReceiveMessage received', chat);
+                this.logger.debug('[EventsService] - ReceiveMessage received', chat);
                 this.messageSubject.next(chat);
             }
         );

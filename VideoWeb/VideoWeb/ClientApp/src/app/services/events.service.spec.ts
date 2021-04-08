@@ -61,6 +61,18 @@ describe('EventsService', () => {
         expect(subscription$).toBeTruthy();
     });
 
+    it('should only register the SignalR message handlers once', () => {
+        // Arrange
+        spyOn(service.connection, 'on');
+
+        // Act
+        service.registerHandlers();
+        service.registerHandlers();
+
+        // Assert
+        expect(service.connection.on).toHaveBeenCalledTimes(16);
+    });
+
     it('should start if not connected', fakeAsync(() => {
         mockOidcSecurityService.setAuthenticated(true);
         spyOn(service.connection, 'start').and.callFake(() => Promise.resolve());
@@ -168,18 +180,5 @@ describe('EventsService', () => {
         tick();
         expect(service.connection.start).toHaveBeenCalledTimes(0);
     }));
-
-    it('should only register the SignalR message handlers once', () => {
-        // Arrange
-        service.handlersRegistered = false;
-        spyOn(service.connection, 'on');
-
-        // Act
-        service.registerHandlers();
-        service.registerHandlers();
-
-        // Assert
-        expect(service.connection.on).toHaveBeenCalledTimes(16);
-    });
 
 });
