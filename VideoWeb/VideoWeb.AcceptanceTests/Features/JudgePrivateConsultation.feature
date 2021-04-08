@@ -140,4 +140,6 @@ Scenario: Participant accepts invitation from Judge
   And Individual accepts the private consultation from Judge  
   Then the Individual and the Judge will be in the same private consultation room
   And the Individual and the Judge can both leave the private consultation room
+
+
   
