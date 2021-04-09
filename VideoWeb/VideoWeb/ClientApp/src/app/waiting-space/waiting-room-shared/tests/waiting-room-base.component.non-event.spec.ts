@@ -488,7 +488,6 @@ describe('WaitingRoomComponent message and clock', () => {
         const caseName = component.getCaseNameAndNumber();
         caseNameElement.innerHTML = caseName;
         spyOnProperty(caseNameElement, 'scrollWidth').and.returnValue(caseName.length + 1);
-        // caseNameElement.scrollWidth = caseName.length * 2;
         const elemRef = new ElementRef(caseNameElement);
         component.roomTitleLabel = elemRef;
 
