@@ -1,7 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { PageTrackerService } from 'src/app/services/page-tracker.service';
 import { ErrorService } from 'src/app/services/error.service';
@@ -30,7 +29,6 @@ export class ErrorComponent implements OnInit, OnDestroy {
     constructor(
         private router: Router,
         private pageTracker: PageTrackerService,
-        private eventsService: EventsService,
         private logger: Logger,
         private errorService: ErrorService,
         private connectionStatusService: ConnectionStatusService,
@@ -47,7 +45,6 @@ export class ErrorComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.attemptingReconnect = false;
-        this.eventsService.stop();
         this.getErrorMessage();
     }
 

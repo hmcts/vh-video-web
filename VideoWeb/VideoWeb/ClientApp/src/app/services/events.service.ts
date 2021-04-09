@@ -25,6 +25,7 @@ import { RoomTransfer } from '../shared/models/room-transfer';
 import { ParticipantHandRaisedMessage } from '../shared/models/participant-hand-raised-message';
 import { ParticipantRemoteMuteMessage } from '../shared/models/participant-remote-mute-message';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { ConnectionStatusService } from './connection-status.service';
 
 @Injectable({
     providedIn: 'root'
@@ -63,24 +64,45 @@ export class EventsService {
         private oidcSecurityService: OidcSecurityService,
         private configService: ConfigService,
         private logger: Logger,
-        private errorService: ErrorService
+        private errorService: ErrorService,
+        connectionStatusService : ConnectionStatusService
     ) {
         this.reconnectionAttempt = 0;
         this.configService.getClientSettings().subscribe(configSettings => {
-            const eventhubPath = configSettings.event_hub_path;
-            this.connection = new signalR.HubConnectionBuilder()
-                .configureLogging(signalR.LogLevel.Debug)
-                .withAutomaticReconnect(this.reconnectionTimes)
-                .withUrl(eventhubPath, {
-                    accessTokenFactory: () => this.oidcSecurityService.getToken()
-                })
-                .build();
-            this.connection.serverTimeoutInMilliseconds = this.serverTimeoutTime;
+            this.buildConnection(configSettings.event_hub_path);
+            this.start();
         });
+
+        connectionStatusService.onConnectionStatusChange().subscribe((connected) => {
+            if (connected) {
+                console.log("[EventsService] connected");
+                this.start();
+            } else {
+                console.log("[EventsService] disconnected");
+                this.stop();
+            }
+        })
+    }
+
+    private buildConnection(eventHubPath : string) {
+        this.connection = new signalR.HubConnectionBuilder()
+        .configureLogging(signalR.LogLevel.Debug)
+        .withAutomaticReconnect(this.reconnectionTimes)
+        .withUrl(eventHubPath, {
+            accessTokenFactory: () => this.oidcSecurityService.getToken()
+        })
+        .build();
+
+        this.connection.serverTimeoutInMilliseconds = this.serverTimeoutTime;
+        this.connection.onreconnecting(error => this.onEventHubReconnecting(error));
+        this.connection.onreconnected(() => this.onEventHubReconnected());
+        this.connection.onclose(error => this.onEventHubErrorOrClose(error));
+        this.registerHandlers();
     }
 
     start() {
         if (this.reconnectionPromise) {
+            this.logger.info("[EventsService] - A reconnection promise already exists")
             return;
         }
 
@@ -93,10 +115,6 @@ export class EventsService {
                         .then(() => {
                             this.reconnectionAttempt = 0;
                             this.logger.info('[EventsService] - Successfully connected to EventHub');
-                            this.connection.onreconnecting(error => this.onEventHubReconnecting(error));
-                            this.connection.onreconnected(() => this.onEventHubReconnected());
-                            this.connection.onclose(error => this.onEventHubErrorOrClose(error));
-                            this.registerHandlers();
                         })
                         .catch(async err => {
                             this.logger.warn(`[EventsService] - Failed to connect to EventHub ${err}`);
@@ -120,6 +138,42 @@ export class EventsService {
         }
     }
 
+    registerHandlers(): void {
+        if (this.handlersRegistered) {
+            this.logger.warn('[EventsService] - Handlers already registered. Skipping registeration of handlers.');
+            return;
+        }
+
+        for (const eventName in this.eventHandlers)
+            this.connection.on(eventName, this.eventHandlers[eventName]);
+
+        this.handlersRegistered = true;
+    }
+
+    deregisterHandlers(): void {
+        if (!this.handlersRegistered) {
+            this.logger.warn('[EventsService] - Handlers are not registered. Skipping deregisteration of handlers.');
+            return;
+        }
+
+        for (const eventName in this.eventHandlers)
+            this.connection.off(eventName, this.eventHandlers[eventName]);
+
+        this.handlersRegistered = false;
+    }
+
+    stop() {
+        if (!this.isDisconnectedFromHub) {
+            this.logger.debug(`[EventsService] - Ending connection to EventHub. Current state: ${this.connection.state}`);
+            this.connection
+                .stop()
+                .then(() => {
+                    this.logger.debug(`[EventsService] - Connection stopped, new state: ${this.connection.state}`);
+                })
+                .catch(err => this.logger.error('[EventsService] - Failed to stop connection to EventHub', err));
+        }
+    }
+
     get isConnectedToHub(): boolean {
         return (
             this.connection.state === signalR.HubConnectionState.Connected ||
@@ -135,163 +189,7 @@ export class EventsService {
         );
     }
 
-    registerHandlers(): void {
-        if (this.handlersRegistered) {
-            this.logger.info('[EventsService] - Handlers already registered. Skipping registering of handlers.');
-            return;
-        }
-
-        this.connection.on(
-            'ParticipantStatusMessage',
-            (participantId: string, username: string, conferenceId: string, status: ParticipantStatus) => {
-                const message = new ParticipantStatusMessage(participantId, username, conferenceId, status);
-                this.logger.debug('[EventsService] - ParticipantStatusMessage received', message);
-                this.participantStatusSubject.next(message);
-            }
-        );
-
-        this.connection.on('EndpointStatusMessage', (endpointId: string, conferenceId: string, status: EndpointStatus) => {
-            const message = new EndpointStatusMessage(endpointId, conferenceId, status);
-            this.logger.debug('[EventsService] - EndpointStatusMessage received', message);
-            this.endpointStatusSubject.next(message);
-        });
-
-        this.connection.on('ConferenceStatusMessage', (conferenceId: string, status: ConferenceStatus) => {
-            const message = new ConferenceStatusMessage(conferenceId, status);
-            this.logger.debug('[EventsService] - ConferenceStatusMessage received', message);
-            this.hearingStatusSubject.next(message);
-        });
-
-        this.connection.on('CountdownFinished', (conferenceId: string) => {
-            this.logger.debug('[EventsService] - CountdownFinished received', conferenceId);
-            this.hearingCountdownCompleteSubject.next(conferenceId);
-        });
-
-        this.connection.on('HelpMessage', (conferenceId: string, participantName: string) => {
-            const message = new HelpMessage(conferenceId, participantName);
-            this.logger.debug('[EventsService] - HelpMessage received', message);
-            this.helpMessageSubject.next(message);
-        });
-
-        this.connection.on(
-            'RequestedConsultationMessage',
-            (conferenceId: string, roomLabel: string, requestedBy: string, requestedFor: string) => {
-                const message = new RequestedConsultationMessage(conferenceId, roomLabel, requestedBy, requestedFor);
-                this.logger.debug('[EventsService] - RequestConsultationMessage received', message);
-                this.requestedConsultationMessageSubject.next(message);
-            }
-        );
-
-        this.connection.on(
-            'ConsultationRequestResponseMessage',
-            (conferenceId: string, roomLabel: string, requestedFor: string, answer: ConsultationAnswer) => {
-                const message = new ConsultationRequestResponseMessage(conferenceId, roomLabel, requestedFor, answer);
-                this.logger.debug('[EventsService] - ConsultationRequestResponseMessage received', message);
-                this.consultationRequestResponseMessageSubject.next(message);
-            }
-        );
-
-        this.connection.on(
-            'ReceiveMessage',
-            (conferenceId: string, from: string, to: string, message: string, timestamp: Date, messageUuid: string) => {
-                const date = new Date(timestamp);
-                const chat = new InstantMessage({ conferenceId, id: messageUuid, to, from, message, timestamp: date });
-                this.logger.debug('[EventsService] - ReceiveMessage received', chat);
-                this.messageSubject.next(chat);
-            }
-        );
-
-        this.connection.on('AdminAnsweredChat', (conferenceId: string, participantId: string) => {
-            const payload = new ConferenceMessageAnswered(conferenceId, participantId);
-            this.logger.debug('[EventsService] - AdminAnsweredChat received', payload);
-            this.adminAnsweredChatSubject.next(payload);
-        });
-
-        this.connection.on('HearingTransfer', (conferenceId: string, participantId: string, hearingPosition: TransferDirection) => {
-            const payload = new HearingTransfer(conferenceId, participantId, hearingPosition);
-            this.logger.debug('[EventsService] - HearingTransfer received: ', payload);
-            this.hearingTransferSubject.next(payload);
-        });
-
-        this.connection.on(
-            'ParticipantMediaStatusMessage',
-            (participantId: string, conferenceId: string, mediaStatus: ParticipantMediaStatus) => {
-                const payload = new ParticipantMediaStatusMessage(conferenceId, participantId, mediaStatus);
-                this.logger.debug('[EventsService] - Participant Media Status change received: ', payload);
-                this.participantMediaStatusSubject.next(payload);
-            }
-        );
-
-        this.connection.on('ParticipantRemoteMuteMessage', (participantId: string, conferenceId: string, isRemoteMuted: boolean) => {
-            this.logger.debug('[EventsService] - Participant Remote mute status change received: ', {
-                participantId,
-                conferenceId,
-                isRemoteMuted
-            });
-            const payload = new ParticipantRemoteMuteMessage(conferenceId, participantId, isRemoteMuted);
-            this.participantRemoteMuteStatusSubject.next(payload);
-        });
-
-        this.connection.on('ParticipantHandRaiseMessage', (participantId: string, conferenceId: string, hasHandRaised: boolean) => {
-            this.logger.debug('[EventsService] - Participant Hand raised status change received: ', {
-                participantId,
-                conferenceId,
-                hasHandRaised
-            });
-            const payload = new ParticipantHandRaisedMessage(conferenceId, participantId, hasHandRaised);
-            this.participantHandRaisedStatusSubject.next(payload);
-        });
-
-        this.connection.on('RoomUpdate', (payload: Room) => {
-            this.logger.debug('[EventsService] - Room Update received: ', payload);
-            this.roomUpdateSubject.next(payload);
-        });
-
-        this.connection.on('RoomTransfer', (payload: RoomTransfer) => {
-            this.logger.debug('[EventsService] - Room Transfer received: ', payload);
-            this.roomTransferSubject.next(payload);
-        });
-
-        this.connection.on(
-            'ReceiveHeartbeat',
-            (
-                conferenceId: string,
-                participantId: string,
-                heartbeatHealth: HeartbeatHealth,
-                browserName: string,
-                browserVersion: string,
-                osName: string,
-                osVersion: string
-            ) => {
-                const heartbeat = new ParticipantHeartbeat(
-                    conferenceId,
-                    participantId,
-                    heartbeatHealth,
-                    browserName,
-                    browserVersion,
-                    osName,
-                    osVersion
-                );
-                this.participantHeartbeat.next(heartbeat);
-            }
-        );
-
-        this.handlersRegistered = true;
-    }
-
-    stop() {
-        if (!this.isDisconnectedFromHub) {
-            this.logger.debug(`[EventsService] - Ending connection to EventHub. Current state: ${this.connection.state}`);
-            this.connection
-                .stop()
-                .then(() => {
-                    this.logger.debug(`[EventsService] - Connection stopped, new state: ${this.connection.state}`);
-                })
-                .catch(err => this.logger.error('[EventsService] - Failed to stop connection to EventHub', err));
-        }
-    }
-
-    async delay(ms: number) {
+    private async delay(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
@@ -434,4 +332,140 @@ export class EventsService {
             mediaStatus: mediaStatus
         });
     }
+
+    private eventHandlers = {
+        'ParticipantStatusMessage' :
+        (participantId: string, username: string, conferenceId: string, status: ParticipantStatus) => {
+            const message = new ParticipantStatusMessage(participantId, username, conferenceId, status);
+            this.logger.debug('[EventsService] - ParticipantStatusMessage received', message);
+            this.participantStatusSubject.next(message);
+        },
+
+        'EndpointStatusMessage' :
+        (endpointId: string, conferenceId: string, status: EndpointStatus) => {
+            const message = new EndpointStatusMessage(endpointId, conferenceId, status);
+            this.logger.debug('[EventsService] - EndpointStatusMessage received', message);
+            this.endpointStatusSubject.next(message);
+        },
+
+        'ConferenceStatusMessage' :
+        (conferenceId: string, status: ConferenceStatus) => {
+            const message = new ConferenceStatusMessage(conferenceId, status);
+            this.logger.debug('[EventsService] - ConferenceStatusMessage received', message);
+            this.hearingStatusSubject.next(message);
+        },
+
+        'CountdownFinished' :
+        (conferenceId: string) => {
+            this.logger.debug('[EventsService] - CountdownFinished received', conferenceId);
+            this.hearingCountdownCompleteSubject.next(conferenceId);
+        },
+
+        'HelpMessage' :
+        (conferenceId: string, participantName: string) => {
+            const message = new HelpMessage(conferenceId, participantName);
+            this.logger.debug('[EventsService] - HelpMessage received', message);
+            this.helpMessageSubject.next(message);
+        },
+
+        'RequestedConsultationMessage' :
+        (conferenceId: string, roomLabel: string, requestedBy: string, requestedFor: string) => {
+            const message = new RequestedConsultationMessage(conferenceId, roomLabel, requestedBy, requestedFor);
+            this.logger.debug('[EventsService] - RequestConsultationMessage received', message);
+            this.requestedConsultationMessageSubject.next(message);
+        },
+
+        'ConsultationRequestResponseMessage' :
+        (conferenceId: string, roomLabel: string, requestedFor: string, answer: ConsultationAnswer) => {
+            const message = new ConsultationRequestResponseMessage(conferenceId, roomLabel, requestedFor, answer);
+            this.logger.debug('[EventsService] - ConsultationRequestResponseMessage received', message);
+            this.consultationRequestResponseMessageSubject.next(message);
+        },
+
+        'ReceiveMessage' :
+        (conferenceId: string, from: string, to: string, message: string, timestamp: Date, messageUuid: string) => {
+            const date = new Date(timestamp);
+            const chat = new InstantMessage({ conferenceId, id: messageUuid, to, from, message, timestamp: date });
+            this.logger.debug('[EventsService] - ReceiveMessage received', chat);
+            this.messageSubject.next(chat);
+        },
+
+        'AdminAnsweredChat' :
+        (conferenceId: string, participantId: string) => {
+            const payload = new ConferenceMessageAnswered(conferenceId, participantId);
+            this.logger.debug('[EventsService] - AdminAnsweredChat received', payload);
+            this.adminAnsweredChatSubject.next(payload);
+        },
+
+        'HearingTransfer' :
+        (conferenceId: string, participantId: string, hearingPosition: TransferDirection) => {
+            const payload = new HearingTransfer(conferenceId, participantId, hearingPosition);
+            this.logger.debug('[EventsService] - HearingTransfer received: ', payload);
+            this.hearingTransferSubject.next(payload);
+        },
+
+        'ParticipantMediaStatusMessage' :
+        (participantId: string, conferenceId: string, mediaStatus: ParticipantMediaStatus) => {
+            const payload = new ParticipantMediaStatusMessage(conferenceId, participantId, mediaStatus);
+            this.logger.debug('[EventsService] - Participant Media Status change received: ', payload);
+            this.participantMediaStatusSubject.next(payload);
+        },
+
+        'ParticipantRemoteMuteMessage' :
+        (participantId: string, conferenceId: string, isRemoteMuted: boolean) => {
+            this.logger.debug('[EventsService] - Participant Remote mute status change received: ', {
+                participantId,
+                conferenceId,
+                isRemoteMuted
+            });
+            const payload = new ParticipantRemoteMuteMessage(conferenceId, participantId, isRemoteMuted);
+            this.participantRemoteMuteStatusSubject.next(payload);
+        },
+
+        'ParticipantHandRaiseMessage' :
+        (participantId: string, conferenceId: string, hasHandRaised: boolean) => {
+            this.logger.debug('[EventsService] - Participant Hand raised status change received: ', {
+                participantId,
+                conferenceId,
+                hasHandRaised
+            });
+            const payload = new ParticipantHandRaisedMessage(conferenceId, participantId, hasHandRaised);
+            this.participantHandRaisedStatusSubject.next(payload);
+        },
+
+        'RoomUpdate' :
+        (payload: Room) => {
+            this.logger.debug('[EventsService] - Room Update received: ', payload);
+            this.roomUpdateSubject.next(payload);
+        },
+
+        'RoomTransfer' :
+        (payload: RoomTransfer) => {
+            this.logger.debug('[EventsService] - Room Transfer received: ', payload);
+            this.roomTransferSubject.next(payload);
+        },
+
+
+        'ReceiveHeartbeat' :
+        (
+            conferenceId: string,
+            participantId: string,
+            heartbeatHealth: HeartbeatHealth,
+            browserName: string,
+            browserVersion: string,
+            osName: string,
+            osVersion: string
+        ) => {
+            const heartbeat = new ParticipantHeartbeat(
+                conferenceId,
+                participantId,
+                heartbeatHealth,
+                browserName,
+                browserVersion,
+                osName,
+                osVersion
+            );
+            this.participantHeartbeat.next(heartbeat);
+        }
+    };
 }
