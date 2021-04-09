@@ -101,3 +101,16 @@ Scenario: Winger Waiting Room
 	And the Winger can see a list of participants and their representatives
 	And the user can see a blue box and a scheduled message
   And they can see other participants status
+
+@VIH-7164
+Scenario: JOH can join the waiting room
+  Given I have a hearing with a Panel Member
+  And the Panel Member user has progressed to the Waiting Room page for the existing hearing
+  Then the user is on the Waiting Room page
+	And a phone number for help is provided
+	And the users status has updated to Available
+	And the participant can see information about their case
+	And the Panel Member can see a list of participants and their representatives
+	And the user can see a blue box and a scheduled message
+  And they can see other participants status
+
