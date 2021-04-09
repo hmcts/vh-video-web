@@ -202,6 +202,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     getCaseNameAndNumber() {
+        return 'fdsuifhidsh iudshfiudshf isfhdsiuhfdsiuhfids uisdhfdsf dskndsn kdsnf sdkjf kdsnf';
         return `${this.conference.case_name}: ${this.conference.case_number}`;
     }
 
@@ -931,7 +932,10 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     get hasCaseNameOverflowed(): boolean {
-        return this.roomTitleLabel?.nativeElement.scrollWidth > this.roomTitleLabel?.nativeElement.clientWidth;
+        if (!this.roomTitleLabel) {
+            return false;
+        }
+        return this.roomTitleLabel.nativeElement.scrollWidth > this.roomTitleLabel.nativeElement.clientWidth;
     }
 
     executeWaitingRoomCleanup() {
