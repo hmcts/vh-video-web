@@ -165,6 +165,12 @@ parameters:
             value: $(SelfTestApiKey)
           - name: KinlyConfiguration:JoinByPhoneFromDate
             value: $(JoinByPhoneFromDate)
+          - name: KinlyConfiguration:TurnServer
+            value: $(TurnServer)
+          - name: KinlyConfiguration:TurnServerUser
+            value: $(TurnServerUser)
+          - name: KinlyConfiguration:TurnServerCredential
+            value: $(TurnServerCredential)
 
           # VhServices
           - name: VhServices:BookingsApiResourceId
