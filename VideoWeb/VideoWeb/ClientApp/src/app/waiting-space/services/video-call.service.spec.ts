@@ -1,6 +1,13 @@
 import { Guid } from 'guid-typescript';
 import { of } from 'rxjs';
-import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
+import { ConfigService } from 'src/app/services/api/config.service';
+import {
+    ApiClient,
+    ClientSettingsResponse,
+    HearingLayout,
+    SharedParticipantRoom,
+    StartHearingRequest
+} from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
 import { UserMediaService } from 'src/app/services/user-media.service';
@@ -19,6 +26,7 @@ describe('VideoCallService', () => {
     let preferredCamera: UserMediaDevice;
     let preferredMicrophone: UserMediaDevice;
     let pexipSpy: jasmine.SpyObj<PexipClient>;
+    let configServiceSpy: jasmine.SpyObj<ConfigService>;
     beforeAll(() => {
         apiClient = jasmine.createSpyObj<ApiClient>('ApiClient', [
             'startOrResumeVideoHearing',
@@ -38,6 +46,14 @@ describe('VideoCallService', () => {
             'updatePreferredMicrophone',
             'selectScreenToShare'
         ]);
+
+        const config = new ClientSettingsResponse({
+            kinly_turn_server: 'turnserver',
+            kinly_turn_server_user: 'tester1',
+            kinly_turn_server_credential: 'credential'
+        });
+        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getConfig']);
+        configServiceSpy.getConfig.and.returnValue(config);
 
         preferredCamera = testData.getListOfCameras()[0];
         preferredMicrophone = testData.getListOfMicrophones()[0];
@@ -66,7 +82,7 @@ describe('VideoCallService', () => {
             'getPresentation',
             'stopPresentation'
         ]);
-        service = new VideoCallService(logger, userMediaService, apiClient);
+        service = new VideoCallService(logger, userMediaService, apiClient, configServiceSpy);
         await service.setupClient();
     });
 
