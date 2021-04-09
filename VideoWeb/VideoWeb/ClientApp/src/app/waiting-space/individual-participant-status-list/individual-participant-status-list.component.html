@@ -1,5 +1,6 @@
 <div>
-  <div id="p-row-{{ judge.id }}" class="govuk-grid-row">
+  <div id="p-row-{{ judge.id }}"
+    class="govuk-grid-row">
     <div class="govuk-grid-column-one-half vh-mb5">
       <div class="govuk-heading-m govuk-!-margin-bottom-0">Judge</div>
       <p class="govuk-body-s govuk-!-margin-bottom-0">
@@ -7,97 +8,119 @@
       </p>
     </div>
     <div class="govuk-grid-column-one-half vh-mb5">
-      <img
-        src="/assets/images/govuk-crest.png"
+      <img src="/assets/images/govuk-crest.png"
         height="50"
         width="50"
         class="govuk-header__logotype-crest"
-        [attr.alt]="'individual-participant-status-list.crest-icon-alt' | translate"
-      />
+        [attr.alt]="'individual-participant-status-list.crest-icon-alt' | translate" />
     </div>
   </div>
   <div class="vh-line govuk-!-margin-bottom-3"></div>
 
-    <div *ngIf="wingers.length > 0">
-        <div class="govuk-grid-row">
-          <div class="govuk-grid-column-full">
-              <h2 class="govuk-heading-s">{{'individual-participant-status-list.wingers' | translate}} ({{ wingers.length }})</h2>
-          </div>
-        </div>
-        <div class="vh-border">
-          <div *ngFor="let participant of wingers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
-            <div id="p-row-{{ participant.id }}-panel-member" class="govuk-grid-column-full">
-              <p id="p-{{ participant.id }}-name-panel-member" class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
-              <div class="vh-line" *ngIf="!lastItem"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-  <div *ngIf="panelMembers.length > 0">
+  <div *ngIf="wingers.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-          <h2 class="govuk-heading-s">{{'individual-participant-status-list.panel-members' | translate}} ({{ panelMembers.length }})</h2>
+        <h2 class="govuk-heading-s">{{'individual-participant-status-list.wingers' | translate}} ({{ wingers.length }})
+        </h2>
       </div>
     </div>
     <div class="vh-border">
-      <div *ngFor="let participant of panelMembers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
-        <div id="p-row-{{ participant.id }}-panel-member" class="govuk-grid-column-full">
-          <p id="p-{{ participant.id }}-name-panel-member" class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
-          <div class="vh-line" *ngIf="!lastItem"></div>
+      <div *ngFor="let participant of wingers; let lastItem = last"
+        class="govuk-grid-row govuk-!-margin-bottom-1">
+        <div id="p-row-{{ participant.id }}-panel-member"
+          class="govuk-grid-column-full">
+          <p id="p-{{ participant.id }}-name-panel-member"
+            class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
+          <div class="vh-line"
+            *ngIf="!lastItem"></div>
         </div>
       </div>
     </div>
   </div>
 
-    <div *ngIf="nonJudgeParticipants.length > 0">
-        <div class="govuk-grid-row">
-            <div class="govuk-grid-column-full">
-                <h2 class="govuk-heading-s">{{'individual-participant-status-list.participants' | translate}} ({{ nonJudgeParticipants.length }})</h2>
-            </div>
-        </div>
-        <div class="vh-border">
-            <div *ngFor="let participant of nonJudgeParticipants; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
-                <div id="p-row-{{ participant.id }}-participant" class="govuk-grid-column-full">
-                    <p id="p-{{ participant.id }}-name-participant" class="govuk-heading-s govuk-!-margin-bottom-0">
-                        <span *ngIf="hasInterpreterLink(participant)" class="vh-interpreter-icon">
-                          <em class="far fa-2x fa-language"></em>
-                        </span>
-                        {{ participant.name }}
-                    </p>
-
-                    <p id="p-{{ participant.id }}-hearing-role-participant"
-                       class="govuk-body-m govuk-!-margin-bottom-3"
-                       [innerHtml]="getHearingRole(participant)">
-                    </p>
-
-                    <p *ngIf="!isCaseTypeNone(participant)" id="p-{{ participant.id }}-case-type-group-participant" class="govuk-body-s govuk-!-margin-bottom-1">
-                        {{ participant.case_type_group }}
-                    </p>
-
-                    <div class="govuk-body-s govuk-!-margin-bottom-3">
-                        <label
-                            id="p-{{ participant.id }}-status-participant"
-                            class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}" [innerHTML]="getParticipantStatus(participant)">
-                        </label>
-                    </div>
-                    <div class="vh-line" *ngIf="!lastItem"></div>
-                </div>
-            </div>
-        </div>
+  <div *ngIf="panelMembers.length > 0">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h2 class="govuk-heading-s">{{'individual-participant-status-list.panel-members' | translate}} ({{
+          panelMembers.length }})</h2>
+      </div>
     </div>
+    <div class="vh-border">
+      <div *ngFor="let participant of panelMembers; let lastItem = last"
+        class="govuk-grid-row govuk-!-margin-bottom-1">
+        <div id="p-row-{{ participant.id }}-panel-member"
+          class="govuk-grid-column-full">
+          <p id="p-{{ participant.id }}-name-panel-member"
+            class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
+          <div class="vh-line"
+            *ngIf="!lastItem"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="nonJudgeParticipants.length > 0">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <h2 class="govuk-heading-s">{{'individual-participant-status-list.participants' | translate}} ({{
+          nonJudgeParticipants.length }})</h2>
+      </div>
+    </div>
+    <div class="vh-border">
+      <div *ngFor="let participant of nonJudgeParticipants; let lastItem = last"
+        class="govuk-grid-row govuk-!-margin-bottom-1">
+        <div id="p-row-{{ participant.id }}-participant"
+          class="govuk-grid-column-full">
+          <p id="p-{{ participant.id }}-name-participant"
+            class="govuk-heading-s govuk-!-margin-bottom-0">
+            <span *ngIf="hasInterpreterLink(participant)"
+              class="vh-interpreter-icon">
+              <em class="far fa-2x fa-language"></em>
+            </span>
+            {{ participant.name }}
+          </p>
+
+          <p id="p-{{ participant.id }}-hearing-role-participant"
+            class="govuk-body-m govuk-!-margin-bottom-3"
+            [innerHtml]="getHearingRole(participant)">
+          </p>
+
+          <p *ngIf="!isCaseTypeNone(participant)"
+            id="p-{{ participant.id }}-case-type-group-participant"
+            class="govuk-body-s govuk-!-margin-bottom-1">
+            {{ participant.case_type_group }}
+          </p>
+
+          <div *ngIf="!isLoggedInParticipant(participant)"
+            class="govuk-body-s govuk-!-margin-bottom-3">
+            <label id="p-{{ participant.id }}-status-participant"
+              class="govuk-body-s label-status label-status--{{ getParticipantStatusCss(participant) }}"
+              [innerHTML]="getParticipantStatus(participant)">
+            </label>
+          </div>
+          <div class="vh-line"
+            *ngIf="!lastItem"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div *ngIf="endpoints.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">{{'individual-participant-status-list.video-access-points' | translate}} ({{ endpoints.length }})</h2>
+        <h2 class="govuk-heading-s">{{'individual-participant-status-list.video-access-points' | translate}} ({{
+          endpoints.length }})</h2>
       </div>
     </div>
     <div class="vh-border">
-      <div *ngFor="let endpoint of endpoints; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
-        <div id="p-row-{{ endpoint.id }}-endpoints" class="govuk-grid-column-full">
-          <p id="p-{{ endpoint.id }}-name-endpoints" class="govuk-heading-s govuk-!-margin-bottom-0">{{ endpoint.display_name }}</p>
-          <div class="vh-line" *ngIf="!lastItem"></div>
+      <div *ngFor="let endpoint of endpoints; let lastItem = last"
+        class="govuk-grid-row govuk-!-margin-bottom-1">
+        <div id="p-row-{{ endpoint.id }}-endpoints"
+          class="govuk-grid-column-full">
+          <p id="p-{{ endpoint.id }}-name-endpoints"
+            class="govuk-heading-s govuk-!-margin-bottom-0">{{ endpoint.display_name }}</p>
+          <div class="vh-line"
+            *ngIf="!lastItem"></div>
         </div>
       </div>
     </div>
@@ -106,20 +129,26 @@
   <div *ngIf="observers.length > 0">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-full">
-        <h2 class="govuk-heading-s">{{'individual-participant-status-list.observers' | translate}} ({{ observers.length }})</h2>
+        <h2 class="govuk-heading-s">{{'individual-participant-status-list.observers' | translate}} ({{ observers.length
+          }})</h2>
       </div>
     </div>
     <div class="vh-border">
-      <div *ngFor="let participant of observers; let lastItem = last" class="govuk-grid-row govuk-!-margin-bottom-1">
-        <div id="p-row-{{ participant.id }}-observer" class="govuk-grid-column-full">
-          <p id="p-{{ participant.id }}-name-observer" class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
-          <div class="vh-line" *ngIf="!lastItem"></div>
+      <div *ngFor="let participant of observers; let lastItem = last"
+        class="govuk-grid-row govuk-!-margin-bottom-1">
+        <div id="p-row-{{ participant.id }}-observer"
+          class="govuk-grid-column-full">
+          <p id="p-{{ participant.id }}-name-observer"
+            class="govuk-heading-s govuk-!-margin-bottom-0">{{ participant.name }}</p>
+          <div class="vh-line"
+            *ngIf="!lastItem"></div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<app-modal id="pc-error-modal" class="modal clear consultation">
+<app-modal id="pc-error-modal"
+  class="modal clear consultation">
   <app-consultation-error (closedModal)="closeAllPCModals()"></app-consultation-error>
 </app-modal>

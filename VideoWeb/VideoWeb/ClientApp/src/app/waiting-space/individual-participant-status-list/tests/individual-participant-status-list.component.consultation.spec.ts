@@ -17,7 +17,7 @@ import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-securit
 import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 
-describe('IndividualParticipantStatusListComponent consultations', () => {
+fdescribe('IndividualParticipantStatusListComponent consultations', () => {
     let component: IndividualParticipantStatusListComponent;
     let conference: ConferenceResponse;
     let participantsObserverPanelMember: ParticipantResponseVho[];
@@ -121,7 +121,7 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
     it('should return participant unavailable status', () => {
         const participant = component.conference.participants[0];
         participant.status = ParticipantStatus.Disconnected;
-        expect(component.getParticipantStatus(participant)).toEqual('Unavailable');
+        expect(component.getParticipantStatus(participant)).toEqual('individual-participant-status-list.unavailable');
     });
 
     it('should return participant in consultation status', () => {
@@ -146,6 +146,6 @@ describe('IndividualParticipantStatusListComponent consultations', () => {
                 linked_id: '1'
             } as any
         ];
-        expect(component.getParticipantStatus(participant)).toEqual('Unavailable');
+        expect(component.getParticipantStatus(participant)).toEqual('individual-participant-status-list.unavailable');
     });
 });

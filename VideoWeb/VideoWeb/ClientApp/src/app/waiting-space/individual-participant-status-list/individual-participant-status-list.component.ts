@@ -43,11 +43,12 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
     }
 
     getParticipantStatusCss(participant: ParticipantResponse): string {
-        if (
-            (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) ||
-            this.hasUnavailableLinkedParticipants(participant)
-        ) {
+        if ((participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) || this.hasUnavailableLinkedParticipants(participant)) {
             return 'unavailable';
+        }
+
+        if (participant.status === ParticipantStatus.Available) {
+            return 'available';
         }
 
         if (participant.status === ParticipantStatus.InConsultation) {
@@ -56,11 +57,12 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
     }
 
     getParticipantStatus(participant: ParticipantResponse): string {
-        if (
-            (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) ||
-            this.hasUnavailableLinkedParticipants(participant)
-        ) {
-            return 'Unavailable';
+        if ((participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) || this.hasUnavailableLinkedParticipants(participant)) {
+            return this.translateService.instant('individual-participant-status-list.unavailable');
+        }
+
+        if (participant.status === ParticipantStatus.Available) {
+            return this.translateService.instant('individual-participant-status-list.available');
         }
 
         if (participant.status === ParticipantStatus.InConsultation && participant.current_room != null) {
@@ -74,6 +76,10 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
                 (participant.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
             );
         }
+    }
+
+    isLoggedInParticipant(participant: ParticipantResponse) {
+        return participant.id === this.loggedInUser.participant_id;
     }
 
     private hasUnavailableLinkedParticipants(participant: ParticipantResponse) {
