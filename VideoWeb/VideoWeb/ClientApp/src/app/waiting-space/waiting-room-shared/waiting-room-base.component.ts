@@ -202,7 +202,6 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     getCaseNameAndNumber() {
-        return 'fdsuifhidsh iudshfiudshf isfhdsiuhfdsiuhfids uisdhfdsf dskndsn kdsnf sdkjf kdsnf';
         return `${this.conference.case_name}: ${this.conference.case_number}`;
     }
 
