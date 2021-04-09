@@ -99,6 +99,7 @@ export abstract class WaitingRoomBaseDirective {
     linkedParticipantRoom: SharedParticipantRoom;
 
     @ViewChild('incomingFeed', { static: false }) videoStream: ElementRef<HTMLVideoElement>;
+    @ViewChild('roomTitleLabel', { static: false }) roomTitleLabel: ElementRef<HTMLDivElement>;
     countdownComplete: boolean;
     consultationInviteToasts: { [roomLabel: string]: VhToastComponent } = {};
 
@@ -906,6 +907,13 @@ export abstract class WaitingRoomBaseDirective {
 
     get showExtraContent(): boolean {
         return !this.showVideo && !this.isTransferringIn;
+    }
+
+    get hasCaseNameOverflowed(): boolean {
+        if (!this.roomTitleLabel) {
+            return false;
+        }
+        return this.roomTitleLabel.nativeElement.scrollWidth > this.roomTitleLabel.nativeElement.clientWidth;
     }
 
     executeWaitingRoomCleanup() {
