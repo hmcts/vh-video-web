@@ -106,6 +106,12 @@ fdescribe('IndividualParticipantStatusListComponent consultations', () => {
         expect(component.getParticipantStatusCss(participant)).toEqual('unavailable');
     });
 
+    it('should return participant available status css class', () => {
+        const participant = component.conference.participants[0];
+        participant.status = ParticipantStatus.Available;
+        expect(component.getParticipantStatusCss(participant)).toEqual('available');
+    });
+
     it('should return participant in consultation status css class', () => {
         const participant = component.conference.participants[0];
         participant.status = ParticipantStatus.InConsultation;
@@ -147,5 +153,11 @@ fdescribe('IndividualParticipantStatusListComponent consultations', () => {
             } as any
         ];
         expect(component.getParticipantStatus(participant)).toEqual('individual-participant-status-list.unavailable');
+    });
+
+    it('should return true for logged in participant', () => {
+        const participant = component.conference.participants[0];
+        component.loggedInUser.participant_id = participant.id;
+        expect(component.isLoggedInParticipant(participant)).toBeTrue();
     });
 });
