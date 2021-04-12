@@ -70,15 +70,14 @@ export class EventsService {
         this.reconnectionAttempt = 0;
         this.configService.getClientSettings().subscribe(configSettings => {
             this.buildConnection(configSettings.event_hub_path);
-            this.start();
         });
 
         connectionStatusService.onConnectionStatusChange().subscribe((connected) => {
             if (connected) {
-                console.log("[EventsService] connected");
+                this.logger.info('[EventsService] - Connection status changed: connected.')
                 this.start();
             } else {
-                console.log("[EventsService] disconnected");
+                this.logger.info('[EventsService] - Connection status changed: disconnected.')
                 this.stop();
             }
         })
@@ -193,6 +192,7 @@ export class EventsService {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    ///////////////////////////////////
     private onEventHubReconnecting(error: Error) {
         this.reconnectionAttempt++;
         this.logger.info('[EventsService] - Attempting to reconnect to EventHub: attempt #' + this.reconnectionAttempt);
@@ -213,6 +213,7 @@ export class EventsService {
         this.logger.error(`[EventsService] - ${message}`, error);
         this.eventHubDisconnectSubject.next(this.reconnectionAttempt);
     }
+    ////////////////////////////////
 
     getServiceReconnected(): Observable<any> {
         return this.eventHubReconnectSubject.asObservable();

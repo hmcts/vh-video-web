@@ -1,6 +1,6 @@
 import * as signalR from '@microsoft/signalr';
 import { Guid } from 'guid-typescript';
-import { of, Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { MockOidcSecurityService } from '../testing/mocks/mock-oidc-security.service';
 import { MockLogger } from '../testing/mocks/mock-logger';
 import { ConfigService } from './api/config.service';
@@ -10,6 +10,8 @@ import { Logger } from './logging/logger-base';
 import { InstantMessage } from './models/instant-message';
 import { ErrorService } from '../services/error.service';
 import { fakeAsync, tick } from '@angular/core/testing';
+import { ConnectionStatusService } from './connection-status.service';
+import { connectionStatusServiceSpyFactory } from '../testing/mocks/mock-connection-status.service';
 
 describe('EventsService', () => {
     const clientSettings = new ClientSettingsResponse({
@@ -22,6 +24,8 @@ describe('EventsService', () => {
     });
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let errorServiceSpy: jasmine.SpyObj<ErrorService>;
+    let connectionStatusServiceSpy : jasmine.SpyObj<ConnectionStatusService>;
+    const connectionStatusChanged$ = new Observable<boolean>();
     let service: EventsService;
     const mockOidcSecurityService = new MockOidcSecurityService();
     let oidcSecurityService;
@@ -32,9 +36,11 @@ describe('EventsService', () => {
         configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings', 'loadConfig']);
         errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['handleApiError', 'goToUnauthorised', 'goToServiceError']);
         configServiceSpy.getClientSettings.and.returnValue(of(clientSettings));
+        connectionStatusServiceSpy = jasmine.createSpyObj<ConnectionStatusService>('ConnectionStatusService', ['onConnectionStatusChange']);
+        connectionStatusServiceSpy.onConnectionStatusChange.and.returnValue(connectionStatusChanged$)
         oidcSecurityService = mockOidcSecurityService;
-        service = new EventsService(oidcSecurityService, configServiceSpy, logger, errorServiceSpy);
 
+        service = new EventsService(oidcSecurityService, configServiceSpy, logger, errorServiceSpy, connectionStatusServiceSpy);
         service.connection = new signalR.HubConnectionBuilder()
             .configureLogging(signalR.LogLevel.Debug)
             .withAutomaticReconnect([0])
@@ -59,18 +65,6 @@ describe('EventsService', () => {
         subscription$.add(service.getAdminAnsweredChat().subscribe());
         subscription$.add(service.getHeartbeat().subscribe());
         expect(subscription$).toBeTruthy();
-    });
-
-    it('should only register the SignalR message handlers once', () => {
-        // Arrange
-        spyOn(service.connection, 'on');
-
-        // Act
-        service.registerHandlers();
-        service.registerHandlers();
-
-        // Assert
-        expect(service.connection.on).toHaveBeenCalledTimes(16);
     });
 
     it('should start if not connected', fakeAsync(() => {
