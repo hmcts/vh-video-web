@@ -57,7 +57,7 @@ Scenario: Video Hearings Officer Calls Users
 
 @VIH-7413
 Scenario: Video Hearings Officer Calls Both Interpretee And Interpreter
-  Given I have an Interpreter and have a hearing
+  Given I have a hearing with an Interpreter
   And the first individual user has progressed to the Waiting Room page for the existing hearing
   And the interpreter user has progressed to the Waiting Room page for the existing hearing
 	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
