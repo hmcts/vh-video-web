@@ -43,7 +43,10 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
     }
 
     getParticipantStatusCss(participant: ParticipantResponse): string {
-        if ((participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) || this.hasUnavailableLinkedParticipants(participant)) {
+        if (
+            (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) ||
+            this.hasUnavailableLinkedParticipants(participant)
+        ) {
             return 'unavailable';
         }
 
@@ -57,7 +60,10 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
     }
 
     getParticipantStatus(participant: ParticipantResponse): string {
-        if ((participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) || this.hasUnavailableLinkedParticipants(participant)) {
+        if (
+            (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) ||
+            this.hasUnavailableLinkedParticipants(participant)
+        ) {
             return this.translateService.instant('individual-participant-status-list.unavailable');
         }
 
