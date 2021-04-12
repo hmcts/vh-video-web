@@ -25,6 +25,7 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { MockOidcSecurityService } from './testing/mocks/mock-oidc-security.service';
 import { TranslatePipeMock } from './testing/mocks/mock-translation-pipe';
 import { of } from 'rxjs';
+import { AuthService } from './services/security/auth.service';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -34,6 +35,7 @@ describe('AppComponent', () => {
     let participantStatusUpdateServiceSpy: jasmine.SpyObj<ParticipantStatusUpdateService>;
     let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
     let testLanguageServiceSpy: jasmine.SpyObj<TestLanguageService>;
+    let authServiceSpy: jasmine.SpyObj<AuthService>;
 
     const clientSettings = new ClientSettingsResponse({
         tenant_id: 'tenantid',
@@ -64,6 +66,8 @@ describe('AppComponent', () => {
         participantStatusUpdateServiceSpy = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
         participantStatusUpdateServiceSpy.postParticipantStatus.and.returnValue(Promise.resolve());
 
+        authServiceSpy = jasmine.createSpyObj<AuthService>('AuthService', ['logout', 'checkAuth']);
+
         TestBed.configureTestingModule({
             imports: [HttpClientModule, RouterTestingModule],
             declarations: [AppComponent, HeaderStubComponent, FooterStubComponent, BetaBannerStubComponent, TranslatePipeMock],
@@ -79,7 +83,8 @@ describe('AppComponent', () => {
                 { provide: TestLanguageService, useValue: testLanguageServiceSpy },
                 { provide: ParticipantStatusUpdateService, useValue: participantStatusUpdateServiceSpy },
                 { provide: EventsService, useValue: eventsServiceSpy },
-                { provide: TranslateService, useValue: translateServiceSpy }
+                { provide: TranslateService, useValue: translateServiceSpy },
+                { provide: AuthService, useValue: authServiceSpy }
             ]
         });
     });
