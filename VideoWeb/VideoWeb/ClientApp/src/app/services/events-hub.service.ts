@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import * as signalR from "@microsoft/signalr";
 import { OidcSecurityService } from "angular-auth-oidc-client";
-import { Subject } from "rxjs";
-import { BehaviorSubject, Observable, Subscription } from "rxjs";
+import { ReplaySubject, Subject } from "rxjs";
+import { Observable } from "rxjs";
 import { ConfigService } from "./api/config.service";
 import { ConnectionStatusService } from "./connection-status.service";
 import { ErrorService } from "./error.service";
@@ -14,6 +14,11 @@ import { Logger } from "./logging/logger-base";
 export class EventsHubService {
     private eventHubDisconnectSubject = new Subject<number>();
     private eventHubReconnectSubject = new Subject();
+
+    private eventsHubReady = new ReplaySubject<void>();
+    get onEventsHubReady() : Observable<void> {
+        return this.eventsHubReady.asObservable();
+    }
 
     private _connection : signalR.HubConnection;
     get connection() : signalR.HubConnection {
@@ -36,7 +41,7 @@ export class EventsHubService {
     }
 
     private reconnectionPromise : Promise<any>;
-    get isReconnecting() : boolean {
+    get isWaitingToReconnect() : boolean {
         return !!this.reconnectionPromise;
     }
 
@@ -66,9 +71,9 @@ export class EventsHubService {
         configService.getClientSettings().subscribe((clientSettings) => {
             this._connection = this.buildConnection(clientSettings.event_hub_path);
             this.configureConnection();
-        });
 
-        connectionStatusService.onConnectionStatusChange().subscribe(this.onConnectionStatusChanged.bind(this));
+            connectionStatusService.onConnectionStatusChange().subscribe((isConnected) => this.onConnectionStatusChanged(isConnected));
+        });
     }
 
     createConnectionBuilder() : signalR.HubConnectionBuilder {
@@ -90,10 +95,12 @@ export class EventsHubService {
         this.connection.onreconnecting(error => this.onEventHubReconnecting(error));
         this.connection.onreconnected(() => this.onEventHubReconnected());
         this.connection.onclose(error => this.onEventHubErrorOrClose(error));
+
+        this.eventsHubReady.next();
     }
 
     start() {
-        if (this.isReconnecting) {
+        if (this.isWaitingToReconnect) {
             this.logger.info("[EventsService] - A reconnection promise already exists")
             return;
         }
@@ -110,7 +117,7 @@ export class EventsHubService {
                         })
                         .catch(async (error) => {
                             this.logger.warn(`[EventsService] - Failed to connect to EventHub ${error}`);
-                            // this.onEventHubErrorOrClose(err);  // TEST I THINK THIS IS REDUNDANT
+                            this.onEventHubErrorOrClose(error);  // TEST I THINK THIS IS REDUNDANT
                             this.reconnect();
                         });
                 } else {

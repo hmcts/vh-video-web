@@ -1,12 +1,9 @@
 import { Injectable } from '@angular/core';
-import * as signalR from '@microsoft/signalr';
 import { Observable, Subject } from 'rxjs';
-import { ErrorService } from 'src/app/services/error.service';
 import { Heartbeat } from '../shared/models/heartbeat';
 import { Room } from '../shared/models/room';
 import { ParticipantMediaStatus } from '../shared/models/participant-media-status';
 import { ParticipantMediaStatusMessage } from '../shared/models/participant-media-status-message';
-import { ConfigService } from './api/config.service';
 import { ConferenceMessageAnswered } from './models/conference-message-answered';
 import { ConferenceStatus, ConsultationAnswer, EndpointStatus, ParticipantStatus } from './clients/api-client';
 import { Logger } from './logging/logger-base';
@@ -24,17 +21,13 @@ import { ParticipantStatusMessage } from './models/participant-status-message';
 import { RoomTransfer } from '../shared/models/room-transfer';
 import { ParticipantHandRaisedMessage } from '../shared/models/participant-hand-raised-message';
 import { ParticipantRemoteMuteMessage } from '../shared/models/participant-remote-mute-message';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { ConnectionStatusService } from './connection-status.service';
+import { EventsHubService } from './events-hub.service';
+import { tap } from 'rxjs/internal/operators/tap';
 
 @Injectable({
     providedIn: 'root'
 })
 export class EventsService {
-    serverTimeoutTime = 300000; // 5 minutes
-    reconnectionTimes = [0, 2000, 5000, 10000, 15000, 20000, 30000];
-    connection: signalR.HubConnection;
-
     private participantStatusSubject = new Subject<ParticipantStatusMessage>();
     private endpointStatusSubject = new Subject<EndpointStatusMessage>();
     private hearingStatusSubject = new Subject<ConferenceStatusMessage>();
@@ -47,8 +40,6 @@ export class EventsService {
     private messageSubject = new Subject<InstantMessage>();
     private adminAnsweredChatSubject = new Subject<ConferenceMessageAnswered>();
     private participantHeartbeat = new Subject<ParticipantHeartbeat>();
-    private eventHubDisconnectSubject = new Subject<number>();
-    private eventHubReconnectSubject = new Subject();
     private hearingTransferSubject = new Subject<HearingTransfer>();
     private participantMediaStatusSubject = new Subject<ParticipantMediaStatusMessage>();
     private participantRemoteMuteStatusSubject = new Subject<ParticipantRemoteMuteMessage>();
@@ -57,84 +48,26 @@ export class EventsService {
     private roomTransferSubject = new Subject<RoomTransfer>();
     private handlersRegistered = false;
 
-    reconnectionAttempt: number;
-    reconnectionPromise: Promise<any>;
-
-    constructor(
-        private oidcSecurityService: OidcSecurityService,
-        private configService: ConfigService,
-        private logger: Logger,
-        private errorService: ErrorService,
-        connectionStatusService : ConnectionStatusService
-    ) {
-        this.reconnectionAttempt = 0;
-        this.configService.getClientSettings().subscribe(configSettings => {
-            this.buildConnection(configSettings.event_hub_path);
-        });
-
-        connectionStatusService.onConnectionStatusChange().subscribe((connected) => {
-            if (connected) {
-                this.logger.info('[EventsService] - Connection status changed: connected.')
-                this.start();
-            } else {
-                this.logger.info('[EventsService] - Connection status changed: disconnected.')
-                this.stop();
-            }
-        })
+    private get eventsHubConnection() {
+        return this.eventsHubService.connection;
     }
 
-    private buildConnection(eventHubPath : string) {
-        this.connection = new signalR.HubConnectionBuilder()
-        .configureLogging(signalR.LogLevel.Debug)
-        .withAutomaticReconnect(this.reconnectionTimes)
-        .withUrl(eventHubPath, {
-            accessTokenFactory: () => this.oidcSecurityService.getToken()
-        })
-        .build();
-
-        this.connection.serverTimeoutInMilliseconds = this.serverTimeoutTime;
-        this.connection.onreconnecting(error => this.onEventHubReconnecting(error));
-        this.connection.onreconnected(() => this.onEventHubReconnected());
-        this.connection.onclose(error => this.onEventHubErrorOrClose(error));
-        this.registerHandlers();
+    constructor(
+        private logger: Logger,
+        private eventsHubService : EventsHubService
+    ) {
+        this.eventsHubService = eventsHubService;
+        eventsHubService.onEventsHubReady.subscribe(() => this.start());
     }
 
     start() {
-        if (this.reconnectionPromise) {
-            this.logger.info("[EventsService] - A reconnection promise already exists")
-            return;
-        }
+        this.eventsHubService.start();
+        this.registerHandlers();
+    }
 
-        if (!this.isConnectedToHub && this.connection.state !== signalR.HubConnectionState.Disconnecting) {
-            this.oidcSecurityService.isAuthenticated$.subscribe(authenticated => {
-                if (authenticated) {
-                    this.reconnectionAttempt++;
-                    return this.connection
-                        .start()
-                        .then(() => {
-                            this.reconnectionAttempt = 0;
-                            this.logger.info('[EventsService] - Successfully connected to EventHub');
-                        })
-                        .catch(async err => {
-                            this.logger.warn(`[EventsService] - Failed to connect to EventHub ${err}`);
-                            this.onEventHubErrorOrClose(err);
-                            if (this.reconnectionTimes.length >= this.reconnectionAttempt) {
-                                const delayMs = this.reconnectionTimes[this.reconnectionAttempt - 1];
-                                this.logger.info(`[EventsService] - Reconnecting in ${delayMs}ms`);
-                                this.reconnectionPromise = this.delay(delayMs).then(() => {
-                                    this.reconnectionPromise = null;
-                                    this.start();
-                                });
-                            } else {
-                                this.logger.info(
-                                    `[EventsService] - Failed to connect too many times (#${this.reconnectionAttempt}), going to service error`
-                                );
-                                this.errorService.goToServiceError('Your connection was lost');
-                            }
-                        });
-                }
-            });
-        }
+    stop() {
+        this.eventsHubService.stop();
+        this.deregisterHandlers();
     }
 
     registerHandlers(): void {
@@ -144,7 +77,7 @@ export class EventsService {
         }
 
         for (const eventName in this.eventHandlers)
-            this.connection.on(eventName, this.eventHandlers[eventName]);
+            this.eventsHubConnection.on(eventName, this.eventHandlers[eventName]);
 
         this.handlersRegistered = true;
     }
@@ -156,71 +89,25 @@ export class EventsService {
         }
 
         for (const eventName in this.eventHandlers)
-            this.connection.off(eventName, this.eventHandlers[eventName]);
+            this.eventsHubConnection.off(eventName, this.eventHandlers[eventName]);
 
         this.handlersRegistered = false;
     }
 
-    stop() {
-        if (!this.isDisconnectedFromHub) {
-            this.logger.debug(`[EventsService] - Ending connection to EventHub. Current state: ${this.connection.state}`);
-            this.connection
-                .stop()
-                .then(() => {
-                    this.logger.debug(`[EventsService] - Connection stopped, new state: ${this.connection.state}`);
-                })
-                .catch(err => this.logger.error('[EventsService] - Failed to stop connection to EventHub', err));
-        }
-    }
-
     get isConnectedToHub(): boolean {
-        return (
-            this.connection.state === signalR.HubConnectionState.Connected ||
-            this.connection.state === signalR.HubConnectionState.Connecting ||
-            this.connection.state === signalR.HubConnectionState.Reconnecting
-        );
+        return this.eventsHubService.isConnectedToHub;
     }
 
     get isDisconnectedFromHub(): boolean {
-        return (
-            this.connection.state === signalR.HubConnectionState.Disconnected ||
-            this.connection.state === signalR.HubConnectionState.Disconnecting
-        );
+        return this.eventsHubService.isDisconnectedFromHub;
     }
-
-    private async delay(ms: number) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    ///////////////////////////////////
-    private onEventHubReconnecting(error: Error) {
-        this.reconnectionAttempt++;
-        this.logger.info('[EventsService] - Attempting to reconnect to EventHub: attempt #' + this.reconnectionAttempt);
-        if (error) {
-            this.logger.error('[EventsService] - Error during reconnect to EventHub', error);
-            this.eventHubDisconnectSubject.next(this.reconnectionAttempt);
-        }
-    }
-
-    private onEventHubReconnected() {
-        this.logger.info('[EventsService] - Successfully reconnected to EventHub');
-        this.reconnectionAttempt = 0;
-        this.eventHubReconnectSubject.next();
-    }
-
-    private onEventHubErrorOrClose(error: Error) {
-        const message = error ? 'EventHub connection error' : 'EventHub connection closed';
-        this.logger.error(`[EventsService] - ${message}`, error);
-        this.eventHubDisconnectSubject.next(this.reconnectionAttempt);
-    }
-    ////////////////////////////////
 
     getServiceReconnected(): Observable<any> {
-        return this.eventHubReconnectSubject.asObservable();
+        return this.eventsHubService.getServiceReconnected();
     }
 
     getServiceDisconnected(): Observable<number> {
-        return this.eventHubDisconnectSubject.asObservable();
+        return this.eventsHubService.getServiceDisconnected();
     }
 
     getParticipantStatusMessage(): Observable<ParticipantStatusMessage> {
@@ -284,7 +171,7 @@ export class EventsService {
 
     async sendMessage(instantMessage: InstantMessage) {
         try {
-            await this.connection.send(
+            await this.eventsHubConnection.send(
                 'SendMessage',
                 instantMessage.conferenceId,
                 instantMessage.message,
@@ -298,17 +185,17 @@ export class EventsService {
     }
 
     async sendHeartbeat(conferenceId: string, participantId: string, heartbeat: Heartbeat) {
-        await this.connection.send('SendHeartbeat', conferenceId, participantId, heartbeat);
+        await this.eventsHubConnection.send('SendHeartbeat', conferenceId, participantId, heartbeat);
         this.logger.debug('[EventsService] - Sent heartbeat to EventHub', heartbeat);
     }
 
     async sendTransferRequest(conferenceId: string, participantId: string, transferDirection: TransferDirection) {
-        await this.connection.send('sendTransferRequest', conferenceId, participantId, transferDirection);
+        await this.eventsHubConnection.send('sendTransferRequest', conferenceId, participantId, transferDirection);
         this.logger.debug('[EventsService] - Sent transfer request to EventHub', transferDirection);
     }
 
     async publishRemoteMuteStatus(conferenceId: string, participantId: string, isRemoteMuted: boolean) {
-        await this.connection.send('UpdateParticipantRemoteMuteStatus', conferenceId, participantId, isRemoteMuted);
+        await this.eventsHubConnection.send('UpdateParticipantRemoteMuteStatus', conferenceId, participantId, isRemoteMuted);
         this.logger.debug('[EventsService] - Sent update remote mute status request to EventHub', {
             conference: conferenceId,
             participant: participantId,
@@ -317,7 +204,7 @@ export class EventsService {
     }
 
     async publishParticipantHandRaisedStatus(conferenceId: string, participantId: string, isRaised: boolean) {
-        await this.connection.send('UpdateParticipantHandStatus', conferenceId, participantId, isRaised);
+        await this.eventsHubConnection.send('UpdateParticipantHandStatus', conferenceId, participantId, isRaised);
         this.logger.debug('[EventsService] - Sent update hand raised status request to EventHub', {
             conference: conferenceId,
             participant: participantId,
@@ -326,7 +213,7 @@ export class EventsService {
     }
 
     async sendMediaStatus(conferenceId: string, participantId: string, mediaStatus: ParticipantMediaStatus) {
-        await this.connection.send('SendMediaDeviceStatus', conferenceId, participantId, mediaStatus);
+        await this.eventsHubConnection.send('SendMediaDeviceStatus', conferenceId, participantId, mediaStatus);
         this.logger.debug('[EventsService] - Sent device media status to EventHub', {
             conference: conferenceId,
             participant: participantId,

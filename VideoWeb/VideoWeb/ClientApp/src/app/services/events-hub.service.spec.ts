@@ -1,5 +1,4 @@
 import { fakeAsync, tick } from '@angular/core/testing';
-import { HubConnection } from '@microsoft/signalr';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { Observable, of, Subject } from 'rxjs';
 import { ConfigService } from './api/config.service';
@@ -17,12 +16,12 @@ fdescribe('EventsHubService', () => {
         return Object.getOwnPropertyDescriptor(spyObj, propName)?.get as jasmine.Spy<() => T[K]>;
       }
 
-      function spyPropertySetter<T, K extends keyof T>(
-        spyObj: jasmine.SpyObj<T>,
-        propName: K
-      ): jasmine.Spy<() => T[K]> {
-        return Object.getOwnPropertyDescriptor(spyObj, propName)?.set as jasmine.Spy<() => T[K]>;
-      }
+    function spyPropertySetter<T, K extends keyof T>(
+    spyObj: jasmine.SpyObj<T>,
+    propName: K
+    ): jasmine.Spy<() => T[K]> {
+    return Object.getOwnPropertyDescriptor(spyObj, propName)?.set as jasmine.Spy<() => T[K]>;
+    }
 
     let serviceUnderTest : EventsHubService;
     let configServiceSpy : jasmine.SpyObj<ConfigService>;
@@ -67,8 +66,6 @@ fdescribe('EventsHubService', () => {
             // Assert
             expect(_configServiceSpy.getClientSettings).toHaveBeenCalledTimes(1);
             expect(_clientSettings$.subscribe).toHaveBeenCalledTimes(1);
-            expect(_connectionStatusServiceSpy.onConnectionStatusChange).toHaveBeenCalledTimes(1);
-            expect(_connectionStatusChanged$.subscribe).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -79,6 +76,8 @@ fdescribe('EventsHubService', () => {
             const clientSettingsResponse = new ClientSettingsResponse();
             clientSettingsResponse.event_hub_path = expectedEventHubPath;
 
+            connectionStatusServiceSpy.onConnectionStatusChange.and.returnValue(connectionStatusChanged$);
+
             spyOn(serviceUnderTest, "buildConnection");
             spyOn(serviceUnderTest, "configureConnection");
 
@@ -88,6 +87,8 @@ fdescribe('EventsHubService', () => {
             // Assert
             expect(serviceUnderTest.buildConnection).toHaveBeenCalledOnceWith(expectedEventHubPath);
             expect(serviceUnderTest.configureConnection).toHaveBeenCalledTimes(1);
+            expect(connectionStatusServiceSpy.onConnectionStatusChange).toHaveBeenCalledTimes(1);
+            expect(connectionStatusChanged$.subscribe).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -150,7 +151,7 @@ fdescribe('EventsHubService', () => {
             }));
 
             spyOn(serviceUnderTest, "reconnect");
-            spyOnProperty(serviceUnderTest, "isReconnecting", "get").and.returnValue(false);
+            spyOnProperty(serviceUnderTest, "isWaitingToReconnect", "get").and.returnValue(false);
             spyOnProperty(serviceUnderTest, "isConnectedToHub", "get").and.returnValue(false);
             spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
 
@@ -174,7 +175,7 @@ fdescribe('EventsHubService', () => {
             }));
 
             spyOn(serviceUnderTest, "reconnect");
-            spyOnProperty(serviceUnderTest, "isReconnecting", "get").and.returnValue(false);
+            spyOnProperty(serviceUnderTest, "isWaitingToReconnect", "get").and.returnValue(false);
             spyOnProperty(serviceUnderTest, "isConnectedToHub", "get").and.returnValue(false);
             spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
 
@@ -197,7 +198,7 @@ fdescribe('EventsHubService', () => {
             }));
 
             spyOn(serviceUnderTest,"reconnect");
-            spyOnProperty(serviceUnderTest, "isReconnecting", "get").and.returnValue(true);
+            spyOnProperty(serviceUnderTest, "isWaitingToReconnect", "get").and.returnValue(true);
             spyOnProperty(serviceUnderTest, "isConnectedToHub", "get").and.returnValue(false);
             spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
 
@@ -219,7 +220,7 @@ fdescribe('EventsHubService', () => {
             }));
 
             spyOn(serviceUnderTest,"reconnect");
-            spyOnProperty(serviceUnderTest, "isReconnecting", "get").and.returnValue(false);
+            spyOnProperty(serviceUnderTest, "isWaitingToReconnect", "get").and.returnValue(false);
             spyOnProperty(serviceUnderTest, "isConnectedToHub", "get").and.returnValue(true);
             spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
 
@@ -241,7 +242,7 @@ fdescribe('EventsHubService', () => {
             }));
 
             spyOn(serviceUnderTest,"reconnect");
-            spyOnProperty(serviceUnderTest, "isReconnecting", "get").and.returnValue(false);
+            spyOnProperty(serviceUnderTest, "isWaitingToReconnect", "get").and.returnValue(false);
             spyOnProperty(serviceUnderTest, "isConnectedToHub", "get").and.returnValue(false);
             spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
 
