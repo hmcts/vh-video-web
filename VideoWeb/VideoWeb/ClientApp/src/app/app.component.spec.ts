@@ -181,13 +181,7 @@ describe('AppComponent', () => {
         await component.ngOnInit();
         expect(profileServiceSpy.getUserProfile).toHaveBeenCalled();
     });
-    it('should stay in logout when user sign out', async () => {
-        locationServiceSpy.getCurrentUrl.and.returnValue(pageUrls.Logout);
-        mockOidcSecurityService.setAuthenticated(false);
-        authServiceSpy.checkAuth.and.returnValue(mockOidcSecurityService.checkAuth());
-        await component.ngOnInit();
-        expect(routerSpy.navigate).toHaveBeenCalledWith([`/${pageUrls.Logout}`]);
-    });
+
     it('should navigate to login not on logout and not authenticated', async () => {
         locationServiceSpy.getCurrentUrl.and.returnValue(pageUrls.AdminVenueList);
         locationServiceSpy.getCurrentPathName.and.returnValue(`/${pageUrls.AdminVenueList}`);

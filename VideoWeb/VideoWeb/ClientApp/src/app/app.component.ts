@@ -90,11 +90,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private async attemptRetrieveProfile(loggedIn: boolean) {
         if (!loggedIn) {
             const currentUrl = this.locationService.getCurrentUrl();
-            if (currentUrl.indexOf(pageUrls.Logout) > -1) {
-                this.router.navigate([`/${pageUrls.Logout}`]);
-            } else {
-                this.router.navigate([`/${pageUrls.IdpSelection}`], { queryParams: { returnUrl: currentUrl } });
-            }
+            this.router.navigate([`/${pageUrls.IdpSelection}`], { queryParams: { returnUrl: currentUrl } });
         } else {
             await this.retrieveProfileRole();
         }
