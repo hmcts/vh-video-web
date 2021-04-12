@@ -19,7 +19,7 @@ export class LoginComponent implements OnInit {
         private logger: Logger,
         private authService: AuthService,
         private configService: ConfigService
-    ) { }
+    ) {}
 
     ngOnInit() {
         this.configService.getClientSettings().subscribe(() => {

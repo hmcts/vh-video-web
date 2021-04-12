@@ -7,17 +7,17 @@ import { first, switchMap, tap } from 'rxjs/operators';
 export class AuthService {
     private checkAuthCompleted$ = new ReplaySubject(1);
 
-    constructor(private oidcSecurityService: OidcSecurityService) { }
+    constructor(private oidcSecurityService: OidcSecurityService) {}
 
     public get isAuthenticated$(): Observable<boolean> {
         return this.checkAuthCompleted$.pipe(
             first(),
-            switchMap((_) => this.oidcSecurityService.isAuthenticated$)
+            switchMap(_ => this.oidcSecurityService.isAuthenticated$)
         );
     }
 
     public checkAuth(): Observable<boolean> {
-        return this.oidcSecurityService.checkAuth().pipe(tap((_) => this.checkAuthCompleted$.next()));
+        return this.oidcSecurityService.checkAuth().pipe(tap(_ => this.checkAuthCompleted$.next()));
     }
 
     public login(): void {
