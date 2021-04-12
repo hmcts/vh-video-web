@@ -87,7 +87,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"the (.*) user with an Interpreter has progressed to the (.*) page")]
         public void GivenIHaveAnInterpreterAndHaveProgressedToThePage(string user, string page)
         {
-            _dataSetupSteps.GivenIHaveAnInterpreterAndHaveAHearingAndAConference();
+            _dataSetupSteps.GivenIHaveAHearingWithUser("interpreter");
             _browserSteps.GivenANewBrowserIsOpenFor(user);
             Progression(FromString(user), page);
         }

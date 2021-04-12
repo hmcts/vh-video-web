@@ -22,6 +22,7 @@ declare interface PexipClient {
     call_tag: string;
     call: PexRTCCall;
     protocol: string;
+    turn_server: any;
 
     onSetup: (stream: any, pinStatus: any, conferenceExtension: any) => void;
     onConnect: (stream: MediaStream | URL) => void;
