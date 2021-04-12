@@ -47,6 +47,6 @@ export class MockOidcSecurityService {
         this.setAuthenticated(false);
         this.setUserData(null);
     }
-    authorize() { };
-    login() { };
+    authorize() {}
+    login() {}
 }

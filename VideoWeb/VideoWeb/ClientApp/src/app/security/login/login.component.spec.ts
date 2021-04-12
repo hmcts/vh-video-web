@@ -46,7 +46,7 @@ describe('LoginComponent', () => {
 
     it('should call authService login', () => {
         oidcSecurityService.setAuthenticated(false);
-        oidcSecurityService.login = jasmine.createSpy().and.callFake(() => { });
+        oidcSecurityService.login = jasmine.createSpy().and.callFake(() => {});
         component.ngOnInit();
         expect(oidcSecurityService.login).toHaveBeenCalledTimes(1);
     });

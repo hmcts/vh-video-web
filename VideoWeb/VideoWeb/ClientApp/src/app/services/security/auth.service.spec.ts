@@ -7,13 +7,18 @@ describe('AuthService', () => {
     let authService: AuthService;
 
     beforeAll(() => {
-        oidcSecurityService = jasmine.createSpyObj<MockOidcSecurityService>('MockOidcSecurityService', ['checkAuth', 'authorize', 'logoffAndRevokeTokens', 'setAuthenticated']);
+        oidcSecurityService = jasmine.createSpyObj<MockOidcSecurityService>('MockOidcSecurityService', [
+            'checkAuth',
+            'authorize',
+            'logoffAndRevokeTokens',
+            'setAuthenticated'
+        ]);
     });
     beforeEach(() => {
         authService = new AuthService(oidcSecurityService);
     });
     it('should authorize been called', () => {
-        oidcSecurityService.authorize.and.callFake(() => { });
+        oidcSecurityService.authorize.and.callFake(() => {});
         authService.login();
         expect(oidcSecurityService.authorize).toHaveBeenCalled();
     });

@@ -137,7 +137,7 @@ describe('AppComponent', () => {
     });
 
     it('should log out of adal', () => {
-        oidcSecurityService.logout = jasmine.createSpy().and.callFake(() => { });
+        oidcSecurityService.logout = jasmine.createSpy().and.callFake(() => {});
         component.logOut();
         expect(component.loggedIn).toBeFalsy();
         expect(oidcSecurityService.logout).toHaveBeenCalled();
