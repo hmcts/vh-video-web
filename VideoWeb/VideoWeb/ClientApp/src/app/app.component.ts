@@ -92,8 +92,7 @@ export class AppComponent implements OnInit, OnDestroy {
             const currentUrl = this.locationService.getCurrentUrl();
             if (currentUrl.indexOf(pageUrls.Logout) > -1) {
                 this.router.navigate([`/${pageUrls.Logout}`]);
-            }
-            else {
+            } else {
                 this.router.navigate([`/${pageUrls.IdpSelection}`], { queryParams: { returnUrl: currentUrl } });
             }
         } else {
