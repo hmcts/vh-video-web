@@ -43,6 +43,7 @@ import {
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
 import { HearingRole } from '../../models/hearing-role-model';
+import { ElementRef } from '@angular/core';
 
 describe('WaitingRoomComponent message and clock', () => {
     let component: WRTestComponent;
@@ -470,5 +471,31 @@ describe('WaitingRoomComponent message and clock', () => {
 
         component.updateVideoStreamMuteStatus();
         expect(component.toggleVideoStreamMute).toHaveBeenCalledWith(false);
+    });
+
+    it('should return false if case name has not been truncated', () => {
+        const caseNameElement = document.createElement('div');
+        caseNameElement.innerHTML = component.getCaseNameAndNumber();
+
+        const elemRef = new ElementRef(caseNameElement);
+        component.roomTitleLabel = elemRef;
+
+        expect(component.hasCaseNameOverflowed).toBeFalsy();
+    });
+
+    it('should return true if case name has been truncated', () => {
+        const caseNameElement = document.createElement('div');
+        const caseName = component.getCaseNameAndNumber();
+        caseNameElement.innerHTML = caseName;
+        spyOnProperty(caseNameElement, 'scrollWidth').and.returnValue(caseName.length + 1);
+        const elemRef = new ElementRef(caseNameElement);
+        component.roomTitleLabel = elemRef;
+
+        expect(component.hasCaseNameOverflowed).toBeTruthy();
+    });
+
+    it('should return true if case name has been truncated', () => {
+        component.roomTitleLabel = null;
+        expect(component.hasCaseNameOverflowed).toBeFalsy();
     });
 });
