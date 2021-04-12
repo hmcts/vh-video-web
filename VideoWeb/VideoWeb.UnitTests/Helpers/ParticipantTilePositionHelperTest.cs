@@ -18,14 +18,14 @@ namespace VideoWeb.UnitTests.Helpers
             ParticipantTilePositionHelper.AssignTilePositions(participants);
 
 
-            participants[0].TiledDisplayName.Should().Contain("Judge;");
-            participants[1].TiledDisplayName.Should().Contain("Civilian;");
-            participants[2].TiledDisplayName.Should().Contain("Civilian;");
-            participants[3].TiledDisplayName.Should().Contain("Civilian;");
-            participants[4].TiledDisplayName.Should().Contain("Civilian;");
-            participants[5].TiledDisplayName.Should().Contain("Civilian;");
-            participants[6].TiledDisplayName.Should().Contain("Witness;");
-            participants[7].TiledDisplayName.Should().Contain("Civilian;");
+            participants[0].TiledDisplayName.Should().Contain("JUDGE;");
+            participants[1].TiledDisplayName.Should().Contain("CIVILIAN;");
+            participants[2].TiledDisplayName.Should().Contain("CIVILIAN;");
+            participants[3].TiledDisplayName.Should().Contain("CIVILIAN;");
+            participants[4].TiledDisplayName.Should().Contain("CIVILIAN;");
+            participants[5].TiledDisplayName.Should().Contain("CIVILIAN;");
+            participants[6].TiledDisplayName.Should().Contain("WITNESS;");
+            participants[7].TiledDisplayName.Should().Contain("CIVILIAN;");
 
         }
 

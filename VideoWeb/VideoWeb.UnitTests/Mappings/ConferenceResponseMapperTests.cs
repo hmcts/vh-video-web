@@ -76,16 +76,16 @@ namespace VideoWeb.UnitTests.Mappings
                 var position = participantResponse.TiledDisplayName.Split(';');
                 if (participantResponse.Role == Role.Judge)
                 {
-                    participantResponse.TiledDisplayName.StartsWith("Judge").Should().BeTrue();
+                    participantResponse.TiledDisplayName.StartsWith("JUDGE").Should().BeTrue();
                 }
 
-                if (position[0].StartsWith("Judge"))
+                if (position[0].StartsWith("JUDGE"))
                 {
                     tiledNames.Count(x => x.StartsWith(position[0])).Should().Be(1);
                 }
-                if (participantResponse.HearingRole == "Witness" && participantResponse.Role == Role.Individual)
+                if (participantResponse.HearingRole == "WITNESS" && participantResponse.Role == Role.Individual)
                 {
-                    participantResponse.TiledDisplayName.StartsWith("Witness").Should().BeTrue();
+                    participantResponse.TiledDisplayName.StartsWith("WITNESS").Should().BeTrue();
                     tiledNames.Count(x => x.StartsWith(position[0])).Should().Be(1);
                 }
             }

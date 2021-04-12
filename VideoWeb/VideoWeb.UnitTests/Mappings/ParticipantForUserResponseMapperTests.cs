@@ -90,10 +90,10 @@ namespace VideoWeb.UnitTests.Mappings
                 var position = participantResponse.TiledDisplayName.Split(';');
                 if (participantResponse.Role == Role.Judge)
                 {
-                    participantResponse.TiledDisplayName.StartsWith("Judge").Should().BeTrue();
+                    participantResponse.TiledDisplayName.StartsWith("JUDGE").Should().BeTrue();
                 }
 
-                if (position[0].StartsWith("Civilian") || position[0].StartsWith("Witness"))
+                if (position[0].StartsWith("CIVILIAN") || position[0].StartsWith("WITNESS"))
                 {
                     tiledNames.Count(x => x.StartsWith(position[0])).Should().Be(5);
                 }

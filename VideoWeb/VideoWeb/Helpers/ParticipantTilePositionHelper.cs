@@ -13,15 +13,15 @@ namespace VideoWeb.Helpers
             {
                 if (participant.Role == Role.Judge)
                 {
-                    participant.TiledDisplayName = GetTiledDisplayName(participant, "Judge");
+                    participant.TiledDisplayName = GetTiledDisplayName(participant, "JUDGE");
                 }
                 else if (participant.HearingRole.ToLower().Trim() == "witness")
                 {
-                    participant.TiledDisplayName = GetTiledDisplayName(participant, "Witness");
+                    participant.TiledDisplayName = GetTiledDisplayName(participant, "WITNESS");
                 }
                 else if (participant.Role != Role.VideoHearingsOfficer)
                 {
-                    participant.TiledDisplayName = GetTiledDisplayName(participant, "Civilian");
+                    participant.TiledDisplayName = GetTiledDisplayName(participant, "CIVILIAN");
                 }
             }        
         }
