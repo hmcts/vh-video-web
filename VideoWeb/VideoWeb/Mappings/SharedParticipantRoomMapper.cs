@@ -14,12 +14,9 @@ namespace VideoWeb.Mappings
             bool isWitness)
         {
             var node = sharedRoom.PexipNode.Replace("https://", string.Empty);
-            var tilePosition = int.Parse(new string(sharedRoom.Label.Where(char.IsDigit).ToArray()));
-            var randomNumber = GetRandomNumberAsString();
-            var tilePrefix = isWitness ? "W" : "T";
-            var tilePrefixNumber = sharedRoom.Label.StartsWith("PanelMember") ? 400 : 200;
+            var tilePrefix = isWitness ? "WITNESS" : "CIVILIAN";
             var tileDisplayName =
-                $"{tilePrefix}{tilePrefixNumber + tilePosition}{randomNumber};{participant.DisplayName};{participant.Id}";
+                $"{tilePrefix};{participant.DisplayName};{participant.Id}";
             return new SharedParticipantRoom
             {
                 PexipNode = node,
@@ -27,12 +24,6 @@ namespace VideoWeb.Mappings
                 DisplayName = sharedRoom.Label,
                 TileDisplayName = tileDisplayName
             };
-        }
-
-        private string GetRandomNumberAsString()
-        {
-            var ticksString = DateTime.UtcNow.Ticks.ToString();
-            return string.Concat(ticksString.Reverse().Skip(1).Take(10));
         }
     }
 }

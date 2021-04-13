@@ -18,7 +18,7 @@ namespace VideoWeb.Mappings
         public VideoEndpointResponse Map(EndpointResponse endpoint, int index)
         {
             var status = Enum.Parse<EndpointStatus>(endpoint.Status.ToString());
-            var pexipDisplayName = $"T{100 + index};{endpoint.DisplayName};{endpoint.Id}";
+            var pexipDisplayName = $"PSTN;{endpoint.DisplayName};{endpoint.Id}";
             return new VideoEndpointResponse
             {
                 DisplayName = endpoint.DisplayName,
