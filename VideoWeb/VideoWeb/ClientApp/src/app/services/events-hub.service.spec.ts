@@ -1,7 +1,7 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import * as signalR from '@microsoft/signalr';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { Observable, of, Subject } from 'rxjs';
+import { Observable, of, ReplaySubject, Subject } from 'rxjs';
 import { ConfigService } from './api/config.service';
 import { ClientSettingsResponse } from './clients/api-client';
 import { ConnectionStatusService } from './connection-status.service';
@@ -530,4 +530,92 @@ describe('EventsHubService', () => {
             expect(isDisconnected).toBeTrue();
         });
     });
+
+    describe('getters', () => {
+        it('onEventsHubReady', () => {
+            // Arrange
+            const expectedObservable = jasmine.createSpyObj<Observable<any>>("Observable", ["subscribe"]);
+
+            const subjectSpy = jasmine.createSpyObj<ReplaySubject<void>>("ReplaySubject", ["asObservable"]);
+            subjectSpy.asObservable.and.returnValue(expectedObservable);
+            serviceUnderTest["eventsHubReady"] = subjectSpy;
+
+            // Act
+            const observable = serviceUnderTest.onEventsHubReady;
+
+            // Assert
+            expect(subjectSpy.asObservable).toHaveBeenCalledTimes(1);
+            expect(observable).toBe(expectedObservable);
+        });
+
+        it('connection', () => {
+            // Arrange
+            const expectedConnection = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"]);
+            serviceUnderTest["_connection"] = expectedConnection;
+
+            // Act
+            const connection = serviceUnderTest.connection;
+
+            // Assert
+            expect(connection).toEqual(expectedConnection);
+        });
+
+        it('reconnectionTimes', () => {
+            // Arrange
+            const expectedReconnectionTimes = [0, 1, 2, 4];
+            serviceUnderTest["_reconnectionTimes"] = expectedReconnectionTimes;
+
+            // Act
+            const reconnectionTimes = serviceUnderTest.reconnectionTimes;
+
+            // Assert
+            expect(reconnectionTimes).toEqual(expectedReconnectionTimes);
+        });
+
+        it('serverTimeoutTime', () => {
+            // Arrange
+            const expectedTimeOutTime = 12;
+            serviceUnderTest["_serverTimeoutTime"] = expectedTimeOutTime;
+
+            // Act
+            const timeOutTime = serviceUnderTest.serverTimeoutTime;
+
+            // Assert
+            expect(timeOutTime).toEqual(expectedTimeOutTime);
+        });
+
+        it('reconnectionAttempt', () => {
+            // Arrange
+            const expectedReconnectionAttempt = 23;
+            serviceUnderTest["_reconnectionAttempt"] = expectedReconnectionAttempt;
+
+            // Act
+            const reconnectionAttempt = serviceUnderTest.reconnectionAttempt;
+
+            // Assert
+            expect(reconnectionAttempt).toEqual(expectedReconnectionAttempt);
+        });
+
+        it('isWaitingToReconnect - truthy', () => {
+            // Arrange
+            serviceUnderTest["reconnectionPromise"] = new Promise<void>((resolve) => resolve());
+
+            // Act
+            const isWaitingToReconnect = serviceUnderTest.isWaitingToReconnect;
+
+            // Assert
+            expect(isWaitingToReconnect).toBeTrue();
+        });
+
+        it('isWaitingToReconnect - falsey', () => {
+            // Arrange
+            serviceUnderTest["_reconnectionPromise"] = null;
+
+            // Act
+            const isWaitingToReconnect = serviceUnderTest.isWaitingToReconnect;
+
+            // Assert
+            expect(isWaitingToReconnect).toBeFalse();
+        });
+    })
 });
