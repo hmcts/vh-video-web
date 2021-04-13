@@ -12,12 +12,9 @@ import { TransferDirection } from './models/hearing-transfer';
 import { ParticipantMediaStatus } from '../shared/models/participant-media-status';
 
 describe('EventsService', () => {
-    function spyPropertyGetter<T, K extends keyof T>(
-        spyObj: jasmine.SpyObj<T>,
-        propName: K
-      ): jasmine.Spy<() => T[K]> {
+    function spyPropertyGetter<T, K extends keyof T>(spyObj: jasmine.SpyObj<T>, propName: K): jasmine.Spy<() => T[K]> {
         return Object.getOwnPropertyDescriptor(spyObj, propName)?.get as jasmine.Spy<() => T[K]>;
-      }
+    }
 
     let serviceUnderTest: EventsService;
     let loggerMock: Logger;
@@ -26,7 +23,11 @@ describe('EventsService', () => {
 
     beforeEach(() => {
         loggerMock = new MockLogger();
-        eventsHubServiceSpy = jasmine.createSpyObj<EventsHubService>('EventsHubService', ['start', 'stop', 'getServiceReconnected', 'getServiceDisconnected'], ['connection', 'onEventsHubReady']);
+        eventsHubServiceSpy = jasmine.createSpyObj<EventsHubService>(
+            'EventsHubService',
+            ['start', 'stop', 'getServiceReconnected', 'getServiceDisconnected'],
+            ['connection', 'onEventsHubReady']
+        );
         eventsHubServiceSpy.getServiceReconnected.and.returnValue(new Observable<any>());
         eventsHubServiceSpy.getServiceDisconnected.and.returnValue(new Observable<number>());
         spyPropertyGetter(eventsHubServiceSpy, 'onEventsHubReady').and.returnValue(new Observable());
@@ -142,7 +143,6 @@ describe('EventsService', () => {
             const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
             spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
 
-
             // Act
             serviceUnderTest.registerHandlers();
 
@@ -223,11 +223,13 @@ describe('EventsService', () => {
             tick();
 
             // Assert
-            expect(hubConnectionSpy.send).toHaveBeenCalledOnceWith( expectedMessageName,
-                                                                    expectedInstantMessage.conferenceId,
-                                                                    expectedInstantMessage.message,
-                                                                    expectedInstantMessage.to,
-                                                                    expectedInstantMessage.id);
+            expect(hubConnectionSpy.send).toHaveBeenCalledOnceWith(
+                expectedMessageName,
+                expectedInstantMessage.conferenceId,
+                expectedInstantMessage.message,
+                expectedInstantMessage.to,
+                expectedInstantMessage.id
+            );
         }));
 
         it('sendMessage (instant) - propagate the error when send fails', async () => {
@@ -260,11 +262,13 @@ describe('EventsService', () => {
 
             // Assert
             expect(error).toEqual(expectedError());
-            expect(hubConnectionSpy.send).toHaveBeenCalledOnceWith( expectedMessageName,
-                                                                    expectedInstantMessage.conferenceId,
-                                                                    expectedInstantMessage.message,
-                                                                    expectedInstantMessage.to,
-                                                                    expectedInstantMessage.id);
+            expect(hubConnectionSpy.send).toHaveBeenCalledOnceWith(
+                expectedMessageName,
+                expectedInstantMessage.conferenceId,
+                expectedInstantMessage.message,
+                expectedInstantMessage.to,
+                expectedInstantMessage.id
+            );
         });
 
         it('sendHeartbeat', fakeAsync(() => {
@@ -282,10 +286,12 @@ describe('EventsService', () => {
             tick();
 
             // Assert
-            expect(hubConnectionSpy.send).toHaveBeenCalledOnceWith( expectedMessageName,
-                                                                    expectedConferenceId,
-                                                                    expectedParticipantId,
-                                                                    expectedHeartbeat);
+            expect(hubConnectionSpy.send).toHaveBeenCalledOnceWith(
+                expectedMessageName,
+                expectedConferenceId,
+                expectedParticipantId,
+                expectedHeartbeat
+            );
         }));
 
         it('sendTransferRequest', fakeAsync(() => {
@@ -303,10 +309,12 @@ describe('EventsService', () => {
             tick();
 
             // Assert
-            expect(hubConnectionSpy.send).toHaveBeenCalledOnceWith( expectedMessageName,
-                                                                    expectedConferenceId,
-                                                                    expectedParticipantId,
-                                                                    expectedTransferDirection);
+            expect(hubConnectionSpy.send).toHaveBeenCalledOnceWith(
+                expectedMessageName,
+                expectedConferenceId,
+                expectedParticipantId,
+                expectedTransferDirection
+            );
         }));
 
         it('publishRemoteMuteStatus', fakeAsync(() => {
@@ -324,10 +332,12 @@ describe('EventsService', () => {
             tick();
 
             // Assert
-            expect(hubConnectionSpy.send).toHaveBeenCalledOnceWith( expectedMessageName,
-                                                                    expectedConferenceId,
-                                                                    expectedParticipantId,
-                                                                    expectedIsRemoteMuted);
+            expect(hubConnectionSpy.send).toHaveBeenCalledOnceWith(
+                expectedMessageName,
+                expectedConferenceId,
+                expectedParticipantId,
+                expectedIsRemoteMuted
+            );
         }));
 
         it('publishParticipantHandRaisedStatus', fakeAsync(() => {
@@ -345,10 +355,12 @@ describe('EventsService', () => {
             tick();
 
             // Assert
-            expect(hubConnectionSpy.send).toHaveBeenCalledOnceWith( expectedMessageName,
-                                                                    expectedConferenceId,
-                                                                    expectedParticipantId,
-                                                                    expectedIsRaised);
+            expect(hubConnectionSpy.send).toHaveBeenCalledOnceWith(
+                expectedMessageName,
+                expectedConferenceId,
+                expectedParticipantId,
+                expectedIsRaised
+            );
         }));
 
         it('sendMediaStatus', fakeAsync(() => {
@@ -366,10 +378,12 @@ describe('EventsService', () => {
             tick();
 
             // Assert
-            expect(hubConnectionSpy.send).toHaveBeenCalledOnceWith( expectedMessageName,
-                                                                    expectedConferenceId,
-                                                                    expectedParticipantId,
-                                                                    expectedMediaStatus);
+            expect(hubConnectionSpy.send).toHaveBeenCalledOnceWith(
+                expectedMessageName,
+                expectedConferenceId,
+                expectedParticipantId,
+                expectedMediaStatus
+            );
         }));
     });
 });

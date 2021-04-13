@@ -60,17 +60,18 @@ export class EventsHubService {
         );
     }
 
-    constructor(configService: ConfigService,
-                connectionStatusService: ConnectionStatusService,
-                private oidcSecurityService: OidcSecurityService,
-                private logger: Logger,
-                private errorService: ErrorService
-            ) {
-        configService.getClientSettings().subscribe((clientSettings) => {
+    constructor(
+        configService: ConfigService,
+        connectionStatusService: ConnectionStatusService,
+        private oidcSecurityService: OidcSecurityService,
+        private logger: Logger,
+        private errorService: ErrorService
+    ) {
+        configService.getClientSettings().subscribe(clientSettings => {
             this._connection = this.buildConnection(clientSettings.event_hub_path);
             this.configureConnection();
 
-            connectionStatusService.onConnectionStatusChange().subscribe((isConnected) => this.onConnectionStatusChanged(isConnected));
+            connectionStatusService.onConnectionStatusChange().subscribe(isConnected => this.onConnectionStatusChanged(isConnected));
         });
     }
 
@@ -83,7 +84,7 @@ export class EventsHubService {
             .configureLogging(signalR.LogLevel.Debug)
             .withAutomaticReconnect(this.reconnectionTimes)
             .withUrl(eventHubPath, {
-                accessTokenFactory : () => this.oidcSecurityService.getToken()
+                accessTokenFactory: () => this.oidcSecurityService.getToken()
             })
             .build();
     }
@@ -104,7 +105,7 @@ export class EventsHubService {
         }
 
         if (!this.isConnectedToHub) {
-            this.oidcSecurityService.isAuthenticated$.subscribe((authenticated) => {
+            this.oidcSecurityService.isAuthenticated$.subscribe(authenticated => {
                 if (authenticated) {
                     this._reconnectionAttempt++;
                     this.connection
@@ -113,9 +114,9 @@ export class EventsHubService {
                             this.logger.info('[EventsService] - Successfully connected to EventHub');
                             this._reconnectionAttempt = 0;
                         })
-                        .catch(async (error) => {
+                        .catch(async error => {
                             this.logger.warn(`[EventsService] - Failed to connect to EventHub ${error}`);
-                            this.onEventHubErrorOrClose(error);  // TEST I THINK THIS IS REDUNDANT
+                            this.onEventHubErrorOrClose(error); // TEST I THINK THIS IS REDUNDANT
                             this.reconnect();
                         });
                 } else {
@@ -137,9 +138,7 @@ export class EventsHubService {
                 this.start();
             });
         } else {
-            this.logger.info(
-                `[EventsService] - Failed to connect too many times (#${this.reconnectionAttempt}), going to service error`
-            );
+            this.logger.info(`[EventsService] - Failed to connect too many times (#${this.reconnectionAttempt}), going to service error`);
             this.errorService.goToServiceError('Your connection was lost');
         }
     }

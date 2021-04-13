@@ -64,9 +64,7 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'publishParticipantHandRaisedStatus',
         'publishRemoteMuteStatus'
     ],
-    {
-
-    }
+    {}
 );
 
 eventsServiceSpy.getHearingStatusMessage.and.returnValue(hearingStatusSubjectMock.asObservable());
