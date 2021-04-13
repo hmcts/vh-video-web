@@ -50,6 +50,10 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
             return 'unavailable';
         }
 
+        if (participant.status === ParticipantStatus.Available) {
+            return 'available';
+        }
+
         if (participant.status === ParticipantStatus.InConsultation) {
             return 'in-consultation';
         }
@@ -60,7 +64,11 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
             (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) ||
             this.hasUnavailableLinkedParticipants(participant)
         ) {
-            return 'Unavailable';
+            return this.translateService.instant('individual-participant-status-list.unavailable');
+        }
+
+        if (participant.status === ParticipantStatus.Available) {
+            return this.translateService.instant('individual-participant-status-list.available');
         }
 
         if (participant.status === ParticipantStatus.InConsultation && participant.current_room != null) {
@@ -74,6 +82,10 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
                 (participant.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
             );
         }
+    }
+
+    isLoggedInParticipant(participant: ParticipantResponse) {
+        return participant.id === this.loggedInUser.participant_id;
     }
 
     private hasUnavailableLinkedParticipants(participant: ParticipantResponse) {

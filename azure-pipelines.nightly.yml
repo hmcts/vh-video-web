@@ -346,5 +346,9 @@ stages:
             value: $(wowza_storageAccountKey)
           - name: WowzaConfiguration:StorageContainerName
             value: $(wowza_storageContainerName)
+            
+          # Ejud - test setting only
+          - name: UsingEjud
+            value: $(UsingEjud)
         runMultiDeviceTests: true
         deviceConfiguration: ${{ parameters.deviceConfiguration }}
