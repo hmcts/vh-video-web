@@ -28,6 +28,9 @@ namespace VideoWeb.UnitTests.Mappings
             response.VideoApiUrl.Should().Be(servicesConfiguration.VideoApiUrl);
             response.AppInsightsInstrumentationKey.Should().Be(azureAdConfiguration.ApplicationInsights.InstrumentationKey);
             response.EventHubPath.Should().Be(servicesConfiguration.EventHubPath);
+            response.KinlyTurnServer.Should().Be(kinlyConfiguration.TurnServer);
+            response.KinlyTurnServerUser.Should().Be(kinlyConfiguration.TurnServerUser);
+            response.KinlyTurnServerCredential.Should().Be(kinlyConfiguration.TurnServerCredential);
             response.JoinByPhoneFromDate.Should().Be(kinlyConfiguration.JoinByPhoneFromDate);
         }
     }
