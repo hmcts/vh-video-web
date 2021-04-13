@@ -41,6 +41,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             RegisterTestUserSecrets(context);
             RegisterDefaultData(context);
             RegisterIsLive(context);
+            RegisterUsingEjud(context);
             RegisterHearingServices(context);
             RegisterWowzaSettings(context);
             RegisterSauceLabsSettings(context);
@@ -99,7 +100,11 @@ namespace VideoWeb.AcceptanceTests.Hooks
         private void RegisterIsLive(TestContext context)
         {
             context.VideoWebConfig.IsLive = _configRoot.GetValue<bool>("IsLive");
-            context.VideoWebConfig.Should().NotBeNull();
+        }
+
+        private void RegisterUsingEjud(TestContext context)
+        {
+            context.VideoWebConfig.UsingEjud = _configRoot.GetValue<bool>("UsingEjud");
         }
 
         private void RegisterHearingServices(TestContext context)

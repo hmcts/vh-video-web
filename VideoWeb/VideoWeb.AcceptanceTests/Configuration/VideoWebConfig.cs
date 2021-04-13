@@ -13,5 +13,6 @@ namespace VideoWeb.AcceptanceTests.Configuration
         public VideoWebVhServicesConfig VhServices { get; set; }
         public SauceLabsSettingsConfig SauceLabsConfiguration { get; set; }
         public WowzaConfiguration Wowza { get; set; }
+        public bool UsingEjud { get; set; }
     }
 }
