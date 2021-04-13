@@ -78,7 +78,7 @@ namespace VideoWeb.UnitTests.Mappings
             result.ParticipantJoinUri.Should().Be(testVmr.ParticipantJoinUri);
             result.DisplayName.Should().Be(testVmr.Label);
             result.TileDisplayName.Should().EndWith($"{participant.DisplayName};{participant.Id}");
-            result.TileDisplayName.Should().StartWith("W");
+            result.TileDisplayName.Should().StartWith("WITNESS");
         }
 
         [Test]
@@ -101,7 +101,7 @@ namespace VideoWeb.UnitTests.Mappings
             result.ParticipantJoinUri.Should().Be(testVmr.ParticipantJoinUri);
             result.DisplayName.Should().Be(testVmr.Label);
             result.TileDisplayName.Should().EndWith($"{participant.DisplayName};{participant.Id}");
-            result.TileDisplayName.Should().StartWith("T");
+            result.TileDisplayName.Should().StartWith("CIVILIAN");
         }
     }
 }
