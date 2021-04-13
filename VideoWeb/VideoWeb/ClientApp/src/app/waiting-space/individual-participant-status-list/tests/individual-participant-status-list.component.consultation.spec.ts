@@ -17,7 +17,7 @@ import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-securit
 import { IndividualParticipantStatusListComponent } from '../individual-participant-status-list.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 
-fdescribe('IndividualParticipantStatusListComponent consultations', () => {
+describe('IndividualParticipantStatusListComponent consultations', () => {
     let component: IndividualParticipantStatusListComponent;
     let conference: ConferenceResponse;
     let participantsObserverPanelMember: ParticipantResponseVho[];
