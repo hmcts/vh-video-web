@@ -10,5 +10,8 @@ namespace VideoWeb.Common.Security.HashGen
         public int ExpiresInMinutes { get; set; }
         public int HashExpiresInMinutes { get; set; }
         public string JoinByPhoneFromDate { get; set; }
+        public string TurnServer { get; set; }
+        public string TurnServerUser { get; set; }
+        public string TurnServerCredential { get; set; }
     }
 }

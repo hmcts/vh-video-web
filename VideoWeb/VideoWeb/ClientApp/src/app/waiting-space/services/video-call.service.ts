@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { Observable, Subject } from 'rxjs';
+import { ConfigService } from 'src/app/services/api/config.service';
 import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { SessionStorage } from 'src/app/services/session-storage';
@@ -53,7 +54,12 @@ export class VideoCallService {
         return this.pexipAPI.call_type === this.callTypeAudioOnly || this.pexipAPI.video_source === false;
     }
 
-    constructor(private logger: Logger, private userMediaService: UserMediaService, private apiClient: ApiClient) {
+    constructor(
+        private logger: Logger,
+        private userMediaService: UserMediaService,
+        private apiClient: ApiClient,
+        private configService: ConfigService
+    ) {
         this.preferredLayoutCache = new SessionStorage(this.PREFERRED_LAYOUT_KEY);
         this.videoCallPreferences = new SessionStorage(this.VIDEO_CALL_PREFERENCE_KEY);
         if (!this.preferredLayoutCache.get()) {
@@ -73,6 +79,7 @@ export class VideoCallService {
         this.pexipAPI = new PexRTC();
         await this.retrievePreferredDevices();
         this.initCallTag();
+        this.initTurnServer();
         this.pexipAPI.screenshare_fps = 30;
 
         this.pexipAPI.onSetup = function (stream, pinStatus, conferenceExtension) {
@@ -127,6 +134,15 @@ export class VideoCallService {
             self.logger.info(`${self.loggerPrefix} Screenshare stopped : ${JSON.stringify(reason)}`);
             self.onStoppedScreenshareSubject.next(new StoppedScreenshare(reason));
         };
+    }
+    initTurnServer() {
+        const config = this.configService.getConfig();
+        const turnServerObj = {
+            url: `turn:${config.kinly_turn_server}`,
+            username: config.kinly_turn_server_user,
+            credential: config.kinly_turn_server_credential
+        };
+        this.pexipAPI.turn_server = turnServerObj;
     }
 
     initCallTag() {

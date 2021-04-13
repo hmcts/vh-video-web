@@ -27,86 +27,10 @@ namespace VideoWeb.UnitTests.Mappings
                 .Build();
             _sut = _mocker.Create<ConferenceResponseMapper>(parameters);
         }
+       
 
         [Test]
         public void Should_map_all_properties()
-        {
-            var participants = new List<ParticipantDetailsResponse>
-            {
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Claimant").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Individual, "Defendant").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Representative, "Defendant").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.Judge, "None").Build(),
-                new ParticipantDetailsResponseBuilder(UserRole.CaseAdmin, "None").Build(),
-            };
-
-            var endpoints = new List<EndpointResponse>
-            {
-                new EndpointsResponseBuilder().Build(),
-                new EndpointsResponseBuilder().Build(),
-            };
-
-            var expectedConferenceStatus = ConferenceStatus.Suspended;
-
-            var meetingRoom = Builder<MeetingRoomResponse>.CreateNew().Build();
-
-            var conference = Builder<ConferenceDetailsResponse>.CreateNew()
-                .With(x => x.CurrentStatus = ConferenceState.Suspended)
-                .With(x => x.Participants = participants)
-                .With(x => x.MeetingRoom = meetingRoom)
-                .With(x=> x.Endpoints = endpoints)
-                .Build();
-
-            var response = _sut.Map(conference);
-
-            response.Id.Should().Be(conference.Id);
-            response.CaseName.Should().Be(conference.CaseName);
-            response.CaseType.Should().Be(conference.CaseType);
-            response.CaseNumber.Should().Be(conference.CaseNumber);
-            response.ScheduledDateTime.Should().Be(conference.ScheduledDateTime);
-            response.ScheduledDuration.Should().Be(conference.ScheduledDuration);
-            response.Status.Should().Be(expectedConferenceStatus);
-            response.Endpoints.Should().NotBeNull();
-            response.Endpoints.Count.Should().Be(2);
-
-            var participantsResponse = response.Participants;
-            participantsResponse.Should().NotBeNullOrEmpty();
-            foreach (var participantResponse in participantsResponse)
-            {
-                if (participantResponse.Role == Role.Representative)
-                {
-                    participantResponse.TiledDisplayName.StartsWith("T4").Should().BeTrue();
-
-                }
-                if (participantResponse.Role == Role.Judge)
-                {
-                    var judge = participants.SingleOrDefault(p => p.UserRole == UserRole.Judge);
-                    participantResponse.TiledDisplayName.Should().Be($"T{0};{judge.DisplayName};{judge.Id}");
-                }
-                if (participantResponse.Role == Role.Individual)
-                {
-                    (participantResponse.TiledDisplayName.StartsWith("T1") ||
-                        participantResponse.TiledDisplayName.StartsWith("T2")).Should().BeTrue();
-                }
-                if (participantResponse.Role == Role.CaseAdmin)
-                {
-                    participantResponse.TiledDisplayName.Should().BeNull();
-                }
-            }
-
-            var caseTypeGroups = participantsResponse.Select(p => p.CaseTypeGroup).Distinct().ToList();
-            caseTypeGroups.Count.Should().BeGreaterThan(2);
-            caseTypeGroups[0].Should().Be("Claimant");
-            caseTypeGroups[1].Should().Be("Defendant");
-            caseTypeGroups[2].Should().Be("None");
-
-            response.ParticipantUri.Should().Be(meetingRoom.ParticipantUri);
-            response.PexipNodeUri.Should().Be(meetingRoom.PexipNode);
-            response.PexipSelfTestNodeUri.Should().NotBeNullOrWhiteSpace();
-        }
-
-        [Test]
-        public void Should_map_all_properties_for_more_then_4_participants()
         {
             var participants = new List<ParticipantDetailsResponse>
             {
@@ -152,16 +76,16 @@ namespace VideoWeb.UnitTests.Mappings
                 var position = participantResponse.TiledDisplayName.Split(';');
                 if (participantResponse.Role == Role.Judge)
                 {
-                    participantResponse.TiledDisplayName.StartsWith("T0").Should().BeTrue();
+                    participantResponse.TiledDisplayName.StartsWith("JUDGE").Should().BeTrue();
                 }
 
-                if (position[0].StartsWith("T"))
+                if (position[0].StartsWith("JUDGE"))
                 {
                     tiledNames.Count(x => x.StartsWith(position[0])).Should().Be(1);
                 }
-                if (participantResponse.HearingRole == "Witness" && participantResponse.Role == Role.Individual)
+                if (participantResponse.HearingRole == "WITNESS" && participantResponse.Role == Role.Individual)
                 {
-                    participantResponse.TiledDisplayName.StartsWith("W").Should().BeTrue();
+                    participantResponse.TiledDisplayName.StartsWith("WITNESS").Should().BeTrue();
                     tiledNames.Count(x => x.StartsWith(position[0])).Should().Be(1);
                 }
             }
