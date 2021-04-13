@@ -1,4 +1,5 @@
 import { fakeAsync, tick } from '@angular/core/testing';
+import * as signalR from '@microsoft/signalr';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { Observable, of, Subject } from 'rxjs';
 import { ConfigService } from './api/config.service';
@@ -8,7 +9,7 @@ import { ErrorService } from './error.service';
 import { EventsHubService } from './events-hub.service';
 import { Logger } from './logging/logger-base';
 
-fdescribe('EventsHubService', () => {
+describe('EventsHubService', () => {
     function spyPropertyGetter<T, K extends keyof T>(
         spyObj: jasmine.SpyObj<T>,
         propName: K
@@ -28,7 +29,7 @@ fdescribe('EventsHubService', () => {
     let connectionStatusServiceSpy : jasmine.SpyObj<ConnectionStatusService>;
     let oidcSecurityServiceSpy : jasmine.SpyObj<OidcSecurityService>;
     let errorServiceSpy : jasmine.SpyObj<ErrorService>;
-    let loggerSpy = jasmine.createSpyObj<Logger>("Logger", ["info", "warn", "error", "debug"]);
+    const loggerSpy = jasmine.createSpyObj<Logger>("Logger", ["info", "warn", "error", "debug"]);
     let clientSettings$ : Subject<ClientSettingsResponse>;
     let connectionStatusChanged$ : jasmine.SpyObj<Subject<boolean>>;
 
@@ -356,6 +357,149 @@ fdescribe('EventsHubService', () => {
             expect(serviceUnderTest.start).not.toHaveBeenCalled();
             expect(serviceUnderTest.stop).toHaveBeenCalledTimes(1);
         });
+    });
 
+    describe('isConnectedToHub', () => {
+        it('should return true when the hub state is connected', () => {
+            // Arrange
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"], ["state"]);
+            spyPropertyGetter(connectionSpy, "state").and.returnValue(signalR.HubConnectionState.Connected);
+
+            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+
+            // Act
+            const isConnected = serviceUnderTest.isConnectedToHub;
+
+            // Assert
+            expect(isConnected).toBeTrue();
+        });
+
+        it('should return true when the hub state is connecting', () => {
+            // Arrange
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"], ["state"]);
+            spyPropertyGetter(connectionSpy, "state").and.returnValue(signalR.HubConnectionState.Connecting);
+
+            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+
+            // Act
+            const isConnected = serviceUnderTest.isConnectedToHub;
+
+            // Assert
+            expect(isConnected).toBeTrue();
+        });
+
+        it('should return true when the hub state is reconnecting', () => {
+            // Arrange
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"], ["state"]);
+            spyPropertyGetter(connectionSpy, "state").and.returnValue(signalR.HubConnectionState.Reconnecting);
+
+            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+
+            // Act
+            const isConnected = serviceUnderTest.isConnectedToHub;
+
+            // Assert
+            expect(isConnected).toBeTrue();
+        });
+
+        it('should return false when the hub state is disonnecting', () => {
+            // Arrange
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"], ["state"]);
+            spyPropertyGetter(connectionSpy, "state").and.returnValue(signalR.HubConnectionState.Disconnecting);
+
+            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+
+            // Act
+            const isConnected = serviceUnderTest.isConnectedToHub;
+
+            // Assert
+            expect(isConnected).toBeFalse();
+        });
+
+        it('should return false when the hub state is disconnected', () => {
+            // Arrange
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"], ["state"]);
+            spyPropertyGetter(connectionSpy, "state").and.returnValue(signalR.HubConnectionState.Disconnected);
+
+            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+
+            // Act
+            const isConnected = serviceUnderTest.isConnectedToHub;
+
+            // Assert
+            expect(isConnected).toBeFalse();
+        });
+    });
+
+    describe('isDisconnectedFromHub', () => {
+        it('should return false when the hub state is connected', () => {
+            // Arrange
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"], ["state"]);
+            spyPropertyGetter(connectionSpy, "state").and.returnValue(signalR.HubConnectionState.Connected);
+
+            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+
+            // Act
+            const isDisconnected = serviceUnderTest.isDisconnectedFromHub;
+
+            // Assert
+            expect(isDisconnected).toBeFalse();
+        });
+
+        it('should return false when the hub state is connecting', () => {
+            // Arrange
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"], ["state"]);
+            spyPropertyGetter(connectionSpy, "state").and.returnValue(signalR.HubConnectionState.Connecting);
+
+            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+
+            // Act
+            const isDisconnected = serviceUnderTest.isDisconnectedFromHub;
+
+            // Assert
+            expect(isDisconnected).toBeFalse();
+        });
+
+        it('should return false when the hub state is reconnecting', () => {
+            // Arrange
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"], ["state"]);
+            spyPropertyGetter(connectionSpy, "state").and.returnValue(signalR.HubConnectionState.Reconnecting);
+
+            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+
+            // Act
+            const isDisconnected = serviceUnderTest.isDisconnectedFromHub;
+
+            // Assert
+            expect(isDisconnected).toBeFalse();
+        });
+
+        it('should return true when the hub state is disonnecting', () => {
+            // Arrange
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"], ["state"]);
+            spyPropertyGetter(connectionSpy, "state").and.returnValue(signalR.HubConnectionState.Disconnecting);
+
+            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+
+            // Act
+            const isDisconnected = serviceUnderTest.isDisconnectedFromHub;
+
+            // Assert
+            expect(isDisconnected).toBeTrue();
+        });
+
+        it('should return true when the hub state is disconnected', () => {
+            // Arrange
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"], ["state"]);
+            spyPropertyGetter(connectionSpy, "state").and.returnValue(signalR.HubConnectionState.Disconnected);
+
+            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+
+            // Act
+            const isDisconnected = serviceUnderTest.isDisconnectedFromHub;
+
+            // Assert
+            expect(isDisconnected).toBeTrue();
+        });
     });
 });

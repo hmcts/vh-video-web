@@ -34,7 +34,6 @@ export const participantHandRaisedStatusSubjectMock = new Subject<ParticipantHan
 export const roomUpdateSubjectMock = new Subject<Room>();
 export const roomTransferSubjectMock = new Subject<RoomTransfer>();
 export const adminAnsweredChatSubjectMock = new Subject<ConferenceMessageAnswered>();
-export let isConnectedSpy = true;
 
 eventsServiceSpy = jasmine.createSpyObj<EventsService>(
     'EventsService',
@@ -66,7 +65,7 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'publishRemoteMuteStatus'
     ],
     {
-        isConnectedToHub: isConnectedSpy
+
     }
 );
 

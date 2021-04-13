@@ -22,7 +22,6 @@ import { RoomTransfer } from '../shared/models/room-transfer';
 import { ParticipantHandRaisedMessage } from '../shared/models/participant-hand-raised-message';
 import { ParticipantRemoteMuteMessage } from '../shared/models/participant-remote-mute-message';
 import { EventsHubService } from './events-hub.service';
-import { tap } from 'rxjs/internal/operators/tap';
 
 @Injectable({
     providedIn: 'root'
@@ -46,7 +45,11 @@ export class EventsService {
     private participantHandRaisedStatusSubject = new Subject<ParticipantHandRaisedMessage>();
     private roomUpdateSubject = new Subject<Room>();
     private roomTransferSubject = new Subject<RoomTransfer>();
-    private handlersRegistered = false;
+
+    private _handlersRegistered = false;
+    get handlersRegistered() {
+        return this._handlersRegistered;
+    }
 
     private get eventsHubConnection() {
         return this.eventsHubService.connection;
@@ -56,13 +59,12 @@ export class EventsService {
         private logger: Logger,
         private eventsHubService : EventsHubService
     ) {
-        this.eventsHubService = eventsHubService;
         eventsHubService.onEventsHubReady.subscribe(() => this.start());
     }
 
     start() {
-        this.eventsHubService.start();
         this.registerHandlers();
+        this.eventsHubService.start();
     }
 
     stop() {
@@ -79,7 +81,7 @@ export class EventsService {
         for (const eventName in this.eventHandlers)
             this.eventsHubConnection.on(eventName, this.eventHandlers[eventName]);
 
-        this.handlersRegistered = true;
+        this._handlersRegistered = true;
     }
 
     deregisterHandlers(): void {
@@ -91,15 +93,7 @@ export class EventsService {
         for (const eventName in this.eventHandlers)
             this.eventsHubConnection.off(eventName, this.eventHandlers[eventName]);
 
-        this.handlersRegistered = false;
-    }
-
-    get isConnectedToHub(): boolean {
-        return this.eventsHubService.isConnectedToHub;
-    }
-
-    get isDisconnectedFromHub(): boolean {
-        return this.eventsHubService.isDisconnectedFromHub;
+        this._handlersRegistered = false;
     }
 
     getServiceReconnected(): Observable<any> {

@@ -45,7 +45,6 @@ export class EventsHubService {
         return !!this.reconnectionPromise;
     }
 
-    // NOT TESTED
     get isConnectedToHub() : boolean {
         return (
             this.connection.state === signalR.HubConnectionState.Connected ||
@@ -54,7 +53,6 @@ export class EventsHubService {
         );
     }
 
-    // NOT TESTED
     get isDisconnectedFromHub(): boolean {
         return (
             this.connection.state === signalR.HubConnectionState.Disconnected ||
