@@ -19,17 +19,17 @@ describe('EventsService', () => {
         return Object.getOwnPropertyDescriptor(spyObj, propName)?.get as jasmine.Spy<() => T[K]>;
       }
 
-    let serviceUnderTest : EventsService;
-    let loggerMock : Logger;
-    let eventsHubServiceSpy : jasmine.SpyObj<EventsHubService>;
-    let subscription$ : Subscription;
+    let serviceUnderTest: EventsService;
+    let loggerMock: Logger;
+    let eventsHubServiceSpy: jasmine.SpyObj<EventsHubService>;
+    let subscription$: Subscription;
 
     beforeEach(() => {
         loggerMock = new MockLogger();
-        eventsHubServiceSpy = jasmine.createSpyObj<EventsHubService>("EventsHubService", ["start", "stop", "getServiceReconnected", "getServiceDisconnected"], ["connection", "onEventsHubReady"]);
+        eventsHubServiceSpy = jasmine.createSpyObj<EventsHubService>('EventsHubService', ['start', 'stop', 'getServiceReconnected', 'getServiceDisconnected'], ['connection', 'onEventsHubReady']);
         eventsHubServiceSpy.getServiceReconnected.and.returnValue(new Observable<any>());
         eventsHubServiceSpy.getServiceDisconnected.and.returnValue(new Observable<number>());
-        spyPropertyGetter(eventsHubServiceSpy, "onEventsHubReady").and.returnValue(new Observable());
+        spyPropertyGetter(eventsHubServiceSpy, 'onEventsHubReady').and.returnValue(new Observable());
         serviceUnderTest = new EventsService(loggerMock, eventsHubServiceSpy);
         subscription$ = new Subscription();
     });
@@ -70,8 +70,8 @@ describe('EventsService', () => {
         it('should should subscribe to the onEvensHubReady event on the EventHubService', () => {
             // Arrange
             const observable = new Observable<any>();
-            spyOn(observable, "subscribe").and.callThrough();
-            spyPropertyGetter(eventsHubServiceSpy, "onEventsHubReady").and.returnValue(observable);
+            spyOn(observable, 'subscribe').and.callThrough();
+            spyPropertyGetter(eventsHubServiceSpy, 'onEventsHubReady').and.returnValue(observable);
 
             // Act
             const _serviceUnderTest = new EventsService(loggerMock, eventsHubServiceSpy);
@@ -109,7 +109,7 @@ describe('EventsService', () => {
     describe('start', () => {
         it('should register the event handlers and start the events hub service.', () => {
             // Arrange
-            spyOn(serviceUnderTest, "registerHandlers");
+            spyOn(serviceUnderTest, 'registerHandlers');
 
             // Act
             serviceUnderTest.start();
@@ -123,7 +123,7 @@ describe('EventsService', () => {
     describe('stop', () => {
         it('should dregister the event handlers and start the events hub service.', () => {
             // Arrange
-            spyOn(serviceUnderTest, "deregisterHandlers");
+            spyOn(serviceUnderTest, 'deregisterHandlers');
 
             // Act
             serviceUnderTest.stop();
@@ -139,8 +139,8 @@ describe('EventsService', () => {
             // Arrange
             const expectedNumberOfRegisterations = 16;
 
-            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["on"]);
-            spyPropertyGetter(eventsHubServiceSpy, "connection").and.returnValue(hubConnectionSpy);
+            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
+            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
 
 
             // Act
@@ -154,10 +154,10 @@ describe('EventsService', () => {
 
         it('should NOT register the handlers if they are NOT already registered', () => {
             // Arrange
-            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["on"]);
-            spyPropertyGetter(eventsHubServiceSpy, "connection").and.returnValue(hubConnectionSpy);
+            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
+            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
 
-            spyOnProperty(serviceUnderTest, "handlersRegistered", "get").and.returnValue(true);
+            spyOnProperty(serviceUnderTest, 'handlersRegistered', 'get').and.returnValue(true);
 
             // Act
             serviceUnderTest.registerHandlers();
@@ -171,10 +171,10 @@ describe('EventsService', () => {
         it('should deregister the handlers if they are already registered', () => {
             // Arrange
             const expectedNumberOfDeregisterations = 16;
-            spyOnProperty(serviceUnderTest, "handlersRegistered", "get").and.returnValue(true);
+            spyOnProperty(serviceUnderTest, 'handlersRegistered', 'get').and.returnValue(true);
 
-            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["off"]);
-            spyPropertyGetter(eventsHubServiceSpy, "connection").and.returnValue(hubConnectionSpy);
+            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['off']);
+            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
 
             // Act
             serviceUnderTest.deregisterHandlers();
@@ -186,10 +186,10 @@ describe('EventsService', () => {
 
         it('should NOT deregister the handlers if they are NOT already registered', () => {
             // Arrange
-            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["off"]);
-            spyPropertyGetter(eventsHubServiceSpy, "connection").and.returnValue(hubConnectionSpy);
+            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['off']);
+            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
 
-            spyOnProperty(serviceUnderTest, "handlersRegistered", "get").and.returnValue(false);
+            spyOnProperty(serviceUnderTest, 'handlersRegistered', 'get').and.returnValue(false);
 
             // Act
             serviceUnderTest.deregisterHandlers();
@@ -202,10 +202,10 @@ describe('EventsService', () => {
     describe('send message functions', () => {
         it('sendMessage (instant) - should call send on the hub connection', fakeAsync(() => {
             // Arrange
-            const expectedMessageName = "SendMessage";
-            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["send"]);
+            const expectedMessageName = 'SendMessage';
+            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['send']);
 
-            spyPropertyGetter(eventsHubServiceSpy, "connection").and.returnValue(hubConnectionSpy);
+            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
 
             const expectedInstantMessage = new InstantMessage({
                 conferenceId: Guid.create().toString(),
@@ -232,12 +232,12 @@ describe('EventsService', () => {
 
         it('sendMessage (instant) - propagate the error when send fails', async () => {
             // Arrange
-            const expectedError = () => new Error("test error");
-            const expectedMessageName = "SendMessage";
-            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["send"]);
+            const expectedError = () => new Error('test error');
+            const expectedMessageName = 'SendMessage';
+            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['send']);
             hubConnectionSpy.send.and.rejectWith(expectedError());
 
-            spyPropertyGetter(eventsHubServiceSpy, "connection").and.returnValue(hubConnectionSpy);
+            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
 
             const expectedInstantMessage = new InstantMessage({
                 conferenceId: Guid.create().toString(),
@@ -251,7 +251,7 @@ describe('EventsService', () => {
             });
 
             // Act
-            let error : Error;
+            let error: Error;
             try {
                 await serviceUnderTest.sendMessage(expectedInstantMessage);
             } catch (e) {
@@ -269,13 +269,13 @@ describe('EventsService', () => {
 
         it('sendHeartbeat', fakeAsync(() => {
             // Arrange
-            const expectedMessageName = "SendHeartbeat";
-            const expectedConferenceId = "test-conference-id";
-            const expectedParticipantId = "test-participant-id";
+            const expectedMessageName = 'SendHeartbeat';
+            const expectedConferenceId = 'test-conference-id';
+            const expectedParticipantId = 'test-participant-id';
             const expectedHeartbeat = new Heartbeat();
-            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["send"]);
+            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['send']);
 
-            spyPropertyGetter(eventsHubServiceSpy, "connection").and.returnValue(hubConnectionSpy);
+            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
 
             // Act
             serviceUnderTest.sendHeartbeat(expectedConferenceId, expectedParticipantId, expectedHeartbeat);
@@ -290,13 +290,13 @@ describe('EventsService', () => {
 
         it('sendTransferRequest', fakeAsync(() => {
             // Arrange
-            const expectedMessageName = "sendTransferRequest";
-            const expectedConferenceId = "test-conference-id";
-            const expectedParticipantId = "test-participant-id";
+            const expectedMessageName = 'sendTransferRequest';
+            const expectedConferenceId = 'test-conference-id';
+            const expectedParticipantId = 'test-participant-id';
             const expectedTransferDirection = TransferDirection.In;
-            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["send"]);
+            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['send']);
 
-            spyPropertyGetter(eventsHubServiceSpy, "connection").and.returnValue(hubConnectionSpy);
+            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
 
             // Act
             serviceUnderTest.sendTransferRequest(expectedConferenceId, expectedParticipantId, expectedTransferDirection);
@@ -311,13 +311,13 @@ describe('EventsService', () => {
 
         it('publishRemoteMuteStatus', fakeAsync(() => {
             // Arrange
-            const expectedMessageName = "UpdateParticipantRemoteMuteStatus";
-            const expectedConferenceId = "test-conference-id";
-            const expectedParticipantId = "test-participant-id";
+            const expectedMessageName = 'UpdateParticipantRemoteMuteStatus';
+            const expectedConferenceId = 'test-conference-id';
+            const expectedParticipantId = 'test-participant-id';
             const expectedIsRemoteMuted = false;
-            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["send"]);
+            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['send']);
 
-            spyPropertyGetter(eventsHubServiceSpy, "connection").and.returnValue(hubConnectionSpy);
+            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
 
             // Act
             serviceUnderTest.publishRemoteMuteStatus(expectedConferenceId, expectedParticipantId, expectedIsRemoteMuted);
@@ -332,13 +332,13 @@ describe('EventsService', () => {
 
         it('publishParticipantHandRaisedStatus', fakeAsync(() => {
             // Arrange
-            const expectedMessageName = "UpdateParticipantHandStatus";
-            const expectedConferenceId = "test-conference-id";
-            const expectedParticipantId = "test-participant-id";
+            const expectedMessageName = 'UpdateParticipantHandStatus';
+            const expectedConferenceId = 'test-conference-id';
+            const expectedParticipantId = 'test-participant-id';
             const expectedIsRaised = false;
-            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["send"]);
+            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['send']);
 
-            spyPropertyGetter(eventsHubServiceSpy, "connection").and.returnValue(hubConnectionSpy);
+            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
 
             // Act
             serviceUnderTest.publishParticipantHandRaisedStatus(expectedConferenceId, expectedParticipantId, expectedIsRaised);
@@ -353,13 +353,13 @@ describe('EventsService', () => {
 
         it('sendMediaStatus', fakeAsync(() => {
             // Arrange
-            const expectedMessageName = "SendMediaDeviceStatus";
-            const expectedConferenceId = "test-conference-id";
-            const expectedParticipantId = "test-participant-id";
+            const expectedMessageName = 'SendMediaDeviceStatus';
+            const expectedConferenceId = 'test-conference-id';
+            const expectedParticipantId = 'test-participant-id';
             const expectedMediaStatus = new ParticipantMediaStatus(false, false);
-            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["send"]);
+            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['send']);
 
-            spyPropertyGetter(eventsHubServiceSpy, "connection").and.returnValue(hubConnectionSpy);
+            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
 
             // Act
             serviceUnderTest.sendMediaStatus(expectedConferenceId, expectedParticipantId, expectedMediaStatus);

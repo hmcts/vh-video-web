@@ -27,6 +27,20 @@ import { EventsHubService } from './events-hub.service';
     providedIn: 'root'
 })
 export class EventsService {
+    get handlersRegistered() {
+        return this._handlersRegistered;
+    }
+
+    private get eventsHubConnection() {
+        return this.eventsHubService.connection;
+    }
+
+    constructor(
+        private logger: Logger,
+        private eventsHubService: EventsHubService
+    ) {
+        eventsHubService.onEventsHubReady.subscribe(() => this.start());
+    }
     private participantStatusSubject = new Subject<ParticipantStatusMessage>();
     private endpointStatusSubject = new Subject<EndpointStatusMessage>();
     private hearingStatusSubject = new Subject<ConferenceStatusMessage>();
@@ -47,173 +61,6 @@ export class EventsService {
     private roomTransferSubject = new Subject<RoomTransfer>();
 
     private _handlersRegistered = false;
-    get handlersRegistered() {
-        return this._handlersRegistered;
-    }
-
-    private get eventsHubConnection() {
-        return this.eventsHubService.connection;
-    }
-
-    constructor(
-        private logger: Logger,
-        private eventsHubService : EventsHubService
-    ) {
-        eventsHubService.onEventsHubReady.subscribe(() => this.start());
-    }
-
-    start() {
-        this.registerHandlers();
-        this.eventsHubService.start();
-    }
-
-    stop() {
-        this.eventsHubService.stop();
-        this.deregisterHandlers();
-    }
-
-    registerHandlers(): void {
-        if (this.handlersRegistered) {
-            this.logger.warn('[EventsService] - Handlers already registered. Skipping registeration of handlers.');
-            return;
-        }
-
-        for (const eventName in this.eventHandlers)
-            this.eventsHubConnection.on(eventName, this.eventHandlers[eventName]);
-
-        this._handlersRegistered = true;
-    }
-
-    deregisterHandlers(): void {
-        if (!this.handlersRegistered) {
-            this.logger.warn('[EventsService] - Handlers are not registered. Skipping deregisteration of handlers.');
-            return;
-        }
-
-        for (const eventName in this.eventHandlers)
-            this.eventsHubConnection.off(eventName, this.eventHandlers[eventName]);
-
-        this._handlersRegistered = false;
-    }
-
-    getServiceReconnected(): Observable<any> {
-        return this.eventsHubService.getServiceReconnected();
-    }
-
-    getServiceDisconnected(): Observable<number> {
-        return this.eventsHubService.getServiceDisconnected();
-    }
-
-    getParticipantStatusMessage(): Observable<ParticipantStatusMessage> {
-        return this.participantStatusSubject.asObservable();
-    }
-
-    getHearingStatusMessage(): Observable<ConferenceStatusMessage> {
-        return this.hearingStatusSubject.asObservable();
-    }
-
-    getEndpointStatusMessage(): Observable<EndpointStatusMessage> {
-        return this.endpointStatusSubject.asObservable();
-    }
-
-    getHearingCountdownCompleteMessage(): Observable<string> {
-        return this.hearingCountdownCompleteSubject.asObservable();
-    }
-
-    getRequestedConsultationMessage(): Observable<RequestedConsultationMessage> {
-        return this.requestedConsultationMessageSubject.asObservable();
-    }
-
-    getConsultationRequestResponseMessage(): Observable<ConsultationRequestResponseMessage> {
-        return this.consultationRequestResponseMessageSubject.asObservable();
-    }
-
-    getChatMessage(): Observable<InstantMessage> {
-        return this.messageSubject.asObservable();
-    }
-
-    getAdminAnsweredChat(): Observable<ConferenceMessageAnswered> {
-        return this.adminAnsweredChatSubject.asObservable();
-    }
-
-    getHeartbeat(): Observable<ParticipantHeartbeat> {
-        return this.participantHeartbeat.asObservable();
-    }
-
-    getHearingTransfer(): Observable<HearingTransfer> {
-        return this.hearingTransferSubject.asObservable();
-    }
-
-    getParticipantMediaStatusMessage(): Observable<ParticipantMediaStatusMessage> {
-        return this.participantMediaStatusSubject.asObservable();
-    }
-
-    getParticipantRemoteMuteStatusMessage(): Observable<ParticipantRemoteMuteMessage> {
-        return this.participantRemoteMuteStatusSubject.asObservable();
-    }
-
-    getParticipantHandRaisedMessage(): Observable<ParticipantHandRaisedMessage> {
-        return this.participantHandRaisedStatusSubject.asObservable();
-    }
-
-    getRoomUpdate(): Observable<Room> {
-        return this.roomUpdateSubject.asObservable();
-    }
-    getRoomTransfer(): Observable<RoomTransfer> {
-        return this.roomTransferSubject.asObservable();
-    }
-
-    async sendMessage(instantMessage: InstantMessage) {
-        try {
-            await this.eventsHubConnection.send(
-                'SendMessage',
-                instantMessage.conferenceId,
-                instantMessage.message,
-                instantMessage.to,
-                instantMessage.id
-            );
-        } catch (err) {
-            this.logger.error(`[EventsService] - Unable to send im from ${instantMessage.from}`, err);
-            throw err;
-        }
-    }
-
-    async sendHeartbeat(conferenceId: string, participantId: string, heartbeat: Heartbeat) {
-        await this.eventsHubConnection.send('SendHeartbeat', conferenceId, participantId, heartbeat);
-        this.logger.debug('[EventsService] - Sent heartbeat to EventHub', heartbeat);
-    }
-
-    async sendTransferRequest(conferenceId: string, participantId: string, transferDirection: TransferDirection) {
-        await this.eventsHubConnection.send('sendTransferRequest', conferenceId, participantId, transferDirection);
-        this.logger.debug('[EventsService] - Sent transfer request to EventHub', transferDirection);
-    }
-
-    async publishRemoteMuteStatus(conferenceId: string, participantId: string, isRemoteMuted: boolean) {
-        await this.eventsHubConnection.send('UpdateParticipantRemoteMuteStatus', conferenceId, participantId, isRemoteMuted);
-        this.logger.debug('[EventsService] - Sent update remote mute status request to EventHub', {
-            conference: conferenceId,
-            participant: participantId,
-            isRemoteMuted
-        });
-    }
-
-    async publishParticipantHandRaisedStatus(conferenceId: string, participantId: string, isRaised: boolean) {
-        await this.eventsHubConnection.send('UpdateParticipantHandStatus', conferenceId, participantId, isRaised);
-        this.logger.debug('[EventsService] - Sent update hand raised status request to EventHub', {
-            conference: conferenceId,
-            participant: participantId,
-            isRaised
-        });
-    }
-
-    async sendMediaStatus(conferenceId: string, participantId: string, mediaStatus: ParticipantMediaStatus) {
-        await this.eventsHubConnection.send('SendMediaDeviceStatus', conferenceId, participantId, mediaStatus);
-        this.logger.debug('[EventsService] - Sent device media status to EventHub', {
-            conference: conferenceId,
-            participant: participantId,
-            mediaStatus: mediaStatus
-        });
-    }
 
     private eventHandlers = {
         'ParticipantStatusMessage' :
@@ -350,4 +197,163 @@ export class EventsService {
             this.participantHeartbeat.next(heartbeat);
         }
     };
+
+    start() {
+        this.registerHandlers();
+        this.eventsHubService.start();
+    }
+
+    stop() {
+        this.eventsHubService.stop();
+        this.deregisterHandlers();
+    }
+
+    registerHandlers(): void {
+        if (this.handlersRegistered) {
+            this.logger.warn('[EventsService] - Handlers already registered. Skipping registeration of handlers.');
+            return;
+        }
+
+        for (const eventName in this.eventHandlers) {
+            if (this.eventHandlers.hasOwnProperty(eventName)) {
+                this.eventsHubConnection.on(eventName, this.eventHandlers[eventName]);
+            }
+        }
+
+        this._handlersRegistered = true;
+    }
+
+    deregisterHandlers(): void {
+        if (!this.handlersRegistered) {
+            this.logger.warn('[EventsService] - Handlers are not registered. Skipping deregisteration of handlers.');
+            return;
+        }
+
+        for (const eventName in this.eventHandlers) {
+            if (this.eventHandlers.hasOwnProperty(eventName)) {
+                this.eventsHubConnection.off(eventName, this.eventHandlers[eventName]);
+            }
+        }
+
+        this._handlersRegistered = false;
+    }
+
+    getServiceReconnected(): Observable<any> {
+        return this.eventsHubService.getServiceReconnected();
+    }
+
+    getServiceDisconnected(): Observable<number> {
+        return this.eventsHubService.getServiceDisconnected();
+    }
+
+    getParticipantStatusMessage(): Observable<ParticipantStatusMessage> {
+        return this.participantStatusSubject.asObservable();
+    }
+
+    getHearingStatusMessage(): Observable<ConferenceStatusMessage> {
+        return this.hearingStatusSubject.asObservable();
+    }
+
+    getEndpointStatusMessage(): Observable<EndpointStatusMessage> {
+        return this.endpointStatusSubject.asObservable();
+    }
+
+    getHearingCountdownCompleteMessage(): Observable<string> {
+        return this.hearingCountdownCompleteSubject.asObservable();
+    }
+
+    getRequestedConsultationMessage(): Observable<RequestedConsultationMessage> {
+        return this.requestedConsultationMessageSubject.asObservable();
+    }
+
+    getConsultationRequestResponseMessage(): Observable<ConsultationRequestResponseMessage> {
+        return this.consultationRequestResponseMessageSubject.asObservable();
+    }
+
+    getChatMessage(): Observable<InstantMessage> {
+        return this.messageSubject.asObservable();
+    }
+
+    getAdminAnsweredChat(): Observable<ConferenceMessageAnswered> {
+        return this.adminAnsweredChatSubject.asObservable();
+    }
+
+    getHeartbeat(): Observable<ParticipantHeartbeat> {
+        return this.participantHeartbeat.asObservable();
+    }
+
+    getHearingTransfer(): Observable<HearingTransfer> {
+        return this.hearingTransferSubject.asObservable();
+    }
+
+    getParticipantMediaStatusMessage(): Observable<ParticipantMediaStatusMessage> {
+        return this.participantMediaStatusSubject.asObservable();
+    }
+
+    getParticipantRemoteMuteStatusMessage(): Observable<ParticipantRemoteMuteMessage> {
+        return this.participantRemoteMuteStatusSubject.asObservable();
+    }
+
+    getParticipantHandRaisedMessage(): Observable<ParticipantHandRaisedMessage> {
+        return this.participantHandRaisedStatusSubject.asObservable();
+    }
+
+    getRoomUpdate(): Observable<Room> {
+        return this.roomUpdateSubject.asObservable();
+    }
+    getRoomTransfer(): Observable<RoomTransfer> {
+        return this.roomTransferSubject.asObservable();
+    }
+
+    async sendMessage(instantMessage: InstantMessage) {
+        try {
+            await this.eventsHubConnection.send(
+                'SendMessage',
+                instantMessage.conferenceId,
+                instantMessage.message,
+                instantMessage.to,
+                instantMessage.id
+            );
+        } catch (err) {
+            this.logger.error(`[EventsService] - Unable to send im from ${instantMessage.from}`, err);
+            throw err;
+        }
+    }
+
+    async sendHeartbeat(conferenceId: string, participantId: string, heartbeat: Heartbeat) {
+        await this.eventsHubConnection.send('SendHeartbeat', conferenceId, participantId, heartbeat);
+        this.logger.debug('[EventsService] - Sent heartbeat to EventHub', heartbeat);
+    }
+
+    async sendTransferRequest(conferenceId: string, participantId: string, transferDirection: TransferDirection) {
+        await this.eventsHubConnection.send('sendTransferRequest', conferenceId, participantId, transferDirection);
+        this.logger.debug('[EventsService] - Sent transfer request to EventHub', transferDirection);
+    }
+
+    async publishRemoteMuteStatus(conferenceId: string, participantId: string, isRemoteMuted: boolean) {
+        await this.eventsHubConnection.send('UpdateParticipantRemoteMuteStatus', conferenceId, participantId, isRemoteMuted);
+        this.logger.debug('[EventsService] - Sent update remote mute status request to EventHub', {
+            conference: conferenceId,
+            participant: participantId,
+            isRemoteMuted
+        });
+    }
+
+    async publishParticipantHandRaisedStatus(conferenceId: string, participantId: string, isRaised: boolean) {
+        await this.eventsHubConnection.send('UpdateParticipantHandStatus', conferenceId, participantId, isRaised);
+        this.logger.debug('[EventsService] - Sent update hand raised status request to EventHub', {
+            conference: conferenceId,
+            participant: participantId,
+            isRaised
+        });
+    }
+
+    async sendMediaStatus(conferenceId: string, participantId: string, mediaStatus: ParticipantMediaStatus) {
+        await this.eventsHubConnection.send('SendMediaDeviceStatus', conferenceId, participantId, mediaStatus);
+        this.logger.debug('[EventsService] - Sent device media status to EventHub', {
+            conference: conferenceId,
+            participant: participantId,
+            mediaStatus: mediaStatus
+        });
+    }
 }

@@ -1,12 +1,12 @@
-import { Injectable } from "@angular/core";
-import * as signalR from "@microsoft/signalr";
-import { OidcSecurityService } from "angular-auth-oidc-client";
-import { ReplaySubject, Subject } from "rxjs";
-import { Observable } from "rxjs";
-import { ConfigService } from "./api/config.service";
-import { ConnectionStatusService } from "./connection-status.service";
-import { ErrorService } from "./error.service";
-import { Logger } from "./logging/logger-base";
+import { Injectable } from '@angular/core';
+import * as signalR from '@microsoft/signalr';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { ReplaySubject, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
+import { ConfigService } from './api/config.service';
+import { ConnectionStatusService } from './connection-status.service';
+import { ErrorService } from './error.service';
+import { Logger } from './logging/logger-base';
 
 @Injectable({
     providedIn: 'root'
@@ -16,12 +16,12 @@ export class EventsHubService {
     private eventHubReconnectSubject = new Subject();
 
     private eventsHubReady = new ReplaySubject<void>();
-    get onEventsHubReady() : Observable<void> {
+    get onEventsHubReady(): Observable<void> {
         return this.eventsHubReady.asObservable();
     }
 
-    private _connection : signalR.HubConnection;
-    get connection() : signalR.HubConnection {
+    private _connection: signalR.HubConnection;
+    get connection(): signalR.HubConnection {
         return this._connection;
     }
 
@@ -35,17 +35,17 @@ export class EventsHubService {
         return this._serverTimeoutTime;
     }
 
-    private _reconnectionAttempt : number = 0;
+    private _reconnectionAttempt = 0;
     get reconnectionAttempt() {
         return this._reconnectionAttempt;
     }
 
-    private reconnectionPromise : Promise<any>;
-    get isWaitingToReconnect() : boolean {
+    private reconnectionPromise: Promise<any>;
+    get isWaitingToReconnect(): boolean {
         return !!this.reconnectionPromise;
     }
 
-    get isConnectedToHub() : boolean {
+    get isConnectedToHub(): boolean {
         return (
             this.connection.state === signalR.HubConnectionState.Connected ||
             this.connection.state === signalR.HubConnectionState.Connecting ||
@@ -60,9 +60,9 @@ export class EventsHubService {
         );
     }
 
-    constructor(configService : ConfigService,
-                connectionStatusService : ConnectionStatusService,
-                private oidcSecurityService : OidcSecurityService,
+    constructor(configService: ConfigService,
+                connectionStatusService: ConnectionStatusService,
+                private oidcSecurityService: OidcSecurityService,
                 private logger: Logger,
                 private errorService: ErrorService
             ) {
@@ -74,11 +74,11 @@ export class EventsHubService {
         });
     }
 
-    createConnectionBuilder() : signalR.HubConnectionBuilder {
+    createConnectionBuilder(): signalR.HubConnectionBuilder {
         return new signalR.HubConnectionBuilder();
     }
 
-    buildConnection(eventHubPath : string) : signalR.HubConnection {
+    buildConnection(eventHubPath: string): signalR.HubConnection {
         return this.createConnectionBuilder()
             .configureLogging(signalR.LogLevel.Debug)
             .withAutomaticReconnect(this.reconnectionTimes)
@@ -99,7 +99,7 @@ export class EventsHubService {
 
     start() {
         if (this.isWaitingToReconnect) {
-            this.logger.info("[EventsService] - A reconnection promise already exists")
+            this.logger.info('[EventsService] - A reconnection promise already exists');
             return;
         }
 
@@ -140,7 +140,7 @@ export class EventsHubService {
             this.logger.info(
                 `[EventsService] - Failed to connect too many times (#${this.reconnectionAttempt}), going to service error`
             );
-            this.errorService.goToServiceError('Your connection was lost')
+            this.errorService.goToServiceError('Your connection was lost');
         }
     }
 
@@ -189,12 +189,12 @@ export class EventsHubService {
         }
     }
 
-    onConnectionStatusChanged(isConnected : boolean) {
+    onConnectionStatusChanged(isConnected: boolean) {
         if (isConnected) {
-            this.logger.info('[EventsService] - Connection status changed: connected.')
+            this.logger.info('[EventsService] - Connection status changed: connected.');
             this.start();
         } else {
-            this.logger.info('[EventsService] - Connection status changed: disconnected.')
+            this.logger.info('[EventsService] - Connection status changed: disconnected.');
             this.stop();
         }
     }

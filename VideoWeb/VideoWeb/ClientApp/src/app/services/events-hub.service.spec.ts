@@ -24,47 +24,48 @@ describe('EventsHubService', () => {
     return Object.getOwnPropertyDescriptor(spyObj, propName)?.set as jasmine.Spy<() => T[K]>;
     }
 
-    let serviceUnderTest : EventsHubService;
-    let configServiceSpy : jasmine.SpyObj<ConfigService>;
-    let connectionStatusServiceSpy : jasmine.SpyObj<ConnectionStatusService>;
-    let oidcSecurityServiceSpy : jasmine.SpyObj<OidcSecurityService>;
-    let errorServiceSpy : jasmine.SpyObj<ErrorService>;
-    const loggerSpy = jasmine.createSpyObj<Logger>("Logger", ["info", "warn", "error", "debug"]);
-    let clientSettings$ : Subject<ClientSettingsResponse>;
-    let connectionStatusChanged$ : jasmine.SpyObj<Subject<boolean>>;
+    let serviceUnderTest: EventsHubService;
+    let configServiceSpy: jasmine.SpyObj<ConfigService>;
+    let connectionStatusServiceSpy: jasmine.SpyObj<ConnectionStatusService>;
+    let oidcSecurityServiceSpy: jasmine.SpyObj<OidcSecurityService>;
+    let errorServiceSpy: jasmine.SpyObj<ErrorService>;
+    const loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['info', 'warn', 'error', 'debug']);
+    let clientSettings$: Subject<ClientSettingsResponse>;
+    let connectionStatusChanged$: jasmine.SpyObj<Subject<boolean>>;
 
     beforeEach(() => {
-        configServiceSpy = jasmine.createSpyObj<ConfigService>("ConfigService", ["getClientSettings"]);
+        configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
         clientSettings$ = new Subject<ClientSettingsResponse>();
-        spyOn(clientSettings$, "subscribe").and.callThrough();
+        spyOn(clientSettings$, 'subscribe').and.callThrough();
         configServiceSpy.getClientSettings.and.returnValue(clientSettings$);
 
-        connectionStatusServiceSpy = jasmine.createSpyObj<ConnectionStatusService>("ConnectionStatusService", ["onConnectionStatusChange"]);
-        connectionStatusChanged$ = jasmine.createSpyObj<Subject<boolean>>("Subject", ["subscribe"]);
+        connectionStatusServiceSpy = jasmine.createSpyObj<ConnectionStatusService>('ConnectionStatusService', ['onConnectionStatusChange']);
+        connectionStatusChanged$ = jasmine.createSpyObj<Subject<boolean>>('Subject', ['subscribe']);
         connectionStatusServiceSpy.onConnectionStatusChange.and.returnValue(connectionStatusChanged$);
 
-        oidcSecurityServiceSpy = jasmine.createSpyObj<OidcSecurityService>("OidcSecurityService", ["getToken"], ["isAuthenticated$"]);
+        oidcSecurityServiceSpy = jasmine.createSpyObj<OidcSecurityService>('OidcSecurityService', ['getToken'], ['isAuthenticated$']);
 
-        errorServiceSpy = jasmine.createSpyObj<ErrorService>("ErrorService", ["goToServiceError"]);
+        errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError']);
 
         serviceUnderTest = new EventsHubService(configServiceSpy, connectionStatusServiceSpy, oidcSecurityServiceSpy, loggerSpy, errorServiceSpy);
     });
 
     describe('construction', () => {
-        it("should subscribe to clientSettings of ConfigService and subscribe to connectionStatusChanged of ConnectionStatusService.", () => {
+        it('should subscribe to clientSettings of ConfigService and subscribe to connectionStatusChanged of ConnectionStatusService.', () => {
             // Arrange
-            const _configServiceSpy = jasmine.createSpyObj<ConfigService>("ConfigService", ["getClientSettings"]);
-            const _clientSettings$ = jasmine.createSpyObj<Subject<ClientSettingsResponse>>("Subject", ["subscribe"]);
+            const _configServiceSpy = jasmine.createSpyObj<ConfigService>('ConfigService', ['getClientSettings']);
+            const _clientSettings$ = jasmine.createSpyObj<Subject<ClientSettingsResponse>>('Subject', ['subscribe']);
             _configServiceSpy.getClientSettings.and.returnValue(_clientSettings$);
 
-            const _connectionStatusServiceSpy = jasmine.createSpyObj<ConnectionStatusService>("ConnectionStatusService", ["onConnectionStatusChange"]);
-            const _connectionStatusChanged$ = jasmine.createSpyObj<Subject<boolean>>("Subject", ["subscribe"]);
+            const _connectionStatusServiceSpy = jasmine.createSpyObj<ConnectionStatusService>('ConnectionStatusService', ['onConnectionStatusChange']);
+            const _connectionStatusChanged$ = jasmine.createSpyObj<Subject<boolean>>('Subject', ['subscribe']);
             _connectionStatusServiceSpy.onConnectionStatusChange.and.returnValue(_connectionStatusChanged$);
 
             // Act
-            new EventsHubService(_configServiceSpy, _connectionStatusServiceSpy, oidcSecurityServiceSpy, loggerSpy, errorServiceSpy);
+            const eventsHubService = new EventsHubService(_configServiceSpy, _connectionStatusServiceSpy, oidcSecurityServiceSpy, loggerSpy, errorServiceSpy);
 
-            // Assert
+            //
+            expect(eventsHubService).toBeTruthy();
             expect(_configServiceSpy.getClientSettings).toHaveBeenCalledTimes(1);
             expect(_clientSettings$.subscribe).toHaveBeenCalledTimes(1);
         });
@@ -73,14 +74,14 @@ describe('EventsHubService', () => {
     describe('on getClientSettings', () => {
         it('should call build connection and configure connection.', () => {
             // Arrange
-            const expectedEventHubPath = "test-event-hub-path";
+            const expectedEventHubPath = 'test-event-hub-path';
             const clientSettingsResponse = new ClientSettingsResponse();
             clientSettingsResponse.event_hub_path = expectedEventHubPath;
 
             connectionStatusServiceSpy.onConnectionStatusChange.and.returnValue(connectionStatusChanged$);
 
-            spyOn(serviceUnderTest, "buildConnection");
-            spyOn(serviceUnderTest, "configureConnection");
+            spyOn(serviceUnderTest, 'buildConnection');
+            spyOn(serviceUnderTest, 'configureConnection');
 
             // Act
             clientSettings$.next(clientSettingsResponse);
@@ -96,21 +97,21 @@ describe('EventsHubService', () => {
     describe('buildConnection', () => {
         it('should build and return SignalR connection.', () => {
             // Arrange
-            const expectedEventHubPath = "test-event-hub-path";
+            const expectedEventHubPath = 'test-event-hub-path';
             const expectedReconnectionTimes = [1, 2, 4, 8];
-            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"]);
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['start']);
 
-            const hubConnectionBuilderSpy = jasmine.createSpyObj<signalR.HubConnectionBuilder>("HubConnectionBuilder", ["configureLogging", "withAutomaticReconnect", "withUrl", "build"]);
+            const hubConnectionBuilderSpy = jasmine.createSpyObj<signalR.HubConnectionBuilder>('HubConnectionBuilder', ['configureLogging', 'withAutomaticReconnect', 'withUrl', 'build']);
             hubConnectionBuilderSpy.configureLogging.and.returnValue(hubConnectionBuilderSpy);
             hubConnectionBuilderSpy.withAutomaticReconnect.and.returnValue(hubConnectionBuilderSpy);
             hubConnectionBuilderSpy.withUrl.and.returnValue(hubConnectionBuilderSpy);
             hubConnectionBuilderSpy.build.and.returnValue(connectionSpy);
 
-            spyOnProperty(serviceUnderTest, "reconnectionTimes", "get").and.returnValue(expectedReconnectionTimes);
-            spyOn(serviceUnderTest, "createConnectionBuilder").and.returnValue(hubConnectionBuilderSpy);
+            spyOnProperty(serviceUnderTest, 'reconnectionTimes', 'get').and.returnValue(expectedReconnectionTimes);
+            spyOn(serviceUnderTest, 'createConnectionBuilder').and.returnValue(hubConnectionBuilderSpy);
 
             // Act
-            var connection = serviceUnderTest.buildConnection(expectedEventHubPath);
+            const connection = serviceUnderTest.buildConnection(expectedEventHubPath);
 
             // Assert
             expect(hubConnectionBuilderSpy.withAutomaticReconnect).toHaveBeenCalledOnceWith(expectedReconnectionTimes);
@@ -125,10 +126,10 @@ describe('EventsHubService', () => {
             // Arrange
             const expectedServerTimeout = 100;
 
-            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["onclose", "onreconnected", "onreconnecting"]);
-            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['onclose', 'onreconnected', 'onreconnecting']);
+            spyOnProperty(serviceUnderTest, 'connection', 'get').and.returnValue(connectionSpy);
 
-            spyOnProperty(serviceUnderTest, "serverTimeoutTime", "get").and.returnValue(expectedServerTimeout);
+            spyOnProperty(serviceUnderTest, 'serverTimeoutTime', 'get').and.returnValue(expectedServerTimeout);
 
             // Act
             serviceUnderTest.configureConnection();
@@ -144,17 +145,17 @@ describe('EventsHubService', () => {
     describe('start', () => {
         it('should try to start the connection if the user is authenticated and the hub is not connected or trying to reconnect', fakeAsync(() => {
             // Arrange
-            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"]);
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['start']);
             connectionSpy.start.and.resolveTo();
 
             spyPropertyGetter(oidcSecurityServiceSpy, 'isAuthenticated$').and.returnValue(new Observable<boolean>((observer) => {
                 observer.next(true);
             }));
 
-            spyOn(serviceUnderTest, "reconnect");
-            spyOnProperty(serviceUnderTest, "isWaitingToReconnect", "get").and.returnValue(false);
-            spyOnProperty(serviceUnderTest, "isConnectedToHub", "get").and.returnValue(false);
-            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+            spyOn(serviceUnderTest, 'reconnect');
+            spyOnProperty(serviceUnderTest, 'isWaitingToReconnect', 'get').and.returnValue(false);
+            spyOnProperty(serviceUnderTest, 'isConnectedToHub', 'get').and.returnValue(false);
+            spyOnProperty(serviceUnderTest, 'connection', 'get').and.returnValue(connectionSpy);
 
             // Act
             serviceUnderTest.start();
@@ -168,17 +169,17 @@ describe('EventsHubService', () => {
 
         it('should attempt to reconnect if the initial start fails', fakeAsync(() => {
             // Arrange
-            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"]);
-            connectionSpy.start.and.rejectWith("test-error");
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['start']);
+            connectionSpy.start.and.rejectWith('test-error');
 
             spyPropertyGetter(oidcSecurityServiceSpy, 'isAuthenticated$').and.returnValue(new Observable<boolean>((observer) => {
                 observer.next(true);
             }));
 
-            spyOn(serviceUnderTest, "reconnect");
-            spyOnProperty(serviceUnderTest, "isWaitingToReconnect", "get").and.returnValue(false);
-            spyOnProperty(serviceUnderTest, "isConnectedToHub", "get").and.returnValue(false);
-            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+            spyOn(serviceUnderTest, 'reconnect');
+            spyOnProperty(serviceUnderTest, 'isWaitingToReconnect', 'get').and.returnValue(false);
+            spyOnProperty(serviceUnderTest, 'isConnectedToHub', 'get').and.returnValue(false);
+            spyOnProperty(serviceUnderTest, 'connection', 'get').and.returnValue(connectionSpy);
 
             // Act
             serviceUnderTest.start();
@@ -192,16 +193,16 @@ describe('EventsHubService', () => {
 
         it('should NOT try to start the connection if a reconnection is in progress', fakeAsync(() => {
             // Arrange
-            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"]);
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['start']);
 
             spyPropertyGetter(oidcSecurityServiceSpy, 'isAuthenticated$').and.returnValue(new Observable<boolean>((observer) => {
                 observer.next(true);
             }));
 
-            spyOn(serviceUnderTest,"reconnect");
-            spyOnProperty(serviceUnderTest, "isWaitingToReconnect", "get").and.returnValue(true);
-            spyOnProperty(serviceUnderTest, "isConnectedToHub", "get").and.returnValue(false);
-            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+            spyOn(serviceUnderTest, 'reconnect');
+            spyOnProperty(serviceUnderTest, 'isWaitingToReconnect', 'get').and.returnValue(true);
+            spyOnProperty(serviceUnderTest, 'isConnectedToHub', 'get').and.returnValue(false);
+            spyOnProperty(serviceUnderTest, 'connection', 'get').and.returnValue(connectionSpy);
 
             // Act
             serviceUnderTest.start();
@@ -214,16 +215,16 @@ describe('EventsHubService', () => {
 
         it('should NOT try to start the connection if the connection hub is connected', fakeAsync(() => {
             // Arrange
-            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"]);
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['start']);
 
             spyPropertyGetter(oidcSecurityServiceSpy, 'isAuthenticated$').and.returnValue(new Observable<boolean>((observer) => {
                 observer.next(true);
             }));
 
-            spyOn(serviceUnderTest,"reconnect");
-            spyOnProperty(serviceUnderTest, "isWaitingToReconnect", "get").and.returnValue(false);
-            spyOnProperty(serviceUnderTest, "isConnectedToHub", "get").and.returnValue(true);
-            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+            spyOn(serviceUnderTest, 'reconnect');
+            spyOnProperty(serviceUnderTest, 'isWaitingToReconnect', 'get').and.returnValue(false);
+            spyOnProperty(serviceUnderTest, 'isConnectedToHub', 'get').and.returnValue(true);
+            spyOnProperty(serviceUnderTest, 'connection', 'get').and.returnValue(connectionSpy);
 
             // Act
             serviceUnderTest.start();
@@ -236,16 +237,16 @@ describe('EventsHubService', () => {
 
         it('should NOT try to start the connection if the user is NOT authenticated', fakeAsync(() => {
             // Arrange
-            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"]);
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['start']);
 
             spyPropertyGetter(oidcSecurityServiceSpy, 'isAuthenticated$').and.returnValue(new Observable<boolean>((observer) => {
                 observer.next(false);
             }));
 
-            spyOn(serviceUnderTest,"reconnect");
-            spyOnProperty(serviceUnderTest, "isWaitingToReconnect", "get").and.returnValue(false);
-            spyOnProperty(serviceUnderTest, "isConnectedToHub", "get").and.returnValue(false);
-            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+            spyOn(serviceUnderTest, 'reconnect');
+            spyOnProperty(serviceUnderTest, 'isWaitingToReconnect', 'get').and.returnValue(false);
+            spyOnProperty(serviceUnderTest, 'isConnectedToHub', 'get').and.returnValue(false);
+            spyOnProperty(serviceUnderTest, 'connection', 'get').and.returnValue(connectionSpy);
 
             // Act
             serviceUnderTest.start();
@@ -258,14 +259,14 @@ describe('EventsHubService', () => {
     });
 
     describe('reconnect', () => {
-        it("should attempt to restart the connection if it has NOT exceeded the number of reconnectionTimes", fakeAsync(() => {
+        it('should attempt to restart the connection if it has NOT exceeded the number of reconnectionTimes', fakeAsync(() => {
             // Arrange
             const reconnectionTimes = [0, 2000, 5000, 10000, 15000, 20000, 30000];
 
-            spyOn(serviceUnderTest, "start");
-            spyOn(serviceUnderTest, "delay").and.callThrough();
-            spyOnProperty(serviceUnderTest, "reconnectionAttempt", "get").and.returnValue(1);
-            spyOnProperty(serviceUnderTest, "reconnectionTimes", "get").and.returnValue(reconnectionTimes);
+            spyOn(serviceUnderTest, 'start');
+            spyOn(serviceUnderTest, 'delay').and.callThrough();
+            spyOnProperty(serviceUnderTest, 'reconnectionAttempt', 'get').and.returnValue(1);
+            spyOnProperty(serviceUnderTest, 'reconnectionTimes', 'get').and.returnValue(reconnectionTimes);
 
             // Act
             serviceUnderTest.reconnect();
@@ -277,14 +278,14 @@ describe('EventsHubService', () => {
             expect(errorServiceSpy.goToServiceError).not.toHaveBeenCalled();
         }));
 
-        it("should go to the service error page if it has exceded the number of reconnectionTimes", fakeAsync(() => {
+        it('should go to the service error page if it has exceded the number of reconnectionTimes', fakeAsync(() => {
             // Arrange
             const reconnectionTimes = [0, 2000, 5000, 10000, 15000, 20000, 30000];
 
-            spyOn(serviceUnderTest, "start");
-            spyOn(serviceUnderTest, "delay").and.callThrough();
-            spyOnProperty(serviceUnderTest, "reconnectionTimes", "get").and.returnValue(reconnectionTimes);
-            spyOnProperty(serviceUnderTest, "reconnectionAttempt", "get").and.returnValue(reconnectionTimes.length + 1);
+            spyOn(serviceUnderTest, 'start');
+            spyOn(serviceUnderTest, 'delay').and.callThrough();
+            spyOnProperty(serviceUnderTest, 'reconnectionTimes', 'get').and.returnValue(reconnectionTimes);
+            spyOnProperty(serviceUnderTest, 'reconnectionAttempt', 'get').and.returnValue(reconnectionTimes.length + 1);
 
             // Act
             serviceUnderTest.reconnect();
@@ -300,11 +301,11 @@ describe('EventsHubService', () => {
     describe('stop', () => {
         it('should call connection stop if it is NOT already disconnected', fakeAsync(() => {
             // Arrange
-            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["stop"]);
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['stop']);
             connectionSpy.stop.and.rejectWith();
 
-            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
-            spyOnProperty(serviceUnderTest, "isDisconnectedFromHub").and.returnValue(false);
+            spyOnProperty(serviceUnderTest, 'connection', 'get').and.returnValue(connectionSpy);
+            spyOnProperty(serviceUnderTest, 'isDisconnectedFromHub').and.returnValue(false);
 
             // Act
             serviceUnderTest.stop();
@@ -316,11 +317,11 @@ describe('EventsHubService', () => {
 
         it('should NOT call connection stop if it is already disconnected', fakeAsync(() => {
             // Arrange
-            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["stop"]);
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['stop']);
             connectionSpy.stop.and.resolveTo();
 
-            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
-            spyOnProperty(serviceUnderTest, "isDisconnectedFromHub").and.returnValue(true);
+            spyOnProperty(serviceUnderTest, 'connection', 'get').and.returnValue(connectionSpy);
+            spyOnProperty(serviceUnderTest, 'isDisconnectedFromHub').and.returnValue(true);
 
             // Act
             serviceUnderTest.stop();
@@ -334,8 +335,8 @@ describe('EventsHubService', () => {
     describe('onConnectionStatusChange', () => {
         it('should try to start the event hub connection when isConnected is true.', () => {
             // Arrange
-            spyOn(serviceUnderTest, "start");
-            spyOn(serviceUnderTest, "stop");
+            spyOn(serviceUnderTest, 'start');
+            spyOn(serviceUnderTest, 'stop');
 
             // Act
             serviceUnderTest.onConnectionStatusChanged(true);
@@ -347,8 +348,8 @@ describe('EventsHubService', () => {
 
         it('should try to stop the event hub connection when isConnected is false.', () => {
             // Arrange
-            spyOn(serviceUnderTest, "start");
-            spyOn(serviceUnderTest, "stop");
+            spyOn(serviceUnderTest, 'start');
+            spyOn(serviceUnderTest, 'stop');
 
             // Act
             serviceUnderTest.onConnectionStatusChanged(false);
@@ -362,10 +363,10 @@ describe('EventsHubService', () => {
     describe('isConnectedToHub', () => {
         it('should return true when the hub state is connected', () => {
             // Arrange
-            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"], ["state"]);
-            spyPropertyGetter(connectionSpy, "state").and.returnValue(signalR.HubConnectionState.Connected);
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['start'], ['state']);
+            spyPropertyGetter(connectionSpy, 'state').and.returnValue(signalR.HubConnectionState.Connected);
 
-            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+            spyOnProperty(serviceUnderTest, 'connection', 'get').and.returnValue(connectionSpy);
 
             // Act
             const isConnected = serviceUnderTest.isConnectedToHub;
@@ -376,10 +377,10 @@ describe('EventsHubService', () => {
 
         it('should return true when the hub state is connecting', () => {
             // Arrange
-            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"], ["state"]);
-            spyPropertyGetter(connectionSpy, "state").and.returnValue(signalR.HubConnectionState.Connecting);
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['start'], ['state']);
+            spyPropertyGetter(connectionSpy, 'state').and.returnValue(signalR.HubConnectionState.Connecting);
 
-            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+            spyOnProperty(serviceUnderTest, 'connection', 'get').and.returnValue(connectionSpy);
 
             // Act
             const isConnected = serviceUnderTest.isConnectedToHub;
@@ -390,10 +391,10 @@ describe('EventsHubService', () => {
 
         it('should return true when the hub state is reconnecting', () => {
             // Arrange
-            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"], ["state"]);
-            spyPropertyGetter(connectionSpy, "state").and.returnValue(signalR.HubConnectionState.Reconnecting);
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['start'], ['state']);
+            spyPropertyGetter(connectionSpy, 'state').and.returnValue(signalR.HubConnectionState.Reconnecting);
 
-            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+            spyOnProperty(serviceUnderTest, 'connection', 'get').and.returnValue(connectionSpy);
 
             // Act
             const isConnected = serviceUnderTest.isConnectedToHub;
@@ -404,10 +405,10 @@ describe('EventsHubService', () => {
 
         it('should return false when the hub state is disonnecting', () => {
             // Arrange
-            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"], ["state"]);
-            spyPropertyGetter(connectionSpy, "state").and.returnValue(signalR.HubConnectionState.Disconnecting);
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['start'], ['state']);
+            spyPropertyGetter(connectionSpy, 'state').and.returnValue(signalR.HubConnectionState.Disconnecting);
 
-            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+            spyOnProperty(serviceUnderTest, 'connection', 'get').and.returnValue(connectionSpy);
 
             // Act
             const isConnected = serviceUnderTest.isConnectedToHub;
@@ -418,10 +419,10 @@ describe('EventsHubService', () => {
 
         it('should return false when the hub state is disconnected', () => {
             // Arrange
-            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"], ["state"]);
-            spyPropertyGetter(connectionSpy, "state").and.returnValue(signalR.HubConnectionState.Disconnected);
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['start'], ['state']);
+            spyPropertyGetter(connectionSpy, 'state').and.returnValue(signalR.HubConnectionState.Disconnected);
 
-            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+            spyOnProperty(serviceUnderTest, 'connection', 'get').and.returnValue(connectionSpy);
 
             // Act
             const isConnected = serviceUnderTest.isConnectedToHub;
@@ -434,10 +435,10 @@ describe('EventsHubService', () => {
     describe('isDisconnectedFromHub', () => {
         it('should return false when the hub state is connected', () => {
             // Arrange
-            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"], ["state"]);
-            spyPropertyGetter(connectionSpy, "state").and.returnValue(signalR.HubConnectionState.Connected);
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['start'], ['state']);
+            spyPropertyGetter(connectionSpy, 'state').and.returnValue(signalR.HubConnectionState.Connected);
 
-            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+            spyOnProperty(serviceUnderTest, 'connection', 'get').and.returnValue(connectionSpy);
 
             // Act
             const isDisconnected = serviceUnderTest.isDisconnectedFromHub;
@@ -448,10 +449,10 @@ describe('EventsHubService', () => {
 
         it('should return false when the hub state is connecting', () => {
             // Arrange
-            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"], ["state"]);
-            spyPropertyGetter(connectionSpy, "state").and.returnValue(signalR.HubConnectionState.Connecting);
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['start'], ['state']);
+            spyPropertyGetter(connectionSpy, 'state').and.returnValue(signalR.HubConnectionState.Connecting);
 
-            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+            spyOnProperty(serviceUnderTest, 'connection', 'get').and.returnValue(connectionSpy);
 
             // Act
             const isDisconnected = serviceUnderTest.isDisconnectedFromHub;
@@ -462,10 +463,10 @@ describe('EventsHubService', () => {
 
         it('should return false when the hub state is reconnecting', () => {
             // Arrange
-            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"], ["state"]);
-            spyPropertyGetter(connectionSpy, "state").and.returnValue(signalR.HubConnectionState.Reconnecting);
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['start'], ['state']);
+            spyPropertyGetter(connectionSpy, 'state').and.returnValue(signalR.HubConnectionState.Reconnecting);
 
-            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+            spyOnProperty(serviceUnderTest, 'connection', 'get').and.returnValue(connectionSpy);
 
             // Act
             const isDisconnected = serviceUnderTest.isDisconnectedFromHub;
@@ -476,10 +477,10 @@ describe('EventsHubService', () => {
 
         it('should return true when the hub state is disonnecting', () => {
             // Arrange
-            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"], ["state"]);
-            spyPropertyGetter(connectionSpy, "state").and.returnValue(signalR.HubConnectionState.Disconnecting);
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['start'], ['state']);
+            spyPropertyGetter(connectionSpy, 'state').and.returnValue(signalR.HubConnectionState.Disconnecting);
 
-            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+            spyOnProperty(serviceUnderTest, 'connection', 'get').and.returnValue(connectionSpy);
 
             // Act
             const isDisconnected = serviceUnderTest.isDisconnectedFromHub;
@@ -490,10 +491,10 @@ describe('EventsHubService', () => {
 
         it('should return true when the hub state is disconnected', () => {
             // Arrange
-            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"], ["state"]);
-            spyPropertyGetter(connectionSpy, "state").and.returnValue(signalR.HubConnectionState.Disconnected);
+            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['start'], ['state']);
+            spyPropertyGetter(connectionSpy, 'state').and.returnValue(signalR.HubConnectionState.Disconnected);
 
-            spyOnProperty(serviceUnderTest, "connection", "get").and.returnValue(connectionSpy);
+            spyOnProperty(serviceUnderTest, 'connection', 'get').and.returnValue(connectionSpy);
 
             // Act
             const isDisconnected = serviceUnderTest.isDisconnectedFromHub;
