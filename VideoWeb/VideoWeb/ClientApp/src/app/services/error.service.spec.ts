@@ -10,8 +10,9 @@ import { ErrorMessage } from '../shared/models/error-message';
 import { ConnectionStatusService } from './connection-status.service';
 import { connectionStatusServiceSpyFactory } from '../testing/mocks/mock-connection-status.service';
 import { LocationService } from './location.service';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { translateServiceSpy } from '../testing/mocks/mock-translation.service';
+import { Subject } from 'rxjs';
 
 describe('ErrorService', () => {
     const mockLogger: Logger = new MockLogger();
@@ -313,5 +314,36 @@ describe('ErrorService', () => {
 
         // assert
         expect(routerSpy.navigate).toHaveBeenCalledTimes(0);
+    });
+
+    it('should raise an event _onUserTriggeredReconnect when userTriggeredReconnect is called', () => {
+        // Arrange
+        createService();
+
+        const subjectSpy = jasmine.createSpyObj<Subject<boolean>>('Subject', ['next']);
+        service['_onUserTriggeredReconnect'] = subjectSpy;
+
+        // Act
+        service.userTriggeredReconnect(true);
+
+        // Assert
+        expect(subjectSpy.next).toHaveBeenCalledOnceWith(true);
+    });
+
+    it('onUserTriggeredReconnect should return _onUserTriggeredReconnect as an observable', () => {
+        // Arrange
+
+        createService();
+        const subjectSpy = jasmine.createSpyObj<Subject<boolean>>('Subject', ['asObservable']);
+        subjectSpy.asObservable.and.returnValue(new Observable<boolean>());
+
+        service['_onUserTriggeredReconnect'] = subjectSpy;
+
+        // Act
+        const observable = service.onUserTriggeredReconnect;
+
+        // Assert
+        expect(observable).toBeTruthy();
+        expect(subjectSpy.asObservable).toHaveBeenCalledTimes(1);
     });
 });

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { ReplaySubject, Subject, Observable } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
 import { ConfigService } from './api/config.service';
 import { ConnectionStatusService } from './connection-status.service';
 import { ErrorService } from './error.service';
@@ -139,6 +140,17 @@ export class EventsHubService {
         } else {
             this.logger.info(`[EventsService] - Failed to connect too many times (#${this.reconnectionAttempt}), going to service error`);
             this.errorService.goToServiceError('Your connection was lost');
+
+            // Only subscibe to the first emitted event where the reconnection was successful
+            this.errorService.onUserTriggeredReconnect
+                .pipe(
+                    filter(reconnectionSuccessful => reconnectionSuccessful),
+                    take(1)
+                )
+                .subscribe(reconnectionSuccessful => {
+                    this._reconnectionAttempt = 1;
+                    this.reconnect();
+                });
         }
     }
 

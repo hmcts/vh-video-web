@@ -39,7 +39,7 @@ describe('EventsHubService', () => {
 
         oidcSecurityServiceSpy = jasmine.createSpyObj<OidcSecurityService>('OidcSecurityService', ['getToken'], ['isAuthenticated$']);
 
-        errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError']);
+        errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError'], ['onUserTriggeredReconnect']);
 
         serviceUnderTest = new EventsHubService(
             configServiceSpy,
@@ -305,7 +305,7 @@ describe('EventsHubService', () => {
             expect(errorServiceSpy.goToServiceError).not.toHaveBeenCalled();
         }));
 
-        it('should go to the service error page if it has exceded the number of reconnectionTimes', fakeAsync(() => {
+        it('should go to the service error page if it has exceded the number of reconnectionTimes and subscribe to the onUserTriggeredReconnect', fakeAsync(() => {
             // Arrange
             const reconnectionTimes = [0, 2000, 5000, 10000, 15000, 20000, 30000];
 
@@ -313,6 +313,11 @@ describe('EventsHubService', () => {
             spyOn(serviceUnderTest, 'delay').and.callThrough();
             spyOnProperty(serviceUnderTest, 'reconnectionTimes', 'get').and.returnValue(reconnectionTimes);
             spyOnProperty(serviceUnderTest, 'reconnectionAttempt', 'get').and.returnValue(reconnectionTimes.length + 1);
+
+            const onUserTriggeredReconnect$Spy = jasmine.createSpyObj<Observable<boolean>>('Observable', ['pipe', 'subscribe']);
+            onUserTriggeredReconnect$Spy.pipe.and.returnValue(onUserTriggeredReconnect$Spy);
+
+            spyPropertyGetter(errorServiceSpy, 'onUserTriggeredReconnect').and.returnValue(onUserTriggeredReconnect$Spy);
 
             // Act
             serviceUnderTest.reconnect();
@@ -322,6 +327,8 @@ describe('EventsHubService', () => {
             expect(serviceUnderTest.start).not.toHaveBeenCalled();
             expect(serviceUnderTest.delay).not.toHaveBeenCalled();
             expect(errorServiceSpy.goToServiceError).toHaveBeenCalledTimes(1);
+            expect(onUserTriggeredReconnect$Spy.subscribe).toHaveBeenCalledTimes(1);
+            expect(onUserTriggeredReconnect$Spy.subscribe).toHaveBeenCalledTimes(1);
         }));
     });
 

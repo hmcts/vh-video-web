@@ -286,6 +286,7 @@ export class EventsService {
     }
 
     async sendMessage(instantMessage: InstantMessage) {
+        this.logger.debug('[EventsService] - Sent message to EventHub', instantMessage);
         try {
             await this.eventsHubConnection.send(
                 'SendMessage',

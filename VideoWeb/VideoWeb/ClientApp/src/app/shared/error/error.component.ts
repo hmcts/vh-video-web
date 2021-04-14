@@ -97,10 +97,12 @@ export class ErrorComponent implements OnInit, OnDestroy {
             });
             this.attemptingReconnect = false;
             this.router.navigate([previousPage]);
+            this.errorService.userTriggeredReconnect(true);
         } else {
             this.attemptingReconnect = false;
             this.logger.debug(`${this.loggerPrefix} No internet connection detected.`);
             this.connectionStatusService.checkNow();
+            this.errorService.userTriggeredReconnect(false);
         }
     }
 }
