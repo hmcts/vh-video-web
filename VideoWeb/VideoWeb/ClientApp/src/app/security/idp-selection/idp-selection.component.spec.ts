@@ -106,6 +106,7 @@ describe('IdpSelectionComponent', () => {
 
     it('should return to root url if no return path is given', () => {
         mockOidcSecurityService.setAuthenticated(true);
+        spyOn(returnUrlService, 'popUrl').and.returnValue('');
         component.ngOnInit();
         expect(router.navigateByUrl).toHaveBeenCalledWith('/');
     });
