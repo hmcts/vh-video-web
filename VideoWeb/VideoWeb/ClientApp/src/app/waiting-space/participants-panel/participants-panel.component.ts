@@ -205,7 +205,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         participant.assignPexipId(updatedParticipant.uuid);
         participant.updateParticipant(updatedParticipant.isRemoteMuted, updatedParticipant.handRaised, updatedParticipant.isSpotlighted);
         if (participant instanceof LinkedParticipantPanelModel) {
-            (<LinkedParticipantPanelModel>participant).participants.forEach(async p => {
+            participant.participants.forEach(async p => {
                 await this.eventService.publishRemoteMuteStatus(this.conferenceId, p.id, updatedParticipant.isRemoteMuted);
             });
         }
@@ -380,8 +380,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     private async sendTransferDirection(participant: PanelModel, direction: TransferDirection) {
         if (participant instanceof LinkedParticipantPanelModel) {
-            const linkedParticipants = participant as LinkedParticipantPanelModel;
-            linkedParticipants.participants.forEach(async p => {
+            participant.participants.forEach(async p => {
                 await this.eventService.sendTransferRequest(this.conferenceId, p.id, direction);
             });
         } else {
@@ -445,7 +444,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         if (!(participant instanceof LinkedParticipantPanelModel)) {
             return false;
         }
-        return (<LinkedParticipantPanelModel>participant).participants.some(x => x.hearingRole === HearingRole.INTERPRETER);
+        return participant.participants.some(x => x.hearingRole === HearingRole.INTERPRETER);
     }
 
     mapParticipantToParticipantResponse(participant: ParticipantPanelModel): ParticipantResponse {
