@@ -8,16 +8,16 @@ import {
     ConferenceResponse,
     ConferenceStatus,
     ConsultationAnswer,
-    SharedParticipantRoom,
+    EndpointStatus,
     LinkType,
     LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
     Role,
     RoomSummaryResponse,
+    SharedParticipantRoom,
     TokenResponse,
-    VideoEndpointResponse,
-    EndpointStatus
+    VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
@@ -47,6 +47,7 @@ import {
     DisconnectedPresentation,
     Presentation
 } from '../models/video-call-models';
+import { PrivateConsultationRoomControlsComponent } from '../private-consultation-room-controls/private-consultation-room-controls.component';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
@@ -99,6 +100,7 @@ export abstract class WaitingRoomBaseDirective {
 
     @ViewChild('incomingFeed', { static: false }) videoStream: ElementRef<HTMLVideoElement>;
     @ViewChild('roomTitleLabel', { static: false }) roomTitleLabel: ElementRef<HTMLDivElement>;
+    @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
     countdownComplete: boolean;
     consultationInviteToasts: { [roomLabel: string]: VhToastComponent } = {};
 
@@ -625,7 +627,7 @@ export abstract class WaitingRoomBaseDirective {
         this.outgoingStream = callSetup.stream;
     }
 
-    handleCallConnected(callConnected: ConnectedCall): void {
+    async handleCallConnected(callConnected: ConnectedCall): Promise<void> {
         this.errorCount = 0;
         this.connected = true;
         this.logger.debug(`${this.loggerPrefix} Successfully connected to hearing`, { conference: this.conferenceId });
@@ -638,6 +640,9 @@ export abstract class WaitingRoomBaseDirective {
             }
         }
         this.setupParticipantHeartbeat();
+        if (this.hearingControls && !this.audioOnly && this.hearingControls.videoMuted) {
+            await this.hearingControls.toggleVideoMute();
+        }
     }
 
     handleCallError(error: CallError): void {
@@ -902,6 +907,14 @@ export abstract class WaitingRoomBaseDirective {
         if (this.audioOnly) {
             this.videoCallService.switchToAudioOnlyCall();
         }
+        if (this.hearingControls) {
+            await this.publishMediaDeviceStatus();
+        }
+    }
+
+    async publishMediaDeviceStatus() {
+        this.hearingControls.audioOnly = this.audioOnly;
+        await this.hearingControls.publishMediaDeviceStatus();
     }
 
     protected updateAudioOnlyPreference(audioOnly: boolean) {
