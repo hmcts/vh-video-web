@@ -441,8 +441,11 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         return participant instanceof VideoEndpointPanelModel;
     }
 
-    isLinkedParticipant(participant: PanelModel) {
-        return participant instanceof LinkedParticipantPanelModel;
+    isLinkedParticipantAndAnInterpreter(participant: PanelModel) {
+        if (!(participant instanceof LinkedParticipantPanelModel)) {
+            return false;
+        }
+        return (<LinkedParticipantPanelModel>participant).participants.some(x => x.hearingRole === HearingRole.INTERPRETER);
     }
 
     mapParticipantToParticipantResponse(participant: ParticipantPanelModel): ParticipantResponse {
