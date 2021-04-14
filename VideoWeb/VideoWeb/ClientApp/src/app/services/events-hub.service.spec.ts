@@ -328,8 +328,73 @@ describe('EventsHubService', () => {
             expect(serviceUnderTest.delay).not.toHaveBeenCalled();
             expect(errorServiceSpy.goToServiceError).toHaveBeenCalledTimes(1);
             expect(onUserTriggeredReconnect$Spy.subscribe).toHaveBeenCalledTimes(1);
-            expect(onUserTriggeredReconnect$Spy.subscribe).toHaveBeenCalledTimes(1);
         }));
+
+        it('should call handleUserTriggeredReconnect when the reconnection was successful', () => {
+            // Arrange
+            const reconnectionTimes = [0, 2000, 5000, 10000, 15000, 20000, 30000];
+
+            spyOn(serviceUnderTest, 'handleUserTriggeredReconnect');
+            spyOnProperty(serviceUnderTest, 'reconnectionTimes', 'get').and.returnValue(reconnectionTimes);
+            spyOnProperty(serviceUnderTest, 'reconnectionAttempt', 'get').and.returnValue(reconnectionTimes.length + 1);
+
+            const onUserTriggeredReconnectSubject = new Subject<boolean>();
+            spyPropertyGetter(errorServiceSpy, 'onUserTriggeredReconnect').and.returnValue(onUserTriggeredReconnectSubject.asObservable());
+
+            serviceUnderTest.reconnect();
+
+            // Act
+            onUserTriggeredReconnectSubject.next(true);
+
+            // Assert
+            expect(serviceUnderTest.handleUserTriggeredReconnect).toHaveBeenCalledTimes(1);
+        });
+
+        it('should NOT call handleUserTriggeredReconnect when the reconnection was NOT successful', () => {
+            // Arrange
+            const reconnectionTimes = [0, 2000, 5000, 10000, 15000, 20000, 30000];
+
+            spyOn(serviceUnderTest, 'handleUserTriggeredReconnect');
+            spyOnProperty(serviceUnderTest, 'reconnectionTimes', 'get').and.returnValue(reconnectionTimes);
+            spyOnProperty(serviceUnderTest, 'reconnectionAttempt', 'get').and.returnValue(reconnectionTimes.length + 1);
+
+            const onUserTriggeredReconnectSubject = new Subject<boolean>();
+            spyPropertyGetter(errorServiceSpy, 'onUserTriggeredReconnect').and.returnValue(onUserTriggeredReconnectSubject.asObservable());
+
+            serviceUnderTest.reconnect();
+
+            // Act
+            onUserTriggeredReconnectSubject.next(false);
+
+            // Assert
+            expect(serviceUnderTest.handleUserTriggeredReconnect).not.toHaveBeenCalled();
+        });
+
+        it('should only handle the first userTriggeredReconnect even where reconnection was successful', () => {
+            // Arrange
+            const reconnectionTimes = [0, 2000, 5000, 10000, 15000, 20000, 30000];
+
+            spyOn(serviceUnderTest, 'handleUserTriggeredReconnect');
+            spyOnProperty(serviceUnderTest, 'reconnectionTimes', 'get').and.returnValue(reconnectionTimes);
+            spyOnProperty(serviceUnderTest, 'reconnectionAttempt', 'get').and.returnValue(reconnectionTimes.length + 1);
+
+            const onUserTriggeredReconnectSubject = new Subject<boolean>();
+            spyPropertyGetter(errorServiceSpy, 'onUserTriggeredReconnect').and.returnValue(onUserTriggeredReconnectSubject.asObservable());
+
+            serviceUnderTest.reconnect();
+
+            // Act
+            onUserTriggeredReconnectSubject.next(false);
+            onUserTriggeredReconnectSubject.next(false);
+            onUserTriggeredReconnectSubject.next(true);
+            onUserTriggeredReconnectSubject.next(true);
+            onUserTriggeredReconnectSubject.next(true);
+            onUserTriggeredReconnectSubject.next(true);
+            onUserTriggeredReconnectSubject.next(true);
+
+            // Assert
+            expect(serviceUnderTest.handleUserTriggeredReconnect).toHaveBeenCalledTimes(1);
+        });
     });
 
     describe('stop', () => {

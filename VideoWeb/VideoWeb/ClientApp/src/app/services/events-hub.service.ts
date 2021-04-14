@@ -147,11 +147,13 @@ export class EventsHubService {
                     filter(reconnectionSuccessful => reconnectionSuccessful),
                     take(1)
                 )
-                .subscribe(reconnectionSuccessful => {
-                    this._reconnectionAttempt = 1;
-                    this.reconnect();
-                });
+                .subscribe(() => this.handleUserTriggeredReconnect());
         }
+    }
+
+    handleUserTriggeredReconnect() {
+        this._reconnectionAttempt = 1;
+        this.reconnect();
     }
 
     stop() {
