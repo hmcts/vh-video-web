@@ -534,11 +534,11 @@ describe('EventsHubService', () => {
     describe('getters', () => {
         it('onEventsHubReady', () => {
             // Arrange
-            const expectedObservable = jasmine.createSpyObj<Observable<any>>("Observable", ["subscribe"]);
+            const expectedObservable = jasmine.createSpyObj<Observable<any>>('Observable', ['subscribe']);
 
-            const subjectSpy = jasmine.createSpyObj<ReplaySubject<void>>("ReplaySubject", ["asObservable"]);
+            const subjectSpy = jasmine.createSpyObj<ReplaySubject<void>>('ReplaySubject', ['asObservable']);
             subjectSpy.asObservable.and.returnValue(expectedObservable);
-            serviceUnderTest["eventsHubReady"] = subjectSpy;
+            serviceUnderTest['eventsHubReady'] = subjectSpy;
 
             // Act
             const observable = serviceUnderTest.onEventsHubReady;
@@ -550,8 +550,8 @@ describe('EventsHubService', () => {
 
         it('connection', () => {
             // Arrange
-            const expectedConnection = jasmine.createSpyObj<signalR.HubConnection>("HubConnection", ["start"]);
-            serviceUnderTest["_connection"] = expectedConnection;
+            const expectedConnection = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['start']);
+            serviceUnderTest['_connection'] = expectedConnection;
 
             // Act
             const connection = serviceUnderTest.connection;
@@ -563,7 +563,7 @@ describe('EventsHubService', () => {
         it('reconnectionTimes', () => {
             // Arrange
             const expectedReconnectionTimes = [0, 1, 2, 4];
-            serviceUnderTest["_reconnectionTimes"] = expectedReconnectionTimes;
+            serviceUnderTest['_reconnectionTimes'] = expectedReconnectionTimes;
 
             // Act
             const reconnectionTimes = serviceUnderTest.reconnectionTimes;
@@ -575,7 +575,7 @@ describe('EventsHubService', () => {
         it('serverTimeoutTime', () => {
             // Arrange
             const expectedTimeOutTime = 12;
-            serviceUnderTest["_serverTimeoutTime"] = expectedTimeOutTime;
+            serviceUnderTest['_serverTimeoutTime'] = expectedTimeOutTime;
 
             // Act
             const timeOutTime = serviceUnderTest.serverTimeoutTime;
@@ -587,7 +587,7 @@ describe('EventsHubService', () => {
         it('reconnectionAttempt', () => {
             // Arrange
             const expectedReconnectionAttempt = 23;
-            serviceUnderTest["_reconnectionAttempt"] = expectedReconnectionAttempt;
+            serviceUnderTest['_reconnectionAttempt'] = expectedReconnectionAttempt;
 
             // Act
             const reconnectionAttempt = serviceUnderTest.reconnectionAttempt;
@@ -598,7 +598,7 @@ describe('EventsHubService', () => {
 
         it('isWaitingToReconnect - truthy', () => {
             // Arrange
-            serviceUnderTest["reconnectionPromise"] = new Promise<void>((resolve) => resolve());
+            serviceUnderTest['reconnectionPromise'] = new Promise<void>(resolve => resolve());
 
             // Act
             const isWaitingToReconnect = serviceUnderTest.isWaitingToReconnect;
@@ -609,7 +609,7 @@ describe('EventsHubService', () => {
 
         it('isWaitingToReconnect - falsey', () => {
             // Arrange
-            serviceUnderTest["_reconnectionPromise"] = null;
+            serviceUnderTest['_reconnectionPromise'] = null;
 
             // Act
             const isWaitingToReconnect = serviceUnderTest.isWaitingToReconnect;
@@ -617,5 +617,5 @@ describe('EventsHubService', () => {
             // Assert
             expect(isWaitingToReconnect).toBeFalse();
         });
-    })
+    });
 });
