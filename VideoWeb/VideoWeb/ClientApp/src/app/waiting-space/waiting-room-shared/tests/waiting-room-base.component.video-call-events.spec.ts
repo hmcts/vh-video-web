@@ -1,3 +1,4 @@
+import { fakeAsync, tick } from '@angular/core/testing';
 import { ConferenceResponse, ConferenceStatus, ParticipantResponse, TokenResponse } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -20,6 +21,7 @@ import {
     ConnectedPresentation,
     DisconnectedPresentation
 } from '../../models/video-call-models';
+import { PrivateConsultationRoomControlsComponent } from '../../private-consultation-room-controls/private-consultation-room-controls.component';
 import {
     activatedRoute,
     clockService,
@@ -156,6 +158,28 @@ describe('WaitingRoomComponent Video Call', () => {
         expect(component.assignStream).toHaveBeenCalledTimes(0);
         expect(component.heartbeat).toBeTruthy();
     });
+
+    it('should toggle video mute when call connects as a full video but camera is still muted', fakeAsync(() => {
+        // arrange
+        spyOn(component, 'setupParticipantHeartbeat').and.callFake(() => (component.heartbeat = mockHeartbeat));
+        component.audioOnly = false;
+        const controls = jasmine.createSpyObj<PrivateConsultationRoomControlsComponent>(
+            'PrivateConsultationRoomControlsComponent',
+            ['toggleVideoMute'],
+            { videoMuted: true }
+        );
+        component.hearingControls = controls;
+
+        const incomingStream = <any>{};
+        const payload = new ConnectedCall(incomingStream);
+
+        // act
+        onConnectedSubject.next(payload);
+        tick();
+
+        // assert
+        expect(controls.toggleVideoMute).toHaveBeenCalled();
+    }));
 
     it('should hide video when video call failed', () => {
         const currentErrorCount = (component.errorCount = 0);
