@@ -43,16 +43,32 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
     }
 
     getParticipantStatusCss(participant: ParticipantResponse): string {
-        if (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) {
+        if (
+            (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) ||
+            this.hasUnavailableLinkedParticipants(participant)
+        ) {
             return 'unavailable';
-        } else if (participant.status === ParticipantStatus.InConsultation) {
+        }
+
+        if (participant.status === ParticipantStatus.Available) {
+            return 'available';
+        }
+
+        if (participant.status === ParticipantStatus.InConsultation) {
             return 'in-consultation';
         }
     }
 
     getParticipantStatus(participant: ParticipantResponse): string {
-        if (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) {
-            return 'Unavailable';
+        if (
+            (participant.status !== ParticipantStatus.Available && participant.status !== ParticipantStatus.InConsultation) ||
+            this.hasUnavailableLinkedParticipants(participant)
+        ) {
+            return this.translateService.instant('individual-participant-status-list.unavailable');
+        }
+
+        if (participant.status === ParticipantStatus.Available) {
+            return this.translateService.instant('individual-participant-status-list.available');
         }
 
         if (participant.status === ParticipantStatus.InConsultation && participant.current_room != null) {
@@ -66,5 +82,23 @@ export class IndividualParticipantStatusListComponent extends WRParticipantStatu
                 (participant.current_room.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
             );
         }
+    }
+
+    isLoggedInParticipant(participant: ParticipantResponse) {
+        return participant.id === this.loggedInUser.participant_id;
+    }
+
+    private hasUnavailableLinkedParticipants(participant: ParticipantResponse) {
+        if (participant.linked_participants.length) {
+            return participant.linked_participants.some(lp => {
+                const linkedParticipant = this.nonJudgeParticipants.find(p => p.id === lp.linked_id);
+                return (
+                    linkedParticipant &&
+                    linkedParticipant.status !== ParticipantStatus.Available &&
+                    linkedParticipant.status !== ParticipantStatus.InConsultation
+                );
+            });
+        }
+        return false;
     }
 }

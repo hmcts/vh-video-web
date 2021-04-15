@@ -28,10 +28,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         private const int DEFAULT_WINGERS = 0;
         private const int DEFAULT_INDIVIDUALS_WITH_INTERPRETERS = 0;
         private const string DEFAULT_VENUE = "Birmingham Civil and Family Justice Centre";
+        private const string DEFAULT_USER = "";
         private const int ALLOCATE_USERS_FOR_MINUTES = 8;
         private const int ALLOCATE_USERS_FOR_HEARING_TESTS = 15;
         private readonly TestContext _c;
         private readonly ScenarioContext _scenario;
+        private bool audioRecordingRequired = false;
+        private string hearingVenue = "Birmingham Civil and Family Justice Centre";
+        private int delayMinutes = 0; 
 
         public DataSetupSteps(TestContext c, ScenarioContext scenario)
         {
@@ -40,30 +44,58 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Given(@"I have a hearing")]
-        [Given(@"I have a hearing with a Judge")]
-        [Given(@"I have another hearing with another Judge")]
         public void GivenIHaveAHearingAndAConference()
         {
-            var userTypes = CreateUserTypes();
-            AllocateUsers(userTypes);
-            GivenIHaveAHearing();
-            CreateConference();
+            GivenIHaveAHearingWithUser();
         }
-        
-        [Given(@"I have an Interpreter and have a hearing")]
-        public void GivenIHaveAnInterpreterAndHaveAHearingAndAConference()
+         
+        [Given(@"I have a hearing with a (.*)")]
+        [Given(@"I have a hearing with an (.*)")]
+        [Given(@"I have another hearing with another (.*)")]
+        [Given(@"I have a CACD hearing with a (.*)")]
+        public void GivenIHaveAHearingWithUser(string user = DEFAULT_USER)
         {
-            var userTypes = CreateUserTypes(0,1,0,0,individualsAndInterpreters: 1);
+            var userTypes = GetUserType(user);
             AllocateUsers(userTypes);
-            GivenIHaveAHearing();
+            if(user.ToLower() == "winger")
+            {
+                CreateCACDHearing(delayMinutes);
+            }
+            else
+            {
+                GivenIHaveAHearing(delayMinutes,hearingVenue,audioRecordingRequired);
+            }
             CreateConference();
+
+            if(delayMinutes > 0)
+                _c.Test.DelayedStartTime = delayMinutes;
+        }
+
+        private static List<UserType> GetUserType(string user)
+        {
+            switch(user.ToLower())
+            {
+                case "interpreter":
+                    return CreateUserTypes(0, 1, 0, 0, individualsAndInterpreters: 1);
+                case "observer":
+                case "panel member":
+                case "observer and panel member":
+                    return CreateUserTypes(2, 1, 1);
+                case "winger":
+                    return CreateUserTypes(2, 0, 0, 1);
+                default:
+                    return CreateUserTypes();
+            }
         }
 
         [Given(@"I have another hearing")]
         public void GivenIHaveAnotherHearingAndAConference()
         {
-            GivenIHaveAHearing();
+            GivenIHaveAHearing(delayMinutes);
             CreateConference();
+
+            if (delayMinutes > 0)
+                _c.Test.DelayedStartTime = delayMinutes;
         }
 
         [Given(@"I have a hearing in (.*) minutes time")]
@@ -72,18 +104,16 @@ namespace VideoWeb.AcceptanceTests.Steps
             CheckThatTheHearingWillBeCreatedForToday(_c.TimeZone.Adjust(DateTime.Now.ToUniversalTime().AddMinutes(minutes)));
             var userTypes = interpreter ? CreateUserTypes(1,0,0,0,1) : CreateUserTypes();
             AllocateUsers(userTypes);
-            GivenIHaveAHearing(minutes);
-            CreateConference();
-            _c.Test.DelayedStartTime = minutes;
+            delayMinutes = minutes;
+            GivenIHaveAnotherHearingAndAConference();
         }
-
+        
         [Given(@"I have another hearing in (.*) minutes time")]
         public void GivenIHaveAnotherHearingAndAConferenceInMinutesTime(int minutes)
-        {
+        {            
             CheckThatTheHearingWillBeCreatedForToday(_c.TimeZone.Adjust(DateTime.Now.ToUniversalTime().AddMinutes(minutes)));
-            GivenIHaveAHearing(minutes);
-            CreateConference();
-            _c.Test.DelayedStartTime = minutes;
+            delayMinutes = minutes;
+            GivenIHaveAnotherHearingAndAConference();
         }
 
         [Given(@"I have a hearing in (.*) days time")]
@@ -101,79 +131,32 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"I have another hearing located in (.*)")]
         public void GivenIHaveAHearingInLocation(string venue)
         {
-            var userTypes = CreateUserTypes();
-            AllocateUsers(userTypes);
-            GivenIHaveAHearing(0, venue);
-            CreateConference();
+            hearingVenue = venue;
+            GivenIHaveAHearingWithUser();
         }
 
         [Given(@"I have a hearing with audio recording enabled")]
         public void GivenIHaveAHearingWihAudioRecording()
         {
-            var userTypes = CreateUserTypes();
-            AllocateUsers(userTypes);
-            GivenIHaveAHearing(0, DEFAULT_VENUE, true);
-            CreateConference();
+            audioRecordingRequired = true;
+            GivenIHaveAHearingWithUser();
         }
 
-        [Given(@"I have a hearing with an Observer and Panel Member")]
-        public void GivenIHaveAHearingWithAnObserverAndPanelMember()
+        private void CreateCACDHearing(int minutes = 0)
         {
-            var userTypes = CreateUserTypes(2, 1, 1);
-            AllocateUsers(userTypes);
-            GivenIHaveAHearing();
-            CreateConference();
-        }
-
-        [Given(@"I have a hearing with a Panel Member")]
-        public void GivenIHaveAHearingWithAPanelMember()
-        {
-            var userTypes = CreateUserTypes(2, 0, 1);
-            AllocateUsers(userTypes);
-            GivenIHaveAHearing();
-            CreateConference();
-        }
-
-        [Given(@"I have a hearing with an Observer and Panel Member in (.*) minutes time")]
-        public void GivenIHaveAHearingWithAnObserverAndPanelMemberIn(int minutes)
-        {
-            var userTypes = CreateUserTypes(2, 1, 1);
-            AllocateUsers(userTypes);
-            GivenIHaveAHearing(minutes);
-            CreateConference();
-            _c.Test.DelayedStartTime = minutes;
-        }
-
-        [Given(@"I have a CACD hearing with a Winger")]
-        public void GivenIHaveAHearingWithAWinger()
-        {
-            var userTypes = CreateUserTypes(2, 0,0,1);
-            AllocateUsers(userTypes);
-
             var request = new HearingRequestBuilder()
-                .WithUsers(_c.Test.Users)
-                .WithCACDCaseType()
-                .Build();
-
+                          .WithUsers(_c.Test.Users)
+                          .WithCACDCaseType()
+                          .WithScheduledTime(_c.TimeZone.Adjust(DateTime.Now.ToUniversalTime().AddMinutes(minutes)))
+                          .Build();           
             SendTheHearingRequest(request);
-            CreateConference();
         }
 
-        [Given(@"I have a CACD hearing with a winger in (.*) minutes time")]
-        public void GivenIHaveAHearingWithAWingerIn(int minutes)
+        [Given(@"I have a hearing in (.*) minutes time with (.*)")]
+        public void GivenIHaveAHearingInMinutesTimeWithUser(int minutes, string user)
         {
-            var userTypes = CreateUserTypes(2, 0, 0, 1);
-            AllocateUsers(userTypes);
-
-            var request = new HearingRequestBuilder()
-                .WithUsers(_c.Test.Users)
-                .WithCACDCaseType()
-                .WithScheduledTime(_c.TimeZone.Adjust(DateTime.Now.ToUniversalTime().AddMinutes(minutes)))
-                .Build();
-
-            SendTheHearingRequest(request);
-            CreateConference();
-            _c.Test.DelayedStartTime = minutes;
+            delayMinutes = minutes;
+            GivenIHaveAHearingWithUser(user);
         }
 
         private void GivenIHaveAHearing(int minutes = 0, string venue = DEFAULT_VENUE, bool audioRecordingRequired = false)
@@ -281,6 +264,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 Application = Application.VideoWeb,
                 ExpiryInMinutes = expiresIn,
+                IsEjud = _c.VideoWebConfig.UsingEjud,
                 IsProdUser = _c.VideoWebConfig.IsLive,
                 TestType = TestType.Automated,
                 UserTypes = userTypes

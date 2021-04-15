@@ -10,6 +10,7 @@ using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using TestApi.Contract.Dtos;
 using TestApi.Contract.Enums;
+using VideoWeb.AcceptanceTests.Pages;
 using TimeZone = AcceptanceTests.Common.Data.Time.TimeZone;
 
 namespace VideoWeb.AcceptanceTests.Hooks
@@ -109,7 +110,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             try
             {
                 _browsers[user].ClickLink(CommonPages.SignOutLink, 2);
-                _browsers[user].Driver.WaitUntilVisible(CommonPages.SignOutMessage).Displayed.Should().BeTrue();
+                _browsers[user].Click(LogoutPage.ChooseWhoToSignOut(user.DisplayName));
             }
             catch
             {

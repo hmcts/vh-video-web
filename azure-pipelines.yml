@@ -119,6 +119,10 @@ parameters:
             value: $(wowza_storageAccountKey)
           - name: WowzaConfiguration:StorageContainerName
             value: $(wowza_storageContainerName)
+            
+          # Ejud - test setting only
+          - name: UsingEjud
+            value: $(UsingEjud)
 
     - name: appSettings
       type: object
@@ -165,6 +169,12 @@ parameters:
             value: $(SelfTestApiKey)
           - name: KinlyConfiguration:JoinByPhoneFromDate
             value: $(JoinByPhoneFromDate)
+          - name: KinlyConfiguration:TurnServer
+            value: $(TurnServer)
+          - name: KinlyConfiguration:TurnServerUser
+            value: $(TurnServerUser)
+          - name: KinlyConfiguration:TurnServerCredential
+            value: $(TurnServerCredential)
 
           # VhServices
           - name: VhServices:BookingsApiResourceId
@@ -272,6 +282,9 @@ extends:
                 sonar.issue.ignore.multicriteria=e1
                 sonar.issue.ignore.multicriteria.e1.ruleKey=typescript:S107
                 sonar.issue.ignore.multicriteria.e1.resourceKey=**/*.ts
+                sonar.issue.ignore.multicriteria=e2
+                sonar.issue.ignore.multicriteria.e2.ruleKey=typescript:S1874
+                sonar.issue.ignore.multicriteria.e2.resourceKey=**/*.ts
             StrykerBreak: 75
         ACTest: ${{ parameters.RunACTests }}
         releaseParameters:

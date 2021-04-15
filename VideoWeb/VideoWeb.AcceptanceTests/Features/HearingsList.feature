@@ -121,7 +121,7 @@ Scenario: Panel Member has 1 or more hearings
 	Then the user is on the Waiting Room page
 
 Scenario: Panel Member has a hearing more than 30 minutes in the future
-	Given I have a hearing with an Observer and Panel Member in 31 minutes time
+	Given I have a hearing in 31 minutes time with Observer and Panel Member
 	And a new browser is open for a PanelMember
 	When they attempt to login with valid credentials
 	Then the user is on the Hearing List page
@@ -143,7 +143,7 @@ Scenario: Panel Member has a hearing more than 30 minutes in the future
 
 @VIH-6420
 Scenario: Winger has a hearing more than 30 minutes in the future
-	Given I have a CACD hearing with a winger in 31 minutes time
+	Given I have a hearing in 31 minutes time with winger 
 	And a new browser is open for a Winger
 	When they attempt to login with valid credentials
 	Then the user is on the Hearing List page

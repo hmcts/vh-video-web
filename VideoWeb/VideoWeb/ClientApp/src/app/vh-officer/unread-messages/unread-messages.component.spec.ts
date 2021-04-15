@@ -131,6 +131,23 @@ describe('UnreadMessagesComponent', () => {
         expect(component.unreadCount).toBe(expectedCount + 1);
     });
 
+    it('should increase unread count when non-admin sends first message', () => {
+        component.unreadMessages = [];
+        component.hearing = new Hearing(conference);
+        const conferenceId = conference.id;
+        const participantId = conference.participants[0].id;
+        const expectedCount = component.unreadCount;
+        component.setupSubscribers();
+        messageSubjectMock.next(
+            new InstantMessage({
+                conferenceId: conferenceId,
+                from: participantId,
+                to: 'Admin'
+            })
+        );
+        expect(component.unreadCount).toBe(expectedCount + 1);
+    });
+
     it('should not increase unread count when admin sends a message', () => {
         const conferenceId = conference.id;
         const participantUsername = 'admin@hmcts.net';
