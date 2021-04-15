@@ -33,13 +33,17 @@ describe('EventsHubService', () => {
         spyOn(clientSettings$, 'subscribe').and.callThrough();
         configServiceSpy.getClientSettings.and.returnValue(clientSettings$);
 
-        connectionStatusServiceSpy = jasmine.createSpyObj<ConnectionStatusService>('ConnectionStatusService', ['onConnectionStatusChange']);
+        connectionStatusServiceSpy = jasmine.createSpyObj<ConnectionStatusService>(
+            'ConnectionStatusService',
+            ['onConnectionStatusChange'],
+            ['onUserTriggeredReconnect']
+        );
         connectionStatusChanged$ = jasmine.createSpyObj<Subject<boolean>>('Subject', ['subscribe']);
         connectionStatusServiceSpy.onConnectionStatusChange.and.returnValue(connectionStatusChanged$);
 
         oidcSecurityServiceSpy = jasmine.createSpyObj<OidcSecurityService>('OidcSecurityService', ['getToken'], ['isAuthenticated$']);
 
-        errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError'], ['onUserTriggeredReconnect']);
+        errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['goToServiceError']);
 
         serviceUnderTest = new EventsHubService(
             configServiceSpy,
@@ -135,9 +139,10 @@ describe('EventsHubService', () => {
     });
 
     describe('configureConnection', () => {
-        it('should configure the signalR connection.', () => {
+        it('should configure the signalR connection and start the hub.', () => {
             // Arrange
             const expectedServerTimeout = 100;
+            spyOnProperty(serviceUnderTest, 'serverTimeoutTime', 'get').and.returnValue(expectedServerTimeout);
 
             const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', [
                 'onclose',
@@ -146,7 +151,7 @@ describe('EventsHubService', () => {
             ]);
             spyOnProperty(serviceUnderTest, 'connection', 'get').and.returnValue(connectionSpy);
 
-            spyOnProperty(serviceUnderTest, 'serverTimeoutTime', 'get').and.returnValue(expectedServerTimeout);
+            spyOn(serviceUnderTest, 'start');
 
             // Act
             serviceUnderTest.configureConnection();
@@ -156,6 +161,7 @@ describe('EventsHubService', () => {
             expect(connectionSpy.onclose).toHaveBeenCalledTimes(1);
             expect(connectionSpy.onreconnected).toHaveBeenCalledTimes(1);
             expect(connectionSpy.onreconnecting).toHaveBeenCalledTimes(1);
+            expect(serviceUnderTest.start).toHaveBeenCalledTimes(1);
         });
     });
 
@@ -317,7 +323,7 @@ describe('EventsHubService', () => {
             const onUserTriggeredReconnect$Spy = jasmine.createSpyObj<Observable<boolean>>('Observable', ['pipe', 'subscribe']);
             onUserTriggeredReconnect$Spy.pipe.and.returnValue(onUserTriggeredReconnect$Spy);
 
-            spyPropertyGetter(errorServiceSpy, 'onUserTriggeredReconnect').and.returnValue(onUserTriggeredReconnect$Spy);
+            spyPropertyGetter(connectionStatusServiceSpy, 'onUserTriggeredReconnect').and.returnValue(onUserTriggeredReconnect$Spy);
 
             // Act
             serviceUnderTest.reconnect();
@@ -339,7 +345,9 @@ describe('EventsHubService', () => {
             spyOnProperty(serviceUnderTest, 'reconnectionAttempt', 'get').and.returnValue(reconnectionTimes.length + 1);
 
             const onUserTriggeredReconnectSubject = new Subject<boolean>();
-            spyPropertyGetter(errorServiceSpy, 'onUserTriggeredReconnect').and.returnValue(onUserTriggeredReconnectSubject.asObservable());
+            spyPropertyGetter(connectionStatusServiceSpy, 'onUserTriggeredReconnect').and.returnValue(
+                onUserTriggeredReconnectSubject.asObservable()
+            );
 
             serviceUnderTest.reconnect();
 
@@ -359,7 +367,9 @@ describe('EventsHubService', () => {
             spyOnProperty(serviceUnderTest, 'reconnectionAttempt', 'get').and.returnValue(reconnectionTimes.length + 1);
 
             const onUserTriggeredReconnectSubject = new Subject<boolean>();
-            spyPropertyGetter(errorServiceSpy, 'onUserTriggeredReconnect').and.returnValue(onUserTriggeredReconnectSubject.asObservable());
+            spyPropertyGetter(connectionStatusServiceSpy, 'onUserTriggeredReconnect').and.returnValue(
+                onUserTriggeredReconnectSubject.asObservable()
+            );
 
             serviceUnderTest.reconnect();
 
@@ -379,7 +389,9 @@ describe('EventsHubService', () => {
             spyOnProperty(serviceUnderTest, 'reconnectionAttempt', 'get').and.returnValue(reconnectionTimes.length + 1);
 
             const onUserTriggeredReconnectSubject = new Subject<boolean>();
-            spyPropertyGetter(errorServiceSpy, 'onUserTriggeredReconnect').and.returnValue(onUserTriggeredReconnectSubject.asObservable());
+            spyPropertyGetter(connectionStatusServiceSpy, 'onUserTriggeredReconnect').and.returnValue(
+                onUserTriggeredReconnectSubject.asObservable()
+            );
 
             serviceUnderTest.reconnect();
 

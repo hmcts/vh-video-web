@@ -17,6 +17,11 @@ export class ConnectionStatusService {
     private timer: NodeJS.Timeout;
     private pings = new Array<boolean>(this.NUMBER_OF_GOOD_PINGS_REQUIRED);
 
+    private _onUserTriggeredReconnect = new Subject<boolean>();
+    get onUserTriggeredReconnect(): Observable<boolean> {
+        return this._onUserTriggeredReconnect.asObservable();
+    }
+
     constructor(private logger: Logger, private http: HttpClient) {
         this.pings.every(x => (x = true));
     }
@@ -77,6 +82,10 @@ export class ConnectionStatusService {
             this.logger.info(`${this.loggerPrefix} ${this.status ? 'Online' : 'Offline'}`);
             this.connectionStatus.next(this.status);
         }
+    }
+
+    userTriggeredReconnect() {
+        this._onUserTriggeredReconnect.next(this.status);
     }
 
     onConnectionStatusChange(): Observable<boolean> {

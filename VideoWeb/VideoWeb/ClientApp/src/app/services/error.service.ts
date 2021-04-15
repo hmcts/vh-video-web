@@ -41,16 +41,6 @@ export class ErrorService {
     errorMessage: SessionStorage<ErrorMessage>;
     errorCameraMicMessage: SessionStorage<string>;
 
-    private _onUserTriggeredReconnect = new Subject<boolean>();
-
-    get onUserTriggeredReconnect(): Observable<boolean> {
-        return this._onUserTriggeredReconnect.asObservable();
-    }
-
-    userTriggeredReconnect(successful: boolean) {
-        this._onUserTriggeredReconnect.next(successful);
-    }
-
     handleApiError(error: any, skipRedirect: boolean = false) {
         this.logger.error('[ErrorService] - API error', error);
         if (skipRedirect) {

@@ -108,7 +108,7 @@ describe('EventsService', () => {
     });
 
     describe('start', () => {
-        it('should register the event handlers and start the events hub service.', () => {
+        it('should register the event handlers.', () => {
             // Arrange
             spyOn(serviceUnderTest, 'registerHandlers');
 
@@ -117,12 +117,11 @@ describe('EventsService', () => {
 
             // Assert
             expect(serviceUnderTest.registerHandlers).toHaveBeenCalledTimes(1);
-            expect(eventsHubServiceSpy.start).toHaveBeenCalledTimes(1);
         });
     });
 
     describe('stop', () => {
-        it('should dregister the event handlers and start the events hub service.', () => {
+        it('should dregister the event handlers.', () => {
             // Arrange
             spyOn(serviceUnderTest, 'deregisterHandlers');
 
@@ -131,7 +130,6 @@ describe('EventsService', () => {
 
             // Assert
             expect(serviceUnderTest.deregisterHandlers).toHaveBeenCalledTimes(1);
-            expect(eventsHubServiceSpy.stop).toHaveBeenCalledTimes(1);
         });
     });
 

@@ -180,11 +180,9 @@ export class EventsService {
 
     start() {
         this.registerHandlers();
-        this.eventsHubService.start();
     }
 
     stop() {
-        this.eventsHubService.stop();
         this.deregisterHandlers();
     }
 

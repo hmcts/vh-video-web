@@ -62,7 +62,7 @@ export class EventsHubService {
 
     constructor(
         configService: ConfigService,
-        connectionStatusService: ConnectionStatusService,
+        private connectionStatusService: ConnectionStatusService,
         private oidcSecurityService: OidcSecurityService,
         private logger: Logger,
         private errorService: ErrorService
@@ -95,7 +95,7 @@ export class EventsHubService {
         this.connection.onreconnected(() => this.onEventHubReconnected());
         this.connection.onclose(error => this.onEventHubErrorOrClose(error));
 
-        this.eventsHubReady.next();
+        this.start();
     }
 
     start() {
@@ -118,6 +118,8 @@ export class EventsHubService {
                             this.logger.warn(`[EventsService] - Failed to connect to EventHub ${error}`);
                             this.onEventHubErrorOrClose(error); // TEST I THINK THIS IS REDUNDANT
                             this.reconnect();
+
+                            this.eventsHubReady.next();
                         });
                 } else {
                     this.logger.debug(`[EventsService] - Cannot start - user is not authenticated`);
@@ -142,18 +144,10 @@ export class EventsHubService {
             this.errorService.goToServiceError('Your connection was lost');
 
             // Only subscibe to the first emitted event where the reconnection was successful
-            this.errorService.onUserTriggeredReconnect
-                .pipe(
-                    filter(reconnectionSuccessful => reconnectionSuccessful),
-                    take(1)
-                )
+            this.connectionStatusService.onUserTriggeredReconnect
+                .pipe(filter(Boolean), take(1))
                 .subscribe(() => this.handleUserTriggeredReconnect());
         }
-    }
-
-    handleUserTriggeredReconnect() {
-        this._reconnectionAttempt = 1;
-        this.reconnect();
     }
 
     stop() {
@@ -170,6 +164,11 @@ export class EventsHubService {
 
     async delay(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    handleUserTriggeredReconnect() {
+        this._reconnectionAttempt = 1;
+        this.reconnect();
     }
 
     private onEventHubErrorOrClose(error: Error): void {

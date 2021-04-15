@@ -47,7 +47,7 @@ describe('ErrorComponent', () => {
         waitForAsync(() => {
             pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
             pageTrackerSpy.getPreviousUrl.and.returnValue('testUrl-test-error1');
-            errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['getErrorMessageFromStorage', 'userTriggeredReconnect']);
+            errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['getErrorMessageFromStorage']);
             connectionStatusServiceSpy = connectionStatusServiceSpyFactory();
 
             TestBed.configureTestingModule({
@@ -147,7 +147,7 @@ describe('ErrorComponent', () => {
 
         // ASSERT
         expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalled();
-        expect(errorServiceSpy.userTriggeredReconnect).toHaveBeenCalledOnceWith(true);
+        expect(connectionStatusServiceSpy.userTriggeredReconnect).toHaveBeenCalledTimes(1);
     });
 
     it('should navigate to previous page on reconnect click and internet connection but has been down', () => {
@@ -161,7 +161,7 @@ describe('ErrorComponent', () => {
 
         // ASSERT
         expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalled();
-        expect(errorServiceSpy.userTriggeredReconnect).toHaveBeenCalledOnceWith(true);
+        expect(connectionStatusServiceSpy.userTriggeredReconnect).toHaveBeenCalledTimes(1);
     });
 
     it('should not navigate to previous page on reconnect click and no internet connection', () => {
@@ -174,7 +174,7 @@ describe('ErrorComponent', () => {
 
         // ASSERT
         expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalledTimes(0);
-        expect(errorServiceSpy.userTriggeredReconnect).toHaveBeenCalledOnceWith(false);
+        expect(connectionStatusServiceSpy.userTriggeredReconnect).toHaveBeenCalledTimes(1);
     });
 
     it('should return true when browser has an internet connection', () => {
@@ -229,8 +229,11 @@ describe('ErrorComponent Refresh', () => {
     beforeEach(() => {
         pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
         pageTrackerSpy.getPreviousUrl.and.returnValue('testUrl-test-error1');
-        errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['getErrorMessageFromStorage', 'userTriggeredReconnect']);
-        connectionStatusServiceSpy = jasmine.createSpyObj<ConnectionStatusService>('ConnectionStatusService', ['status']);
+        errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['getErrorMessageFromStorage']);
+        connectionStatusServiceSpy = jasmine.createSpyObj<ConnectionStatusService>('ConnectionStatusService', [
+            'status',
+            'userTriggeredReconnect'
+        ]);
 
         TestBed.configureTestingModule({
             declarations: [ErrorComponent, ContactUsFoldingComponent, TranslatePipeMock],
