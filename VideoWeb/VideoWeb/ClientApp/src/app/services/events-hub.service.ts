@@ -71,7 +71,7 @@ export class EventsHubService {
             this._connection = this.buildConnection(clientSettings.event_hub_path);
             this.configureConnection();
 
-            connectionStatusService.onConnectionStatusChange().subscribe(isConnected => this.onConnectionStatusChanged(isConnected));
+            connectionStatusService.onConnectionStatusChange().subscribe(isConnected => this.handleConnectionStatusChanged(isConnected));
         });
     }
 
@@ -201,13 +201,10 @@ export class EventsHubService {
         }
     }
 
-    onConnectionStatusChanged(isConnected: boolean) {
+    handleConnectionStatusChanged(isConnected: boolean) {
         if (isConnected) {
             this.logger.info('[EventsService] - Connection status changed: connected.');
             this.start();
-        } else {
-            this.logger.info('[EventsService] - Connection status changed: disconnected.');
-            this.stop();
         }
     }
 }

@@ -9,7 +9,7 @@ import { ErrorService } from './error.service';
 import { EventsHubService } from './events-hub.service';
 import { Logger } from './logging/logger-base';
 
-describe('EventsHubService', () => {
+fdescribe('EventsHubService', () => {
     function spyPropertyGetter<T, K extends keyof T>(spyObj: jasmine.SpyObj<T>, propName: K): jasmine.Spy<() => T[K]> {
         return Object.getOwnPropertyDescriptor(spyObj, propName)?.get as jasmine.Spy<() => T[K]>;
     }
@@ -438,24 +438,24 @@ describe('EventsHubService', () => {
             spyOn(serviceUnderTest, 'stop');
 
             // Act
-            serviceUnderTest.onConnectionStatusChanged(true);
+            serviceUnderTest.handleConnectionStatusChanged(true);
 
             // Assert
             expect(serviceUnderTest.start).toHaveBeenCalledTimes(1);
             expect(serviceUnderTest.stop).not.toHaveBeenCalled();
         });
 
-        it('should try to stop the event hub connection when isConnected is false.', () => {
+        it('should try to do nothing when isConnected is false and let the signal r reconnection run its course.', () => {
             // Arrange
             spyOn(serviceUnderTest, 'start');
             spyOn(serviceUnderTest, 'stop');
 
             // Act
-            serviceUnderTest.onConnectionStatusChanged(false);
+            serviceUnderTest.handleConnectionStatusChanged(false);
 
             // Assert
             expect(serviceUnderTest.start).not.toHaveBeenCalled();
-            expect(serviceUnderTest.stop).toHaveBeenCalledTimes(1);
+            expect(serviceUnderTest.stop).not.toHaveBeenCalled();
         });
     });
 
