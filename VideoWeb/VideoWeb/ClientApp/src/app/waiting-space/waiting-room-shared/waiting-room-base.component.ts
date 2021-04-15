@@ -207,6 +207,14 @@ export abstract class WaitingRoomBaseDirective {
         return `${this.conference.case_name}: ${this.conference.case_number}`;
     }
 
+    onLinkedParticiantRejectedConsultationInvite(linkedParticipantId : string, consulationRoomLabel : string) {
+        if (this.consultationInviteToasts.hasOwnProperty(consulationRoomLabel)) {
+            this.consultationInviteToasts[consulationRoomLabel].remove();
+        }
+
+        this.notificationToastrService.showConsultationRejectedByLinkedParticipant(linkedParticipantId, consulationRoomLabel);
+    }
+
     startEventHubSubscribers() {
         this.logger.debug(`${this.loggerPrefix} Subscribing to conference status changes...`);
         this.eventHubSubscription$.add(
@@ -237,9 +245,10 @@ export abstract class WaitingRoomBaseDirective {
             this.eventService.getConsultationRequestResponseMessage().subscribe(async message => {
                 if (message.answer && message.answer === ConsultationAnswer.Accepted && message.requestedFor === this.participant.id) {
                     await this.onConsultationAccepted();
-                }
-                if (message.answer && message.answer === ConsultationAnswer.Rejected && message.requestedFor === this.participant.id) {
+                } else if (message.answer && message.answer === ConsultationAnswer.Rejected && message.requestedFor === this.participant.id) {
                     this.onConsultationRejected(message.roomLabel);
+                } else if (message.answer && message.answer !== ConsultationAnswer.Accepted && this.participant.linked_participants.filter((linkedParticipant) => message.requestedFor === linkedParticipant.linked_id).length > 0) {
+                    this.onLinkedParticiantRejectedConsultationInvite(message.requestedFor, message.roomLabel);
                 }
             })
         );

@@ -26,6 +26,7 @@ const conferenceTestData = new ConferenceTestData();
 export let component: WRTestComponent;
 
 export const globalConference = conferenceTestData.getConferenceDetailPast();
+export const participantsLinked = conferenceTestData.getListOfLinkedParticipants();
 export const participantsWitness = conferenceTestData.getListOfParticipantsWitness();
 participantsWitness.forEach(x => {
     globalConference.participants.push(x);
@@ -119,6 +120,7 @@ export function initAllWRDependencies() {
     ]);
     notificationToastrService = jasmine.createSpyObj<NotificationToastrService>('NotificationToastrService', [
         'showConsultationInvite',
+        'showConsultationRejectedByLinkedParticipant',
         'clearAllToastNotifications'
     ]);
     toastrService = jasmine.createSpyObj<ToastrService>('ToastrService', ['show', 'clear', 'remove']);

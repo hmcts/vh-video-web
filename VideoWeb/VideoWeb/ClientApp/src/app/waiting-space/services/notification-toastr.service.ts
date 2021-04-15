@@ -121,6 +121,10 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
+    showConsultationRejectedByLinkedParticipant(linkedParticipantName : string, consultationRoomLabel : string) {
+        throw new Error("NOT IMPLEMENTED");
+    }
+
     clearAllToastNotifications() {
         this.toastr.clear();
         this.notificationSoundService.stopConsultationRequestRingtone();

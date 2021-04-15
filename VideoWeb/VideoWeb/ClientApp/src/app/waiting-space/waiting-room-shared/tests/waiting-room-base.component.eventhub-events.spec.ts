@@ -44,6 +44,7 @@ import {
     logger,
     notificationSoundsService,
     notificationToastrService,
+    participantsLinked,
     roomClosingToastrService,
     router,
     userMediaService,
@@ -265,58 +266,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
         expect(component.showVideo).toBeFalsy();
     }));
 
-    it('should not set preferred devices when participant has rejected consultation', fakeAsync(async () => {
-        const message = new ConsultationRequestResponseMessage(
-            globalConference.id,
-            'ConsultationRoom',
-            globalParticipant.id,
-            ConsultationAnswer.Rejected
-        );
-        consultationRequestResponseMessageSubject.next(message);
-        flushMicrotasks();
-        expect(component.isAdminConsultation).toBeFalsy();
-        expect(userMediaService.getPreferredCamera).toHaveBeenCalledTimes(0);
-        expect(userMediaService.getPreferredMicrophone).toHaveBeenCalledTimes(0);
-        expect(userMediaStreamService.getStreamForCam).toHaveBeenCalledTimes(0);
-        expect(userMediaStreamService.getStreamForMic).toHaveBeenCalledTimes(0);
-    }));
-
-    it('should set consultation toast to rejected', fakeAsync(() => {
-        const roomLabel = 'ConsultationRoom';
-        const toast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
-        component.consultationInviteToasts[roomLabel] = toast;
-        const message = new ConsultationRequestResponseMessage(
-            globalConference.id,
-            roomLabel,
-            globalParticipant.id,
-            ConsultationAnswer.Rejected
-        );
-        consultationRequestResponseMessageSubject.next(message);
-        flushMicrotasks();
-        const updatedToast = component.consultationInviteToasts[roomLabel];
-        expect(updatedToast.declinedByThirdParty).toBeTruthy();
-    }));
-
-    it('should close start and join modal set preferred devices when participant accepts consultation', fakeAsync(async () => {
-        component.displayDeviceChangeModal = true;
-        const message = new ConsultationRequestResponseMessage(
-            globalConference.id,
-            'ConsultationRoom',
-            globalParticipant.id,
-            ConsultationAnswer.Accepted
-        );
-        component.participant = globalParticipant;
-        consultationRequestResponseMessageSubject.next(message);
-        tick();
-        expect(component.displayStartPrivateConsultationModal).toBeFalsy();
-        expect(component.displayJoinPrivateConsultationModal).toBeFalsy();
-        expect(userMediaService.getPreferredCamera).toHaveBeenCalled();
-        expect(userMediaService.getPreferredMicrophone).toHaveBeenCalled();
-        expect(userMediaStreamService.getStreamForCam).toHaveBeenCalled();
-        expect(userMediaStreamService.getStreamForMic).toHaveBeenCalled();
-        expect(component.displayDeviceChangeModal).toBeFalsy();
-    }));
-
     it('should get conference when disconnected from eventhub less than 7 times', fakeAsync(() => {
         component.participant.status = ParticipantStatus.InHearing;
         component.conference.status = ConferenceStatus.InSession;
@@ -499,5 +448,185 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
         expect(component.countdownComplete).toBeFalsy();
         expect(component.videoStream.nativeElement.muted).toBeTruthy();
+    });
+
+    fdescribe('onLinkedParticiantRejectedConsultationInvite', () => {
+        const linkedParticipant = participantsLinked[1];
+        const expectedConsultationRoomLabel = 'ConsultationRoom';
+
+        it('should remove the existing toast for a room if it exists', () => {
+            // Arrange
+            const toastSpy = jasmine.createSpyObj<VhToastComponent>("VhToastComponent", ["remove"]);
+            component.consultationInviteToasts[expectedConsultationRoomLabel] = toastSpy;
+
+            // Act
+            component.onLinkedParticiantRejectedConsultationInvite(linkedParticipant.id, expectedConsultationRoomLabel);
+
+            // Assert
+            expect(toastSpy.remove).toHaveBeenCalledTimes(1);
+            expect(notificationToastrService.showConsultationRejectedByLinkedParticipant).toHaveBeenCalledOnceWith(linkedParticipant.id, expectedConsultationRoomLabel);
+        });
+    });
+
+    fdescribe('on recieve getConsultationRequestResponseMessage from the event hub', () => {
+        const primaryParticipant = participantsLinked[0];
+        const linkedParticipant = participantsLinked[1];
+        const expectedConsultationRoomLabel = 'ConsultationRoom';
+
+        it('should NOT raise any toasts if the participant is NOT linked and is NOT the current participant', () => {
+            // Arrange
+            const message = new ConsultationRequestResponseMessage(
+                globalConference.id,
+                expectedConsultationRoomLabel,
+                Guid.create().toString(),
+                ConsultationAnswer.Accepted
+            );
+
+            spyOn(component, "onConsultationAccepted");
+            spyOn(component, "onConsultationRejected");
+            spyOn(component, "onLinkedParticiantRejectedConsultationInvite");
+            component.participant = primaryParticipant;
+
+            // Act
+            consultationRequestResponseMessageSubject.next(message);
+
+            // Assert
+            expect(component.onConsultationAccepted).not.toHaveBeenCalled();
+            expect(component.onConsultationRejected).not.toHaveBeenCalled();
+            expect(component.onLinkedParticiantRejectedConsultationInvite).not.toHaveBeenCalled();
+        });
+
+        it('should NOT raise any toasts if the linked participant accepted the consultation invite', () => {
+            // Arrange
+            const message = new ConsultationRequestResponseMessage(
+                globalConference.id,
+                expectedConsultationRoomLabel,
+                linkedParticipant.id,
+                ConsultationAnswer.Accepted
+            );
+
+            spyOn(component, "onConsultationAccepted");
+            spyOn(component, "onConsultationRejected");
+            spyOn(component, "onLinkedParticiantRejectedConsultationInvite");
+            component.participant = primaryParticipant;
+
+            // Act
+            consultationRequestResponseMessageSubject.next(message);
+
+            // Assert
+            expect(component.onConsultationAccepted).not.toHaveBeenCalled();
+            expect(component.onConsultationRejected).not.toHaveBeenCalled();
+            expect(component.onLinkedParticiantRejectedConsultationInvite).not.toHaveBeenCalled();
+        });
+
+        it("should raise a toast if a linked participant rejected the consultation request", () => {
+            // Arrange
+            const message = new ConsultationRequestResponseMessage(
+                globalConference.id,
+                expectedConsultationRoomLabel,
+                linkedParticipant.id,
+                ConsultationAnswer.Rejected
+            );
+
+            spyOn(component, "onLinkedParticiantRejectedConsultationInvite");
+            component.participant = primaryParticipant;
+
+            // Act
+            consultationRequestResponseMessageSubject.next(message);
+
+            // Assert
+            expect(component.onLinkedParticiantRejectedConsultationInvite).toHaveBeenCalledOnceWith(linkedParticipant.id, expectedConsultationRoomLabel);
+        });
+
+        it("should raise a toast if a linked participant responed to the consultation request with transferring", () => {
+            // Arrange
+            const message = new ConsultationRequestResponseMessage(
+                globalConference.id,
+                expectedConsultationRoomLabel,
+                linkedParticipant.id,
+                ConsultationAnswer.Transferring
+            );
+
+            spyOn(component, "onLinkedParticiantRejectedConsultationInvite");
+            component.participant = primaryParticipant;
+
+            // Act
+            consultationRequestResponseMessageSubject.next(message);
+
+            // TODO: Update with expected behaviour
+            // Assert
+            // expect(component.onLinkedParticiapntRejectedConsultationInvite).toHaveBeenCalledTimes(1);
+        });
+
+        it("should raise a toast if a linked participant's consultation request failed", () => {
+            // Arrange
+            const message = new ConsultationRequestResponseMessage(
+                globalConference.id,
+                expectedConsultationRoomLabel,
+                linkedParticipant.id,
+                ConsultationAnswer.Failed
+            );
+
+            spyOn(component, "onLinkedParticiantRejectedConsultationInvite");
+            component.participant = primaryParticipant;
+
+            // Act
+            consultationRequestResponseMessageSubject.next(message);
+
+            // Assert
+            expect(component.onLinkedParticiantRejectedConsultationInvite).toHaveBeenCalledOnceWith(linkedParticipant.id, expectedConsultationRoomLabel);
+        });
+
+        it('should not set preferred devices when participant has rejected consultation', fakeAsync(async () => {
+            const message = new ConsultationRequestResponseMessage(
+                globalConference.id,
+                'ConsultationRoom',
+                globalParticipant.id,
+                ConsultationAnswer.Rejected
+            );
+            consultationRequestResponseMessageSubject.next(message);
+            flushMicrotasks();
+            expect(component.isAdminConsultation).toBeFalsy();
+            expect(userMediaService.getPreferredCamera).toHaveBeenCalledTimes(0);
+            expect(userMediaService.getPreferredMicrophone).toHaveBeenCalledTimes(0);
+            expect(userMediaStreamService.getStreamForCam).toHaveBeenCalledTimes(0);
+            expect(userMediaStreamService.getStreamForMic).toHaveBeenCalledTimes(0);
+        }));
+
+        it('should set consultation toast to rejected', fakeAsync(() => {
+            const roomLabel = 'ConsultationRoom';
+            const toast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
+            component.consultationInviteToasts[roomLabel] = toast;
+            const message = new ConsultationRequestResponseMessage(
+                globalConference.id,
+                roomLabel,
+                globalParticipant.id,
+                ConsultationAnswer.Rejected
+            );
+            consultationRequestResponseMessageSubject.next(message);
+            flushMicrotasks();
+            const updatedToast = component.consultationInviteToasts[roomLabel];
+            expect(updatedToast.declinedByThirdParty).toBeTruthy();
+        }));
+
+        it('should close start and join modal set preferred devices when participant accepts consultation', fakeAsync(async () => {
+            component.displayDeviceChangeModal = true;
+            const message = new ConsultationRequestResponseMessage(
+                globalConference.id,
+                'ConsultationRoom',
+                globalParticipant.id,
+                ConsultationAnswer.Accepted
+            );
+            component.participant = globalParticipant;
+            consultationRequestResponseMessageSubject.next(message);
+            tick();
+            expect(component.displayStartPrivateConsultationModal).toBeFalsy();
+            expect(component.displayJoinPrivateConsultationModal).toBeFalsy();
+            expect(userMediaService.getPreferredCamera).toHaveBeenCalled();
+            expect(userMediaService.getPreferredMicrophone).toHaveBeenCalled();
+            expect(userMediaStreamService.getStreamForCam).toHaveBeenCalled();
+            expect(userMediaStreamService.getStreamForMic).toHaveBeenCalled();
+            expect(component.displayDeviceChangeModal).toBeFalsy();
+        }));
     });
 });
