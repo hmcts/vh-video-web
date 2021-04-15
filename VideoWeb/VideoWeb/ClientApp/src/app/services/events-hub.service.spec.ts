@@ -9,7 +9,7 @@ import { ErrorService } from './error.service';
 import { EventsHubService } from './events-hub.service';
 import { Logger } from './logging/logger-base';
 
-fdescribe('EventsHubService', () => {
+describe('EventsHubService', () => {
     function spyPropertyGetter<T, K extends keyof T>(spyObj: jasmine.SpyObj<T>, propName: K): jasmine.Spy<() => T[K]> {
         return Object.getOwnPropertyDescriptor(spyObj, propName)?.get as jasmine.Spy<() => T[K]>;
     }
