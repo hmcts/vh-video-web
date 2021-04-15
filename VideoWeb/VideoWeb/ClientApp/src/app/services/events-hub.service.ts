@@ -95,6 +95,7 @@ export class EventsHubService {
         this.connection.onreconnected(() => this.onEventHubReconnected());
         this.connection.onclose(error => this.onEventHubErrorOrClose(error));
 
+        this.eventsHubReady.next();
         this.start();
     }
 
@@ -118,8 +119,6 @@ export class EventsHubService {
                             this.logger.warn(`[EventsService] - Failed to connect to EventHub ${error}`);
                             this.onEventHubErrorOrClose(error); // TEST I THINK THIS IS REDUNDANT
                             this.reconnect();
-
-                            this.eventsHubReady.next();
                         });
                 } else {
                     this.logger.debug(`[EventsService] - Cannot start - user is not authenticated`);

@@ -9,7 +9,6 @@ import { SessionStorage } from './session-storage';
 import { ConnectionStatusService } from './connection-status.service';
 import { LocationService } from './location.service';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, Subject } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'

@@ -1,7 +1,7 @@
 import { fakeAsync, tick } from '@angular/core/testing';
 import * as signalR from '@microsoft/signalr';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { Observable, of, ReplaySubject, Subject } from 'rxjs';
+import { Observable, ReplaySubject, Subject } from 'rxjs';
 import { ConfigService } from './api/config.service';
 import { ClientSettingsResponse } from './clients/api-client';
 import { ConnectionStatusService } from './connection-status.service';
@@ -153,6 +153,9 @@ describe('EventsHubService', () => {
 
             spyOn(serviceUnderTest, 'start');
 
+            const eventsHubReadySubjectSpy = jasmine.createSpyObj<ReplaySubject<any>>('ReplaySubject', ['next']);
+            serviceUnderTest['eventsHubReady'] = eventsHubReadySubjectSpy;
+
             // Act
             serviceUnderTest.configureConnection();
 
@@ -162,6 +165,7 @@ describe('EventsHubService', () => {
             expect(connectionSpy.onreconnected).toHaveBeenCalledTimes(1);
             expect(connectionSpy.onreconnecting).toHaveBeenCalledTimes(1);
             expect(serviceUnderTest.start).toHaveBeenCalledTimes(1);
+            expect(eventsHubReadySubjectSpy.next).toHaveBeenCalledTimes(1);
         });
     });
 

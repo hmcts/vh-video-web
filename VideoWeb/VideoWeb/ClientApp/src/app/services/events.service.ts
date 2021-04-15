@@ -179,6 +179,8 @@ export class EventsService {
     };
 
     start() {
+        this.logger.info('[EventsService] - Start.');
+
         this.registerHandlers();
     }
 
