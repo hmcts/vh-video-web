@@ -44,6 +44,7 @@ import {
 import { WRTestComponent } from './WRTestComponent';
 import { HearingRole } from '../../models/hearing-role-model';
 import { ElementRef } from '@angular/core';
+import { PrivateConsultationRoomControlsComponent } from '../../private-consultation-room-controls/private-consultation-room-controls.component';
 
 describe('WaitingRoomComponent message and clock', () => {
     let component: WRTestComponent;
@@ -303,6 +304,28 @@ describe('WaitingRoomComponent message and clock', () => {
         await component.onMediaDeviceChangeAccepted(device);
 
         expect(videoCallService.switchToAudioOnlyCall).toHaveBeenCalled();
+    });
+
+    it('should publish media device status changes when switching call type mid hearing or consultation', async () => {
+        // arrange
+        component.audioOnly = true;
+        const device = new SelectedUserMediaDevice(
+            new UserMediaDevice('camera1', 'id3445', 'videoinput', '1'),
+            new UserMediaDevice('microphone', 'id123', 'audioinput', '1'),
+            false
+        );
+        const controls = jasmine.createSpyObj<PrivateConsultationRoomControlsComponent>(
+            'PrivateConsultationRoomControlsComponent',
+            ['publishMediaDeviceStatus'],
+            { audioOnly: true }
+        );
+        component.hearingControls = controls;
+
+        // act
+        await component.onMediaDeviceChangeAccepted(device);
+
+        // assert
+        expect(controls.publishMediaDeviceStatus).toHaveBeenCalled();
     });
 
     it('should not announce hearing is starting when already announced', () => {
