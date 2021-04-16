@@ -99,6 +99,9 @@ export class NotificationToastrService {
                 if (this.toastr.toasts.length === 1) {
                     this.notificationSoundService.stopConsultationRequestRingtone();
                 }
+
+                const index = this.activeRoomInviteRequests.indexOf(inviteKey);
+                this.activeRoomInviteRequests.splice(index, 1);
             },
             buttons: [
                 {
