@@ -23,7 +23,7 @@ namespace VideoWeb.UnitTests.Mappings
             result.Id.Should().Be(endpoint.Id);
             result.Status.ToString().Should().Be(endpoint.Status.ToString());
             result.DefenceAdvocateUsername.Should().Be(endpoint.DefenceAdvocate);
-            result.PexipDisplayName.Should().Be($"T{100 + 1};{endpoint.DisplayName};{endpoint.Id}");
+            result.PexipDisplayName.Should().Be($"PSTN;{endpoint.DisplayName};{endpoint.Id}");
         }
     }
 }

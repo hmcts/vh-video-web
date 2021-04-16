@@ -18,7 +18,10 @@ namespace VideoWeb.Mappings
                 VideoApiUrl = servicesConfiguration.VideoApiUrl,
                 AppInsightsInstrumentationKey = azureAdConfiguration.ApplicationInsights.InstrumentationKey,
                 EventHubPath = servicesConfiguration.EventHubPath,
-                JoinByPhoneFromDate = kinlyConfiguration.JoinByPhoneFromDate
+                JoinByPhoneFromDate = kinlyConfiguration.JoinByPhoneFromDate,
+                KinlyTurnServer = kinlyConfiguration.TurnServer,
+                KinlyTurnServerUser = kinlyConfiguration.TurnServerUser,
+                KinlyTurnServerCredential = kinlyConfiguration.TurnServerCredential
             };
         }
 

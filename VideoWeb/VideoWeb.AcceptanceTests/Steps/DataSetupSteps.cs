@@ -71,7 +71,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 _c.Test.DelayedStartTime = delayMinutes;
         }
 
-        private List<UserType> GetUserType(string user)
+        private static List<UserType> GetUserType(string user)
         {
             switch(user.ToLower())
             {
@@ -264,6 +264,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 Application = Application.VideoWeb,
                 ExpiryInMinutes = expiresIn,
+                IsEjud = _c.VideoWebConfig.UsingEjud,
                 IsProdUser = _c.VideoWebConfig.IsLive,
                 TestType = TestType.Automated,
                 UserTypes = userTypes
