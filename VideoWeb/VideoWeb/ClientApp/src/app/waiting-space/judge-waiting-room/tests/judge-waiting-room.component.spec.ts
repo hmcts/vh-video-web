@@ -33,6 +33,7 @@ import {
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
 import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
@@ -213,19 +214,33 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     it('should continue with no recording when judge dismisses the audio recording alert mid hearing', async () => {
+        const toast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', { actioned: true });
+        notificationToastrService.showAudioRecordingError.and.returnValue(toast);
         audioRecordingService.getAudioStreamInfo.and.throwError('Error');
         component.conferenceRecordingInSessionForSeconds = 61;
         component.conference.status = ConferenceStatus.InSession;
         await component.retrieveAudioStreamInfo(globalConference.id);
+
         component.continueWithNoRecordingCallback();
+
         expect(component.audioErrorToastOpen).toBeFalsy();
         expect(component.continueWithNoRecording).toBeTruthy();
     });
 
     it('should update toast visibility variable on auto dimiss ', async () => {
-        component.audioErrorToastOpen = true;
-        await component.continueWithNoRecordingCallback();
+        const toast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', { actioned: false });
+        toast.actioned = false;
+        notificationToastrService.showAudioRecordingError.and.returnValue(toast);
+        audioRecordingService.getAudioStreamInfo.and.throwError('Error');
+        component.conferenceRecordingInSessionForSeconds = 61;
+        component.conference.status = ConferenceStatus.InSession;
+        await component.retrieveAudioStreamInfo(globalConference.id);
+        component.continueWithNoRecording = false;
+
+        component.continueWithNoRecordingCallback();
+
         expect(component.audioErrorToastOpen).toBeFalsy();
+        expect(component.continueWithNoRecording).toBeFalsy();
     });
 
     it('should display audio recording alert when audio info throws an error and hearing must be recorded', async () => {
