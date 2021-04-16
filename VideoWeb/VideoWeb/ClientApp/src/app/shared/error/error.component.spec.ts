@@ -3,10 +3,8 @@ import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync, getTestBed } 
 import { NavigationEnd, NavigationExtras, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Observable, of } from 'rxjs';
-import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { PageTrackerService } from 'src/app/services/page-tracker.service';
-import { eventsServiceSpy, isConnectedSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { ContactUsFoldingComponent } from '../contact-us-folding/contact-us-folding.component';
 import { ErrorMessage } from '../models/error-message';
@@ -37,8 +35,6 @@ class Mock1Component {}
 @Component({ selector: 'app-mock-component2', template: '' })
 class Mock2Component {}
 
-let eventsService: jasmine.SpyObj<EventsService>;
-
 describe('ErrorComponent', () => {
     let component: ErrorComponent;
     let fixture: ComponentFixture<ErrorComponent>;
@@ -49,7 +45,6 @@ describe('ErrorComponent', () => {
     let connectionStatusServiceSpy: jasmine.SpyObj<ConnectionStatusService>;
     beforeEach(
         waitForAsync(() => {
-            eventsService = eventsServiceSpy;
             pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
             pageTrackerSpy.getPreviousUrl.and.returnValue('testUrl-test-error1');
             errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['getErrorMessageFromStorage']);
@@ -65,7 +60,6 @@ describe('ErrorComponent', () => {
                 ],
                 providers: [
                     { provide: PageTrackerService, useValue: pageTrackerSpy },
-                    { provide: EventsService, useValue: eventsService },
                     { provide: Logger, useClass: MockLogger },
                     { provide: ErrorService, useValue: errorServiceSpy },
                     { provide: ConnectionStatusService, useValue: connectionStatusServiceSpy },
@@ -153,6 +147,7 @@ describe('ErrorComponent', () => {
 
         // ASSERT
         expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalled();
+        expect(connectionStatusServiceSpy.userTriggeredReconnect).toHaveBeenCalledTimes(1);
     });
 
     it('should navigate to previous page on reconnect click and internet connection but has been down', () => {
@@ -166,6 +161,7 @@ describe('ErrorComponent', () => {
 
         // ASSERT
         expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalled();
+        expect(connectionStatusServiceSpy.userTriggeredReconnect).toHaveBeenCalledTimes(1);
     });
 
     it('should not navigate to previous page on reconnect click and no internet connection', () => {
@@ -178,6 +174,7 @@ describe('ErrorComponent', () => {
 
         // ASSERT
         expect(pageTrackerSpy.getPreviousUrl).toHaveBeenCalledTimes(0);
+        expect(connectionStatusServiceSpy.userTriggeredReconnect).toHaveBeenCalledTimes(1);
     });
 
     it('should return true when browser has an internet connection', () => {
@@ -230,11 +227,13 @@ describe('ErrorComponent Refresh', () => {
     let connectionStatusServiceSpy: jasmine.SpyObj<ConnectionStatusService>;
 
     beforeEach(() => {
-        eventsService = eventsServiceSpy;
         pageTrackerSpy = jasmine.createSpyObj<PageTrackerService>(['trackPreviousPage', 'getPreviousUrl']);
         pageTrackerSpy.getPreviousUrl.and.returnValue('testUrl-test-error1');
         errorServiceSpy = jasmine.createSpyObj<ErrorService>('ErrorService', ['getErrorMessageFromStorage']);
-        connectionStatusServiceSpy = jasmine.createSpyObj<ConnectionStatusService>('ConnectionStatusService', ['status']);
+        connectionStatusServiceSpy = jasmine.createSpyObj<ConnectionStatusService>('ConnectionStatusService', [
+            'status',
+            'userTriggeredReconnect'
+        ]);
 
         TestBed.configureTestingModule({
             declarations: [ErrorComponent, ContactUsFoldingComponent, TranslatePipeMock],
@@ -242,7 +241,6 @@ describe('ErrorComponent Refresh', () => {
             providers: [
                 { provide: PageTrackerService, useValue: pageTrackerSpy },
                 { provide: Router, useClass: MockRouter },
-                { provide: EventsService, useValue: eventsService },
                 { provide: Logger, useClass: MockLogger },
                 { provide: ErrorService, useValue: errorServiceSpy },
                 { provide: ConnectionStatusService, useValue: connectionStatusServiceSpy },
