@@ -450,7 +450,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         expect(component.videoStream.nativeElement.muted).toBeTruthy();
     });
 
-    fdescribe('onLinkedParticiantRejectedConsultationInvite', () => {
+    describe('onLinkedParticiantRejectedConsultationInvite', () => {
         const linkedParticipant = participantsLinked[1];
         const expectedConsultationRoomLabel = 'ConsultationRoom';
 
@@ -460,18 +460,48 @@ describe('WaitingRoomComponent EventHub Call', () => {
             component.consultationInviteToasts[expectedConsultationRoomLabel] = toastSpy;
 
             // Act
-            component.onLinkedParticiantRejectedConsultationInvite(linkedParticipant.id, expectedConsultationRoomLabel);
+            component.onLinkedParticiantRejectedConsultationInvite(linkedParticipant.display_name, expectedConsultationRoomLabel);
 
             // Assert
             expect(toastSpy.remove).toHaveBeenCalledTimes(1);
-            expect(notificationToastrService.showConsultationRejectedByLinkedParticipant).toHaveBeenCalledOnceWith(linkedParticipant.id, expectedConsultationRoomLabel);
+            expect(notificationToastrService.showConsultationRejectedByLinkedParticipant).toHaveBeenCalledOnceWith(linkedParticipant.display_name, expectedConsultationRoomLabel);
         });
     });
 
-    fdescribe('on recieve getConsultationRequestResponseMessage from the event hub', () => {
+    describe('on recieve getConsultationRequestResponseMessage from the event hub', () => {
         const primaryParticipant = participantsLinked[0];
         const linkedParticipant = participantsLinked[1];
         const expectedConsultationRoomLabel = 'ConsultationRoom';
+
+        fit('should NOT raise linked participant rejected inviation when the linked participant is this participant', () => {
+            // Arrange
+            const linkedRejection = new ConsultationRequestResponseMessage(
+                globalConference.id,
+                expectedConsultationRoomLabel,
+                linkedParticipant.id,
+                ConsultationAnswer.Rejected
+            );
+
+            const primaryRejection = new ConsultationRequestResponseMessage(
+                globalConference.id,
+                expectedConsultationRoomLabel,
+                primaryParticipant.id,
+                ConsultationAnswer.Rejected
+            );
+
+            spyOn(component, "onConsultationAccepted");
+            spyOn(component, "onConsultationRejected");
+            spyOn(component, "onLinkedParticiantRejectedConsultationInvite");
+            component.participant = primaryParticipant;
+
+            // Act
+            consultationRequestResponseMessageSubject.next(linkedRejection);
+            consultationRequestResponseMessageSubject.next(primaryRejection);
+
+            // Assert
+            expect(component.onConsultationAccepted).not.toHaveBeenCalledTimes(1);
+            expect(component.onLinkedParticiantRejectedConsultationInvite).not.toHaveBeenCalled();
+        });
 
         it('should NOT raise any toasts if the participant is NOT linked and is NOT the current participant', () => {
             // Arrange
@@ -528,6 +558,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 ConsultationAnswer.Rejected
             );
 
+            component["findParticipant"] = jasmine.createSpy("findParticipant").and.returnValue(linkedParticipant);
             spyOn(component, "onLinkedParticiantRejectedConsultationInvite");
             component.participant = primaryParticipant;
 
@@ -535,7 +566,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             consultationRequestResponseMessageSubject.next(message);
 
             // Assert
-            expect(component.onLinkedParticiantRejectedConsultationInvite).toHaveBeenCalledOnceWith(linkedParticipant.id, expectedConsultationRoomLabel);
+            expect(component.onLinkedParticiantRejectedConsultationInvite).toHaveBeenCalledOnceWith(linkedParticipant.display_name, expectedConsultationRoomLabel);
         });
 
         it("should raise a toast if a linked participant responed to the consultation request with transferring", () => {
@@ -547,6 +578,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 ConsultationAnswer.Transferring
             );
 
+            component["findParticipant"] = jasmine.createSpy("findParticipant").and.returnValue(linkedParticipant);
             spyOn(component, "onLinkedParticiantRejectedConsultationInvite");
             component.participant = primaryParticipant;
 
@@ -558,6 +590,26 @@ describe('WaitingRoomComponent EventHub Call', () => {
             // expect(component.onLinkedParticiapntRejectedConsultationInvite).toHaveBeenCalledTimes(1);
         });
 
+        it("should raise a toast if a linked participant responed to the consultation request with none", () => {
+            // Arrange
+            const message = new ConsultationRequestResponseMessage(
+                globalConference.id,
+                expectedConsultationRoomLabel,
+                linkedParticipant.id,
+                ConsultationAnswer.None
+            );
+
+            component["findParticipant"] = jasmine.createSpy("findParticipant").and.returnValue(linkedParticipant);
+            spyOn(component, "onLinkedParticiantRejectedConsultationInvite");
+            component.participant = primaryParticipant;
+
+            // Act
+            consultationRequestResponseMessageSubject.next(message);
+
+            // Assert
+            expect(component.onLinkedParticiantRejectedConsultationInvite).toHaveBeenCalledOnceWith(linkedParticipant.display_name, expectedConsultationRoomLabel);
+        });
+
         it("should raise a toast if a linked participant's consultation request failed", () => {
             // Arrange
             const message = new ConsultationRequestResponseMessage(
@@ -567,6 +619,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 ConsultationAnswer.Failed
             );
 
+            component["findParticipant"] = jasmine.createSpy("findParticipant").and.returnValue(linkedParticipant);
             spyOn(component, "onLinkedParticiantRejectedConsultationInvite");
             component.participant = primaryParticipant;
 
@@ -574,7 +627,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             consultationRequestResponseMessageSubject.next(message);
 
             // Assert
-            expect(component.onLinkedParticiantRejectedConsultationInvite).toHaveBeenCalledOnceWith(linkedParticipant.id, expectedConsultationRoomLabel);
+            expect(component.onLinkedParticiantRejectedConsultationInvite).toHaveBeenCalledOnceWith(linkedParticipant.display_name, expectedConsultationRoomLabel);
         });
 
         it('should not set preferred devices when participant has rejected consultation', fakeAsync(async () => {

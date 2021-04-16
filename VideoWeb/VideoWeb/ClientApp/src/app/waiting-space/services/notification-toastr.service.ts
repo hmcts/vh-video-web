@@ -121,8 +121,37 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
-    showConsultationRejectedByLinkedParticipant(linkedParticipantName : string, consultationRoomLabel : string) {
-        throw new Error("NOT IMPLEMENTED");
+    showConsultationRejectedByLinkedParticipant(linkedParticipantName : string, consultationRoomLabel : string, inHearing : boolean = false) : VhToastComponent {
+        // TODO - Change to translated string
+        const message = `${linkedParticipantName} rejected the invitation to ${consultationRoomLabel}.`
+
+        const toast = this.toastr.show('', '', {
+            timeOut: 120000,
+            extendedTimeOut: 0,
+            toastClass: 'vh-no-pointer',
+            tapToDismiss: false,
+            toastComponent: VhToastComponent
+        });
+
+        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
+            color: inHearing ? 'white' : 'black',
+            htmlBody: message,
+            onNoAction: async () => {
+                this.toastr.remove(toast.toastId);
+            },
+            buttons: [
+                {
+                    // TODO - Change to translated string
+                    label: this.translateService.instant('notification-toastr.invite.decline'),
+                    hoverColour: 'red',
+                    action: async () => {
+                        this.toastr.remove(toast.toastId);
+                    }
+                }
+            ]
+        };
+
+        return toast.toastRef.componentInstance as VhToastComponent;
     }
 
     clearAllToastNotifications() {

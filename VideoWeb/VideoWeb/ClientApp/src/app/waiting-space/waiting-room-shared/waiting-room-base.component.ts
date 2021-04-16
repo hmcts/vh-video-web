@@ -243,12 +243,26 @@ export abstract class WaitingRoomBaseDirective {
         this.logger.debug(`${this.loggerPrefix} Subscribing to ConsultationRequestResponseMessage`);
         this.eventHubSubscription$.add(
             this.eventService.getConsultationRequestResponseMessage().subscribe(async message => {
+                console.log("[ROB] - ConsultationRequestResponseMessage recieved", message.requestedFor);
                 if (message.answer && message.answer === ConsultationAnswer.Accepted && message.requestedFor === this.participant.id) {
+                    console.log("[ROB] - onConsultationAccepted");
                     await this.onConsultationAccepted();
-                } else if (message.answer && message.answer === ConsultationAnswer.Rejected && message.requestedFor === this.participant.id) {
+                }
+
+                if (message.answer && message.answer === ConsultationAnswer.Rejected && message.requestedFor === this.participant.id) {
+                    console.log("[ROB] - onConsultationRejected");
                     this.onConsultationRejected(message.roomLabel);
-                } else if (message.answer && message.answer !== ConsultationAnswer.Accepted && this.participant.linked_participants.filter((linkedParticipant) => message.requestedFor === linkedParticipant.linked_id).length > 0) {
-                    this.onLinkedParticiantRejectedConsultationInvite(message.requestedFor, message.roomLabel);
+                }
+
+                if (message.answer && message.answer !== ConsultationAnswer.Accepted) {
+                    console.log("[ROB] - message.answer !== ConsultationAnswer.Accepted");
+                    const participantLink = this.participant.linked_participants.find((linkedParticipant) => message.requestedFor === linkedParticipant.linked_id);
+                    console.log("[ROB] - participantLink =", participantLink);
+                    if (participantLink) {
+                        const participant = this.findParticipant(participantLink.linked_id);
+                        console.log("[ROB] - participant =", participant);
+                        this.onLinkedParticiantRejectedConsultationInvite(participant.display_name, message.roomLabel);
+                    }
                 }
             })
         );
