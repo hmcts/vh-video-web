@@ -14,6 +14,7 @@ import { UserMediaStreamService } from 'src/app/services/user-media-stream.servi
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { pageUrls } from 'src/app/shared/page-url.constants';
+import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { CallError } from '../models/video-call-models';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
@@ -42,6 +43,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         Chat: false
     };
     unreadMessageCount = 0;
+    audioErrorToast: VhToastComponent;
 
     constructor(
         protected route: ActivatedRoute,
@@ -212,25 +214,20 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         if (this.audioErrorToastOpen) {
             return;
         }
-        this.notificationToastrService.showAudioRecordingError(
-            this.continueWithNoRecordingCallback.bind(this),
-            this.autoDismissedAudioErrorToast.bind(this)
-        );
         this.audioErrorToastOpen = true;
+        this.audioErrorToast = this.notificationToastrService.showAudioRecordingError(this.continueWithNoRecordingCallback.bind(this));
     }
 
     continueWithNoRecordingCallback() {
-        this.continueWithNoRecording = true;
+        if (this.audioErrorToast.actioned) {
+            this.continueWithNoRecording = true;
+        }
         this.audioErrorToastOpen = false;
-    }
-
-    autoDismissedAudioErrorToast() {
-        this.audioErrorToastOpen = false;
+        this.audioErrorToast = null;
     }
 
     async retrieveAudioStreamInfo(hearingId): Promise<void> {
         if (this.conference.status === ConferenceStatus.InSession || this.participant.status === ParticipantStatus.InConsultation) {
-            this.notificationToastrService.clearAllToastNotifications();
             this.conferenceRecordingInSessionForSeconds += this.audioRecordingStreamCheckIntervalSeconds;
         } else {
             this.conferenceRecordingInSessionForSeconds = 0;
