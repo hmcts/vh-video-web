@@ -37,6 +37,7 @@ export class NotificationToastrService {
     ) {
         const inviteKey = `${conferenceId}_${roomLabel}`;
         if (this.activeRoomInviteRequests.indexOf(inviteKey) >= 0) {
+            console.log("[ROB] - already in activeRoomInviteRequests");
             return;
         }
         this.activeRoomInviteRequests.push(inviteKey);
@@ -93,6 +94,8 @@ export class NotificationToastrService {
             htmlBody: message,
             onNoAction: async () => {
                 await respondToConsultationRequest(ConsultationAnswer.None);
+            },
+            cleanUp: () => {
                 if (this.toastr.toasts.length === 1) {
                     this.notificationSoundService.stopConsultationRequestRingtone();
                 }
@@ -138,6 +141,9 @@ export class NotificationToastrService {
             htmlBody: message,
             onNoAction: async () => {
                 this.toastr.remove(toast.toastId);
+            },
+            cleanUp: () => {
+
             },
             buttons: [
                 {
