@@ -125,8 +125,35 @@ namespace VideoWeb.UnitTests.Services
 
             // assert
             _mocker.Mock<IEventHubClient>().Verify(
-                x => x.ConsultationRequestResponseMessage(_conference.Id, roomLabel, requestedFor.Id, answer),
+                x => x.ConsultationRequestResponseMessage(_conference.Id, roomLabel, requestedFor.Id, answer, It.IsAny<bool>()),
                 Times.Exactly(_conference.Participants.Count));
+        }
+
+        [TestCase(ConsultationAnswer.None)]
+        [TestCase(ConsultationAnswer.Failed)]
+        [TestCase(ConsultationAnswer.Rejected)]
+        public async Task should_only_mark_initiating_linked_participant_as_sent_by_client(ConsultationAnswer answer)
+        {
+            // arrange
+            var participantCount = _conference.Participants.Count;
+            var allLinkedParticipants = _conference.Participants.Where(x => !x.IsJudge() && x.LinkedParticipants.Any()).ToList();
+            var roomLabel = "ConsultationRoom1";
+            var requestedFor = allLinkedParticipants[0];
+            var linkedParticipants = requestedFor.LinkedParticipants;
+
+            // act
+            await _sut.NotifyConsultationResponseAsync(_conference, roomLabel, requestedFor.Id, answer);
+
+            // assert
+            _mocker.Mock<IEventHubClient>().Verify(
+                x => x.ConsultationRequestResponseMessage(_conference.Id, roomLabel, requestedFor.Id, answer, true),
+                Times.Exactly(participantCount));
+
+            foreach (var linkedParticipant in linkedParticipants) {
+                _mocker.Mock<IEventHubClient>().Verify(
+                    x => x.ConsultationRequestResponseMessage(_conference.Id, roomLabel, linkedParticipant.LinkedId, answer, false),
+                    Times.Exactly(participantCount));
+            }
         }
 
         [Test]
@@ -142,7 +169,7 @@ namespace VideoWeb.UnitTests.Services
 
             // assert
             _mocker.Mock<IEventHubClient>().Verify(
-                x => x.ConsultationRequestResponseMessage(_conference.Id, roomLabel, linkedParticipant.Id, answer),
+                x => x.ConsultationRequestResponseMessage(_conference.Id, roomLabel, linkedParticipant.Id, answer, It.IsAny<bool>()),
                 Times.Never);
         }
 
@@ -168,14 +195,14 @@ namespace VideoWeb.UnitTests.Services
             // assert
             _mocker.Mock<IEventHubClient>()
                 .Verify(
-                    x => x.ConsultationRequestResponseMessage(_conference.Id, roomLabel, linkedParticipant.Id, answer),
+                    x => x.ConsultationRequestResponseMessage(_conference.Id, roomLabel, linkedParticipant.Id, answer, It.IsAny<bool>()),
                     Times.Exactly(_conference.Participants.Count));
 
             foreach (var lParticipant in linked)
             {
                 _mocker.Mock<IEventHubClient>().Verify(
                     x => x.ConsultationRequestResponseMessage(_conference.Id, roomLabel,
-                        lParticipant.Id, answer),
+                        lParticipant.Id, answer, It.IsAny<bool>()),
                     Times.Exactly(_conference.Participants.Count));
             }
 
@@ -229,7 +256,7 @@ namespace VideoWeb.UnitTests.Services
             // assert
             _mocker.Mock<IEventHubClient>()
                 .Verify(
-                    x => x.ConsultationRequestResponseMessage(_conference.Id, roomLabel, endpoint.Id, ConsultationAnswer.Transferring),
+                    x => x.ConsultationRequestResponseMessage(_conference.Id, roomLabel, endpoint.Id, ConsultationAnswer.Transferring, It.IsAny<bool>()),
                     Times.Exactly(_conference.Participants.Count));
         }
     }

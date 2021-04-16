@@ -97,15 +97,15 @@ namespace VideoWeb.Helpers
 
             foreach (var linkedParticipant in linkedParticipants)
             {
-                await PublishResponseMessage(conference, roomLabel, linkedParticipant.Id, answer);
+                await PublishResponseMessage(conference, roomLabel, linkedParticipant.Id, answer, false);
             }
         }
         
-        private async Task PublishResponseMessage(Conference conference, string roomLabel, Guid requestedForId, ConsultationAnswer answer)
+        private async Task PublishResponseMessage(Conference conference, string roomLabel, Guid requestedForId, ConsultationAnswer answer, bool sentByClient=true)
         {
             var tasks = conference.Participants.Select(p => 
                 _hubContext.Clients?.Group(p.Username.ToLowerInvariant())
-                    .ConsultationRequestResponseMessage(conference.Id, roomLabel, requestedForId, answer) ?? Task.CompletedTask);
+                    .ConsultationRequestResponseMessage(conference.Id, roomLabel, requestedForId, answer, sentByClient) ?? Task.CompletedTask);
             await Task.WhenAll(tasks);
         }
 

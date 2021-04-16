@@ -36,7 +36,10 @@ export class VhToastComponent extends Toast {
     }
 
     remove() {
+        console.log("[ROB] - Toast Remove A/3rd", this.actioned, this.declinedByThirdParty, this.vhToastOptions.body);
+
         if (!this.actioned && !this.declinedByThirdParty) {
+            console.log("[ROB] - Action Called", this.vhToastOptions.body);
             this.vhToastOptions.onNoAction();
         }
 

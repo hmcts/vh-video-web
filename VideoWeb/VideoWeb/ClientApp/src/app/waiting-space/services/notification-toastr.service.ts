@@ -92,7 +92,7 @@ export class NotificationToastrService {
             color: inHearing ? 'white' : 'black',
             htmlBody: message,
             onNoAction: async () => {
-                respondToConsultationRequest(ConsultationAnswer.None);
+                await respondToConsultationRequest(ConsultationAnswer.None);
                 if (this.toastr.toasts.length === 1) {
                     this.notificationSoundService.stopConsultationRequestRingtone();
                 }
@@ -102,7 +102,7 @@ export class NotificationToastrService {
                     label: this.translateService.instant('notification-toastr.invite.accept'),
                     hoverColour: 'green',
                     action: async () => {
-                        respondToConsultationRequest(ConsultationAnswer.Accepted);
+                        await respondToConsultationRequest(ConsultationAnswer.Accepted);
                         this.clearAllToastNotifications();
                     }
                 },
@@ -110,7 +110,7 @@ export class NotificationToastrService {
                     label: this.translateService.instant('notification-toastr.invite.decline'),
                     hoverColour: 'red',
                     action: async () => {
-                        respondToConsultationRequest(ConsultationAnswer.Rejected);
+                        await respondToConsultationRequest(ConsultationAnswer.Rejected);
                         if (this.toastr.toasts.length === 1) {
                             this.notificationSoundService.stopConsultationRequestRingtone();
                         }

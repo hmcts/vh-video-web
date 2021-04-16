@@ -208,11 +208,14 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     onLinkedParticiantRejectedConsultationInvite(linkedParticipantId : string, consulationRoomLabel : string) {
+        console.log("[ROB] -  onLinkedParticiantRejectedConsultationInvite");
         if (this.consultationInviteToasts.hasOwnProperty(consulationRoomLabel)) {
+            console.log("[ROB] -  remove existing toast");
             this.consultationInviteToasts[consulationRoomLabel].remove();
         }
 
         this.notificationToastrService.showConsultationRejectedByLinkedParticipant(linkedParticipantId, consulationRoomLabel);
+        console.log();
     }
 
     startEventHubSubscribers() {
@@ -243,18 +246,22 @@ export abstract class WaitingRoomBaseDirective {
         this.logger.debug(`${this.loggerPrefix} Subscribing to ConsultationRequestResponseMessage`);
         this.eventHubSubscription$.add(
             this.eventService.getConsultationRequestResponseMessage().subscribe(async message => {
-                console.log("[ROB] - ConsultationRequestResponseMessage recieved", message.requestedFor);
+                console.log("[ROB]-----------------------");
+                console.log("[ROB] - ConsultationRequestResponseMessage recieved", message.answer, message.requestedFor, message.sentByClient, "my id", this.participant.id);
                 if (message.answer && message.answer === ConsultationAnswer.Accepted && message.requestedFor === this.participant.id) {
                     console.log("[ROB] - onConsultationAccepted");
                     await this.onConsultationAccepted();
                 }
 
-                if (message.answer && message.answer === ConsultationAnswer.Rejected && message.requestedFor === this.participant.id) {
+                if (message.answer && message.answer === ConsultationAnswer.Rejected && message.sentByClient) {
                     console.log("[ROB] - onConsultationRejected");
                     this.onConsultationRejected(message.roomLabel);
                 }
 
-                if (message.answer && message.answer !== ConsultationAnswer.Accepted) {
+                if (message.answer &&
+                    message.answer !== ConsultationAnswer.Accepted &&
+                    message.answer !== ConsultationAnswer.Transferring &&
+                    message.sentByClient) {
                     console.log("[ROB] - message.answer !== ConsultationAnswer.Accepted");
                     const participantLink = this.participant.linked_participants.find((linkedParticipant) => message.requestedFor === linkedParticipant.linked_id);
                     console.log("[ROB] - participantLink =", participantLink);
@@ -406,7 +413,6 @@ export abstract class WaitingRoomBaseDirective {
         if (this.consultationInviteToasts[roomLabel]) {
             this.consultationInviteToasts[roomLabel].declinedByThirdParty = true;
         }
-        this.notificationToastrService.clearAllToastNotifications();
     }
 
     async handleEventHubDisconnection(reconnectionAttempt: number) {
