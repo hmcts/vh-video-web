@@ -222,6 +222,12 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.continueWithNoRecording).toBeTruthy();
     });
 
+    it('should update toast visibility variable on auto dimiss ', async () => {
+        component.audioErrorToastOpen = true;
+        await component.continueWithNoRecordingCallback();
+        expect(component.audioErrorToastOpen).toBeFalsy();
+    });
+
     it('should display audio recording alert when audio info throws an error and hearing must be recorded', async () => {
         audioRecordingService.getAudioStreamInfo.and.throwError('Error');
         component.conferenceRecordingInSessionForSeconds = 61;

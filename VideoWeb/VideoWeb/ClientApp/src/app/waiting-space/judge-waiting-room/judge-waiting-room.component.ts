@@ -212,7 +212,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         if (this.audioErrorToastOpen) {
             return;
         }
-        this.notificationToastrService.showAudioRecordingError(this.continueWithNoRecordingCallback.bind(this));
+        this.notificationToastrService.showAudioRecordingError(
+            this.continueWithNoRecordingCallback.bind(this),
+            this.autoDismissedAudioErrorToast.bind(this)
+        );
         this.audioErrorToastOpen = true;
     }
 
@@ -221,9 +224,13 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.audioErrorToastOpen = false;
     }
 
+    autoDismissedAudioErrorToast() {
+        this.audioErrorToastOpen = false;
+    }
+
     async retrieveAudioStreamInfo(hearingId): Promise<void> {
         if (this.conference.status === ConferenceStatus.InSession || this.participant.status === ParticipantStatus.InConsultation) {
-            console.log('incrementing counter');
+            this.notificationToastrService.clearAllToastNotifications();
             this.conferenceRecordingInSessionForSeconds += this.audioRecordingStreamCheckIntervalSeconds;
         } else {
             this.conferenceRecordingInSessionForSeconds = 0;
@@ -235,7 +242,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             try {
                 const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId);
                 this.logger.debug(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
-                console.log(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
                 if (!audioStreamWorking && !this.continueWithNoRecording && this.showVideo) {
                     this.logger.debug(`${this.loggerPrefixJudge} not recording when expected, show alert`);
                     this.showAudioRecordingAlert();

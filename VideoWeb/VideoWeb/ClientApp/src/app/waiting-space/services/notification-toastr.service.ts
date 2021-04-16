@@ -167,7 +167,7 @@ export class NotificationToastrService {
         };
     }
 
-    showAudioRecordingError(callback: Function) {
+    showAudioRecordingError(callback: Function, noAction: Function) {
         this.logger.debug(`${this.loggerPrefix} creating 'audio recording error' toastr notification`);
 
         let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('audio-alert.title')}</span>`;
@@ -179,6 +179,10 @@ export class NotificationToastrService {
         (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
             color: 'white',
             htmlBody: message,
+            onNoAction: async () => {
+                this.logger.info(`${this.loggerPrefix} No action called on show audio recording error. Defaulting to callback`);
+                noAction();
+            },
             buttons: [
                 {
                     label: this.translateService.instant('notification-toastr.poor-connection.dismiss'),
