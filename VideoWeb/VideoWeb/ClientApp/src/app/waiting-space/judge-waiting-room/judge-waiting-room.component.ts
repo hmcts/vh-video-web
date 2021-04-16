@@ -31,7 +31,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     audioRecordingInterval: NodeJS.Timer;
     isRecording: boolean;
     continueWithNoRecording = false;
-    showAudioRecordingAlert = false;
+    audioErrorToastOpen = false;
     audioRecordingStreamCheckIntervalSeconds = 10;
     conferenceRecordingInSessionForSeconds = 0;
     expanedPanel = true;
@@ -208,12 +208,25 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         }, this.audioRecordingStreamCheckIntervalSeconds * 1000);
     }
 
+    private showAudioRecordingAlert() {
+        if (this.audioErrorToastOpen) {
+            return;
+        }
+        this.notificationToastrService.showAudioRecordingError(this.continueWithNoRecordingCallback.bind(this));
+        this.audioErrorToastOpen = true;
+    }
+
+    continueWithNoRecordingCallback() {
+        this.continueWithNoRecording = true;
+        this.audioErrorToastOpen = false;
+    }
+
     async retrieveAudioStreamInfo(hearingId): Promise<void> {
-        if (this.conference.status === ConferenceStatus.InSession) {
+        if (this.conference.status === ConferenceStatus.InSession || this.participant.status === ParticipantStatus.InConsultation) {
+            console.log('incrementing counter');
             this.conferenceRecordingInSessionForSeconds += this.audioRecordingStreamCheckIntervalSeconds;
         } else {
             this.conferenceRecordingInSessionForSeconds = 0;
-            this.showAudioRecordingAlert = false;
             this.continueWithNoRecording = false;
         }
 
@@ -222,10 +235,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             try {
                 const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId);
                 this.logger.debug(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
-
-                if (!audioStreamWorking && !this.continueWithNoRecording) {
+                console.log(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
+                if (!audioStreamWorking && !this.continueWithNoRecording && this.showVideo) {
                     this.logger.debug(`${this.loggerPrefixJudge} not recording when expected, show alert`);
-                    this.showAudioRecordingAlert = true;
+                    this.showAudioRecordingAlert();
                 }
             } catch (error) {
                 this.logger.error(`${this.loggerPrefixJudge} Failed to get audio stream info`, error, { conference: this.conferenceId });
@@ -234,16 +247,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                     this.logger.info(`${this.loggerPrefixJudge} Should not continue without a recording. Show alert.`, {
                         conference: this.conferenceId
                     });
-                    this.showAudioRecordingAlert = true;
+                    this.showAudioRecordingAlert();
                 }
             }
         }
-    }
-
-    closeAlert(value) {
-        this.logger.debug(`${this.loggerPrefixJudge} Closing alert`);
-        this.showAudioRecordingAlert = !value;
-        this.continueWithNoRecording = true;
     }
 
     defineIsIMEnabled(): boolean {
