@@ -219,7 +219,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     continueWithNoRecordingCallback() {
-        console.log(this.audioErrorToast);
         if (this.audioErrorToast.actioned) {
             this.continueWithNoRecording = true;
         }
