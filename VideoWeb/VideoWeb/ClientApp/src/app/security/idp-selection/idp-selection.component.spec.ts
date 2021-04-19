@@ -106,13 +106,11 @@ describe('IdpSelectionComponent', () => {
 
     it('should return to root url if no return path is given', () => {
         mockOidcSecurityService.setAuthenticated(true);
-        spyOn(returnUrlService, 'popUrl').and.returnValue('');
         component.ngOnInit();
         expect(router.navigateByUrl).toHaveBeenCalledWith('/');
     });
 
     it('should fallback to root url if return url is invalid', () => {
-        spyOn(returnUrlService, 'popUrl').and.returnValue('');
         mockOidcSecurityService.setAuthenticated(true);
         router.navigateByUrl.and.callFake(() => {
             throw new Error('Invalid URL');
