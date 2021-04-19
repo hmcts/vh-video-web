@@ -37,7 +37,6 @@ export class NotificationToastrService {
     ) {
         const inviteKey = `${conferenceId}_${roomLabel}`;
         if (this.activeRoomInviteRequests.indexOf(inviteKey) >= 0) {
-            console.log("[ROB] - already in activeRoomInviteRequests");
             return;
         }
         this.activeRoomInviteRequests.push(inviteKey);
@@ -127,7 +126,7 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
-    showConsultationRejectedByLinkedParticipant(linkedParticipantName : string, consultationRoomLabel : string, inHearing : boolean = false) : VhToastComponent {
+    showConsultationRejectedByLinkedParticipant(linkedParticipantName : string, consultationRoomLabel : string, inHearing : boolean) : VhToastComponent {
         // TODO - Change to translated string
         const message = `${linkedParticipantName} rejected the invitation to ${consultationRoomLabel}.`
 

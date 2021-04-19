@@ -454,17 +454,40 @@ describe('WaitingRoomComponent EventHub Call', () => {
         const linkedParticipant = participantsLinked[1];
         const expectedConsultationRoomLabel = 'ConsultationRoom';
 
+        beforeEach(() => {
+            notificationToastrService.showConsultationRejectedByLinkedParticipant.calls.reset();
+        });
+
         it('should remove the existing toast for a room if it exists', () => {
             // Arrange
             const toastSpy = jasmine.createSpyObj<VhToastComponent>("VhToastComponent", ["remove"]);
             component.consultationInviteToasts[expectedConsultationRoomLabel] = toastSpy;
+            const expectedIsParticipantInHearing = true;
+
+            component.participant.status = ParticipantStatus.InHearing;
 
             // Act
             component.onLinkedParticiantRejectedConsultationInvite(linkedParticipant.display_name, expectedConsultationRoomLabel);
 
             // Assert
             expect(toastSpy.remove).toHaveBeenCalledTimes(1);
-            expect(notificationToastrService.showConsultationRejectedByLinkedParticipant).toHaveBeenCalledOnceWith(linkedParticipant.display_name, expectedConsultationRoomLabel);
+            expect(notificationToastrService.showConsultationRejectedByLinkedParticipant).toHaveBeenCalledOnceWith(linkedParticipant.display_name, expectedConsultationRoomLabel, expectedIsParticipantInHearing);
+        });
+
+        it('should remove the existing toast for a room if it exists', () => {
+            // Arrange
+            const toastSpy = jasmine.createSpyObj<VhToastComponent>("VhToastComponent", ["remove"]);
+            component.consultationInviteToasts[expectedConsultationRoomLabel] = toastSpy;
+            const expectedIsParticipantInHearing = false;
+
+            component.participant.status = ParticipantStatus.Available;
+
+            // Act
+            component.onLinkedParticiantRejectedConsultationInvite(linkedParticipant.display_name, expectedConsultationRoomLabel);
+
+            // Assert
+            expect(toastSpy.remove).toHaveBeenCalledTimes(1);
+            expect(notificationToastrService.showConsultationRejectedByLinkedParticipant).toHaveBeenCalledOnceWith(linkedParticipant.display_name, expectedConsultationRoomLabel, expectedIsParticipantInHearing);
         });
     });
 

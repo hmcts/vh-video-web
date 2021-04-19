@@ -208,14 +208,11 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     onLinkedParticiantRejectedConsultationInvite(linkedParticipantId : string, consulationRoomLabel : string) {
-        console.log("[ROB] -  onLinkedParticiantRejectedConsultationInvite");
         if (this.consultationInviteToasts.hasOwnProperty(consulationRoomLabel)) {
-            console.log("[ROB] -  remove existing toast");
             this.consultationInviteToasts[consulationRoomLabel].remove();
         }
 
-        this.notificationToastrService.showConsultationRejectedByLinkedParticipant(linkedParticipantId, consulationRoomLabel);
-        console.log();
+        this.notificationToastrService.showConsultationRejectedByLinkedParticipant(linkedParticipantId, consulationRoomLabel, this.participant.status === ParticipantStatus.InHearing);
     }
 
     startEventHubSubscribers() {
@@ -246,15 +243,12 @@ export abstract class WaitingRoomBaseDirective {
         this.logger.debug(`${this.loggerPrefix} Subscribing to ConsultationRequestResponseMessage`);
         this.eventHubSubscription$.add(
             this.eventService.getConsultationRequestResponseMessage().subscribe(async message => {
-                console.log("[ROB]-----------------------");
-                console.log("[ROB] - ConsultationRequestResponseMessage recieved", message.answer, message.requestedFor, message.sentByClient, "my id", this.participant.id);
+                console.log("[ROB] - My ID", this.participant.id, "RequestFor", message.requestedFor, "Answer", message.answer);
                 if (message.answer && message.answer === ConsultationAnswer.Accepted && message.requestedFor === this.participant.id) {
-                    console.log("[ROB] - onConsultationAccepted");
                     await this.onConsultationAccepted();
                 }
 
                 if (message.answer && message.answer === ConsultationAnswer.Rejected && message.sentByClient) {
-                    console.log("[ROB] - onConsultationRejected");
                     this.onConsultationRejected(message.roomLabel);
                 }
 
@@ -262,12 +256,9 @@ export abstract class WaitingRoomBaseDirective {
                     message.answer !== ConsultationAnswer.Accepted &&
                     message.answer !== ConsultationAnswer.Transferring &&
                     message.sentByClient) {
-                    console.log("[ROB] - message.answer !== ConsultationAnswer.Accepted");
                     const participantLink = this.participant.linked_participants.find((linkedParticipant) => message.requestedFor === linkedParticipant.linked_id);
-                    console.log("[ROB] - participantLink =", participantLink);
                     if (participantLink) {
                         const participant = this.findParticipant(participantLink.linked_id);
-                        console.log("[ROB] - participant =", participant);
                         this.onLinkedParticiantRejectedConsultationInvite(participant.display_name, message.roomLabel);
                     }
                 }
@@ -387,6 +378,7 @@ export abstract class WaitingRoomBaseDirective {
     protected findParticipantsInRoom(roomLabel: string): ParticipantResponse[] {
         return this.conference.participants.filter(x => x.current_room?.label === roomLabel);
     }
+
     protected findEndpointsInRoom(roomLabel: string): VideoEndpointResponse[] {
         return this.conference.endpoints.filter(x => x.current_room?.label === roomLabel);
     }

@@ -14,7 +14,6 @@ import { PageTrackerService } from './services/page-tracker.service';
 import { ConnectionStatusService } from './services/connection-status.service';
 import { pageUrls } from './shared/page-url.constants';
 import { MockOidcSecurityService } from './testing/mocks/mock-oidc-security.service';
-import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { TestLanguageService } from './shared/test-language.service';
 import { translateServiceSpy } from './testing/mocks/mock-translation.service';
 
@@ -77,7 +76,6 @@ describe('AppComponent', () => {
             titleServiceSpy,
             activatedRoute,
             locationServiceSpy,
-            eventsServiceSpy,
             connectionStatusServiceSpy,
             pageTrackerServiceSpy,
             testLanguageServiceSpy,
@@ -108,15 +106,6 @@ describe('AppComponent', () => {
         component.ngOnInit();
         flushMicrotasks();
         expect(connectionStatusServiceSpy.start).toHaveBeenCalled();
-    }));
-
-    it('should start event service if authenticated oninit', fakeAsync(() => {
-        locationServiceSpy.getCurrentUrl.and.returnValue(pageUrls.AdminVenueList);
-        locationServiceSpy.getCurrentPathName.and.returnValue(`/${pageUrls.AdminVenueList}`);
-        mockOidcSecurityService.setAuthenticated(true);
-        component.ngOnInit();
-        flushMicrotasks();
-        expect(eventsServiceSpy.start).toHaveBeenCalled();
     }));
 
     it('should prompt user to login if not authenticated', () => {
