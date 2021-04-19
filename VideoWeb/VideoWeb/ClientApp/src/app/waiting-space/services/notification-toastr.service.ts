@@ -95,7 +95,7 @@ export class NotificationToastrService {
             onNoAction: async () => {
                 await respondToConsultationRequest(ConsultationAnswer.None);
             },
-            cleanUp: () => {
+            onRemove: () => {
                 if (this.toastr.toasts.length === 1) {
                     this.notificationSoundService.stopConsultationRequestRingtone();
                 }
@@ -145,9 +145,7 @@ export class NotificationToastrService {
             onNoAction: async () => {
                 this.toastr.remove(toast.toastId);
             },
-            cleanUp: () => {
-
-            },
+            onRemove: () => {},
             buttons: [
                 {
                     // TODO - Change to translated string
@@ -197,6 +195,7 @@ export class NotificationToastrService {
             onNoAction: async () => {
                 this.logger.info(`${this.loggerPrefix} No action called on poor connection alert`);
             },
+            onRemove: () => {},
             buttons: [
                 {
                     label: this.translateService.instant('notification-toastr.poor-connection.dismiss'),

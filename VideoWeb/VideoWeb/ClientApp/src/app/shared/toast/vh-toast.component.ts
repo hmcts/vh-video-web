@@ -7,7 +7,7 @@ export interface VhToastOptions {
     htmlBody?: string;
     buttons: VhToastButton[];
     onNoAction?: () => void;
-    cleanUp : () => void;
+    onRemove : () => void;
 }
 
 export interface VhToastButton {
@@ -41,7 +41,7 @@ export class VhToastComponent extends Toast {
             this.vhToastOptions.onNoAction();
         }
 
-        this.vhToastOptions.cleanUp();
+        this.vhToastOptions.onRemove();
 
         super.remove();
     }
