@@ -49,4 +49,7 @@ export class MockOidcSecurityService {
     }
     authorize() {}
     login() {}
+    logout(){
+        this.logoffAndRevokeTokens();
+    }
 }

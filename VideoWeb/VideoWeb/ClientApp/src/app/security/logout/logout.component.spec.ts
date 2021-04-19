@@ -23,17 +23,17 @@ describe('LogoutComponent', () => {
         const sessionStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
         sessionStorage.set(['one', 'tow']);
         oidcSecurityService.setAuthenticated(true);
-        spyOn(oidcSecurityService, 'logoffAndRevokeTokens').and.callFake(() => {});
+        spyOn(oidcSecurityService, 'logout').and.callFake(() => {});
         component.ngOnInit();
-        expect(oidcSecurityService.logoffAndRevokeTokens).toHaveBeenCalled();
+        expect(oidcSecurityService.logout).toHaveBeenCalled();
         expect(sessionStorage.get()).toBeNull();
     });
 
     it('should not call logout if unauthenticated', () => {
         oidcSecurityService.setAuthenticated(false);
-        spyOn(oidcSecurityService, 'logoffAndRevokeTokens').and.callFake(() => {});
+        spyOn(oidcSecurityService, 'logout').and.callThrough();
         component.ngOnInit();
-        expect(oidcSecurityService.logoffAndRevokeTokens).toHaveBeenCalledTimes(0);
+        expect(oidcSecurityService.logout).toHaveBeenCalledTimes(0);
     });
 
     it('should return true for "loggedIn" when authenticated', async () => {
