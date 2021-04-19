@@ -9,7 +9,6 @@ import { DeviceTypeService } from './services/device-type.service';
 import { ErrorService } from './services/error.service';
 import { LocationService } from './services/location.service';
 import { PageTrackerService } from './services/page-tracker.service';
-import { EventsService } from './services/events.service';
 import { ConnectionStatusService } from './services/connection-status.service';
 import { pageUrls } from './shared/page-url.constants';
 import { TestLanguageService } from './shared/test-language.service';
@@ -42,7 +41,6 @@ export class AppComponent implements OnInit, OnDestroy {
         private titleService: Title,
         private activatedRoute: ActivatedRoute,
         private locationService: LocationService,
-        private eventsService: EventsService,
         private connectionStatusService: ConnectionStatusService,
         pageTracker: PageTrackerService,
         testLanguageService: TestLanguageService,
@@ -83,7 +81,6 @@ export class AppComponent implements OnInit, OnDestroy {
         this.checkBrowser();
         this.setPageTitle();
         this.setupSubscribers();
-        this.eventsService.start();
         this.connectionStatusService.start();
     }
 
@@ -102,7 +99,6 @@ export class AppComponent implements OnInit, OnDestroy {
                 next: (event: NavigationEnd) => {
                     if (event instanceof NavigationEnd) {
                         // If the connection has failed and passed the max number of retries, we need to trigger a manual reconnect attempt.
-                        this.eventsService.start();
                         this.scrollToTop();
                     }
                 }

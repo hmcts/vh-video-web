@@ -119,6 +119,10 @@ parameters:
             value: $(wowza_storageAccountKey)
           - name: WowzaConfiguration:StorageContainerName
             value: $(wowza_storageContainerName)
+            
+          # Ejud - test setting only
+          - name: UsingEjud
+            value: $(UsingEjud)
 
     - name: appSettings
       type: object
