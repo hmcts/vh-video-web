@@ -166,4 +166,30 @@ export class NotificationToastrService {
             ]
         };
     }
+
+    showAudioRecordingError(callback: Function) {
+        this.logger.debug(`${this.loggerPrefix} creating 'audio recording error' toastr notification`);
+
+        let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('audio-alert.title')}</span>`;
+        message += `<br/>${this.translateService.instant('audio-alert.message')}<br/>`;
+        const toast = this.toastr.show('', '', {
+            tapToDismiss: false,
+            toastComponent: VhToastComponent
+        });
+        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
+            color: 'white',
+            htmlBody: message,
+            buttons: [
+                {
+                    label: this.translateService.instant('notification-toastr.poor-connection.dismiss'),
+                    hoverColour: 'green',
+                    action: async () => {
+                        this.toastr.remove(toast.toastId);
+                        callback();
+                    }
+                }
+            ]
+        };
+        return toast.toastRef.componentInstance as VhToastComponent;
+    }
 }

@@ -13,7 +13,8 @@ import {
     globalWitness,
     globalEndpoint,
     notificationSoundsService,
-    toastrService
+    toastrService,
+    initAllWRDependencies
 } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { NotificationToastrService } from './notification-toastr.service';
 
@@ -23,7 +24,9 @@ describe('NotificationToastrService', () => {
     let roomLabel: string;
     const translateService = translateServiceSpy;
 
-    beforeAll(() => {});
+    beforeAll(() => {
+        initAllWRDependencies();
+    });
 
     beforeEach(() => {
         service = new NotificationToastrService(logger, toastrService, consultationService, notificationSoundsService, translateService);
@@ -35,6 +38,21 @@ describe('NotificationToastrService', () => {
 
     it('should create', async () => {
         expect(service).toBeTruthy();
+    });
+
+    it('should return the audio alert component', () => {
+        const mockToast = {
+            toastRef: {
+                componentInstance: {}
+            }
+        } as ActiveToast<VhToastComponent>;
+        toastrService.show.and.returnValue(mockToast);
+        const callback = jasmine.createSpy();
+
+        const result = service.showAudioRecordingError(callback);
+
+        expect(result).toBeDefined();
+        expect(result.vhToastOptions.htmlBody).toContain('audio-alert.title');
     });
 
     it('showConsultationInvite should only show invite for room once', async () => {
