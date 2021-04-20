@@ -150,7 +150,6 @@ export abstract class PanelModel {
     }
 
     private setOrderInTheList(): number {
-        let order = 3;
         if (this.role === Role.Judge) {
             return 1;
         } else if (this.role === Role.JudicialOfficeHolder) {
