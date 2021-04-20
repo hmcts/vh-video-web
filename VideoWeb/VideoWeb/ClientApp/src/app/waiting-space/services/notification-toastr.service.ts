@@ -20,7 +20,6 @@ export class NotificationToastrService {
         private notificationSoundService: NotificationSoundsService,
         private translateService: TranslateService
     ) {
-        console.log('a', toastr, 'b', notificationSoundService);
         this.notificationSoundService.initConsultationRequestRingtone();
     }
 
@@ -128,8 +127,10 @@ export class NotificationToastrService {
     }
 
     showConsultationRejectedByLinkedParticipant(linkedParticipantName: string, consultationRoomLabel: string, inHearing: boolean): VhToastComponent {
-        // TODO - Change to translated string
-        const message = `${linkedParticipantName} rejected the invitation to ${consultationRoomLabel}.`;
+        let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('notification-toastr.linked-participants.rejected', {
+            name: linkedParticipantName,
+            room : consultationRoomLabel
+        })}</span>`;
 
         const toast = this.toastr.show('', '', {
             timeOut: 120000,
@@ -148,8 +149,7 @@ export class NotificationToastrService {
             onRemove: () => {},
             buttons: [
                 {
-                    // TODO - Change to translated string
-                    label: this.translateService.instant('notification-toastr.invite.decline'),
+                    label: this.translateService.instant('notification-toastr.linked-participants.button-close'),
                     hoverColour: 'red',
                     action: async () => {
                         this.toastr.remove(toast.toastId);
@@ -162,9 +162,18 @@ export class NotificationToastrService {
     }
 
     showWaitingForLinkedParticipantsToAccept(linkedParticipantNames: string[], consultationRoomLabel: string, inHearing: boolean): VhToastComponent {
-        // TODO - Change to translated string
-        const message = linkedParticipantNames.length > 1 ?     `Waiting for ${linkedParticipantNames.length} other participants to accept the invitation to ${consultationRoomLabel}.` :
-                                                                `Waiting for ${linkedParticipantNames[0]} to accept the invitation to ${consultationRoomLabel}.`;
+        let message : string;
+        if (linkedParticipantNames.length > 1) {
+            message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('notification-toastr.linked-participants.waiting-multiple', {
+                number: linkedParticipantNames.length,
+                room : consultationRoomLabel
+            })}</span>`;
+        } else {
+            message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('notification-toastr.linked-participants.waiting-single', {
+                name: linkedParticipantNames[0],
+                room : consultationRoomLabel
+            })}</span>`;
+        }
 
         const toast = this.toastr.show('', '', {
             timeOut: 120000,
@@ -183,8 +192,7 @@ export class NotificationToastrService {
             onRemove: () => {},
             buttons: [
                 {
-                    // TODO - Change to translated string
-                    label: this.translateService.instant('notification-toastr.invite.decline'),
+                    label: this.translateService.instant('notification-toastr.linked-participants.button-close'),
                     hoverColour: 'red',
                     action: async () => {
                         this.toastr.remove(toast.toastId);

@@ -1002,6 +1002,12 @@
       "accept": "Accept",
       "decline": "Decline"
     },
+    "linked-participants": {
+        "waiting-single": "Waiting for {{name}} to accept the invitation to {{room}}.",
+        "waiting-multiple": "Waiting for {{number}} other participants to accept the invitation to {{room}}.",
+        "rejected": "{{name}} rejected the invitation to {{room}}",
+        "button-close": "Close"
+    },
     "poor-connection": {
       "title": "Alert",
       "message": "Your internet connection is poor. People may have trouble seeing and hearing you.",

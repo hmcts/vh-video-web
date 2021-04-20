@@ -344,12 +344,15 @@ describe('NotificationToastrService', () => {
         const expectedToastId = 2;
         const expectedInHearingColor = 'white';
         const expectedNotInHearingColor = 'black';
-        const expectedBody = `${expectedParticipantName} rejected the invitation to ${expectedConsulationRoomLabel}.`;
+        const expectedTranslationString = 'notification-toastr.linked-participants.rejected';
+        const expectedBody = `<span class="govuk-!-font-weight-bold">${expectedTranslationString}</span>`;
+        const expectedButtonTranslationString = 'notification-toastr.linked-participants.button-close';
         let mockToast: ActiveToast<VhToastComponent>;
 
         beforeEach(() => {
         toastrService.show.calls.reset();
         toastrService.remove.calls.reset();
+        translateServiceSpy.instant.calls.reset();
         mockToast = {
                 toastId : expectedToastId,
                 toastRef: {
@@ -376,7 +379,6 @@ describe('NotificationToastrService', () => {
             it('should have a button to close the toast', () => {
                 // Arrange
                 const expectedHoverColor = 'red';
-                const expectedLabel = 'notification-toastr.invite.decline';
                 toastrService.show.and.returnValue(mockToast);
 
                 // Act
@@ -386,7 +388,7 @@ describe('NotificationToastrService', () => {
                 expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
                 expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
                 expect(toastComponentInstance.vhToastOptions.buttons[0].hoverColour).toBe(expectedHoverColor);
-                expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedLabel);
+                expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedButtonTranslationString);
             });
 
             it('should call toastr.remove with the toast id when the button action is triggered', () => {
@@ -426,6 +428,10 @@ describe('NotificationToastrService', () => {
 
                 // Assert
                 expect(toastComponentInstance.vhToastOptions.htmlBody).toBe(expectedBody);
+                expect(translateServiceSpy.instant).toHaveBeenCalledTimes(2);
+                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedTranslationString, { name : expectedParticipantName , room : expectedConsulationRoomLabel })
+                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedButtonTranslationString);
+
             });
 
             it('should have the color black when NOT in hearing', () => {
@@ -455,32 +461,34 @@ describe('NotificationToastrService', () => {
     describe('showWaitingForLinkedParticipantsToAccept', () => {
         const linkedParticipantName = ['Linked Participant 1'];
         const multipleLinkedParticipantNames = ['Linked Participant 1', 'Linked Participant 2'];
-        const expectedParticipantName = 'First Last';
         const expectedConsulationRoomLabel = 'Consultation Room';
         const expectedToastId = 2;
         const expectedInHearingColor = 'white';
         const expectedNotInHearingColor = 'black';
-        const expectedBody = `Waiting for ${linkedParticipantName[0]} to accept the invitation to ${expectedConsulationRoomLabel}.`;
-        const expectedBodyForMultipleParticipants = `Waiting for ${multipleLinkedParticipantNames.length} other participants to accept the invitation to ${expectedConsulationRoomLabel}.`;
+        const expectedTranslationString = 'notification-toastr.linked-participants.waiting-single';
+        const expectedBody = `<span class="govuk-!-font-weight-bold">${expectedTranslationString}</span>`;
+        const expectedTranslationStringForMultipleParticipants = 'notification-toastr.linked-participants.waiting-multiple';
+        const expectedBodyForMultipleParticipants = `<span class="govuk-!-font-weight-bold">${expectedTranslationStringForMultipleParticipants}</span>`;
+        const expectedButtonTranslationString = 'notification-toastr.linked-participants.button-close';
 
         let mockToast: ActiveToast<VhToastComponent>;
 
         beforeEach(() => {
-        toastrService.show.calls.reset();
-        toastrService.remove.calls.reset();
-        mockToast = {
-                toastId : expectedToastId,
-                toastRef: {
-                    componentInstance: {}
-                }
-            } as ActiveToast<VhToastComponent>;
+            toastrService.show.calls.reset();
+            toastrService.remove.calls.reset();
+            translateServiceSpy.instant.calls.reset();
+            mockToast = {
+                    toastId : expectedToastId,
+                    toastRef: {
+                        componentInstance: {}
+                    }
+                } as ActiveToast<VhToastComponent>;
         });
 
         describe('expected toast configuration', () => {
             it('should have a button to close the toast', () => {
                 // Arrange
                 const expectedHoverColor = 'red';
-                const expectedLabel = 'notification-toastr.invite.decline';
                 toastrService.show.and.returnValue(mockToast);
 
                 // Act
@@ -490,7 +498,7 @@ describe('NotificationToastrService', () => {
                 expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
                 expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
                 expect(toastComponentInstance.vhToastOptions.buttons[0].hoverColour).toBe(expectedHoverColor);
-                expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedLabel);
+                expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedButtonTranslationString);
             });
 
             it('should call toastr.remove with the toast id when the button action is triggered', () => {
@@ -530,6 +538,9 @@ describe('NotificationToastrService', () => {
 
                 // Assert
                 expect(toastComponentInstance.vhToastOptions.htmlBody).toBe(expectedBody);
+                expect(translateServiceSpy.instant).toHaveBeenCalledTimes(2);
+                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedTranslationString, { name : linkedParticipantName[0] , room : expectedConsulationRoomLabel })
+                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedButtonTranslationString);
             });
 
             it('should have a correctly formatted body for multiple linked participants', () => {
@@ -538,6 +549,9 @@ describe('NotificationToastrService', () => {
 
                 // Assert
                 expect(toastComponentInstance.vhToastOptions.htmlBody).toBe(expectedBodyForMultipleParticipants);
+                expect(translateServiceSpy.instant).toHaveBeenCalledTimes(2);
+                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedTranslationStringForMultipleParticipants, { number : multipleLinkedParticipantNames.length, room : expectedConsulationRoomLabel });
+                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedButtonTranslationString);
             });
 
             it('should have the color black when NOT in hearing', () => {
