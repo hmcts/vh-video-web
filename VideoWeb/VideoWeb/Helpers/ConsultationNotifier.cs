@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
@@ -82,11 +83,11 @@ namespace VideoWeb.Helpers
             if (participantFor.LinkedParticipants.Any())
             {
                 await NotifyLinkedParticipantsOfConsultationResponseAsync(conference, participantFor, roomLabel, answer);
-            }
 
-            if (answer == ConsultationAnswer.Transferring && participantFor.LinkedParticipants.Any())
-            {
-                await _consultationResponseTracker.ClearResponses(conference, requestedForId);
+                if (answer != ConsultationAnswer.Accepted)
+                {
+                    await _consultationResponseTracker.ClearResponses(conference, requestedForId);
+                }
             }
         }
         

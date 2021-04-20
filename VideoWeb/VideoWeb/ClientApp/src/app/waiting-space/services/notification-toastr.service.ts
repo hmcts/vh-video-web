@@ -95,18 +95,19 @@ export class NotificationToastrService {
                 await respondToConsultationRequest(ConsultationAnswer.None);
             },
             onRemove: () => {
-                if (this.toastr.toasts.length === 1) {
-                    this.notificationSoundService.stopConsultationRequestRingtone();
-                }
-
                 const index = this.activeRoomInviteRequests.indexOf(inviteKey);
                 this.activeRoomInviteRequests.splice(index, 1);
+
+                if (this.activeRoomInviteRequests.length === 0) {
+                    this.notificationSoundService.stopConsultationRequestRingtone();
+                }
             },
             buttons: [
                 {
                     label: this.translateService.instant('notification-toastr.invite.accept'),
                     hoverColour: 'green',
                     action: async () => {
+                        console.log("[ROB] - Accept clicked");
                         await respondToConsultationRequest(ConsultationAnswer.Accepted);
                         this.toastr.remove(toast.toastId);
                     }
@@ -115,10 +116,8 @@ export class NotificationToastrService {
                     label: this.translateService.instant('notification-toastr.invite.decline'),
                     hoverColour: 'red',
                     action: async () => {
+                        console.log("[ROB] - Decline clicked");
                         await respondToConsultationRequest(ConsultationAnswer.Rejected);
-                        if (this.toastr.toasts.length === 1) {
-                            this.notificationSoundService.stopConsultationRequestRingtone();
-                        }
                     }
                 }
             ]
@@ -202,11 +201,6 @@ export class NotificationToastrService {
         };
 
         return toast.toastRef.componentInstance as VhToastComponent;
-    }
-
-    clearAllToastNotifications() {
-        this.toastr.clear();
-        this.notificationSoundService.stopConsultationRequestRingtone();
     }
 
     reportPoorConnection(heartbeat: ParticipantHeartbeat) {

@@ -175,6 +175,23 @@ namespace VideoWeb.UnitTests.Services
         }
 
         [Test]
+        public async Task should_clear_consultation_response_tracker()
+        {
+            // arrange
+            var linkedParticipant = _conference.Participants.First(x => !x.IsJudge() && x.LinkedParticipants.Any());
+            var roomLabel = "ConsultationRoom1";
+            var answer = ConsultationAnswer.Accepted;
+
+            // act
+            await _sut.NotifyConsultationResponseAsync(_conference, roomLabel, linkedParticipant.Id, answer);
+
+            // assert
+            _mocker.Mock<IEventHubClient>().Verify(
+                x => x.ConsultationRequestResponseMessage(_conference.Id, roomLabel, linkedParticipant.Id, answer, It.IsAny<bool>()),
+                Times.Exactly(_conference.Participants.Count));
+        }
+
+        [Test]
         public async Task should_send_message_to_other_party_when_all_linked_participant_respond_accept()
         {
             // arrange
@@ -236,6 +253,36 @@ namespace VideoWeb.UnitTests.Services
             // act
             await _sut.NotifyConsultationResponseAsync(_conference, roomLabel, linkedParticipant.Id, answer);
             
+            // assert
+            var room = _conference.CivilianRooms.First(x => x.Participants.Contains(linkedParticipant.Id));
+            var cache = _dictionaryCache.GetCache();
+            cache.ContainsKey(room.Id).Should().BeFalse();
+
+            _dictionaryCache.GetCache().ContainsKey(room.Id).Should().BeFalse();
+        }
+
+        [TestCase(ConsultationAnswer.None)]
+        [TestCase(ConsultationAnswer.Failed)]
+        [TestCase(ConsultationAnswer.Rejected)]
+        public async Task should_clear_responses_when_participant_doesnot_accept(ConsultationAnswer answer)
+        {
+            // arrange
+            var linkedParticipant = _conference.Participants.First(x => !x.IsJudge() && x.LinkedParticipants.Any());
+            var linked = _conference.Participants
+                .Where(p => linkedParticipant.LinkedParticipants.Select(x => x.LinkedId).Contains(p.Id)).ToList();
+            var roomLabel = "ConsultationRoom1";
+
+            await _consultationResponseTracker.UpdateConsultationResponse(_conference, linkedParticipant.Id,
+                ConsultationAnswer.Accepted);
+            foreach (var lParticipant in linked)
+            {
+                await _consultationResponseTracker.UpdateConsultationResponse(_conference, lParticipant.Id,
+                    ConsultationAnswer.Accepted);
+            }
+
+            // act
+            await _sut.NotifyConsultationResponseAsync(_conference, roomLabel, linkedParticipant.Id, answer);
+
             // assert
             var room = _conference.CivilianRooms.First(x => x.Participants.Contains(linkedParticipant.Id));
             var cache = _dictionaryCache.GetCache();
