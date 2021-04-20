@@ -259,17 +259,17 @@ export abstract class WaitingRoomBaseDirective {
         this.logger.debug(`${this.loggerPrefix} Subscribing to ConsultationRequestResponseMessage`);
         this.eventHubSubscription$.add(
             this.eventService.getConsultationRequestResponseMessage().subscribe(async message => {
-                console.log('[ROB] - My ID', this.participant.id, 'RequestFor', message.requestedFor, 'Answer', message.answer, "Sent by Client", message.sentByClient);
-                if (message.answer && message.sentByClient) {
+                console.log('[ROB] - My ID', this.participant.id, 'RequestFor', message.requestedFor, 'Answer', message.answer, 'Sent by Client', message.sentByClient);
+                if (message.answer) {
                     if (message.requestedFor === this.participant.id) {
-                        if (message.answer === ConsultationAnswer.Accepted) {
+                        if (message.answer === ConsultationAnswer.Accepted && message.sentByClient) {
                             await this.onConsultationAccepted(message.roomLabel);
                         } else if (message.answer === ConsultationAnswer.Transferring) {
                             this.onTransferingToConsultation(message.roomLabel);
-                        } else {
+                        } else if (message.sentByClient) {
                             this.onConsultationRejected(message.roomLabel);
                         }
-                    } else {
+                    } else if (message.sentByClient) {
                         if (this.participant.linked_participants.find((linkedParticipant) => message.requestedFor === linkedParticipant.linked_id)) {
                             const linkedParticipant = this.findParticipant(message.requestedFor);
 
@@ -431,13 +431,13 @@ export abstract class WaitingRoomBaseDirective {
         for (const linkedParticipantId in linkedParticipantStatuses) {
             if (linkedParticipantStatuses.hasOwnProperty(linkedParticipantId)) {
                 if (!linkedParticipantStatuses[linkedParticipantId]) {
-                    waitingOnLinkedParticipants.push(this.findParticipant(linkedParticipantId).display_name);
+                    waitingOnLinkedParticipants.push(this.findParticipant(linkedParticipantId)?.display_name);
                 }
             }
         }
 
         if (waitingOnLinkedParticipants.length > 0) {
-            console.log("[ROB] Setting active toast", waitingOnLinkedParticipants);
+            console.log('[ROB] Setting active toast', waitingOnLinkedParticipants);
             this.consultationInvitiationService.getInvitation(roomLabel).activeToast = this.notificationToastrService.showWaitingForLinkedParticipantsToAccept(waitingOnLinkedParticipants, roomLabel, this.participant.status === ParticipantStatus.InHearing);
         }
     }

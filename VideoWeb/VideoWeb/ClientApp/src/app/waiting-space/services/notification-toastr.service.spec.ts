@@ -282,8 +282,7 @@ describe('NotificationToastrService', () => {
                 roomLabel
             );
             expect(consultationService.respondToConsultationRequest).toHaveBeenCalledTimes(1);
-            expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalledTimes(1);
-            expect(toastrService.clear).toHaveBeenCalledTimes(1);
+            expect(toastrService.remove).toHaveBeenCalledOnceWith(mockToast.toastId);
         });
 
         it('should add decline button', async () => {

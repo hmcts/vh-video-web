@@ -34,6 +34,7 @@ import {
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
 import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { ConsultationInvitation } from '../../services/consultation-invitation.service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
@@ -41,6 +42,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     let activatedRoute: ActivatedRoute;
     let logged: LoggedParticipantResponse;
     const translateService = translateServiceSpy;
+    let consultationInvitiationSpy: jasmine.SpyObj<ConsultationInvitation>;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -48,6 +50,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     beforeEach(async () => {
+        consultationInvitiationSpy = jasmine.createSpyObj<ConsultationInvitation>('ConsultationInvitation', ['addLinkedParticipant', 'updateLinkedParticipantStatus'], ['linkedParticipantStatuses', 'activeToast']);
         logged = new LoggedParticipantResponse({
             participant_id: globalParticipant.id,
             display_name: globalParticipant.display_name,
@@ -79,6 +82,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             translateService,
             consultationInvitiationService
         );
+
+       consultationInvitiationService.getInvitation.and.returnValue(consultationInvitiationSpy);
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));

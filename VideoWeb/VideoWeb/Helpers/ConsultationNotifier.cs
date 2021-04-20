@@ -74,8 +74,11 @@ namespace VideoWeb.Helpers
             var haveAllAccepted =
                 await _consultationResponseTracker.HaveAllParticipantsAccepted(conference, participantFor.Id);
 
-
             await PublishResponseMessage(conference, roomLabel, participantFor.Id, answer);
+
+            if (answer == ConsultationAnswer.Accepted && !haveAllAccepted)
+                return;
+
             if (participantFor.LinkedParticipants.Any())
             {
                 await NotifyLinkedParticipantsOfConsultationResponseAsync(conference, participantFor, roomLabel, answer);

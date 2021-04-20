@@ -72,7 +72,6 @@ describe('VhToastComponent', () => {
         spyOn(VhToastComponent.prototype, 'remove');
         component.remove();
         expect(VhToastComponent.prototype.remove).toHaveBeenCalledTimes(1);
-        expect(component.vhToastOptions.onRemove).toHaveBeenCalledTimes(1);
     });
 
     it('should return true for get black', () => {

@@ -15,6 +15,7 @@ using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Services
 {
+    [TestFixture]
     public class ConsultationNotifierTests
     {
         private AutoMock _mocker;
@@ -157,7 +158,7 @@ namespace VideoWeb.UnitTests.Services
         }
 
         [Test]
-        public async Task should_not_send_message_to_other_party_when_not_all_linked_participant_respond()
+        public async Task should_send_message_to_all_parties_when_a_participant_responds()
         {
             // arrange
             var linkedParticipant = _conference.Participants.First(x => !x.IsJudge() && x.LinkedParticipants.Any());
@@ -170,7 +171,7 @@ namespace VideoWeb.UnitTests.Services
             // assert
             _mocker.Mock<IEventHubClient>().Verify(
                 x => x.ConsultationRequestResponseMessage(_conference.Id, roomLabel, linkedParticipant.Id, answer, It.IsAny<bool>()),
-                Times.Never);
+                Times.Exactly(_conference.Participants.Count));
         }
 
         [Test]

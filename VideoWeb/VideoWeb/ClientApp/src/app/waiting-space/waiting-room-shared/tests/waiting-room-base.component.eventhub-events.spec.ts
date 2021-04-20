@@ -1,4 +1,4 @@
-import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
+import { fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import {
@@ -449,7 +449,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         expect(component.videoStream.nativeElement.muted).toBeTruthy();
     });
 
-    fdescribe('onConsultationAccepted', () => {
+    describe('onConsultationAccepted', () => {
         beforeEach(() => {
             notificationToastrService.showWaitingForLinkedParticipantsToAccept.calls.reset();
             consultationInvitiationService.getInvitation.calls.reset();
@@ -466,7 +466,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             notificationToastrService.showWaitingForLinkedParticipantsToAccept.and.returnValue(expectedToastSpy);
 
             const findParticipantSpy = component['findParticipant'] = jasmine.createSpy('findParticipant');
-            findParticipantSpy.and.returnValues({display_name:'lp2'}, {display_name:'lp3'});
+            findParticipantSpy.and.returnValues({display_name: 'lp2'}, {display_name: 'lp3'});
 
             const expectedLinkedParticipantsWhoHaventAccepted = ['lp2', 'lp3'];
 
@@ -488,7 +488,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         it('should NOT raise a toast detailing the statuses of linked participants if there are NO linked participants who have NOT accepted', () => {
             // Arrange
             const invitationSpy = jasmine.createSpyObj<ConsultationInvitation>('ConsultationInvitation', ['addLinkedParticipant'], ['linkedParticipantStatuses']);
-            spyPropertyGetter(invitationSpy, 'linkedParticipantStatuses').and.returnValue({ 'lp1' : false, 'lp2' : false, 'lp3' : false, 'lp4' : false });
+            spyPropertyGetter(invitationSpy, 'linkedParticipantStatuses').and.returnValue({ 'lp1' : true, 'lp2' : true, 'lp3' : true, 'lp4' : true });
             consultationInvitiationService.getInvitation.and.returnValue(invitationSpy);
 
             // Act
@@ -676,7 +676,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
             // Assert
             expect(component.onConsultationRejected).toHaveBeenCalledOnceWith(expectedConsultationRoomLabel);
-        })
+        });
 
         it('should NOT raise any toasts if the request was not raised directly by the linked participants client', () => {
             // Arrange
