@@ -103,7 +103,6 @@ export abstract class WaitingRoomBaseDirective {
     @ViewChild('roomTitleLabel', { static: false }) roomTitleLabel: ElementRef<HTMLDivElement>;
     @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
     countdownComplete: boolean;
-    consultationInviteToasts: { [roomLabel: string]: VhToastComponent } = {};
 
     protected constructor(
         protected route: ActivatedRoute,
@@ -214,11 +213,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     onLinkedParticiantRejectedConsultationInvite(linkedParticipantId: string, consulationRoomLabel: string) {
-        if (this.consultationInviteToasts.hasOwnProperty(consulationRoomLabel)) {
-            this.consultationInviteToasts[consulationRoomLabel].declinedByThirdParty = true;
-            this.consultationInviteToasts[consulationRoomLabel].remove();
-        }
-
+        this.consultationInvitiationService.getInvitation(consulationRoomLabel).activeToast.declinedByThirdParty = true;
         this.notificationToastrService.showConsultationRejectedByLinkedParticipant(linkedParticipantId, consulationRoomLabel, this.participant.status === ParticipantStatus.InHearing);
         this.consultationInvitiationService.removeInvitation(consulationRoomLabel);
     }
@@ -309,12 +304,10 @@ export abstract class WaitingRoomBaseDirective {
                         this.participant.status !== ParticipantStatus.Available
                     );
 
-                    // this.consultationInvitiationService.getInvitation(message.roomLabel).activeToast = consultationInviteToast;
+                    this.consultationInvitiationService.getInvitation(message.roomLabel).activeToast = consultationInviteToast;
                     for (const linkedParticipant of this.participant.linked_participants) {
                         this.consultationInvitiationService.getInvitation(message.roomLabel).addLinkedParticipant(linkedParticipant.linked_id);
                     }
-
-                    this.consultationInviteToasts[message.roomLabel] = consultationInviteToast;
                 }
             })
         );
