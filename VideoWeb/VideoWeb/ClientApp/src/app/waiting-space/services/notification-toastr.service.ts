@@ -20,6 +20,7 @@ export class NotificationToastrService {
         private notificationSoundService: NotificationSoundsService,
         private translateService: TranslateService
     ) {
+        console.log('a', toastr, 'b', notificationSoundService);
         this.notificationSoundService.initConsultationRequestRingtone();
     }
 
@@ -108,7 +109,7 @@ export class NotificationToastrService {
                     hoverColour: 'green',
                     action: async () => {
                         await respondToConsultationRequest(ConsultationAnswer.Accepted);
-                        this.clearAllToastNotifications();
+                        this.toastr.remove(toast.toastId);
                     }
                 },
                 {
@@ -126,9 +127,44 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
-    showConsultationRejectedByLinkedParticipant(linkedParticipantName : string, consultationRoomLabel : string, inHearing : boolean) : VhToastComponent {
+    showConsultationRejectedByLinkedParticipant(linkedParticipantName: string, consultationRoomLabel: string, inHearing: boolean): VhToastComponent {
         // TODO - Change to translated string
-        const message = `${linkedParticipantName} rejected the invitation to ${consultationRoomLabel}.`
+        const message = `${linkedParticipantName} rejected the invitation to ${consultationRoomLabel}.`;
+
+        const toast = this.toastr.show('', '', {
+            timeOut: 120000,
+            extendedTimeOut: 0,
+            toastClass: 'vh-no-pointer',
+            tapToDismiss: false,
+            toastComponent: VhToastComponent
+        });
+
+        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
+            color: inHearing ? 'white' : 'black',
+            htmlBody: message,
+            onNoAction: async () => {
+                this.toastr.remove(toast.toastId);
+            },
+            onRemove: () => {},
+            buttons: [
+                {
+                    // TODO - Change to translated string
+                    label: this.translateService.instant('notification-toastr.invite.decline'),
+                    hoverColour: 'red',
+                    action: async () => {
+                        this.toastr.remove(toast.toastId);
+                    }
+                }
+            ]
+        };
+
+        return toast.toastRef.componentInstance as VhToastComponent;
+    }
+
+    showWaitingForLinkedParticipantsToAccept(linkedParticipantNames: string[], consultationRoomLabel: string, inHearing: boolean): VhToastComponent {
+        // TODO - Change to translated string
+        const message = linkedParticipantNames.length > 1 ?     `Waiting for ${linkedParticipantNames.length} other participants to accept the invitation to ${consultationRoomLabel}.` :
+                                                                `Waiting for ${linkedParticipantNames[0]} to accept the invitation to ${consultationRoomLabel}.`;
 
         const toast = this.toastr.show('', '', {
             timeOut: 120000,

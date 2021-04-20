@@ -13,5 +13,5 @@ export class ConsultationRequestResponseMessage {
     roomLabel: string;
     requestedFor: string;
     answer: ConsultationAnswer;
-    sentByClient : boolean;
+    sentByClient: boolean;
 }

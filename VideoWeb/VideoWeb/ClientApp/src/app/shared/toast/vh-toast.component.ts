@@ -7,7 +7,7 @@ export interface VhToastOptions {
     htmlBody?: string;
     buttons: VhToastButton[];
     onNoAction?: () => void;
-    onRemove : () => void;
+    onRemove: () => void;
 }
 
 export interface VhToastButton {
@@ -37,6 +37,7 @@ export class VhToastComponent extends Toast {
     }
 
     remove() {
+        console.log("[ROB] - Remove called", this.vhToastOptions.body)
         if (!this.actioned && !this.declinedByThirdParty) {
             this.vhToastOptions.onNoAction();
         }

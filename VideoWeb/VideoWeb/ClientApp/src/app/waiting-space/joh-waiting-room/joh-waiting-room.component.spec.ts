@@ -5,6 +5,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import {
     clockService,
+    consultationInvitiationService,
     consultationService,
     deviceTypeService,
     errorService,
@@ -63,7 +64,8 @@ describe('JohWaitingRoomComponent', () => {
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            translateService
+            translateService,
+            consultationInvitiationService
         );
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));

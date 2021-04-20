@@ -48,6 +48,7 @@ import {
     Presentation
 } from '../models/video-call-models';
 import { PrivateConsultationRoomControlsComponent } from '../private-consultation-room-controls/private-consultation-room-controls.component';
+import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
@@ -120,7 +121,8 @@ export abstract class WaitingRoomBaseDirective {
         protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
-        protected clockService: ClockService
+        protected clockService: ClockService,
+        protected consultationInvitiationService: ConsultationInvitationService
     ) {
         this.isAdminConsultation = false;
         this.loadingData = true;
@@ -207,12 +209,26 @@ export abstract class WaitingRoomBaseDirective {
         return `${this.conference.case_name}: ${this.conference.case_number}`;
     }
 
-    onLinkedParticiantRejectedConsultationInvite(linkedParticipantId : string, consulationRoomLabel : string) {
+    onLinkedParticiantAcceptedConsultationInvite(roomLabel: string, id: string) {
+        this.consultationInvitiationService.getInvitation(roomLabel).updateLinkedParticipantStatus(id, true);
+    }
+
+    onLinkedParticiantRejectedConsultationInvite(linkedParticipantId: string, consulationRoomLabel: string) {
         if (this.consultationInviteToasts.hasOwnProperty(consulationRoomLabel)) {
+            this.consultationInviteToasts[consulationRoomLabel].declinedByThirdParty = true;
             this.consultationInviteToasts[consulationRoomLabel].remove();
         }
 
         this.notificationToastrService.showConsultationRejectedByLinkedParticipant(linkedParticipantId, consulationRoomLabel, this.participant.status === ParticipantStatus.InHearing);
+        this.consultationInvitiationService.removeInvitation(consulationRoomLabel);
+    }
+
+    onTransferingToConsultation(roomLabel: string) {
+        this.consultationInvitiationService.removeInvitation(roomLabel);
+    }
+
+    onConsultationRejected(roomLabel: string) {
+        this.consultationInvitiationService.removeInvitation(roomLabel);
     }
 
     startEventHubSubscribers() {
@@ -243,23 +259,27 @@ export abstract class WaitingRoomBaseDirective {
         this.logger.debug(`${this.loggerPrefix} Subscribing to ConsultationRequestResponseMessage`);
         this.eventHubSubscription$.add(
             this.eventService.getConsultationRequestResponseMessage().subscribe(async message => {
-                console.log("[ROB] - My ID", this.participant.id, "RequestFor", message.requestedFor, "Answer", message.answer);
-                if (message.answer && message.answer === ConsultationAnswer.Accepted && message.requestedFor === this.participant.id) {
-                    await this.onConsultationAccepted();
-                }
+                console.log('[ROB] - My ID', this.participant.id, 'RequestFor', message.requestedFor, 'Answer', message.answer, "Sent by Client", message.sentByClient);
+                if (message.answer && message.sentByClient) {
+                    if (message.requestedFor === this.participant.id) {
+                        if (message.answer === ConsultationAnswer.Accepted) {
+                            await this.onConsultationAccepted(message.roomLabel);
+                        } else if (message.answer === ConsultationAnswer.Transferring) {
+                            this.onTransferingToConsultation(message.roomLabel);
+                        } else {
+                            this.onConsultationRejected(message.roomLabel);
+                        }
+                    } else {
+                        if (this.participant.linked_participants.find((linkedParticipant) => message.requestedFor === linkedParticipant.linked_id)) {
+                            const linkedParticipant = this.findParticipant(message.requestedFor);
 
-                if (message.answer && message.answer === ConsultationAnswer.Rejected && message.sentByClient) {
-                    this.onConsultationRejected(message.roomLabel);
-                }
-
-                if (message.answer &&
-                    message.answer !== ConsultationAnswer.Accepted &&
-                    message.answer !== ConsultationAnswer.Transferring &&
-                    message.sentByClient) {
-                    const participantLink = this.participant.linked_participants.find((linkedParticipant) => message.requestedFor === linkedParticipant.linked_id);
-                    if (participantLink) {
-                        const participant = this.findParticipant(participantLink.linked_id);
-                        this.onLinkedParticiantRejectedConsultationInvite(participant.display_name, message.roomLabel);
+                            if (message.answer === ConsultationAnswer.Accepted ||
+                                message.answer === ConsultationAnswer.Transferring) {
+                                this.onLinkedParticiantAcceptedConsultationInvite(message.roomLabel, linkedParticipant.id);
+                            } else {
+                                this.onLinkedParticiantRejectedConsultationInvite(linkedParticipant.display_name, message.roomLabel);
+                            }
+                        }
                     }
                 }
             })
@@ -288,6 +308,12 @@ export abstract class WaitingRoomBaseDirective {
                         roomEndpoints,
                         this.participant.status !== ParticipantStatus.Available
                     );
+
+                    // this.consultationInvitiationService.getInvitation(message.roomLabel).activeToast = consultationInviteToast;
+                    for (const linkedParticipant of this.participant.linked_participants) {
+                        this.consultationInvitiationService.getInvitation(message.roomLabel).addLinkedParticipant(linkedParticipant.linked_id);
+                    }
+
                     this.consultationInviteToasts[message.roomLabel] = consultationInviteToast;
                 }
             })
@@ -383,7 +409,7 @@ export abstract class WaitingRoomBaseDirective {
         return this.conference.endpoints.filter(x => x.current_room?.label === roomLabel);
     }
 
-    async onConsultationAccepted() {
+    async onConsultationAccepted(roomLabel: string) {
         this.displayStartPrivateConsultationModal = false;
         this.displayJoinPrivateConsultationModal = false;
         this.privateConsultationAccordianExpanded = false;
@@ -399,11 +425,20 @@ export abstract class WaitingRoomBaseDirective {
             this.userMediaStreamService.stopStream(preferredMicrophoneStream);
             this.displayDeviceChangeModal = false;
         }
-    }
 
-    onConsultationRejected(roomLabel: string) {
-        if (this.consultationInviteToasts[roomLabel]) {
-            this.consultationInviteToasts[roomLabel].declinedByThirdParty = true;
+        const waitingOnLinkedParticipants: string[] = [];
+        const linkedParticipantStatuses = this.consultationInvitiationService.getInvitation(roomLabel).linkedParticipantStatuses;
+        for (const linkedParticipantId in linkedParticipantStatuses) {
+            if (linkedParticipantStatuses.hasOwnProperty(linkedParticipantId)) {
+                if (!linkedParticipantStatuses[linkedParticipantId]) {
+                    waitingOnLinkedParticipants.push(this.findParticipant(linkedParticipantId).display_name);
+                }
+            }
+        }
+
+        if (waitingOnLinkedParticipants.length > 0) {
+            console.log("[ROB] Setting active toast", waitingOnLinkedParticipants);
+            this.consultationInvitiationService.getInvitation(roomLabel).activeToast = this.notificationToastrService.showWaitingForLinkedParticipantsToAccept(waitingOnLinkedParticipants, roomLabel, this.participant.status === ParticipantStatus.InHearing);
         }
     }
 

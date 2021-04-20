@@ -13,6 +13,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import {
     clockService,
+    consultationInvitiationService,
     consultationService,
     deviceTypeService,
     errorService,
@@ -75,7 +76,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            translateService
+            translateService,
+            consultationInvitiationService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
@@ -313,7 +315,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
     it('should on consultation accept stop streams for devices and close choose device popup', async () => {
         component.displayDeviceChangeModal = true;
-        await component.onConsultationAccepted();
+        await component.onConsultationAccepted('');
         expect(component.displayDeviceChangeModal).toBe(false);
         expect(userMediaStreamService.getStreamForMic).toHaveBeenCalled();
         expect(userMediaStreamService.getStreamForCam).toHaveBeenCalled();

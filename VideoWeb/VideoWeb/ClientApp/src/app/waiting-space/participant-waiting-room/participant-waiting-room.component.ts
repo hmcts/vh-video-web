@@ -21,6 +21,7 @@ import { RoomClosingToastrService } from '../services/room-closing-toast.service
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
 import { TranslateService } from '@ngx-translate/core';
+import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -50,7 +51,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
-        protected translateService: TranslateService
+        protected translateService: TranslateService,
+        protected consultationInvitiationService: ConsultationInvitationService
     ) {
         super(
             route,
@@ -68,7 +70,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
-            clockService
+            clockService,
+            consultationInvitiationService
         );
     }
 

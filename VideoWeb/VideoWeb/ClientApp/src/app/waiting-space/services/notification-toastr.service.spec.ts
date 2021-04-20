@@ -13,7 +13,8 @@ import {
     globalWitness,
     globalEndpoint,
     notificationSoundsService,
-    toastrService
+    toastrService,
+    notificationToastrService
 } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { NotificationToastrService } from './notification-toastr.service';
 
@@ -147,7 +148,7 @@ describe('NotificationToastrService', () => {
             expect(mockToast.toastRef.componentInstance.vhToastOptions.color).toBe('black');
         });
 
-        it('should respond to consultation request on toastr on action', async () => {
+        it('should respond to consultation request on toastr on NO action', async () => {
             // Arrange
             const mockToast = {
                 toastRef: {
@@ -171,6 +172,24 @@ describe('NotificationToastrService', () => {
                 roomLabel
             );
             expect(consultationService.respondToConsultationRequest).toHaveBeenCalledTimes(1);
+        });
+
+        it('should respond stop the sound playing and clear toasts on remove action', async () => {
+            // Arrange
+            const mockToast = {
+                toastRef: {
+                    componentInstance: {}
+                }
+            } as ActiveToast<VhToastComponent>;
+            toastrService.show.and.returnValue(mockToast);
+            toastrService.toasts = [mockToast];
+            const p = new Participant(globalParticipant);
+
+            // Act
+            service.showConsultationInvite(roomLabel, globalConference.id, p, p, [p], [], false);
+            await mockToast.toastRef.componentInstance.vhToastOptions.onRemove();
+
+            // Assert
             expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalledTimes(1);
         });
 
@@ -321,13 +340,13 @@ describe('NotificationToastrService', () => {
     });
 
     describe('showConsultationRejectedByLinkedParticipant', () => {
-        const expectedParticipantName = "First Last";
-        const expectedConsulationRoomLabel = "Consultation Room";
+        const expectedParticipantName = 'First Last';
+        const expectedConsulationRoomLabel = 'Consultation Room';
         const expectedToastId = 2;
         const expectedInHearingColor = 'white';
         const expectedNotInHearingColor = 'black';
         const expectedBody = `${expectedParticipantName} rejected the invitation to ${expectedConsulationRoomLabel}.`;
-        let mockToast : ActiveToast<VhToastComponent>;
+        let mockToast: ActiveToast<VhToastComponent>;
 
         beforeEach(() => {
         toastrService.show.calls.reset();
@@ -338,7 +357,7 @@ describe('NotificationToastrService', () => {
                     componentInstance: {}
                 }
             } as ActiveToast<VhToastComponent>;
-        })
+        });
 
         it('should call toastr.show with the correct parameters', () => {
             // Act
@@ -427,6 +446,118 @@ describe('NotificationToastrService', () => {
 
                 // Act
                 const toastComponentInstance = service.showConsultationRejectedByLinkedParticipant(expectedParticipantName, expectedConsulationRoomLabel, true);
+
+                // Assert
+                expect(toastComponentInstance.vhToastOptions.color).toBe(expectedColor);
+            });
+        });
+    });
+
+    describe('showWaitingForLinkedParticipantsToAccept', () => {
+        const linkedParticipantName = ['Linked Participant 1'];
+        const multipleLinkedParticipantNames = ['Linked Participant 1', 'Linked Participant 2'];
+        const expectedParticipantName = 'First Last';
+        const expectedConsulationRoomLabel = 'Consultation Room';
+        const expectedToastId = 2;
+        const expectedInHearingColor = 'white';
+        const expectedNotInHearingColor = 'black';
+        const expectedBody = `Waiting for ${linkedParticipantName[0]} to accept the invitation to ${expectedConsulationRoomLabel}.`;
+        const expectedBodyForMultipleParticipants = `Waiting for ${multipleLinkedParticipantNames.length} other participants to accept the invitation to ${expectedConsulationRoomLabel}.`;
+
+        let mockToast: ActiveToast<VhToastComponent>;
+
+        beforeEach(() => {
+        toastrService.show.calls.reset();
+        toastrService.remove.calls.reset();
+        mockToast = {
+                toastId : expectedToastId,
+                toastRef: {
+                    componentInstance: {}
+                }
+            } as ActiveToast<VhToastComponent>;
+        });
+
+        describe('expected toast configuration', () => {
+            it('should have a button to close the toast', () => {
+                // Arrange
+                const expectedHoverColor = 'red';
+                const expectedLabel = 'notification-toastr.invite.decline';
+                toastrService.show.and.returnValue(mockToast);
+
+                // Act
+                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(linkedParticipantName, expectedConsulationRoomLabel, true);
+
+                // Assert
+                expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
+                expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
+                expect(toastComponentInstance.vhToastOptions.buttons[0].hoverColour).toBe(expectedHoverColor);
+                expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedLabel);
+            });
+
+            it('should call toastr.remove with the toast id when the button action is triggered', () => {
+                // Arrange
+                const expectedHoverColor = 'red';
+                const expectedLabel = 'notification-toastr.invite.decline';
+                toastrService.show.and.returnValue(mockToast);
+
+                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(linkedParticipantName, expectedConsulationRoomLabel, true);
+                const button = toastComponentInstance.vhToastOptions.buttons[0];
+
+                // Act
+                button.action();
+
+                // Assert
+                expect(toastrService.remove).toHaveBeenCalledOnceWith(expectedToastId);
+            });
+
+            it('should call toastr.remove with the toast id when the NO action is triggered', () => {
+                // Arrange
+                const expectedHoverColor = 'red';
+                const expectedLabel = 'notification-toastr.invite.decline';
+                toastrService.show.and.returnValue(mockToast);
+
+                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(linkedParticipantName, expectedConsulationRoomLabel, true);
+
+                // Act
+                toastComponentInstance.vhToastOptions.onNoAction();
+
+                // Assert
+                expect(toastrService.remove).toHaveBeenCalledOnceWith(expectedToastId);
+            });
+
+            it('should have a correctly formatted body for a single linked participant', () => {
+                // Act
+                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(linkedParticipantName, expectedConsulationRoomLabel, true);
+
+                // Assert
+                expect(toastComponentInstance.vhToastOptions.htmlBody).toBe(expectedBody);
+            });
+
+            it('should have a correctly formatted body for multiple linked participants', () => {
+                // Act
+                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(multipleLinkedParticipantNames, expectedConsulationRoomLabel, true);
+
+                // Assert
+                expect(toastComponentInstance.vhToastOptions.htmlBody).toBe(expectedBodyForMultipleParticipants);
+            });
+
+            it('should have the color black when NOT in hearing', () => {
+                // Arrange
+                const expectedColor = 'black';
+
+                // Act
+                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(multipleLinkedParticipantNames, expectedConsulationRoomLabel, false);
+
+                // Assert
+                expect(toastComponentInstance.vhToastOptions.color).toBe(expectedColor);
+            });
+
+            it('should have the color white when in hearing', () => {
+                // Arrange
+                const expectedColor = 'white';
+
+                // Act
+                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(multipleLinkedParticipantNames, expectedConsulationRoomLabel, true);
 
                 // Assert
                 expect(toastComponentInstance.vhToastOptions.color).toBe(expectedColor);
