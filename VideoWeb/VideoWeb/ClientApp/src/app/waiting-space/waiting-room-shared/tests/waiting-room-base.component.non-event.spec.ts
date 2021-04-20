@@ -43,6 +43,8 @@ import {
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
 import { HearingRole } from '../../models/hearing-role-model';
+import { ElementRef } from '@angular/core';
+import { PrivateConsultationRoomControlsComponent } from '../../private-consultation-room-controls/private-consultation-room-controls.component';
 
 describe('WaitingRoomComponent message and clock', () => {
     let component: WRTestComponent;
@@ -304,6 +306,28 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(videoCallService.switchToAudioOnlyCall).toHaveBeenCalled();
     });
 
+    it('should publish media device status changes when switching call type mid hearing or consultation', async () => {
+        // arrange
+        component.audioOnly = true;
+        const device = new SelectedUserMediaDevice(
+            new UserMediaDevice('camera1', 'id3445', 'videoinput', '1'),
+            new UserMediaDevice('microphone', 'id123', 'audioinput', '1'),
+            false
+        );
+        const controls = jasmine.createSpyObj<PrivateConsultationRoomControlsComponent>(
+            'PrivateConsultationRoomControlsComponent',
+            ['publishMediaDeviceStatus'],
+            { audioOnly: true }
+        );
+        component.hearingControls = controls;
+
+        // act
+        await component.onMediaDeviceChangeAccepted(device);
+
+        // assert
+        expect(controls.publishMediaDeviceStatus).toHaveBeenCalled();
+    });
+
     it('should not announce hearing is starting when already announced', () => {
         spyOn(component, 'announceHearingIsAboutToStart').and.callFake(() => Promise.resolve());
         component.hearingStartingAnnounced = true;
@@ -470,5 +494,31 @@ describe('WaitingRoomComponent message and clock', () => {
 
         component.updateVideoStreamMuteStatus();
         expect(component.toggleVideoStreamMute).toHaveBeenCalledWith(false);
+    });
+
+    it('should return false if case name has not been truncated', () => {
+        const caseNameElement = document.createElement('div');
+        caseNameElement.innerHTML = component.getCaseNameAndNumber();
+
+        const elemRef = new ElementRef(caseNameElement);
+        component.roomTitleLabel = elemRef;
+
+        expect(component.hasCaseNameOverflowed).toBeFalsy();
+    });
+
+    it('should return true if case name has been truncated', () => {
+        const caseNameElement = document.createElement('div');
+        const caseName = component.getCaseNameAndNumber();
+        caseNameElement.innerHTML = caseName;
+        spyOnProperty(caseNameElement, 'scrollWidth').and.returnValue(caseName.length + 1);
+        const elemRef = new ElementRef(caseNameElement);
+        component.roomTitleLabel = elemRef;
+
+        expect(component.hasCaseNameOverflowed).toBeTruthy();
+    });
+
+    it('should return true if case name has been truncated', () => {
+        component.roomTitleLabel = null;
+        expect(component.hasCaseNameOverflowed).toBeFalsy();
     });
 });

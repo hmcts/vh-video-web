@@ -6,9 +6,9 @@
   <div class="header-bar">
     <div class="govuk-body" [class]="!isJohRoom && isPrivateConsultation ? 'header-content-grid-with-lock' : 'header-content-grid'">
       <ng-container *ngIf="!isJohRoom && isPrivateConsultation">
-        <h1 class="room-title">
+        <div class="room-title">
           {{ getRoomName() }}
-        </h1>
+        </div>
         <div class="room-status">
           <span class="lock-badge" [class]="this.participant?.current_room?.locked ? 'locked' : 'unlocked'">{{
             (this.participant?.current_room?.locked ? 'participant-waiting-room.locked' : 'participant-waiting-room.unlocked') | translate
@@ -22,12 +22,16 @@
         </div>
       </ng-container>
       <ng-container *ngIf="isJohRoom || !isPrivateConsultation">
-        <h1 class="room-title">
-          {{ getCaseNameAndNumber() }}
-        </h1>
+        <div class="room-title">
+          <div #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</div>
+          <div *ngIf="hasCaseNameOverflowed" class="room-title-show-more" appTooltip [text]="getCaseNameAndNumber()" colour="grey">
+            (show more)
+          </div>
+        </div>
       </ng-container>
       <ng-container *ngIf="connected">
         <app-private-consultation-room-controls
+          #hearingControls
           [conferenceId]="conference.id"
           [participant]="participant"
           [audioOnly]="audioOnly"

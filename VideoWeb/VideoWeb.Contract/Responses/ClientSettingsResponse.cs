@@ -43,5 +43,20 @@ namespace VideoWeb.Contract.Responses
         /// The date to set option ON to display functionality to join hearing by phone
         /// </summary>
         public string JoinByPhoneFromDate { get; set; }
+        
+        /// <summary>
+        /// The turn server
+        /// </summary>
+        public string KinlyTurnServer { get; set; }
+        
+        /// <summary>
+        /// The turn server username
+        /// </summary>
+        public string KinlyTurnServerUser { get; set; }
+        
+        /// <summary>
+        /// The turn server password
+        /// </summary>
+        public string KinlyTurnServerCredential { get; set; }
     }
 }

@@ -9,9 +9,12 @@
       <div class="video-background">
         <div class="header-bar">
           <div class="header-content-grid govuk-body">
-            <h1 class="room-title">
-              {{ getCaseNameAndNumber() }}
-            </h1>
+            <div class="room-title">
+              <div #roomTitleLabel class="room-title-label">{{ getCaseNameAndNumber() }}</div>
+              <div *ngIf="hasCaseNameOverflowed" class="room-title-show-more" appTooltip [text]="getCaseNameAndNumber()" colour="grey">
+                (show more)
+              </div>
+            </div>
             <app-private-consultation-room-controls
               [conferenceId]="conference.id"
               [participant]="participant"
@@ -263,10 +266,6 @@
   [hearingStarted]="!hearing.isNotStarted()"
   (popupAnswered)="onStartConfirmAnswered($event)"
 ></app-confirm-start-hearing-popup>
-
-<div *ngIf="showAudioRecordingAlert">
-  <app-audio-alert (alertClose)="closeAlert($event)"></app-audio-alert>
-</div>
 
 <app-modal id="pc-leave-modal" class="modal clear consultation">
   <app-consultation-leave (leave)="onConsultationCancelled()" (closedModal)="closeAllPCModals()"></app-consultation-leave>

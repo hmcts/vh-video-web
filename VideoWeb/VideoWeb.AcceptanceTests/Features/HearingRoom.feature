@@ -35,7 +35,7 @@ Scenario: Judge pauses and closes hearing
 
 @HearingTest @Smoketest-Extended @DisableLogging
 Scenario: Interpreter And Interpretee joins hearing
-  Given I have an Interpreter and have a hearing
+  Given I have a hearing with an Interpreter
   And the first Individual user has progressed to the Waiting Room page for the existing hearing
 	And the first Interpreter user has progressed to the Waiting Room page for the existing hearing
   And the Judge user has progressed to the Waiting Room page for the existing hearing

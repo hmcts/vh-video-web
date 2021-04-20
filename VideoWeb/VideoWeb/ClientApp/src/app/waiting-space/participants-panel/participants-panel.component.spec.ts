@@ -583,6 +583,16 @@ describe('ParticipantsPanelComponent', () => {
         expect(component.isEndpoint(panelModel)).toBeFalsy();
     });
 
+    it('should return false when panelmodel is not linked', () => {
+        const panelModel = component.participants.filter(x => x instanceof VideoEndpointPanelModel)[0];
+        expect(component.isLinkedParticipantAndAnInterpreter(panelModel)).toBeFalsy();
+    });
+
+    it('should return true when panelmodel is linked and an interpreter', () => {
+        const panelModel = component.participants.filter(x => x instanceof LinkedParticipantPanelModel && !x.isJudicalOfficeHolder)[0];
+        expect(component.isLinkedParticipantAndAnInterpreter(panelModel)).toBeTruthy();
+    });
+
     it('should getPanelRowTooltipText return "Joining" for available participant', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Available;

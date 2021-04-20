@@ -184,6 +184,12 @@ stages:
             value: $(SelfTestApiKey)
           - name: KinlyConfiguration:JoinByPhoneFromDate
             value: $(JoinByPhoneFromDate)
+          - name: KinlyConfiguration:TurnServer
+            value: $(TurnServer)
+          - name: KinlyConfiguration:TurnServerUser
+            value: $(TurnServerUser)
+          - name: KinlyConfiguration:TurnServerCredential
+            value: $(TurnServerCredential)
             
           # VhServices
           - name: VhServices:BookingsApiResourceId
@@ -283,3 +289,7 @@ stages:
             value: $(wowza_storageAccountKey)
           - name: WowzaConfiguration:StorageContainerName
             value: $(wowza_storageContainerName)
+            
+          # Ejud - test setting only
+          - name: UsingEjud
+            value: $(UsingEjud)
