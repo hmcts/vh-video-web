@@ -1,5 +1,5 @@
 import { PublicConfiguration } from 'angular-auth-oidc-client';
-import { Observable, of, from } from 'rxjs';
+import { Observable, of } from 'rxjs';
 interface UserData {
     preferred_username?: string;
     name?: string;
@@ -32,7 +32,7 @@ export class MockOidcSecurityService {
     }
 
     get isAuthenticated$(): Observable<boolean> {
-        return from([false, this.authenticated]);
+        return of(this.authenticated);
     }
 
     getToken(): string {
