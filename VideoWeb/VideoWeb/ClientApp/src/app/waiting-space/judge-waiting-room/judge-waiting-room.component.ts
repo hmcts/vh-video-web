@@ -14,6 +14,7 @@ import { UserMediaStreamService } from 'src/app/services/user-media-stream.servi
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
 import { pageUrls } from 'src/app/shared/page-url.constants';
+import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { CallError } from '../models/video-call-models';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
@@ -32,7 +33,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     audioRecordingInterval: NodeJS.Timer;
     isRecording: boolean;
     continueWithNoRecording = false;
-    showAudioRecordingAlert = false;
+    audioErrorToastOpen = false;
     audioRecordingStreamCheckIntervalSeconds = 10;
     conferenceRecordingInSessionForSeconds = 0;
     expanedPanel = true;
@@ -43,6 +44,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         Chat: false
     };
     unreadMessageCount = 0;
+    audioErrorToast: VhToastComponent;
 
     constructor(
         protected route: ActivatedRoute,
@@ -211,12 +213,27 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         }, this.audioRecordingStreamCheckIntervalSeconds * 1000);
     }
 
+    private showAudioRecordingAlert() {
+        if (this.audioErrorToastOpen) {
+            return;
+        }
+        this.audioErrorToastOpen = true;
+        this.audioErrorToast = this.notificationToastrService.showAudioRecordingError(this.continueWithNoRecordingCallback.bind(this));
+    }
+
+    continueWithNoRecordingCallback() {
+        if (this.audioErrorToast.actioned) {
+            this.continueWithNoRecording = true;
+        }
+        this.audioErrorToastOpen = false;
+        this.audioErrorToast = null;
+    }
+
     async retrieveAudioStreamInfo(hearingId): Promise<void> {
-        if (this.conference.status === ConferenceStatus.InSession) {
+        if (this.conference.status === ConferenceStatus.InSession || this.participant.status === ParticipantStatus.InConsultation) {
             this.conferenceRecordingInSessionForSeconds += this.audioRecordingStreamCheckIntervalSeconds;
         } else {
             this.conferenceRecordingInSessionForSeconds = 0;
-            this.showAudioRecordingAlert = false;
             this.continueWithNoRecording = false;
         }
 
@@ -225,10 +242,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             try {
                 const audioStreamWorking = await this.audioRecordingService.getAudioStreamInfo(hearingId);
                 this.logger.debug(`${this.loggerPrefixJudge} Got response: recording: ${audioStreamWorking}`);
-
-                if (!audioStreamWorking && !this.continueWithNoRecording) {
+                if (!audioStreamWorking && !this.continueWithNoRecording && this.showVideo) {
                     this.logger.debug(`${this.loggerPrefixJudge} not recording when expected, show alert`);
-                    this.showAudioRecordingAlert = true;
+                    this.showAudioRecordingAlert();
                 }
             } catch (error) {
                 this.logger.error(`${this.loggerPrefixJudge} Failed to get audio stream info`, error, { conference: this.conferenceId });
@@ -237,16 +253,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                     this.logger.info(`${this.loggerPrefixJudge} Should not continue without a recording. Show alert.`, {
                         conference: this.conferenceId
                     });
-                    this.showAudioRecordingAlert = true;
+                    this.showAudioRecordingAlert();
                 }
             }
         }
-    }
-
-    closeAlert(value) {
-        this.logger.debug(`${this.loggerPrefixJudge} Closing alert`);
-        this.showAudioRecordingAlert = !value;
-        this.continueWithNoRecording = true;
     }
 
     defineIsIMEnabled(): boolean {
