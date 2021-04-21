@@ -267,10 +267,6 @@
   (popupAnswered)="onStartConfirmAnswered($event)"
 ></app-confirm-start-hearing-popup>
 
-<div *ngIf="showAudioRecordingAlert">
-  <app-audio-alert (alertClose)="closeAlert($event)"></app-audio-alert>
-</div>
-
 <app-modal id="pc-leave-modal" class="modal clear consultation">
   <app-consultation-leave (leave)="onConsultationCancelled()" (closedModal)="closeAllPCModals()"></app-consultation-leave>
 </app-modal>
