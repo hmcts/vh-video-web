@@ -5,6 +5,9 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class MultilinePipe implements PipeTransform {
     transform(text: string): string {
-        return text.replace(', ', '<br />');
+        return text
+            .split(',')
+            .map(x => x.trim())
+            .join('<br />');
     }
 }
