@@ -59,6 +59,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
+        console.log('------ On Component: App');
         this.configService.getClientSettings().subscribe({
             next: async () => {
                 this.postConfigSetup();
@@ -67,7 +68,12 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     private postConfigSetup() {
-        this.checkAuth();
+        this.checkAuth().subscribe({
+            next: async (loggedIn: boolean) => {
+                console.log(`Post config setup loggged in status: ${loggedIn}`);
+                // await this.postAuthSetup(loggedIn);
+            }
+        });
 
         this.eventService
             .registerForEvents()
@@ -77,7 +83,8 @@ export class AppComponent implements OnInit, OnDestroy {
                 }),
                 filter(notification => notification.type === EventTypes.NewAuthorizationResult)
             )
-            .subscribe(async () => {
+            .subscribe(async value => {
+                console.log('EventReceived with value from app', value);
                 await this.postAuthSetup(true);
             });
     }
@@ -118,6 +125,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     checkBrowser(): void {
         if (!this.deviceTypeService.isSupportedBrowser()) {
+            console.log('going to unsupported browser');
             this.router.navigateByUrl(pageUrls.UnsupportedBrowser);
         }
     }
@@ -126,6 +134,8 @@ export class AppComponent implements OnInit, OnDestroy {
         return this.oidcSecurityService.checkAuth().pipe(
             catchError(err => {
                 console.error('[AppComponent] - Check Auth Error', err);
+                console.log('going to /');
+                // this.router.navigate(['/']);
                 return NEVER;
             })
         );
