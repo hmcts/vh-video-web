@@ -105,6 +105,16 @@ namespace VideoWeb.AcceptanceTests.Steps
             return _c.Test.Users.First();
         }
 
+        private UserDto GetMatchingUserType(string userType)
+        {
+            if (_c.Test.Users.Count != 0)
+                return Users.GetUserFromUserType(_c.Test.Users, userType.Replace(" ", string.Empty));
+            if (!Enum.TryParse(RemoveWhiteSpace(userType), true, out UserType result))
+                throw new DataMisalignedException($"User Type {userType} could not be parsed");
+            AllocateSingleUser(result);
+            return _c.Test.Users.First();
+        }
+
         private static string RemoveWhiteSpace(string text)
         {
             return text.Replace(" ", string.Empty);

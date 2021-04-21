@@ -19,8 +19,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.AcceptanceTests", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoWeb.EventHub", "VideoWeb.EventHub\VideoWeb.EventHub.csproj", "{371E895D-1CDC-4872-BCCC-7199DD3AA519}"
 EndProject
-Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "..\docker-compose.dcproj", "{C9A206DD-786B-4998-B783-D83029F0B9BE}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,10 +53,6 @@ Global
 		{371E895D-1CDC-4872-BCCC-7199DD3AA519}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{371E895D-1CDC-4872-BCCC-7199DD3AA519}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{371E895D-1CDC-4872-BCCC-7199DD3AA519}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C9A206DD-786B-4998-B783-D83029F0B9BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C9A206DD-786B-4998-B783-D83029F0B9BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C9A206DD-786B-4998-B783-D83029F0B9BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C9A206DD-786B-4998-B783-D83029F0B9BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
