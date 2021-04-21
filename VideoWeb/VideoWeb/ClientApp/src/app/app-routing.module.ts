@@ -14,7 +14,7 @@ export const routes: Routes = [
         path: 'admin',
         loadChildren: () => import('./vh-officer/vh-officer.module').then(m => m.VhOfficerModule)
     },
-    { path: `${pageUrls.Home}`, component: HomeComponent},
+    { path: `${pageUrls.Home}`, component: HomeComponent },
     { path: `${pageUrls.Navigator}`, component: NavigatorComponent, canActivate: [AuthGuard] },
     { path: '**', redirectTo: `${pageUrls.NotFound}`, pathMatch: 'full' }
 ];

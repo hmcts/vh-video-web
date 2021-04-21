@@ -7,10 +7,10 @@ import { pageUrls } from '../../shared/page-url.constants';
 import { UserProfileResponse, Role } from '../../services/clients/api-client';
 
 @Component({
-  selector: 'app-navigator',
-  templateUrl: './navigator.component.html',
+    selector: 'app-navigator',
+    templateUrl: './navigator.component.html'
 })
-  export class NavigatorComponent implements OnInit {
+export class NavigatorComponent implements OnInit {
     constructor(
         private router: Router,
         private profileService: ProfileService,
@@ -40,4 +40,4 @@ import { UserProfileResponse, Role } from '../../services/clients/api-client';
             this.router.navigate([pageUrls.Unauthorised]);
         }
     }
-  }
+}

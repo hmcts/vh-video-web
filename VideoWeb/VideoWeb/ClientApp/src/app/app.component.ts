@@ -1,20 +1,19 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+import { EventTypes, OidcSecurityService, PublicEventsService } from 'angular-auth-oidc-client';
 import { NEVER, Observable, Subscription } from 'rxjs';
-import { catchError, filter, map } from 'rxjs/operators';
+import { catchError, filter, map, tap } from 'rxjs/operators';
+import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
 import { Role } from './services/clients/api-client';
+import { ConnectionStatusService } from './services/connection-status.service';
 import { DeviceTypeService } from './services/device-type.service';
 import { ErrorService } from './services/error.service';
-import { LocationService } from './services/location.service';
 import { PageTrackerService } from './services/page-tracker.service';
-import { ConnectionStatusService } from './services/connection-status.service';
 import { pageUrls } from './shared/page-url.constants';
 import { TestLanguageService } from './shared/test-language.service';
-import { TranslateService } from '@ngx-translate/core';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { ConfigService } from './services/api/config.service';
 
 @Component({
     selector: 'app-root',
@@ -40,13 +39,13 @@ export class AppComponent implements OnInit, OnDestroy {
         private errorService: ErrorService,
         private titleService: Title,
         private activatedRoute: ActivatedRoute,
-        private locationService: LocationService,
         private connectionStatusService: ConnectionStatusService,
         pageTracker: PageTrackerService,
         testLanguageService: TestLanguageService,
         translate: TranslateService,
         private oidcSecurityService: OidcSecurityService,
-        private configService: ConfigService
+        private configService: ConfigService,
+        private eventService: PublicEventsService
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
@@ -68,11 +67,19 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     private postConfigSetup() {
-        this.checkAuth().subscribe({
-            next: async (loggedIn: boolean) => {
-                await this.postAuthSetup(loggedIn);
-            }
-        });
+        this.checkAuth();
+
+        this.eventService
+            .registerForEvents()
+            .pipe(
+                tap(value => {
+                    console.log('EventReceived with value from app', value);
+                }),
+                filter(notification => notification.type === EventTypes.NewAuthorizationResult)
+            )
+            .subscribe(async () => {
+                await this.postAuthSetup(true);
+            });
     }
 
     private async postAuthSetup(loggedIn: boolean) {
@@ -86,8 +93,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     private async attemptRetrieveProfile(loggedIn: boolean) {
         if (!loggedIn) {
-            const currentUrl = this.locationService.getCurrentUrl();
-            this.router.navigate([`/${pageUrls.IdpSelection}`], { queryParams: { returnUrl: currentUrl } });
+            this.router.navigate([`/${pageUrls.IdpSelection}`]);
         } else {
             await this.retrieveProfileRole();
         }
@@ -120,7 +126,6 @@ export class AppComponent implements OnInit, OnDestroy {
         return this.oidcSecurityService.checkAuth().pipe(
             catchError(err => {
                 console.error('[AppComponent] - Check Auth Error', err);
-                this.router.navigate(['/']);
                 return NEVER;
             })
         );
