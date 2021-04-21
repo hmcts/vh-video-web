@@ -151,6 +151,69 @@ describe('ConsultationInvitationServiceService', () => {
       });
   });
 
+  describe('createInvitation', () => {
+    const expectedRoomlabel = 'consultation room';
+    const expectedInvitedBy = 'invited by';
+
+    it('should return the existing toast one already exists', () => {
+        // Arrange
+        const existingInvitation = new ConsultationInvitation();
+        service['consultationInvitations'] = {};
+        service['consultationInvitations'][expectedRoomlabel] = existingInvitation;
+
+        // Act
+        const invitation = service.createInvitation(expectedRoomlabel);
+
+        // Assert
+        expect(invitation).toBeTruthy();
+        expect(service['consultationInvitations'][expectedRoomlabel]).toBe(invitation);
+        expect(invitation.invitedByName).toBeNull();
+    });
+
+    it('should update the invited by name if one was provided', () => {
+        // Arrange
+        const existingInvitation = new ConsultationInvitation();
+        service['consultationInvitations'] = {};
+        service['consultationInvitations'][expectedRoomlabel] = existingInvitation;
+
+        // Act
+        const invitation = service.createInvitation(expectedRoomlabel, expectedInvitedBy);
+
+        // Assert
+        expect(invitation).toBeTruthy();
+        expect(service['consultationInvitations'][expectedRoomlabel]).toBe(invitation);
+        expect(invitation.invitedByName).toBe(expectedInvitedBy);
+    });
+
+    it('should NOT update the invited by name if one was NOT provided', () => {
+        // Arrange
+        const existingInvitation = new ConsultationInvitation();
+        existingInvitation.invitedByName = expectedInvitedBy;
+        service['consultationInvitations'] = {};
+        service['consultationInvitations'][expectedRoomlabel] = existingInvitation;
+
+        // Act
+        const invitation = service.createInvitation(expectedRoomlabel);
+
+        // Assert
+        expect(invitation).toBeTruthy();
+        expect(service['consultationInvitations'][expectedRoomlabel]).toBe(invitation);
+        expect(invitation.invitedByName).toBe(expectedInvitedBy);
+    });
+
+    it('should create a new toast if one exists', () => {
+        // Arrange
+        service['consultationInvitations'] = {};
+
+        // Act
+        const invitation = service.createInvitation(expectedRoomlabel, expectedInvitedBy);
+
+        // Assert
+        expect(invitation).toBeTruthy();
+        expect(service['consultationInvitations'][expectedRoomlabel]).toBe(invitation);
+    });
+  });
+
   describe('removeInvitation', () => {
     const expectedId = 'test-id';
     it('should attempt to remove the toast and delete the invitation', () => {

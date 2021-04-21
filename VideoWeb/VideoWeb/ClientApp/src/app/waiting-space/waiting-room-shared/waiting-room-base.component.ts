@@ -212,13 +212,17 @@ export abstract class WaitingRoomBaseDirective {
         invitation.updateLinkedParticipantStatus(id, true);
 
         if (invitation.activeParticipantAccepted) {
-            this.createOrUpdateWaitingOnLinkedParticipantsNotification(invitation, roomLabel);
+            this.createOrUpdateWaitingOnLinkedParticipantsNotification(invitation);
         }
     }
 
     onLinkedParticiantRejectedConsultationInvite(linkedParticipantId: string, consulationRoomLabel: string) {
-        this.consultationInvitiationService.getInvitation(consulationRoomLabel).activeToast.declinedByThirdParty = true;
-        this.notificationToastrService.showConsultationRejectedByLinkedParticipant(linkedParticipantId, consulationRoomLabel, this.participant.status === ParticipantStatus.InHearing);
+        const invitation = this.consultationInvitiationService.getInvitation(consulationRoomLabel);
+        if (invitation.activeToast) {
+            invitation.activeToast.declinedByThirdParty = true;
+        }
+
+        this.notificationToastrService.showConsultationRejectedByLinkedParticipant(linkedParticipantId, invitation.invitedByName, this.participant.status === ParticipantStatus.InHearing);
         this.consultationInvitiationService.removeInvitation(consulationRoomLabel);
     }
 
@@ -290,11 +294,9 @@ export abstract class WaitingRoomBaseDirective {
                 if (requestedFor.id === this.participant.id && this.participant.status !== ParticipantStatus.InHearing) {
                     // A request for you to join a consultation room
                     this.logger.debug(`${this.loggerPrefix} Recieved RequestedConsultationMessage`);
-                    const requestedParticipant = this.findParticipant(message.requestedBy);
-                    const requestedBy =
-                        requestedParticipant === undefined || requestedParticipant === null
-                            ? null
-                            : new Participant(this.findParticipant(message.requestedBy));
+                    const _requestedBy: Participant | ParticipantResponse = this.findParticipant(message.requestedBy);
+                    const requestedBy = _requestedBy ? new Participant(_requestedBy) : null;
+
                     const roomParticipants = this.findParticipantsInRoom(message.roomLabel).map(x => new Participant(x));
                     const roomEndpoints = this.findEndpointsInRoom(message.roomLabel);
                     const consultationInviteToast = this.notificationToastrService.showConsultationInvite(
@@ -307,9 +309,10 @@ export abstract class WaitingRoomBaseDirective {
                         this.participant.status !== ParticipantStatus.Available
                     );
 
-                    this.consultationInvitiationService.getInvitation(message.roomLabel).activeToast = consultationInviteToast;
+                    const invitation = this.consultationInvitiationService.createInvitation(message.roomLabel, requestedBy.displayName);
+                    invitation.activeToast = consultationInviteToast;
                     for (const linkedParticipant of this.participant.linked_participants) {
-                        this.consultationInvitiationService.getInvitation(message.roomLabel).addLinkedParticipant(linkedParticipant.linked_id);
+                        invitation.addLinkedParticipant(linkedParticipant.linked_id);
                     }
                 }
             })
@@ -425,10 +428,10 @@ export abstract class WaitingRoomBaseDirective {
         const invitation = this.consultationInvitiationService.getInvitation(roomLabel);
         invitation.activeParticipantAccepted = true;
 
-        this.createOrUpdateWaitingOnLinkedParticipantsNotification(invitation, roomLabel);
+        this.createOrUpdateWaitingOnLinkedParticipantsNotification(invitation);
     }
 
-    createOrUpdateWaitingOnLinkedParticipantsNotification(invitation: ConsultationInvitation, roomLabel: string) {
+    createOrUpdateWaitingOnLinkedParticipantsNotification(invitation: ConsultationInvitation) {
         const waitingOnLinkedParticipants: string[] = [];
         for (const linkedParticipantId in invitation.linkedParticipantStatuses) {
             if (invitation.linkedParticipantStatuses.hasOwnProperty(linkedParticipantId)) {
@@ -443,7 +446,7 @@ export abstract class WaitingRoomBaseDirective {
         }
 
         if (waitingOnLinkedParticipants.length > 0) {
-            invitation.activeToast = this.notificationToastrService.showWaitingForLinkedParticipantsToAccept(waitingOnLinkedParticipants, roomLabel, this.participant.status === ParticipantStatus.InHearing);
+            invitation.activeToast = this.notificationToastrService.showWaitingForLinkedParticipantsToAccept(waitingOnLinkedParticipants, invitation.invitedByName, this.participant.status === ParticipantStatus.InHearing);
         }
     }
 

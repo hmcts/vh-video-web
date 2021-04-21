@@ -46,13 +46,13 @@ namespace VideoWeb.UnitTests.Services
         }
 
         [Test]
-        public void should_update_all_participants_on_room_updates()
+        public async Task should_update_all_participants_on_room_updates()
         {
             // arrange
             var room = new Room {Label = "Consultation2", Locked = true, ConferenceId = _conference.Id};
             
             // act
-            _sut.NotifyRoomUpdateAsync(_conference, room);
+            await _sut.NotifyRoomUpdateAsync(_conference, room);
             
             // assert
             _mocker.Mock<IEventHubClient>()
@@ -63,7 +63,7 @@ namespace VideoWeb.UnitTests.Services
         }
 
         [Test]
-        public void should_notify_participant_of_consultation_request()
+        public async Task should_notify_participant_of_consultation_request()
         {
             // arrange
             var allNonJudgeAndNonLinkedParticipants = _conference.Participants
@@ -73,7 +73,7 @@ namespace VideoWeb.UnitTests.Services
             var requestedBy = allNonJudgeAndNonLinkedParticipants[1];
 
             // act
-            _sut.NotifyConsultationRequestAsync(_conference, roomLabel, requestedBy.Id, requestedFor.Id);
+            await _sut.NotifyConsultationRequestAsync(_conference, roomLabel, requestedBy.Id, requestedFor.Id);
             
             // assert
             _mocker.Mock<IEventHubClient>().Verify(
@@ -82,7 +82,7 @@ namespace VideoWeb.UnitTests.Services
         }
         
         [Test]
-        public void should_notify_participant_and_linked_participants_of_consultation_request()
+        public async Task should_notify_participant_and_linked_participants_of_consultation_request()
         {
             // arrange
             var allNonJudgeAndNonLinkedParticipants = _conference.Participants
@@ -95,7 +95,7 @@ namespace VideoWeb.UnitTests.Services
             var requestedBy = allNonJudgeAndNonLinkedParticipants[0];
 
             // act
-            _sut.NotifyConsultationRequestAsync(_conference, roomLabel, requestedBy.Id, requestedFor.Id);
+            await _sut.NotifyConsultationRequestAsync(_conference, roomLabel, requestedBy.Id, requestedFor.Id);
             
             // assert
             _mocker.Mock<IEventHubClient>().Verify(

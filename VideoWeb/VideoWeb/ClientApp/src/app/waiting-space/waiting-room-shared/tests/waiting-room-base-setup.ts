@@ -131,5 +131,5 @@ export function initAllWRDependencies() {
         'showRoomClosingAlert',
         'clearToasts'
     ]);
-    consultationInvitiationService = jasmine.createSpyObj<ConsultationInvitationService>('ConsultationInvitationService', ['getInvitation', 'removeInvitation']);
+    consultationInvitiationService = jasmine.createSpyObj<ConsultationInvitationService>('ConsultationInvitationService', ['getInvitation', 'createInvitation', 'removeInvitation']);
 }

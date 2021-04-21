@@ -124,10 +124,10 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
-    showConsultationRejectedByLinkedParticipant(linkedParticipantName: string, consultationRoomLabel: string, inHearing: boolean): VhToastComponent {
+    showConsultationRejectedByLinkedParticipant(rejectorName: string, invitedByName: string, inHearing: boolean): VhToastComponent {
         const message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('notification-toastr.linked-participants.rejected', {
-            name: linkedParticipantName,
-            room : consultationRoomLabel
+            rejector: rejectorName,
+            invitedBy : invitedByName
         })}</span>`;
 
         const toast = this.toastr.show('', '', {
@@ -159,17 +159,17 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
-    showWaitingForLinkedParticipantsToAccept(linkedParticipantNames: string[], consultationRoomLabel: string, inHearing: boolean): VhToastComponent {
+    showWaitingForLinkedParticipantsToAccept(linkedParticipantNames: string[], invitedByName: string, inHearing: boolean): VhToastComponent {
         let message: string;
         if (linkedParticipantNames.length > 1) {
             message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('notification-toastr.linked-participants.waiting-multiple', {
                 number: linkedParticipantNames.length,
-                room : consultationRoomLabel
+                invitedBy : invitedByName
             })}</span>`;
         } else {
             message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('notification-toastr.linked-participants.waiting-single', {
                 name: linkedParticipantNames[0],
-                room : consultationRoomLabel
+                invitedBy : invitedByName
             })}</span>`;
         }
 

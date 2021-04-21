@@ -3,7 +3,7 @@ import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 
 export class ConsultationInvitation {
     private _linkedParticipantStatuses:  { [participantId: string]: boolean };
-    constructor(linkedParticipantStatuses: { [participantId: string]: boolean } = {}, public activeToast: VhToastComponent = null, public activeParticipantAccepted: boolean = false) {
+    constructor(linkedParticipantStatuses: { [participantId: string]: boolean } = {}, public activeToast: VhToastComponent = null, public activeParticipantAccepted: boolean = false, public invitedByName: string = null) {
         this._linkedParticipantStatuses = linkedParticipantStatuses;
     }
 
@@ -30,8 +30,16 @@ export class ConsultationInvitationService {
 
     constructor() { }
 
-    createInvitation(roomLabel: string): ConsultationInvitation {
-        const invitation = this.consultationInvitations[roomLabel] = new ConsultationInvitation();
+    createInvitation(roomLabel: string, invitedByName: string = null): ConsultationInvitation {
+        let invitation = this.consultationInvitations[roomLabel];
+        if (!invitation) {
+            invitation = this.consultationInvitations[roomLabel] = new ConsultationInvitation();
+        }
+
+        if (invitedByName) {
+            invitation.invitedByName = invitedByName;
+        }
+
         return invitation;
     }
 
