@@ -54,8 +54,16 @@
           <span class="far fa-webcam type-icon"> </span>
           <br />
         </span>
-        <span *ngIf="isLinkedParticipant(participant)">
+        <span *ngIf="isLinkedParticipantAndAnInterpreter(participant)">
           <span class="fas fa-language type-icon"> </span>
+          <br />
+        </span>
+        <span *ngIf="participant.isJudicialOfficeHolder">
+          <img
+            src="/assets/images/UkGovCrestWhite.png"
+            class="panel-icon panel-icon-crest"
+            [attr.alt]="'participants-panel.crest' | translate"
+          />
           <br />
         </span>
         <span innerHtml="{{ participant.displayName | MultiLinePipe }}"></span>

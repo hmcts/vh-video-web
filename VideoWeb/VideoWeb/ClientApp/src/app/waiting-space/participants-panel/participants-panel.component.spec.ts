@@ -88,9 +88,9 @@ describe('ParticipantsPanelComponent', () => {
         component.ngOnInit();
         flushMicrotasks();
         expect(component.participants.length).toBe(expectedCount);
-        expect(component.participants[0].caseTypeGroup).toBe('judge');
-        expect(component.participants[1].caseTypeGroup).toBe('panelmember');
-        expect(component.participants[component.participants.length - 1].caseTypeGroup).toBe('observer');
+        expect(component.participants[0].caseTypeGroup.toLowerCase()).toBe('judge');
+        expect(component.participants[1].caseTypeGroup.toLowerCase()).toBe('panelmember');
+        expect(component.participants[component.participants.length - 1].caseTypeGroup.toLowerCase()).toBe('observer');
     }));
 
     it('should log error when api returns error', async () => {
@@ -581,6 +581,16 @@ describe('ParticipantsPanelComponent', () => {
     it('should return false when panelmodel is a participant', () => {
         const panelModel = component.participants.filter(x => x instanceof ParticipantPanelModel)[0];
         expect(component.isEndpoint(panelModel)).toBeFalsy();
+    });
+
+    it('should return false when panelmodel is not linked', () => {
+        const panelModel = component.participants.filter(x => x instanceof VideoEndpointPanelModel)[0];
+        expect(component.isLinkedParticipantAndAnInterpreter(panelModel)).toBeFalsy();
+    });
+
+    it('should return true when panelmodel is linked and an interpreter', () => {
+        const panelModel = component.participants.filter(x => x instanceof LinkedParticipantPanelModel && !x.isJudicalOfficeHolder)[0];
+        expect(component.isLinkedParticipantAndAnInterpreter(panelModel)).toBeTruthy();
     });
 
     it('should getPanelRowTooltipText return "Joining" for available participant', () => {

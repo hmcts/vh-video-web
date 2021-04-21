@@ -3,7 +3,7 @@ import { MockLoggerToConsole } from '../testing/mocks/mock-logger-to-console';
 import { Logger } from './logging/logger-base';
 import { ConnectionStatusService } from '../services/connection-status.service';
 import { HttpClient, HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { of } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 
 describe('ConnectionStatusService', () => {
     let service: ConnectionStatusService;
@@ -226,4 +226,45 @@ describe('ConnectionStatusService', () => {
         // Assert
         expect(service.status).toBe(false);
     }));
+
+    it('should raise an event _onUserTriggeredReconnect when userTriggeredReconnect with true when the status is true', () => {
+        // Arrange
+        const subjectSpy = jasmine.createSpyObj<Subject<boolean>>('Subject', ['next']);
+        service['_onUserTriggeredReconnect'] = subjectSpy;
+        spyOnProperty(service, 'status', 'get').and.returnValue(true);
+
+        // Act
+        service.userTriggeredReconnect();
+
+        // Assert
+        expect(subjectSpy.next).toHaveBeenCalledOnceWith(true);
+    });
+
+    it('should raise an event _onUserTriggeredReconnect when userTriggeredReconnect with false when the status is false', () => {
+        // Arrange
+        const subjectSpy = jasmine.createSpyObj<Subject<boolean>>('Subject', ['next']);
+        service['_onUserTriggeredReconnect'] = subjectSpy;
+        spyOnProperty(service, 'status', 'get').and.returnValue(false);
+
+        // Act
+        service.userTriggeredReconnect();
+
+        // Assert
+        expect(subjectSpy.next).toHaveBeenCalledOnceWith(false);
+    });
+
+    it('onUserTriggeredReconnect should return _onUserTriggeredReconnect as an observable', () => {
+        // Arrange
+        const subjectSpy = jasmine.createSpyObj<Subject<boolean>>('Subject', ['asObservable']);
+        subjectSpy.asObservable.and.returnValue(new Observable<boolean>());
+
+        service['_onUserTriggeredReconnect'] = subjectSpy;
+
+        // Act
+        const observable = service.onUserTriggeredReconnect;
+
+        // Assert
+        expect(observable).toBeTruthy();
+        expect(subjectSpy.asObservable).toHaveBeenCalledTimes(1);
+    });
 });
