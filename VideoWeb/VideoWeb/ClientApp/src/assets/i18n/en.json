@@ -1003,9 +1003,9 @@
       "decline": "Decline"
     },
     "linked-participants": {
-        "waiting-single": "Waiting for {{name}} to accept the invitation to {{invitedBy}}.",
-        "waiting-multiple": "Waiting for {{number}} other participants to accept the invitation to {{invitedBy}}.",
-        "rejected": "{{rejector}} rejected the invitation to {{invitedBy}}",
+        "waiting-single": "Waiting for {{name}} to accept the invitation from {{invitedBy}}.",
+        "waiting-multiple": "Waiting for {{number}} other participants to accept the invitation from {{invitedBy}}.",
+        "rejected": "{{rejector}} rejected the invitation from {{invitedBy}}.",
         "button-close": "Close"
     },
     "poor-connection": {
