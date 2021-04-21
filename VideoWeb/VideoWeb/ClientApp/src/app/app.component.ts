@@ -2,7 +2,13 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/co
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { EventTypes, OidcSecurityService, PublicEventsService } from 'angular-auth-oidc-client';
+import {
+    AuthorizationResult,
+    EventTypes,
+    OidcClientNotification,
+    OidcSecurityService,
+    PublicEventsService
+} from 'angular-auth-oidc-client';
 import { NEVER, Observable, Subscription } from 'rxjs';
 import { catchError, filter, map, tap } from 'rxjs/operators';
 import { ConfigService } from './services/api/config.service';
@@ -71,7 +77,7 @@ export class AppComponent implements OnInit, OnDestroy {
         this.checkAuth().subscribe({
             next: async (loggedIn: boolean) => {
                 console.log(`Post config setup loggged in status: ${loggedIn}`);
-                // await this.postAuthSetup(loggedIn);
+                await this.postAuthSetup(loggedIn);
             }
         });
 
@@ -83,7 +89,7 @@ export class AppComponent implements OnInit, OnDestroy {
                 }),
                 filter(notification => notification.type === EventTypes.NewAuthorizationResult)
             )
-            .subscribe(async value => {
+            .subscribe(async (value: OidcClientNotification<AuthorizationResult>) => {
                 console.log('EventReceived with value from app', value);
                 await this.postAuthSetup(true);
             });
