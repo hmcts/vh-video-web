@@ -222,7 +222,11 @@ export abstract class WaitingRoomBaseDirective {
             invitation.activeToast.declinedByThirdParty = true;
         }
 
-        this.notificationToastrService.showConsultationRejectedByLinkedParticipant(linkedParticipantId, invitation.invitedByName, this.participant.status === ParticipantStatus.InHearing);
+        this.notificationToastrService.showConsultationRejectedByLinkedParticipant(
+            linkedParticipantId,
+            invitation.invitedByName,
+            this.participant.status === ParticipantStatus.InHearing
+        );
         this.consultationInvitiationService.removeInvitation(consulationRoomLabel);
     }
 
@@ -272,11 +276,14 @@ export abstract class WaitingRoomBaseDirective {
                             this.onConsultationRejected(message.roomLabel);
                         }
                     } else if (message.sentByClient) {
-                        if (this.participant.linked_participants.find((linkedParticipant) => message.requestedFor === linkedParticipant.linked_id)) {
+                        if (
+                            this.participant.linked_participants.find(
+                                linkedParticipant => message.requestedFor === linkedParticipant.linked_id
+                            )
+                        ) {
                             const linkedParticipant = this.findParticipant(message.requestedFor);
 
-                            if (message.answer === ConsultationAnswer.Accepted ||
-                                message.answer === ConsultationAnswer.Transferring) {
+                            if (message.answer === ConsultationAnswer.Accepted || message.answer === ConsultationAnswer.Transferring) {
                                 this.onLinkedParticiantAcceptedConsultationInvite(message.roomLabel, linkedParticipant.id);
                             } else {
                                 this.onLinkedParticiantRejectedConsultationInvite(linkedParticipant.display_name, message.roomLabel);
@@ -446,7 +453,11 @@ export abstract class WaitingRoomBaseDirective {
         }
 
         if (waitingOnLinkedParticipants.length > 0) {
-            invitation.activeToast = this.notificationToastrService.showWaitingForLinkedParticipantsToAccept(waitingOnLinkedParticipants, invitation.invitedByName, this.participant.status === ParticipantStatus.InHearing);
+            invitation.activeToast = this.notificationToastrService.showWaitingForLinkedParticipantsToAccept(
+                waitingOnLinkedParticipants,
+                invitation.invitedByName,
+                this.participant.status === ParticipantStatus.InHearing
+            );
         }
     }
 

@@ -125,10 +125,13 @@ export class NotificationToastrService {
     }
 
     showConsultationRejectedByLinkedParticipant(rejectorName: string, invitedByName: string, inHearing: boolean): VhToastComponent {
-        const message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('notification-toastr.linked-participants.rejected', {
-            rejector: rejectorName,
-            invitedBy : invitedByName
-        })}</span>`;
+        const message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant(
+            'notification-toastr.linked-participants.rejected',
+            {
+                rejector: rejectorName,
+                invitedBy: invitedByName
+            }
+        )}</span>`;
 
         const toast = this.toastr.show('', '', {
             timeOut: 120000,
@@ -159,18 +162,28 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
-    showWaitingForLinkedParticipantsToAccept(linkedParticipantNames: string[], invitedByName: string, inHearing: boolean): VhToastComponent {
+    showWaitingForLinkedParticipantsToAccept(
+        linkedParticipantNames: string[],
+        invitedByName: string,
+        inHearing: boolean
+    ): VhToastComponent {
         let message: string;
         if (linkedParticipantNames.length > 1) {
-            message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('notification-toastr.linked-participants.waiting-multiple', {
-                number: linkedParticipantNames.length,
-                invitedBy : invitedByName
-            })}</span>`;
+            message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant(
+                'notification-toastr.linked-participants.waiting-multiple',
+                {
+                    number: linkedParticipantNames.length,
+                    invitedBy: invitedByName
+                }
+            )}</span>`;
         } else {
-            message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('notification-toastr.linked-participants.waiting-single', {
-                name: linkedParticipantNames[0],
-                invitedBy : invitedByName
-            })}</span>`;
+            message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant(
+                'notification-toastr.linked-participants.waiting-single',
+                {
+                    name: linkedParticipantNames[0],
+                    invitedBy: invitedByName
+                }
+            )}</span>`;
         }
 
         const toast = this.toastr.show('', '', {

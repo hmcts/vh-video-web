@@ -2,8 +2,13 @@ import { Injectable } from '@angular/core';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 
 export class ConsultationInvitation {
-    private _linkedParticipantStatuses:  { [participantId: string]: boolean };
-    constructor(linkedParticipantStatuses: { [participantId: string]: boolean } = {}, public activeToast: VhToastComponent = null, public activeParticipantAccepted: boolean = false, public invitedByName: string = null) {
+    private _linkedParticipantStatuses: { [participantId: string]: boolean };
+    constructor(
+        linkedParticipantStatuses: { [participantId: string]: boolean } = {},
+        public activeToast: VhToastComponent = null,
+        public activeParticipantAccepted: boolean = false,
+        public invitedByName: string = null
+    ) {
         this._linkedParticipantStatuses = linkedParticipantStatuses;
     }
 
@@ -23,12 +28,12 @@ export class ConsultationInvitation {
 }
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class ConsultationInvitationService {
-    private consultationInvitations:  { [roomLabel: string]: ConsultationInvitation } = {};
+    private consultationInvitations: { [roomLabel: string]: ConsultationInvitation } = {};
 
-    constructor() { }
+    constructor() {}
 
     createInvitation(roomLabel: string, invitedByName: string = null): ConsultationInvitation {
         let invitation = this.consultationInvitations[roomLabel];

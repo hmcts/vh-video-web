@@ -5,14 +5,14 @@ describe('ConsultationInvitation', () => {
     let model: ConsultationInvitation;
 
     beforeEach(() => {
-      model = new ConsultationInvitation();
+        model = new ConsultationInvitation();
     });
 
     it('should be created', () => {
-      expect(model).toBeTruthy();
+        expect(model).toBeTruthy();
     });
 
-    it('should add a participant to the list with a value of false if the participant doesn\'t exist', () => {
+    it("should add a participant to the list with a value of false if the participant doesn't exist", () => {
         // Arrange
         const expectedId = 'test-id';
 
@@ -103,134 +103,137 @@ describe('ConsultationInvitation', () => {
         // Assert
         expect(model.linkedParticipantStatuses[expectedId]).toBeFalse();
     });
-  });
-
+});
 
 describe('ConsultationInvitationServiceService', () => {
-  let service: ConsultationInvitationService;
+    let service: ConsultationInvitationService;
 
-  function spyPropertyGetter<T, K extends keyof T>(spyObj: jasmine.SpyObj<T>, propName: K): jasmine.Spy<() => T[K]> {
-    return Object.getOwnPropertyDescriptor(spyObj, propName)?.get as jasmine.Spy<() => T[K]>;
-  }
+    function spyPropertyGetter<T, K extends keyof T>(spyObj: jasmine.SpyObj<T>, propName: K): jasmine.Spy<() => T[K]> {
+        return Object.getOwnPropertyDescriptor(spyObj, propName)?.get as jasmine.Spy<() => T[K]>;
+    }
 
-  beforeEach(() => {
-    service = new ConsultationInvitationService();
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
-  describe('getInvitation', () => {
-      const expectedId = 'test-id';
-      it('should return the existing invitation', () => {
-        // Arrange
-        const expectedInvitation = jasmine.createSpyObj<ConsultationInvitation>('ConsultationInvitation', ['addLinkedParticipant']);
-        service['consultationInvitations'] = {};
-        service['consultationInvitations'][expectedId] = expectedInvitation;
-
-        // Act
-        const invitation = service.getInvitation(expectedId);
-
-        // Assert
-        expect(invitation).toEqual(expectedInvitation);
-      });
-
-      it('should create a new invitation', () => {
-        // Arrange
-        const expectedInvitation = jasmine.createSpyObj<ConsultationInvitation>('ConsultationInvitation', ['addLinkedParticipant']);
-        service['consultationInvitations'] = {};
-        spyOn(service, 'createInvitation').and.returnValue(expectedInvitation);
-
-        // Act
-        const invitation = service.getInvitation(expectedId);
-
-        // Assert
-        expect(service.createInvitation).toHaveBeenCalledOnceWith(expectedId);
-        expect(invitation).toEqual(expectedInvitation);
-      });
-  });
-
-  describe('createInvitation', () => {
-    const expectedRoomlabel = 'consultation room';
-    const expectedInvitedBy = 'invited by';
-
-    it('should return the existing toast one already exists', () => {
-        // Arrange
-        const existingInvitation = new ConsultationInvitation();
-        service['consultationInvitations'] = {};
-        service['consultationInvitations'][expectedRoomlabel] = existingInvitation;
-
-        // Act
-        const invitation = service.createInvitation(expectedRoomlabel);
-
-        // Assert
-        expect(invitation).toBeTruthy();
-        expect(service['consultationInvitations'][expectedRoomlabel]).toBe(invitation);
-        expect(invitation.invitedByName).toBeNull();
+    beforeEach(() => {
+        service = new ConsultationInvitationService();
     });
 
-    it('should update the invited by name if one was provided', () => {
-        // Arrange
-        const existingInvitation = new ConsultationInvitation();
-        service['consultationInvitations'] = {};
-        service['consultationInvitations'][expectedRoomlabel] = existingInvitation;
-
-        // Act
-        const invitation = service.createInvitation(expectedRoomlabel, expectedInvitedBy);
-
-        // Assert
-        expect(invitation).toBeTruthy();
-        expect(service['consultationInvitations'][expectedRoomlabel]).toBe(invitation);
-        expect(invitation.invitedByName).toBe(expectedInvitedBy);
+    it('should be created', () => {
+        expect(service).toBeTruthy();
     });
 
-    it('should NOT update the invited by name if one was NOT provided', () => {
-        // Arrange
-        const existingInvitation = new ConsultationInvitation();
-        existingInvitation.invitedByName = expectedInvitedBy;
-        service['consultationInvitations'] = {};
-        service['consultationInvitations'][expectedRoomlabel] = existingInvitation;
+    describe('getInvitation', () => {
+        const expectedId = 'test-id';
+        it('should return the existing invitation', () => {
+            // Arrange
+            const expectedInvitation = jasmine.createSpyObj<ConsultationInvitation>('ConsultationInvitation', ['addLinkedParticipant']);
+            service['consultationInvitations'] = {};
+            service['consultationInvitations'][expectedId] = expectedInvitation;
 
-        // Act
-        const invitation = service.createInvitation(expectedRoomlabel);
+            // Act
+            const invitation = service.getInvitation(expectedId);
 
-        // Assert
-        expect(invitation).toBeTruthy();
-        expect(service['consultationInvitations'][expectedRoomlabel]).toBe(invitation);
-        expect(invitation.invitedByName).toBe(expectedInvitedBy);
+            // Assert
+            expect(invitation).toEqual(expectedInvitation);
+        });
+
+        it('should create a new invitation', () => {
+            // Arrange
+            const expectedInvitation = jasmine.createSpyObj<ConsultationInvitation>('ConsultationInvitation', ['addLinkedParticipant']);
+            service['consultationInvitations'] = {};
+            spyOn(service, 'createInvitation').and.returnValue(expectedInvitation);
+
+            // Act
+            const invitation = service.getInvitation(expectedId);
+
+            // Assert
+            expect(service.createInvitation).toHaveBeenCalledOnceWith(expectedId);
+            expect(invitation).toEqual(expectedInvitation);
+        });
     });
 
-    it('should create a new toast if one exists', () => {
-        // Arrange
-        service['consultationInvitations'] = {};
+    describe('createInvitation', () => {
+        const expectedRoomlabel = 'consultation room';
+        const expectedInvitedBy = 'invited by';
 
-        // Act
-        const invitation = service.createInvitation(expectedRoomlabel, expectedInvitedBy);
+        it('should return the existing toast one already exists', () => {
+            // Arrange
+            const existingInvitation = new ConsultationInvitation();
+            service['consultationInvitations'] = {};
+            service['consultationInvitations'][expectedRoomlabel] = existingInvitation;
 
-        // Assert
-        expect(invitation).toBeTruthy();
-        expect(service['consultationInvitations'][expectedRoomlabel]).toBe(invitation);
+            // Act
+            const invitation = service.createInvitation(expectedRoomlabel);
+
+            // Assert
+            expect(invitation).toBeTruthy();
+            expect(service['consultationInvitations'][expectedRoomlabel]).toBe(invitation);
+            expect(invitation.invitedByName).toBeNull();
+        });
+
+        it('should update the invited by name if one was provided', () => {
+            // Arrange
+            const existingInvitation = new ConsultationInvitation();
+            service['consultationInvitations'] = {};
+            service['consultationInvitations'][expectedRoomlabel] = existingInvitation;
+
+            // Act
+            const invitation = service.createInvitation(expectedRoomlabel, expectedInvitedBy);
+
+            // Assert
+            expect(invitation).toBeTruthy();
+            expect(service['consultationInvitations'][expectedRoomlabel]).toBe(invitation);
+            expect(invitation.invitedByName).toBe(expectedInvitedBy);
+        });
+
+        it('should NOT update the invited by name if one was NOT provided', () => {
+            // Arrange
+            const existingInvitation = new ConsultationInvitation();
+            existingInvitation.invitedByName = expectedInvitedBy;
+            service['consultationInvitations'] = {};
+            service['consultationInvitations'][expectedRoomlabel] = existingInvitation;
+
+            // Act
+            const invitation = service.createInvitation(expectedRoomlabel);
+
+            // Assert
+            expect(invitation).toBeTruthy();
+            expect(service['consultationInvitations'][expectedRoomlabel]).toBe(invitation);
+            expect(invitation.invitedByName).toBe(expectedInvitedBy);
+        });
+
+        it('should create a new toast if one exists', () => {
+            // Arrange
+            service['consultationInvitations'] = {};
+
+            // Act
+            const invitation = service.createInvitation(expectedRoomlabel, expectedInvitedBy);
+
+            // Assert
+            expect(invitation).toBeTruthy();
+            expect(service['consultationInvitations'][expectedRoomlabel]).toBe(invitation);
+        });
     });
-  });
 
-  describe('removeInvitation', () => {
-    const expectedId = 'test-id';
-    it('should attempt to remove the toast and delete the invitation', () => {
-      // Arrange
-      const expectedInvitation = jasmine.createSpyObj<ConsultationInvitation>('ConsultationInvitation', ['addLinkedParticipant'], ['activeToast']);
-      const expectedToastSpy = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
-      spyPropertyGetter(expectedInvitation, 'activeToast').and.returnValue(expectedToastSpy);
+    describe('removeInvitation', () => {
+        const expectedId = 'test-id';
+        it('should attempt to remove the toast and delete the invitation', () => {
+            // Arrange
+            const expectedInvitation = jasmine.createSpyObj<ConsultationInvitation>(
+                'ConsultationInvitation',
+                ['addLinkedParticipant'],
+                ['activeToast']
+            );
+            const expectedToastSpy = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
+            spyPropertyGetter(expectedInvitation, 'activeToast').and.returnValue(expectedToastSpy);
 
-      service['consultationInvitations'] = {};
-      service['consultationInvitations'][expectedId] = expectedInvitation;
+            service['consultationInvitations'] = {};
+            service['consultationInvitations'][expectedId] = expectedInvitation;
 
-      // Act
-      const invitation = service.removeInvitation(expectedId);
+            // Act
+            const invitation = service.removeInvitation(expectedId);
 
-      // Assert
-      expect(expectedToastSpy.remove).toHaveBeenCalledTimes(1);
-      expect(service['consultationInvitations'][expectedId]).toBeFalsy();
+            // Assert
+            expect(expectedToastSpy.remove).toHaveBeenCalledTimes(1);
+            expect(service['consultationInvitations'][expectedId]).toBeFalsy();
+        });
     });
-  });
 });

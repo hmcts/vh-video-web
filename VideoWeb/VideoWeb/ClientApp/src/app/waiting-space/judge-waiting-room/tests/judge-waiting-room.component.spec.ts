@@ -51,7 +51,11 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     beforeEach(async () => {
-        consultationInvitiationSpy = jasmine.createSpyObj<ConsultationInvitation>('ConsultationInvitation', ['addLinkedParticipant', 'updateLinkedParticipantStatus'], ['linkedParticipantStatuses', 'activeToast']);
+        consultationInvitiationSpy = jasmine.createSpyObj<ConsultationInvitation>(
+            'ConsultationInvitation',
+            ['addLinkedParticipant', 'updateLinkedParticipantStatus'],
+            ['linkedParticipantStatuses', 'activeToast']
+        );
         logged = new LoggedParticipantResponse({
             participant_id: globalParticipant.id,
             display_name: globalParticipant.display_name,
@@ -84,7 +88,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             consultationInvitiationService
         );
 
-       consultationInvitiationService.getInvitation.and.returnValue(consultationInvitiationSpy);
+        consultationInvitiationService.getInvitation.and.returnValue(consultationInvitiationSpy);
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));

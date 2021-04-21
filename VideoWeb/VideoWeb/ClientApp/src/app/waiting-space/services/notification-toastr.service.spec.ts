@@ -358,11 +358,11 @@ describe('NotificationToastrService', () => {
         let mockToast: ActiveToast<VhToastComponent>;
 
         beforeEach(() => {
-        toastrService.show.calls.reset();
-        toastrService.remove.calls.reset();
-        translateServiceSpy.instant.calls.reset();
-        mockToast = {
-                toastId : expectedToastId,
+            toastrService.show.calls.reset();
+            toastrService.remove.calls.reset();
+            translateServiceSpy.instant.calls.reset();
+            mockToast = {
+                toastId: expectedToastId,
                 toastRef: {
                     componentInstance: {}
                 }
@@ -375,11 +375,11 @@ describe('NotificationToastrService', () => {
 
             // Assert
             expect(toastrService.show).toHaveBeenCalledOnceWith('', '', {
-                timeOut : 120000,
-                extendedTimeOut : 0,
-                toastClass : 'vh-no-pointer',
-                tapToDismiss : false,
-                toastComponent : VhToastComponent
+                timeOut: 120000,
+                extendedTimeOut: 0,
+                toastClass: 'vh-no-pointer',
+                tapToDismiss: false,
+                toastComponent: VhToastComponent
             });
         });
 
@@ -390,7 +390,11 @@ describe('NotificationToastrService', () => {
                 toastrService.show.and.returnValue(mockToast);
 
                 // Act
-                const toastComponentInstance = service.showConsultationRejectedByLinkedParticipant(expectedParticipantName, expectedInvitedBy, true);
+                const toastComponentInstance = service.showConsultationRejectedByLinkedParticipant(
+                    expectedParticipantName,
+                    expectedInvitedBy,
+                    true
+                );
 
                 // Assert
                 expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
@@ -405,7 +409,11 @@ describe('NotificationToastrService', () => {
                 const expectedLabel = 'notification-toastr.invite.decline';
                 toastrService.show.and.returnValue(mockToast);
 
-                const toastComponentInstance = service.showConsultationRejectedByLinkedParticipant(expectedParticipantName, expectedInvitedBy, true);
+                const toastComponentInstance = service.showConsultationRejectedByLinkedParticipant(
+                    expectedParticipantName,
+                    expectedInvitedBy,
+                    true
+                );
                 const button = toastComponentInstance.vhToastOptions.buttons[0];
 
                 // Act
@@ -421,7 +429,11 @@ describe('NotificationToastrService', () => {
                 const expectedLabel = 'notification-toastr.invite.decline';
                 toastrService.show.and.returnValue(mockToast);
 
-                const toastComponentInstance = service.showConsultationRejectedByLinkedParticipant(expectedParticipantName, expectedInvitedBy, true);
+                const toastComponentInstance = service.showConsultationRejectedByLinkedParticipant(
+                    expectedParticipantName,
+                    expectedInvitedBy,
+                    true
+                );
 
                 // Act
                 toastComponentInstance.vhToastOptions.onNoAction();
@@ -432,14 +444,20 @@ describe('NotificationToastrService', () => {
 
             it('should have a correctly formatted body', () => {
                 // Act
-                const toastComponentInstance = service.showConsultationRejectedByLinkedParticipant(expectedParticipantName, expectedInvitedBy, true);
+                const toastComponentInstance = service.showConsultationRejectedByLinkedParticipant(
+                    expectedParticipantName,
+                    expectedInvitedBy,
+                    true
+                );
 
                 // Assert
                 expect(toastComponentInstance.vhToastOptions.htmlBody).toBe(expectedBody);
                 expect(translateServiceSpy.instant).toHaveBeenCalledTimes(2);
-                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedTranslationString, { rejector : expectedParticipantName , invitedBy : expectedInvitedBy });
+                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedTranslationString, {
+                    rejector: expectedParticipantName,
+                    invitedBy: expectedInvitedBy
+                });
                 expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedButtonTranslationString);
-
             });
 
             it('should have the color black when NOT in hearing', () => {
@@ -447,7 +465,11 @@ describe('NotificationToastrService', () => {
                 const expectedColor = 'black';
 
                 // Act
-                const toastComponentInstance = service.showConsultationRejectedByLinkedParticipant(expectedParticipantName, expectedInvitedBy, false);
+                const toastComponentInstance = service.showConsultationRejectedByLinkedParticipant(
+                    expectedParticipantName,
+                    expectedInvitedBy,
+                    false
+                );
 
                 // Assert
                 expect(toastComponentInstance.vhToastOptions.color).toBe(expectedColor);
@@ -458,7 +480,11 @@ describe('NotificationToastrService', () => {
                 const expectedColor = 'white';
 
                 // Act
-                const toastComponentInstance = service.showConsultationRejectedByLinkedParticipant(expectedParticipantName, expectedInvitedBy, true);
+                const toastComponentInstance = service.showConsultationRejectedByLinkedParticipant(
+                    expectedParticipantName,
+                    expectedInvitedBy,
+                    true
+                );
 
                 // Assert
                 expect(toastComponentInstance.vhToastOptions.color).toBe(expectedColor);
@@ -486,11 +512,11 @@ describe('NotificationToastrService', () => {
             toastrService.remove.calls.reset();
             translateServiceSpy.instant.calls.reset();
             mockToast = {
-                    toastId : expectedToastId,
-                    toastRef: {
-                        componentInstance: {}
-                    }
-                } as ActiveToast<VhToastComponent>;
+                toastId: expectedToastId,
+                toastRef: {
+                    componentInstance: {}
+                }
+            } as ActiveToast<VhToastComponent>;
         });
 
         describe('expected toast configuration', () => {
@@ -500,7 +526,11 @@ describe('NotificationToastrService', () => {
                 toastrService.show.and.returnValue(mockToast);
 
                 // Act
-                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(linkedParticipantName, expectedInvitedBy, true);
+                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(
+                    linkedParticipantName,
+                    expectedInvitedBy,
+                    true
+                );
 
                 // Assert
                 expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
@@ -515,7 +545,11 @@ describe('NotificationToastrService', () => {
                 const expectedLabel = 'notification-toastr.invite.decline';
                 toastrService.show.and.returnValue(mockToast);
 
-                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(linkedParticipantName, expectedInvitedBy, true);
+                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(
+                    linkedParticipantName,
+                    expectedInvitedBy,
+                    true
+                );
                 const button = toastComponentInstance.vhToastOptions.buttons[0];
 
                 // Act
@@ -531,7 +565,11 @@ describe('NotificationToastrService', () => {
                 const expectedLabel = 'notification-toastr.invite.decline';
                 toastrService.show.and.returnValue(mockToast);
 
-                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(linkedParticipantName, expectedInvitedBy, true);
+                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(
+                    linkedParticipantName,
+                    expectedInvitedBy,
+                    true
+                );
 
                 // Act
                 toastComponentInstance.vhToastOptions.onNoAction();
@@ -542,23 +580,37 @@ describe('NotificationToastrService', () => {
 
             it('should have a correctly formatted body for a single linked participant', () => {
                 // Act
-                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(linkedParticipantName, expectedInvitedBy, true);
+                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(
+                    linkedParticipantName,
+                    expectedInvitedBy,
+                    true
+                );
 
                 // Assert
                 expect(toastComponentInstance.vhToastOptions.htmlBody).toBe(expectedBody);
                 expect(translateServiceSpy.instant).toHaveBeenCalledTimes(2);
-                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedTranslationString, { name : linkedParticipantName[0] , invitedBy : expectedInvitedBy });
+                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedTranslationString, {
+                    name: linkedParticipantName[0],
+                    invitedBy: expectedInvitedBy
+                });
                 expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedButtonTranslationString);
             });
 
             it('should have a correctly formatted body for multiple linked participants', () => {
                 // Act
-                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(multipleLinkedParticipantNames, expectedInvitedBy, true);
+                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(
+                    multipleLinkedParticipantNames,
+                    expectedInvitedBy,
+                    true
+                );
 
                 // Assert
                 expect(toastComponentInstance.vhToastOptions.htmlBody).toBe(expectedBodyForMultipleParticipants);
                 expect(translateServiceSpy.instant).toHaveBeenCalledTimes(2);
-                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedTranslationStringForMultipleParticipants, { number : multipleLinkedParticipantNames.length, invitedBy : expectedInvitedBy });
+                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedTranslationStringForMultipleParticipants, {
+                    number: multipleLinkedParticipantNames.length,
+                    invitedBy: expectedInvitedBy
+                });
                 expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedButtonTranslationString);
             });
 
@@ -567,7 +619,11 @@ describe('NotificationToastrService', () => {
                 const expectedColor = 'black';
 
                 // Act
-                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(multipleLinkedParticipantNames, expectedInvitedBy, false);
+                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(
+                    multipleLinkedParticipantNames,
+                    expectedInvitedBy,
+                    false
+                );
 
                 // Assert
                 expect(toastComponentInstance.vhToastOptions.color).toBe(expectedColor);
@@ -578,7 +634,11 @@ describe('NotificationToastrService', () => {
                 const expectedColor = 'white';
 
                 // Act
-                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(multipleLinkedParticipantNames, expectedInvitedBy, true);
+                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(
+                    multipleLinkedParticipantNames,
+                    expectedInvitedBy,
+                    true
+                );
 
                 // Assert
                 expect(toastComponentInstance.vhToastOptions.color).toBe(expectedColor);
