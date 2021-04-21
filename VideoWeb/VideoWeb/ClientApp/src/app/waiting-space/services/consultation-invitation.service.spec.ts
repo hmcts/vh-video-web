@@ -12,7 +12,7 @@ describe('ConsultationInvitation', () => {
         expect(model).toBeTruthy();
     });
 
-    it('should add a participant to the list with a value of false if the participant doesn\'t exist', () => {
+    it('should add a participant to the list with a value of false if the participant does NOT exist', () => {
         // Arrange
         const expectedId = 'test-id';
 

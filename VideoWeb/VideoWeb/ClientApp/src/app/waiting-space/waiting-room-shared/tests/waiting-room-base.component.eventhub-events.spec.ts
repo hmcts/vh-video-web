@@ -980,7 +980,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             );
         });
 
-        it('should raise a toast if a linked participant\'s consultation request failed', () => {
+        it('should raise a toast if a linked participants consultation request failed', () => {
             // Arrange
             const message = new ConsultationRequestResponseMessage(
                 globalConference.id,
