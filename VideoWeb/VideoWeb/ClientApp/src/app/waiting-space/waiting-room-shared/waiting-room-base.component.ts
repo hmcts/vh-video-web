@@ -47,7 +47,7 @@ import {
     Presentation
 } from '../models/video-call-models';
 import { PrivateConsultationRoomControlsComponent } from '../private-consultation-room-controls/private-consultation-room-controls.component';
-import { ConsultationInvitationService } from '../services/consultation-invitation.service';
+import { ConsultationInvitation, ConsultationInvitationService } from '../services/consultation-invitation.service';
 import { NotificationSoundsService } from '../services/notification-sounds.service';
 import { NotificationToastrService } from '../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
@@ -208,7 +208,12 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     onLinkedParticiantAcceptedConsultationInvite(roomLabel: string, id: string) {
-        this.consultationInvitiationService.getInvitation(roomLabel).updateLinkedParticipantStatus(id, true);
+        const invitation = this.consultationInvitiationService.getInvitation(roomLabel);
+        invitation.updateLinkedParticipantStatus(id, true);
+
+        if (invitation.activeParticipantAccepted) {
+            this.createOrUpdateWaitingOnLinkedParticipantsNotification(invitation, roomLabel);
+        }
     }
 
     onLinkedParticiantRejectedConsultationInvite(linkedParticipantId: string, consulationRoomLabel: string) {
@@ -253,7 +258,6 @@ export abstract class WaitingRoomBaseDirective {
         this.logger.debug(`${this.loggerPrefix} Subscribing to ConsultationRequestResponseMessage`);
         this.eventHubSubscription$.add(
             this.eventService.getConsultationRequestResponseMessage().subscribe(async message => {
-                console.log('[ROB] - My ID', this.participant.id, 'RequestFor', message.requestedFor, 'Answer', message.answer, 'Sent by Client', message.sentByClient);
                 if (message.answer) {
                     if (message.requestedFor === this.participant.id) {
                         if (message.answer === ConsultationAnswer.Accepted && message.sentByClient) {
@@ -418,19 +422,28 @@ export abstract class WaitingRoomBaseDirective {
             this.displayDeviceChangeModal = false;
         }
 
+        const invitation = this.consultationInvitiationService.getInvitation(roomLabel);
+        invitation.activeParticipantAccepted = true;
+
+        this.createOrUpdateWaitingOnLinkedParticipantsNotification(invitation, roomLabel);
+    }
+
+    createOrUpdateWaitingOnLinkedParticipantsNotification(invitation: ConsultationInvitation, roomLabel: string) {
         const waitingOnLinkedParticipants: string[] = [];
-        const linkedParticipantStatuses = this.consultationInvitiationService.getInvitation(roomLabel).linkedParticipantStatuses;
-        for (const linkedParticipantId in linkedParticipantStatuses) {
-            if (linkedParticipantStatuses.hasOwnProperty(linkedParticipantId)) {
-                if (!linkedParticipantStatuses[linkedParticipantId]) {
+        for (const linkedParticipantId in invitation.linkedParticipantStatuses) {
+            if (invitation.linkedParticipantStatuses.hasOwnProperty(linkedParticipantId)) {
+                if (!invitation.linkedParticipantStatuses[linkedParticipantId]) {
                     waitingOnLinkedParticipants.push(this.findParticipant(linkedParticipantId)?.display_name);
                 }
             }
         }
 
+        if (invitation.activeToast) {
+            invitation.activeToast.remove();
+        }
+
         if (waitingOnLinkedParticipants.length > 0) {
-            console.log('[ROB] Setting active toast', waitingOnLinkedParticipants);
-            this.consultationInvitiationService.getInvitation(roomLabel).activeToast = this.notificationToastrService.showWaitingForLinkedParticipantsToAccept(waitingOnLinkedParticipants, roomLabel, this.participant.status === ParticipantStatus.InHearing);
+            invitation.activeToast = this.notificationToastrService.showWaitingForLinkedParticipantsToAccept(waitingOnLinkedParticipants, roomLabel, this.participant.status === ParticipantStatus.InHearing);
         }
     }
 

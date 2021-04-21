@@ -39,6 +39,10 @@ describe('NotificationToastrService', () => {
     });
 
     describe('showConsultationInvite', () => {
+        beforeEach(() => {
+            toastrService.remove.calls.reset();
+        });
+
         it('should only show invite for room once', async () => {
             // Arrange
             const mockToast = {
@@ -259,6 +263,7 @@ describe('NotificationToastrService', () => {
         it('should add accept button', async () => {
             // Arrange
             const mockToast = {
+                toastId: 2,
                 toastRef: {
                     componentInstance: {}
                 }
@@ -288,6 +293,7 @@ describe('NotificationToastrService', () => {
         it('should add decline button', async () => {
             // Arrange
             const mockToast = {
+                toastId: 2,
                 toastRef: {
                     componentInstance: {}
                 }
@@ -311,7 +317,7 @@ describe('NotificationToastrService', () => {
                 roomLabel
             );
             expect(consultationService.respondToConsultationRequest).toHaveBeenCalledTimes(1);
-            expect(notificationSoundsService.stopConsultationRequestRingtone).toHaveBeenCalledTimes(1);
+            expect(toastrService.remove).toHaveBeenCalledOnceWith(mockToast.toastId);
         });
 
         it('should set correct toastr properties', async () => {
@@ -429,7 +435,7 @@ describe('NotificationToastrService', () => {
                 // Assert
                 expect(toastComponentInstance.vhToastOptions.htmlBody).toBe(expectedBody);
                 expect(translateServiceSpy.instant).toHaveBeenCalledTimes(2);
-                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedTranslationString, { name : expectedParticipantName , room : expectedConsulationRoomLabel })
+                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedTranslationString, { name : expectedParticipantName , room : expectedConsulationRoomLabel });
                 expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedButtonTranslationString);
 
             });
@@ -539,7 +545,7 @@ describe('NotificationToastrService', () => {
                 // Assert
                 expect(toastComponentInstance.vhToastOptions.htmlBody).toBe(expectedBody);
                 expect(translateServiceSpy.instant).toHaveBeenCalledTimes(2);
-                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedTranslationString, { name : linkedParticipantName[0] , room : expectedConsulationRoomLabel })
+                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedTranslationString, { name : linkedParticipantName[0] , room : expectedConsulationRoomLabel });
                 expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedButtonTranslationString);
             });
 

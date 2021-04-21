@@ -449,15 +449,14 @@ describe('WaitingRoomComponent EventHub Call', () => {
         expect(component.videoStream.nativeElement.muted).toBeTruthy();
     });
 
-    describe('onConsultationAccepted', () => {
+    describe('createOrUpdateWaitingOnLinkedParticipantsNotification', () => {
         beforeEach(() => {
             notificationToastrService.showWaitingForLinkedParticipantsToAccept.calls.reset();
-            consultationInvitiationService.getInvitation.calls.reset();
         });
 
         const expectedConsultationRoomLabel = 'ConsultationRoom';
-        it('should raise a toast detailing the statuses of linked participants if there are linked participants who have NOT accepted', () => {
-            // Arrange
+        it('should raise a toast if there are linked participants who have NOT accepted their invitation', () => {
+            // Arramge
             const invitation = new ConsultationInvitation();
             spyOnProperty(invitation, 'linkedParticipantStatuses', 'get').and.returnValue({ 'lp1' : true, 'lp2' : false, 'lp3' : false, 'lp4' : true });
             consultationInvitiationService.getInvitation.and.returnValue(invitation);
@@ -473,42 +472,126 @@ describe('WaitingRoomComponent EventHub Call', () => {
             component.participant.status = ParticipantStatus.InHearing;
 
             // Act
-            component.onConsultationAccepted(expectedConsultationRoomLabel);
+            component.createOrUpdateWaitingOnLinkedParticipantsNotification(invitation, expectedConsultationRoomLabel);
 
             // Assert
-            expect(notificationToastrService.showWaitingForLinkedParticipantsToAccept).toHaveBeenCalledOnceWith(expectedLinkedParticipantsWhoHaventAccepted, expectedConsultationRoomLabel, true);
-            expect(consultationInvitiationService.getInvitation).toHaveBeenCalledTimes(2);
-            expect(consultationInvitiationService.getInvitation).toHaveBeenCalledWith(expectedConsultationRoomLabel);
             expect(findParticipantSpy).toHaveBeenCalledTimes(2);
             expect(findParticipantSpy).toHaveBeenCalledWith(expectedLinkedParticipantsWhoHaventAccepted[0]);
             expect(findParticipantSpy).toHaveBeenCalledWith(expectedLinkedParticipantsWhoHaventAccepted[1]);
+            expect(notificationToastrService.showWaitingForLinkedParticipantsToAccept).toHaveBeenCalledOnceWith(expectedLinkedParticipantsWhoHaventAccepted, expectedConsultationRoomLabel, true);
             expect(invitation.activeToast).toBe(expectedToastSpy);
         });
 
-        it('should NOT raise a toast detailing the statuses of linked participants if there are NO linked participants who have NOT accepted', () => {
-            // Arrange
-            const invitationSpy = jasmine.createSpyObj<ConsultationInvitation>('ConsultationInvitation', ['addLinkedParticipant'], ['linkedParticipantStatuses']);
-            spyPropertyGetter(invitationSpy, 'linkedParticipantStatuses').and.returnValue({ 'lp1' : true, 'lp2' : true, 'lp3' : true, 'lp4' : true });
-            consultationInvitiationService.getInvitation.and.returnValue(invitationSpy);
+        it('should close an existing toast before raising a new toast', () => {
+            // Arramge
+            const invitation = new ConsultationInvitation();
+            const toastSpy = invitation.activeToast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
+            spyOnProperty(invitation, 'linkedParticipantStatuses', 'get').and.returnValue({ 'lp1' : true, 'lp2' : false, 'lp3' : false, 'lp4' : true });
+            consultationInvitiationService.getInvitation.and.returnValue(invitation);
+
+            const expectedToastSpy = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
+            notificationToastrService.showWaitingForLinkedParticipantsToAccept.and.returnValue(expectedToastSpy);
+
+            const findParticipantSpy = component['findParticipant'] = jasmine.createSpy('findParticipant');
+            findParticipantSpy.and.returnValues({display_name: 'lp2'}, {display_name: 'lp3'});
+
+            const expectedLinkedParticipantsWhoHaventAccepted = ['lp2', 'lp3'];
+
+            component.participant.status = ParticipantStatus.InHearing;
 
             // Act
-            component.onConsultationAccepted(expectedConsultationRoomLabel);
+            component.createOrUpdateWaitingOnLinkedParticipantsNotification(invitation, expectedConsultationRoomLabel);
 
             // Assert
-            expect(notificationToastrService.showWaitingForLinkedParticipantsToAccept).not.toHaveBeenCalled();
+            expect(findParticipantSpy).toHaveBeenCalledTimes(2);
+            expect(findParticipantSpy).toHaveBeenCalledWith(expectedLinkedParticipantsWhoHaventAccepted[0]);
+            expect(findParticipantSpy).toHaveBeenCalledWith(expectedLinkedParticipantsWhoHaventAccepted[1]);
+            expect(notificationToastrService.showWaitingForLinkedParticipantsToAccept).toHaveBeenCalledOnceWith(expectedLinkedParticipantsWhoHaventAccepted, expectedConsultationRoomLabel, true);
+            expect(invitation.activeToast).toBe(expectedToastSpy);
+            expect(toastSpy.remove).toHaveBeenCalledTimes(1);
         });
 
-        it('should NOT raise a toast detailing the statuses of linked participants if there are NO linked participants ', () => {
+        it('should NOT raise a toast if there are NO linked participants who have NOT accepted their invitation', () => {
+            // Arramge
+            const invitation = new ConsultationInvitation();
+            spyOnProperty(invitation, 'linkedParticipantStatuses', 'get').and.returnValue({ 'lp1' : true, 'lp2' : true, 'lp3' : true, 'lp4' : true });
+            consultationInvitiationService.getInvitation.and.returnValue(invitation);
+
+            const expectedToastSpy = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
+            notificationToastrService.showWaitingForLinkedParticipantsToAccept.and.returnValue(expectedToastSpy);
+
+            const findParticipantSpy = component['findParticipant'] = jasmine.createSpy('findParticipant');
+            findParticipantSpy.and.returnValues({display_name: 'lp2'}, {display_name: 'lp3'});
+
+            const expectedLinkedParticipantsWhoHaventAccepted = ['lp2', 'lp3'];
+
+            component.participant.status = ParticipantStatus.InHearing;
+
+            // Act
+            component.createOrUpdateWaitingOnLinkedParticipantsNotification(invitation, expectedConsultationRoomLabel);
+
+            // Assert
+            expect(findParticipantSpy).not.toHaveBeenCalled();
+            expect(notificationToastrService.showWaitingForLinkedParticipantsToAccept).not.toHaveBeenCalled();
+            expect(invitation.activeToast).toBeNull();
+        });
+
+        it('should NOT raise a toast if there are NO linked participants', () => {
+            // Arramge
+            const invitation = new ConsultationInvitation();
+            spyOnProperty(invitation, 'linkedParticipantStatuses', 'get').and.returnValue({});
+            consultationInvitiationService.getInvitation.and.returnValue(invitation);
+
+            const expectedToastSpy = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
+            notificationToastrService.showWaitingForLinkedParticipantsToAccept.and.returnValue(expectedToastSpy);
+
+            const findParticipantSpy = component['findParticipant'] = jasmine.createSpy('findParticipant');
+            findParticipantSpy.and.returnValues({display_name: 'lp2'}, {display_name: 'lp3'});
+
+            const expectedLinkedParticipantsWhoHaventAccepted = ['lp2', 'lp3'];
+
+            component.participant.status = ParticipantStatus.InHearing;
+
+            // Act
+            component.createOrUpdateWaitingOnLinkedParticipantsNotification(invitation, expectedConsultationRoomLabel);
+
+            // Assert
+            expect(findParticipantSpy).not.toHaveBeenCalled();
+            expect(notificationToastrService.showWaitingForLinkedParticipantsToAccept).not.toHaveBeenCalled();
+            expect(invitation.activeToast).toBeNull();
+        });
+    });
+
+    describe('onConsultationAccepted', () => {
+        beforeEach(() => {
+            notificationToastrService.showWaitingForLinkedParticipantsToAccept.calls.reset();
+            consultationInvitiationService.getInvitation.calls.reset();
+        });
+
+        const expectedConsultationRoomLabel = 'ConsultationRoom';
+        it('should call createOrUpdateWaitingOnLinkedParticipantsNotification and set the activeParticipantAccepted to true', () => {
             // Arrange
-            const invitationSpy = jasmine.createSpyObj<ConsultationInvitation>('ConsultationInvitation', ['addLinkedParticipant'], ['linkedParticipantStatuses']);
-            spyPropertyGetter(invitationSpy, 'linkedParticipantStatuses').and.returnValue({});
-            consultationInvitiationService.getInvitation.and.returnValue(invitationSpy);
+            const invitation = new ConsultationInvitation();
+            spyOnProperty(invitation, 'linkedParticipantStatuses', 'get').and.returnValue({ 'lp1' : true, 'lp2' : false, 'lp3' : false, 'lp4' : true });
+            consultationInvitiationService.getInvitation.and.returnValue(invitation);
+
+            const expectedToastSpy = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
+            notificationToastrService.showWaitingForLinkedParticipantsToAccept.and.returnValue(expectedToastSpy);
+
+            const findParticipantSpy = component['findParticipant'] = jasmine.createSpy('findParticipant');
+            findParticipantSpy.and.returnValues({display_name: 'lp2'}, {display_name: 'lp3'});
+
+            spyOn(component, 'createOrUpdateWaitingOnLinkedParticipantsNotification');
+            component.participant.status = ParticipantStatus.InHearing;
 
             // Act
             component.onConsultationAccepted(expectedConsultationRoomLabel);
 
             // Assert
-            expect(notificationToastrService.showWaitingForLinkedParticipantsToAccept).not.toHaveBeenCalled();
+            expect(consultationInvitiationService.getInvitation).toHaveBeenCalledTimes(1);
+            expect(consultationInvitiationService.getInvitation).toHaveBeenCalledWith(expectedConsultationRoomLabel);
+            expect(invitation.activeParticipantAccepted).toBeTrue();
+            expect(component.createOrUpdateWaitingOnLinkedParticipantsNotification).toHaveBeenCalledOnceWith(invitation, expectedConsultationRoomLabel);
         });
     });
 
@@ -582,18 +665,42 @@ describe('WaitingRoomComponent EventHub Call', () => {
             consultationInvitiationService.getInvitation.calls.reset();
         });
 
-        it('should update the participant status for the invitation', () => {
+        it('should update the participant status and the toast notification for the invitation if there are still linked participants who havent accepted and the active participant has accepted', () => {
             // Arrange
-            const invitationSpy = jasmine.createSpyObj<ConsultationInvitation>('ConsultationInvitation', ['updateLinkedParticipantStatus']);
-            consultationInvitiationService.getInvitation.and.returnValue(invitationSpy);
+            const invitation = new ConsultationInvitation();
+            invitation.activeParticipantAccepted = true;
+            spyOnProperty(invitation, 'linkedParticipantStatuses', 'get').and.returnValue({ 'lp1' : true, 'lp2' : true, 'lp3' : true, 'lp4' : true });
+            spyOn(invitation, 'updateLinkedParticipantStatus');
+            consultationInvitiationService.getInvitation.and.returnValue(invitation);
 
+            spyOn(component, 'createOrUpdateWaitingOnLinkedParticipantsNotification');
 
             // Act
             component.onLinkedParticiantAcceptedConsultationInvite(expectedConsultationRoomLabel, linkedParticipant.id);
 
             // Assert
             expect(consultationInvitiationService.getInvitation).toHaveBeenCalledOnceWith(expectedConsultationRoomLabel);
-            expect(invitationSpy.updateLinkedParticipantStatus).toHaveBeenCalledOnceWith(linkedParticipant.id, true);
+            expect(invitation.updateLinkedParticipantStatus).toHaveBeenCalledOnceWith(linkedParticipant.id, true);
+            expect(component.createOrUpdateWaitingOnLinkedParticipantsNotification).toHaveBeenCalledOnceWith(invitation, expectedConsultationRoomLabel);
+        });
+
+        it('should NOT update the toast notification for the invitation if the active participant has NOT accepted', () => {
+            // Arrange
+            const invitation = new ConsultationInvitation();
+            invitation.activeParticipantAccepted = false;
+            spyOnProperty(invitation, 'linkedParticipantStatuses', 'get').and.returnValue({ 'lp1' : true, 'lp2' : true, 'lp3' : true, 'lp4' : true });
+            spyOn(invitation, 'updateLinkedParticipantStatus');
+            consultationInvitiationService.getInvitation.and.returnValue(invitation);
+
+            spyOn(component, 'createOrUpdateWaitingOnLinkedParticipantsNotification');
+
+            // Act
+            component.onLinkedParticiantAcceptedConsultationInvite(expectedConsultationRoomLabel, linkedParticipant.id);
+
+            // Assert
+            expect(consultationInvitiationService.getInvitation).toHaveBeenCalledOnceWith(expectedConsultationRoomLabel);
+            expect(invitation.updateLinkedParticipantStatus).toHaveBeenCalledOnceWith(linkedParticipant.id, true);
+            expect(component.createOrUpdateWaitingOnLinkedParticipantsNotification).not.toHaveBeenCalled();
         });
     });
 

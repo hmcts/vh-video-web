@@ -3,7 +3,7 @@ import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 
 export class ConsultationInvitation {
     private _linkedParticipantStatuses:  { [participantId: string]: boolean };
-    constructor(linkedParticipantStatuses: { [participantId: string]: boolean } = {}, public activeToast: VhToastComponent = null) {
+    constructor(linkedParticipantStatuses: { [participantId: string]: boolean } = {}, public activeToast: VhToastComponent = null, public activeParticipantAccepted: boolean = false) {
         this._linkedParticipantStatuses = linkedParticipantStatuses;
     }
 
@@ -44,7 +44,6 @@ export class ConsultationInvitationService {
     }
 
     removeInvitation(roomLabel: string) {
-        console.log('[ROB]', 'Remove invitation', roomLabel);
         if (this.consultationInvitations[roomLabel]?.activeToast) {
             this.consultationInvitations[roomLabel].activeToast.remove();
             this.consultationInvitations[roomLabel].activeToast = null;

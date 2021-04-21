@@ -107,7 +107,6 @@ export class NotificationToastrService {
                     label: this.translateService.instant('notification-toastr.invite.accept'),
                     hoverColour: 'green',
                     action: async () => {
-                        console.log("[ROB] - Accept clicked");
                         await respondToConsultationRequest(ConsultationAnswer.Accepted);
                         this.toastr.remove(toast.toastId);
                     }
@@ -116,8 +115,8 @@ export class NotificationToastrService {
                     label: this.translateService.instant('notification-toastr.invite.decline'),
                     hoverColour: 'red',
                     action: async () => {
-                        console.log("[ROB] - Decline clicked");
                         await respondToConsultationRequest(ConsultationAnswer.Rejected);
+                        this.toastr.remove(toast.toastId);
                     }
                 }
             ]
@@ -126,7 +125,7 @@ export class NotificationToastrService {
     }
 
     showConsultationRejectedByLinkedParticipant(linkedParticipantName: string, consultationRoomLabel: string, inHearing: boolean): VhToastComponent {
-        let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('notification-toastr.linked-participants.rejected', {
+        const message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('notification-toastr.linked-participants.rejected', {
             name: linkedParticipantName,
             room : consultationRoomLabel
         })}</span>`;
@@ -161,7 +160,7 @@ export class NotificationToastrService {
     }
 
     showWaitingForLinkedParticipantsToAccept(linkedParticipantNames: string[], consultationRoomLabel: string, inHearing: boolean): VhToastComponent {
-        let message : string;
+        let message: string;
         if (linkedParticipantNames.length > 1) {
             message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant('notification-toastr.linked-participants.waiting-multiple', {
                 number: linkedParticipantNames.length,
