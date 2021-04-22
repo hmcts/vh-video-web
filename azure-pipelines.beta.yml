@@ -199,9 +199,6 @@ stages:
           - name: EJudAd:ClientId
             value: vh-video-web-ejud-appid-v2
             secret: true
-          - name: EJudAd:ClientSecret
-            value: vh-video-web-ejud-key-v2
-            secret: true
           - name: EJudAd:PostLogoutRedirectUri
             slot:
               deployment:
@@ -216,9 +213,6 @@ stages:
                 value: $(video_web_url)home
           - name: EJudAd:TenantId
             value: tenantid
-            secret: true
-          - name: EJudAd:VhVideoWebResourceId
-            value: vh-video-web-ejud-identifieruris
             secret: true
 
           # Kinly
@@ -304,12 +298,6 @@ stages:
             secret: true
           - name: EJudAd:ClientId
             value: vh-video-web-ejud-appid-v2
-            secret: true
-          - name: EJudAd:ClientSecret
-            value: vh-video-web-ejud-key-v2
-            secret: true
-          - name: EJudAd:VhVideoApiResourceId
-            value: vh-video-web-ejud-identifieruris
             secret: true
 
           # Testing

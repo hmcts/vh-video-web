@@ -169,6 +169,14 @@ stages:
           value: vh-video-web-identifieruris
           secret: true
 
+        # EJudAd
+        - name: EJudAd:TenantId
+          value: tenantid
+          secret: true
+        - name: EJudAd:ClientId
+          value: vh-video-web-ejud-appid-v2
+          secret: true
+
         # Testing
         - name: Testing:TestClientId
           value: vh-admin-web-appid
