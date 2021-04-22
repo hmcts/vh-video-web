@@ -10,7 +10,7 @@ import {
     PublicEventsService
 } from 'angular-auth-oidc-client';
 import { NEVER, Observable, Subscription } from 'rxjs';
-import { catchError, filter, map, tap } from 'rxjs/operators';
+import { catchError, filter, map } from 'rxjs/operators';
 import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
 import { Role } from './services/clients/api-client';

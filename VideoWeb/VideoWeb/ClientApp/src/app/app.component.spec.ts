@@ -16,6 +16,7 @@ import { MockOidcSecurityService } from './testing/mocks/mock-oidc-security.serv
 import { TestLanguageService } from './shared/test-language.service';
 import { translateServiceSpy } from './testing/mocks/mock-translation.service';
 import { PublicEventsService, OidcClientNotification, EventTypes } from 'angular-auth-oidc-client';
+import { MockLogger } from './testing/mocks/mock-logger';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
@@ -82,7 +83,8 @@ describe('AppComponent', () => {
             translateServiceSpy,
             oidcSecurityService,
             configServiceSpy,
-            publicEventsServiceSpy
+            publicEventsServiceSpy,
+            new MockLogger()
         );
 
         document.getElementById = jasmine.createSpy('HTML Element').and.returnValue(dummyElement);
