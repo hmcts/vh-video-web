@@ -1,6 +1,6 @@
 namespace VideoWeb.Common.Configuration
 {
-    public class AzureAdConfiguration
+    public class EJudAdConfiguration
     {
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }

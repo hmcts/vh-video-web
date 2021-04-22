@@ -52,7 +52,14 @@ namespace VideoWeb
                 options.ApplicationInsights = new ApplicationInsightsConfiguration();
                 Configuration.Bind("ApplicationInsights", options.ApplicationInsights);
             });
-            services.Configure<HearingServicesConfiguration>(options => Configuration.Bind("VhServices", options));
+
+            services.Configure<EJudAdConfiguration>(options =>
+            {
+                Configuration.Bind("EJudAd", options);
+                options.ApplicationInsights = new ApplicationInsightsConfiguration();
+                Configuration.Bind("ApplicationInsights", options.ApplicationInsights);
+            });
+
             var customTokenSettings = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
             services.AddSingleton(customTokenSettings);
 
