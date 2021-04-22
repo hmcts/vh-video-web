@@ -30,10 +30,6 @@ describe('IdpSelectionComponent', () => {
         configServiceSpy.getClientSettings.and.returnValue(of(null));
     });
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
-
     it('should show error should be false if not submitted', () => {
         component.selectedProvider = null;
         expect(component.showError()).toBeFalse();
