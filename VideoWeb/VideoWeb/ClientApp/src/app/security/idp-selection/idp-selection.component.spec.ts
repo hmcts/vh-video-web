@@ -1,5 +1,4 @@
 import { Router } from '@angular/router';
-import { ReturnUrlService } from '../../services/return-url.service';
 import { MockOidcSecurityService } from '../../testing/mocks/mock-oidc-security.service';
 import { MockLogger } from '../../testing/mocks/mock-logger';
 import { IdpSelectionComponent } from './idp-selection.component';
@@ -11,8 +10,6 @@ describe('IdpSelectionComponent', () => {
     let component: IdpSelectionComponent;
     const mockOidcSecurityService = new MockOidcSecurityService();
     let oidcSecurityService;
-    const returnUrlService = new ReturnUrlService();
-    const activatedRoute: any = { snapshot: { url: [{ path: 'foo' }], queryParams: {} } };
     let router: jasmine.SpyObj<Router>;
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let oidcConfigSetupServiceSpy: jasmine.SpyObj<OidcConfigSetupService>;
