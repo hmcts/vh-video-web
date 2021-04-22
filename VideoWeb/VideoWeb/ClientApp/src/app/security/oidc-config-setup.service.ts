@@ -28,7 +28,10 @@ export class OidcConfigSetupService {
                     };
                 })
             )
-            .subscribe(config => (this.config = config));
+            .subscribe(config => {
+                this.config = config;
+                this.configSetup$.next(true);
+            });
 
         // configService.getClientSettings().subscribe(clientSettings => {
         //     this.config.ejud = {
