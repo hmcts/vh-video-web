@@ -366,11 +366,7 @@ describe('NotificationToastrService', () => {
             spyOn(service, 'createConsultationNotificationToast');
 
             // Act
-            service.showConsultationRejectedByLinkedParticipant(
-                expectedParticipantName,
-                expectedInvitedBy,
-                expectedInHearing
-            );
+            service.showConsultationRejectedByLinkedParticipant(expectedParticipantName, expectedInvitedBy, expectedInHearing);
 
             // Assert
             expect(service.createConsultationNotificationToast).toHaveBeenCalledOnceWith(expectedBody, expectedInHearing);
@@ -434,7 +430,10 @@ describe('NotificationToastrService', () => {
             );
 
             // Assert
-            expect(service.createConsultationNotificationToast).toHaveBeenCalledOnceWith(expectedBodyForMultipleParticipants, expectedInHearing);
+            expect(service.createConsultationNotificationToast).toHaveBeenCalledOnceWith(
+                expectedBodyForMultipleParticipants,
+                expectedInHearing
+            );
             expect(translateServiceSpy.instant).toHaveBeenCalledTimes(1);
             expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedTranslationStringForMultipleParticipants, {
                 number: multipleLinkedParticipantNames.length,
