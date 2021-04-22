@@ -269,9 +269,19 @@ export abstract class WaitingRoomBaseDirective {
             this.eventService.getConsultationRequestResponseMessage().subscribe(async message => {
                 if (message.answer) {
                     if (message.requestedFor === this.participant.id) {
-                        await this.handleMyConsultationResponse(message.answer, message.requestedFor, message.responseInitiatorId, message.roomLabel);
+                        await this.handleMyConsultationResponse(
+                            message.answer,
+                            message.requestedFor,
+                            message.responseInitiatorId,
+                            message.roomLabel
+                        );
                     } else {
-                        this.handleLinkedParticipantConsultationResponse(message.answer, message.requestedFor, message.responseInitiatorId, message.roomLabel);
+                        this.handleLinkedParticipantConsultationResponse(
+                            message.answer,
+                            message.requestedFor,
+                            message.responseInitiatorId,
+                            message.roomLabel
+                        );
                     }
                 }
             })
@@ -386,7 +396,12 @@ export abstract class WaitingRoomBaseDirective {
         );
     }
 
-    private handleLinkedParticipantConsultationResponse(answer: ConsultationAnswer, requestedFor: string, responseInitiatorId: string, roomLabel: string) {
+    private handleLinkedParticipantConsultationResponse(
+        answer: ConsultationAnswer,
+        requestedFor: string,
+        responseInitiatorId: string,
+        roomLabel: string
+    ) {
         if (requestedFor === responseInitiatorId) {
             if (this.isLinkedParticipant(requestedFor)) {
                 const linkedParticipant = this.findParticipant(requestedFor);
@@ -400,11 +415,16 @@ export abstract class WaitingRoomBaseDirective {
         }
     }
 
-    private isLinkedParticipant(requestedFor: string) : boolean {
+    private isLinkedParticipant(requestedFor: string): boolean {
         return !!this.participant.linked_participants.find(linkedParticipant => requestedFor === linkedParticipant.linked_id);
     }
 
-    private async handleMyConsultationResponse(answer: ConsultationAnswer, requestedFor: string, responseInitiatorId: string, roomLabel: string) {
+    private async handleMyConsultationResponse(
+        answer: ConsultationAnswer,
+        requestedFor: string,
+        responseInitiatorId: string,
+        roomLabel: string
+    ) {
         if (answer === ConsultationAnswer.Accepted && requestedFor === responseInitiatorId) {
             await this.onConsultationAccepted(roomLabel);
         } else if (answer === ConsultationAnswer.Transferring) {
