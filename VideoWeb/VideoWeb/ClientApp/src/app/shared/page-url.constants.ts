@@ -1,6 +1,7 @@
 export const pageUrls = {
     // shared
     Home: 'home',
+    Navigator: 'navigator',
     ContactUs: 'contact-us',
     // on-the-day
     Declaration: 'declaration',
