@@ -65,44 +65,5 @@ namespace VideoWeb.Controllers
                 return BadRequest(e.Message);
             }
         }
-
-        /// <summary>
-        /// GetClientConfigurationSettings the configuration settings for client
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("idp-config")]
-        [AllowAnonymous]
-        [ProducesResponseType(typeof(IdpSettingsResponse), (int) HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
-        [SwaggerOperation(OperationId = "GetIdpConfigurationForProvider")]
-        public ActionResult<IdpSettingsResponse> GetIdpConfigurationForProvider(string idpSelection = "vhaad")
-        {
-            try
-            {
-                var response = GetIdpSettingsResponse(idpSelection);
-                return Ok(response);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Unable to retrieve IDP configuration for {Provider}", idpSelection);
-                return BadRequest(e.Message);
-            }
-        }
-
-        private IdpSettingsResponse GetIdpSettingsResponse(string idpSelection)
-        {
-            switch (idpSelection)
-            {
-                case "ejud":
-                    var ejudclientSettingsResponseMapper = _mapperFactory
-                        .Get<EJudAdConfiguration, IdpSettingsResponse>();
-                    return ejudclientSettingsResponseMapper.Map(_ejudAdConfiguration);
-                default:
-                    var aadclientSettingsResponseMapper = _mapperFactory
-                        .Get<AzureAdConfiguration, IdpSettingsResponse>();
-                    return aadclientSettingsResponseMapper.Map(_azureAdConfiguration);
-
-            }
-        }
     }
 }

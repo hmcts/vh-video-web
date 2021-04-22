@@ -16,16 +16,11 @@ namespace VideoWeb.Mappings
 
         public ClientSettingsResponse Map(AzureAdConfiguration azureAdConfiguration, EJudAdConfiguration eJudAdConfiguration, HearingServicesConfiguration servicesConfiguration, KinlyConfiguration kinlyConfiguration)
         {
-            var ejudSettings = _mapperFactory
-                .Get<EJudAdConfiguration, IdpSettingsResponse>().Map(eJudAdConfiguration);
-            var vhAdSettings = _mapperFactory
-                .Get<AzureAdConfiguration, IdpSettingsResponse>().Map(azureAdConfiguration);
+            var mapper = _mapperFactory.Get<IdpConfiguration, IdpSettingsResponse>();
+            var ejudSettings = mapper.Map(eJudAdConfiguration);
+            var vhAdSettings = mapper.Map(azureAdConfiguration);
             return new ClientSettingsResponse
             {
-                ClientId = azureAdConfiguration.ClientId,
-                TenantId = azureAdConfiguration.TenantId,
-                RedirectUri = azureAdConfiguration.RedirectUri,
-                PostLogoutRedirectUri = azureAdConfiguration.PostLogoutRedirectUri,
                 AppInsightsInstrumentationKey = azureAdConfiguration.ApplicationInsights.InstrumentationKey,
                 EventHubPath = servicesConfiguration.EventHubPath,
                 JoinByPhoneFromDate = kinlyConfiguration.JoinByPhoneFromDate,

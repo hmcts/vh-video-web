@@ -36,10 +36,9 @@ describe('AppComponent', () => {
     let publicEventsServiceSpy: jasmine.SpyObj<PublicEventsService>;
 
     const clientSettings = new ClientSettingsResponse({
-        tenant_id: 'tenantid',
-        client_id: 'clientid',
-        post_logout_redirect_uri: '/logout',
-        redirect_uri: '/home'
+        event_hub_path: 'evenhub',
+        join_by_phone_from_date: '2020-09-01',
+        app_insights_instrumentation_key: 'appinsights'
     });
 
     let component: AppComponent;

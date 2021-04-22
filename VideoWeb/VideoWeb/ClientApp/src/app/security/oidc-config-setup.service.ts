@@ -15,25 +15,6 @@ export class OidcConfigSetupService {
     private configSetup$ = new BehaviorSubject(false);
 
     constructor(private oidcConfigService: OidcConfigService, configService: ConfigService) {
-        // const vhAdConfig$ = configService.getIdpSettings('vhaad');
-        // const ejudAdConfig$ = configService.getIdpSettings('ejud');
-
-        // vhAdConfig$
-        //     .pipe(
-        //         withLatestFrom(ejudAdConfig$),
-        //         map(([vhConfig, ejudConfig]) => {
-        //             return {
-        //                 ejud: (this.config.ejud = this.initOidcConfig(ejudConfig)),
-        //                 vhaad: (this.config.ejud = this.initOidcConfig(vhConfig))
-        //             };
-        //         })
-        //     )
-        //     .subscribe(config => {
-        //         console.warn('IOIDC Config Setup Service creating config properties after get client settings published');
-        //         this.config = config;
-        //         this.configSetup$.next(true);
-        //     });
-
         configService.getClientSettings().subscribe(clientSettings => {
             this.config.ejud = this.initOidcConfig(clientSettings.e_jud_idp_settings);
             this.config.vhaad = this.initOidcConfig(clientSettings.vh_idp_settings);
@@ -41,6 +22,7 @@ export class OidcConfigSetupService {
             this.configSetup$.next(true);
         });
     }
+
     initOidcConfig(idpSettings: IdpSettingsResponse): OpenIdConfiguration {
         return {
             stsServer: `https://login.microsoftonline.com/${idpSettings.tenant_id}/v2.0`,

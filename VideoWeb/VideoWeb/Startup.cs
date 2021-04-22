@@ -58,8 +58,6 @@ namespace VideoWeb
             services.Configure<EJudAdConfiguration>(options =>
             {
                 Configuration.Bind("EJudAd", options);
-                options.ApplicationInsights = new ApplicationInsightsConfiguration();
-                Configuration.Bind("ApplicationInsights", options.ApplicationInsights);
             });
 
             var customTokenSettings = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
