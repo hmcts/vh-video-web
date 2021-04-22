@@ -53,9 +53,9 @@ namespace VideoWeb.Controllers
             try
             {
                 var clientSettingsResponseMapper = _mapperFactory
-                    .Get<AzureAdConfiguration, HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse
+                    .Get<AzureAdConfiguration, EJudAdConfiguration, HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse
                     >();
-                var response = clientSettingsResponseMapper.Map(_azureAdConfiguration, _servicesConfiguration,
+                var response = clientSettingsResponseMapper.Map(_azureAdConfiguration, _ejudAdConfiguration, _servicesConfiguration,
                     _kinlyConfiguration);
                 return Ok(response);
             }

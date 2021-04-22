@@ -53,5 +53,8 @@ namespace VideoWeb.Contract.Responses
         /// The turn server password
         /// </summary>
         public string KinlyTurnServerCredential { get; set; }
+
+        public IdpSettingsResponse EJudIdpSettings { get; set; }
+        public IdpSettingsResponse VHIdpSettings { get; set; }
     }
 }
