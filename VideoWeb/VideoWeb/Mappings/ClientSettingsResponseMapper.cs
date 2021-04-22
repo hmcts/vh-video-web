@@ -5,7 +5,7 @@ using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
 {
-    public class ClientSettingsResponseMapper : IMapTo<AzureAdConfiguration,  EJudAdConfiguration,HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse>
+    public class ClientSettingsResponseMapper : IMapTo<AzureAdConfiguration, EJudAdConfiguration, HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse>
     {
         private readonly IMapperFactory _mapperFactory;
 

@@ -39,8 +39,7 @@ describe('AppComponent', () => {
         tenant_id: 'tenantid',
         client_id: 'clientid',
         post_logout_redirect_uri: '/logout',
-        redirect_uri: '/home',
-        video_api_url: 'http://vh-video-api/'
+        redirect_uri: '/home'
     });
 
     let component: AppComponent;

@@ -37,7 +37,6 @@ describe('AppComponent', () => {
         client_id: 'clientid',
         post_logout_redirect_uri: '/logout',
         redirect_uri: '/home',
-        video_api_url: 'http://vh-video-api/',
         event_hub_path: 'eventhub-karma-tests'
     });
 

@@ -20,7 +20,7 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<AzureAdConfiguration, HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse>())
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<AzureAdConfiguration, EJudAdConfiguration, HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse>())
                 .Returns(_mocker.Create<ClientSettingsResponseMapper>());
         }
 

@@ -15,11 +15,15 @@ namespace VideoWeb.UnitTests.Mappings
             var azureAdConfiguration = Builder<AzureAdConfiguration>.CreateNew()
                 .With(x => x.ApplicationInsights = Builder<ApplicationInsightsConfiguration>.CreateNew().Build())
                 .Build();
-            
+
+            var ejudAdConfiguration = Builder<EJudAdConfiguration>.CreateNew()
+              .With(x => x.ApplicationInsights = Builder<ApplicationInsightsConfiguration>.CreateNew().Build())
+              .Build();
+
             var servicesConfiguration = Builder<HearingServicesConfiguration>.CreateNew().Build();
             var kinlyConfiguration = Builder<KinlyConfiguration>.CreateNew().Build();
 
-            var response = _sut.Map(azureAdConfiguration, servicesConfiguration, kinlyConfiguration);
+            var response = _sut.Map(azureAdConfiguration, ejudAdConfiguration, servicesConfiguration, kinlyConfiguration);
 
             response.TenantId.Should().Be(azureAdConfiguration.TenantId);
             response.ClientId.Should().Be(azureAdConfiguration.ClientId);
