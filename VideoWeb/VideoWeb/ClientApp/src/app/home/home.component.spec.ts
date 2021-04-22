@@ -21,6 +21,6 @@ describe('HomeComponent', () => {
 
     it('should go to navigator if user log in', async () => {
         component.ngOnInit();
-        expect(router.navigate).toHaveBeenCalledWith([pageUrls.Navigator]);
+        expect(router.navigate).toHaveBeenCalledWith([`/${pageUrls.Navigator}`]);
     });
 });

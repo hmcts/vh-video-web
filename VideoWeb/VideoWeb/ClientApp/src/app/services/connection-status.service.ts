@@ -31,12 +31,12 @@ export class ConnectionStatusService {
     }
 
     start() {
-        // if (this.timer) {
-        //     this.logger.info(`${this.loggerPrefix} Timer already started`);
-        //     return;
-        // }
-        // this.timer = setInterval(() => this.checkConnection(), this.INTERVAL_IN_MS);
-        // this.checkConnection();
+        if (this.timer) {
+            this.logger.info(`${this.loggerPrefix} Timer already started`);
+            return;
+        }
+        this.timer = setInterval(() => this.checkConnection(), this.INTERVAL_IN_MS);
+        this.checkConnection();
     }
 
     checkNow() {

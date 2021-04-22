@@ -26,15 +26,7 @@ describe('IdpSelectionComponent', () => {
 
     beforeEach(() => {
         router.navigate.calls.reset();
-        component = new IdpSelectionComponent(
-            oidcSecurityService,
-            activatedRoute,
-            router,
-            returnUrlService,
-            new MockLogger(),
-            configServiceSpy,
-            oidcConfigSetupServiceSpy
-        );
+        component = new IdpSelectionComponent(router, new MockLogger(), oidcConfigSetupServiceSpy);
         configServiceSpy.getClientSettings.and.returnValue(of(null));
     });
 
@@ -87,37 +79,5 @@ describe('IdpSelectionComponent', () => {
         const result = component.onSubmit();
         expect(result).toBeFalse();
         expect(router.navigate).not.toHaveBeenCalled();
-    });
-
-    it('should store return url if supplied', () => {
-        spyOn(returnUrlService, 'setUrl');
-        mockOidcSecurityService.setAuthenticated(false);
-        activatedRoute.snapshot.queryParams.returnUrl = '/returnPath';
-        component.ngOnInit();
-        expect(returnUrlService.setUrl).toHaveBeenCalledWith('/returnPath');
-    });
-
-    it('should use saved return url', () => {
-        mockOidcSecurityService.setAuthenticated(true);
-        spyOn(returnUrlService, 'popUrl').and.returnValue('testurl');
-        component.ngOnInit();
-        expect(router.navigateByUrl).toHaveBeenCalledWith('testurl');
-    });
-
-    it('should return to root url if no return path is given', () => {
-        mockOidcSecurityService.setAuthenticated(true);
-        spyOn(returnUrlService, 'popUrl').and.returnValue('');
-        component.ngOnInit();
-        expect(router.navigateByUrl).toHaveBeenCalledWith('/');
-    });
-
-    it('should fallback to root url if return url is invalid', () => {
-        spyOn(returnUrlService, 'popUrl').and.returnValue('');
-        mockOidcSecurityService.setAuthenticated(true);
-        router.navigateByUrl.and.callFake(() => {
-            throw new Error('Invalid URL');
-        });
-        component.ngOnInit();
-        expect(router.navigate).toHaveBeenCalledWith(['/']);
     });
 });
