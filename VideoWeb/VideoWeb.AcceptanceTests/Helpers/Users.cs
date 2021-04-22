@@ -31,9 +31,9 @@ namespace VideoWeb.AcceptanceTests.Helpers
         }
         public static UserDto GetUserFromUserType(List<UserDto> users, string userType)
         {
-            if (users.Any(x => x.UserType.ToString().Equals(userType)))
+            if (users.Any(x => x.UserType.ToString().ToLower().Equals(userType.ToLower())))
             {
-                return users.First(x => x.UserType.ToString().Equals(userType));
+                return users.First(x => x.UserType.ToString().ToLower().Equals(userType.ToLower()));
             }
 
             var usersList = users.Select(x => x.UserType).Aggregate("", (current, UserType) => current + userType + ",");

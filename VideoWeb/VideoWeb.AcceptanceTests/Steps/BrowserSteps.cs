@@ -98,7 +98,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private UserDto GetMatchingDisplayName(string userType)
         {
             if (_c.Test.Users.Count != 0)
-                return Users.GetUserFromDisplayName(_c.Test.Users, userType.Replace(" ", string.Empty));
+                return Users.GetUserFromUserType(_c.Test.Users, userType.Replace(" ", string.Empty));
             if (!Enum.TryParse(RemoveWhiteSpace(userType), true, out UserType result))
                 throw new DataMisalignedException($"User Type {userType} could not be parsed");
             AllocateSingleUser(result);
