@@ -25,6 +25,7 @@ import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
@@ -268,27 +269,9 @@ export abstract class WaitingRoomBaseDirective {
             this.eventService.getConsultationRequestResponseMessage().subscribe(async message => {
                 if (message.answer) {
                     if (message.requestedFor === this.participant.id) {
-                        if (message.answer === ConsultationAnswer.Accepted && message.sentByClient) {
-                            await this.onConsultationAccepted(message.roomLabel);
-                        } else if (message.answer === ConsultationAnswer.Transferring) {
-                            this.onTransferingToConsultation(message.roomLabel);
-                        } else if (message.sentByClient) {
-                            this.onConsultationRejected(message.roomLabel);
-                        }
-                    } else if (message.sentByClient) {
-                        if (
-                            this.participant.linked_participants.find(
-                                linkedParticipant => message.requestedFor === linkedParticipant.linked_id
-                            )
-                        ) {
-                            const linkedParticipant = this.findParticipant(message.requestedFor);
-
-                            if (message.answer === ConsultationAnswer.Accepted || message.answer === ConsultationAnswer.Transferring) {
-                                this.onLinkedParticiantAcceptedConsultationInvite(message.roomLabel, linkedParticipant.id);
-                            } else {
-                                this.onLinkedParticiantRejectedConsultationInvite(linkedParticipant.display_name, message.roomLabel);
-                            }
-                        }
+                        await this.handleMyConsultationResponse(message.answer, message.requestedFor, message.responseInitiatorId, message.roomLabel);
+                    } else {
+                        this.handleLinkedParticipantConsultationResponse(message.answer, message.requestedFor, message.responseInitiatorId, message.roomLabel);
                     }
                 }
             })
@@ -401,6 +384,34 @@ export abstract class WaitingRoomBaseDirective {
                 this.updateShowVideo();
             })
         );
+    }
+
+    private handleLinkedParticipantConsultationResponse(answer: ConsultationAnswer, requestedFor: string, responseInitiatorId: string, roomLabel: string) {
+        if (requestedFor === responseInitiatorId) {
+            if (this.isLinkedParticipant(requestedFor)) {
+                const linkedParticipant = this.findParticipant(requestedFor);
+
+                if (answer === ConsultationAnswer.Accepted || answer === ConsultationAnswer.Transferring) {
+                    this.onLinkedParticiantAcceptedConsultationInvite(roomLabel, linkedParticipant.id);
+                } else {
+                    this.onLinkedParticiantRejectedConsultationInvite(linkedParticipant.display_name, roomLabel);
+                }
+            }
+        }
+    }
+
+    private isLinkedParticipant(requestedFor: string) : boolean {
+        return !!this.participant.linked_participants.find(linkedParticipant => requestedFor === linkedParticipant.linked_id);
+    }
+
+    private async handleMyConsultationResponse(answer: ConsultationAnswer, requestedFor: string, responseInitiatorId: string, roomLabel: string) {
+        if (answer === ConsultationAnswer.Accepted && requestedFor === responseInitiatorId) {
+            await this.onConsultationAccepted(roomLabel);
+        } else if (answer === ConsultationAnswer.Transferring) {
+            this.onTransferingToConsultation(roomLabel);
+        } else if (requestedFor === responseInitiatorId) {
+            this.onConsultationRejected(roomLabel);
+        }
     }
 
     protected findParticipant(participantId: string): ParticipantResponse {

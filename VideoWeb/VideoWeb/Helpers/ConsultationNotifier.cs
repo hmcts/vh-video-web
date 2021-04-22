@@ -66,7 +66,7 @@ namespace VideoWeb.Helpers
             var endpoint = conference.Endpoints.FirstOrDefault(e => e.Id == requestedForId);
             if (endpoint != null)
             {
-                await PublishResponseMessage(conference, roomLabel, endpoint.Id, answer);
+                await PublishResponseMessage(conference, roomLabel, endpoint.Id, answer, endpoint.Id);
                 return;
             }
             
@@ -75,7 +75,7 @@ namespace VideoWeb.Helpers
             var haveAllAccepted =
                 await _consultationResponseTracker.HaveAllParticipantsAccepted(conference, participantFor.Id);
 
-            await PublishResponseMessage(conference, roomLabel, participantFor.Id, answer);
+            await PublishResponseMessage(conference, roomLabel, participantFor.Id, answer, participantFor.Id);
 
             if (answer == ConsultationAnswer.Accepted && !haveAllAccepted)
                 return;
@@ -98,15 +98,15 @@ namespace VideoWeb.Helpers
 
             foreach (var linkedParticipant in linkedParticipants)
             {
-                await PublishResponseMessage(conference, roomLabel, linkedParticipant.Id, answer, false);
+                await PublishResponseMessage(conference, roomLabel, linkedParticipant.Id, answer, participantFor.Id);
             }
         }
         
-        private async Task PublishResponseMessage(Conference conference, string roomLabel, Guid requestedForId, ConsultationAnswer answer, bool sentByClient=true)
+        private async Task PublishResponseMessage(Conference conference, string roomLabel, Guid requestedForId, ConsultationAnswer answer, Guid responseInitiatorId)
         {
             var tasks = conference.Participants.Select(p => 
                 _hubContext.Clients?.Group(p.Username.ToLowerInvariant())
-                    .ConsultationRequestResponseMessage(conference.Id, roomLabel, requestedForId, answer, sentByClient) ?? Task.CompletedTask);
+                    .ConsultationRequestResponseMessage(conference.Id, roomLabel, requestedForId, answer, responseInitiatorId) ?? Task.CompletedTask);
             await Task.WhenAll(tasks);
         }
 

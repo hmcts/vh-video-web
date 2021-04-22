@@ -100,9 +100,9 @@ export class EventsService {
             roomLabel: string,
             requestedFor: string,
             answer: ConsultationAnswer,
-            sentByClient: boolean
+            responseInitiatorId: string
         ) => {
-            const message = new ConsultationRequestResponseMessage(conferenceId, roomLabel, requestedFor, answer, sentByClient);
+            const message = new ConsultationRequestResponseMessage(conferenceId, roomLabel, requestedFor, answer, responseInitiatorId);
             this.logger.debug('[EventsService] - ConsultationRequestResponseMessage received', message);
             this.consultationRequestResponseMessageSubject.next(message);
         },

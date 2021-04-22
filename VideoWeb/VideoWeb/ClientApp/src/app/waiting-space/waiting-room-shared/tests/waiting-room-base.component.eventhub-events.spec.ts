@@ -805,7 +805,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 expectedConsultationRoomLabel,
                 globalParticipant.id,
                 ConsultationAnswer.Rejected,
-                true
+                globalParticipant.id
             );
 
             spyOn(component, 'onConsultationRejected');
@@ -826,7 +826,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 expectedConsultationRoomLabel,
                 linkedParticipant.id,
                 ConsultationAnswer.Rejected,
-                false
+                globalParticipant.id
             );
 
             component['findParticipant'] = jasmine.createSpy('findParticipant').and.returnValue(linkedParticipant);
@@ -844,12 +844,13 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
         it('should NOT raise any toasts if the participant is NOT linked and is NOT the current participant', () => {
             // Arrange
+            const responseInitiatorId = Guid.create().toString();
             const message = new ConsultationRequestResponseMessage(
                 globalConference.id,
                 expectedConsultationRoomLabel,
-                Guid.create().toString(),
+                responseInitiatorId,
                 ConsultationAnswer.Accepted,
-                true
+                responseInitiatorId
             );
 
             spyOn(component, 'onConsultationAccepted');
@@ -871,7 +872,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 expectedConsultationRoomLabel,
                 linkedParticipant.id,
                 ConsultationAnswer.Accepted,
-                true
+                linkedParticipant.id
             );
 
             spyOn(component, 'onConsultationAccepted');
@@ -893,7 +894,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 expectedConsultationRoomLabel,
                 linkedParticipant.id,
                 ConsultationAnswer.Accepted,
-                true
+                linkedParticipant.id
             );
 
             component['findParticipant'] = jasmine.createSpy('findParticipant').and.returnValue(linkedParticipant);
@@ -917,7 +918,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 expectedConsultationRoomLabel,
                 linkedParticipant.id,
                 ConsultationAnswer.Rejected,
-                true
+                linkedParticipant.id
             );
 
             component['findParticipant'] = jasmine.createSpy('findParticipant').and.returnValue(linkedParticipant);
@@ -941,7 +942,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 expectedConsultationRoomLabel,
                 linkedParticipant.id,
                 ConsultationAnswer.Transferring,
-                true
+                linkedParticipant.id
             );
 
             component['findParticipant'] = jasmine.createSpy('findParticipant').and.returnValue(linkedParticipant);
@@ -963,7 +964,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 expectedConsultationRoomLabel,
                 linkedParticipant.id,
                 ConsultationAnswer.None,
-                true
+                linkedParticipant.id
             );
 
             component['findParticipant'] = jasmine.createSpy('findParticipant').and.returnValue(linkedParticipant);
@@ -987,7 +988,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 expectedConsultationRoomLabel,
                 linkedParticipant.id,
                 ConsultationAnswer.Failed,
-                true
+                linkedParticipant.id
             );
 
             component['findParticipant'] = jasmine.createSpy('findParticipant').and.returnValue(linkedParticipant);
@@ -1011,7 +1012,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 expectedConsultationRoomLabel,
                 linkedParticipant.id,
                 ConsultationAnswer.Rejected,
-                true
+                linkedParticipant.id
             );
 
             component['findParticipant'] = jasmine.createSpy('findParticipant').and.returnValue(linkedParticipant);
@@ -1036,7 +1037,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 expectedConsultationRoomLabel,
                 linkedParticipant.id,
                 ConsultationAnswer.Rejected,
-                false
+                globalParticipant.id
             );
 
             component['findParticipant'] = jasmine.createSpy('findParticipant').and.returnValue(linkedParticipant);
@@ -1058,7 +1059,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 'ConsultationRoom',
                 globalParticipant.id,
                 ConsultationAnswer.Accepted,
-                true
+                globalParticipant.id
             );
             component.participant = globalParticipant;
             consultationRequestResponseMessageSubject.next(message);
@@ -1081,7 +1082,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 expectedConsultationRoomLabel,
                 globalParticipant.id,
                 ConsultationAnswer.Transferring,
-                true
+                globalParticipant.id
             );
 
             component.participant = globalParticipant;
