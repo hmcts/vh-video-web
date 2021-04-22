@@ -175,23 +175,6 @@ namespace VideoWeb.UnitTests.Services
         }
 
         [Test]
-        public async Task should_clear_consultation_response_tracker()
-        {
-            // arrange
-            var linkedParticipant = _conference.Participants.First(x => !x.IsJudge() && x.LinkedParticipants.Any());
-            var roomLabel = "ConsultationRoom1";
-            var answer = ConsultationAnswer.Accepted;
-
-            // act
-            await _sut.NotifyConsultationResponseAsync(_conference, roomLabel, linkedParticipant.Id, answer);
-
-            // assert
-            _mocker.Mock<IEventHubClient>().Verify(
-                x => x.ConsultationRequestResponseMessage(_conference.Id, roomLabel, linkedParticipant.Id, answer, It.IsAny<bool>()),
-                Times.Exactly(_conference.Participants.Count));
-        }
-
-        [Test]
         public async Task should_send_message_to_other_party_when_all_linked_participant_respond_accept()
         {
             // arrange

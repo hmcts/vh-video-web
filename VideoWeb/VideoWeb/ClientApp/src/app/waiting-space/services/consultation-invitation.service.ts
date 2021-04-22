@@ -33,8 +33,6 @@ export class ConsultationInvitation {
 export class ConsultationInvitationService {
     private consultationInvitations: { [roomLabel: string]: ConsultationInvitation } = {};
 
-    constructor() {}
-
     createInvitation(roomLabel: string, invitedByName: string = null): ConsultationInvitation {
         let invitation = this.consultationInvitations[roomLabel];
         if (!invitation) {

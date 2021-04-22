@@ -350,144 +350,34 @@ describe('NotificationToastrService', () => {
         const expectedParticipantName = 'First Last';
         const expectedInvitedBy = 'Consultation Room';
         const expectedToastId = 2;
-        const expectedInHearingColor = 'white';
-        const expectedNotInHearingColor = 'black';
         const expectedTranslationString = 'notification-toastr.linked-participants.rejected';
         const expectedBody = `<span class="govuk-!-font-weight-bold">${expectedTranslationString}</span>`;
-        const expectedButtonTranslationString = 'notification-toastr.linked-participants.button-close';
-        let mockToast: ActiveToast<VhToastComponent>;
 
         beforeEach(() => {
             toastrService.show.calls.reset();
             toastrService.remove.calls.reset();
             translateServiceSpy.instant.calls.reset();
-            mockToast = {
-                toastId: expectedToastId,
-                toastRef: {
-                    componentInstance: {}
-                }
-            } as ActiveToast<VhToastComponent>;
         });
 
-        it('should call toastr.show with the correct parameters', () => {
+        it('should call create consultation toast with correct message', () => {
+            // Arrange
+            const expectedInHearing = false;
+
+            spyOn(service, 'createConsultationNotificationToast');
+
             // Act
-            service.showConsultationRejectedByLinkedParticipant(expectedParticipantName, expectedInvitedBy, true);
+            service.showConsultationRejectedByLinkedParticipant(
+                expectedParticipantName,
+                expectedInvitedBy,
+                expectedInHearing
+            );
 
             // Assert
-            expect(toastrService.show).toHaveBeenCalledOnceWith('', '', {
-                timeOut: 120000,
-                extendedTimeOut: 0,
-                toastClass: 'vh-no-pointer',
-                tapToDismiss: false,
-                toastComponent: VhToastComponent
-            });
-        });
-
-        describe('expected toast configuration', () => {
-            it('should have a button to close the toast', () => {
-                // Arrange
-                const expectedHoverColor = 'red';
-                toastrService.show.and.returnValue(mockToast);
-
-                // Act
-                const toastComponentInstance = service.showConsultationRejectedByLinkedParticipant(
-                    expectedParticipantName,
-                    expectedInvitedBy,
-                    true
-                );
-
-                // Assert
-                expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
-                expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
-                expect(toastComponentInstance.vhToastOptions.buttons[0].hoverColour).toBe(expectedHoverColor);
-                expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedButtonTranslationString);
-            });
-
-            it('should call toastr.remove with the toast id when the button action is triggered', () => {
-                // Arrange
-                const expectedHoverColor = 'red';
-                const expectedLabel = 'notification-toastr.invite.decline';
-                toastrService.show.and.returnValue(mockToast);
-
-                const toastComponentInstance = service.showConsultationRejectedByLinkedParticipant(
-                    expectedParticipantName,
-                    expectedInvitedBy,
-                    true
-                );
-                const button = toastComponentInstance.vhToastOptions.buttons[0];
-
-                // Act
-                button.action();
-
-                // Assert
-                expect(toastrService.remove).toHaveBeenCalledOnceWith(expectedToastId);
-            });
-
-            it('should call toastr.remove with the toast id when the NO action is triggered', () => {
-                // Arrange
-                const expectedHoverColor = 'red';
-                const expectedLabel = 'notification-toastr.invite.decline';
-                toastrService.show.and.returnValue(mockToast);
-
-                const toastComponentInstance = service.showConsultationRejectedByLinkedParticipant(
-                    expectedParticipantName,
-                    expectedInvitedBy,
-                    true
-                );
-
-                // Act
-                toastComponentInstance.vhToastOptions.onNoAction();
-
-                // Assert
-                expect(toastrService.remove).toHaveBeenCalledOnceWith(expectedToastId);
-            });
-
-            it('should have a correctly formatted body', () => {
-                // Act
-                const toastComponentInstance = service.showConsultationRejectedByLinkedParticipant(
-                    expectedParticipantName,
-                    expectedInvitedBy,
-                    true
-                );
-
-                // Assert
-                expect(toastComponentInstance.vhToastOptions.htmlBody).toBe(expectedBody);
-                expect(translateServiceSpy.instant).toHaveBeenCalledTimes(2);
-                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedTranslationString, {
-                    rejector: expectedParticipantName,
-                    invitedBy: expectedInvitedBy
-                });
-                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedButtonTranslationString);
-            });
-
-            it('should have the color black when NOT in hearing', () => {
-                // Arrange
-                const expectedColor = 'black';
-
-                // Act
-                const toastComponentInstance = service.showConsultationRejectedByLinkedParticipant(
-                    expectedParticipantName,
-                    expectedInvitedBy,
-                    false
-                );
-
-                // Assert
-                expect(toastComponentInstance.vhToastOptions.color).toBe(expectedColor);
-            });
-
-            it('should have the color white when in hearing', () => {
-                // Arrange
-                const expectedColor = 'white';
-
-                // Act
-                const toastComponentInstance = service.showConsultationRejectedByLinkedParticipant(
-                    expectedParticipantName,
-                    expectedInvitedBy,
-                    true
-                );
-
-                // Assert
-                expect(toastComponentInstance.vhToastOptions.color).toBe(expectedColor);
+            expect(service.createConsultationNotificationToast).toHaveBeenCalledOnceWith(expectedBody, expectedInHearing);
+            expect(translateServiceSpy.instant).toHaveBeenCalledTimes(1);
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedTranslationString, {
+                rejector: expectedParticipantName,
+                invitedBy: expectedInvitedBy
             });
         });
     });
@@ -497,151 +387,58 @@ describe('NotificationToastrService', () => {
         const multipleLinkedParticipantNames = ['Linked Participant 1', 'Linked Participant 2'];
         const expectedInvitedBy = 'Consultation Room';
         const expectedToastId = 2;
-        const expectedInHearingColor = 'white';
-        const expectedNotInHearingColor = 'black';
         const expectedTranslationString = 'notification-toastr.linked-participants.waiting-single';
         const expectedBody = `<span class="govuk-!-font-weight-bold">${expectedTranslationString}</span>`;
         const expectedTranslationStringForMultipleParticipants = 'notification-toastr.linked-participants.waiting-multiple';
         const expectedBodyForMultipleParticipants = `<span class="govuk-!-font-weight-bold">${expectedTranslationStringForMultipleParticipants}</span>`;
-        const expectedButtonTranslationString = 'notification-toastr.linked-participants.button-close';
-
-        let mockToast: ActiveToast<VhToastComponent>;
 
         beforeEach(() => {
             toastrService.show.calls.reset();
             toastrService.remove.calls.reset();
             translateServiceSpy.instant.calls.reset();
-            mockToast = {
-                toastId: expectedToastId,
-                toastRef: {
-                    componentInstance: {}
-                }
-            } as ActiveToast<VhToastComponent>;
         });
 
-        describe('expected toast configuration', () => {
-            it('should have a button to close the toast', () => {
-                // Arrange
-                const expectedHoverColor = 'red';
-                toastrService.show.and.returnValue(mockToast);
+        it('should call create consultation toast with correct message for a single linked participant', () => {
+            // Arrange
+            const expectedInHearing = false;
 
-                // Act
-                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(
-                    linkedParticipantName,
-                    expectedInvitedBy,
-                    true
-                );
+            spyOn(service, 'createConsultationNotificationToast');
 
-                // Assert
-                expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
-                expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
-                expect(toastComponentInstance.vhToastOptions.buttons[0].hoverColour).toBe(expectedHoverColor);
-                expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedButtonTranslationString);
+            // Act
+            const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(
+                linkedParticipantName,
+                expectedInvitedBy,
+                expectedInHearing
+            );
+
+            // Assert
+            expect(service.createConsultationNotificationToast).toHaveBeenCalledOnceWith(expectedBody, expectedInHearing);
+            expect(translateServiceSpy.instant).toHaveBeenCalledTimes(1);
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedTranslationString, {
+                name: linkedParticipantName[0],
+                invitedBy: expectedInvitedBy
             });
+        });
 
-            it('should call toastr.remove with the toast id when the button action is triggered', () => {
-                // Arrange
-                const expectedHoverColor = 'red';
-                const expectedLabel = 'notification-toastr.invite.decline';
-                toastrService.show.and.returnValue(mockToast);
+        it('should have a correctly formatted body for multiple linked participants', () => {
+            // Arrange
+            const expectedInHearing = true;
 
-                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(
-                    linkedParticipantName,
-                    expectedInvitedBy,
-                    true
-                );
-                const button = toastComponentInstance.vhToastOptions.buttons[0];
+            spyOn(service, 'createConsultationNotificationToast');
 
-                // Act
-                button.action();
+            // Act
+            const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(
+                multipleLinkedParticipantNames,
+                expectedInvitedBy,
+                expectedInHearing
+            );
 
-                // Assert
-                expect(toastrService.remove).toHaveBeenCalledOnceWith(expectedToastId);
-            });
-
-            it('should call toastr.remove with the toast id when the NO action is triggered', () => {
-                // Arrange
-                const expectedHoverColor = 'red';
-                const expectedLabel = 'notification-toastr.invite.decline';
-                toastrService.show.and.returnValue(mockToast);
-
-                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(
-                    linkedParticipantName,
-                    expectedInvitedBy,
-                    true
-                );
-
-                // Act
-                toastComponentInstance.vhToastOptions.onNoAction();
-
-                // Assert
-                expect(toastrService.remove).toHaveBeenCalledOnceWith(expectedToastId);
-            });
-
-            it('should have a correctly formatted body for a single linked participant', () => {
-                // Act
-                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(
-                    linkedParticipantName,
-                    expectedInvitedBy,
-                    true
-                );
-
-                // Assert
-                expect(toastComponentInstance.vhToastOptions.htmlBody).toBe(expectedBody);
-                expect(translateServiceSpy.instant).toHaveBeenCalledTimes(2);
-                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedTranslationString, {
-                    name: linkedParticipantName[0],
-                    invitedBy: expectedInvitedBy
-                });
-                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedButtonTranslationString);
-            });
-
-            it('should have a correctly formatted body for multiple linked participants', () => {
-                // Act
-                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(
-                    multipleLinkedParticipantNames,
-                    expectedInvitedBy,
-                    true
-                );
-
-                // Assert
-                expect(toastComponentInstance.vhToastOptions.htmlBody).toBe(expectedBodyForMultipleParticipants);
-                expect(translateServiceSpy.instant).toHaveBeenCalledTimes(2);
-                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedTranslationStringForMultipleParticipants, {
-                    number: multipleLinkedParticipantNames.length,
-                    invitedBy: expectedInvitedBy
-                });
-                expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedButtonTranslationString);
-            });
-
-            it('should have the color black when NOT in hearing', () => {
-                // Arrange
-                const expectedColor = 'black';
-
-                // Act
-                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(
-                    multipleLinkedParticipantNames,
-                    expectedInvitedBy,
-                    false
-                );
-
-                // Assert
-                expect(toastComponentInstance.vhToastOptions.color).toBe(expectedColor);
-            });
-
-            it('should have the color white when in hearing', () => {
-                // Arrange
-                const expectedColor = 'white';
-
-                // Act
-                const toastComponentInstance = service.showWaitingForLinkedParticipantsToAccept(
-                    multipleLinkedParticipantNames,
-                    expectedInvitedBy,
-                    true
-                );
-
-                // Assert
-                expect(toastComponentInstance.vhToastOptions.color).toBe(expectedColor);
+            // Assert
+            expect(service.createConsultationNotificationToast).toHaveBeenCalledOnceWith(expectedBodyForMultipleParticipants, expectedInHearing);
+            expect(translateServiceSpy.instant).toHaveBeenCalledTimes(1);
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedTranslationStringForMultipleParticipants, {
+                number: multipleLinkedParticipantNames.length,
+                invitedBy: expectedInvitedBy
             });
         });
     });
@@ -660,6 +457,107 @@ describe('NotificationToastrService', () => {
 
             expect(result).toBeDefined();
             expect(result.vhToastOptions.htmlBody).toContain('audio-alert.title');
+        });
+    });
+
+    describe('createConsultationNotificationToast', () => {
+        let mockToast: ActiveToast<VhToastComponent>;
+        const expectedToastId = 2;
+        const expectedMessage = 'message';
+        const expectedButtonTranslationString = 'notification-toastr.linked-participants.button-close';
+        const expectedInHearingColor = 'white';
+        const expectedNotInHearingColor = 'black';
+
+        beforeEach(() => {
+            toastrService.show.calls.reset();
+            toastrService.remove.calls.reset();
+            translateServiceSpy.instant.calls.reset();
+            mockToast = {
+                toastId: expectedToastId,
+                toastRef: {
+                    componentInstance: {}
+                }
+            } as ActiveToast<VhToastComponent>;
+        });
+
+        it('should call toastr.show with the correct parameters', () => {
+            // Act
+            service.createConsultationNotificationToast(expectedMessage, true);
+
+            // Assert
+            expect(toastrService.show).toHaveBeenCalledOnceWith('', '', {
+                timeOut: 120000,
+                extendedTimeOut: 0,
+                toastClass: 'vh-no-pointer',
+                tapToDismiss: false,
+                toastComponent: VhToastComponent
+            });
+        });
+
+        it('should have a button to close the toast', () => {
+            // Arrange
+            const expectedHoverColor = 'red';
+            toastrService.show.and.returnValue(mockToast);
+
+            // Act
+            const toastComponentInstance = service.createConsultationNotificationToast(expectedMessage, true);
+
+            // Assert
+            expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
+            expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
+            expect(toastComponentInstance.vhToastOptions.buttons[0].hoverColour).toBe(expectedHoverColor);
+            expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedButtonTranslationString);
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedButtonTranslationString);
+        });
+
+        it('should call toastr.remove with the toast id when the button action is triggered', () => {
+            // Arrange
+            toastrService.show.and.returnValue(mockToast);
+
+            const toastComponentInstance = service.createConsultationNotificationToast(expectedMessage, true);
+            const button = toastComponentInstance.vhToastOptions.buttons[0];
+
+            // Act
+            button.action();
+
+            // Assert
+            expect(toastrService.remove).toHaveBeenCalledOnceWith(expectedToastId);
+        });
+
+        it('should call toastr.remove with the toast id when the NO action is triggered', () => {
+            // Arrange
+            toastrService.show.and.returnValue(mockToast);
+            const toastComponentInstance = service.createConsultationNotificationToast(expectedMessage, true);
+
+            // Act
+            toastComponentInstance.vhToastOptions.onNoAction();
+
+            // Assert
+            expect(toastrService.remove).toHaveBeenCalledOnceWith(expectedToastId);
+        });
+
+        it('should set the body to the message', () => {
+            // Act
+            const toastComponentInstance = service.createConsultationNotificationToast(expectedMessage, true);
+
+            // Assert
+            expect(toastComponentInstance.vhToastOptions.htmlBody).toBe(expectedMessage);
+        });
+
+        it('should have the color black when NOT in hearing', () => {
+            // Act
+            const toastComponentInstance = service.createConsultationNotificationToast(expectedMessage, false);
+
+            // Assert
+            expect(toastComponentInstance.vhToastOptions.color).toBe(expectedNotInHearingColor);
+        });
+
+        it('should have the color white when in hearing', () => {
+            // Act
+            const toastComponentInstance = service.createConsultationNotificationToast(expectedMessage, true);
+
+            // Assert
+            expect(toastComponentInstance.vhToastOptions.color).toBe(expectedInHearingColor);
         });
     });
 

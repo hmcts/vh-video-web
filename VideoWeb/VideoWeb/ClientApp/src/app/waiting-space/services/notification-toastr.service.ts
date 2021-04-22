@@ -133,33 +133,7 @@ export class NotificationToastrService {
             }
         )}</span>`;
 
-        const toast = this.toastr.show('', '', {
-            timeOut: 120000,
-            extendedTimeOut: 0,
-            toastClass: 'vh-no-pointer',
-            tapToDismiss: false,
-            toastComponent: VhToastComponent
-        });
-
-        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
-            color: inHearing ? 'white' : 'black',
-            htmlBody: message,
-            onNoAction: async () => {
-                this.toastr.remove(toast.toastId);
-            },
-            onRemove: () => {},
-            buttons: [
-                {
-                    label: this.translateService.instant('notification-toastr.linked-participants.button-close'),
-                    hoverColour: 'red',
-                    action: async () => {
-                        this.toastr.remove(toast.toastId);
-                    }
-                }
-            ]
-        };
-
-        return toast.toastRef.componentInstance as VhToastComponent;
+        return this.createConsultationNotificationToast(message, inHearing);
     }
 
     showWaitingForLinkedParticipantsToAccept(
@@ -186,6 +160,10 @@ export class NotificationToastrService {
             )}</span>`;
         }
 
+        return this.createConsultationNotificationToast(message, inHearing);
+    }
+
+    createConsultationNotificationToast(message: string, inHearing: boolean): VhToastComponent {
         const toast = this.toastr.show('', '', {
             timeOut: 120000,
             extendedTimeOut: 0,
@@ -200,7 +178,6 @@ export class NotificationToastrService {
             onNoAction: async () => {
                 this.toastr.remove(toast.toastId);
             },
-            onRemove: () => {},
             buttons: [
                 {
                     label: this.translateService.instant('notification-toastr.linked-participants.button-close'),
@@ -244,7 +221,6 @@ export class NotificationToastrService {
             onNoAction: async () => {
                 this.logger.info(`${this.loggerPrefix} No action called on poor connection alert`);
             },
-            onRemove: () => {},
             buttons: [
                 {
                     label: this.translateService.instant('notification-toastr.poor-connection.dismiss'),
