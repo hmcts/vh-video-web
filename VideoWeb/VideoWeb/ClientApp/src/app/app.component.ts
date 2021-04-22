@@ -20,6 +20,7 @@ import { ErrorService } from './services/error.service';
 import { PageTrackerService } from './services/page-tracker.service';
 import { pageUrls } from './shared/page-url.constants';
 import { TestLanguageService } from './shared/test-language.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 @Component({
     selector: 'app-root',
@@ -51,7 +52,8 @@ export class AppComponent implements OnInit, OnDestroy {
         translate: TranslateService,
         private oidcSecurityService: OidcSecurityService,
         private configService: ConfigService,
-        private eventService: PublicEventsService
+        private eventService: PublicEventsService,
+        private logger: Logger
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
@@ -65,7 +67,6 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        console.log('------ On Component: App');
         this.configService.getClientSettings().subscribe({
             next: async () => {
                 this.postConfigSetup();
@@ -76,21 +77,15 @@ export class AppComponent implements OnInit, OnDestroy {
     private postConfigSetup() {
         this.checkAuth().subscribe({
             next: async (loggedIn: boolean) => {
-                console.log(`Post config setup loggged in status: ${loggedIn}`);
                 await this.postAuthSetup(loggedIn);
             }
         });
 
         this.eventService
             .registerForEvents()
-            .pipe(
-                tap(value => {
-                    console.log('EventReceived with value from app', value);
-                }),
-                filter(notification => notification.type === EventTypes.NewAuthorizationResult)
-            )
+            .pipe(filter(notification => notification.type === EventTypes.NewAuthorizationResult))
             .subscribe(async (value: OidcClientNotification<AuthorizationResult>) => {
-                console.log('EventReceived with value from app', value);
+                this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
                 await this.postAuthSetup(true);
             });
     }
@@ -131,7 +126,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
     checkBrowser(): void {
         if (!this.deviceTypeService.isSupportedBrowser()) {
-            console.log('going to unsupported browser');
             this.router.navigateByUrl(pageUrls.UnsupportedBrowser);
         }
     }
@@ -140,8 +134,7 @@ export class AppComponent implements OnInit, OnDestroy {
         return this.oidcSecurityService.checkAuth().pipe(
             catchError(err => {
                 console.error('[AppComponent] - Check Auth Error', err);
-                console.log('going to /');
-                // this.router.navigate(['/']);
+                this.router.navigate(['/']);
                 return NEVER;
             })
         );
