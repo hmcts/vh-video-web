@@ -57,7 +57,6 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
 
             clientSettings.ClientId.Should().Be(securitySettings.ClientId);
             clientSettings.TenantId.Should().Be(securitySettings.TenantId);
-            clientSettings.VideoApiUrl.Should().Be(servicesConfiguration.VideoApiUrl);
             clientSettings.JoinByPhoneFromDate.Should().Be(kinlyConfiguration.JoinByPhoneFromDate);
         }
     }

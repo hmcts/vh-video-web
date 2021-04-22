@@ -7,16 +7,15 @@ namespace VideoWeb.Mappings
 {
     public class ClientSettingsResponseMapper : IMapTo<AzureAdConfiguration, HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse>
     {
-        public ClientSettingsResponse Map(AzureAdConfiguration azureAdConfiguration, HearingServicesConfiguration servicesConfiguration, KinlyConfiguration kinlyConfiguration)
+        public ClientSettingsResponse Map(AzureAdConfiguration input1, HearingServicesConfiguration servicesConfiguration, KinlyConfiguration kinlyConfiguration)
         {
             return new ClientSettingsResponse
             {
-                ClientId = azureAdConfiguration.ClientId,
-                TenantId = azureAdConfiguration.TenantId,
-                RedirectUri = azureAdConfiguration.RedirectUri,
-                PostLogoutRedirectUri = azureAdConfiguration.PostLogoutRedirectUri,
-                VideoApiUrl = servicesConfiguration.VideoApiUrl,
-                AppInsightsInstrumentationKey = azureAdConfiguration.ApplicationInsights.InstrumentationKey,
+                ClientId = input1.ClientId,
+                TenantId = input1.TenantId,
+                RedirectUri = input1.RedirectUri,
+                PostLogoutRedirectUri = input1.PostLogoutRedirectUri,
+                AppInsightsInstrumentationKey = input1.ApplicationInsights.InstrumentationKey,
                 EventHubPath = servicesConfiguration.EventHubPath,
                 JoinByPhoneFromDate = kinlyConfiguration.JoinByPhoneFromDate,
                 KinlyTurnServer = kinlyConfiguration.TurnServer,

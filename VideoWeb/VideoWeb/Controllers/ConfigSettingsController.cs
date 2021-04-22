@@ -23,8 +23,11 @@ namespace VideoWeb.Controllers
         private readonly ILogger<ConfigSettingsController> _logger;
         private readonly IMapperFactory _mapperFactory;
         private readonly KinlyConfiguration _kinlyConfiguration;
-        public ConfigSettingsController(IOptions<AzureAdConfiguration> azureAdConfiguration, IOptions<EJudAdConfiguration> ejudAdConfiguration,
-            IOptions<HearingServicesConfiguration> servicesConfiguration, KinlyConfiguration kinlyConfiguration, ILogger<ConfigSettingsController> logger,
+
+        public ConfigSettingsController(IOptions<AzureAdConfiguration> azureAdConfiguration,
+            IOptions<EJudAdConfiguration> ejudAdConfiguration,
+            IOptions<HearingServicesConfiguration> servicesConfiguration, KinlyConfiguration kinlyConfiguration,
+            ILogger<ConfigSettingsController> logger,
             IMapperFactory mapperFactory)
         {
             _azureAdConfiguration = azureAdConfiguration.Value;
@@ -42,21 +45,23 @@ namespace VideoWeb.Controllers
         /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
-        [ProducesResponseType(typeof(ClientSettingsResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ClientSettingsResponse), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ClientSettingsResponse), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
         [SwaggerOperation(OperationId = "GetClientConfigurationSettings")]
         public ActionResult<ClientSettingsResponse> GetClientConfigurationSettings()
         {
-            var response = new ClientSettingsResponse();
             try
             {
-                var clientSettingsResponseMapper = _mapperFactory.Get<AzureAdConfiguration, HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse>();
-                response = clientSettingsResponseMapper.Map(_azureAdConfiguration, _servicesConfiguration, _kinlyConfiguration);
+                var clientSettingsResponseMapper = _mapperFactory
+                    .Get<AzureAdConfiguration, HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse
+                    >();
+                var response = clientSettingsResponseMapper.Map(_azureAdConfiguration, _servicesConfiguration,
+                    _kinlyConfiguration);
                 return Ok(response);
             }
             catch (Exception e)
             {
-                _logger.LogError(e.Message, $"Unable to retrieve client configuration settings for ClientId: {response.ClientId}");
+                _logger.LogError(e, "Unable to retrieve client configuration settings");
                 return BadRequest(e.Message);
             }
         }
@@ -65,43 +70,39 @@ namespace VideoWeb.Controllers
         /// GetClientConfigurationSettings the configuration settings for client
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet("idp-config")]
         [AllowAnonymous]
-        [ProducesResponseType(typeof(ClientSettingsResponse), (int) HttpStatusCode.OK)]
-        [ProducesResponseType(typeof(ClientSettingsResponse), (int) HttpStatusCode.BadRequest)]
-        [SwaggerOperation(OperationId = "GetClientConfigurationSettings")]
-        public ActionResult<ClientSettingsResponse> GetClientConfigurationSettingsNew(string idpSelection = "vhaad")
+        [ProducesResponseType(typeof(IdpSettingsResponse), (int) HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(string), (int) HttpStatusCode.BadRequest)]
+        [SwaggerOperation(OperationId = "GetIdpConfigurationForProvider")]
+        public ActionResult<IdpSettingsResponse> GetIdpConfigurationForProvider(string idpSelection = "vhaad")
         {
-            var response = new ClientSettingsResponse();
             try
             {
-                response = GetConfigresponse(idpSelection);
+                var response = GetIdpSettingsResponse(idpSelection);
                 return Ok(response);
             }
             catch (Exception e)
             {
-                _logger.LogError(e.Message, $"Unable to retrieve client configuration settings for ClientId: {response.ClientId}");
+                _logger.LogError(e, "Unable to retrieve IDP configuration for {Provider}", idpSelection);
                 return BadRequest(e.Message);
             }
         }
 
-        private ClientSettingsResponse GetConfigresponse(string idpSelection)
+        private IdpSettingsResponse GetIdpSettingsResponse(string idpSelection)
         {
-            var response = new ClientSettingsResponse();
-
             switch (idpSelection)
             {
                 case "ejud":
-                    var ejudclientSettingsResponseMapper = _mapperFactory.Get<EJudAdConfiguration, HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse>();
-                    response = ejudclientSettingsResponseMapper.Map(_ejudAdConfiguration, _servicesConfiguration, _kinlyConfiguration);
-                    break;
+                    var ejudclientSettingsResponseMapper = _mapperFactory
+                        .Get<EJudAdConfiguration, IdpSettingsResponse>();
+                    return ejudclientSettingsResponseMapper.Map(_ejudAdConfiguration);
                 default:
-                    var aadclientSettingsResponseMapper = _mapperFactory.Get<AzureAdConfiguration, HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse>();
-                    response = aadclientSettingsResponseMapper.Map(_azureAdConfiguration, _servicesConfiguration, _kinlyConfiguration);
-                    break;
+                    var aadclientSettingsResponseMapper = _mapperFactory
+                        .Get<AzureAdConfiguration, IdpSettingsResponse>();
+                    return aadclientSettingsResponseMapper.Map(_azureAdConfiguration);
+
             }
-            
-            return response;
         }
     }
 }

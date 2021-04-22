@@ -46,6 +46,8 @@ namespace VideoWeb
             Settings = Configuration.Get<Settings>();
             services.AddSingleton(Settings);
 
+            services.Configure<HearingServicesConfiguration>(options => Configuration.Bind("VhServices", options));
+
             services.Configure<AzureAdConfiguration>(options =>
             {
                 Configuration.Bind("AzureAd", options);

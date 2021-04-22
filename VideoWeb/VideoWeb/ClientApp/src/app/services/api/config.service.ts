@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ClientSettingsResponse } from '../clients/api-client';
+import { ClientSettingsResponse, IdpSettingsResponse } from '../clients/api-client';
 import { HttpClient, HttpBackend } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { SessionStorage } from '../session-storage';
@@ -39,6 +39,12 @@ export class ConfigService {
             filter(Boolean),
             map(() => this.getConfig())
         );
+    }
+
+    getIdpSettings(provider: string = 'vhaad'): Observable<IdpSettingsResponse> {
+        let url = `/config/idp-config?idpSelection=${provider}`;
+        url = url.replace(/[?&]$/, '');
+        return this.httpClient.get<IdpSettingsResponse>(url);
     }
 
     getConfig(): ClientSettingsResponse {

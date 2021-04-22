@@ -1048,7 +1048,7 @@ export class ApiClient {
                 _observableMergeMap(_responseText => {
                     let result400: any = null;
                     let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = ClientSettingsResponse.fromJS(resultData400);
+                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
                     return throwException('Bad Request', status, _responseText, _headers, result400);
                 })
             );
@@ -1066,6 +1066,90 @@ export class ApiClient {
             );
         }
         return _observableOf<ClientSettingsResponse>(<any>null);
+    }
+
+    /**
+     * GetClientConfigurationSettings the configuration settings for client
+     * @param idpSelection (optional)
+     * @return Success
+     */
+    getIdpConfigurationForProvider(idpSelection: string | undefined): Observable<IdpSettingsResponse> {
+        let url_ = this.baseUrl + '/config/idp-config?';
+        if (idpSelection === null) throw new Error("The parameter 'idpSelection' cannot be null.");
+        else if (idpSelection !== undefined) url_ += 'idpSelection=' + encodeURIComponent('' + idpSelection) + '&';
+        url_ = url_.replace(/[?&]$/, '');
+
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({
+                Accept: 'application/json'
+            })
+        };
+
+        return this.http
+            .request('get', url_, options_)
+            .pipe(
+                _observableMergeMap((response_: any) => {
+                    return this.processGetIdpConfigurationForProvider(response_);
+                })
+            )
+            .pipe(
+                _observableCatch((response_: any) => {
+                    if (response_ instanceof HttpResponseBase) {
+                        try {
+                            return this.processGetIdpConfigurationForProvider(<any>response_);
+                        } catch (e) {
+                            return <Observable<IdpSettingsResponse>>(<any>_observableThrow(e));
+                        }
+                    } else return <Observable<IdpSettingsResponse>>(<any>_observableThrow(response_));
+                })
+            );
+    }
+
+    protected processGetIdpConfigurationForProvider(response: HttpResponseBase): Observable<IdpSettingsResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {};
+        if (response.headers) {
+            for (let key of response.headers.keys()) {
+                _headers[key] = response.headers.get(key);
+            }
+        }
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result200: any = null;
+                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result200 = IdpSettingsResponse.fromJS(resultData200);
+                    return _observableOf(result200);
+                })
+            );
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    let result400: any = null;
+                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
+                    return throwException('Bad Request', status, _responseText, _headers, result400);
+                })
+            );
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('Unauthorized', status, _responseText, _headers);
+                })
+            );
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(
+                _observableMergeMap(_responseText => {
+                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+                })
+            );
+        }
+        return _observableOf<IdpSettingsResponse>(<any>null);
     }
 
     /**
@@ -5142,7 +5226,6 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
     client_id?: string | undefined;
     redirect_uri?: string | undefined;
     post_logout_redirect_uri?: string | undefined;
-    video_api_url?: string | undefined;
     app_insights_instrumentation_key?: string | undefined;
     event_hub_path?: string | undefined;
     join_by_phone_from_date?: string | undefined;
@@ -5164,7 +5247,6 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
             this.client_id = _data['client_id'];
             this.redirect_uri = _data['redirect_uri'];
             this.post_logout_redirect_uri = _data['post_logout_redirect_uri'];
-            this.video_api_url = _data['video_api_url'];
             this.app_insights_instrumentation_key = _data['app_insights_instrumentation_key'];
             this.event_hub_path = _data['event_hub_path'];
             this.join_by_phone_from_date = _data['join_by_phone_from_date'];
@@ -5187,7 +5269,6 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
         data['client_id'] = this.client_id;
         data['redirect_uri'] = this.redirect_uri;
         data['post_logout_redirect_uri'] = this.post_logout_redirect_uri;
-        data['video_api_url'] = this.video_api_url;
         data['app_insights_instrumentation_key'] = this.app_insights_instrumentation_key;
         data['event_hub_path'] = this.event_hub_path;
         data['join_by_phone_from_date'] = this.join_by_phone_from_date;
@@ -5204,13 +5285,59 @@ export interface IClientSettingsResponse {
     client_id?: string | undefined;
     redirect_uri?: string | undefined;
     post_logout_redirect_uri?: string | undefined;
-    video_api_url?: string | undefined;
     app_insights_instrumentation_key?: string | undefined;
     event_hub_path?: string | undefined;
     join_by_phone_from_date?: string | undefined;
     kinly_turn_server?: string | undefined;
     kinly_turn_server_user?: string | undefined;
     kinly_turn_server_credential?: string | undefined;
+}
+
+export class IdpSettingsResponse implements IIdpSettingsResponse {
+    tenant_id?: string | undefined;
+    client_id?: string | undefined;
+    redirect_uri?: string | undefined;
+    post_logout_redirect_uri?: string | undefined;
+
+    constructor(data?: IIdpSettingsResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.tenant_id = _data['tenant_id'];
+            this.client_id = _data['client_id'];
+            this.redirect_uri = _data['redirect_uri'];
+            this.post_logout_redirect_uri = _data['post_logout_redirect_uri'];
+        }
+    }
+
+    static fromJS(data: any): IdpSettingsResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new IdpSettingsResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['tenant_id'] = this.tenant_id;
+        data['client_id'] = this.client_id;
+        data['redirect_uri'] = this.redirect_uri;
+        data['post_logout_redirect_uri'] = this.post_logout_redirect_uri;
+        return data;
+    }
+}
+
+export interface IIdpSettingsResponse {
+    tenant_id?: string | undefined;
+    client_id?: string | undefined;
+    redirect_uri?: string | undefined;
+    post_logout_redirect_uri?: string | undefined;
 }
 
 /** Leave a private consultation */
