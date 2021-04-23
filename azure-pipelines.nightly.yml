@@ -234,7 +234,7 @@ stages:
 
         # EJudAd
           - name: EJudAd:ClientId
-            value: vh-video-web-ejud-appid-v2
+            value: ejud-appid
             secret: true
           - name: EJudAd:PostLogoutRedirectUri
             slot:
@@ -249,7 +249,7 @@ stages:
               active:
                 value: $(video_web_url)home
           - name: EJudAd:TenantId
-            value: tenantid
+            value: ejud-tenantid
             secret: true
 
           # Kinly
@@ -331,10 +331,10 @@ stages:
 
           # EJudAd
           - name: EJudAd:TenantId
-            value: tenantid
+            value: ejud-tenantid
             secret: true
           - name: EJudAd:ClientId
-            value: vh-video-web-ejud-appid-v2
+            value: ejud-appid
             secret: true
 
           # Testing

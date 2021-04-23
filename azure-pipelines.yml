@@ -84,10 +84,10 @@ parameters:
 
          # EJudAd
           - name: EJudAd:TenantId
-            value: tenantid
+            value: ejud-tenantid
             secret: true
           - name: EJudAd:ClientId
-            value: vh-video-web-ejud-appid-v2
+            value: ejud-appid
             secret: true
 
           # Testing
@@ -170,7 +170,7 @@ parameters:
 
          # EJudAd
           - name: EJudAd:ClientId
-            value: vh-video-web-ejud-appid-v2
+            value: ejud-appid
             secret: true
           - name: EJudAd:PostLogoutRedirectUri
             slot:
@@ -185,7 +185,7 @@ parameters:
                 active:
                     value: $(video_web_url)home
           - name: EJudAd:TenantId
-            value: tenantid
+            value: ejud-tenantid
             secret: true
 
           # Kinly

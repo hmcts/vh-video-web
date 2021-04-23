@@ -171,10 +171,10 @@ stages:
 
         # EJudAd
         - name: EJudAd:TenantId
-          value: tenantid
+          value: ejud-tenantid
           secret: true
         - name: EJudAd:ClientId
-          value: vh-video-web-ejud-appid-v2
+          value: ejud-appid
           secret: true
 
         # Testing
