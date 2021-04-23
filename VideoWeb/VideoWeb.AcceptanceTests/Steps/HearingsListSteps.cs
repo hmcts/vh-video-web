@@ -38,7 +38,9 @@ namespace VideoWeb.AcceptanceTests.Steps
             }
             else
             {
-                var element = _c.CurrentUser.UserType == UserType.Judge ? JudgeHearingListPage.StartHearingButton(_c.Test.Conference.Id) : ParticipantHearingListPage.StartHearingButton(_c.Test.Conference.Id);
+                var element = (_c.CurrentUser.UserType == UserType.Judge ||
+                               _c.CurrentUser.UserType == UserType.Winger ||
+                               _c.CurrentUser.UserType == UserType.PanelMember) ? JudgeHearingListPage.StartHearingButton(_c.Test.Conference.Id) : ParticipantHearingListPage.SignInButton(_c.Test.Conference.Id);
                 var tolerance = _c.CurrentUser.UserType == UserType.Judge ? 30 : ToleranceInMinutes * 60;
                 _browsers[_c.CurrentUser].Driver.WaitUntilVisible(ParticipantHearingListPage.HearingListPageTitle).Displayed.Should().BeTrue();
                 _browsers[_c.CurrentUser].ScrollTo(element);
