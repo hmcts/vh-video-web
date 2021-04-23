@@ -14,6 +14,7 @@ import { VideoCallService } from '../../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-base.component';
 import { NotificationToastrService } from 'src/app/waiting-space/services/notification-toastr.service';
 import { RoomClosingToastrService } from 'src/app/waiting-space/services/room-closing-toast.service';
+import { ConsultationInvitationService } from '../../services/consultation-invitation.service';
 
 export class WRTestComponent extends WaitingRoomBaseDirective {
     constructor(
@@ -32,7 +33,8 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
         protected notificationSoundsService: NotificationSoundsService,
         protected notificationToastrService: NotificationToastrService,
         protected roomClosingToastrService: RoomClosingToastrService,
-        protected clockService: ClockService
+        protected clockService: ClockService,
+        protected consultationInvitiationService: ConsultationInvitationService
     ) {
         super(
             route,
@@ -50,7 +52,8 @@ export class WRTestComponent extends WaitingRoomBaseDirective {
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
-            clockService
+            clockService,
+            consultationInvitiationService
         );
     }
 }

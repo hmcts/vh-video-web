@@ -13,6 +13,7 @@ import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import {
     clockService,
+    consultationInvitiationService,
     consultationService,
     deviceTypeService,
     errorService,
@@ -33,6 +34,7 @@ import {
 } from '../../waiting-room-shared/tests/waiting-room-base-setup';
 import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { ConsultationInvitation } from '../../services/consultation-invitation.service';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
@@ -41,6 +43,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     let activatedRoute: ActivatedRoute;
     let logged: LoggedParticipantResponse;
     const translateService = translateServiceSpy;
+    let consultationInvitiation: ConsultationInvitation;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -48,6 +51,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     beforeEach(async () => {
+        consultationInvitiation = {} as ConsultationInvitation;
         logged = new LoggedParticipantResponse({
             participant_id: globalParticipant.id,
             display_name: globalParticipant.display_name,
@@ -76,8 +80,11 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            translateService
+            translateService,
+            consultationInvitiationService
         );
+
+        consultationInvitiationService.getInvitation.and.returnValue(consultationInvitiation);
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
@@ -349,7 +356,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
     it('should on consultation accept stop streams for devices and close choose device popup', async () => {
         component.displayDeviceChangeModal = true;
-        await component.onConsultationAccepted();
+        await component.onConsultationAccepted('');
         expect(component.displayDeviceChangeModal).toBe(false);
         expect(userMediaStreamService.getStreamForMic).toHaveBeenCalled();
         expect(userMediaStreamService.getStreamForCam).toHaveBeenCalled();
