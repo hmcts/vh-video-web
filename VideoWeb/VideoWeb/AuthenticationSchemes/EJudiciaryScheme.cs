@@ -1,4 +1,3 @@
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -7,25 +6,17 @@ using VideoWeb.Common.Configuration;
 
 namespace VideoWeb.AuthenticationSchemes
 {
-    public class EJudiciaryScheme : ProviderSchemeBase, IProviderSchemes
+    public class EJudiciaryScheme : AadSchemeBase
     {
-        private readonly EJudAdConfiguration _eJudAdConfiguration;
-
-        public EJudiciaryScheme(string eventhubPath, EJudAdConfiguration eJudAdConfiguration): base(eventhubPath)
+        public EJudiciaryScheme(string eventhubPath, EJudAdConfiguration eJudAdConfiguration): base(eventhubPath, eJudAdConfiguration)
         {
-            _eJudAdConfiguration = eJudAdConfiguration;
         }
 
         public override AuthProvider Provider => AuthProvider.EJudiciary;
-
-        public bool BelongsToScheme(JwtSecurityToken jwtSecurityToken) => jwtSecurityToken.Issuer.Contains(_eJudAdConfiguration.TenantId, StringComparison.InvariantCultureIgnoreCase);
-
+        
         public override void SetJwtBearerOptions(JwtBearerOptions options)
         {
-            options.Authority = $"https://login.microsoftonline.com/{_eJudAdConfiguration.TenantId}/v2.0";
-            options.TokenValidationParameters.NameClaimType = "preferred_username";
-            options.Audience = _eJudAdConfiguration.ClientId;
-            options.TokenValidationParameters.ClockSkew = TimeSpan.Zero;
+            base.SetJwtBearerOptions(options);
             options.Events = new JwtBearerEvents { OnTokenValidated = OnTokenValidated };
         }
 
