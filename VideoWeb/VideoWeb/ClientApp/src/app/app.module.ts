@@ -28,6 +28,7 @@ import { registerLocaleData } from '@angular/common';
 import localeCy from '@angular/common/locales/cy';
 import { AuthConfigModule } from './auth-config.module';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { NavigatorComponent } from './home/navigator/navigator.component';
 
 export function createTranslateLoader() {
     // We cant inject a httpClient because it has a race condition with adal
@@ -46,7 +47,7 @@ export function getLocale() {
 }
 
 @NgModule({
-    declarations: [AppComponent, HomeComponent],
+    declarations: [AppComponent, HomeComponent, NavigatorComponent],
     imports: [
         BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
         HttpClientModule,
