@@ -98,7 +98,7 @@ export class NotificationToastrService {
                 const index = this.activeRoomInviteRequests.indexOf(inviteKey);
                 this.activeRoomInviteRequests.splice(index, 1);
 
-                if (this.activeRoomInviteRequests.length === 0) {
+                if (!this.activeRoomInviteRequests.length) {
                     this.notificationSoundService.stopConsultationRequestRingtone();
                 }
             },

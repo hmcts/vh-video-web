@@ -209,7 +209,7 @@ export abstract class WaitingRoomBaseDirective {
 
     onLinkedParticiantAcceptedConsultationInvite(roomLabel: string, id: string) {
         const invitation = this.consultationInvitiationService.getInvitation(roomLabel);
-        invitation.updateLinkedParticipantStatus(id, true);
+        invitation.linkedParticipantStatuses[id] = true;
 
         if (invitation.activeParticipantAccepted) {
             this.createOrUpdateWaitingOnLinkedParticipantsNotification(invitation);
@@ -308,10 +308,13 @@ export abstract class WaitingRoomBaseDirective {
                         this.participant.status !== ParticipantStatus.Available
                     );
 
-                    const invitation = this.consultationInvitiationService.createInvitation(message.roomLabel, requestedBy.displayName);
+                    const invitation = this.consultationInvitiationService.getInvitation(message.roomLabel);
+                    invitation.invitedByName = requestedBy.displayName;
                     invitation.activeToast = consultationInviteToast;
                     for (const linkedParticipant of this.participant.linked_participants) {
-                        invitation.addLinkedParticipant(linkedParticipant.linked_id);
+                        if (invitation.linkedParticipantStatuses[linkedParticipant.linked_id] === undefined) {
+                            invitation.linkedParticipantStatuses[linkedParticipant.linked_id] = false;
+                        }
                     }
                 }
             })
