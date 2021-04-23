@@ -7,6 +7,7 @@ import { Hearing } from '../../../shared/models/hearing';
 import {
     activatedRoute,
     clockService,
+    consultationInvitiationService,
     consultationService,
     deviceTypeService,
     errorService,
@@ -56,7 +57,8 @@ describe('ParticipantWaitingRoomComponent event hub events', () => {
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            translateService
+            translateService,
+            consultationInvitiationService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

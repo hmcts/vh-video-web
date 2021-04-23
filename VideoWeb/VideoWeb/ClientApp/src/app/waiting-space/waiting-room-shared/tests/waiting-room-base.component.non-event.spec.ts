@@ -23,6 +23,7 @@ import { VideoCallPreferences } from '../../services/video-call-preferences.mode
 import {
     activatedRoute,
     clockService,
+    consultationInvitiationService,
     consultationService,
     deviceTypeService,
     errorService,
@@ -84,7 +85,8 @@ describe('WaitingRoomComponent message and clock', () => {
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
-            clockService
+            clockService,
+            consultationInvitiationService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
