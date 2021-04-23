@@ -19,6 +19,7 @@ import { HearingRole } from '../../models/hearing-role-model';
 import { VideoCallPreferences } from '../../services/video-call-preferences.mode';
 import {
     clockService,
+    consultationInvitiationService,
     consultationService,
     deviceTypeService,
     errorService,
@@ -95,7 +96,8 @@ describe('ParticipantWaitingRoomComponent when conference exists', () => {
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            translateService
+            translateService,
+            consultationInvitiationService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

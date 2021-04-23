@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
@@ -65,7 +66,7 @@ namespace VideoWeb.Helpers
             var endpoint = conference.Endpoints.FirstOrDefault(e => e.Id == requestedForId);
             if (endpoint != null)
             {
-                await PublishResponseMessage(conference, roomLabel, endpoint.Id, answer);
+                await PublishResponseMessage(conference, roomLabel, endpoint.Id, answer, endpoint.Id);
                 return;
             }
             
@@ -73,20 +74,20 @@ namespace VideoWeb.Helpers
             await _consultationResponseTracker.UpdateConsultationResponse(conference, participantFor.Id, answer);
             var haveAllAccepted =
                 await _consultationResponseTracker.HaveAllParticipantsAccepted(conference, participantFor.Id);
-            if (answer == ConsultationAnswer.Accepted && !haveAllAccepted)
-            {
-                return;
-            }
 
-            await PublishResponseMessage(conference, roomLabel, participantFor.Id, answer);
+            await PublishResponseMessage(conference, roomLabel, participantFor.Id, answer, participantFor.Id);
+
+            if (answer == ConsultationAnswer.Accepted && !haveAllAccepted)
+                return;
+
             if (participantFor.LinkedParticipants.Any())
             {
                 await NotifyLinkedParticipantsOfConsultationResponseAsync(conference, participantFor, roomLabel, answer);
-            }
 
-            if (answer == ConsultationAnswer.Transferring && participantFor.LinkedParticipants.Any())
-            {
-                await _consultationResponseTracker.ClearResponses(conference, requestedForId);
+                if (answer != ConsultationAnswer.Accepted)
+                {
+                    await _consultationResponseTracker.ClearResponses(conference, requestedForId);
+                }
             }
         }
         
@@ -97,15 +98,15 @@ namespace VideoWeb.Helpers
 
             foreach (var linkedParticipant in linkedParticipants)
             {
-                await PublishResponseMessage(conference, roomLabel, linkedParticipant.Id, answer);
+                await PublishResponseMessage(conference, roomLabel, linkedParticipant.Id, answer, participantFor.Id);
             }
         }
         
-        private async Task PublishResponseMessage(Conference conference, string roomLabel, Guid requestedForId, ConsultationAnswer answer)
+        private async Task PublishResponseMessage(Conference conference, string roomLabel, Guid requestedForId, ConsultationAnswer answer, Guid responseInitiatorId)
         {
             var tasks = conference.Participants.Select(p => 
                 _hubContext.Clients?.Group(p.Username.ToLowerInvariant())
-                    .ConsultationRequestResponseMessage(conference.Id, roomLabel, requestedForId, answer) ?? Task.CompletedTask);
+                    .ConsultationRequestResponseMessage(conference.Id, roomLabel, requestedForId, answer, responseInitiatorId) ?? Task.CompletedTask);
             await Task.WhenAll(tasks);
         }
 
