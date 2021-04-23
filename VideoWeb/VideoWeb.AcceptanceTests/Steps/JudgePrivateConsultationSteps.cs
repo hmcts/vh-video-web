@@ -85,7 +85,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.HearingTitle).Displayed.Should().BeTrue();
             WaitForUserStatusToBe(ParticipantState.Available);
-            Thread.Sleep(1500);  // unfortunately need a hard sleep as the button is active in html but does not respond for another second.
             _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.EnterPrivateConsultationButton);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateConsultationRoomPage.LeavePrivateConsultationButton, 60).Displayed.Should().BeTrue();
             WaitForUserStatusToBe(ParticipantState.InConsultation);
