@@ -45,4 +45,16 @@ describe('ParticipantPanelModel', () => {
         model = new ParticipantPanelModel(participant);
         expect(model.isJudge).toBeFalsy();
     });
+
+    it('should return true when participant is a joh', () => {
+        participant.role = Role.JudicialOfficeHolder;
+        model = new ParticipantPanelModel(participant);
+        expect(model.isJudicialOfficeHolder).toBeTruthy();
+    });
+
+    it('should return false when participant is not a joh', () => {
+        participant.role = Role.Individual;
+        model = new ParticipantPanelModel(participant);
+        expect(model.isJudicialOfficeHolder).toBeFalsy();
+    });
 });

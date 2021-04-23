@@ -1,11 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { NEVER } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { ConfigService } from 'src/app/services/api/config.service';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ReturnUrlService } from 'src/app/services/return-url.service';
 import { pageUrls } from '../../shared/page-url.constants';
 import { OidcConfigSetupService } from '../oidc-config-setup.service';
 
@@ -13,7 +8,7 @@ import { OidcConfigSetupService } from '../oidc-config-setup.service';
     selector: 'app-idp-selection',
     templateUrl: './idp-selection.component.html'
 })
-export class IdpSelectionComponent implements OnInit {
+export class IdpSelectionComponent {
     identityProviders = {
         ejud: {
             url: '/' + pageUrls.Login
@@ -26,50 +21,7 @@ export class IdpSelectionComponent implements OnInit {
     selectedProvider: string;
     submitted = false;
 
-    constructor(
-        private oidcSecurityService: OidcSecurityService,
-        private route: ActivatedRoute,
-        private router: Router,
-        private returnUrlService: ReturnUrlService,
-        private logger: Logger,
-        private configService: ConfigService,
-        private oidcConfigSetupService: OidcConfigSetupService
-    ) {}
-
-    ngOnInit(): void {
-        this.configService.getClientSettings().subscribe(() => {
-            this.oidcSecurityService.isAuthenticated$
-                .pipe(
-                    catchError(err => {
-                        this.logger.error('[Idp Selection] - Check Auth Error', err);
-                        this.router.navigate(['/']);
-                        return NEVER;
-                    })
-                )
-                .subscribe(async loggedIn => {
-                    this.logger.debug('[IdpSelectionComponent] - isLoggedIn ' + loggedIn);
-                    if (loggedIn) {
-                        const returnUrl = this.returnUrlService.popUrl() || '/';
-                        try {
-                            this.logger.debug(`[IdpSelectionComponent] - User is authenticated. Returning to ${returnUrl}`);
-                            this.router.navigateByUrl(returnUrl);
-                        } catch (e) {
-                            this.logger.error('[IdpSelectionComponent] - Failed to log in', e);
-                            this.router.navigate(['/']);
-                        }
-                    } else {
-                        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-                        this.returnUrlService.setUrl(returnUrl);
-
-                        const routeIdp = this.route.snapshot.queryParams['idp'];
-                        if (routeIdp && this.identityProviders[routeIdp]) {
-                            this.logger.debug('[IdpSelectionComponent] - Redirecting to login');
-                            this.redirectToLogin(routeIdp);
-                        }
-                    }
-                });
-        });
-    }
+    constructor(private router: Router, private logger: Logger, private oidcConfigSetupService: OidcConfigSetupService) {}
 
     showError(): boolean {
         return this.submitted && !this.selectedProvider;

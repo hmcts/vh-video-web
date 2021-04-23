@@ -335,7 +335,7 @@ export class ConferenceTestData {
             status: ParticipantStatus.NotSignedIn,
             display_name: 'Observer Doe O',
             role: Role.Individual,
-            case_type_group: 'observer',
+            case_type_group: 'Observer',
             tiled_display_name: 'CIVILIAN;Observer Doe O;6666-6666-6666-6666',
             hearing_role: HearingRole.OBSERVER,
             linked_participants: []
