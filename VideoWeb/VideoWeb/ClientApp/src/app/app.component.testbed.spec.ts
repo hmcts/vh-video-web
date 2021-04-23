@@ -1,5 +1,5 @@
 import { HttpClientModule } from '@angular/common/http';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { configureTestSuite } from 'ng-bullet';
@@ -8,7 +8,6 @@ import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
 import { ClientSettingsResponse, Role, UserProfileResponse } from './services/clients/api-client';
 import { DeviceTypeService } from './services/device-type.service';
-import { LocationService } from './services/location.service';
 import { Logger } from './services/logging/logger-base';
 import { PageTrackerService } from './services/page-tracker.service';
 import { MockLogger } from './testing/mocks/mock-logger';
@@ -25,15 +24,16 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { MockOidcSecurityService } from './testing/mocks/mock-oidc-security.service';
 import { TranslatePipeMock } from './testing/mocks/mock-translation-pipe';
 import { of } from 'rxjs';
+import { PublicEventsService } from 'angular-auth-oidc-client';
 
 describe('AppComponent', () => {
     let configServiceSpy: jasmine.SpyObj<ConfigService>;
     let deviceTypeServiceSpy: jasmine.SpyObj<DeviceTypeService>;
     let profileServiceSpy: jasmine.SpyObj<ProfileService>;
-    let locationServiceSpy: jasmine.SpyObj<LocationService>;
     let participantStatusUpdateServiceSpy: jasmine.SpyObj<ParticipantStatusUpdateService>;
     let pageTrackerSpy: jasmine.SpyObj<PageTrackerService>;
     let testLanguageServiceSpy: jasmine.SpyObj<TestLanguageService>;
+    let publicEventsServiceSpy: jasmine.SpyObj<PublicEventsService>;
 
     const clientSettings = new ClientSettingsResponse({
         tenant_id: 'tenantid',
@@ -57,12 +57,12 @@ describe('AppComponent', () => {
         const profile = new UserProfileResponse({ role: Role.Representative });
         profileServiceSpy.getUserProfile.and.returnValue(Promise.resolve(profile));
 
-        locationServiceSpy = jasmine.createSpyObj<LocationService>('LocationService', ['getCurrentUrl', 'getCurrentPathName']);
         pageTrackerSpy = jasmine.createSpyObj('PageTrackerService', ['trackNavigation', 'trackPreviousPage']);
         testLanguageServiceSpy = jasmine.createSpyObj('TestLanguageService', ['setupSubscriptions']);
 
         participantStatusUpdateServiceSpy = jasmine.createSpyObj('ParticipantStatusUpdateService', ['postParticipantStatus']);
         participantStatusUpdateServiceSpy.postParticipantStatus.and.returnValue(Promise.resolve());
+        publicEventsServiceSpy = jasmine.createSpyObj('PublicEventsService', ['registerForEvents']);
 
         TestBed.configureTestingModule({
             imports: [HttpClientModule, RouterTestingModule],
@@ -74,12 +74,12 @@ describe('AppComponent', () => {
                 { provide: DeviceTypeService, useValue: deviceTypeServiceSpy },
                 { provide: DeviceTypeService, useValue: deviceTypeServiceSpy },
                 { provide: ProfileService, useValue: profileServiceSpy },
-                { provide: LocationService, useValue: locationServiceSpy },
                 { provide: PageTrackerService, useValue: pageTrackerSpy },
                 { provide: TestLanguageService, useValue: testLanguageServiceSpy },
                 { provide: ParticipantStatusUpdateService, useValue: participantStatusUpdateServiceSpy },
                 { provide: EventsService, useValue: eventsServiceSpy },
-                { provide: TranslateService, useValue: translateServiceSpy }
+                { provide: TranslateService, useValue: translateServiceSpy },
+                { provide: PublicEventsService, useValue: publicEventsServiceSpy }
             ]
         });
     });

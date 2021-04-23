@@ -69,10 +69,10 @@ export abstract class PanelModel {
         this.displayName = displayName;
         this.role = role;
         this.caseTypeGroup = role === Role.Judge ? 'judge' : caseTypeGroup;
-        this.orderInTheList = this.setOrderInTheList();
         this.pexipDisplayName = pexipDisplayName;
         this.hearingRole = hearingRole;
         this.representee = representee;
+        this.orderInTheList = this.setOrderInTheList();
     }
 
     abstract isInHearing(): boolean;
@@ -91,6 +91,10 @@ export abstract class PanelModel {
 
     get isJudge(): boolean {
         return this.role === Role.Judge;
+    }
+
+    get isJudicialOfficeHolder(): boolean {
+        return this.role === Role.JudicialOfficeHolder;
     }
 
     get isWitness(): boolean {
@@ -146,17 +150,16 @@ export abstract class PanelModel {
     }
 
     private setOrderInTheList(): number {
-        switch (this.caseTypeGroup.toLowerCase()) {
-            case 'judge':
-                return 1;
-            case 'panelmember':
-                return 2;
-            case 'endpoint':
-                return 4;
-            case 'observer':
-                return 5;
-            default:
-                return 3;
+        if (this.role === Role.Judge) {
+            return 1;
+        } else if (this.role === Role.JudicialOfficeHolder) {
+            return 2;
+        } else if (this.caseTypeGroup.toLowerCase() === 'endpoint') {
+            return 4;
+        } else if (this.hearingRole === HearingRole.OBSERVER) {
+            return 5;
+        } else {
+            return 3;
         }
     }
 }
