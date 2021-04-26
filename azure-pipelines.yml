@@ -291,10 +291,9 @@ extends:
                 sonar.cs.opencover.reportsPaths=$(Common.TestResultsDirectory)/Coverage/coverage.opencover.xml
                 sonar.typescript.lcov.reportPaths=$(System.DefaultWorkingDirectory)/VideoWeb/VideoWeb/ClientApp/coverage/lcov.info
                 sonar.cpd.exclusions=**/tests/WRTestComponent.ts,**/joh-waiting-room/**
-                sonar.issue.ignore.multicriteria=e1
+                sonar.issue.ignore.multicriteria=e1,e2
                 sonar.issue.ignore.multicriteria.e1.ruleKey=typescript:S107
                 sonar.issue.ignore.multicriteria.e1.resourceKey=**/*.ts
-                sonar.issue.ignore.multicriteria=e2
                 sonar.issue.ignore.multicriteria.e2.ruleKey=typescript:S1874
                 sonar.issue.ignore.multicriteria.e2.resourceKey=**/*.ts
             StrykerBreak: 75

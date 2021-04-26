@@ -79,7 +79,6 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         this.getConference().then(() => {
             this.subscribeToClock();
             this.startEventHubSubscribers();
-            this.participant = this.setLoggedParticipant();
             this.getJwtokenAndConnectToPexip();
         });
     }
