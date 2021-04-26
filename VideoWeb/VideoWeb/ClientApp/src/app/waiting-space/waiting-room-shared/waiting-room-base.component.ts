@@ -220,6 +220,8 @@ export abstract class WaitingRoomBaseDirective {
         }
 
         this.notificationToastrService.showConsultationRejectedByLinkedParticipant(
+            this.conferenceId,
+            consulationRoomLabel,
             linkedParticipantId,
             invitation.invitedByName,
             this.participant.status === ParticipantStatus.InHearing
@@ -296,19 +298,24 @@ export abstract class WaitingRoomBaseDirective {
 
                     const roomParticipants = this.findParticipantsInRoom(message.roomLabel).map(x => new Participant(x));
                     const roomEndpoints = this.findEndpointsInRoom(message.roomLabel);
-                    const consultationInviteToast = this.notificationToastrService.showConsultationInvite(
-                        message.roomLabel,
-                        message.conferenceId,
-                        requestedBy,
-                        requestedFor,
-                        roomParticipants,
-                        roomEndpoints,
-                        this.participant.status !== ParticipantStatus.Available
-                    );
 
                     const invitation = this.consultationInvitiationService.getInvitation(message.roomLabel);
                     invitation.invitedByName = requestedBy.displayName;
-                    invitation.activeToast = consultationInviteToast;
+
+                    if (!invitation.activeParticipantAccepted && !invitation.activeToast) {
+                        const consultationInviteToast = this.notificationToastrService.showConsultationInvite(
+                            message.roomLabel,
+                            message.conferenceId,
+                            requestedBy,
+                            requestedFor,
+                            roomParticipants,
+                            roomEndpoints,
+                            this.participant.status !== ParticipantStatus.Available
+                        );
+
+                        invitation.activeToast = consultationInviteToast;
+                    }
+
                     for (const linkedParticipant of this.participant.linked_participants) {
                         if (invitation.linkedParticipantStatuses[linkedParticipant.linked_id] === undefined) {
                             invitation.linkedParticipantStatuses[linkedParticipant.linked_id] = false;

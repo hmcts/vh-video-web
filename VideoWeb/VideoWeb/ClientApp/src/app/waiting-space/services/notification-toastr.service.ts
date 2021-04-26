@@ -25,6 +25,11 @@ export class NotificationToastrService {
 
     activeRoomInviteRequests = [];
     activeHeartbeatReport = [];
+    activeLinkedParticipantRejectionToasts: VhToastComponent[] = [];
+
+    getInviteKey(conferenceId: string, roomLabel: string): string {
+        return `${conferenceId}_${roomLabel}`;
+    }
 
     showConsultationInvite(
         roomLabel: string,
@@ -35,7 +40,7 @@ export class NotificationToastrService {
         endpoints: VideoEndpointResponse[],
         inHearing: boolean
     ) {
-        const inviteKey = `${conferenceId}_${roomLabel}`;
+        const inviteKey = this.getInviteKey(conferenceId, roomLabel);
         if (this.activeRoomInviteRequests.indexOf(inviteKey) >= 0) {
             return;
         }
@@ -43,6 +48,11 @@ export class NotificationToastrService {
         this.logger.debug(`${this.loggerPrefix} creating 'showConsultationInvite' toastr notification`);
         if (!inHearing) {
             this.notificationSoundService.playConsultationRequestRingtone();
+        }
+
+        if (this.activeLinkedParticipantRejectionToasts[inviteKey]) {
+            this.activeLinkedParticipantRejectionToasts[inviteKey].remove();
+            delete this.activeLinkedParticipantRejectionToasts[inviteKey];
         }
 
         const requesterDisplayName =
@@ -126,7 +136,19 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
-    showConsultationRejectedByLinkedParticipant(rejectorName: string, invitedByName: string, inHearing: boolean): VhToastComponent {
+    showConsultationRejectedByLinkedParticipant(
+        conferenceId: string,
+        roomLabel: string,
+        rejectorName: string,
+        invitedByName: string,
+        inHearing: boolean
+    ): VhToastComponent {
+        const inviteKey = this.getInviteKey(conferenceId, roomLabel);
+        if (this.activeLinkedParticipantRejectionToasts[inviteKey]) {
+            this.activeLinkedParticipantRejectionToasts[inviteKey].remove();
+            delete this.activeLinkedParticipantRejectionToasts[inviteKey];
+        }
+
         const message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant(
             'notification-toastr.linked-participants.rejected',
             {
@@ -135,7 +157,7 @@ export class NotificationToastrService {
             }
         )}</span>`;
 
-        return this.createConsultationNotificationToast(message, inHearing);
+        return (this.activeLinkedParticipantRejectionToasts[inviteKey] = this.createConsultationNotificationToast(message, inHearing));
     }
 
     showWaitingForLinkedParticipantsToAccept(

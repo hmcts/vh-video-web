@@ -45,6 +45,29 @@ describe('NotificationToastrService', () => {
             toastrService.remove.calls.reset();
         });
 
+        it('should remove any active rejected by linked participant toasts for the invite key', async () => {
+            // Arrange
+            const expectedInviteKey = 'invite-key';
+            const participant = new Participant(globalParticipant);
+            const mockToast = {
+                toastRef: {
+                    componentInstance: {}
+                }
+            } as ActiveToast<VhToastComponent>;
+
+            toastrService.show.and.returnValue(mockToast);
+            spyOn(service, 'getInviteKey').and.returnValue(expectedInviteKey);
+
+            const existingRejectedToast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
+            service.activeLinkedParticipantRejectionToasts[expectedInviteKey] = existingRejectedToast;
+
+            // Act
+            service.showConsultationInvite(roomLabel, globalConference.id, participant, participant, [participant], [], false);
+
+            // Assert
+            expect(existingRejectedToast.remove).toHaveBeenCalledTimes(1);
+        });
+
         it('should only show invite for room once', async () => {
             // Arrange
             const mockToast = {
@@ -346,27 +369,52 @@ describe('NotificationToastrService', () => {
         });
     });
 
+    describe('getInviteKey', () => {
+        it('should return the invite key in the correct format', () => {
+            // Arrange
+            const conferenceId = 'conference_id';
+            const expectedInviteKey = `${conferenceId}_${roomLabel}`;
+
+            // Act
+            const inviteKey = service.getInviteKey(conferenceId, roomLabel);
+
+            // Assert
+            expect(inviteKey).toEqual(expectedInviteKey);
+        });
+    });
+
     describe('showConsultationRejectedByLinkedParticipant', () => {
         const expectedParticipantName = 'First Last';
         const expectedInvitedBy = 'Consultation Room';
-        const expectedToastId = 2;
         const expectedTranslationString = 'notification-toastr.linked-participants.rejected';
         const expectedBody = `<span class="govuk-!-font-weight-bold">${expectedTranslationString}</span>`;
+        const expectedConferenceId = 'conference_id';
+        const expectedRoomLabel = 'room_label';
+        let mockToast: jasmine.SpyObj<VhToastComponent>;
 
         beforeEach(() => {
             toastrService.show.calls.reset();
             toastrService.remove.calls.reset();
             translateServiceSpy.instant.calls.reset();
+            mockToast = jasmine.createSpyObj<VhToastComponent>('VhToastCompoenet', ['remove']);
         });
 
-        it('should call create consultation toast with correct message', () => {
+        it('should call create consultation toast with correct message and store it in the active rejection toasts', () => {
             // Arrange
             const expectedInHearing = false;
+            const expectedInviteKey = 'invite-key';
 
-            spyOn(service, 'createConsultationNotificationToast');
+            spyOn(service, 'createConsultationNotificationToast').and.returnValue(mockToast);
+            spyOn(service, 'getInviteKey').and.returnValue(expectedInviteKey);
 
             // Act
-            service.showConsultationRejectedByLinkedParticipant(expectedParticipantName, expectedInvitedBy, expectedInHearing);
+            service.showConsultationRejectedByLinkedParticipant(
+                expectedConferenceId,
+                expectedRoomLabel,
+                expectedParticipantName,
+                expectedInvitedBy,
+                expectedInHearing
+            );
 
             // Assert
             expect(service.createConsultationNotificationToast).toHaveBeenCalledOnceWith(expectedBody, expectedInHearing);
@@ -375,6 +423,40 @@ describe('NotificationToastrService', () => {
                 rejector: expectedParticipantName,
                 invitedBy: expectedInvitedBy
             });
+            expect(service.activeLinkedParticipantRejectionToasts[expectedInviteKey]).toBeTruthy();
+            expect(service.activeLinkedParticipantRejectionToasts[expectedInviteKey]).toBe(mockToast);
+        });
+
+        it('should remove the existing active rejection toast for the same invite key if it exists', () => {
+            // Arrange
+            const expectedInHearing = false;
+            const expectedInviteKey = 'invite-key';
+
+            spyOn(service, 'createConsultationNotificationToast').and.returnValue(mockToast);
+            spyOn(service, 'getInviteKey').and.returnValue(expectedInviteKey);
+
+            const initialToast = jasmine.createSpyObj<VhToastComponent>('VhToastCompoenet', ['remove']);
+            service.activeLinkedParticipantRejectionToasts[expectedInviteKey] = initialToast;
+
+            // Act
+            service.showConsultationRejectedByLinkedParticipant(
+                expectedConferenceId,
+                expectedRoomLabel,
+                expectedParticipantName,
+                expectedInvitedBy,
+                expectedInHearing
+            );
+
+            // Assert
+            expect(service.createConsultationNotificationToast).toHaveBeenCalledOnceWith(expectedBody, expectedInHearing);
+            expect(translateServiceSpy.instant).toHaveBeenCalledTimes(1);
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedTranslationString, {
+                rejector: expectedParticipantName,
+                invitedBy: expectedInvitedBy
+            });
+            expect(service.activeLinkedParticipantRejectionToasts[expectedInviteKey]).toBeTruthy();
+            expect(service.activeLinkedParticipantRejectionToasts[expectedInviteKey]).toBe(mockToast);
+            expect(initialToast.remove).toHaveBeenCalledTimes(1);
         });
     });
 
