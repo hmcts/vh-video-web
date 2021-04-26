@@ -21,11 +21,13 @@ import { WRTestComponent } from './WRTestComponent';
 import { NotificationToastrService } from 'src/app/waiting-space/services/notification-toastr.service';
 import { RoomClosingToastrService } from 'src/app/waiting-space/services/room-closing-toast.service';
 import { ToastrService } from 'ngx-toastr';
+import { ConsultationInvitationService } from '../../services/consultation-invitation.service';
 const conferenceTestData = new ConferenceTestData();
 
 export let component: WRTestComponent;
 
 export const globalConference = conferenceTestData.getConferenceDetailPast();
+export const participantsLinked = conferenceTestData.getListOfLinkedParticipants();
 export const participantsWitness = conferenceTestData.getListOfParticipantsWitness();
 participantsWitness.forEach(x => {
     globalConference.participants.push(x);
@@ -42,6 +44,7 @@ export let videoWebService: jasmine.SpyObj<VideoWebService>;
 export const eventsService = eventsServiceSpy;
 export let errorService: jasmine.SpyObj<ErrorService>;
 export let clockService: jasmine.SpyObj<ClockService>;
+export let consultationInvitiationService: jasmine.SpyObj<ConsultationInvitationService>;
 export let router: jasmine.SpyObj<Router>;
 export let heartbeatModelMapper: HeartbeatModelMapper;
 export let deviceTypeService: jasmine.SpyObj<DeviceTypeService>;
@@ -119,12 +122,18 @@ export function initAllWRDependencies() {
     ]);
     notificationToastrService = jasmine.createSpyObj<NotificationToastrService>('NotificationToastrService', [
         'showConsultationInvite',
-        'clearAllToastNotifications',
+        'showConsultationRejectedByLinkedParticipant',
+        'showWaitingForLinkedParticipantsToAccept',
+        'reportPoorConnection',
         'showAudioRecordingError'
     ]);
     toastrService = jasmine.createSpyObj<ToastrService>('ToastrService', ['show', 'clear', 'remove']);
     roomClosingToastrService = jasmine.createSpyObj<RoomClosingToastrService>('RoomClosingToastrService', [
         'showRoomClosingAlert',
         'clearToasts'
+    ]);
+    consultationInvitiationService = jasmine.createSpyObj<ConsultationInvitationService>('ConsultationInvitationService', [
+        'getInvitation',
+        'removeInvitation'
     ]);
 }

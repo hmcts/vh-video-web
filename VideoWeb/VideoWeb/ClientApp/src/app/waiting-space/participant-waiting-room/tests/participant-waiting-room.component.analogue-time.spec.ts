@@ -5,6 +5,7 @@ import { HearingRole } from '../../models/hearing-role-model';
 import {
     activatedRoute,
     clockService,
+    consultationInvitiationService,
     consultationService,
     deviceTypeService,
     errorService,
@@ -50,7 +51,8 @@ describe('ParticipantWaitingRoomComponent message and clock', () => {
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            translateService
+            translateService,
+            consultationInvitiationService
         );
     });
 

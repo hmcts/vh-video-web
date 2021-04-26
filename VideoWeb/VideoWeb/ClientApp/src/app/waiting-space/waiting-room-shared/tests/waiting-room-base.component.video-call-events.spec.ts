@@ -25,6 +25,7 @@ import { PrivateConsultationRoomControlsComponent } from '../../private-consulta
 import {
     activatedRoute,
     clockService,
+    consultationInvitiationService,
     consultationService,
     deviceTypeService,
     errorService,
@@ -81,7 +82,8 @@ describe('WaitingRoomComponent Video Call', () => {
             notificationSoundsService,
             notificationToastrService,
             roomClosingToastrService,
-            clockService
+            clockService,
+            consultationInvitiationService
         );
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));

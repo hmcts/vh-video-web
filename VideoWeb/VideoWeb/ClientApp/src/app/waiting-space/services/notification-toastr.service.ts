@@ -94,8 +94,13 @@ export class NotificationToastrService {
             color: inHearing ? 'white' : 'black',
             htmlBody: message,
             onNoAction: async () => {
-                respondToConsultationRequest(ConsultationAnswer.None);
-                if (this.toastr.toasts.length === 1) {
+                await respondToConsultationRequest(ConsultationAnswer.None);
+            },
+            onRemove: () => {
+                const index = this.activeRoomInviteRequests.indexOf(inviteKey);
+                this.activeRoomInviteRequests.splice(index, 1);
+
+                if (!this.activeRoomInviteRequests.length) {
                     this.notificationSoundService.stopConsultationRequestRingtone();
                 }
             },
@@ -104,18 +109,16 @@ export class NotificationToastrService {
                     label: this.translateService.instant('notification-toastr.invite.accept'),
                     hoverColour: 'green',
                     action: async () => {
-                        respondToConsultationRequest(ConsultationAnswer.Accepted);
-                        this.clearAllToastNotifications();
+                        await respondToConsultationRequest(ConsultationAnswer.Accepted);
+                        this.toastr.remove(toast.toastId);
                     }
                 },
                 {
                     label: this.translateService.instant('notification-toastr.invite.decline'),
                     hoverColour: 'red',
                     action: async () => {
-                        respondToConsultationRequest(ConsultationAnswer.Rejected);
-                        if (this.toastr.toasts.length === 1) {
-                            this.notificationSoundService.stopConsultationRequestRingtone();
-                        }
+                        await respondToConsultationRequest(ConsultationAnswer.Rejected);
+                        this.toastr.remove(toast.toastId);
                     }
                 }
             ]
@@ -123,9 +126,72 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
-    clearAllToastNotifications() {
-        this.toastr.clear();
-        this.notificationSoundService.stopConsultationRequestRingtone();
+    showConsultationRejectedByLinkedParticipant(rejectorName: string, invitedByName: string, inHearing: boolean): VhToastComponent {
+        const message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant(
+            'notification-toastr.linked-participants.rejected',
+            {
+                rejector: rejectorName,
+                invitedBy: invitedByName
+            }
+        )}</span>`;
+
+        return this.createConsultationNotificationToast(message, inHearing);
+    }
+
+    showWaitingForLinkedParticipantsToAccept(
+        linkedParticipantNames: string[],
+        invitedByName: string,
+        inHearing: boolean
+    ): VhToastComponent {
+        let message: string;
+        if (linkedParticipantNames.length > 1) {
+            message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant(
+                'notification-toastr.linked-participants.waiting-multiple',
+                {
+                    number: linkedParticipantNames.length,
+                    invitedBy: invitedByName
+                }
+            )}</span>`;
+        } else {
+            message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant(
+                'notification-toastr.linked-participants.waiting-single',
+                {
+                    name: linkedParticipantNames[0],
+                    invitedBy: invitedByName
+                }
+            )}</span>`;
+        }
+
+        return this.createConsultationNotificationToast(message, inHearing);
+    }
+
+    createConsultationNotificationToast(message: string, inHearing: boolean): VhToastComponent {
+        const toast = this.toastr.show('', '', {
+            timeOut: 120000,
+            extendedTimeOut: 0,
+            toastClass: 'vh-no-pointer',
+            tapToDismiss: false,
+            toastComponent: VhToastComponent
+        });
+
+        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
+            color: inHearing ? 'white' : 'black',
+            htmlBody: message,
+            onNoAction: async () => {
+                this.toastr.remove(toast.toastId);
+            },
+            buttons: [
+                {
+                    label: this.translateService.instant('notification-toastr.linked-participants.button-close'),
+                    hoverColour: 'red',
+                    action: async () => {
+                        this.toastr.remove(toast.toastId);
+                    }
+                }
+            ]
+        };
+
+        return toast.toastRef.componentInstance as VhToastComponent;
     }
 
     reportPoorConnection(heartbeat: ParticipantHeartbeat) {

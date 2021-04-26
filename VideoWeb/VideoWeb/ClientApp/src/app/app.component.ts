@@ -1,20 +1,26 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
+import {
+    AuthorizationResult,
+    EventTypes,
+    OidcClientNotification,
+    OidcSecurityService,
+    PublicEventsService
+} from 'angular-auth-oidc-client';
 import { NEVER, Observable, Subscription } from 'rxjs';
 import { catchError, filter, map } from 'rxjs/operators';
+import { ConfigService } from './services/api/config.service';
 import { ProfileService } from './services/api/profile.service';
 import { Role } from './services/clients/api-client';
+import { ConnectionStatusService } from './services/connection-status.service';
 import { DeviceTypeService } from './services/device-type.service';
 import { ErrorService } from './services/error.service';
-import { LocationService } from './services/location.service';
 import { PageTrackerService } from './services/page-tracker.service';
-import { ConnectionStatusService } from './services/connection-status.service';
 import { pageUrls } from './shared/page-url.constants';
 import { TestLanguageService } from './shared/test-language.service';
-import { TranslateService } from '@ngx-translate/core';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { ConfigService } from './services/api/config.service';
+import { Logger } from 'src/app/services/logging/logger-base';
 
 @Component({
     selector: 'app-root',
@@ -40,13 +46,14 @@ export class AppComponent implements OnInit, OnDestroy {
         private errorService: ErrorService,
         private titleService: Title,
         private activatedRoute: ActivatedRoute,
-        private locationService: LocationService,
         private connectionStatusService: ConnectionStatusService,
         pageTracker: PageTrackerService,
         testLanguageService: TestLanguageService,
         translate: TranslateService,
         private oidcSecurityService: OidcSecurityService,
-        private configService: ConfigService
+        private configService: ConfigService,
+        private eventService: PublicEventsService,
+        private logger: Logger
     ) {
         this.loggedIn = false;
         this.isRepresentativeOrIndividual = false;
@@ -73,6 +80,14 @@ export class AppComponent implements OnInit, OnDestroy {
                 await this.postAuthSetup(loggedIn);
             }
         });
+
+        this.eventService
+            .registerForEvents()
+            .pipe(filter(notification => notification.type === EventTypes.NewAuthorizationResult))
+            .subscribe(async (value: OidcClientNotification<AuthorizationResult>) => {
+                this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
+                await this.postAuthSetup(true);
+            });
     }
 
     private async postAuthSetup(loggedIn: boolean) {
@@ -86,8 +101,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     private async attemptRetrieveProfile(loggedIn: boolean) {
         if (!loggedIn) {
-            const currentUrl = this.locationService.getCurrentUrl();
-            this.router.navigate([`/${pageUrls.IdpSelection}`], { queryParams: { returnUrl: currentUrl } });
+            this.router.navigate([`/${pageUrls.IdpSelection}`]);
         } else {
             await this.retrieveProfileRole();
         }
