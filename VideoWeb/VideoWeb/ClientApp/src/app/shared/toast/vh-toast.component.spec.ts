@@ -54,6 +54,20 @@ describe('VhToastComponent', () => {
         expect(component).toBeTruthy();
     });
 
+    it('should not try to call onNoAction if a method was not provided', () => {
+        component.vhToastOptions.onNoAction = undefined;
+        component.actioned = true;
+        expect(() => component.remove()).not.toThrow();
+        expect(component.vhToastOptions.onNoAction).toBeFalsy();
+    });
+
+    it('should not try to call onRemove if a method was not provided', () => {
+        component.vhToastOptions.onRemove = undefined;
+        component.actioned = true;
+        expect(() => component.remove()).not.toThrow();
+        expect(component.vhToastOptions.onRemove).toBeFalsy();
+    });
+
     it('should call onNoAction if not actioned when removed', () => {
         component.actioned = false;
         component.remove();

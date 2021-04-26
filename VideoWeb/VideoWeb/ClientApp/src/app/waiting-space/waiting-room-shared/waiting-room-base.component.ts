@@ -227,6 +227,7 @@ export abstract class WaitingRoomBaseDirective {
             invitation.invitedByName,
             this.participant.status === ParticipantStatus.InHearing
         );
+
         this.consultationInvitiationService.removeInvitation(consulationRoomLabel);
     }
 
@@ -483,6 +484,7 @@ export abstract class WaitingRoomBaseDirective {
 
         if (invitation.activeToast) {
             invitation.activeToast.remove();
+            invitation.activeToast = null;
         }
 
         if (waitingOnLinkedParticipants.length > 0) {
