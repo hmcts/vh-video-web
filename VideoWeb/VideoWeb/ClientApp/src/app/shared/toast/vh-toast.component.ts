@@ -44,7 +44,7 @@ export class VhToastComponent extends Toast {
         if (this.vhToastOptions.onRemove) {
             this.vhToastOptions.onRemove();
         }
-      
+
         super.remove();
     }
 
