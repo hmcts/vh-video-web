@@ -82,7 +82,6 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         this.getConference().then(() => {
             this.subscribeToClock();
             this.startEventHubSubscribers();
-            this.participant = this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
             this.getJwtokenAndConnectToPexip();
         });
     }
