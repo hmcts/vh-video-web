@@ -152,7 +152,7 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(errorService.handleApiError).toHaveBeenCalled();
     });
 
-    fit('should update the participant', async () => {
+    it('should update the participant', async () => {
         component.hearing.getConference().status = ConferenceStatus.InSession;
         component.hearing.getConference().closed_date_time = null;
         const closedConference = new ConferenceResponse(Object.assign({}, globalConference));
