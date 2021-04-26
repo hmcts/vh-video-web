@@ -25,7 +25,7 @@ export class NotificationToastrService {
 
     activeRoomInviteRequests = [];
     activeHeartbeatReport = [];
-    activeLinkedParticipantRejectionToasts: VhToastComponent[] = [];
+    activeLinkedParticipantRejectionToasts: { [inviteKey: string]: VhToastComponent } = {};
 
     getInviteKey(conferenceId: string, roomLabel: string): string {
         return `${conferenceId}_${roomLabel}`;
