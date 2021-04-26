@@ -1,9 +1,9 @@
+import { HttpBackend, HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ClientSettingsResponse, IdpSettingsResponse } from '../clients/api-client';
-import { HttpClient, HttpBackend } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { SessionStorage } from '../session-storage';
 import { filter, map } from 'rxjs/operators';
+import { ClientSettingsResponse } from '../clients/api-client';
+import { SessionStorage } from '../session-storage';
 
 @Injectable()
 export class ConfigService {
