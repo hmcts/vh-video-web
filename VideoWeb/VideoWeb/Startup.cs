@@ -46,13 +46,20 @@ namespace VideoWeb
             Settings = Configuration.Get<Settings>();
             services.AddSingleton(Settings);
 
+            services.Configure<HearingServicesConfiguration>(options => Configuration.Bind("VhServices", options));
+
             services.Configure<AzureAdConfiguration>(options =>
             {
                 Configuration.Bind("AzureAd", options);
                 options.ApplicationInsights = new ApplicationInsightsConfiguration();
                 Configuration.Bind("ApplicationInsights", options.ApplicationInsights);
             });
-            services.Configure<HearingServicesConfiguration>(options => Configuration.Bind("VhServices", options));
+
+            services.Configure<EJudAdConfiguration>(options =>
+            {
+                Configuration.Bind("EJudAd", options);
+            });
+
             var customTokenSettings = Configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
             services.AddSingleton(customTokenSettings);
 

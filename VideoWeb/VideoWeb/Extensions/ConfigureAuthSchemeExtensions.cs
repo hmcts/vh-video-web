@@ -23,12 +23,13 @@ namespace VideoWeb.Extensions
             var eventhubPath = configuration.GetValue<string>("VhServices:EventHubPath");
             var kinlyConfiguration = configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
             var azureAdConfiguration = configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
+            var eJudAdConfiguration = configuration.GetSection("EJudAd").Get<EJudAdConfiguration>();
             var kinlyCallbackSecret = Convert.FromBase64String(kinlyConfiguration.CallbackSecret);
 
             var providerSchemes = new List<IProviderSchemes>
             {
                 new VhAadScheme(azureAdConfiguration, eventhubPath),
-                new EJudiciaryScheme(eventhubPath)
+                new EJudiciaryScheme(eventhubPath, eJudAdConfiguration)
             };
 
             var authenticationBuilder = serviceCollection.AddAuthentication(options =>
