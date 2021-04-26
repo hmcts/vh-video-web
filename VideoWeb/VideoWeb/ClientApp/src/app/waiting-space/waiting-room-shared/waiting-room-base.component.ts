@@ -186,7 +186,6 @@ export abstract class WaitingRoomBaseDirective {
         try {
             this.conference = await this.videoWebService.getConferenceById(conferenceId);
             this.hearing = new Hearing(this.conference);
-
             this.participant = this.getLoggedParticipant();
 
             this.logger.info(`${this.loggerPrefix} Conference closed.`, {

@@ -152,6 +152,29 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(errorService.handleApiError).toHaveBeenCalled();
     });
 
+    fit('should update the participant', async () => {
+        component.hearing.getConference().status = ConferenceStatus.InSession;
+        component.hearing.getConference().closed_date_time = null;
+        const closedConference = new ConferenceResponse(Object.assign({}, globalConference));
+        closedConference.status = ConferenceStatus.Closed;
+        closedConference.closed_date_time = new Date();
+
+        const originalParticipant = (component.participant = globalConference.participants[0]);
+        const expectedParticipant = new ParticipantResponse(globalConference.participants[0].toJSON());
+
+        spyOn(component, 'getLoggedParticipant').and.returnValue(expectedParticipant);
+
+        videoWebService.getConferenceById.and.resolveTo(closedConference);
+        await component.getConferenceClosedTime(component.conference.id);
+
+        expect(component.hearing).toBeDefined();
+        expect(component.hearing.isClosed()).toBeTruthy();
+        expect(component.hearing.getConference().closed_date_time).toBeDefined();
+        expect(component.participant).toBeDefined();
+        expect(component.participant).toBe(expectedParticipant);
+        expect(originalParticipant.id).toBe(component.participant.id);
+    });
+
     it('should get the conference for closed time', async () => {
         component.hearing.getConference().status = ConferenceStatus.InSession;
         component.hearing.getConference().closed_date_time = null;

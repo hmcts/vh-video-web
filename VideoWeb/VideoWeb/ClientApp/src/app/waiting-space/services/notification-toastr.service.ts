@@ -72,7 +72,9 @@ export class NotificationToastrService {
         }
 
         const respondToConsultationRequest = async (answer: ConsultationAnswer) => {
-            this.logger.info(`${this.loggerPrefix} Responding to consultation request with conference id ${conferenceId} request by id ${requestedById} answer ${answer} room label ${roomLabel}`);
+            this.logger.info(
+                `${this.loggerPrefix} Responding to consultation request with conference id ${conferenceId} request by id ${requestedById} answer ${answer} room label ${roomLabel}`
+            );
 
             const index = this.activeRoomInviteRequests.indexOf(inviteKey);
             this.activeRoomInviteRequests.splice(index, 1);
