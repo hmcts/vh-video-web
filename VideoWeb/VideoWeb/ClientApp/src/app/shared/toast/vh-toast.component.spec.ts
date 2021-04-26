@@ -35,12 +35,14 @@ describe('VhToastComponent', () => {
         const onNoActionSpy = jasmine.createSpy().and.callFake(function () {
             return false;
         });
+        const cleanUpSpy = jasmine.createSpy();
         component.vhToastOptions = {
             color: 'white',
             body: '',
             htmlBody: 'string',
             buttons: [],
-            onNoAction: onNoActionSpy
+            onNoAction: onNoActionSpy,
+            onRemove: cleanUpSpy
         };
     });
 
@@ -56,12 +58,14 @@ describe('VhToastComponent', () => {
         component.actioned = false;
         component.remove();
         expect(component.vhToastOptions.onNoAction).toHaveBeenCalledTimes(1);
+        expect(component.vhToastOptions.onRemove).toHaveBeenCalledTimes(1);
     });
 
     it('should not call onNoAction if actioned when removed', () => {
         component.actioned = true;
         component.remove();
         expect(component.vhToastOptions.onNoAction).toHaveBeenCalledTimes(0);
+        expect(component.vhToastOptions.onRemove).toHaveBeenCalledTimes(1);
     });
 
     it('should call remove on base', () => {

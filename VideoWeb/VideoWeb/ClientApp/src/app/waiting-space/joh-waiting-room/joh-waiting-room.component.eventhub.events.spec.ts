@@ -7,6 +7,7 @@ import { hearingStatusSubjectMock } from 'src/app/testing/mocks/mock-events-serv
 import {
     activatedRoute,
     clockService,
+    consultationInvitiationService,
     consultationService,
     deviceTypeService,
     errorService,
@@ -55,7 +56,8 @@ describe('JohWaitingRoomComponent eventhub events', () => {
             notificationToastrService,
             roomClosingToastrService,
             clockService,
-            translateService
+            translateService,
+            consultationInvitiationService
         );
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));

@@ -95,8 +95,14 @@ export class EventsService {
             this.requestedConsultationMessageSubject.next(message);
         },
 
-        ConsultationRequestResponseMessage: (conferenceId: string, roomLabel: string, requestedFor: string, answer: ConsultationAnswer) => {
-            const message = new ConsultationRequestResponseMessage(conferenceId, roomLabel, requestedFor, answer);
+        ConsultationRequestResponseMessage: (
+            conferenceId: string,
+            roomLabel: string,
+            requestedFor: string,
+            answer: ConsultationAnswer,
+            responseInitiatorId: string
+        ) => {
+            const message = new ConsultationRequestResponseMessage(conferenceId, roomLabel, requestedFor, answer, responseInitiatorId);
             this.logger.debug('[EventsService] - ConsultationRequestResponseMessage received', message);
             this.consultationRequestResponseMessageSubject.next(message);
         },
