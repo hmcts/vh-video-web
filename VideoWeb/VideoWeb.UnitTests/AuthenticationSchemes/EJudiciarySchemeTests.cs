@@ -9,7 +9,9 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using FizzWare.NBuilder;
 using VideoWeb.AuthenticationSchemes;
+using VideoWeb.Common.Configuration;
 using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.AuthenticationSchemes
@@ -17,11 +19,21 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
     public class EJudiciarySchemeTests
     {
         private EJudiciaryScheme sut;
+        private EJudAdConfiguration _ejudConfig;
+
 
         [SetUp]
         public void SetUp()
         {
-            sut = new EJudiciaryScheme("eventHubPath");
+            _ejudConfig = new EJudAdConfiguration
+            {
+                Authority = "https://login.microsoftonline.com/",
+                ClientId = "EjudClientId",
+                RedirectUri = "https://localhost:5800/home",
+                PostLogoutRedirectUri = "https://localhost:5800/logout",
+                TenantId = "EjudTenant"
+            };
+            sut = new EJudiciaryScheme("eventHubPath", _ejudConfig);
         }
 
         [Test]
@@ -76,8 +88,8 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
             sut.SetJwtBearerOptions(jwtBearerOptions);
 
             // Assert
-            jwtBearerOptions.Authority.Should().Be("https://login.microsoftonline.com/0b90379d-18de-426a-ae94-7f62441231e0/v2.0");
-            jwtBearerOptions.Audience.Should().Be("a6596b93-7bd6-4363-81a4-3e6d9aa2df2b");
+            jwtBearerOptions.Authority.Should().Be($"{_ejudConfig.Authority}{_ejudConfig.TenantId}/v2.0");
+            jwtBearerOptions.Audience.Should().Be(_ejudConfig.ClientId);
             jwtBearerOptions.TokenValidationParameters.NameClaimType.Should().Be("preferred_username");
             jwtBearerOptions.TokenValidationParameters.ValidateLifetime.Should().BeTrue();
             jwtBearerOptions.TokenValidationParameters.ClockSkew.Should().Be(TimeSpan.Zero);
@@ -100,7 +112,7 @@ namespace VideoWeb.UnitTests.AuthenticationSchemes
         public void ShouldReturnTrueIfDoesntBelongsToScheme()
         {
             // Arange
-            var token = new JwtSecurityToken(issuer: "0b90379d-18de-426a-ae94-7f62441231e0");
+            var token = new JwtSecurityToken(issuer: _ejudConfig.TenantId);
 
             // Act
             var belongs = sut.BelongsToScheme(token);

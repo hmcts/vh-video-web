@@ -5,23 +5,30 @@ using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
 {
-    public class ClientSettingsResponseMapper : IMapTo<AzureAdConfiguration, HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse>
+    public class ClientSettingsResponseMapper : IMapTo<AzureAdConfiguration, EJudAdConfiguration, HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse>
     {
-        public ClientSettingsResponse Map(AzureAdConfiguration azureAdConfiguration, HearingServicesConfiguration servicesConfiguration, KinlyConfiguration kinlyConfiguration)
+        private readonly IMapperFactory _mapperFactory;
+
+        public ClientSettingsResponseMapper(IMapperFactory mapperFactory)
         {
+            _mapperFactory = mapperFactory;
+        }
+
+        public ClientSettingsResponse Map(AzureAdConfiguration azureAdConfiguration, EJudAdConfiguration eJudAdConfiguration, HearingServicesConfiguration servicesConfiguration, KinlyConfiguration kinlyConfiguration)
+        {
+            var mapper = _mapperFactory.Get<IdpConfiguration, IdpSettingsResponse>();
+            var ejudSettings = mapper.Map(eJudAdConfiguration);
+            var vhAdSettings = mapper.Map(azureAdConfiguration);
             return new ClientSettingsResponse
             {
-                ClientId = azureAdConfiguration.ClientId,
-                TenantId = azureAdConfiguration.TenantId,
-                RedirectUri = azureAdConfiguration.RedirectUri,
-                PostLogoutRedirectUri = azureAdConfiguration.PostLogoutRedirectUri,
-                VideoApiUrl = servicesConfiguration.VideoApiUrl,
                 AppInsightsInstrumentationKey = azureAdConfiguration.ApplicationInsights.InstrumentationKey,
                 EventHubPath = servicesConfiguration.EventHubPath,
                 JoinByPhoneFromDate = kinlyConfiguration.JoinByPhoneFromDate,
                 KinlyTurnServer = kinlyConfiguration.TurnServer,
                 KinlyTurnServerUser = kinlyConfiguration.TurnServerUser,
-                KinlyTurnServerCredential = kinlyConfiguration.TurnServerCredential
+                KinlyTurnServerCredential = kinlyConfiguration.TurnServerCredential,
+                EJudIdpSettings = ejudSettings,
+                VHIdpSettings = vhAdSettings
             };
         }
 

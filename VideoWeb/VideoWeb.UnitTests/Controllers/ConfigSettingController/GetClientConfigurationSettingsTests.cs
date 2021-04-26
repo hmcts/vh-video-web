@@ -20,12 +20,60 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<AzureAdConfiguration, HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse>())
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<AzureAdConfiguration, EJudAdConfiguration, HearingServicesConfiguration, KinlyConfiguration, ClientSettingsResponse>())
                 .Returns(_mocker.Create<ClientSettingsResponseMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IdpConfiguration, IdpSettingsResponse>())
+                .Returns(_mocker.Create<IdpSettingsResponseMapper>());
         }
 
         [Test]
         public void Should_return_response_with_settings()
+        {
+            var securitySettings = new AzureAdConfiguration
+            {
+                ClientId = "ClientId",
+                ClientSecret = "ClientSecret",
+                TenantId = "TenantId",
+                Authority = "Authority",
+                ApplicationInsights = new ApplicationInsightsConfiguration { InstrumentationKey = "AiKey" }
+            };
+            
+            var eJudAdConfiguration = new EJudAdConfiguration()
+            {
+                ClientId = "EjudClientId",
+                TenantId = "EjudTenantId",
+                Authority = "EjudAuthority",
+                RedirectUri = "EjudRedirectUri",
+                PostLogoutRedirectUri = "EjudPostLogoutRedirectUri"
+            };
+
+            var servicesConfiguration = new HearingServicesConfiguration
+            {
+                VideoApiUrl = "https://vh-video-api/"
+            };
+
+            var kinlyConfiguration = new KinlyConfiguration
+            {
+                JoinByPhoneFromDate = "2021-02-09"
+            };
+
+            var parameters = new ParameterBuilder(_mocker).AddObject(Options.Create(securitySettings))
+                .AddObject(Options.Create(servicesConfiguration))
+                .AddObject(kinlyConfiguration)
+                .AddObject(Options.Create(eJudAdConfiguration))
+                .Build();
+
+            var configSettingsController = _mocker.Create<ConfigSettingsController>(parameters);
+
+            var result = configSettingsController.GetClientConfigurationSettings();
+            result.Should().BeOfType<ActionResult<ClientSettingsResponse>>().Which.Result.Should().BeOfType<OkObjectResult>();
+            var okObjectResult = (OkObjectResult) result.Result;
+            var clientSettings = (ClientSettingsResponse) okObjectResult.Value;
+            clientSettings.JoinByPhoneFromDate.Should().Be(kinlyConfiguration.JoinByPhoneFromDate);
+        }
+
+        [Test]
+        public void should_return_bad_request_when_config_is_missing()
         {
             var securitySettings = new AzureAdConfiguration
             {
@@ -48,17 +96,13 @@ namespace VideoWeb.UnitTests.Controllers.ConfigSettingController
 
             var parameters = new ParameterBuilder(_mocker).AddObject(Options.Create(securitySettings))
                 .AddObject(Options.Create(servicesConfiguration))
-                .AddObject(kinlyConfiguration).Build();
+                .AddObject(kinlyConfiguration)
+                .Build();
 
             var configSettingsController = _mocker.Create<ConfigSettingsController>(parameters);
 
-            var actionResult = (OkObjectResult)configSettingsController.GetClientConfigurationSettings().Result;
-            var clientSettings = (ClientSettingsResponse)actionResult.Value;
-
-            clientSettings.ClientId.Should().Be(securitySettings.ClientId);
-            clientSettings.TenantId.Should().Be(securitySettings.TenantId);
-            clientSettings.VideoApiUrl.Should().Be(servicesConfiguration.VideoApiUrl);
-            clientSettings.JoinByPhoneFromDate.Should().Be(kinlyConfiguration.JoinByPhoneFromDate);
+            var result = configSettingsController.GetClientConfigurationSettings();
+            result.Should().BeOfType<ActionResult<ClientSettingsResponse>>().Which.Result.Should().BeOfType<BadRequestObjectResult>();
         }
     }
 }

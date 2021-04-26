@@ -3,6 +3,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
+using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 
 namespace VideoWeb.UnitTests.Mappings
@@ -12,20 +13,20 @@ namespace VideoWeb.UnitTests.Mappings
         [Test]
         public void Should_map_all_properties()
         {
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<IdpConfiguration, IdpSettingsResponse>())
+                .Returns(_mocker.Create<IdpSettingsResponseMapper>());
             var azureAdConfiguration = Builder<AzureAdConfiguration>.CreateNew()
                 .With(x => x.ApplicationInsights = Builder<ApplicationInsightsConfiguration>.CreateNew().Build())
                 .Build();
-            
+
+            var ejudAdConfiguration = Builder<EJudAdConfiguration>.CreateNew()
+                .Build();
+
             var servicesConfiguration = Builder<HearingServicesConfiguration>.CreateNew().Build();
             var kinlyConfiguration = Builder<KinlyConfiguration>.CreateNew().Build();
 
-            var response = _sut.Map(azureAdConfiguration, servicesConfiguration, kinlyConfiguration);
+            var response = _sut.Map(azureAdConfiguration, ejudAdConfiguration, servicesConfiguration, kinlyConfiguration);
 
-            response.TenantId.Should().Be(azureAdConfiguration.TenantId);
-            response.ClientId.Should().Be(azureAdConfiguration.ClientId);
-            response.RedirectUri.Should().Be(azureAdConfiguration.RedirectUri);
-            response.PostLogoutRedirectUri.Should().Be(azureAdConfiguration.PostLogoutRedirectUri);
-            response.VideoApiUrl.Should().Be(servicesConfiguration.VideoApiUrl);
             response.AppInsightsInstrumentationKey.Should().Be(azureAdConfiguration.ApplicationInsights.InstrumentationKey);
             response.EventHubPath.Should().Be(servicesConfiguration.EventHubPath);
             response.KinlyTurnServer.Should().Be(kinlyConfiguration.TurnServer);
