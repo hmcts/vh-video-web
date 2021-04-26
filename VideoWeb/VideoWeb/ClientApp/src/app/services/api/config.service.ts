@@ -41,12 +41,6 @@ export class ConfigService {
         );
     }
 
-    getIdpSettings(provider: string = 'vhaad'): Observable<IdpSettingsResponse> {
-        let url = `/config/idp-config?idpSelection=${provider}`;
-        url = url.replace(/[?&]$/, '');
-        return this.httpClient.get<IdpSettingsResponse>(url);
-    }
-
     getConfig(): ClientSettingsResponse {
         return this.clientSettingCache.get();
     }
