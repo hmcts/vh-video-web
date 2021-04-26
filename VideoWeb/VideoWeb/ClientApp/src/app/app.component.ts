@@ -100,7 +100,7 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     private async attemptRetrieveProfile(loggedIn: boolean) {
-        if (!loggedIn) {
+        if (!loggedIn && !this.isSignInUrl) {
             this.router.navigate([`/${pageUrls.IdpSelection}`]);
         } else {
             await this.retrieveProfileRole();
@@ -131,14 +131,19 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     checkAuth(): Observable<boolean> {
-        console.warn(this.router.url);
         return this.oidcSecurityService.checkAuth().pipe(
             catchError(err => {
                 console.error('[AppComponent] - Check Auth Error', err);
-                //this.router.navigate(['/']);
+                if (!this.isSignInUrl) {
+                    this.router.navigate(['/']);
+                }
                 return NEVER;
             })
         );
+    }
+
+    get isSignInUrl(): boolean {
+        return window.location.pathname.includes(pageUrls.EJudSignIn) || window.location.pathname.includes(pageUrls.VHSignIn);
     }
 
     async retrieveProfileRole(): Promise<void> {
