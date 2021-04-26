@@ -1048,7 +1048,7 @@ export class ApiClient {
                 _observableMergeMap(_responseText => {
                     let result400: any = null;
                     let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = ClientSettingsResponse.fromJS(resultData400);
+                    result400 = resultData400 !== undefined ? resultData400 : <any>null;
                     return throwException('Bad Request', status, _responseText, _headers, result400);
                 })
             );
@@ -5136,21 +5136,13 @@ export interface IConferenceResponse {
     endpoints?: VideoEndpointResponse[] | undefined;
 }
 
-/** Configuration to initialise the UI application */
-export class ClientSettingsResponse implements IClientSettingsResponse {
+export class IdpSettingsResponse implements IIdpSettingsResponse {
     tenant_id?: string | undefined;
     client_id?: string | undefined;
     redirect_uri?: string | undefined;
     post_logout_redirect_uri?: string | undefined;
-    video_api_url?: string | undefined;
-    app_insights_instrumentation_key?: string | undefined;
-    event_hub_path?: string | undefined;
-    join_by_phone_from_date?: string | undefined;
-    kinly_turn_server?: string | undefined;
-    kinly_turn_server_user?: string | undefined;
-    kinly_turn_server_credential?: string | undefined;
 
-    constructor(data?: IClientSettingsResponse) {
+    constructor(data?: IIdpSettingsResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
@@ -5164,13 +5156,64 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
             this.client_id = _data['client_id'];
             this.redirect_uri = _data['redirect_uri'];
             this.post_logout_redirect_uri = _data['post_logout_redirect_uri'];
-            this.video_api_url = _data['video_api_url'];
+        }
+    }
+
+    static fromJS(data: any): IdpSettingsResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new IdpSettingsResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['tenant_id'] = this.tenant_id;
+        data['client_id'] = this.client_id;
+        data['redirect_uri'] = this.redirect_uri;
+        data['post_logout_redirect_uri'] = this.post_logout_redirect_uri;
+        return data;
+    }
+}
+
+export interface IIdpSettingsResponse {
+    tenant_id?: string | undefined;
+    client_id?: string | undefined;
+    redirect_uri?: string | undefined;
+    post_logout_redirect_uri?: string | undefined;
+}
+
+/** Configuration to initialise the UI application */
+export class ClientSettingsResponse implements IClientSettingsResponse {
+    app_insights_instrumentation_key?: string | undefined;
+    event_hub_path?: string | undefined;
+    join_by_phone_from_date?: string | undefined;
+    kinly_turn_server?: string | undefined;
+    kinly_turn_server_user?: string | undefined;
+    kinly_turn_server_credential?: string | undefined;
+    e_jud_idp_settings?: IdpSettingsResponse | undefined;
+    vh_idp_settings?: IdpSettingsResponse | undefined;
+
+    constructor(data?: IClientSettingsResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
             this.app_insights_instrumentation_key = _data['app_insights_instrumentation_key'];
             this.event_hub_path = _data['event_hub_path'];
             this.join_by_phone_from_date = _data['join_by_phone_from_date'];
             this.kinly_turn_server = _data['kinly_turn_server'];
             this.kinly_turn_server_user = _data['kinly_turn_server_user'];
             this.kinly_turn_server_credential = _data['kinly_turn_server_credential'];
+            this.e_jud_idp_settings = _data['e_jud_idp_settings']
+                ? IdpSettingsResponse.fromJS(_data['e_jud_idp_settings'])
+                : <any>undefined;
+            this.vh_idp_settings = _data['vh_idp_settings'] ? IdpSettingsResponse.fromJS(_data['vh_idp_settings']) : <any>undefined;
         }
     }
 
@@ -5183,34 +5226,28 @@ export class ClientSettingsResponse implements IClientSettingsResponse {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data['tenant_id'] = this.tenant_id;
-        data['client_id'] = this.client_id;
-        data['redirect_uri'] = this.redirect_uri;
-        data['post_logout_redirect_uri'] = this.post_logout_redirect_uri;
-        data['video_api_url'] = this.video_api_url;
         data['app_insights_instrumentation_key'] = this.app_insights_instrumentation_key;
         data['event_hub_path'] = this.event_hub_path;
         data['join_by_phone_from_date'] = this.join_by_phone_from_date;
         data['kinly_turn_server'] = this.kinly_turn_server;
         data['kinly_turn_server_user'] = this.kinly_turn_server_user;
         data['kinly_turn_server_credential'] = this.kinly_turn_server_credential;
+        data['e_jud_idp_settings'] = this.e_jud_idp_settings ? this.e_jud_idp_settings.toJSON() : <any>undefined;
+        data['vh_idp_settings'] = this.vh_idp_settings ? this.vh_idp_settings.toJSON() : <any>undefined;
         return data;
     }
 }
 
 /** Configuration to initialise the UI application */
 export interface IClientSettingsResponse {
-    tenant_id?: string | undefined;
-    client_id?: string | undefined;
-    redirect_uri?: string | undefined;
-    post_logout_redirect_uri?: string | undefined;
-    video_api_url?: string | undefined;
     app_insights_instrumentation_key?: string | undefined;
     event_hub_path?: string | undefined;
     join_by_phone_from_date?: string | undefined;
     kinly_turn_server?: string | undefined;
     kinly_turn_server_user?: string | undefined;
     kinly_turn_server_credential?: string | undefined;
+    e_jud_idp_settings?: IdpSettingsResponse | undefined;
+    vh_idp_settings?: IdpSettingsResponse | undefined;
 }
 
 /** Leave a private consultation */

@@ -52,12 +52,12 @@ describe('OidcConfigSetupService', () => {
         // Act
 
         // Assert
-        expect(sut.config.vhaad.stsServer).toBe('https://login.microsoftonline.com/tenantId/v2.0');
-        expect(sut.config.vhaad.clientId).toBe('clientId');
-        expect(sut.config.vhaad.redirectUrl).toBe('/home');
+        expect(sut.config.vhaad.stsServer).toBe(`https://login.microsoftonline.com/${configService.vhAdSettings.tenant_id}/v2.0`);
+        expect(sut.config.vhaad.clientId).toBe(configService.vhAdSettings.client_id);
+        expect(sut.config.vhaad.redirectUrl).toBe(configService.vhAdSettings.redirect_uri);
 
-        expect(sut.config.ejud.stsServer).toBe('https://login.microsoftonline.com/0b90379d-18de-426a-ae94-7f62441231e0/v2.0');
-        expect(sut.config.ejud.clientId).toBe('a6596b93-7bd6-4363-81a4-3e6d9aa2df2b');
-        expect(sut.config.ejud.redirectUrl).toBe('/home');
+        expect(sut.config.ejud.stsServer).toBe(`https://login.microsoftonline.com/${configService.ejudSettings.tenant_id}/v2.0`);
+        expect(sut.config.ejud.clientId).toBe(configService.ejudSettings.client_id);
+        expect(sut.config.ejud.redirectUrl).toBe(configService.ejudSettings.redirect_uri);
     });
 });
