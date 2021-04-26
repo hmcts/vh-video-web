@@ -26,11 +26,11 @@ export class ConsultationInvitationService {
     }
 
     removeInvitation(roomLabel: string) {
-        if (this.consultationInvitations[roomLabel] && this.consultationInvitations[roomLabel].activeToast) {
+        if (this.consultationInvitations[roomLabel]?.activeToast) {
             this.consultationInvitations[roomLabel].activeToast.remove();
             this.consultationInvitations[roomLabel].activeToast = null;
         }
-
+            
         delete this.consultationInvitations[roomLabel];
     }
 }

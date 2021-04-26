@@ -146,7 +146,7 @@ export abstract class WaitingRoomBaseDirective {
         ).length;
     }
 
-    setLoggedParticipant(): ParticipantResponse {
+    getLoggedParticipant(): ParticipantResponse {
         return this.conference.participants.find(x => x.id === this.loggedInUser.participant_id);
     }
 
@@ -167,7 +167,7 @@ export abstract class WaitingRoomBaseDirective {
                     this.participantEndpoints = endpoints;
                 });
 
-                this.participant = this.setLoggedParticipant();
+                this.participant = this.getLoggedParticipant();
                 this.logger.debug(`${this.loggerPrefix} Getting conference details`, {
                     conference: this.conferenceId,
                     participant: this.participant.id
@@ -186,10 +186,7 @@ export abstract class WaitingRoomBaseDirective {
         try {
             this.conference = await this.videoWebService.getConferenceById(conferenceId);
             this.hearing = new Hearing(this.conference);
-
-            if (!this.participant) {
-                this.participant = this.setLoggedParticipant();
-            }
+            this.participant = this.getLoggedParticipant();
 
             this.logger.info(`${this.loggerPrefix} Conference closed.`, {
                 conference: this.conferenceId,
@@ -351,21 +348,24 @@ export abstract class WaitingRoomBaseDirective {
             this.eventService.getRoomTransfer().subscribe(async roomTransfer => {
                 const participant = this.conference.participants.find(p => p.id === roomTransfer.participant_id);
                 const endpoint = this.conference.endpoints.find(p => p.id === roomTransfer.participant_id);
+
                 if (participant) {
-                    participant.current_room = null;
                     if (roomTransfer.to_room.toLowerCase().indexOf('consultation') >= 0) {
                         const room = this.conferenceRooms.find(r => r.label === roomTransfer.to_room);
                         participant.current_room = room
                             ? new RoomSummaryResponse(room)
                             : new RoomSummaryResponse({ label: roomTransfer.to_room });
+                    } else {
+                        participant.current_room = null;
                     }
                 } else if (endpoint) {
-                    endpoint.current_room = null;
                     if (roomTransfer.to_room.toLowerCase().indexOf('consultation') >= 0) {
                         const room = this.conferenceRooms.find(r => r.label === roomTransfer.to_room);
                         endpoint.current_room = room
                             ? new RoomSummaryResponse(room)
                             : new RoomSummaryResponse({ label: roomTransfer.to_room });
+                    } else {
+                        endpoint.current_room = null;
                     }
                 }
             })
