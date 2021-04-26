@@ -131,10 +131,11 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     checkAuth(): Observable<boolean> {
+        console.warn(this.router.url);
         return this.oidcSecurityService.checkAuth().pipe(
             catchError(err => {
                 console.error('[AppComponent] - Check Auth Error', err);
-                this.router.navigate(['/']);
+                //this.router.navigate(['/']);
                 return NEVER;
             })
         );

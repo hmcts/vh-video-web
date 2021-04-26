@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { pageUrls } from '../../shared/page-url.constants';
@@ -8,7 +8,7 @@ import { OidcConfigSetupService } from '../oidc-config-setup.service';
     selector: 'app-idp-selection',
     templateUrl: './idp-selection.component.html'
 })
-export class IdpSelectionComponent {
+export class IdpSelectionComponent implements OnInit {
     identityProviders = {
         ejud: {
             url: '/' + pageUrls.Login
@@ -21,7 +21,16 @@ export class IdpSelectionComponent {
     selectedProvider: string;
     submitted = false;
 
-    constructor(private router: Router, private logger: Logger, private oidcConfigSetupService: OidcConfigSetupService) {}
+    constructor(private router: Router, private logger: Logger, private oidcConfigSetupService: OidcConfigSetupService) { }
+
+    ngOnInit() {
+        debugger;
+        const urlExtension = this.router.url;
+        if (urlExtension) {
+            this.selectProvider(urlExtension);
+            this.redirectToLogin(this.selectedProvider);
+        }
+    }
 
     showError(): boolean {
         return this.submitted && !this.selectedProvider;
