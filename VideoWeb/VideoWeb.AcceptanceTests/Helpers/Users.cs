@@ -37,7 +37,7 @@ namespace VideoWeb.AcceptanceTests.Helpers
             }
 
             var usersList = users.Select(x => x.UserType).Aggregate("", (current, UserType) => current + userType + ",");
-            throw new InvalidOperationException($"No user with display name '{userType}' found in the list: '{usersList}'");
+            throw new InvalidOperationException($"No user with the user type'{userType}' found in the list: '{usersList}'");
         }
 
         public static UserDto GetUser(List<UserDto> users, string number, string user)
