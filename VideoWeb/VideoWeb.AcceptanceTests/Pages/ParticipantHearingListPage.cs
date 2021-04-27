@@ -15,5 +15,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By SignInDate(Guid conferenceId) => By.Id($"participant-sign-in-date-{conferenceId:D}");
         public static By SignInTime(Guid conferenceId) => By.Id($"participant-sign-in-time-{conferenceId:D}");
         public static By SignInButton(Guid conferenceId) => By.Id($"sign-into-hearing-btn-{conferenceId:D}");
+        public static By StartHearingButton(Guid conferenceId) => By.Id($"start-hearing-btn-{conferenceId:D}");
     }
 }
