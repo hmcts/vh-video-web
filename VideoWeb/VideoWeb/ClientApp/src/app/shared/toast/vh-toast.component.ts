@@ -37,11 +37,13 @@ export class VhToastComponent extends Toast {
     }
 
     remove() {
-        if (!this.actioned && !this.declinedByThirdParty) {
+        if (!this.actioned && !this.declinedByThirdParty && this.vhToastOptions.onNoAction) {
             this.vhToastOptions.onNoAction();
         }
 
-        this.vhToastOptions.onRemove();
+        if (this.vhToastOptions.onRemove) {
+            this.vhToastOptions.onRemove();
+        }
 
         super.remove();
     }

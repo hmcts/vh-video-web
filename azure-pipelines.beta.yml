@@ -195,6 +195,26 @@ stages:
             value: vh-video-web-identifieruris
             secret: true
 
+          # EJudAd
+          - name: EJudAd:ClientId
+            value: ejud-appid
+            secret: true
+          - name: EJudAd:PostLogoutRedirectUri
+            slot:
+              deployment:
+                value: $(video_web_url)logout
+              active:
+                value: $(video_web_url)logout
+          - name: EJudAd:RedirectUri
+            slot:
+              deployment:
+                value: $(video_web_url)home
+              active:
+                value: $(video_web_url)home
+          - name: EJudAd:TenantId
+            value: ejud-tenantid
+            secret: true
+
           # Kinly
           - name: KinlyConfiguration:CallbackSecret
             value: $(CallbackKey)
@@ -270,6 +290,14 @@ stages:
             secret: true
           - name: AzureAd:VhVideoApiResourceId
             value: vh-video-web-identifieruris
+            secret: true
+          
+          # EJudAd
+          - name: EJudAd:TenantId
+            value: ejud-tenantid
+            secret: true
+          - name: EJudAd:ClientId
+            value: ejud-appid
             secret: true
 
           # Testing

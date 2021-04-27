@@ -674,6 +674,8 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
             // Assert
             expect(notificationToastrService.showConsultationRejectedByLinkedParticipant).toHaveBeenCalledOnceWith(
+                globalConference.id,
+                expectedConsultationRoomLabel,
                 linkedParticipant.display_name,
                 expectedInvitedByName,
                 expectedIsParticipantInHearing
@@ -693,6 +695,8 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
             // Assert
             expect(notificationToastrService.showConsultationRejectedByLinkedParticipant).toHaveBeenCalledOnceWith(
+                globalConference.id,
+                expectedConsultationRoomLabel,
                 linkedParticipant.display_name,
                 expectedInvitedByName,
                 expectedIsParticipantInHearing
@@ -763,6 +767,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
     describe('on recieve getRequestedConsultationMessage from the event hub', () => {
         beforeEach(() => {
             consultationInvitiationService.getInvitation.calls.reset();
+            notificationToastrService.showConsultationInvite.calls.reset();
         });
 
         const primaryParticipant = participantsLinked[0];
@@ -802,6 +807,64 @@ describe('WaitingRoomComponent EventHub Call', () => {
             expect(invitation.invitedByName).toBe(expectedInvitedByName);
             expect(invitation.linkedParticipantStatuses[linkedParticipant.id]).toBeFalse();
             expect(invitation.activeToast).toBe(expectedToast);
+        }));
+
+        it('should NOT raise a toast if the invitation has already been accepted', fakeAsync(() => {
+            // Arrange
+            const invitation = {
+                linkedParticipantStatuses: {},
+                activeToast: null,
+                activeParticipantAccepted: true,
+                invitedByName: null
+            } as ConsultationInvitation;
+            invitation.invitedByName = null;
+            consultationInvitiationService.getInvitation.and.returnValue(invitation);
+
+            const expectedToast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
+            notificationToastrService.showConsultationInvite.and.returnValue(expectedToast);
+
+            const payload = new RequestedConsultationMessage(globalConference.id, 'ConsultationRoom', requestor.id, primaryParticipant.id);
+
+            component['findParticipant'] = jasmine
+                .createSpy('findParticipant')
+                .and.returnValues(new ParticipantResponse(primaryParticipant), new ParticipantResponse(requestor));
+            component.participant = primaryParticipant;
+
+            // Act
+            requestedConsultationMessageSubjectMock.next(payload);
+            flush();
+
+            // Assert
+            expect(notificationToastrService.showConsultationInvite).not.toHaveBeenCalled();
+        }));
+
+        it('should NOT raise a toast if there is already a toast active for this invitation', fakeAsync(() => {
+            // Arrange
+            const invitation = {
+                linkedParticipantStatuses: {},
+                activeToast: jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']),
+                activeParticipantAccepted: false,
+                invitedByName: null
+            } as ConsultationInvitation;
+            invitation.invitedByName = null;
+            consultationInvitiationService.getInvitation.and.returnValue(invitation);
+
+            const expectedToast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
+            notificationToastrService.showConsultationInvite.and.returnValue(expectedToast);
+
+            const payload = new RequestedConsultationMessage(globalConference.id, 'ConsultationRoom', requestor.id, primaryParticipant.id);
+
+            component['findParticipant'] = jasmine
+                .createSpy('findParticipant')
+                .and.returnValues(new ParticipantResponse(primaryParticipant), new ParticipantResponse(requestor));
+            component.participant = primaryParticipant;
+
+            // Act
+            requestedConsultationMessageSubjectMock.next(payload);
+            flush();
+
+            // Assert
+            expect(notificationToastrService.showConsultationInvite).not.toHaveBeenCalled();
         }));
 
         it('should NOT set the status of a linked participant that already exists on the invitation when trying to add all linked participants into the invitation', fakeAsync(() => {

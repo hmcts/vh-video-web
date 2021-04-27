@@ -30,6 +30,7 @@ export class ConsultationInvitationService {
             this.consultationInvitations[roomLabel].activeToast.remove();
             this.consultationInvitations[roomLabel].activeToast = null;
         }
+
         delete this.consultationInvitations[roomLabel];
     }
 }

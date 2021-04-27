@@ -82,6 +82,14 @@ parameters:
             value: vh-video-web-identifieruris
             secret: true
 
+          # EJudAd
+          - name: EJudAd:TenantId
+            value: ejud-tenantid
+            secret: true
+          - name: EJudAd:ClientId
+            value: ejud-appid
+            secret: true
+
           # Testing
           - name: Testing:TestClientId
             value: vh-admin-web-appid
@@ -119,7 +127,7 @@ parameters:
             value: $(wowza_storageAccountKey)
           - name: WowzaConfiguration:StorageContainerName
             value: $(wowza_storageContainerName)
-            
+
           # Ejud - test setting only
           - name: UsingEjud
             value: $(UsingEjud)
@@ -142,22 +150,26 @@ parameters:
             value: vh-video-web-key-v2
             secret: true
           - name: AzureAd:PostLogoutRedirectUri
-            slot:
-                deployment:
-                    value: $(video_web_url)logout
-                active:
-                    value: $(video_web_url)logout
+            value: $(video_web_url)logout
           - name: AzureAd:RedirectUri
-            slot:
-                deployment:
-                    value: $(video_web_url)home
-                active:
-                    value: $(video_web_url)home
+            value: $(video_web_url)home
           - name: AzureAd:TenantId
             value: tenantid
             secret: true
           - name: AzureAd:VhVideoWebResourceId
             value: vh-video-web-identifieruris
+            secret: true
+
+          # EJudAd
+          - name: EJudAd:ClientId
+            value: ejud-appid
+            secret: true
+          - name: EJudAd:PostLogoutRedirectUri
+            value: $(video_web_url)logout
+          - name: EJudAd:RedirectUri
+            value: $(video_web_url)home
+          - name: EJudAd:TenantId
+            value: ejud-tenantid
             secret: true
 
           # Kinly
