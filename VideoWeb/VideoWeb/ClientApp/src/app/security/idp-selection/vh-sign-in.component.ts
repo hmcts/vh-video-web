@@ -9,9 +9,10 @@ import { OidcConfigSetupService } from '../oidc-config-setup.service';
     styles: []
 })
 export class VhSignInComponent implements OnInit {
-    constructor(private router: Router, private oidcConfigSetupService: OidcConfigSetupService) {}
+    constructor(private router: Router, private oidcConfigSetupService: OidcConfigSetupService) { }
 
     ngOnInit(): void {
+        debugger;
         this.oidcConfigSetupService.setIdp('vhaad');
         this.router.navigate([`/${pageUrls.Login}`]);
     }

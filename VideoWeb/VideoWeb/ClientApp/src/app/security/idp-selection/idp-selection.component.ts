@@ -21,9 +21,7 @@ export class IdpSelectionComponent {
     selectedProvider: string;
     submitted = false;
 
-    constructor(private router: Router, private logger: Logger, private oidcConfigSetupService: OidcConfigSetupService) {
-        debugger;
-    }
+    constructor(private router: Router, private logger: Logger, private oidcConfigSetupService: OidcConfigSetupService) { }
 
     showError(): boolean {
         return this.submitted && !this.selectedProvider;
