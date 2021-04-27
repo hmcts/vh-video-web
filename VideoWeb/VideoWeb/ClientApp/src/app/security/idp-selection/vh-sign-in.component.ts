@@ -5,14 +5,13 @@ import { OidcConfigSetupService } from '../oidc-config-setup.service';
 
 @Component({
     selector: 'app-vh-sign-in',
-    template: ` <p>vh-sign-in works!</p> `,
+    template: ``,
     styles: []
 })
 export class VhSignInComponent implements OnInit {
     constructor(private router: Router, private oidcConfigSetupService: OidcConfigSetupService) { }
 
     ngOnInit(): void {
-        debugger;
         this.oidcConfigSetupService.setIdp('vhaad');
         this.router.navigate([`/${pageUrls.Login}`]);
     }

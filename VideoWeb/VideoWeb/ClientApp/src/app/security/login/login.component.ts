@@ -28,7 +28,6 @@ export class LoginComponent implements OnInit {
                 .pipe(
                     catchError(err => {
                         this.logger.error('[Login] - Check Auth Error', err);
-                        debugger;
                         if (
                             !window.location.pathname.includes(pageUrls.EJudSignIn) &&
                             !window.location.pathname.includes(pageUrls.VHSignIn)

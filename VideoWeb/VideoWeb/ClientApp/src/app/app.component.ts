@@ -103,8 +103,7 @@ export class AppComponent implements OnInit, OnDestroy {
         if (!loggedIn && !this.isSignInUrl) {
             this.router.navigate([`/${pageUrls.IdpSelection}`]);
         } else {
-            debugger;
-            this.router.navigate([`${window.location.pathname}`]);
+            await this.retrieveProfileRole();
         }
     }
 
