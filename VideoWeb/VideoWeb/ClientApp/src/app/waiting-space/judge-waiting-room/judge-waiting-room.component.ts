@@ -103,9 +103,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 this.getConference().then(() => {
                     this.subscribeToClock();
                     this.startEventHubSubscribers();
-
-                    this.participant = this.setLoggedParticipant();
-
                     this.getJwtokenAndConnectToPexip();
                     if (this.conference.audio_recording_required) {
                         this.initAudioRecordingInterval();
