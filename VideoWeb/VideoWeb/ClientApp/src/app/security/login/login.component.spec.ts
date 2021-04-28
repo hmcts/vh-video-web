@@ -7,7 +7,7 @@ import { fakeAsync, tick } from '@angular/core/testing';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { of } from 'rxjs';
 
-describe('LoginComponent', () => {
+fdescribe('LoginComponent', () => {
     let component: LoginComponent;
     const mockOidcSecurityService = new MockOidcSecurityService();
     let oidcSecurityService;
@@ -54,4 +54,18 @@ describe('LoginComponent', () => {
         tick();
         expect(router.navigate).toHaveBeenCalledWith(['/']);
     }));
+
+    it('should use saved return url if pathname includes ejud-signin', () => {
+        oidcSecurityService.setAuthenticated(true);
+        spyOn(returnUrlService, 'popUrl').and.returnValue('/ejud-signin');
+        component.ngOnInit();
+        expect(router.navigateByUrl).toHaveBeenCalledWith('/ejud-signin');
+    });
+
+    it('should use saved return url if pathname includes vh-signin', () => {
+        oidcSecurityService.setAuthenticated(true);
+        spyOn(returnUrlService, 'popUrl').and.returnValue('/vh-signin');
+        component.ngOnInit();
+        expect(router.navigateByUrl).toHaveBeenCalledWith('/vh-signin');
+    });
 });
