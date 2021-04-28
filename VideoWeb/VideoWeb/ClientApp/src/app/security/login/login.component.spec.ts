@@ -71,7 +71,11 @@ describe('LoginComponent', () => {
 
     it('should fallback to root url if return ejud url & error', fakeAsync(() => {
         spyOn(returnUrlService, 'popUrl').and.returnValue('/ejud-signin');
-        spyOnProperty(oidcSecurityService, 'isAuthenticated$', 'get').and.returnValue(new Observable<boolean>(() => {throw new Error('')}));
+        spyOnProperty(oidcSecurityService, 'isAuthenticated$', 'get').and.returnValue(
+            new Observable<boolean>(() => {
+                throw new Error('');
+            })
+        );
         oidcSecurityService.setAuthenticated(false);
         router.navigateByUrl.and.callFake(() => {
             throw new Error('Invalid URL');
@@ -83,7 +87,11 @@ describe('LoginComponent', () => {
 
     it('should fallback to root url if return ejud url & error', fakeAsync(() => {
         spyOn(returnUrlService, 'popUrl').and.returnValue('/vh-signin');
-        spyOnProperty(oidcSecurityService, 'isAuthenticated$', 'get').and.returnValue(new Observable<boolean>(() => {throw new Error('')}));
+        spyOnProperty(oidcSecurityService, 'isAuthenticated$', 'get').and.returnValue(
+            new Observable<boolean>(() => {
+                throw new Error('');
+            })
+        );
         oidcSecurityService.setAuthenticated(true);
         router.navigateByUrl.and.callFake(() => {
             throw new Error('Invalid URL');
