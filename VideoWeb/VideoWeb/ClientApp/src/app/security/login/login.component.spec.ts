@@ -7,7 +7,7 @@ import { fakeAsync, tick } from '@angular/core/testing';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { of } from 'rxjs';
 
-fdescribe('LoginComponent', () => {
+describe('LoginComponent', () => {
     let component: LoginComponent;
     const mockOidcSecurityService = new MockOidcSecurityService();
     let oidcSecurityService;
