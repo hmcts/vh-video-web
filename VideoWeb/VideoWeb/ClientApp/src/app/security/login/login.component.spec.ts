@@ -5,7 +5,7 @@ import { MockLogger } from '../../testing/mocks/mock-logger';
 import { LoginComponent } from './login.component';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { ConfigService } from 'src/app/services/api/config.service';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 describe('LoginComponent', () => {
     let component: LoginComponent;
@@ -71,7 +71,8 @@ describe('LoginComponent', () => {
 
     it('should fallback to root url if return ejud url & error', fakeAsync(() => {
         spyOn(returnUrlService, 'popUrl').and.returnValue('/ejud-signin');
-        oidcSecurityService.setAuthenticated(true);
+        spyOnProperty(oidcSecurityService, 'isAuthenticated$', 'get').and.returnValue(new Observable<boolean>(() => {throw new Error('')}));
+        oidcSecurityService.setAuthenticated(false);
         router.navigateByUrl.and.callFake(() => {
             throw new Error('Invalid URL');
         });
@@ -82,6 +83,7 @@ describe('LoginComponent', () => {
 
     it('should fallback to root url if return ejud url & error', fakeAsync(() => {
         spyOn(returnUrlService, 'popUrl').and.returnValue('/vh-signin');
+        spyOnProperty(oidcSecurityService, 'isAuthenticated$', 'get').and.returnValue(new Observable<boolean>(() => {throw new Error('')}));
         oidcSecurityService.setAuthenticated(true);
         router.navigateByUrl.and.callFake(() => {
             throw new Error('Invalid URL');
