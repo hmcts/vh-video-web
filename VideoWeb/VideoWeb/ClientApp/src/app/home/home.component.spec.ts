@@ -15,7 +15,6 @@ describe('HomeComponent', () => {
     let eventServiceSpy: jasmine.SpyObj<PublicEventsService>;
     let oidcClientNotificationSpy: jasmine.SpyObj<OidcClientNotification<any>>;
 
-
     beforeAll(() => {
         routerSpy = jasmine.createSpyObj<Router>('Router', ['navigate']);
         eventServiceSpy = jasmine.createSpyObj('PublicEventsService', ['registerForEvents']);
@@ -27,18 +26,9 @@ describe('HomeComponent', () => {
     });
 
     it('should go to navigator if user log in', async () => {
-        debugger;
         oidcClientNotificationSpy = jasmine.createSpyObj('OidcClientNotification', {}, { type: EventTypes.UserDataChanged });
         eventServiceSpy.registerForEvents.and.returnValue(of(oidcClientNotificationSpy));
         component.ngOnInit();
         expect(routerSpy.navigate).toHaveBeenCalledWith([`/${pageUrls.Navigator}`]);
     });
 });
-
-/*
-        subscribe(async (value: OidcClientNotification<AuthorizationResult>) => {
-        eventService.registerForEvents.and.returnValue(of(oidcClientNotificationSpy));
-        
-        .subscribe(() => this.router.navigate([`/${pageUrls.Navigator}`]));
-        eventService.registerForEvents(router)));
-*/
