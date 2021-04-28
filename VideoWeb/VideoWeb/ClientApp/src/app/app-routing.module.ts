@@ -8,7 +8,7 @@ import { AuthGuard } from './security/auth.guard';
 import { NavigatorComponent } from './home/navigator/navigator.component';
 
 export const routes: Routes = [
-    { path: '', redirectTo: `${pageUrls.Home}`, pathMatch: 'full' },
+    { path: '', redirectTo: `${pageUrls.Navigator}`, pathMatch: 'full' },
     {
         canActivate: [AdminGuard],
         path: 'admin',

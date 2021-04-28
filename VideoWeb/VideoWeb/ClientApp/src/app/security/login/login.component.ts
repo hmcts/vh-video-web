@@ -6,6 +6,7 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { catchError } from 'rxjs/operators';
 import { NEVER } from 'rxjs';
 import { ConfigService } from 'src/app/services/api/config.service';
+import { pageUrls } from 'src/app/shared/page-url.constants';
 
 @Component({
     selector: 'app-login',
@@ -27,7 +28,12 @@ export class LoginComponent implements OnInit {
                 .pipe(
                     catchError(err => {
                         this.logger.error('[Login] - Check Auth Error', err);
-                        this.router.navigate(['/']);
+                        if (
+                            !window.location.pathname.includes(pageUrls.EJudSignIn) &&
+                            !window.location.pathname.includes(pageUrls.VHSignIn)
+                        ) {
+                            this.router.navigate(['/']);
+                        }
                         return NEVER;
                     })
                 )
