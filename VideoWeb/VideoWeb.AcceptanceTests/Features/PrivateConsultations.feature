@@ -12,7 +12,7 @@ Scenario: Accept a private consultation invite
   And the individual and their representative can both leave the private consultation room
 
 @VIH-7415
-Scenario: Interpreter private consultation accept invite
+Scenario: Interpreter private consultation accepts an invite
   Given an first individual and their interpreter are in the waiting room 10 minutes before a hearing
   And the representative user has progressed to the Waiting Room page for the existing hearing
   When the representative starts a private consultation with their interpreter  
@@ -23,7 +23,7 @@ Scenario: Interpreter private consultation accept invite
   And the representative has left the private consultation room
             
 @VIH-7415
-Scenario: Interpreter private consultation decline invite
+Scenario: Interpreter private consultation declines an invite
   Given an first individual and their interpreter are in the waiting room 10 minutes before a hearing
   And the representative user has progressed to the Waiting Room page for the existing hearing
   When the representative starts a private consultation with their interpreter  
