@@ -187,6 +187,15 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(PrivateConsultationRoomPage.SelfViewVideo).Should().BeTrue();
         }
 
+        [Then(@"the (.*) user sees a message that the invitation has been rejected")]
+        public void ThenTheRepresentativeUserSeesAMessageThatTheInvitationHasBeenRejected(string user)
+        {
+            _browserSteps.GivenInTheUsersBrowser(user);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateCallPopupPage.InvitationMessageButton).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Click(PrivateCallPopupPage.InvitationMessageButton);
+        }
+
+
         [Then(@"the (.*) user sees a message that the request has been rejected")]
         public void ThenTheRepresentativeUserSeesAMessageThatTheRequestHasBeenRejected(string user)
         {
