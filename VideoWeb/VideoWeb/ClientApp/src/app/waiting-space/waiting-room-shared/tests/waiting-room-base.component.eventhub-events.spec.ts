@@ -711,7 +711,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             const expectedIsParticipantInHearing = false;
             component.participant.status = ParticipantStatus.Available;
             const newToastSpy = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
-            notificationToastrService.showConsultationRejectedByLinkedParticipant.and.returnValue(newToastSpy)
+            notificationToastrService.showConsultationRejectedByLinkedParticipant.and.returnValue(newToastSpy);
 
             // Act
             component.onLinkedParticiantRejectedConsultationInvite(linkedParticipant.display_name, expectedConsultationRoomLabel);

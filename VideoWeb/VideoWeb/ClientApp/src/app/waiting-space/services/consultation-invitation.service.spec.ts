@@ -16,7 +16,7 @@ describe('ConsultationInvitationServiceService', () => {
         expect(service).toBeTruthy();
     });
 
-    fdescribe('rejectInvitation', () => {
+    describe('rejectInvitation', () => {
         const expectedId = 'test-id';
         it('should set rejected to false on the invitation if it exists', () => {
             // Arrange
@@ -33,7 +33,7 @@ describe('ConsultationInvitationServiceService', () => {
         });
     });
 
-    fdescribe('getInvitation', () => {
+    describe('getInvitation', () => {
         const expectedId = 'test-id';
         it('should return the existing invitation', () => {
             // Arrange
@@ -68,7 +68,7 @@ describe('ConsultationInvitationServiceService', () => {
             // Assert
             expect(invitation).toBeTruthy();
             expect(invitation.rejected).toBeFalse();
-        })
+        });
     });
 
     describe('removeInvitation', () => {

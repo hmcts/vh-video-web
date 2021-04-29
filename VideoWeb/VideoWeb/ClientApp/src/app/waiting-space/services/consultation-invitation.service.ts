@@ -19,13 +19,13 @@ export class ConsultationInvitationService {
         const invitation = this.consultationInvitations[roomLabel];
 
         if (!invitation || invitation.rejected) {
-            return this.consultationInvitations[roomLabel] = {
+            return (this.consultationInvitations[roomLabel] = {
                 linkedParticipantStatuses: {},
                 activeToast: null,
                 activeParticipantAccepted: false,
                 invitedByName: null,
                 rejected: false
-            } as ConsultationInvitation;
+            } as ConsultationInvitation);
         }
 
         return invitation;
