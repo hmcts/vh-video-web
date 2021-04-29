@@ -44,7 +44,7 @@ describe('ConsultationInvitationServiceService', () => {
             const invitation = service.getInvitation(expectedId);
 
             // Assert
-            expect(invitation).toEqual(expectedInvitation);
+            expect(invitation).toBe(expectedInvitation);
         });
 
         it('should create a new invitation if an existing one does NOT exist', () => {
