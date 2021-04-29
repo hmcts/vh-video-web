@@ -657,6 +657,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             notificationToastrService.showConsultationRejectedByLinkedParticipant.calls.reset();
             consultationInvitiationService.getInvitation.calls.reset();
             consultationInvitiationService.rejectInvitation.calls.reset();
+            toastSpy.remove.calls.reset();
 
             toastSpy.declinedByThirdParty = false;
             invitation.activeToast = toastSpy;
@@ -682,6 +683,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             );
             expect(consultationInvitiationService.rejectInvitation).toHaveBeenCalledOnceWith(expectedConsultationRoomLabel);
             expect(consultationInvitiationService.getInvitation).toHaveBeenCalledOnceWith(expectedConsultationRoomLabel);
+            expect(toastSpy.remove).toHaveBeenCalledTimes(1);
             expect(toastSpy.declinedByThirdParty).toBeTrue();
         });
 
@@ -703,6 +705,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             );
             expect(consultationInvitiationService.rejectInvitation).toHaveBeenCalledOnceWith(expectedConsultationRoomLabel);
             expect(consultationInvitiationService.getInvitation).toHaveBeenCalledOnceWith(expectedConsultationRoomLabel);
+            expect(toastSpy.remove).toHaveBeenCalledTimes(1);
             expect(toastSpy.declinedByThirdParty).toBeTrue();
         });
 
@@ -717,7 +720,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             component.onLinkedParticiantRejectedConsultationInvite(linkedParticipant.display_name, expectedConsultationRoomLabel);
 
             // Assert
-
+            expect(toastSpy.remove).toHaveBeenCalledTimes(1);
             expect(invitation.activeToast).toBe(newToastSpy);
         });
     });

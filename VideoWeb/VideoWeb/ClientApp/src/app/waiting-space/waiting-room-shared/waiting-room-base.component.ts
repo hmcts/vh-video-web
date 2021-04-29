@@ -217,6 +217,7 @@ export abstract class WaitingRoomBaseDirective {
         const invitation = this.consultationInvitiationService.getInvitation(consulationRoomLabel);
         if (invitation.activeToast) {
             invitation.activeToast.declinedByThirdParty = true;
+            invitation.activeToast.remove();
         }
 
         this.consultationInvitiationService.rejectInvitation(consulationRoomLabel);
