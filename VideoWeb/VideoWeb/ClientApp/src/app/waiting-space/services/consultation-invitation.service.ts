@@ -6,6 +6,7 @@ export interface ConsultationInvitation {
     activeToast: VhToastComponent;
     activeParticipantAccepted: boolean;
     invitedByName: string;
+    rejected: boolean;
 }
 
 @Injectable({
@@ -15,14 +16,26 @@ export class ConsultationInvitationService {
     private consultationInvitations: { [roomLabel: string]: ConsultationInvitation } = {};
 
     getInvitation(roomLabel: string): ConsultationInvitation {
-        return (this.consultationInvitations[roomLabel] =
-            this.consultationInvitations[roomLabel] ??
-            ({
+        const invitation = this.consultationInvitations[roomLabel];
+
+        if (!invitation || invitation.rejected) {
+            return this.consultationInvitations[roomLabel] = {
                 linkedParticipantStatuses: {},
                 activeToast: null,
                 activeParticipantAccepted: false,
-                invitedByName: null
-            } as ConsultationInvitation));
+                invitedByName: null,
+                rejected: false
+            } as ConsultationInvitation;
+        }
+
+        return invitation;
+    }
+
+    rejectInvitation(roomLabel: string) {
+        const invitation = this.consultationInvitations[roomLabel];
+        if (invitation) {
+            invitation.rejected = true;
+        }
     }
 
     removeInvitation(roomLabel: string) {
