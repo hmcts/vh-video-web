@@ -29,6 +29,16 @@ namespace VideoWeb.AcceptanceTests.Helpers
             var usersList = users.Select(x => x.DisplayName).Aggregate("", (current, name) => current + name + ",");
             throw new InvalidOperationException($"No user with display name '{displayName}' found in the list: '{usersList}'");
         }
+        public static UserDto GetUserFromUserType(List<UserDto> users, string userType)
+        {
+            if (users.Any(x => x.UserType.ToString().ToLower().Equals(userType.ToLower())))
+            {
+                return users.First(x => x.UserType.ToString().ToLower().Equals(userType.ToLower()));
+            }
+
+            var usersList = users.Select(x => x.UserType).Aggregate("", (current, UserType) => current + userType + ",");
+            throw new InvalidOperationException($"No user with the user type'{userType}' found in the list: '{usersList}'");
+        }
 
         public static UserDto GetUser(List<UserDto> users, string number, string user)
         {
