@@ -200,19 +200,15 @@ namespace VideoWeb.UnitTests.Services
         public async Task Should_update_status_if_the_invitation_exists()
         {
             // Arrange
-            var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
-            ConsultationInvitation expectedConsultationInvitation = new ConsultationInvitation(requestedForParticipant.Id, "room_label",requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
-            
-            _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
-                .ReturnsAsync(expectedConsultationInvitation);
+            var participantId = Guid.NewGuid();
+            var invitationId = Guid.NewGuid();
+            var answer = ConsultationAnswer.Accepted;
+
             // Act
-            await _sut.UpdateConsultationResponse(expectedConsultationInvitation.InvitationId,
-                expectedConsultationInvitation.RequestedForParticipantId, ConsultationAnswer.Accepted);
+            await _sut.UpdateConsultationResponse(invitationId, participantId, answer);
 
             // Assert
-            expectedConsultationInvitation
-                .InvitedParticipantResponses[expectedConsultationInvitation.RequestedForParticipantId].Should()
-                .Be(ConsultationAnswer.Accepted);
+            _mocker.Mock<IConsultationResponseCache>().Verify(crc => crc.UpdateResponseToInvitation(invitationId, participantId, answer), Times.Once);
         }
         
         [Test]

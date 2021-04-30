@@ -50,10 +50,7 @@ namespace VideoWeb.Helpers
 
         public async Task UpdateConsultationResponse(Guid invitationId, Guid participantId, ConsultationAnswer answer)
         {
-            var invitation = await _cache.GetInvitation(invitationId);
-            
-            if (invitation != null) 
-                invitation.InvitedParticipantResponses[participantId] = answer;
+            await _cache.UpdateResponseToInvitation(invitationId, participantId, answer);
         }
 
         public async Task StopTrackingInvitation(Guid invitationId)

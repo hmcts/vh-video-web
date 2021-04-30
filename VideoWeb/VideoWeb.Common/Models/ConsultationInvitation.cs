@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace VideoWeb.Common.Models
 {
@@ -17,6 +18,15 @@ namespace VideoWeb.Common.Models
 
     public class ConsultationInvitation : IConsultationInvitation
     {
+        [JsonConstructor]
+        public ConsultationInvitation(Guid invitationId, Guid requestedForParticipantId, string roomLabel, ConcurrentDictionary<Guid, ConsultationAnswer> invitedParticipantResponses)
+        {
+            InvitationId = invitationId;
+            RequestedForParticipantId = requestedForParticipantId;
+            RoomLabel = roomLabel;
+            InvitedParticipantResponses = invitedParticipantResponses;
+        }
+
         public ConsultationInvitation(Guid requestedForParticipantId, string roomLabel)
         {
             InvitationId = Guid.NewGuid();
