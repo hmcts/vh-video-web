@@ -16,6 +16,23 @@ describe('ConsultationInvitationServiceService', () => {
         expect(service).toBeTruthy();
     });
 
+    describe('rejectInvitation', () => {
+        const expectedId = 'test-id';
+        it('should set rejected to false on the invitation if it exists', () => {
+            // Arrange
+            const invitation = {
+                rejected: false
+            } as ConsultationInvitation;
+            service['consultationInvitations'][expectedId] = invitation;
+
+            // Act
+            service.rejectInvitation(expectedId);
+
+            // Assert
+            expect(invitation.rejected).toBeTrue();
+        });
+    });
+
     describe('getInvitation', () => {
         const expectedId = 'test-id';
         it('should return the existing invitation', () => {
@@ -27,15 +44,30 @@ describe('ConsultationInvitationServiceService', () => {
             const invitation = service.getInvitation(expectedId);
 
             // Assert
-            expect(invitation).toEqual(expectedInvitation);
+            expect(invitation).toBe(expectedInvitation);
         });
 
-        it('should create a new invitation', () => {
+        it('should create a new invitation if an existing one does NOT exist', () => {
             // Act
             const invitation = service.getInvitation(expectedId);
 
             // Assert
             expect(invitation).toBeTruthy();
+        });
+
+        it('should create a new invitation if the existing one is marked as rejected', () => {
+            // Arrange
+            const existingInvitation = {
+                rejected: true
+            } as ConsultationInvitation;
+            service['consultationInvitations'][expectedId] = existingInvitation;
+
+            // Act
+            const invitation = service.getInvitation(expectedId);
+
+            // Assert
+            expect(invitation).toBeTruthy();
+            expect(invitation.rejected).toBeFalse();
         });
     });
 
