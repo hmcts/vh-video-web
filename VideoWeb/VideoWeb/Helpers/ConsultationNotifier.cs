@@ -35,7 +35,7 @@ namespace VideoWeb.Helpers
         public async Task<Guid> NotifyConsultationRequestAsync(Conference conference, string roomLabel, Guid requestedById, Guid requestedForId)
         {
             var participantFor = conference.Participants.First(x => x.Id == requestedForId);
-            var invitationId = await _consultationResponseTracker.StartTrackingInvitation(conference, requestedForId);
+            var invitationId = await _consultationResponseTracker.StartTrackingInvitation(conference, roomLabel, requestedForId);
 
             var tasks = conference.Participants.Select(p =>
                 _hubContext.Clients.Group(p.Username.ToLowerInvariant())

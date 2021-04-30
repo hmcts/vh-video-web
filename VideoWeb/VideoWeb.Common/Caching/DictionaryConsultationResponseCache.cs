@@ -17,13 +17,12 @@ namespace VideoWeb.Common.Caching
 
         public Task CreateInvitationEntry(ConsultationInvitation consultationInvitation)
         {
-            _cache[consultationInvitation.InvitationId] = consultationInvitation;
-            return Task.CompletedTask;
+            throw new NotImplementedException();
         }
 
         public Task<ConsultationInvitation> GetInvitation(Guid invitationId)
         {
-            return Task.FromResult(_cache[invitationId]);
+            throw new NotImplementedException();
         }
 
         public Task UpdateResponseToInvitation(Guid invitationId, Guid participantId, ConsultationAnswer answer)
@@ -32,6 +31,11 @@ namespace VideoWeb.Common.Caching
         }
 
         public Task DeleteInvitationEntry(Guid invitationId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<ConsultationInvitation>> GetInvitationsForParticipant(Guid participantId)
         {
             throw new NotImplementedException();
         }

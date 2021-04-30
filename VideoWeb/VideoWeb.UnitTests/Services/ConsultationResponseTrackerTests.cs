@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
@@ -36,7 +37,7 @@ namespace VideoWeb.UnitTests.Services
             _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.CreateInvitationEntry(It.IsAny<ConsultationInvitation>()));
 
             // Act
-            var invitationGuid = await _sut.StartTrackingInvitation(_conference, requestedForParticipant.Id);
+            var invitationGuid = await _sut.StartTrackingInvitation(_conference, "room_label", requestedForParticipant.Id);
 
             // Assert
             invitationGuid.Should().NotBe(Guid.Empty);
@@ -56,7 +57,7 @@ namespace VideoWeb.UnitTests.Services
             _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.CreateInvitationEntry(It.IsAny<ConsultationInvitation>()));
             
             // Act
-            var invitationGuid = await _sut.StartTrackingInvitation(_conference, requestedForParticipant.Id);
+            var invitationGuid = await _sut.StartTrackingInvitation(_conference, "room_label", requestedForParticipant.Id);
 
             // Assert
             invitationGuid.Should().Be(Guid.Empty);
@@ -70,7 +71,7 @@ namespace VideoWeb.UnitTests.Services
         {
             // Arrange
             var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
-            ConsultationInvitation expectedConsultationInvitation = new ConsultationInvitation(requestedForParticipant.Id, requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
+            ConsultationInvitation expectedConsultationInvitation = new ConsultationInvitation(requestedForParticipant.Id, "room_label", requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
             _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
                 .ReturnsAsync(expectedConsultationInvitation);
 
@@ -86,7 +87,7 @@ namespace VideoWeb.UnitTests.Services
         {
             // Arrange
             var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
-            ConsultationInvitation expectedConsultationInvitation = new ConsultationInvitation(requestedForParticipant.Id, requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
+            ConsultationInvitation expectedConsultationInvitation = new ConsultationInvitation(requestedForParticipant.Id,"room_label", requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
             _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
                 .ReturnsAsync(null as ConsultationInvitation);
 
@@ -102,7 +103,7 @@ namespace VideoWeb.UnitTests.Services
         {
             // Arrange
             var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
-            ConsultationInvitation expectedConsultationInvitation = new ConsultationInvitation(requestedForParticipant.Id, requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
+            ConsultationInvitation expectedConsultationInvitation = new ConsultationInvitation(requestedForParticipant.Id, "room_label",requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
             _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
                 .ReturnsAsync(null as ConsultationInvitation);
 
@@ -132,7 +133,7 @@ namespace VideoWeb.UnitTests.Services
             // Arrange
             var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
             ConsultationInvitation expectedConsultationInvitation = new ConsultationInvitation(
-                requestedForParticipant.Id, requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
+                requestedForParticipant.Id, "room_label",requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
 
             foreach (var invitedParticipantResponseKey in expectedConsultationInvitation.InvitedParticipantResponses.Keys)
                 expectedConsultationInvitation.InvitedParticipantResponses[invitedParticipantResponseKey] = ConsultationAnswer.Accepted;
@@ -168,7 +169,7 @@ namespace VideoWeb.UnitTests.Services
             // Arrange
             var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
             ConsultationInvitation expectedConsultationInvitation = new ConsultationInvitation(
-                requestedForParticipant.Id, requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
+                requestedForParticipant.Id, "room_label",requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
 
             _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
                 .ReturnsAsync(expectedConsultationInvitation);
@@ -200,7 +201,7 @@ namespace VideoWeb.UnitTests.Services
         {
             // Arrange
             var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
-            ConsultationInvitation expectedConsultationInvitation = new ConsultationInvitation(requestedForParticipant.Id, requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
+            ConsultationInvitation expectedConsultationInvitation = new ConsultationInvitation(requestedForParticipant.Id, "room_label",requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
             
             _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
                 .ReturnsAsync(expectedConsultationInvitation);
@@ -212,6 +213,34 @@ namespace VideoWeb.UnitTests.Services
             expectedConsultationInvitation
                 .InvitedParticipantResponses[expectedConsultationInvitation.RequestedForParticipantId].Should()
                 .Be(ConsultationAnswer.Accepted);
+        }
+        
+        [Test]
+        public async Task Should_call_delete_inventory_invitation_on_all_invitations_the_participant_is_part_of()
+        {
+            // Arrange
+            var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
+            var invitations = new List<ConsultationInvitation>();
+            invitations.Add(new ConsultationInvitation(requestedForParticipant.Id, "room_label",
+                requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId)));
+            invitations.Add(new ConsultationInvitation(requestedForParticipant.Id, "room_label2",
+                requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId)));
+            
+            _mocker.Mock<IConsultationResponseCache>()
+                .Setup(x => x.GetInvitationsForParticipant(requestedForParticipant.Id)).ReturnsAsync(invitations);
+            
+            // Act
+            await _sut.StopTrackingInvitationsForParticipant(requestedForParticipant.Id);
+
+            // Assert
+            _mocker.Mock<IConsultationResponseCache>()
+                .Verify(x => x.GetInvitationsForParticipant(requestedForParticipant.Id), Times.Once);
+
+            foreach (var invitation in invitations)
+            {
+                _mocker.Mock<IConsultationResponseCache>()
+                    .Verify(x => x.DeleteInvitationEntry(invitation.InvitationId), Times.Once);    
+            }
         }
     }
 }

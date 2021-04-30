@@ -17,20 +17,22 @@ namespace VideoWeb.Common.Models
 
     public class ConsultationInvitation : IConsultationInvitation
     {
-        public ConsultationInvitation(Guid requestedForParticipantId)
+        public ConsultationInvitation(Guid requestedForParticipantId, string roomLabel)
         {
             InvitationId = Guid.NewGuid();
             RequestedForParticipantId = requestedForParticipantId;
-            
+            RoomLabel = roomLabel;
+
             InvitedParticipantResponses = new ConcurrentDictionary<Guid, ConsultationAnswer>();
             InvitedParticipantResponses.TryAdd(requestedForParticipantId, ConsultationAnswer.None);
         }
         
-        public ConsultationInvitation(Guid requestedForParticipantId, IEnumerable<Guid> linkedParticipantIds)
+        public ConsultationInvitation(Guid requestedForParticipantId, string roomLabel, IEnumerable<Guid> linkedParticipantIds)
         {
             InvitationId = Guid.NewGuid();
             RequestedForParticipantId = requestedForParticipantId;
-            
+            RoomLabel = roomLabel;
+
             InvitedParticipantResponses = new ConcurrentDictionary<Guid, ConsultationAnswer>();
             InvitedParticipantResponses.TryAdd(requestedForParticipantId, ConsultationAnswer.None);
             foreach (var linkedParticipantId in linkedParticipantIds)
@@ -39,6 +41,7 @@ namespace VideoWeb.Common.Models
 
         public Guid InvitationId { get; private set; }
         public Guid RequestedForParticipantId { get; private set; }
+        public string RoomLabel { get; }
         public ConcurrentDictionary<Guid, ConsultationAnswer> InvitedParticipantResponses { get; private set; }
         public bool HaveAllAccepted 
         {

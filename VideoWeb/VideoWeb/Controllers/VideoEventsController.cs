@@ -153,14 +153,13 @@ namespace VideoWeb.Controllers
             var roomId = long.Parse(request.ParticipantRoomId);
             var participantId = Guid.Parse(request.ParticipantId);
 
-
             switch (request.EventType)
             {
                 case EventType.Joined:
                     conference.AddParticipantToRoom(roomId, participantId);
                     break;
                 case EventType.Disconnected:
-                    await _consultationResponseTracker.StopTrackingInvitation(Guid.Empty);
+                    await _consultationResponseTracker.StopTrackingInvitationsForParticipant(participantId);
                     conference.RemoveParticipantFromRoom(roomId, participantId);
                     break;
                 default: return;

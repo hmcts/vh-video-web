@@ -176,75 +176,49 @@ namespace VideoWeb.UnitTests.Services
         [Test]
         public async Task should_send_message_to_other_party_when_all_linked_participant_respond_accept()
         {
-            throw new NotImplementedException();
-            // // arrange
-            // var linkedParticipant = _conference.Participants.First(x => !x.IsJudge() && x.LinkedParticipants.Any());
-            // var linked = _conference.Participants
-            //     .Where(p => linkedParticipant.LinkedParticipants.Select(x => x.LinkedId).Contains(p.Id)).ToList();
-            // var roomLabel = "ConsultationRoom1";
-            // var answer = ConsultationAnswer.Accepted;
-            // var expectedInvitationId = Guid.NewGuid();
-            //
-            // foreach (var lParticipant in linked)
-            // {
-            //     await _consultationResponseTracker.UpdateConsultationResponse(expectedInvitationId, lParticipant.Id,
-            //         ConsultationAnswer.Accepted);
-            // }
-            //
-            // // act
-            // await _sut.NotifyConsultationResponseAsync(_conference, expectedInvitationId, roomLabel, linkedParticipant.Id, answer);
-            //
-            // // assert
-            // _mocker.Mock<IEventHubClient>()
-            //     .Verify(
-            //         x => x.ConsultationRequestResponseMessage(_conference.Id, expectedInvitationId, roomLabel, linkedParticipant.Id, answer, linkedParticipant.Id),
-            //         Times.Exactly(_conference.Participants.Count));
-            //
-            // foreach (var lParticipant in linked)
-            // {
-            //     _mocker.Mock<IEventHubClient>().Verify(
-            //         x => x.ConsultationRequestResponseMessage(_conference.Id, expectedInvitationId, roomLabel,
-            //             lParticipant.Id, answer, linkedParticipant.Id),
-            //         Times.Exactly(_conference.Participants.Count));
-            // }
-            //
-            // var room = _conference.CivilianRooms.First(x => x.Participants.Contains(linkedParticipant.Id));
-            // var cache = _dictionaryCache.GetCache();
-            // cache.ContainsKey(room.Id).Should().BeTrue();
-            // var accepted = cache[room.Id];
-            // accepted.Should().Contain(linkedParticipant.Id);
-            // accepted.Should().Contain(linked.Select(p => p.Id));
+            // arrange
+            var linkedParticipant = _conference.Participants.First(x => !x.IsJudge() && x.LinkedParticipants.Any());
+            var linked = _conference.Participants
+                .Where(p => linkedParticipant.LinkedParticipants.Select(x => x.LinkedId).Contains(p.Id)).ToList();
+            var roomLabel = "ConsultationRoom1";
+            var answer = ConsultationAnswer.Accepted;
+            var expectedInvitationId = Guid.NewGuid();
+
+            _mocker.Mock<IConsultationResponseTracker>().Setup(crt => crt.HaveAllParticipantsAccepted(expectedInvitationId))
+                .ReturnsAsync(true);
+            
+            // act
+            await _sut.NotifyConsultationResponseAsync(_conference, expectedInvitationId, roomLabel, linkedParticipant.Id, answer);
+            
+            // assert
+            _mocker.Mock<IEventHubClient>()
+                .Verify(
+                    x => x.ConsultationRequestResponseMessage(_conference.Id, expectedInvitationId, roomLabel, linkedParticipant.Id, answer, linkedParticipant.Id),
+                    Times.Exactly(_conference.Participants.Count));
+            
+            foreach (var lParticipant in linked)
+            {
+                _mocker.Mock<IEventHubClient>().Verify(
+                    x => x.ConsultationRequestResponseMessage(_conference.Id, expectedInvitationId, roomLabel,
+                        lParticipant.Id, answer, linkedParticipant.Id),
+                    Times.Exactly(_conference.Participants.Count));
+            }
         }
 
         [Test]
         public async Task should_clear_responses_when_participant_is_being_transferred()
         {
-            throw new NotImplementedException();
             // arrange
-            // var linkedParticipant = _conference.Participants.First(x => !x.IsJudge() && x.LinkedParticipants.Any());
-            // var linked = _conference.Participants
-            //     .Where(p => linkedParticipant.LinkedParticipants.Select(x => x.LinkedId).Contains(p.Id)).ToList();
-            // var roomLabel = "ConsultationRoom1";
-            // var answer = ConsultationAnswer.Transferring;
-            // var expectedInvitationId = Guid.NewGuid();
-            //
-            // await _consultationResponseTracker.UpdateConsultationResponse(expectedInvitationId, linkedParticipant.Id,
-            //     ConsultationAnswer.Accepted);
-            // foreach (var lParticipant in linked)
-            // {
-            //     await _consultationResponseTracker.UpdateConsultationResponse(expectedInvitationId, lParticipant.Id,
-            //         ConsultationAnswer.Accepted);
-            // }
-            //
-            // // act
-            // await _sut.NotifyConsultationResponseAsync(_conference, expectedInvitationId, roomLabel, linkedParticipant.Id, answer);
-            //
-            // // assert
-            // var room = _conference.CivilianRooms.First(x => x.Participants.Contains(linkedParticipant.Id));
-            // var cache = _dictionaryCache.GetCache();
-            // cache.ContainsKey(room.Id).Should().BeFalse();
-            //
-            // _dictionaryCache.GetCache().ContainsKey(room.Id).Should().BeFalse();
+            var linkedParticipant = _conference.Participants.First(x => !x.IsJudge() && x.LinkedParticipants.Any());
+            var roomLabel = "ConsultationRoom1";
+            var answer = ConsultationAnswer.Transferring;
+            var expectedInvitationId = Guid.NewGuid();
+            
+            // act
+            await _sut.NotifyConsultationResponseAsync(_conference, expectedInvitationId, roomLabel, linkedParticipant.Id, answer);
+            
+            // assert
+            _mocker.Mock<IConsultationResponseTracker>().Verify(crt => crt.StopTrackingInvitation(expectedInvitationId));
         }
 
         [TestCase(ConsultationAnswer.None)]
@@ -252,31 +226,16 @@ namespace VideoWeb.UnitTests.Services
         [TestCase(ConsultationAnswer.Rejected)]
         public async Task should_clear_responses_when_participant_doesnot_accept(ConsultationAnswer answer)
         {
-            throw new NotImplementedException();
-            // // arrange
-            // var linkedParticipant = _conference.Participants.First(x => !x.IsJudge() && x.LinkedParticipants.Any());
-            // var linked = _conference.Participants
-            //     .Where(p => linkedParticipant.LinkedParticipants.Select(x => x.LinkedId).Contains(p.Id)).ToList();
-            // var roomLabel = "ConsultationRoom1";
-            // var expectedInvitationId = Guid.NewGuid();
-            //
-            // await _consultationResponseTracker.UpdateConsultationResponse(expectedInvitationId, linkedParticipant.Id,
-            //     ConsultationAnswer.Accepted);
-            // foreach (var lParticipant in linked)
-            // {
-            //     await _consultationResponseTracker.UpdateConsultationResponse(expectedInvitationId, lParticipant.Id,
-            //         ConsultationAnswer.Accepted);
-            // }
-            //
-            // // act
-            // await _sut.NotifyConsultationResponseAsync(_conference, expectedInvitationId, roomLabel, linkedParticipant.Id, answer);
-            //
-            // // assert
-            // var room = _conference.CivilianRooms.First(x => x.Participants.Contains(linkedParticipant.Id));
-            // var cache = _dictionaryCache.GetCache();
-            // cache.ContainsKey(room.Id).Should().BeFalse();
-            //
-            // _dictionaryCache.GetCache().ContainsKey(room.Id).Should().BeFalse();
+            // arrange
+            var linkedParticipant = _conference.Participants.First(x => !x.IsJudge() && x.LinkedParticipants.Any());
+            var roomLabel = "ConsultationRoom1";
+            var expectedInvitationId = Guid.NewGuid();
+            
+            // act
+            await _sut.NotifyConsultationResponseAsync(_conference, expectedInvitationId, roomLabel, linkedParticipant.Id, answer);
+            
+            // assert
+            _mocker.Mock<IConsultationResponseTracker>().Verify(crt => crt.StopTrackingInvitation(expectedInvitationId));
         }
 
         [Test]

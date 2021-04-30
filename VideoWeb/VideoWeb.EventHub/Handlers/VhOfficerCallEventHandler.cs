@@ -27,21 +27,20 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            throw new NotImplementedException();
-            // var targetRoom = ValidationConsultationRoom(callbackEvent);
-            // if (SourceEndpoint != null)
-            // {
-            //     return _videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
-            //     {
-            //         ConferenceId = SourceConference.Id,
-            //         RequestedById = Guid.Empty,
-            //         EndpointId = SourceEndpoint.Id,
-            //         RoomLabel = targetRoom
-            //     });
-            // }
-            //
-            // return HubContext.Clients.Group(SourceParticipant.Username.ToLowerInvariant())
-            //                         .RequestedConsultationMessage(SourceConference.Id, targetRoom, Guid.Empty, SourceParticipant.Id);
+            var targetRoom = ValidationConsultationRoom(callbackEvent);
+            if (SourceEndpoint != null)
+            {
+                return _videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
+                {
+                    ConferenceId = SourceConference.Id,
+                    RequestedById = Guid.Empty,
+                    EndpointId = SourceEndpoint.Id,
+                    RoomLabel = targetRoom
+                });
+            }
+            
+            return HubContext.Clients.Group(SourceParticipant.Username.ToLowerInvariant())
+                                    .RequestedConsultationMessage(SourceConference.Id, callbackEvent.ConsultationInvitationId.Value, targetRoom, Guid.Empty, SourceParticipant.Id);
         }
 
         private string ValidationConsultationRoom(CallbackEvent callbackEvent)

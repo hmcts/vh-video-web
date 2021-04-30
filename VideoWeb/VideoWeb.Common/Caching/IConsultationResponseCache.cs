@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VideoWeb.Common.Models;
@@ -11,5 +12,6 @@ namespace VideoWeb.Common.Caching
         Task<ConsultationInvitation> GetInvitation(Guid invitationId);
         Task UpdateResponseToInvitation(Guid invitationId, Guid participantId, ConsultationAnswer answer);
         Task DeleteInvitationEntry(Guid invitationId);
+        Task<IEnumerable<ConsultationInvitation>> GetInvitationsForParticipant(Guid participantId);
     }
 }
