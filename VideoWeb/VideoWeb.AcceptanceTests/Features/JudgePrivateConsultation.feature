@@ -8,7 +8,7 @@ Scenario: Judge Can Enter The Consultation Room
   Given the Judge user is on the Waiting Room page
   When they enter the private consultation room
   Then they will be transferred to the private consultation room
-  And they can leave the private consultation room
+ And they can leave the private consultation room
 
 @VIH-6524 @Video
 Scenario: Panel Member Can Enter The Consultation Room

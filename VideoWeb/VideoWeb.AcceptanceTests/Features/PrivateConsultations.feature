@@ -22,6 +22,30 @@ Scenario: Interpreter private consultation invite
   And the first individual and their representative can both leave the private consultation room
   And the representative has left the private consultation room
       
+#@VIH-7415
+#Scenario: Interpreter and Interpretee have a private consultation 
+#  Given an first individual and their interpreter are in the waiting room 10 minutes before a hearing
+#  And the representative user has progressed to the Waiting Room page for the existing hearing
+#  When the representative starts a private consultation with their interpreter  
+#  And the first individual accepts the private consultation invite from the representative
+#  And the interpreter accepts the private consultation invite from the representative
+#  Then the first individual and their interpreter will be in the same private consultation room
+#  And the first individual and their representative can both leave the private consultation room
+#  And the representative has left the private consultation room
+#  And an audio recording of the hearing has been created
+
+@VIH-7625
+Scenario: Interpreter and Interpretee have a private consultation 
+  Given an first individual and their interpreter are in the waiting room 10 minutes before a hearing
+  And the representative user has progressed to the Waiting Room page for the existing hearing
+  When the representative starts a private consultation with their interpreter  
+  And the first individual accepts the private consultation invite from the representative
+  And the interpreter accepts the private consultation invite from the first individual
+  Then the first individual and their interpreter will be in the same private consultation room
+  And the first individual and their interpreter can both leave the private consultation room
+  #And the representative has left the private consultation room
+  And an audio recording of the hearing has been created
+     
 @VIH-6988
 Scenario: Decline a private consultation invite
   Given an individual and their representative are in the waiting room 10 minutes before a hearing

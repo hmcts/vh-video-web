@@ -83,7 +83,7 @@ Scenario: Four participants join hearing
 
   @HearingTest @Smoketest-Extended @Smoketest-Prod @AudioRecording @DisableLogging
 Scenario: Audio Recording
-  Given I have a hearing with audio recording enabled
+ Given I have a hearing with audio recording enabled
   And the first Individual user has progressed to the Waiting Room page for the existing hearing
 	And the Judge user has progressed to the Waiting Room page for the existing hearing
 	When the Judge starts the hearing
