@@ -104,7 +104,7 @@ export class NotificationToastrService {
             color: inHearing ? 'white' : 'black',
             htmlBody: message,
             onNoAction: async () => {
-                await respondToConsultationRequest(ConsultationAnswer.None);
+                await respondToConsultationRequest(ConsultationAnswer.Rejected);
             },
             onRemove: () => {
                 const index = this.activeRoomInviteRequests.indexOf(inviteKey);

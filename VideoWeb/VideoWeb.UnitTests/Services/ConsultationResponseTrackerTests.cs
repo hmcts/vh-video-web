@@ -1,6 +1,9 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Autofac.Extras.Moq;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
@@ -9,120 +12,206 @@ using VideoWeb.UnitTests.Builders;
 
 namespace VideoWeb.UnitTests.Services
 {
+    [TestFixture]
     public class ConsultationResponseTrackerTests
     {
-        private ConsultationResponseTracker _sut;
+        private AutoMock _mocker;
         private Conference _conference;
-        private IConsultationResponseCache _cache;
+        private IConsultationResponseTracker _sut;
 
         [SetUp]
         public void Setup()
         {
-            _cache = new DictionaryConsultationResponseCache();
+            _mocker = AutoMock.GetLoose();
             _conference = new ConferenceCacheModelBuilder().WithLinkedParticipantsInRoom().Build();
-            _sut = new ConsultationResponseTracker(_cache);
+            _sut = _mocker.Create<ConsultationResponseTracker>();
+        }
+        
+        // [Start] StartTrackingInvitation
+        [Test]
+        public async Task Should_create_an_entry_in_the_cache_with_a_guid_representing_the_invitation_if_the_conference_has_linked_participants()
+        {
+            // Arrange
+            var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
+            _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.CreateInvitationEntry(It.IsAny<ConsultationInvitation>()));
+
+            // Act
+            var invitationGuid = await _sut.StartTrackingInvitation(_conference, requestedForParticipant.Id);
+
+            // Assert
+            invitationGuid.Should().NotBe(Guid.Empty);
+            _mocker.Mock<IConsultationResponseCache>()
+                .Verify(crc => crc.CreateInvitationEntry(
+                        It.Is<ConsultationInvitation>(ci =>
+                            ci.RequestedForParticipantId == requestedForParticipant.Id &&
+                            ci.InvitedParticipantResponses.Count == 1 + requestedForParticipant.LinkedParticipants.Count)), 
+                    Times.Once);
         }
         
         [Test]
-        public async Task should_not_track_response_for_participants_not_linked()
+        public async Task Should_return_an_empty_guid_if_the_conference_does_NOT_have_linked_participants()
         {
-            // arrange
-            var participant = _conference.Participants.First(x => !x.IsJudge() && !x.LinkedParticipants.Any());
+            // Arrange
+            var requestedForParticipant = _conference.Participants.First(p => !p.LinkedParticipants.Any());
+            _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.CreateInvitationEntry(It.IsAny<ConsultationInvitation>()));
             
-            // act
-            await _sut.UpdateConsultationResponse(_conference, participant.Id, ConsultationAnswer.Accepted);
-            
-            // assert
-            foreach (var room in _conference.CivilianRooms)
-            {
-                var acceptedResponses = await _cache.GetResponses(room.Id);
-                acceptedResponses.Should().BeEmpty();
-            }
+            // Act
+            var invitationGuid = await _sut.StartTrackingInvitation(_conference, requestedForParticipant.Id);
+
+            // Assert
+            invitationGuid.Should().Be(Guid.Empty);
+            _mocker.Mock<IConsultationResponseCache>()
+                .Verify(crc => crc.CreateInvitationEntry(It.IsAny<ConsultationInvitation>()), 
+                    Times.Never);
+        }
+
+        [Test]
+        public async Task Should_return_the_invitation_if_it_is_tracked()
+        {
+            // Arrange
+            var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
+            ConsultationInvitation expectedConsultationInvitation = new ConsultationInvitation(requestedForParticipant.Id, requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
+            _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
+                .ReturnsAsync(expectedConsultationInvitation);
+
+            // Act
+            var invitation = await _sut.GetInvitation(expectedConsultationInvitation.InvitationId);
+
+            // Assert
+            invitation.Should().Be(expectedConsultationInvitation);
         }
         
         [Test]
-        public async Task should_return_true_all_participants_have_accepted_for_participants_not_linked()
+        public async Task Should_return_the_null_if_it_is_NOT_tracked()
         {
-            // arrange
-            var participant = _conference.Participants.First(x => !x.IsJudge() && !x.LinkedParticipants.Any());
-            
-            // act
-            var result = await _sut.HaveAllParticipantsAccepted(_conference, participant.Id);
-            
-            // assert
-            result.Should().BeTrue();
-        }
+            // Arrange
+            var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
+            ConsultationInvitation expectedConsultationInvitation = new ConsultationInvitation(requestedForParticipant.Id, requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
+            _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
+                .ReturnsAsync(null as ConsultationInvitation);
 
-        [Test]
-        public async Task should_return_false_when_no_participants_have_accepted()
-        {
-            // arrange
-            var interpreterRoom = _conference.CivilianRooms.First();
-            var participants = _conference.Participants.Where(p => interpreterRoom.Participants.Contains(p.Id))
-                .ToList();
-            
-            // act
-            var result = await _sut.HaveAllParticipantsAccepted(_conference, participants[0].Id);
-            
-            // assert
-            result.Should().BeFalse();
+            // Act
+            var invitation = await _sut.GetInvitation(expectedConsultationInvitation.InvitationId);
+
+            // Assert
+            invitation.Should().BeNull();
         }
         
         [Test]
-        public async Task should_return_false_when_not_all_participants_have_accepted()
+        public async Task Should_return_null_if_the_GUID_is_empty()
         {
-            // arrange
-            var interpreterRoom = _conference.CivilianRooms.First();
-            var participants = _conference.Participants.Where(p => interpreterRoom.Participants.Contains(p.Id))
-                .ToList();
+            // Arrange
+            var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
+            ConsultationInvitation expectedConsultationInvitation = new ConsultationInvitation(requestedForParticipant.Id, requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
+            _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
+                .ReturnsAsync(null as ConsultationInvitation);
+
+            // Act
+            var invitation = await _sut.GetInvitation(expectedConsultationInvitation.InvitationId);
+
+            // Assert
+            invitation.Should().BeNull();
+        }
+
+        [Test]
+        public async Task Should_call_delete_invitation_entry()
+        {
+            // Arrange
+            var invitationId = Guid.NewGuid();
             
-            await _sut.UpdateConsultationResponse(_conference, participants[0].Id, ConsultationAnswer.Accepted);
+            // Act
+            await _sut.StopTrackingInvitation(invitationId);
+
+            // Assert
+            _mocker.Mock<IConsultationResponseCache>().Verify(crc => crc.DeleteInvitationEntry(It.Is<Guid>(x => x == invitationId)), Times.Once);
+        }
+
+        [Test]
+        public async Task Should_return_HaveAllParticipantsAccepted_result_from_consultation_invite_method()
+        {
+            // Arrange
+            var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
+            ConsultationInvitation expectedConsultationInvitation = new ConsultationInvitation(
+                requestedForParticipant.Id, requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
+
+            foreach (var invitedParticipantResponseKey in expectedConsultationInvitation.InvitedParticipantResponses.Keys)
+                expectedConsultationInvitation.InvitedParticipantResponses[invitedParticipantResponseKey] = ConsultationAnswer.Accepted;
+
+            _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
+                .ReturnsAsync(expectedConsultationInvitation);
             
-            // act
-            var result = await _sut.HaveAllParticipantsAccepted(_conference, participants[0].Id);
-            
-            // assert
-            result.Should().BeFalse();
+            // Act
+            var haveAllParticipantsAccepted = await _sut.HaveAllParticipantsAccepted(expectedConsultationInvitation.InvitationId);
+
+            // Assert
+            _mocker.Mock<IConsultationResponseCache>().Verify(crc => crc.GetInvitation(It.Is<Guid>(x => x == expectedConsultationInvitation.InvitationId)), Times.Once);
+            haveAllParticipantsAccepted.Should().BeTrue();
         }
         
         [Test]
-        public async Task should_return_true_when_all_participants_have_accepted()
+        public async Task Should_return_true_for_all_accepted_if_the_consultation_invite_DOES_NOT_exist()
         {
-            // arrange
-            var interpreterRoom = _conference.CivilianRooms.First();
-            var participants = _conference.Participants.Where(p => interpreterRoom.Participants.Contains(p.Id))
-                .ToList();
-            foreach (var participant in participants)
-            {
-                await _sut.UpdateConsultationResponse(_conference, participant.Id, ConsultationAnswer.Accepted);
-            }
+            // Arrange
+            _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
+                .ReturnsAsync(null as ConsultationInvitation);
             
-            // act
-            var result = await _sut.HaveAllParticipantsAccepted(_conference, participants[0].Id);
+            // Act
+            var haveAllParticipantsAccepted = await _sut.HaveAllParticipantsAccepted(Guid.Empty);
 
-            // assert
-            result.Should().BeTrue();
+            // Assert
+            haveAllParticipantsAccepted.Should().BeTrue();
         }
 
         [Test]
-        public async Task should_clear_all_accepted_responses_when_one_participant_rejects()
+        public async Task Should_return_HaveAllResponded_result_from_consultation_invite_method()
         {
-            // arrange
-            var interpreterRoom = _conference.CivilianRooms.First();
-            var participants = _conference.Participants.Where(p => interpreterRoom.Participants.Contains(p.Id))
-                .ToList();
-            foreach (var participant in participants.Skip(1))
-            {
-                await _sut.UpdateConsultationResponse(_conference, participant.Id, ConsultationAnswer.Accepted);
-            }
-            await _sut.UpdateConsultationResponse(_conference, participants[0].Id, ConsultationAnswer.Rejected);
-            
-            // act
-            var result = await _sut.HaveAllParticipantsAccepted(_conference, participants[0].Id);
+            // Arrange
+            var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
+            ConsultationInvitation expectedConsultationInvitation = new ConsultationInvitation(
+                requestedForParticipant.Id, requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
 
-            // assert
-            result.Should().BeFalse();
+            _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
+                .ReturnsAsync(expectedConsultationInvitation);
             
-        }        
+            // Act
+            var haveAllParticipantsAccepted = await _sut.HaveAllParticipantsResponded(expectedConsultationInvitation.InvitationId);
+
+            // Assert
+            _mocker.Mock<IConsultationResponseCache>().Verify(crc => crc.GetInvitation(It.Is<Guid>(x => x == expectedConsultationInvitation.InvitationId)), Times.Once);
+            haveAllParticipantsAccepted.Should().BeTrue();
+        }
+        
+        [Test]
+        public async Task Should_return_true_for_all_responded_if_the_consultation_invite_DOES_NOT_exist()
+        {
+            // Arrange
+            _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
+                .ReturnsAsync(null as ConsultationInvitation);
+            
+            // Act
+            var haveAllParticipantsAccepted = await _sut.HaveAllParticipantsAccepted(Guid.Empty);
+
+            // Assert
+            haveAllParticipantsAccepted.Should().BeTrue();
+        }
+
+        [Test]
+        public async Task Should_update_status_if_the_invitation_exists()
+        {
+            // Arrange
+            var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
+            ConsultationInvitation expectedConsultationInvitation = new ConsultationInvitation(requestedForParticipant.Id, requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
+            
+            _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
+                .ReturnsAsync(expectedConsultationInvitation);
+            // Act
+            await _sut.UpdateConsultationResponse(expectedConsultationInvitation.InvitationId,
+                expectedConsultationInvitation.RequestedForParticipantId, ConsultationAnswer.Accepted);
+
+            // Assert
+            expectedConsultationInvitation
+                .InvitedParticipantResponses[expectedConsultationInvitation.RequestedForParticipantId].Should()
+                .Be(ConsultationAnswer.Accepted);
+        }
     }
 }

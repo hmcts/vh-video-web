@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.Common.Caching
 {
     public interface IConsultationResponseCache
     {
-        Task AddOrUpdateResponses(long roomId, List<Guid> accepted);
-        Task ClearResponses(long roomId);
-        Task<List<Guid>> GetResponses(long roomId);
+        Task CreateInvitationEntry(ConsultationInvitation consultationInvitation);
+        Task<ConsultationInvitation> GetInvitation(Guid invitationId);
+        Task UpdateResponseToInvitation(Guid invitationId, Guid participantId, ConsultationAnswer answer);
+        Task DeleteInvitationEntry(Guid invitationId);
     }
 }

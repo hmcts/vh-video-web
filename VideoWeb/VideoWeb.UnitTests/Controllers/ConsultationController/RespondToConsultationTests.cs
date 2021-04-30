@@ -91,6 +91,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         {
             // Arrange
             var request = ConsultationHelper.GetConsultationRequest(_testConference);
+            
             // Act
             var result =
                 await _controller.RespondToConsultationRequestAsync(request);
@@ -99,7 +100,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             result.Should().BeOfType<NoContentResult>();
             _mocker.Mock<IConsultationNotifier>()
                 .Verify(
-                    x => x.NotifyConsultationResponseAsync(_testConference, request.RoomLabel,
+                    x => x.NotifyConsultationResponseAsync(_testConference, request.InvitationId, request.RoomLabel,
                         request.RequestedForId, request.Answer), Times.Once);
         }
         
@@ -114,7 +115,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Setup(x => x.RespondToConsultationRequestAsync(It.IsAny<ConsultationRequestResponse>()))
                 .ThrowsAsync(apiException);
             _mocker.Mock<IConsultationResponseTracker>()
-                .Setup(x => x.HaveAllParticipantsAccepted(_testConference, request.RequestedForId)).ReturnsAsync(true);
+                .Setup(x => x.HaveAllParticipantsAccepted(request.InvitationId)).ReturnsAsync(true);
 
             // Act
             var result = await _controller.RespondToConsultationRequestAsync(request);
@@ -135,7 +136,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .Setup(x => x.RespondToConsultationRequestAsync(It.IsAny<ConsultationRequestResponse>()))
                 .ThrowsAsync(apiException);
             _mocker.Mock<IConsultationResponseTracker>()
-                .Setup(x => x.HaveAllParticipantsAccepted(_testConference, request.RequestedForId)).ReturnsAsync(true);
+                .Setup(x => x.HaveAllParticipantsAccepted(request.InvitationId)).ReturnsAsync(true);
             
             // Act
             var result = await _controller.RespondToConsultationRequestAsync(request);
@@ -161,7 +162,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             result.Should().BeOfType<NoContentResult>();
             _mocker.Mock<IConsultationNotifier>()
                 .Verify(
-                    x => x.NotifyConsultationResponseAsync(_testConference, consultationRequest.RoomLabel,
+                    x => x.NotifyConsultationResponseAsync(_testConference, consultationRequest.InvitationId, consultationRequest.RoomLabel,
                         consultationRequest.RequestedForId, consultationRequest.Answer), Times.Once);
         }
         
@@ -205,10 +206,9 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             // Arrange
             var consultationRequest = ConsultationHelper.GetConsultationRequest(_testConference);
             consultationRequest.Answer = ConsultationAnswer.Accepted;
-            _mocker.Mock<IConsultationResponseTracker>().Setup(x =>
-                    x.HaveAllParticipantsAccepted(_testConference, consultationRequest.RequestedForId))
-                .ReturnsAsync(true);
 
+            _mocker.Mock<IConsultationResponseTracker>().Setup(x => x.HaveAllParticipantsResponded(It.IsAny<Guid>())).ReturnsAsync(true);
+            
             // Act
             var result = await _controller.RespondToConsultationRequestAsync(consultationRequest);
 
@@ -216,17 +216,17 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             result.Should().BeOfType<NoContentResult>();
             _mocker.Mock<IConsultationNotifier>()
                 .Verify(
-                    x => x.NotifyConsultationResponseAsync(_testConference, consultationRequest.RoomLabel,
+                    x => x.NotifyConsultationResponseAsync(_testConference, consultationRequest.InvitationId, consultationRequest.RoomLabel,
                         consultationRequest.RequestedForId, consultationRequest.Answer), Times.Once);
             
             _mocker.Mock<IConsultationNotifier>()
                 .Verify(
-                    x => x.NotifyConsultationResponseAsync(_testConference, consultationRequest.RoomLabel,
+                    x => x.NotifyConsultationResponseAsync(_testConference, consultationRequest.InvitationId, consultationRequest.RoomLabel,
                         consultationRequest.RequestedForId, consultationRequest.Answer), Times.Once);
             
             _mocker.Mock<IConsultationNotifier>()
                 .Verify(
-                    x => x.NotifyConsultationResponseAsync(_testConference, consultationRequest.RoomLabel,
+                    x => x.NotifyConsultationResponseAsync(_testConference, consultationRequest.InvitationId, consultationRequest.RoomLabel,
                         consultationRequest.RequestedForId, ConsultationAnswer.Transferring), Times.Once);
         }
     }

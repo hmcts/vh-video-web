@@ -160,7 +160,7 @@ namespace VideoWeb.Controllers
                     conference.AddParticipantToRoom(roomId, participantId);
                     break;
                 case EventType.Disconnected:
-                    await _consultationResponseTracker.ClearResponses(conference, participantId);
+                    await _consultationResponseTracker.StopTrackingInvitation(Guid.Empty);
                     conference.RemoveParticipantFromRoom(roomId, participantId);
                     break;
                 default: return;

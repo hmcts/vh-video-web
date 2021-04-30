@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using VideoWeb.Common.Caching;
@@ -8,10 +10,12 @@ namespace VideoWeb.Helpers
 {
     public interface IConsultationResponseTracker
     {
-        Task UpdateConsultationResponse(Conference conference, Guid participantId, ConsultationAnswer answer);
-        Task<bool> HaveAllParticipantsAccepted(Conference conference, Guid participantId);
-        
-        Task ClearResponses(Conference conference, Guid participantId);
+        Task<Guid> StartTrackingInvitation(Conference conference, Guid requestedParticipantId);
+        Task<ConsultationInvitation> GetInvitation(Guid invitationId);
+        Task UpdateConsultationResponse(Guid invitationId, Guid participantId, ConsultationAnswer answer);
+        Task StopTrackingInvitation(Guid invitationId);
+        Task<bool> HaveAllParticipantsAccepted(Guid invitationId);
+        Task<bool> HaveAllParticipantsResponded(Guid invitationId);
     }
 
     public class ConsultationResponseTracker : IConsultationResponseTracker
@@ -23,59 +27,49 @@ namespace VideoWeb.Helpers
             _cache = cache;
         }
 
-        public async Task UpdateConsultationResponse(Conference conference, Guid participantId,
-            ConsultationAnswer answer)
+        public async Task<Guid> StartTrackingInvitation(Conference conference, Guid requestedParticipantId)
         {
-            var participant = conference.Participants.First(x => x.Id == participantId);
-            if (!participant.LinkedParticipants.Any())
-            {
-                return;
-            }
-
-            var interpreterRoom = GetRoomForParticipant(conference, participant);
-
-            if (answer == ConsultationAnswer.Rejected)
-            {
-                await StopTrackingResponsesForInterpreterRoom(interpreterRoom.Id);
-            }
-
-            var acceptedConsultations = await _cache.GetResponses(interpreterRoom.Id);
-            if (!acceptedConsultations.Contains(participantId))
-            {
-                acceptedConsultations.Add(participantId);
-            }
-
-            await _cache.AddOrUpdateResponses(interpreterRoom.Id, acceptedConsultations);
+            var requestedParticipant = conference.Participants.FirstOrDefault(p => p.Id == requestedParticipantId);
+            
+            if (requestedParticipant?.LinkedParticipants.Any() != true) 
+                return Guid.Empty;
+            
+            var consultationInvitation = new ConsultationInvitation(requestedParticipantId, requestedParticipant.LinkedParticipants.Select(x => x.LinkedId));
+            await _cache.CreateInvitationEntry(consultationInvitation);
+            return consultationInvitation.InvitationId;
         }
 
-        private async Task StopTrackingResponsesForInterpreterRoom(long interpreterRoomId)
+        public async Task<ConsultationInvitation> GetInvitation(Guid invitationId)
         {
-            await _cache.ClearResponses(interpreterRoomId);
+            if (invitationId == Guid.Empty)
+                return null;
+            
+            return await _cache.GetInvitation(invitationId);
         }
 
-        public async Task<bool> HaveAllParticipantsAccepted(Conference conference, Guid participantId)
+        public async Task UpdateConsultationResponse(Guid invitationId, Guid participantId, ConsultationAnswer answer)
         {
-            var participant = conference.Participants.First(x => x.Id == participantId);
-            if (!participant.LinkedParticipants.Any())
-            {
-                return true;
-            }
-
-            var interpreterRoom = GetRoomForParticipant(conference, participant);
-            var participantsAccepted = await _cache.GetResponses(interpreterRoom.Id);
-            return interpreterRoom.Participants.All(participantsAccepted.Contains);
+            var invitation = await _cache.GetInvitation(invitationId);
+            
+            if (invitation != null) 
+                invitation.InvitedParticipantResponses[participantId] = answer;
         }
 
-        public async Task ClearResponses(Conference conference, Guid participantId)
+        public async Task StopTrackingInvitation(Guid invitationId)
         {
-            var participant = conference.Participants.First(x => x.Id == participantId);
-            var interpreterRoom = GetRoomForParticipant(conference, participant);
-            await StopTrackingResponsesForInterpreterRoom(interpreterRoom.Id);
+            await _cache.DeleteInvitationEntry(invitationId);
         }
 
-        private CivilianRoom GetRoomForParticipant(Conference conference, Participant participant)
+        public async Task<bool> HaveAllParticipantsAccepted(Guid invitationId)
         {
-            return conference.CivilianRooms.First(r => r.Participants.Contains(participant.Id));
+            var invitation = await _cache.GetInvitation(invitationId);
+            return invitation?.HaveAllAccepted ?? true;
+        }
+
+        public async Task<bool> HaveAllParticipantsResponded(Guid invitationId)
+        {
+            var invitation = await _cache.GetInvitation(invitationId);
+            return invitation?.HaveAllResponded ?? true;
         }
     }
 }

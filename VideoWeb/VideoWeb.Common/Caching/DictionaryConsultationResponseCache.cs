@@ -2,39 +2,38 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.Common.Caching
 {
     public class DictionaryConsultationResponseCache : IConsultationResponseCache
     {
-        private readonly ConcurrentDictionary<long, List<Guid>> _cache;
+        private readonly ConcurrentDictionary<Guid, ConsultationInvitation> _cache;
 
         public DictionaryConsultationResponseCache()
         {
-            _cache = new ConcurrentDictionary<long, List<Guid>>();
+            _cache = new ConcurrentDictionary<Guid, ConsultationInvitation>();
         }
 
-        public Task AddOrUpdateResponses(long roomId, List<Guid> accepted)
+        public Task CreateInvitationEntry(ConsultationInvitation consultationInvitation)
         {
-            _cache[roomId] = accepted;
+            _cache[consultationInvitation.InvitationId] = consultationInvitation;
             return Task.CompletedTask;
         }
 
-        public Task ClearResponses(long roomId)
+        public Task<ConsultationInvitation> GetInvitation(Guid invitationId)
         {
-            return Task.FromResult(_cache.TryRemove(roomId, out _));
+            return Task.FromResult(_cache[invitationId]);
         }
 
-        public Task<List<Guid>> GetResponses(long roomId)
+        public Task UpdateResponseToInvitation(Guid invitationId, Guid participantId, ConsultationAnswer answer)
         {
-            return Task.FromResult(_cache.TryGetValue(roomId, out var acceptedResponses)
-                ? acceptedResponses
-                : new List<Guid>());
+            throw new NotImplementedException();
         }
 
-        public ConcurrentDictionary<long, List<Guid>> GetCache()
+        public Task DeleteInvitationEntry(Guid invitationId)
         {
-            return _cache;
+            throw new NotImplementedException();
         }
     }
 }

@@ -102,7 +102,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             result.Should().BeOfType<AcceptedResult>();
 
             _mocker.Mock<IVideoApiClient>().Verify(x => x.JoinEndpointToConsultationAsync(It.Is<EndpointConsultationRequest>(r => r.EndpointId == request.EndpointId && r.ConferenceId == request.ConferenceId && r.RequestedById == _testConference.Participants[1].Id)), Times.Once);
-            _mocker.Mock<IConsultationNotifier>().Verify(x=> x.NotifyConsultationResponseAsync(_testConference, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring));
+            _mocker.Mock<IConsultationNotifier>().Verify(x=> x.NotifyConsultationResponseAsync(_testConference, Guid.Empty, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring));
         }
 
         [Test]
@@ -138,10 +138,10 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                     r.RequestedById == _testConference.Participants[1].Id)), Times.Once);
 
             _mocker.Mock<IConsultationNotifier>().Verify(x => x.NotifyConsultationResponseAsync(_testConference,
-                request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring));
+                Guid.Empty, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring));
             
             _mocker.Mock<IConsultationNotifier>().Verify(x => x.NotifyConsultationResponseAsync(_testConference,
-                request.RoomLabel, request.EndpointId, ConsultationAnswer.Failed));
+                Guid.Empty, request.RoomLabel, request.EndpointId, ConsultationAnswer.Failed));
         }
 
         private void SetupControllerWithClaims(string username)

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -66,29 +67,30 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         [Test]
         public async Task should_remove_participant_from_room_on_disconnect_event()
         {
-            // Arrange
-            var request = CreateRequest();
-            var room = TestConference.CivilianRooms.First();
-            var roomId = room.Id;
-            var participantId = room.Participants.First();
-            request.ParticipantRoomId = roomId.ToString();
-            request.ParticipantId = participantId.ToString();
-            request.EventType = EventType.Disconnected;
-            
-            // Act
-            var result = await Sut.SendHearingEventAsync(request);
-            
-            // Assert
-            Mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
-            Mocker.Mock<IConsultationResponseTracker>()
-                .Verify(x => x.ClearResponses(TestConference, participantId), Times.Once);
-            result.Should().BeOfType<NoContentResult>();
-            var typedResult = (NoContentResult) result;
-            typedResult.Should().NotBeNull();
-
-            var newCacheRoom = TestConference.CivilianRooms.FirstOrDefault(x => x.Id == roomId);
-            newCacheRoom.Should().NotBeNull();
-            newCacheRoom?.Participants.Any(x => x == participantId).Should().BeFalse();
+            throw new NotImplementedException();
+            // // Arrange
+            // var request = CreateRequest();
+            // var room = TestConference.CivilianRooms.First();
+            // var roomId = room.Id;
+            // var participantId = room.Participants.First();
+            // request.ParticipantRoomId = roomId.ToString();
+            // request.ParticipantId = participantId.ToString();
+            // request.EventType = EventType.Disconnected;
+            //
+            // // Act
+            // var result = await Sut.SendHearingEventAsync(request);
+            //
+            // // Assert
+            // Mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
+            // Mocker.Mock<IConsultationResponseTracker>()
+            //     .Verify(x => x.ClearResponses(TestConference, participantId), Times.Once);
+            // result.Should().BeOfType<NoContentResult>();
+            // var typedResult = (NoContentResult) result;
+            // typedResult.Should().NotBeNull();
+            //
+            // var newCacheRoom = TestConference.CivilianRooms.FirstOrDefault(x => x.Id == roomId);
+            // newCacheRoom.Should().NotBeNull();
+            // newCacheRoom?.Participants.Any(x => x == participantId).Should().BeFalse();
         }
 
         [Test]

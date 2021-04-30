@@ -10,6 +10,11 @@ namespace VideoWeb.Contract.Request
     public class PrivateConsultationRequest
     {
         /// <summary>
+        /// ID unique to the request
+        /// </summary>
+        public Guid InvitationId { get; set; }
+        
+        /// <summary>
         /// Conference ID
         /// </summary>
         public Guid ConferenceId { get; set; }

@@ -101,12 +101,11 @@ namespace VideoWeb.Controllers
 
             try
             {
-                await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedForId, request.Answer);
-                var haveAllResponded =
-                    await _consultationResponseTracker.HaveAllParticipantsAccepted(conference, request.RequestedForId);
+                await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.InvitationId, request.RoomLabel, request.RequestedForId, request.Answer);
+                var haveAllResponded = await _consultationResponseTracker.HaveAllParticipantsResponded(request.InvitationId);
                 if (request.Answer == ConsultationAnswer.Accepted && haveAllResponded)
                 {
-                    await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Transferring);
+                    await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.InvitationId, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Transferring);
                 }
 
                 if (request.Answer != ConsultationAnswer.Accepted || haveAllResponded)
@@ -118,7 +117,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Failed);
+                await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.InvitationId, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Failed);
                 _logger.LogError(e, "Consultation request could not be responded to");
                 return StatusCode(e.StatusCode, e.Response);
             }
@@ -173,7 +172,8 @@ namespace VideoWeb.Controllers
                         }
                         catch (VideoApiException e)
                         {
-                            await _consultationNotifier.NotifyConsultationResponseAsync(conference, room.Label, endpoint.Id, ConsultationAnswer.Failed);
+                            // As endpoints cannot be linked participants just use and Empty GUID
+                            await _consultationNotifier.NotifyConsultationResponseAsync(conference, Guid.Empty, room.Label, endpoint.Id, ConsultationAnswer.Failed);
                             _logger.LogError(e, "Unable to add {EndpointId} to consultation", endpoint.Id);
                         }
                     }
@@ -260,7 +260,7 @@ namespace VideoWeb.Controllers
 
             try
             {
-                await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring);
+                await _consultationNotifier.NotifyConsultationResponseAsync(conference, Guid.Empty, request.RoomLabel, request.EndpointId, ConsultationAnswer.Transferring);
                 await _videoApiClient.JoinEndpointToConsultationAsync(new EndpointConsultationRequest
                 {
                     ConferenceId = request.ConferenceId,
@@ -271,7 +271,8 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.RoomLabel, request.EndpointId, ConsultationAnswer.Failed);
+                // As endpoints cannot be linked participants just use and Empty GUID
+                await _consultationNotifier.NotifyConsultationResponseAsync(conference, Guid.Empty, request.RoomLabel, request.EndpointId, ConsultationAnswer.Failed);
                 _logger.LogError(e, "Join endpoint to consultation error");
                 return StatusCode(e.StatusCode);
             }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using UserApi.Contract.Responses;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.Common.Caching
 {
@@ -12,52 +13,24 @@ namespace VideoWeb.Common.Caching
     {
         private readonly IDistributedCache _distributedCache;
 
-        public DistributedConsultationResponseCache(IDistributedCache distributedCache)
+        public Task CreateInvitationEntry(ConsultationInvitation consultationInvitation)
         {
-            _distributedCache = distributedCache;
+            throw new NotImplementedException();
         }
 
-        public Task AddOrUpdateResponses(long roomId, List<Guid> accepted)
+        public Task<ConsultationInvitation> GetInvitation(Guid invitationId)
         {
-            return SetResponsesForRoom(roomId, accepted);
+            throw new NotImplementedException();
         }
 
-        public Task ClearResponses(long roomId)
+        public Task UpdateResponseToInvitation(Guid invitationId, Guid participantId, ConsultationAnswer answer)
         {
-            return SetResponsesForRoom(roomId, new List<Guid>());
+            throw new NotImplementedException();
         }
 
-        public Task<List<Guid>> GetResponses(long roomId)
+        public Task DeleteInvitationEntry(Guid invitationId)
         {
-            return GetAcceptedResponsesFromCache(roomId.ToString());
-        }
-
-        private Task SetResponsesForRoom(long roomId, List<Guid> acceptedResponses)
-        {
-            var serialisedConference = JsonConvert.SerializeObject(acceptedResponses, CachingHelper.SerializerSettings);
-            var data = Encoding.UTF8.GetBytes(serialisedConference);
-            return _distributedCache.SetAsync(roomId.ToString(), data,
-                new DistributedCacheEntryOptions
-                {
-                    SlidingExpiration = TimeSpan.FromHours(4)
-                });
-        }
-
-
-        private async Task<List<Guid>> GetAcceptedResponsesFromCache(string key)
-        {
-            try
-            {
-                var data = await _distributedCache.GetAsync(key);
-                var profileSerialised = Encoding.UTF8.GetString(data);
-                var profile =
-                    JsonConvert.DeserializeObject<List<Guid>>(profileSerialised, CachingHelper.SerializerSettings);
-                return profile;
-            }
-            catch (Exception)
-            {
-                return new List<Guid>();
-            }
+            throw new NotImplementedException();
         }
     }
 }
