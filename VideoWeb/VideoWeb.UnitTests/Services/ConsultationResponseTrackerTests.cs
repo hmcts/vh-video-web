@@ -50,7 +50,7 @@ namespace VideoWeb.UnitTests.Services
         }
         
         [Test]
-        public async Task Should_return_an_empty_guid_if_the_conference_does_NOT_have_linked_participants()
+        public async Task Should_create_an_entry_in_the_cache_with_a_guid_representing_the_invitation_if_the_conference_DOES_NOT_have_linked_participants()
         {
             // Arrange
             var requestedForParticipant = _conference.Participants.First(p => !p.LinkedParticipants.Any());
@@ -60,10 +60,10 @@ namespace VideoWeb.UnitTests.Services
             var invitationGuid = await _sut.StartTrackingInvitation(_conference, "room_label", requestedForParticipant.Id);
 
             // Assert
-            invitationGuid.Should().Be(Guid.Empty);
+            invitationGuid.Should().NotBe(Guid.Empty);
             _mocker.Mock<IConsultationResponseCache>()
                 .Verify(crc => crc.CreateInvitationEntry(It.IsAny<ConsultationInvitation>()), 
-                    Times.Never);
+                    Times.Once);
         }
 
         [Test]
@@ -150,7 +150,7 @@ namespace VideoWeb.UnitTests.Services
         }
         
         [Test]
-        public async Task Should_return_true_for_all_accepted_if_the_consultation_invite_DOES_NOT_exist()
+        public async Task Should_return_false_for_all_accepted_if_the_consultation_invite_DOES_NOT_exist()
         {
             // Arrange
             _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
@@ -160,16 +160,24 @@ namespace VideoWeb.UnitTests.Services
             var haveAllParticipantsAccepted = await _sut.HaveAllParticipantsAccepted(Guid.Empty);
 
             // Assert
-            haveAllParticipantsAccepted.Should().BeTrue();
+            haveAllParticipantsAccepted.Should().BeFalse();
         }
 
-        [Test]
-        public async Task Should_return_HaveAllResponded_result_from_consultation_invite_method()
+        [TestCase(ConsultationAnswer.Accepted)]
+        [TestCase(ConsultationAnswer.Rejected)]
+        [TestCase(ConsultationAnswer.Failed)]
+        [TestCase(ConsultationAnswer.Transferring)]
+        public async Task Should_return_HaveAllResponded_result_from_consultation_invite_method(ConsultationAnswer answer)
         {
             // Arrange
             var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
             ConsultationInvitation expectedConsultationInvitation = new ConsultationInvitation(
                 requestedForParticipant.Id, "room_label",requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
+
+            foreach (var invitedParticipantResponseKey in expectedConsultationInvitation.InvitedParticipantResponses.Keys)
+            {
+                expectedConsultationInvitation.InvitedParticipantResponses[invitedParticipantResponseKey] = answer;
+            }
 
             _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
                 .ReturnsAsync(expectedConsultationInvitation);
@@ -183,7 +191,7 @@ namespace VideoWeb.UnitTests.Services
         }
         
         [Test]
-        public async Task Should_return_true_for_all_responded_if_the_consultation_invite_DOES_NOT_exist()
+        public async Task Should_return_false_for_all_responded_if_the_consultation_invite_DOES_NOT_exist()
         {
             // Arrange
             _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
@@ -193,7 +201,7 @@ namespace VideoWeb.UnitTests.Services
             var haveAllParticipantsAccepted = await _sut.HaveAllParticipantsAccepted(Guid.Empty);
 
             // Assert
-            haveAllParticipantsAccepted.Should().BeTrue();
+            haveAllParticipantsAccepted.Should().BeFalse();
         }
 
         [Test]
