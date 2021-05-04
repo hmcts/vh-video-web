@@ -91,7 +91,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Given(@"I have another hearing")]
         public void GivenIHaveAnotherHearingAndAConference()
         {
-            audioRecordingRequired = true;
             GivenIHaveAHearing(delayMinutes, audioRecordingRequired: true);
             CreateConference();
 
