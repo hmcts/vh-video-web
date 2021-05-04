@@ -3,9 +3,9 @@ import { ConsultationAnswer } from 'src/app/services/clients/api-client';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 
 export interface ConsultationInvitation {
-    answer: ConsultationAnswer,
-    invitationId: string,
-    roomLabel: string,
+    answer: ConsultationAnswer;
+    invitationId: string;
+    roomLabel: string;
     linkedParticipantStatuses: { [participantId: string]: boolean };
     activeToast: VhToastComponent;
     activeParticipantAccepted: boolean;

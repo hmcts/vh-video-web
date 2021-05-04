@@ -89,7 +89,13 @@ export class EventsService {
             this.helpMessageSubject.next(message);
         },
 
-        RequestedConsultationMessage: (conferenceId: string, invitationId: string, roomLabel: string, requestedBy: string, requestedFor: string) => {
+        RequestedConsultationMessage: (
+            conferenceId: string,
+            invitationId: string,
+            roomLabel: string,
+            requestedBy: string,
+            requestedFor: string
+        ) => {
             const message = new RequestedConsultationMessage(conferenceId, invitationId, roomLabel, requestedBy, requestedFor);
             this.logger.debug('[EventsService] - RequestConsultationMessage received', message);
             this.requestedConsultationMessageSubject.next(message);
@@ -103,7 +109,14 @@ export class EventsService {
             answer: ConsultationAnswer,
             responseInitiatorId: string
         ) => {
-            const message = new ConsultationRequestResponseMessage(conferenceId, invitationId, roomLabel, requestedFor, answer, responseInitiatorId);
+            const message = new ConsultationRequestResponseMessage(
+                conferenceId,
+                invitationId,
+                roomLabel,
+                requestedFor,
+                answer,
+                responseInitiatorId
+            );
             this.logger.debug('[EventsService] - ConsultationRequestResponseMessage received', message);
             this.consultationRequestResponseMessageSubject.next(message);
         },

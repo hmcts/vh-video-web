@@ -42,7 +42,7 @@ describe('NotificationToastrService', () => {
     });
 
     describe('showConsultationInvite', () => {
-        const expectedInvitationId = "invitation-id";
+        const expectedInvitationId = 'invitation-id';
         const invitation = {
             invitationId: expectedInvitationId
         } as ConsultationInvitation;

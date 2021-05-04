@@ -40,7 +40,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
     let consultationService: jasmine.SpyObj<ConsultationService>;
     let logger: jasmine.SpyObj<Logger>;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
-    const invitationId = "invitation-id";
+    const invitationId = 'invitation-id';
 
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
@@ -194,7 +194,13 @@ describe('PrivateConsultationParticipantsComponent', () => {
     it('should not set answer if different conference', () => {
         component.roomLabel = 'Room1';
         consultationRequestResponseMessageSubjectMock.next(
-            new ConsultationRequestResponseMessage('IncorrectConferenceId', invitationId, 'Room1', 'Participant1', ConsultationAnswer.Rejected)
+            new ConsultationRequestResponseMessage(
+                'IncorrectConferenceId',
+                invitationId,
+                'Room1',
+                'Participant1',
+                ConsultationAnswer.Rejected
+            )
         );
 
         // Assert

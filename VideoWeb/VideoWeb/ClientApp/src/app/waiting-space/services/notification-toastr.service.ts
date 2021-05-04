@@ -91,7 +91,14 @@ export class NotificationToastrService {
             const index = this.activeRoomInviteRequests.indexOf(inviteKey);
             this.activeRoomInviteRequests.splice(index, 1);
 
-            await this.consultationService.respondToConsultationRequest(conferenceId, consultationInvitation.invitationId, requestedById, requestedFor.id, answer, roomLabel);
+            await this.consultationService.respondToConsultationRequest(
+                conferenceId,
+                consultationInvitation.invitationId,
+                requestedById,
+                requestedFor.id,
+                answer,
+                roomLabel
+            );
         };
 
         const toast = this.toastr.show('', '', {

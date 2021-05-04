@@ -303,8 +303,15 @@ export abstract class WaitingRoomBaseDirective {
                     const invitation = this.consultationInvitiationService.getInvitation(message.roomLabel);
 
                     // if the invitation has already been accepted; resend the response with the updated invitation id
-                    if (invitation.answer == ConsultationAnswer.Accepted) {
-                        this.consultationService.respondToConsultationRequest(message.conferenceId, message.invitationId, message.requestedBy, message.requestedFor, invitation.answer, message.roomLabel);
+                    if (invitation.answer === ConsultationAnswer.Accepted) {
+                        this.consultationService.respondToConsultationRequest(
+                            message.conferenceId,
+                            message.invitationId,
+                            message.requestedBy,
+                            message.requestedFor,
+                            invitation.answer,
+                            message.roomLabel
+                        );
                     }
 
                     invitation.invitationId = message.invitationId;
