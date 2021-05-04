@@ -57,10 +57,10 @@ namespace VideoWeb.Common.Models
         {
             get
             {
-                return InvitedParticipantResponses.Values.Aggregate(true, (state, x) => state == (state && x == ConsultationAnswer.Accepted));
+                return InvitedParticipantResponses.Values.Aggregate(true, (state, x) => state && x == ConsultationAnswer.Accepted);
             }
         } 
-        public bool HaveAllResponded => InvitedParticipantResponses.Values.Aggregate(true, (state, x) => state == (state && x != ConsultationAnswer.None));
-        public bool HasSomeoneRejected => InvitedParticipantResponses.Values.Aggregate(false, (state, x) => state == (state || x == ConsultationAnswer.Rejected || x == ConsultationAnswer.Failed));
+        public bool HaveAllResponded => InvitedParticipantResponses.Values.Aggregate(true, (state, x) => state && x != ConsultationAnswer.None);
+        public bool HasSomeoneRejected => InvitedParticipantResponses.Values.Aggregate(false, (state, x) => state || x == ConsultationAnswer.Rejected || x == ConsultationAnswer.Failed);
     }
 }

@@ -301,14 +301,21 @@ export abstract class WaitingRoomBaseDirective {
                     const roomEndpoints = this.findEndpointsInRoom(message.roomLabel);
 
                     const invitation = this.consultationInvitiationService.getInvitation(message.roomLabel);
-                    invitation.invitationId = message.invitationId; // set or update the invitation id
+
+                    // if the invitation has already been accepted; resend the response with the updated invitation id
+                    if (invitation.answer == ConsultationAnswer.Accepted) {
+                        this.consultationService.respondToConsultationRequest(message.conferenceId, message.invitationId, message.requestedBy, message.requestedFor, invitation.answer, message.roomLabel);
+                    }
+
+                    invitation.invitationId = message.invitationId;
+
                     invitation.invitedByName = requestedBy.displayName;
 
                     if (!invitation.activeParticipantAccepted && !invitation.activeToast) {
                         const consultationInviteToast = this.notificationToastrService.showConsultationInvite(
                             message.roomLabel,
                             message.conferenceId,
-                            message.invitationId,
+                            invitation,
                             requestedBy,
                             requestedFor,
                             roomParticipants,
@@ -478,6 +485,7 @@ export abstract class WaitingRoomBaseDirective {
 
         const invitation = this.consultationInvitiationService.getInvitation(roomLabel);
         invitation.activeParticipantAccepted = true;
+        invitation.answer = ConsultationAnswer.Accepted;
 
         this.createOrUpdateWaitingOnLinkedParticipantsNotification(invitation);
     }

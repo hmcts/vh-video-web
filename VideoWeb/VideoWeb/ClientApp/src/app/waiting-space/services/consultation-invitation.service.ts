@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
+import { ConsultationAnswer } from 'src/app/services/clients/api-client';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 
 export interface ConsultationInvitation {
+    answer: ConsultationAnswer,
     invitationId: string,
     roomLabel: string,
     linkedParticipantStatuses: { [participantId: string]: boolean };
     activeToast: VhToastComponent;
     activeParticipantAccepted: boolean;
     invitedByName: string;
-    rejected: boolean;
 }
 
 @Injectable({
@@ -20,15 +21,15 @@ export class ConsultationInvitationService {
     getInvitation(roomLabel: string): ConsultationInvitation {
         const invitation = this.consultationInvitations[roomLabel];
 
-        if (!invitation || invitation.rejected) {
+        if (!invitation || invitation.answer === ConsultationAnswer.Rejected) {
             return (this.consultationInvitations[roomLabel] = {
+                answer: ConsultationAnswer.None,
                 invitationId: null,
                 roomLabel: roomLabel,
                 linkedParticipantStatuses: {},
                 activeToast: null,
                 activeParticipantAccepted: false,
-                invitedByName: null,
-                rejected: false
+                invitedByName: null
             } as ConsultationInvitation);
         }
 
@@ -38,7 +39,7 @@ export class ConsultationInvitationService {
     rejectInvitation(roomLabel: string) {
         const invitation = this.consultationInvitations[roomLabel];
         if (invitation) {
-            invitation.rejected = true;
+            invitation.answer = ConsultationAnswer.Rejected;
         }
     }
 

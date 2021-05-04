@@ -9,6 +9,7 @@ import { NotificationSoundsService } from './notification-sounds.service';
 import { Guid } from 'guid-typescript';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { TranslateService } from '@ngx-translate/core';
+import { ConsultationInvitation } from './consultation-invitation.service';
 
 @Injectable()
 export class NotificationToastrService {
@@ -34,7 +35,7 @@ export class NotificationToastrService {
     showConsultationInvite(
         roomLabel: string,
         conferenceId: string,
-        invitationId: string,
+        consultationInvitation: ConsultationInvitation,
         requestedBy: Participant,
         requestedFor: Participant,
         participants: Participant[],
@@ -90,7 +91,7 @@ export class NotificationToastrService {
             const index = this.activeRoomInviteRequests.indexOf(inviteKey);
             this.activeRoomInviteRequests.splice(index, 1);
 
-            await this.consultationService.respondToConsultationRequest(conferenceId, invitationId, requestedById, requestedFor.id, answer, roomLabel);
+            await this.consultationService.respondToConsultationRequest(conferenceId, consultationInvitation.invitationId, requestedById, requestedFor.id, answer, roomLabel);
         };
 
         const toast = this.toastr.show('', '', {

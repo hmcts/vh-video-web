@@ -1,5 +1,6 @@
 import { ConsultationInvitation, ConsultationInvitationService } from './consultation-invitation.service';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
+import { ConsultationAnswer } from 'src/app/services/clients/api-client';
 
 describe('ConsultationInvitationServiceService', () => {
     let service: ConsultationInvitationService;
@@ -18,10 +19,10 @@ describe('ConsultationInvitationServiceService', () => {
 
     describe('rejectInvitationByRoomLabel', () => {
         const expectedId = 'test-id';
-        it('should set rejected to false on the invitation if it exists', () => {
+        it('should set answer to rejected on the invitation if it exists', () => {
             // Arrange
             const invitation = {
-                rejected: false
+                answer: ConsultationAnswer.Rejected
             } as ConsultationInvitation;
             service['consultationInvitations'][expectedId] = invitation;
 
@@ -29,7 +30,7 @@ describe('ConsultationInvitationServiceService', () => {
             service.rejectInvitation(expectedId);
 
             // Assert
-            expect(invitation.rejected).toBeTrue();
+            expect(invitation.answer).toBe(ConsultationAnswer.Rejected);
         });
     });
 
@@ -54,12 +55,13 @@ describe('ConsultationInvitationServiceService', () => {
             // Assert
             expect(invitation).toBeTruthy();
             expect(invitation.roomLabel).toBe(expectedRoomLabel);
+            expect(invitation.answer).toBe(ConsultationAnswer.None);
         });
 
         it('should create a new invitation if the existing one is marked as rejected', () => {
             // Arrange
             const existingInvitation = {
-                rejected: true
+                answer: ConsultationAnswer.Rejected
             } as ConsultationInvitation;
             service['consultationInvitations'][expectedRoomLabel] = existingInvitation;
 
@@ -68,7 +70,7 @@ describe('ConsultationInvitationServiceService', () => {
 
             // Assert
             expect(invitation).toBeTruthy();
-            expect(invitation.rejected).toBeFalse();
+            expect(invitation.answer).toBe(ConsultationAnswer.None);
         });
     });
 

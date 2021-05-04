@@ -29,8 +29,8 @@ namespace VideoWeb.Helpers
         public async Task<Guid> StartTrackingInvitation(Conference conference, string roomLabel, Guid requestedParticipantId)
         {
             var requestedParticipant = conference.Participants.FirstOrDefault(p => p.Id == requestedParticipantId);
-            
-            if (requestedParticipant?.LinkedParticipants.Any() != true) 
+
+            if (requestedParticipant == null) 
                 return Guid.Empty;
             
             var consultationInvitation = new ConsultationInvitation(requestedParticipantId, roomLabel, requestedParticipant.LinkedParticipants.Select(x => x.LinkedId));
@@ -59,13 +59,13 @@ namespace VideoWeb.Helpers
         public async Task<bool> HaveAllParticipantsAccepted(Guid invitationId)
         {
             var invitation = await _cache.GetInvitation(invitationId);
-            return invitation?.HaveAllAccepted ?? true;
+            return invitation?.HaveAllAccepted ?? false;
         }
 
         public async Task<bool> HaveAllParticipantsResponded(Guid invitationId)
         {
             var invitation = await _cache.GetInvitation(invitationId);
-            return invitation?.HaveAllResponded ?? true;
+            return invitation?.HaveAllResponded ?? false;
         }
 
         public async Task StopTrackingInvitationsForParticipant(Guid participantId)
