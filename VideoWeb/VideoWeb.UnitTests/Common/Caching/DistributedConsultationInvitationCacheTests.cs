@@ -17,11 +17,11 @@ using VideoWeb.Common.Models;
 namespace VideoWeb.UnitTests.Common.Caching
 {
     [TestFixture]
-    public class DistributedConsultationResponseCacheTests
+    public class DistributedConsultationInvitationCacheTests
     {
         private AutoMock _mocker;
         private IDistributedCache _distributedCache;
-        private DistributedConsultationResponseCache _sut;
+        private DistributedConsultationInvitationCache _sut;
 
         private async Task WriteToCache<T>(Guid key, T obj) where T : class
         {
@@ -47,7 +47,7 @@ namespace VideoWeb.UnitTests.Common.Caching
             var opts = Options.Create(new MemoryDistributedCacheOptions());
             _distributedCache = new MemoryDistributedCache(opts);
             _mocker = AutoMock.GetStrict(builder => builder.RegisterInstance(_distributedCache));
-            _sut = _mocker.Create<DistributedConsultationResponseCache>();
+            _sut = _mocker.Create<DistributedConsultationInvitationCache>();
         }
         
         [Test]

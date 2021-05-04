@@ -120,7 +120,7 @@ namespace VideoWeb.UnitTests.Services
             await _sut.NotifyConsultationResponseAsync(_conference, expectedInvitationId, roomLabel, requestedFor.Id, answer);
 
             // assert
-            _mocker.Mock<IConsultationResponseTracker>().Verify(crt =>
+            _mocker.Mock<IConsultationInvitationTracker>().Verify(crt =>
                 crt.UpdateConsultationResponse(expectedInvitationId, requestedFor.Id, answer), Times.Once);
             _mocker.Mock<IEventHubClient>().Verify(
                 x => x.ConsultationRequestResponseMessage(_conference.Id, expectedInvitationId, roomLabel, requestedFor.Id, answer, requestedFor.Id),
@@ -184,7 +184,7 @@ namespace VideoWeb.UnitTests.Services
             var answer = ConsultationAnswer.Accepted;
             var expectedInvitationId = Guid.NewGuid();
 
-            _mocker.Mock<IConsultationResponseTracker>().Setup(crt => crt.HaveAllParticipantsAccepted(expectedInvitationId))
+            _mocker.Mock<IConsultationInvitationTracker>().Setup(crt => crt.HaveAllParticipantsAccepted(expectedInvitationId))
                 .ReturnsAsync(true);
             
             // act
@@ -218,7 +218,7 @@ namespace VideoWeb.UnitTests.Services
             await _sut.NotifyConsultationResponseAsync(_conference, expectedInvitationId, roomLabel, linkedParticipant.Id, answer);
             
             // assert
-            _mocker.Mock<IConsultationResponseTracker>().Verify(crt => crt.StopTrackingInvitation(expectedInvitationId));
+            _mocker.Mock<IConsultationInvitationTracker>().Verify(crt => crt.StopTrackingInvitation(expectedInvitationId));
         }
 
         [TestCase(ConsultationAnswer.None)]
@@ -235,7 +235,7 @@ namespace VideoWeb.UnitTests.Services
             await _sut.NotifyConsultationResponseAsync(_conference, expectedInvitationId, roomLabel, linkedParticipant.Id, answer);
             
             // assert
-            _mocker.Mock<IConsultationResponseTracker>().Verify(crt => crt.StopTrackingInvitation(expectedInvitationId));
+            _mocker.Mock<IConsultationInvitationTracker>().Verify(crt => crt.StopTrackingInvitation(expectedInvitationId));
         }
 
         [Test]

@@ -9,11 +9,11 @@ using VideoWeb.Common.Models;
 
 namespace VideoWeb.Common.Caching
 {
-    public class DistributedConsultationResponseCache : IConsultationResponseCache
+    public class DistributedConsultationInvitationCache : IConsultationInvitationCache
     {
         private readonly IDistributedCache _distributedCache;
 
-        public DistributedConsultationResponseCache(IDistributedCache distributedCache)
+        public DistributedConsultationInvitationCache(IDistributedCache distributedCache)
         {
             _distributedCache = distributedCache;
         }

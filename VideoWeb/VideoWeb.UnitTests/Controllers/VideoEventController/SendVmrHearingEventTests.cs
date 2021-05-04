@@ -81,7 +81,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             
             // Assert
             Mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
-            Mocker.Mock<IConsultationResponseTracker>()
+            Mocker.Mock<IConsultationInvitationTracker>()
                 .Verify(x => x.StopTrackingInvitationsForParticipant(participantId), Times.Once);
             result.Should().BeOfType<NoContentResult>();
             var typedResult = (NoContentResult) result;

@@ -25,7 +25,7 @@ namespace VideoWeb.Controllers
         private readonly IVideoApiClient _videoApiClient;
         private readonly IConferenceCache _conferenceCache;
         private readonly IConsultationNotifier _consultationNotifier;
-        private readonly IConsultationResponseTracker _consultationResponseTracker;
+        private readonly IConsultationInvitationTracker _consultationInvitationTracker;
         private readonly ILogger<ConsultationsController> _logger;
         private readonly IMapperFactory _mapperFactory;
 
@@ -33,14 +33,14 @@ namespace VideoWeb.Controllers
             IVideoApiClient videoApiClient,
             IConferenceCache conferenceCache,
             ILogger<ConsultationsController> logger,
-            IMapperFactory mapperFactory, IConsultationNotifier consultationNotifier, IConsultationResponseTracker consultationResponseTracker)
+            IMapperFactory mapperFactory, IConsultationNotifier consultationNotifier, IConsultationInvitationTracker consultationInvitationTracker)
         {
             _videoApiClient = videoApiClient;
             _conferenceCache = conferenceCache;
             _logger = logger;
             _mapperFactory = mapperFactory;
             _consultationNotifier = consultationNotifier;
-            _consultationResponseTracker = consultationResponseTracker;
+            _consultationInvitationTracker = consultationInvitationTracker;
         }
 
         [HttpPost("leave")]
@@ -102,7 +102,7 @@ namespace VideoWeb.Controllers
             try
             {
                 await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.InvitationId, request.RoomLabel, request.RequestedForId, request.Answer);
-                var haveAllResponded = await _consultationResponseTracker.HaveAllParticipantsResponded(request.InvitationId);
+                var haveAllResponded = await _consultationInvitationTracker.HaveAllParticipantsResponded(request.InvitationId);
                 if (request.Answer == ConsultationAnswer.Accepted && haveAllResponded)
                 {
                     await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.InvitationId, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Transferring);

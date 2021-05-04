@@ -14,18 +14,18 @@ using VideoWeb.UnitTests.Builders;
 namespace VideoWeb.UnitTests.Services
 {
     [TestFixture]
-    public class ConsultationResponseTrackerTests
+    public class ConsultationInvitationTrackerTests
     {
         private AutoMock _mocker;
         private Conference _conference;
-        private IConsultationResponseTracker _sut;
+        private IConsultationInvitationTracker _sut;
 
         [SetUp]
         public void Setup()
         {
             _mocker = AutoMock.GetLoose();
             _conference = new ConferenceCacheModelBuilder().WithLinkedParticipantsInRoom().Build();
-            _sut = _mocker.Create<ConsultationResponseTracker>();
+            _sut = _mocker.Create<ConsultationInvitationTracker>();
         }
         
         // [Start] StartTrackingInvitation
@@ -34,14 +34,14 @@ namespace VideoWeb.UnitTests.Services
         {
             // Arrange
             var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
-            _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.CreateInvitationEntry(It.IsAny<ConsultationInvitation>()));
+            _mocker.Mock<IConsultationInvitationCache>().Setup(crc => crc.CreateInvitationEntry(It.IsAny<ConsultationInvitation>()));
 
             // Act
             var invitationGuid = await _sut.StartTrackingInvitation(_conference, "room_label", requestedForParticipant.Id);
 
             // Assert
             invitationGuid.Should().NotBe(Guid.Empty);
-            _mocker.Mock<IConsultationResponseCache>()
+            _mocker.Mock<IConsultationInvitationCache>()
                 .Verify(crc => crc.CreateInvitationEntry(
                         It.Is<ConsultationInvitation>(ci =>
                             ci.RequestedForParticipantId == requestedForParticipant.Id &&
@@ -54,14 +54,14 @@ namespace VideoWeb.UnitTests.Services
         {
             // Arrange
             var requestedForParticipant = _conference.Participants.First(p => !p.LinkedParticipants.Any());
-            _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.CreateInvitationEntry(It.IsAny<ConsultationInvitation>()));
+            _mocker.Mock<IConsultationInvitationCache>().Setup(crc => crc.CreateInvitationEntry(It.IsAny<ConsultationInvitation>()));
             
             // Act
             var invitationGuid = await _sut.StartTrackingInvitation(_conference, "room_label", requestedForParticipant.Id);
 
             // Assert
             invitationGuid.Should().NotBe(Guid.Empty);
-            _mocker.Mock<IConsultationResponseCache>()
+            _mocker.Mock<IConsultationInvitationCache>()
                 .Verify(crc => crc.CreateInvitationEntry(It.IsAny<ConsultationInvitation>()), 
                     Times.Once);
         }
@@ -72,7 +72,7 @@ namespace VideoWeb.UnitTests.Services
             // Arrange
             var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
             ConsultationInvitation expectedConsultationInvitation = new ConsultationInvitation(requestedForParticipant.Id, "room_label", requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
-            _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
+            _mocker.Mock<IConsultationInvitationCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
                 .ReturnsAsync(expectedConsultationInvitation);
 
             // Act
@@ -88,7 +88,7 @@ namespace VideoWeb.UnitTests.Services
             // Arrange
             var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
             ConsultationInvitation expectedConsultationInvitation = new ConsultationInvitation(requestedForParticipant.Id,"room_label", requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
-            _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
+            _mocker.Mock<IConsultationInvitationCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
                 .ReturnsAsync(null as ConsultationInvitation);
 
             // Act
@@ -104,7 +104,7 @@ namespace VideoWeb.UnitTests.Services
             // Arrange
             var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
             ConsultationInvitation expectedConsultationInvitation = new ConsultationInvitation(requestedForParticipant.Id, "room_label",requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId));
-            _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
+            _mocker.Mock<IConsultationInvitationCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
                 .ReturnsAsync(null as ConsultationInvitation);
 
             // Act
@@ -124,7 +124,7 @@ namespace VideoWeb.UnitTests.Services
             await _sut.StopTrackingInvitation(invitationId);
 
             // Assert
-            _mocker.Mock<IConsultationResponseCache>().Verify(crc => crc.DeleteInvitationEntry(It.Is<Guid>(x => x == invitationId)), Times.Once);
+            _mocker.Mock<IConsultationInvitationCache>().Verify(crc => crc.DeleteInvitationEntry(It.Is<Guid>(x => x == invitationId)), Times.Once);
         }
 
         [Test]
@@ -138,14 +138,14 @@ namespace VideoWeb.UnitTests.Services
             foreach (var invitedParticipantResponseKey in expectedConsultationInvitation.InvitedParticipantResponses.Keys)
                 expectedConsultationInvitation.InvitedParticipantResponses[invitedParticipantResponseKey] = ConsultationAnswer.Accepted;
 
-            _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
+            _mocker.Mock<IConsultationInvitationCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
                 .ReturnsAsync(expectedConsultationInvitation);
             
             // Act
             var haveAllParticipantsAccepted = await _sut.HaveAllParticipantsAccepted(expectedConsultationInvitation.InvitationId);
 
             // Assert
-            _mocker.Mock<IConsultationResponseCache>().Verify(crc => crc.GetInvitation(It.Is<Guid>(x => x == expectedConsultationInvitation.InvitationId)), Times.Once);
+            _mocker.Mock<IConsultationInvitationCache>().Verify(crc => crc.GetInvitation(It.Is<Guid>(x => x == expectedConsultationInvitation.InvitationId)), Times.Once);
             haveAllParticipantsAccepted.Should().BeTrue();
         }
         
@@ -153,7 +153,7 @@ namespace VideoWeb.UnitTests.Services
         public async Task Should_return_false_for_all_accepted_if_the_consultation_invite_DOES_NOT_exist()
         {
             // Arrange
-            _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
+            _mocker.Mock<IConsultationInvitationCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
                 .ReturnsAsync(null as ConsultationInvitation);
             
             // Act
@@ -179,14 +179,14 @@ namespace VideoWeb.UnitTests.Services
                 expectedConsultationInvitation.InvitedParticipantResponses[invitedParticipantResponseKey] = answer;
             }
 
-            _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
+            _mocker.Mock<IConsultationInvitationCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
                 .ReturnsAsync(expectedConsultationInvitation);
             
             // Act
             var haveAllParticipantsAccepted = await _sut.HaveAllParticipantsResponded(expectedConsultationInvitation.InvitationId);
 
             // Assert
-            _mocker.Mock<IConsultationResponseCache>().Verify(crc => crc.GetInvitation(It.Is<Guid>(x => x == expectedConsultationInvitation.InvitationId)), Times.Once);
+            _mocker.Mock<IConsultationInvitationCache>().Verify(crc => crc.GetInvitation(It.Is<Guid>(x => x == expectedConsultationInvitation.InvitationId)), Times.Once);
             haveAllParticipantsAccepted.Should().BeTrue();
         }
         
@@ -194,7 +194,7 @@ namespace VideoWeb.UnitTests.Services
         public async Task Should_return_false_for_all_responded_if_the_consultation_invite_DOES_NOT_exist()
         {
             // Arrange
-            _mocker.Mock<IConsultationResponseCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
+            _mocker.Mock<IConsultationInvitationCache>().Setup(crc => crc.GetInvitation(It.IsAny<Guid>()))
                 .ReturnsAsync(null as ConsultationInvitation);
             
             // Act
@@ -216,7 +216,7 @@ namespace VideoWeb.UnitTests.Services
             await _sut.UpdateConsultationResponse(invitationId, participantId, answer);
 
             // Assert
-            _mocker.Mock<IConsultationResponseCache>().Verify(crc => crc.UpdateResponseToInvitation(invitationId, participantId, answer), Times.Once);
+            _mocker.Mock<IConsultationInvitationCache>().Verify(crc => crc.UpdateResponseToInvitation(invitationId, participantId, answer), Times.Once);
         }
         
         [Test]
@@ -230,19 +230,19 @@ namespace VideoWeb.UnitTests.Services
             invitations.Add(new ConsultationInvitation(requestedForParticipant.Id, "room_label2",
                 requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId)));
             
-            _mocker.Mock<IConsultationResponseCache>()
+            _mocker.Mock<IConsultationInvitationCache>()
                 .Setup(x => x.GetInvitationsForParticipant(requestedForParticipant.Id)).ReturnsAsync(invitations);
             
             // Act
             await _sut.StopTrackingInvitationsForParticipant(requestedForParticipant.Id);
 
             // Assert
-            _mocker.Mock<IConsultationResponseCache>()
+            _mocker.Mock<IConsultationInvitationCache>()
                 .Verify(x => x.GetInvitationsForParticipant(requestedForParticipant.Id), Times.Once);
 
             foreach (var invitation in invitations)
             {
-                _mocker.Mock<IConsultationResponseCache>()
+                _mocker.Mock<IConsultationInvitationCache>()
                     .Verify(x => x.DeleteInvitationEntry(invitation.InvitationId), Times.Once);    
             }
         }

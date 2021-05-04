@@ -6,7 +6,7 @@ using VideoWeb.Common.Models;
 
 namespace VideoWeb.Common.Caching
 {
-    public interface IConsultationResponseCache
+    public interface IConsultationInvitationCache
     {
         Task CreateInvitationEntry(ConsultationInvitation consultationInvitation);
         Task<ConsultationInvitation> GetInvitation(Guid invitationId);

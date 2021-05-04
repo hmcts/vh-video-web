@@ -24,18 +24,18 @@ namespace VideoWeb.Helpers
     {
         
         private readonly IHubContext<EventHub.Hub.EventHub, IEventHubClient> _hubContext;
-        private readonly IConsultationResponseTracker _consultationResponseTracker;
+        private readonly IConsultationInvitationTracker _consultationInvitationTracker;
 
-        public ConsultationNotifier(IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext, IConsultationResponseTracker consultationResponseTracker)
+        public ConsultationNotifier(IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext, IConsultationInvitationTracker consultationInvitationTracker)
         {
             _hubContext = hubContext;
-            _consultationResponseTracker = consultationResponseTracker;
+            _consultationInvitationTracker = consultationInvitationTracker;
         }
 
         public async Task<Guid> NotifyConsultationRequestAsync(Conference conference, string roomLabel, Guid requestedById, Guid requestedForId)
         {
             var participantFor = conference.Participants.First(x => x.Id == requestedForId);
-            var invitationId = await _consultationResponseTracker.StartTrackingInvitation(conference, roomLabel, requestedForId);
+            var invitationId = await _consultationInvitationTracker.StartTrackingInvitation(conference, roomLabel, requestedForId);
 
             var tasks = conference.Participants.Select(p =>
                 _hubContext.Clients.Group(p.Username.ToLowerInvariant())
@@ -74,10 +74,10 @@ namespace VideoWeb.Helpers
             }
             
             var participantFor = conference.Participants.First(x => x.Id == requestedForId);
-            await _consultationResponseTracker.UpdateConsultationResponse(invitationId, participantFor.Id, answer);
+            await _consultationInvitationTracker.UpdateConsultationResponse(invitationId, participantFor.Id, answer);
             
             var haveAllAccepted =
-                await _consultationResponseTracker.HaveAllParticipantsAccepted(invitationId);
+                await _consultationInvitationTracker.HaveAllParticipantsAccepted(invitationId);
 
             await PublishResponseMessage(conference, invitationId, roomLabel, participantFor.Id, answer, participantFor.Id);
 
@@ -90,7 +90,7 @@ namespace VideoWeb.Helpers
 
                 if (answer != ConsultationAnswer.Accepted)
                 {
-                    await _consultationResponseTracker.StopTrackingInvitation(invitationId);
+                    await _consultationInvitationTracker.StopTrackingInvitation(invitationId);
                 }
             }
         }

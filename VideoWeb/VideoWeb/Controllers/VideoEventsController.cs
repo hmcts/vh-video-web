@@ -31,7 +31,7 @@ namespace VideoWeb.Controllers
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<VideoEventsController> _logger;
         private readonly IMapperFactory _mapperFactory;
-        private readonly IConsultationResponseTracker _consultationResponseTracker;
+        private readonly IConsultationInvitationTracker _consultationInvitationTracker;
 
 
         public VideoEventsController(
@@ -40,14 +40,14 @@ namespace VideoWeb.Controllers
             IConferenceCache conferenceCache,
             ILogger<VideoEventsController> logger,
             IMapperFactory mapperFactory,
-            IConsultationResponseTracker consultationResponseTracker)
+            IConsultationInvitationTracker consultationInvitationTracker)
         {
             _videoApiClient = videoApiClient;
             _eventHandlerFactory = eventHandlerFactory;
             _conferenceCache = conferenceCache;
             _logger = logger;
             _mapperFactory = mapperFactory;
-            _consultationResponseTracker = consultationResponseTracker;
+            _consultationInvitationTracker = consultationInvitationTracker;
         }
 
         [HttpPost]
@@ -159,7 +159,7 @@ namespace VideoWeb.Controllers
                     conference.AddParticipantToRoom(roomId, participantId);
                     break;
                 case EventType.Disconnected:
-                    await _consultationResponseTracker.StopTrackingInvitationsForParticipant(participantId);
+                    await _consultationInvitationTracker.StopTrackingInvitationsForParticipant(participantId);
                     conference.RemoveParticipantFromRoom(roomId, participantId);
                     break;
                 default: return;

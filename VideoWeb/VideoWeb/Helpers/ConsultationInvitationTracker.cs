@@ -6,7 +6,7 @@ using VideoWeb.Common.Models;
 
 namespace VideoWeb.Helpers
 {
-    public interface IConsultationResponseTracker
+    public interface IConsultationInvitationTracker
     {
         Task<Guid> StartTrackingInvitation(Conference conference, string roomLabel, Guid requestedParticipantId);
         Task<ConsultationInvitation> GetInvitation(Guid invitationId);
@@ -17,11 +17,11 @@ namespace VideoWeb.Helpers
         Task StopTrackingInvitationsForParticipant(Guid participantId);
     }
 
-    public class ConsultationResponseTracker : IConsultationResponseTracker
+    public class ConsultationInvitationTracker : IConsultationInvitationTracker
     {
-        private readonly IConsultationResponseCache _cache;
+        private readonly IConsultationInvitationCache _cache;
 
-        public ConsultationResponseTracker(IConsultationResponseCache cache)
+        public ConsultationInvitationTracker(IConsultationInvitationCache cache)
         {
             _cache = cache;
         }
