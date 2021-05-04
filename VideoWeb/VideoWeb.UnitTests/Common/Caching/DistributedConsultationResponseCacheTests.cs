@@ -64,10 +64,12 @@ namespace VideoWeb.UnitTests.Common.Caching
 
             // Assert
             (await ReadFromCache<ConsultationInvitation>(invitation.InvitationId)).Should().BeEquivalentTo(invitation);
-            (await ReadFromCache<IEnumerable<Guid>>(participantGuid)).Count().Should().Be(1);
-            (await ReadFromCache<IEnumerable<Guid>>(participantGuid)).First().Should().Be(invitation.InvitationId);
-            (await ReadFromCache<IEnumerable<Guid>>(linkedParticipantGuid)).Count().Should().Be(1);
-            (await ReadFromCache<IEnumerable<Guid>>(linkedParticipantGuid)).First().Should().Be(invitation.InvitationId);
+            var participantInvitations = (await ReadFromCache<IEnumerable<Guid>>(participantGuid)).ToList();
+            participantInvitations.Count().Should().Be(1);
+            participantInvitations.First().Should().Be(invitation.InvitationId);
+            var linkedParticipantInvitations = (await ReadFromCache<IEnumerable<Guid>>(linkedParticipantGuid)).ToList();
+            linkedParticipantInvitations.Count().Should().Be(1);
+            linkedParticipantInvitations.First().Should().Be(invitation.InvitationId);
         }
 
         [Test]
@@ -149,18 +151,22 @@ namespace VideoWeb.UnitTests.Common.Caching
             await WriteToCache(participantGuid, new [] { storedInvitation.InvitationId, permanentInvitation.InvitationId });
             await WriteToCache(linkedParticipantGuid, new [] { storedInvitation.InvitationId});
             await WriteToCache(linkedParticipant2Guid, new [] { permanentInvitation.InvitationId });
-
             
             // Act
             await _sut.DeleteInvitationEntry(storedInvitation.InvitationId);
 
             // Assert
             (await ReadFromCache<ConsultationInvitation>(storedInvitation.InvitationId)).Should().BeNull();
-            (await ReadFromCache<IEnumerable<Guid>>(participantGuid)).Count().Should().Be(1);
-            (await ReadFromCache<IEnumerable<Guid>>(participantGuid)).First().Should().Be(permanentInvitation.InvitationId);
-            (await ReadFromCache<IEnumerable<Guid>>(linkedParticipant2Guid)).Count().Should().Be(1);
-            (await ReadFromCache<IEnumerable<Guid>>(linkedParticipant2Guid)).First().Should().Be(permanentInvitation.InvitationId);
+
+            var participantInvitations = (await ReadFromCache<IEnumerable<Guid>>(participantGuid)).ToList();
+            participantInvitations.Count().Should().Be(1);
+            participantInvitations.First().Should().Be(permanentInvitation.InvitationId);
+            
             (await ReadFromCache<IEnumerable<Guid>>(linkedParticipantGuid)).Should().BeNull();
+
+            var linkedParticipant2Invitations = (await ReadFromCache<IEnumerable<Guid>>(linkedParticipant2Guid)).ToList();
+            linkedParticipant2Invitations.Count().Should().Be(1);
+            linkedParticipant2Invitations.First().Should().Be(permanentInvitation.InvitationId);
         }
         
         [Test]
