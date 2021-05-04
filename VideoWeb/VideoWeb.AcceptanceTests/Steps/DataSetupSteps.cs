@@ -182,7 +182,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _c.Test.NewHearingId = hearing.Id;
             _c.Test.Case = hearing.Cases.First();
             _c.Test.HearingParticipants = hearing.Participants;
-            NUnit.Framework.TestContext.WriteLine($"Hearing ###^^^ created with Hearing Id {hearing.Id}");
+            NUnit.Framework.TestContext.WriteLine($"Hearing created with Hearing Id {hearing.Id}");
         }
 
         private void CheckThatTheHearingWillBeCreatedForToday(DateTime dateTime)
