@@ -34,6 +34,7 @@ export class NotificationToastrService {
     showConsultationInvite(
         roomLabel: string,
         conferenceId: string,
+        invitationId: string,
         requestedBy: Participant,
         requestedFor: Participant,
         participants: Participant[],
@@ -89,7 +90,7 @@ export class NotificationToastrService {
             const index = this.activeRoomInviteRequests.indexOf(inviteKey);
             this.activeRoomInviteRequests.splice(index, 1);
 
-            await this.consultationService.respondToConsultationRequest(conferenceId, requestedById, requestedFor.id, answer, roomLabel);
+            await this.consultationService.respondToConsultationRequest(conferenceId, invitationId, requestedById, requestedFor.id, answer, roomLabel);
         };
 
         const toast = this.toastr.show('', '', {

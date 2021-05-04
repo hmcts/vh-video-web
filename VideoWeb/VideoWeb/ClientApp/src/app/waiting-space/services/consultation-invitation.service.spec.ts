@@ -16,7 +16,7 @@ describe('ConsultationInvitationServiceService', () => {
         expect(service).toBeTruthy();
     });
 
-    describe('rejectInvitation', () => {
+    describe('rejectInvitationByRoomLabel', () => {
         const expectedId = 'test-id';
         it('should set rejected to false on the invitation if it exists', () => {
             // Arrange
@@ -34,14 +34,14 @@ describe('ConsultationInvitationServiceService', () => {
     });
 
     describe('getInvitation', () => {
-        const expectedId = 'test-id';
+        const expectedRoomLabel = 'room-label';
         it('should return the existing invitation', () => {
             // Arrange
             const expectedInvitation = {} as ConsultationInvitation;
-            service['consultationInvitations'][expectedId] = expectedInvitation;
+            service['consultationInvitations'][expectedRoomLabel] = expectedInvitation;
 
             // Act
-            const invitation = service.getInvitation(expectedId);
+            const invitation = service.getInvitation(expectedRoomLabel);
 
             // Assert
             expect(invitation).toBe(expectedInvitation);
@@ -49,10 +49,11 @@ describe('ConsultationInvitationServiceService', () => {
 
         it('should create a new invitation if an existing one does NOT exist', () => {
             // Act
-            const invitation = service.getInvitation(expectedId);
+            const invitation = service.getInvitation(expectedRoomLabel);
 
             // Assert
             expect(invitation).toBeTruthy();
+            expect(invitation.roomLabel).toBe(expectedRoomLabel);
         });
 
         it('should create a new invitation if the existing one is marked as rejected', () => {
@@ -60,10 +61,10 @@ describe('ConsultationInvitationServiceService', () => {
             const existingInvitation = {
                 rejected: true
             } as ConsultationInvitation;
-            service['consultationInvitations'][expectedId] = existingInvitation;
+            service['consultationInvitations'][expectedRoomLabel] = existingInvitation;
 
             // Act
-            const invitation = service.getInvitation(expectedId);
+            const invitation = service.getInvitation(expectedRoomLabel);
 
             // Assert
             expect(invitation).toBeTruthy();
@@ -71,7 +72,7 @@ describe('ConsultationInvitationServiceService', () => {
         });
     });
 
-    describe('removeInvitation', () => {
+    describe('removeInvitationByRoomLabel', () => {
         const expectedId = 'test-id';
         it('should attempt to remove the toast and delete the invitation', () => {
             // Arrange

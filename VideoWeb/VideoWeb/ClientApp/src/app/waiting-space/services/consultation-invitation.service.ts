@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 
 export interface ConsultationInvitation {
+    invitationId: string,
+    roomLabel: string,
     linkedParticipantStatuses: { [participantId: string]: boolean };
     activeToast: VhToastComponent;
     activeParticipantAccepted: boolean;
@@ -20,6 +22,8 @@ export class ConsultationInvitationService {
 
         if (!invitation || invitation.rejected) {
             return (this.consultationInvitations[roomLabel] = {
+                invitationId: null,
+                roomLabel: roomLabel,
                 linkedParticipantStatuses: {},
                 activeToast: null,
                 activeParticipantAccepted: false,

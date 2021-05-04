@@ -77,6 +77,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
     const eventHubReconnectSubject = eventHubReconnectSubjectMock;
     const hearingTransferSubject = hearingTransferSubjectMock;
     const endpointStatusSubject = endpointStatusSubjectMock;
+    const invitationId = Guid.create().toString();
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
 
@@ -133,7 +134,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
     it('should not display vho consultation request when participant is unavailable', fakeAsync(() => {
         component.participant.status = ParticipantStatus.InHearing;
-        const payload = new RequestedConsultationMessage(component.conference.id, 'AdminRoom', Guid.EMPTY, component.participant.id);
+        const payload = new RequestedConsultationMessage(component.conference.id, invitationId, 'AdminRoom', Guid.EMPTY, component.participant.id);
 
         // spyOn(logger, 'debug');
         requestedConsultationMessageSubject.next(payload);
@@ -808,7 +809,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             const expectedToast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
             notificationToastrService.showConsultationInvite.and.returnValue(expectedToast);
 
-            const payload = new RequestedConsultationMessage(globalConference.id, 'ConsultationRoom', requestor.id, primaryParticipant.id);
+            const payload = new RequestedConsultationMessage(globalConference.id, invitationId, 'ConsultationRoom', requestor.id, primaryParticipant.id);
 
             component['findParticipant'] = jasmine
                 .createSpy('findParticipant')
@@ -841,7 +842,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             const expectedToast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
             notificationToastrService.showConsultationInvite.and.returnValue(expectedToast);
 
-            const payload = new RequestedConsultationMessage(globalConference.id, 'ConsultationRoom', requestor.id, primaryParticipant.id);
+            const payload = new RequestedConsultationMessage(globalConference.id, invitationId, 'ConsultationRoom', requestor.id, primaryParticipant.id);
 
             component['findParticipant'] = jasmine
                 .createSpy('findParticipant')
@@ -859,6 +860,8 @@ describe('WaitingRoomComponent EventHub Call', () => {
         it('should NOT raise a toast if there is already a toast active for this invitation', fakeAsync(() => {
             // Arrange
             const invitation = {
+                invitationId:  null,
+                roomLabel: null,
                 linkedParticipantStatuses: {},
                 activeToast: jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']),
                 activeParticipantAccepted: false,
@@ -871,7 +874,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             const expectedToast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
             notificationToastrService.showConsultationInvite.and.returnValue(expectedToast);
 
-            const payload = new RequestedConsultationMessage(globalConference.id, 'ConsultationRoom', requestor.id, primaryParticipant.id);
+            const payload = new RequestedConsultationMessage(globalConference.id, invitationId, 'ConsultationRoom', requestor.id, primaryParticipant.id);
 
             component['findParticipant'] = jasmine
                 .createSpy('findParticipant')
@@ -900,7 +903,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             const expectedToast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
             notificationToastrService.showConsultationInvite.and.returnValue(expectedToast);
 
-            const payload = new RequestedConsultationMessage(globalConference.id, 'ConsultationRoom', requestor.id, primaryParticipant.id);
+            const payload = new RequestedConsultationMessage(globalConference.id, invitationId, 'ConsultationRoom', requestor.id, primaryParticipant.id);
 
             component['findParticipant'] = jasmine
                 .createSpy('findParticipant')
@@ -947,6 +950,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             // Arrange
             const message = new ConsultationRequestResponseMessage(
                 globalConference.id,
+                invitationId,
                 expectedConsultationRoomLabel,
                 globalParticipant.id,
                 ConsultationAnswer.Rejected,
@@ -968,6 +972,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             // Arrange
             const message = new ConsultationRequestResponseMessage(
                 globalConference.id,
+                invitationId,
                 expectedConsultationRoomLabel,
                 linkedParticipant.id,
                 ConsultationAnswer.Rejected,
@@ -992,6 +997,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             const responseInitiatorId = Guid.create().toString();
             const message = new ConsultationRequestResponseMessage(
                 globalConference.id,
+                invitationId,
                 expectedConsultationRoomLabel,
                 responseInitiatorId,
                 ConsultationAnswer.Accepted,
@@ -1014,6 +1020,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             // Arrange
             const message = new ConsultationRequestResponseMessage(
                 globalConference.id,
+                invitationId,
                 expectedConsultationRoomLabel,
                 linkedParticipant.id,
                 ConsultationAnswer.Accepted,
@@ -1036,6 +1043,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             // Arrange
             const message = new ConsultationRequestResponseMessage(
                 globalConference.id,
+                invitationId,
                 expectedConsultationRoomLabel,
                 linkedParticipant.id,
                 ConsultationAnswer.Accepted,
@@ -1060,6 +1068,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             // Arrange
             const message = new ConsultationRequestResponseMessage(
                 globalConference.id,
+                invitationId,
                 expectedConsultationRoomLabel,
                 linkedParticipant.id,
                 ConsultationAnswer.Rejected,
@@ -1084,6 +1093,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             // Arrange
             const message = new ConsultationRequestResponseMessage(
                 globalConference.id,
+                invitationId,
                 expectedConsultationRoomLabel,
                 linkedParticipant.id,
                 ConsultationAnswer.Transferring,
@@ -1106,6 +1116,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             // Arrange
             const message = new ConsultationRequestResponseMessage(
                 globalConference.id,
+                invitationId,
                 expectedConsultationRoomLabel,
                 linkedParticipant.id,
                 ConsultationAnswer.None,
@@ -1130,6 +1141,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             // Arrange
             const message = new ConsultationRequestResponseMessage(
                 globalConference.id,
+                invitationId,
                 expectedConsultationRoomLabel,
                 linkedParticipant.id,
                 ConsultationAnswer.Failed,
@@ -1154,6 +1166,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             // Arrange
             const message = new ConsultationRequestResponseMessage(
                 globalConference.id,
+                invitationId,
                 expectedConsultationRoomLabel,
                 linkedParticipant.id,
                 ConsultationAnswer.Rejected,
@@ -1179,6 +1192,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             // Arrange
             const message = new ConsultationRequestResponseMessage(
                 globalConference.id,
+                invitationId,
                 expectedConsultationRoomLabel,
                 linkedParticipant.id,
                 ConsultationAnswer.Rejected,
@@ -1201,6 +1215,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             component.displayDeviceChangeModal = true;
             const message = new ConsultationRequestResponseMessage(
                 globalConference.id,
+                invitationId,
                 'ConsultationRoom',
                 globalParticipant.id,
                 ConsultationAnswer.Accepted,
@@ -1224,6 +1239,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
             const message = new ConsultationRequestResponseMessage(
                 globalConference.id,
+                invitationId,
                 expectedConsultationRoomLabel,
                 globalParticipant.id,
                 ConsultationAnswer.Transferring,

@@ -22,6 +22,7 @@ describe('ConsultationService', () => {
     const logger = new MockLogger();
     let service: ConsultationService;
     let timeout: jasmine.SpyObj<NodeJS.Timer>;
+    const invitationId = "inivitation-id";
 
     beforeAll(() => {
         modalService = jasmine.createSpyObj<ModalService>('ModalService', ['add', 'remove', 'open', 'close', 'closeAll']);
@@ -64,12 +65,13 @@ describe('ConsultationService', () => {
         const requestee = conference.participants[1];
         const request = new PrivateConsultationRequest({
             conference_id: conference.id,
+            invitation_id: invitationId,
             requested_by_id: requester.id,
             requested_for_id: requestee.id,
             answer: ConsultationAnswer.Accepted,
             room_label: 'RoomLabel'
         });
-        await service.respondToConsultationRequest(conference.id, requester.id, requestee.id, ConsultationAnswer.Accepted, 'RoomLabel');
+        await service.respondToConsultationRequest(conference.id, invitationId, requester.id, requestee.id, ConsultationAnswer.Accepted, 'RoomLabel');
 
         expect(modalService.closeAll).toHaveBeenCalled();
         expect(apiClient.respondToConsultationRequest).toHaveBeenCalledWith(request);
@@ -82,7 +84,7 @@ describe('ConsultationService', () => {
 
         apiClient.respondToConsultationRequest.and.throwError('Error');
 
-        await service.respondToConsultationRequest(conference.id, requester.id, requestee.id, ConsultationAnswer.Accepted, 'RoomLabel');
+        await service.respondToConsultationRequest(conference.id, invitationId, requester.id, requestee.id, ConsultationAnswer.Accepted, 'RoomLabel');
 
         expect(modalService.closeAll).toHaveBeenCalled();
         expect(modalService.open).toHaveBeenCalledWith(ConsultationService.ERROR_PC_MODAL);

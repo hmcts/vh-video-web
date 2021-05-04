@@ -301,12 +301,14 @@ export abstract class WaitingRoomBaseDirective {
                     const roomEndpoints = this.findEndpointsInRoom(message.roomLabel);
 
                     const invitation = this.consultationInvitiationService.getInvitation(message.roomLabel);
+                    invitation.invitationId = message.invitationId; // set or update the invitation id
                     invitation.invitedByName = requestedBy.displayName;
 
                     if (!invitation.activeParticipantAccepted && !invitation.activeToast) {
                         const consultationInviteToast = this.notificationToastrService.showConsultationInvite(
                             message.roomLabel,
                             message.conferenceId,
+                            message.invitationId,
                             requestedBy,
                             requestedFor,
                             roomParticipants,

@@ -40,6 +40,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
     let consultationService: jasmine.SpyObj<ConsultationService>;
     let logger: jasmine.SpyObj<Logger>;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
+    const invitationId = "invitation-id";
 
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
@@ -173,7 +174,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
     it('should set answer on response message', () => {
         component.roomLabel = 'Room1';
         consultationRequestResponseMessageSubjectMock.next(
-            new ConsultationRequestResponseMessage(conference.id, 'Room1', 'Participant1', ConsultationAnswer.Rejected)
+            new ConsultationRequestResponseMessage(conference.id, invitationId, 'Room1', 'Participant1', ConsultationAnswer.Rejected)
         );
 
         // Assert
@@ -193,7 +194,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
     it('should not set answer if different conference', () => {
         component.roomLabel = 'Room1';
         consultationRequestResponseMessageSubjectMock.next(
-            new ConsultationRequestResponseMessage('IncorrectConferenceId', 'Room1', 'Participant1', ConsultationAnswer.Rejected)
+            new ConsultationRequestResponseMessage('IncorrectConferenceId', invitationId, 'Room1', 'Participant1', ConsultationAnswer.Rejected)
         );
 
         // Assert
@@ -203,7 +204,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
     it('should set answer on response message then reset after timeout', fakeAsync(() => {
         component.roomLabel = 'Room1';
         consultationRequestResponseMessageSubjectMock.next(
-            new ConsultationRequestResponseMessage(conference.id, 'Room1', 'Participant1', ConsultationAnswer.Rejected)
+            new ConsultationRequestResponseMessage(conference.id, invitationId, 'Room1', 'Participant1', ConsultationAnswer.Rejected)
         );
         flushMicrotasks();
 
@@ -216,12 +217,12 @@ describe('PrivateConsultationParticipantsComponent', () => {
     it('should a 2nd call after answering should prevent timeout call', fakeAsync(() => {
         component.roomLabel = 'Room1';
         consultationRequestResponseMessageSubjectMock.next(
-            new ConsultationRequestResponseMessage(conference.id, 'Room1', 'Participant1', ConsultationAnswer.Rejected)
+            new ConsultationRequestResponseMessage(conference.id, invitationId, 'Room1', 'Participant1', ConsultationAnswer.Rejected)
         );
         flushMicrotasks();
         tick(2000);
         requestedConsultationMessageSubjectMock.next(
-            new RequestedConsultationMessage(conference.id, 'Room1', 'Participant2', 'Participant1')
+            new RequestedConsultationMessage(conference.id, invitationId, 'Room1', 'Participant2', 'Participant1')
         );
         tick(9000);
 
@@ -232,7 +233,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
     it('should not set calling if different room', () => {
         component.roomLabel = 'Room1';
         requestedConsultationMessageSubjectMock.next(
-            new RequestedConsultationMessage(conference.id, 'Room2', 'Participant2', 'Participant1')
+            new RequestedConsultationMessage(conference.id, invitationId, 'Room2', 'Participant2', 'Participant1')
         );
 
         // Assert
@@ -242,7 +243,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
     it('should not set calling if different conference', () => {
         component.roomLabel = 'Room1';
         requestedConsultationMessageSubjectMock.next(
-            new RequestedConsultationMessage('IncorrectConferenceId', 'Room1', 'Participant2', 'Participant1')
+            new RequestedConsultationMessage('IncorrectConferenceId', invitationId, 'Room1', 'Participant2', 'Participant1')
         );
 
         // Assert
@@ -252,7 +253,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
     it('should reset participant call status on status message', () => {
         component.roomLabel = 'Room1';
         requestedConsultationMessageSubjectMock.next(
-            new RequestedConsultationMessage(conference.id, 'Room1', 'Participant2', 'Participant1')
+            new RequestedConsultationMessage(conference.id, invitationId, 'Room1', 'Participant2', 'Participant1')
         );
         participantStatusSubjectMock.next(
             new ParticipantStatusMessage('Participant1', 'Username', conference.id, ParticipantStatus.Disconnected)
