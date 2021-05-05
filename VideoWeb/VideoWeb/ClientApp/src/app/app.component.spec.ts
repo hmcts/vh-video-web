@@ -166,14 +166,6 @@ describe('AppComponent', () => {
         expect(profileServiceSpy.getUserProfile).toHaveBeenCalled();
     });
 
-    it('should navigate to login not on logout and not authenticated', async () => {
-        publicEventsServiceSpy.registerForEvents.and.callThrough();
-        mockOidcSecurityService.setAuthenticated(false);
-        await component.ngOnInit();
-        expect(profileServiceSpy.getUserProfile).toHaveBeenCalledTimes(0);
-        expect(routerSpy.navigate).toHaveBeenCalledWith([`/${pageUrls.IdpSelection}`]);
-    });
-
     it('should not check auth or get profile on logout', async () => {
         mockOidcSecurityService.setAuthenticated(true);
         await component.checkAuth();
