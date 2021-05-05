@@ -178,7 +178,7 @@ export abstract class WRParticipantStatusListDirective {
 
     protected filterJudge(): void {
         this.judge = this.conference.participants.find(x => x.role === Role.Judge);
-    }    
+    }
 
     protected filterParticipantInConsultation(): void {
         this.participantsInConsultation = [
@@ -189,7 +189,6 @@ export abstract class WRParticipantStatusListDirective {
             ...this.observers
         ];
     }
-    
 
     get canInvite(): boolean {
         const isJudicialUser = this.loggedInUser.role === Role.Judge || this.loggedInUser.role === Role.JudicialOfficeHolder;
