@@ -173,9 +173,9 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
                 .filter(c => c.hearing_role !== HearingRole.INTERPRETER)
                 .filter(
                     c =>
-                    c.hearing_role !== HearingRole.JUDGE &&
-                    c.hearing_role !== HearingRole.PANEL_MEMBER &&
-                    c.hearing_role !== HearingRole.WINGER
+                        c.hearing_role !== HearingRole.JUDGE &&
+                        c.hearing_role !== HearingRole.PANEL_MEMBER &&
+                        c.hearing_role !== HearingRole.WINGER
                 )
                 .map(c => {
                     const interpreterLink = c.linked_participants.find(x => x.link_type === LinkType.Interpreter);
