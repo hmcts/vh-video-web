@@ -133,7 +133,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         component.roomLabel = 'judgejohconsultationroom';
         const p = conference.participants[0];
         p.current_room.label = 'judgejohconsultationroom';
-        expect(component.getParticipantRowClasses(p)).toEqual('participant-row');
+        expect(component.getParticipantRowClasses(p)).toEqual('participant-group-row');
     });
 
     it('should confirm is last or unique PANEL_MEMBER, JUDGE, WINGER in a consultation room', () => {
@@ -146,8 +146,11 @@ describe('PrivateConsultationParticipantsComponent', () => {
         winger.hearing_role = HearingRole.WINGER;
         component.roomLabel = 'judgejohconsultationroom';
         component.participantsInConsultation = [judge, panelMember, winger];
-        expect(component.isLastJohFromGroupOrIndividualGroupMember(judge)).toEqual(true);
+        component.panelMembers = [panelMember];
+        component.wingers = [winger];
+        component.judge = judge;
         expect(component.isLastJohFromGroupOrIndividualGroupMember(panelMember)).toEqual(true);
+        expect(component.isLastJohFromGroupOrIndividualGroupMember(judge)).toEqual(true);
         expect(component.isLastJohFromGroupOrIndividualGroupMember(winger)).toEqual(true);
     });
 
