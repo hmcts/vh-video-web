@@ -154,8 +154,6 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         }
     }
 
-
-
     getPrivateConsultationParticipants(): ParticipantListItem[] {
         if (this.roomLabel?.toLowerCase().includes('judgejohconsultationroom')) {
             return this.participantsInConsultation
@@ -171,22 +169,22 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
                 });
         } else {
             return this.participantsInConsultation
-            .filter(p => p.hearing_role !== HearingRole.WITNESS && p.hearing_role !== HearingRole.OBSERVER)
-            .filter(p => p.hearing_role !== HearingRole.INTERPRETER)
-            .filter(
-                p =>
-                    p.hearing_role !== HearingRole.JUDGE &&
-                    p.hearing_role !== HearingRole.PANEL_MEMBER &&
-                    p.hearing_role !== HearingRole.WINGER
-            )
-            .map(p => {
-                const interpreterLink = p.linked_participants.find(x => x.link_type === LinkType.Interpreter);
-                const participant: ParticipantListItem = { ...p };
-                if (p.linked_participants && interpreterLink) {
-                    participant.interpreter = this.participantsInConsultation.find(x => x.id === interpreterLink.linked_id);
-                }
-                return participant;
-            });
+                .filter(p => p.hearing_role !== HearingRole.WITNESS && p.hearing_role !== HearingRole.OBSERVER)
+                .filter(p => p.hearing_role !== HearingRole.INTERPRETER)
+                .filter(
+                    p =>
+                        p.hearing_role !== HearingRole.JUDGE &&
+                        p.hearing_role !== HearingRole.PANEL_MEMBER &&
+                        p.hearing_role !== HearingRole.WINGER
+                )
+                .map(p => {
+                    const interpreterLink = p.linked_participants.find(x => x.link_type === LinkType.Interpreter);
+                    const participant: ParticipantListItem = { ...p };
+                    if (p.linked_participants && interpreterLink) {
+                        participant.interpreter = this.participantsInConsultation.find(x => x.id === interpreterLink.linked_id);
+                    }
+                    return participant;
+                });
         }
     }
 
