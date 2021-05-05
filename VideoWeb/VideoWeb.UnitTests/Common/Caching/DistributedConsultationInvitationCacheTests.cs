@@ -57,7 +57,7 @@ namespace VideoWeb.UnitTests.Common.Caching
             var participantGuid = Guid.NewGuid();
             var linkedParticipantGuid = Guid.NewGuid();
             var roomLabel = "room_label";
-            var invitation = new ConsultationInvitation(participantGuid, roomLabel, new[] {linkedParticipantGuid});
+            var invitation = ConsultationInvitation.Create(participantGuid, roomLabel, new[] {linkedParticipantGuid});
 
             // Act
             await _sut.CreateInvitationEntry(invitation);
@@ -79,8 +79,7 @@ namespace VideoWeb.UnitTests.Common.Caching
             var participantGuid = Guid.NewGuid();
             var linkedParticipantGuid = Guid.NewGuid();
             var roomLabel = "room_label";
-            var storedInvitation =
-                new ConsultationInvitation(participantGuid, roomLabel, new[] {linkedParticipantGuid});
+            var storedInvitation = ConsultationInvitation.Create(participantGuid, roomLabel, new[] {linkedParticipantGuid});
 
             await WriteToCache(storedInvitation.InvitationId, storedInvitation);
             
@@ -99,7 +98,7 @@ namespace VideoWeb.UnitTests.Common.Caching
             var linkedParticipantGuid = Guid.NewGuid();
             var roomLabel = "room_label";
             var storedInvitation =
-                new ConsultationInvitation(participantGuid, roomLabel, new[] {linkedParticipantGuid});
+                ConsultationInvitation.Create(participantGuid, roomLabel, new[] {linkedParticipantGuid});
 
             // Act
             var invitation = await _sut.GetInvitation(storedInvitation.InvitationId);
@@ -116,7 +115,7 @@ namespace VideoWeb.UnitTests.Common.Caching
             var linkedParticipantGuid = Guid.NewGuid();
             var roomLabel = "room_label";
             var storedInvitation =
-                new ConsultationInvitation(participantGuid, roomLabel, new[] {linkedParticipantGuid});
+                ConsultationInvitation.Create(participantGuid, roomLabel, new[] {linkedParticipantGuid});
 
             await WriteToCache(storedInvitation.InvitationId, storedInvitation);
             await WriteToCache(participantGuid, new [] { storedInvitation.InvitationId });
@@ -140,12 +139,12 @@ namespace VideoWeb.UnitTests.Common.Caching
             var linkedParticipant2Guid = Guid.NewGuid();
             var roomLabel = "room_label";
             var storedInvitation =
-                new ConsultationInvitation(participantGuid, roomLabel, new[] {linkedParticipantGuid});
+                ConsultationInvitation.Create(participantGuid, roomLabel, new[] {linkedParticipantGuid});
 
             await WriteToCache(storedInvitation.InvitationId, storedInvitation);
 
             var permanentInvitation =
-                new ConsultationInvitation(participantGuid, roomLabel, new[] {linkedParticipant2Guid});
+                ConsultationInvitation.Create(participantGuid, roomLabel, new[] {linkedParticipant2Guid});
             
             await WriteToCache(permanentInvitation.InvitationId, permanentInvitation);
             await WriteToCache(participantGuid, new [] { storedInvitation.InvitationId, permanentInvitation.InvitationId });
@@ -177,7 +176,7 @@ namespace VideoWeb.UnitTests.Common.Caching
             var linkedParticipantGuid = Guid.NewGuid();
             var roomLabel = "room_label";
             var invitationToUpdate =
-                new ConsultationInvitation(participantGuid, roomLabel, new[] {linkedParticipantGuid});
+                ConsultationInvitation.Create(participantGuid, roomLabel, new[] {linkedParticipantGuid});
             
             await WriteToCache(invitationToUpdate.InvitationId, invitationToUpdate);
             

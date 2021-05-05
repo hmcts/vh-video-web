@@ -16,6 +16,7 @@ using VideoWeb.EventHub.Hub;
 using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
+using VideoWeb.EventHub.Services;
 using VideoWeb.Helpers;
 using VideoWeb.UnitTests.Builders;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;

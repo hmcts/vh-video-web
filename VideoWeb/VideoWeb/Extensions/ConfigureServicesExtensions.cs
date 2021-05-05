@@ -34,6 +34,7 @@ using VideoWeb.Middleware;
 using BookingsApi.Client;
 using UserApi.Client;
 using VideoApi.Client;
+using VideoWeb.EventHub.Services;
 using VideoWeb.Swagger;
 
 namespace VideoWeb.Extensions

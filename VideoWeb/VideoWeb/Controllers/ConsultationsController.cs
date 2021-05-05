@@ -12,6 +12,7 @@ using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
+using VideoWeb.EventHub.Services;
 using VideoWeb.Helpers;
 using ConsultationAnswer = VideoWeb.Common.Models.ConsultationAnswer;
 

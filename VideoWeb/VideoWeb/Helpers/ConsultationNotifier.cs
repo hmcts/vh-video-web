@@ -6,20 +6,10 @@ using Microsoft.AspNetCore.SignalR;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
+using VideoWeb.EventHub.Services;
 
 namespace VideoWeb.Helpers
 {
-    public interface IConsultationNotifier
-    {
-        Task<Guid> NotifyConsultationRequestAsync(Conference conference, string roomLabel, Guid requestedById,
-            Guid requestedForId);
-
-        Task NotifyConsultationResponseAsync(Conference conference, Guid invitationId, string roomLabel,
-            Guid requestedForId, ConsultationAnswer answer);
-
-        Task NotifyRoomUpdateAsync(Conference conference, Room room);
-    }
-    
     public class ConsultationNotifier : IConsultationNotifier
     {
         

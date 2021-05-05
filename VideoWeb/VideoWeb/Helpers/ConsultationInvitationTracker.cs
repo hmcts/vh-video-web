@@ -33,7 +33,7 @@ namespace VideoWeb.Helpers
             if (requestedParticipant == null) 
                 return Guid.Empty;
             
-            var consultationInvitation = new ConsultationInvitation(requestedParticipantId, roomLabel, requestedParticipant.LinkedParticipants.Select(x => x.LinkedId));
+            var consultationInvitation = ConsultationInvitation.Create(requestedParticipantId, roomLabel, requestedParticipant.LinkedParticipants.Select(linkedParticipant => linkedParticipant.LinkedId));
             await _cache.CreateInvitationEntry(consultationInvitation);
             return consultationInvitation.InvitationId;
         }
