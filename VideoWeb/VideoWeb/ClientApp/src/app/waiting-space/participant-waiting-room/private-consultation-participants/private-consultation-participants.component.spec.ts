@@ -513,7 +513,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         const representativeNo2 = participants[3];
         representativeNo2.hearing_role = HearingRole.REPRESENTATIVE;
         component.roomLabel = 'privateconsultationroom';
-        component.participantsInConsultation = [judge, panelMember, representative,representativeNo2];
+        component.participantsInConsultation = [judge, panelMember, representative, representativeNo2];
         expect(component.getPrivateConsultationParticipants().length).toBe(2);
     });
 
