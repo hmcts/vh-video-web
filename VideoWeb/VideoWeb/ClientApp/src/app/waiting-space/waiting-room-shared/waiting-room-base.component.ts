@@ -305,6 +305,9 @@ export abstract class WaitingRoomBaseDirective {
 
                         if (_requestedBy) {
                             requestedBy = new Participant(_requestedBy);
+                        } else {
+                            this.logger.warn(`${this.loggerPrefix} Could NOT find the requested by participant`, message);
+                            return;
                         }
                     }
 

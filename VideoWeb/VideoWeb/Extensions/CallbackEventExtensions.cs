@@ -8,8 +8,8 @@ namespace VideoWeb.Extensions
     {
         public static void RemoveRepeatedVhoCallConferenceEvents(this List<CallbackEvent> events)
         {
-            events.RemoveAll(x => 
-                x.EventType == EventHub.Enums.EventType.VhoCall && 
+            events?.RemoveAll(x => 
+                x is {EventType: EventHub.Enums.EventType.VhoCall} && 
                 x.ParticipantId != events.First(y => y.EventType == EventHub.Enums.EventType.VhoCall).ParticipantId);
         }
     }
