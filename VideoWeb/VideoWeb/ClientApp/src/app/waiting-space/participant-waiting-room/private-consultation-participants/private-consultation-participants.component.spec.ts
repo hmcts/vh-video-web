@@ -510,9 +510,11 @@ describe('PrivateConsultationParticipantsComponent', () => {
         panelMember.hearing_role = HearingRole.PANEL_MEMBER;
         const representative = participants[2];
         representative.hearing_role = HearingRole.REPRESENTATIVE;
+        const representativeNo2 = participants[3];
+        representativeNo2.hearing_role = HearingRole.REPRESENTATIVE;
         component.roomLabel = 'privateconsultationroom';
-        component.participantsInConsultation = [judge, panelMember, representative];
-        expect(component.getPrivateConsultationParticipants().length).toBe(3);
+        component.participantsInConsultation = [judge, panelMember, representative,representativeNo2];
+        expect(component.getPrivateConsultationParticipants().length).toBe(2);
     });
 
     it('should not get witnesses', () => {
