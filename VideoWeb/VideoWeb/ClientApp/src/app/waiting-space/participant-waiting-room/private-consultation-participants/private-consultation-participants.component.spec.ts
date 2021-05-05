@@ -122,11 +122,33 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(component.isJohConsultation()).toEqual(false);
     });
 
-    it('should get participant-row classes', () => {
+    it('should get participant-row classes on private room', () => {
         component.roomLabel = 'test-room';
         const p = conference.participants[0];
         p.current_room.label = 'test-room';
         expect(component.getParticipantRowClasses(p)).toEqual('participant-row');
+    });
+
+    it('should get participant-row classes on joh room', () => {
+        component.roomLabel = 'judgejohconsultationroom';
+        const p = conference.participants[0];
+        p.current_room.label = 'judgejohconsultationroom';
+        expect(component.getParticipantRowClasses(p)).toEqual('participant-row');
+    });
+
+    it('should confirm is last or unique PANEL_MEMBER, JUDGE, WINGER in a consultation room', () => {
+        const participants = new ConferenceTestData().getListOfParticipants();
+        const judge = participants[0];
+        judge.hearing_role = HearingRole.JUDGE;
+        const panelMember = participants[1];
+        panelMember.hearing_role = HearingRole.PANEL_MEMBER;
+        const winger = participants[2];
+        winger.hearing_role = HearingRole.WINGER;
+        component.roomLabel = 'judgejohconsultationroom';
+        component.participantsInConsultation = [judge, panelMember, winger];
+        expect(component.isLastJohFromGroupOrIndividualGroupMember(judge)).toEqual(true);
+        expect(component.isLastJohFromGroupOrIndividualGroupMember(panelMember)).toEqual(true);
+        expect(component.isLastJohFromGroupOrIndividualGroupMember(winger)).toEqual(true);
     });
 
     it('should get yellow row classes', () => {
