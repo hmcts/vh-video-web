@@ -8,6 +8,7 @@ using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
+using VideoWeb.EventHub.Services;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.EventHub.Handlers
@@ -15,12 +16,14 @@ namespace VideoWeb.EventHub.Handlers
     public class VhOfficerCallEventHandler : EventHandlerBase
     {
         private readonly IVideoApiClient _videoApiClient;
+        private readonly IConsultationNotifier _consultationNotifier;
 
         public VhOfficerCallEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
-            IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient) : base(
+            IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient, IConsultationNotifier consultationNotifier) : base(
             hubContext, conferenceCache, logger, videoApiClient)
         {
             _videoApiClient = videoApiClient;
+            _consultationNotifier = consultationNotifier;
         }
 
         public override EventType EventType => EventType.VhoCall;
@@ -38,9 +41,9 @@ namespace VideoWeb.EventHub.Handlers
                     RoomLabel = targetRoom
                 });
             }
-            
-            return HubContext.Clients.Group(SourceParticipant.Username.ToLowerInvariant())
-                                    .RequestedConsultationMessage(SourceConference.Id, callbackEvent.ConsultationInvitationId.Value, targetRoom, Guid.Empty, SourceParticipant.Id);
+
+            return _consultationNotifier.NotifyConsultationRequestAsync(SourceConference, targetRoom, Guid.Empty,
+                SourceParticipant.Id);
         }
 
         private string ValidationConsultationRoom(CallbackEvent callbackEvent)

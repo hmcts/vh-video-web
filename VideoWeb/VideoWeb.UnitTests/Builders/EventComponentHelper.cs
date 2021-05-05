@@ -11,6 +11,8 @@ using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
 using VideoApi.Client;
+using VideoWeb.EventHub.Services;
+using VideoWeb.Helpers;
 
 namespace VideoWeb.UnitTests.Builders
 {
@@ -32,13 +34,14 @@ namespace VideoWeb.UnitTests.Builders
             var eventHubContextMock = new Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>>();
             var logger = new Mock<ILogger<EventHandlerBase>>();
             var apiClient = new Mock<IVideoApiClient>();
+            var consultationNotifier = new Mock<IConsultationNotifier>();
 
-            return GetHandlers(eventHubContextMock, cache, logger, apiClient);
+            return GetHandlers(eventHubContextMock, cache, logger, apiClient, consultationNotifier);
         }
 
         private List<IEventHandler> GetHandlers(
             Mock<IHubContext<EventHub.Hub.EventHub, IEventHubClient>> eventHubContextMock,
-            IMemoryCache memoryCache, Mock<ILogger<EventHandlerBase>> logger, Mock<IVideoApiClient> apiClientMock)
+            IMemoryCache memoryCache, Mock<ILogger<EventHandlerBase>> logger, Mock<IVideoApiClient> apiClientMock, Mock<IConsultationNotifier> consultationNotifier)
         {
             Cache = memoryCache;
             ConferenceCache = new ConferenceCache(memoryCache);
@@ -65,7 +68,7 @@ namespace VideoWeb.UnitTests.Builders
                 new ParticipantJoiningEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
                     apiClientMock.Object),
                 new VhOfficerCallEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
-                    apiClientMock.Object),
+                    apiClientMock.Object, consultationNotifier.Object),
                 new EndpointJoinedEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
                     apiClientMock.Object),
                 new EndpointDisconnectedEventHandler(eventHubContextMock.Object, ConferenceCache, logger.Object,
