@@ -49,7 +49,7 @@ namespace VideoWeb.Controllers
             _mapperFactory = mapperFactory;
             _consultationInvitationTracker = consultationInvitationTracker;
         }
-
+        
         [HttpPost]
         [SwaggerOperation(OperationId = "SendEvent")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
@@ -73,14 +73,16 @@ namespace VideoWeb.Controllers
                     request.ParticipantId = null;
                     events = request.CreateEventsForParticipantsInRoom(conference, roomId);
                 }
-
+                
                 var callbackEvents = events.Select(e => TransformAndMapRequest(e, conference)).ToList();
+
                 // DO NOT USE Task.WhenAll because the handlers are not thread safe and will overwrite Source<Variable> for each run
                 foreach (var e in events)
                 {
                     await SendEventToVideoApi(e);
                 }
 
+                callbackEvents.RemoveRepeatedVhoCallConferenceEvents();
                 foreach (var cb in callbackEvents)
                 {
                     await PublishEventToUi(cb);
