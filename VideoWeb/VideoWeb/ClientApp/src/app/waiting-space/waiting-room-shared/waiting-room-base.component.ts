@@ -217,17 +217,18 @@ export abstract class WaitingRoomBaseDirective {
         const invitation = this.consultationInvitiationService.getInvitation(consulationRoomLabel);
         if (invitation.activeToast) {
             invitation.activeToast.declinedByThirdParty = true;
+            invitation.activeToast.remove();
         }
 
-        this.notificationToastrService.showConsultationRejectedByLinkedParticipant(
+        this.consultationInvitiationService.rejectInvitation(consulationRoomLabel);
+
+        invitation.activeToast = this.notificationToastrService.showConsultationRejectedByLinkedParticipant(
             this.conferenceId,
             consulationRoomLabel,
             linkedParticipantId,
             invitation.invitedByName,
             this.participant.status === ParticipantStatus.InHearing
         );
-
-        this.consultationInvitiationService.removeInvitation(consulationRoomLabel);
     }
 
     onTransferingToConsultation(roomLabel: string) {
