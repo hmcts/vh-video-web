@@ -112,11 +112,25 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(component.isParticipantAvailable(p)).toEqual(true);
     });
 
-    it('should get row classes', () => {
+    it('should get joh consultation', () => {
+        component.roomLabel = 'judgejohconsultationroom';
+        const p = conference.participants[0];
+        p.current_room.label = 'test-room';
+        expect(component.isJohConsultation()).toEqual(p.current_room.label);
+    });
+
+    it('should get private consultation', () => {
         component.roomLabel = 'test-room';
         const p = conference.participants[0];
-        p.current_room.label = 'test-room-two';
-        expect(component.getRowClasses(p)).toEqual('');
+        p.current_room.label = 'test-room-2';
+        expect(component.isJohConsultation()).toEqual(p.current_room.label);
+    });
+
+    it('should get participant-row classes', () => {
+        component.roomLabel = 'test-room';
+        const p = conference.participants[0];
+        p.current_room.label = 'test-room';
+        expect(component.getParticipantRowClasses(p)).toEqual('participant-row');
     });
 
     it('should get yellow row classes', () => {
@@ -124,6 +138,13 @@ describe('PrivateConsultationParticipantsComponent', () => {
         const p = conference.participants[0];
         p.current_room.label = 'test-room';
         expect(component.getRowClasses(p)).toEqual('yellow');
+    });
+
+    it('should get row classes', () => {
+        component.roomLabel = 'test-room';
+        const p = conference.participants[0];
+        p.current_room.label = 'test-room-two';
+        expect(component.getRowClasses(p)).toEqual('');
     });
 
     it('should get same room status', () => {
@@ -472,7 +493,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(result).toBe('white');
     });
 
-    it('should get all if joh consultation', () => {
+    it('should get participants joh consultation room', () => {
         const participants = new ConferenceTestData().getListOfParticipants();
         const judge = participants[0];
         judge.hearing_role = HearingRole.JUDGE;
@@ -480,7 +501,20 @@ describe('PrivateConsultationParticipantsComponent', () => {
         panelMember.hearing_role = HearingRole.PANEL_MEMBER;
         const representative = participants[2];
         representative.hearing_role = HearingRole.REPRESENTATIVE;
-        component.roomLabel = 'judgejohconsultationroom1';
+        component.roomLabel = 'judgejohconsultationroom';
+        component.participantsInConsultation = [judge, panelMember, representative];
+        expect(component.getPrivateConsultationParticipants().length).toBe(3);
+    });
+
+    it('should get participants private consultation room', () => {
+        const participants = new ConferenceTestData().getListOfParticipants();
+        const judge = participants[0];
+        judge.hearing_role = HearingRole.JUDGE;
+        const panelMember = participants[1];
+        panelMember.hearing_role = HearingRole.PANEL_MEMBER;
+        const representative = participants[2];
+        representative.hearing_role = HearingRole.REPRESENTATIVE;
+        component.roomLabel = 'privateconsultationroom';
         component.participantsInConsultation = [judge, panelMember, representative];
         expect(component.getPrivateConsultationParticipants().length).toBe(3);
     });
