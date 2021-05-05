@@ -104,6 +104,18 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         return '';
     }
 
+    getParticipantRowClasses(participant: any): string {       
+        if (!this.isJohConsultation()) {
+            return 'participant-row';
+        } 
+        if (this.isJohConsultation() && (!this.isLastJohFromGroupMember(participant))) {            
+            return 'participant-group-row';
+        }
+        else
+            return 'participant-row';
+    }
+
+
     isJohInCurrentRoom(participant: ParticipantResponse): boolean {
         return (
             this.isParticipantInCurrentRoom(participant) &&
@@ -113,11 +125,36 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         );
     }
 
-    getPrivateConsultationParticipants(): ParticipantListItem[] {
+    isJohConsultation(): boolean {
+        return this.roomLabel?.toLowerCase().includes('judgejohconsultationroom') ? true : false;
+    }
+
+    isFirstJohFromGroupMember(participant: any): boolean {
+        if (participant.hearing_role === HearingRole.PANEL_MEMBER)
+            return this.panelMembers[0].id === participant.id;
+        
+        if (participant.hearing_role === HearingRole.WINGER)
+            return this.wingers[0].id === participant.id;
+
+        if (participant.hearing_role === HearingRole.JUDGE)
+            return this.judge.id === participant.id;          
+    }
+
+    isLastJohFromGroupMember(participant: any): boolean {
+        if (participant.hearing_role === HearingRole.PANEL_MEMBER)
+            return this.panelMembers[this.panelMembers.length - 1].id === participant.id;        
+        else if (participant.hearing_role === HearingRole.WINGER)
+            return this.wingers[this.wingers.length - 1].id === participant.id;
+        else if (participant.hearing_role === HearingRole.JUDGE)
+            return this.judge.id === participant.id;   
+        
+        return true;
+        
+    }
+
+    getPrivateConsultationParticipants(): ParticipantListItem[] {        
         if (this.roomLabel?.toLowerCase().includes('judgejohconsultationroom')) {
-            return this.participantsInConsultation;
-        } else {
-            return this.participantsInConsultation
+            let list = this.participantsInConsultation
                 .filter(p => p.hearing_role !== HearingRole.WITNESS && p.hearing_role !== HearingRole.OBSERVER)
                 .filter(p => p.hearing_role !== HearingRole.INTERPRETER)
                 .map(p => {
@@ -128,6 +165,24 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
                     }
                     return participant;
                 });
+
+
+            return list;
+        } else {
+            let list = this.participantsInConsultation
+                .filter(p => p.hearing_role !== HearingRole.WITNESS && p.hearing_role !== HearingRole.OBSERVER)
+                .filter(p => p.hearing_role !== HearingRole.INTERPRETER)
+                .filter(p => p.hearing_role !== HearingRole.JUDGE && p.hearing_role !== HearingRole.PANEL_MEMBER && p.hearing_role !== HearingRole.WINGER)
+                .map(p => {
+                    const interpreterLink = p.linked_participants.find(x => x.link_type === LinkType.Interpreter);
+                    const participant: ParticipantListItem = { ...p };
+                    if (p.linked_participants && interpreterLink) {
+                        participant.interpreter = this.participantsInConsultation.find(x => x.id === interpreterLink.linked_id);
+                    }
+                    return participant;
+                });
+            return list;
+                
         }
     }
 

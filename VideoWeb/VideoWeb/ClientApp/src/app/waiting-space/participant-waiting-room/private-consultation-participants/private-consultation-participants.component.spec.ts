@@ -474,13 +474,15 @@ describe('PrivateConsultationParticipantsComponent', () => {
 
     it('should get all if joh consultation', () => {
         const participants = new ConferenceTestData().getListOfParticipants();
-        const witness = participants[0];
-        witness.hearing_role = HearingRole.WITNESS;
-        const observer = participants[1];
-        observer.hearing_role = HearingRole.OBSERVER;
+        const judge = participants[0];
+        judge.hearing_role = HearingRole.JUDGE;
+        const panelMember = participants[1];
+        panelMember.hearing_role = HearingRole.PANEL_MEMBER;
+        const representative = participants[2];
+        representative.hearing_role = HearingRole.REPRESENTATIVE;
         component.roomLabel = 'judgejohconsultationroom1';
-        component.participantsInConsultation = [witness, observer];
-        expect(component.getPrivateConsultationParticipants().length).toBe(2);
+        component.participantsInConsultation = [judge, panelMember, representative];
+        expect(component.getPrivateConsultationParticipants().length).toBe(3);
     });
 
     it('should not get witnesses', () => {

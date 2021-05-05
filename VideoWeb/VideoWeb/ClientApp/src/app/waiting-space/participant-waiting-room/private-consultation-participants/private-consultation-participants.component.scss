@@ -7,7 +7,7 @@
 .participant-grid {
   color: rgba(255, 255, 255, 0.5);
   font-size: 16px;
-  font-family: 'GDS Transport', arial, sans-serif;
+  font-family: 'GDS Transport', arial, sans-serif;  
   .participant-row,
   .endpoint-row {
     display: flex;
@@ -24,6 +24,26 @@
     margin: 0.5em 0 -0.5em 1em;
     font-size: 1.5em;
   }
+}
+
+.participant-grid {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 16px;
+  font-family: 'GDS Transport', arial, sans-serif;  
+  .participant-group-row{
+    display: flex;
+    border-bottom: 0.5px  rgba(255, 255, 255, 0.2);
+    padding-top: 1em;
+    padding-bottom: 0.2em;
+
+    > div {
+      margin-right: 0.5em;
+    }
+  }
+}
+
+.header-left {
+  width: 16px;
 }
 
 .text-right {
@@ -49,7 +69,6 @@
 
 .small-crest {
   width: 30px;
-  position: absolute;
-  right: 30px;
+  
   margin-top: -3px;
 }

@@ -178,21 +178,18 @@ export abstract class WRParticipantStatusListDirective {
 
     protected filterJudge(): void {
         this.judge = this.conference.participants.find(x => x.role === Role.Judge);
-    }
+    }    
 
     protected filterParticipantInConsultation(): void {
-        if (this.loggedInUser.role === Role.Judge || this.loggedInUser.role === Role.JudicialOfficeHolder) {
-            this.participantsInConsultation = [
-                this.judge,
-                ...this.panelMembers,
-                ...this.wingers,
-                ...this.nonJudgeParticipants,
-                ...this.observers
-            ];
-        } else {
-            this.participantsInConsultation = [...this.nonJudgeParticipants];
-        }
+        this.participantsInConsultation = [
+            this.judge,
+            ...this.panelMembers,
+            ...this.wingers,
+            ...this.nonJudgeParticipants,
+            ...this.observers
+        ];
     }
+    
 
     get canInvite(): boolean {
         const isJudicialUser = this.loggedInUser.role === Role.Judge || this.loggedInUser.role === Role.JudicialOfficeHolder;
