@@ -468,7 +468,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             const invitation = {
                 linkedParticipantStatuses: {},
                 activeToast: null,
-                activeParticipantAccepted: false,
+                answer: ConsultationAnswer.None,
                 invitedByName: null
             } as ConsultationInvitation;
 
@@ -506,7 +506,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             const invitation = {
                 linkedParticipantStatuses: {},
                 activeToast: null,
-                activeParticipantAccepted: false,
+                answer: ConsultationAnswer.None,
                 invitedByName: null
             } as ConsultationInvitation;
 
@@ -546,7 +546,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             const invitation = {
                 linkedParticipantStatuses: {},
                 activeToast: null,
-                activeParticipantAccepted: false,
+                answer: ConsultationAnswer.None,
                 invitedByName: null
             } as ConsultationInvitation;
 
@@ -576,7 +576,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             const invitation = {
                 linkedParticipantStatuses: {},
                 activeToast: null,
-                activeParticipantAccepted: false,
+                answer: ConsultationAnswer.None,
                 invitedByName: null
             } as ConsultationInvitation;
 
@@ -613,7 +613,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             const invitation = {
                 linkedParticipantStatuses: {},
                 activeToast: null,
-                activeParticipantAccepted: false,
+                answer: ConsultationAnswer.None,
                 invitedByName: null
             } as ConsultationInvitation;
 
@@ -635,7 +635,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             // Assert
             expect(consultationInvitiationService.getInvitation).toHaveBeenCalledTimes(1);
             expect(consultationInvitiationService.getInvitation).toHaveBeenCalledWith(expectedConsultationRoomLabel);
-            expect(invitation.activeParticipantAccepted).toBeTrue();
+            expect(invitation.answer).toEqual(ConsultationAnswer.Accepted);
             expect(component.createOrUpdateWaitingOnLinkedParticipantsNotification).toHaveBeenCalledOnceWith(invitation);
         });
     });
@@ -747,10 +747,9 @@ describe('WaitingRoomComponent EventHub Call', () => {
             const invitation = {
                 linkedParticipantStatuses: {},
                 activeToast: null,
-                activeParticipantAccepted: false,
+                answer: ConsultationAnswer.Accepted,
                 invitedByName: null
             } as ConsultationInvitation;
-            invitation.activeParticipantAccepted = true;
             invitation.linkedParticipantStatuses = { lp1: true, lp2: true, lp3: true, lp4: true };
             consultationInvitiationService.getInvitation.and.returnValue(invitation);
 
@@ -770,10 +769,9 @@ describe('WaitingRoomComponent EventHub Call', () => {
             const invitation = {
                 linkedParticipantStatuses: {},
                 activeToast: null,
-                activeParticipantAccepted: false,
+                answer: ConsultationAnswer.None,
                 invitedByName: null
             } as ConsultationInvitation;
-            invitation.activeParticipantAccepted = false;
             invitation.linkedParticipantStatuses = { lp1: true, lp2: true, lp3: true, lp4: true };
             consultationInvitiationService.getInvitation.and.returnValue(invitation);
 
@@ -808,7 +806,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 answer: ConsultationAnswer.Accepted,
                 linkedParticipantStatuses: {},
                 activeToast: null,
-                activeParticipantAccepted: false,
                 invitedByName: null
             } as ConsultationInvitation;
             consultationInvitiationService.getInvitation.and.returnValue(invitation);
@@ -851,7 +848,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             const invitation = {
                 linkedParticipantStatuses: {},
                 activeToast: null,
-                activeParticipantAccepted: false,
+                answer: ConsultationAnswer.None,
                 invitedByName: null
             } as ConsultationInvitation;
             consultationInvitiationService.getInvitation.and.returnValue(invitation);
@@ -889,7 +886,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             const invitation = {
                 linkedParticipantStatuses: {},
                 activeToast: null,
-                activeParticipantAccepted: true,
+                answer: ConsultationAnswer.Accepted,
                 invitedByName: null
             } as ConsultationInvitation;
             invitation.invitedByName = null;
@@ -922,12 +919,11 @@ describe('WaitingRoomComponent EventHub Call', () => {
         it('should NOT raise a toast if there is already a toast active for this invitation', fakeAsync(() => {
             // Arrange
             const invitation = {
-                answer: ConsultationAnswer.None,
                 invitationId: null,
                 roomLabel: null,
                 linkedParticipantStatuses: {},
                 activeToast: jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']),
-                activeParticipantAccepted: false,
+                answer: ConsultationAnswer.None,
                 invitedByName: null
             } as ConsultationInvitation;
             invitation.invitedByName = null;
@@ -962,7 +958,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             const invitation = {
                 linkedParticipantStatuses: {},
                 activeToast: null,
-                activeParticipantAccepted: false,
+                answer: ConsultationAnswer.None,
                 invitedByName: null
             } as ConsultationInvitation;
             invitation.linkedParticipantStatuses[linkedParticipant.id] = true;
@@ -993,6 +989,87 @@ describe('WaitingRoomComponent EventHub Call', () => {
             expect(consultationInvitiationService.getInvitation).toHaveBeenCalledWith(expectedConsultationRoomLabel);
             expect(invitation.invitedByName).toBe(expectedInvitedByName);
             expect(invitation.linkedParticipantStatuses[linkedParticipant.id]).toBeTrue();
+            expect(invitation.activeToast).toBe(expectedToast);
+        }));
+
+        it('should raise a toast for a vho consultation request; requested participant has a linked participant', fakeAsync(() => {
+            // Arrange
+            const invitation = {
+                linkedParticipantStatuses: {},
+                activeToast: null,
+                answer: ConsultationAnswer.None,
+                invitedByName: null
+            } as ConsultationInvitation;
+            consultationInvitiationService.getInvitation.and.returnValue(invitation);
+
+            const expectedToast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
+            notificationToastrService.showConsultationInvite.and.returnValue(expectedToast);
+
+            const payload = new RequestedConsultationMessage(
+                globalConference.id,
+                invitationId,
+                'ConsultationRoom',
+                Guid.EMPTY,
+                primaryParticipant.id
+            );
+
+            component['findParticipant'] = jasmine
+                .createSpy('findParticipant')
+                .and.returnValues(new ParticipantResponse(primaryParticipant), new ParticipantResponse(requestor));
+            component.participant = primaryParticipant;
+
+            // Act
+
+            // Act
+            requestedConsultationMessageSubjectMock.next(payload);
+            flush();
+
+            // Assert
+            expect(notificationToastrService.showConsultationInvite).toHaveBeenCalled();
+            expect(consultationInvitiationService.getInvitation).toHaveBeenCalledWith(expectedConsultationRoomLabel);
+            expect(invitation.invitedByName).toBe('a VHO officer');
+            expect(invitation.linkedParticipantStatuses[linkedParticipant.id]).toBeFalse();
+            expect(invitation.activeToast).toBe(expectedToast);
+        }));
+
+        it('should raise a toast for a vho consultation request; requested participant DOES NOT have a linked participant', fakeAsync(() => {
+            // Arrange
+            const invitation = {
+                linkedParticipantStatuses: {},
+                activeToast: null,
+                answer: ConsultationAnswer.None,
+                invitedByName: null
+            } as ConsultationInvitation;
+            consultationInvitiationService.getInvitation.and.returnValue(invitation);
+
+            const expectedToast = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
+            notificationToastrService.showConsultationInvite.and.returnValue(expectedToast);
+
+            const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
+            const payload = new RequestedConsultationMessage(
+                globalConference.id,
+                invitationId,
+                'ConsultationRoom',
+                Guid.EMPTY,
+                participant.id
+            );
+
+            component['findParticipant'] = jasmine
+                .createSpy('findParticipant')
+                .and.returnValues(new ParticipantResponse(participant), new ParticipantResponse(requestor));
+            component.participant = participant;
+
+            // Act
+
+            // Act
+            requestedConsultationMessageSubjectMock.next(payload);
+            flush();
+
+            // Assert
+            expect(notificationToastrService.showConsultationInvite).toHaveBeenCalled();
+            expect(consultationInvitiationService.getInvitation).toHaveBeenCalledWith(expectedConsultationRoomLabel);
+            expect(invitation.invitedByName).toBe('a VHO officer');
+            expect(invitation.linkedParticipantStatuses).toEqual({});
             expect(invitation.activeToast).toBe(expectedToast);
         }));
     });

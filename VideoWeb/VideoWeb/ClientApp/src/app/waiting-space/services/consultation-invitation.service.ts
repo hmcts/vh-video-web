@@ -8,7 +8,6 @@ export interface ConsultationInvitation {
     roomLabel: string;
     linkedParticipantStatuses: { [participantId: string]: boolean };
     activeToast: VhToastComponent;
-    activeParticipantAccepted: boolean;
     invitedByName: string;
 }
 

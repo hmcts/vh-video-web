@@ -1,5 +1,6 @@
 import { Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -12,6 +13,7 @@ import {
     LinkType,
     LoggedParticipantResponse,
     ParticipantResponse,
+    ParticipantResponseVho,
     ParticipantStatus,
     Role,
     RoomSummaryResponse,
@@ -208,7 +210,7 @@ export abstract class WaitingRoomBaseDirective {
         const invitation = this.consultationInvitiationService.getInvitation(roomLabel);
         invitation.linkedParticipantStatuses[id] = true;
 
-        if (invitation.activeParticipantAccepted) {
+        if (invitation.answer === ConsultationAnswer.Accepted) {
             this.createOrUpdateWaitingOnLinkedParticipantsNotification(invitation);
         }
     }
@@ -294,8 +296,17 @@ export abstract class WaitingRoomBaseDirective {
                 if (requestedFor.id === this.participant.id && this.participant.status !== ParticipantStatus.InHearing) {
                     // A request for you to join a consultation room
                     this.logger.debug(`${this.loggerPrefix} Recieved RequestedConsultationMessage`);
-                    const _requestedBy: Participant | ParticipantResponse = this.findParticipant(message.requestedBy);
-                    const requestedBy = _requestedBy ? new Participant(_requestedBy) : null;
+
+                    let requestedBy: Participant | null = null;
+                    if (message.requestedBy === Guid.EMPTY) {
+                        requestedBy = new Participant(new ParticipantResponseVho({ display_name: 'a VHO officer' }));
+                    } else {
+                        const _requestedBy = this.findParticipant(message.requestedBy);
+
+                        if (_requestedBy) {
+                            requestedBy = new Participant(_requestedBy);
+                        }
+                    }
 
                     const roomParticipants = this.findParticipantsInRoom(message.roomLabel).map(x => new Participant(x));
                     const roomEndpoints = this.findEndpointsInRoom(message.roomLabel);
@@ -315,10 +326,9 @@ export abstract class WaitingRoomBaseDirective {
                     }
 
                     invitation.invitationId = message.invitationId;
+                    invitation.invitedByName = requestedBy ? requestedBy.displayName : 'a VHO Officer';
 
-                    invitation.invitedByName = requestedBy.displayName;
-
-                    if (!invitation.activeParticipantAccepted && !invitation.activeToast) {
+                    if (invitation.answer !== ConsultationAnswer.Accepted && !invitation.activeToast) {
                         const consultationInviteToast = this.notificationToastrService.showConsultationInvite(
                             message.roomLabel,
                             message.conferenceId,
@@ -491,7 +501,6 @@ export abstract class WaitingRoomBaseDirective {
         }
 
         const invitation = this.consultationInvitiationService.getInvitation(roomLabel);
-        invitation.activeParticipantAccepted = true;
         invitation.answer = ConsultationAnswer.Accepted;
 
         this.createOrUpdateWaitingOnLinkedParticipantsNotification(invitation);
