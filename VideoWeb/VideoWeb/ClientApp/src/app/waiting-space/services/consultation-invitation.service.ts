@@ -21,7 +21,7 @@ export class ConsultationInvitationService {
         const invitation = this.consultationInvitations[roomLabel];
 
         if (!invitation || invitation.answer === ConsultationAnswer.Rejected) {
-            return (this.consultationInvitations[roomLabel] = {
+            this.consultationInvitations[roomLabel] = {
                 answer: ConsultationAnswer.None,
                 invitationId: null,
                 roomLabel: roomLabel,
@@ -29,7 +29,9 @@ export class ConsultationInvitationService {
                 activeToast: null,
                 activeParticipantAccepted: false,
                 invitedByName: null
-            } as ConsultationInvitation);
+            } as ConsultationInvitation;
+
+            return this.consultationInvitations[roomLabel];
         }
 
         return invitation;

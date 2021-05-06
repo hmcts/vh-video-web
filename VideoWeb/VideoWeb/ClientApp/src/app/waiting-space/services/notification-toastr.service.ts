@@ -166,7 +166,8 @@ export class NotificationToastrService {
             }
         )}</span>`;
 
-        return (this.activeLinkedParticipantRejectionToasts[inviteKey] = this.createConsultationNotificationToast(message, inHearing));
+        this.activeLinkedParticipantRejectionToasts[inviteKey] = this.createConsultationNotificationToast(message, inHearing);
+        return this.activeLinkedParticipantRejectionToasts[inviteKey];
     }
 
     showWaitingForLinkedParticipantsToAccept(
