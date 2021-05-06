@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -10,7 +9,6 @@ using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Helpers;
 
 namespace VideoWeb.UnitTests.Controllers.VideoEventController
 {
@@ -69,7 +67,6 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         {
             // arrange
             var room = TestConference.CivilianRooms.First(x => x.Participants.Any());
-            var participantCount = room.Participants.Count;
 
             var request = CreateRequest();
             request.ParticipantId = room.Id.ToString();

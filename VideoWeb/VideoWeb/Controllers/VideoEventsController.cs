@@ -31,7 +31,6 @@ namespace VideoWeb.Controllers
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<VideoEventsController> _logger;
         private readonly IMapperFactory _mapperFactory;
-        private readonly IConsultationInvitationTracker _consultationInvitationTracker;
 
 
         public VideoEventsController(
@@ -39,15 +38,13 @@ namespace VideoWeb.Controllers
             IEventHandlerFactory eventHandlerFactory,
             IConferenceCache conferenceCache,
             ILogger<VideoEventsController> logger,
-            IMapperFactory mapperFactory,
-            IConsultationInvitationTracker consultationInvitationTracker)
+            IMapperFactory mapperFactory)
         {
             _videoApiClient = videoApiClient;
             _eventHandlerFactory = eventHandlerFactory;
             _conferenceCache = conferenceCache;
             _logger = logger;
             _mapperFactory = mapperFactory;
-            _consultationInvitationTracker = consultationInvitationTracker;
         }
         
         [HttpPost]
