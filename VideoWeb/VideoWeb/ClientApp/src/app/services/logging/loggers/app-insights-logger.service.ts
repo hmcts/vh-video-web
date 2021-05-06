@@ -5,6 +5,8 @@ import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { ConfigService } from '../../api/config.service';
+import { ProfileService } from '../../api/profile.service';
+import { Role } from '../../clients/api-client';
 import { LogAdapter } from '../log-adapter';
 
 @Injectable({
@@ -14,10 +16,18 @@ export class AppInsightsLoggerService implements LogAdapter {
     errorInfo: any;
     router: Router;
     appInsights: ApplicationInsights;
+    isVHO: boolean;
+    userData;
 
-    constructor(configService: ConfigService, router: Router, oidcSecurityService: OidcSecurityService) {
+    constructor(
+        configService: ConfigService,
+        router: Router,
+        oidcSecurityService: OidcSecurityService,
+        private profileService: ProfileService
+    ) {
         this.router = router;
         this.setupAppInsights(configService, oidcSecurityService).subscribe(() => {
+            this.checkIfVho(oidcSecurityService);
             this.trackNavigation();
         });
     }
@@ -42,27 +52,40 @@ export class AppInsightsLoggerService implements LogAdapter {
         );
     }
 
+    private checkIfVho(oidcSecurityService: OidcSecurityService) {
+        oidcSecurityService.isAuthenticated$.pipe(filter(Boolean)).subscribe(() => {
+            this.profileService.getUserProfile().then(profile => {
+                this.isVHO = profile.role === Role.VideoHearingsOfficer;
+            });
+        });
+    }
+
     debug(message: string, properties: any = null): void {
         if (this.appInsights) {
+            this.updatePropertiesIfVho(properties);
             this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Verbose }, properties);
         }
     }
 
     info(message: string, properties: any = null): void {
+        this.updatePropertiesIfVho(properties);
         this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Information }, properties);
     }
 
     warn(message: string, properties: any = null): void {
+        this.updatePropertiesIfVho(properties);
         this.appInsights.trackTrace({ message, severityLevel: SeverityLevel.Warning }, properties);
     }
 
     trackEvent(eventName: string, properties: any) {
+        this.updatePropertiesIfVho(properties);
         this.appInsights.trackEvent({ name: eventName }, properties);
     }
 
     trackException(message: string, err: Error, properties: any) {
         properties = properties || {};
         properties.message = message;
+        this.updatePropertiesIfVho(properties);
 
         this.errorInfo = err;
         properties.errorInformation = this.errorInfo
@@ -114,5 +137,11 @@ export class AppInsightsLoggerService implements LogAdapter {
         }
 
         return path;
+    }
+
+    private updatePropertiesIfVho(properties: any) {
+        if (properties && this.isVHO) {
+            properties.isVho = this.isVHO;
+        }
     }
 }
