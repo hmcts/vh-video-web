@@ -292,25 +292,12 @@ export abstract class WaitingRoomBaseDirective {
         this.logger.debug(`${this.loggerPrefix} Subscribing to RequestedConsultationMessage`);
         this.eventHubSubscription$.add(
             this.eventService.getRequestedConsultationMessage().subscribe(message => {
-                const requestedFor = new Participant(this.findParticipant(message.requestedFor));
+                const requestedFor = this.resolveParticipant(message.requestedFor);
                 if (requestedFor.id === this.participant.id && this.participant.status !== ParticipantStatus.InHearing) {
                     // A request for you to join a consultation room
                     this.logger.debug(`${this.loggerPrefix} Recieved RequestedConsultationMessage`);
 
-                    let requestedBy: Participant | null = null;
-                    if (message.requestedBy === Guid.EMPTY) {
-                        requestedBy = new Participant(new ParticipantResponseVho({ display_name: 'a Video Hearings Officer' }));
-                    } else {
-                        const _requestedBy = this.findParticipant(message.requestedBy);
-
-                        if (_requestedBy) {
-                            requestedBy = new Participant(_requestedBy);
-                        } else {
-                            this.logger.warn(`${this.loggerPrefix} Could NOT find the requested by participant`, message);
-                            return;
-                        }
-                    }
-
+                    const requestedBy = this.resolveParticipant(message.requestedBy);
                     const roomParticipants = this.findParticipantsInRoom(message.roomLabel).map(x => new Participant(x));
                     const roomEndpoints = this.findEndpointsInRoom(message.roomLabel);
 
@@ -434,6 +421,20 @@ export abstract class WaitingRoomBaseDirective {
                 this.updateShowVideo();
             })
         );
+    }
+    resolveParticipant(participantId: any): Participant {
+        if (participantId === Guid.EMPTY) {
+            return new Participant(new ParticipantResponseVho({ display_name: 'a Video Hearings Officer' }));
+        } else {
+            const participant = this.findParticipant(participantId);
+
+            if (participant) {
+                return new Participant(participant);
+            } else {
+                this.logger.warn(`${this.loggerPrefix} Could NOT find the requested by participant`, participantId);
+                return;
+            }
+        }
     }
 
     private handleLinkedParticipantConsultationResponse(
