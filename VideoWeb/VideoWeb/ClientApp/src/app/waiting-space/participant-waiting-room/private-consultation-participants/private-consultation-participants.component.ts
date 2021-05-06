@@ -108,7 +108,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         if (!this.isJohConsultation()) {
             return 'participant-row';
         }
-        if (this.isLastJohFromGroupOrIndividualGroupMember(participant)) {
+        if (!this.isLastJohFromGroupOrIndividualGroupMember(participant)) {
             return 'participant-group-row';
         } else {
             return 'participant-row';
