@@ -10,7 +10,6 @@ import {
     ConferenceStatus,
     ConsultationAnswer,
     EndpointStatus,
-    LinkedParticipantResponse,
     LinkType,
     LoggedParticipantResponse,
     ParticipantResponse,
