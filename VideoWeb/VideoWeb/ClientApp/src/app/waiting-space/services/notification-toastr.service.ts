@@ -44,7 +44,7 @@ export class NotificationToastrService {
     ) {
         const inviteKey = this.getInviteKey(conferenceId, roomLabel);
         if (this.activeRoomInviteRequests.indexOf(inviteKey) >= 0) {
-            return;
+            return null;
         }
         this.activeRoomInviteRequests.push(inviteKey);
         this.logger.debug(`${this.loggerPrefix} creating 'showConsultationInvite' toastr notification`);

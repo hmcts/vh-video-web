@@ -20,7 +20,7 @@ export class ConsultationInvitationService {
     getInvitation(roomLabel: string): ConsultationInvitation {
         const invitation = this.consultationInvitations[roomLabel];
 
-        if (!invitation || invitation.answer === ConsultationAnswer.Rejected) {
+        if (!invitation) {
             this.consultationInvitations[roomLabel] = {
                 answer: ConsultationAnswer.None,
                 invitationId: null,

@@ -302,6 +302,8 @@ export abstract class WaitingRoomBaseDirective {
                     const roomEndpoints = this.findEndpointsInRoom(message.roomLabel);
 
                     const invitation = this.consultationInvitiationService.getInvitation(message.roomLabel);
+                    invitation.invitationId = message.invitationId;
+                    invitation.invitedByName = requestedBy.displayName;
 
                     // if the invitation has already been accepted; resend the response with the updated invitation id
                     if (invitation.answer === ConsultationAnswer.Accepted) {
@@ -315,10 +317,7 @@ export abstract class WaitingRoomBaseDirective {
                         );
                     }
 
-                    invitation.invitationId = message.invitationId;
-                    invitation.invitedByName = requestedBy.displayName;
-
-                    if (invitation.answer !== ConsultationAnswer.Accepted && !invitation.activeToast) {
+                    if (invitation.answer !== ConsultationAnswer.Accepted) {
                         const consultationInviteToast = this.notificationToastrService.showConsultationInvite(
                             message.roomLabel,
                             message.conferenceId,
@@ -330,7 +329,8 @@ export abstract class WaitingRoomBaseDirective {
                             this.participant.status !== ParticipantStatus.Available
                         );
 
-                        invitation.activeToast = consultationInviteToast;
+                        if (consultationInviteToast)
+                            invitation.activeToast = consultationInviteToast;
                     }
 
                     for (const linkedParticipant of this.participant.linked_participants) {
@@ -505,6 +505,9 @@ export abstract class WaitingRoomBaseDirective {
         }
 
         const invitation = this.consultationInvitiationService.getInvitation(roomLabel);
+        if (invitation.answer === ConsultationAnswer.Rejected)
+            return;
+
         invitation.answer = ConsultationAnswer.Accepted;
 
         this.createOrUpdateWaitingOnLinkedParticipantsNotification(invitation);
