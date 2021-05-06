@@ -44,7 +44,7 @@ export class ConsultationInvitationService {
         }
     }
 
-    linkedParticipantRejectedInvitation(roomLabel: string, linkedParticipantId: string ) {
+    linkedParticipantRejectedInvitation(roomLabel: string, linkedParticipantId: string) {
         const invitation = this.consultationInvitations[roomLabel];
         if (invitation) {
             invitation.answer = ConsultationAnswer.Rejected;

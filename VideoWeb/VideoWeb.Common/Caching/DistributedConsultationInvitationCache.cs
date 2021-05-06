@@ -25,7 +25,7 @@ namespace VideoWeb.Common.Caching
             await _distributedCache.SetAsync(consultationInvitation.InvitationId.ToString(), data,
                 new DistributedCacheEntryOptions
                 {
-                    SlidingExpiration = TimeSpan.FromSeconds(2.5 * 60) // 2.5 minutes
+                    SlidingExpiration = TimeSpan.FromMinutes(2.5)
                 });
         }
 

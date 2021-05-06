@@ -688,7 +688,10 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 expectedInvitedByName,
                 expectedIsParticipantInHearing
             );
-            expect(consultationInvitiationService.linkedParticipantRejectedInvitation).toHaveBeenCalledOnceWith(expectedConsultationRoomLabel, linkedParticipant.id);
+            expect(consultationInvitiationService.linkedParticipantRejectedInvitation).toHaveBeenCalledOnceWith(
+                expectedConsultationRoomLabel,
+                linkedParticipant.id
+            );
             expect(consultationInvitiationService.getInvitation).toHaveBeenCalledOnceWith(expectedConsultationRoomLabel);
             expect(toastSpy.remove).toHaveBeenCalledTimes(1);
             expect(toastSpy.declinedByThirdParty).toBeTrue();
@@ -710,7 +713,10 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 expectedInvitedByName,
                 expectedIsParticipantInHearing
             );
-            expect(consultationInvitiationService.linkedParticipantRejectedInvitation).toHaveBeenCalledOnceWith(expectedConsultationRoomLabel, linkedParticipant.id);
+            expect(consultationInvitiationService.linkedParticipantRejectedInvitation).toHaveBeenCalledOnceWith(
+                expectedConsultationRoomLabel,
+                linkedParticipant.id
+            );
             expect(consultationInvitiationService.getInvitation).toHaveBeenCalledOnceWith(expectedConsultationRoomLabel);
             expect(toastSpy.remove).toHaveBeenCalledTimes(1);
             expect(toastSpy.declinedByThirdParty).toBeTrue();
