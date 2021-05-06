@@ -43,6 +43,7 @@ export class ConsultationService {
      */
     async respondToConsultationRequest(
         conferenceId: string,
+        invitationId: string,
         requesterId: string,
         requesteeId: string,
         answer: ConsultationAnswer,
@@ -62,6 +63,7 @@ export class ConsultationService {
                 .respondToConsultationRequest(
                     new PrivateConsultationRequest({
                         conference_id: conferenceId,
+                        invitation_id: invitationId,
                         requested_by_id: requesterId,
                         requested_for_id: requesteeId,
                         answer: answer,

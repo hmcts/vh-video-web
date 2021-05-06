@@ -34,6 +34,7 @@ using VideoWeb.Middleware;
 using BookingsApi.Client;
 using UserApi.Client;
 using VideoApi.Client;
+using VideoWeb.EventHub.Services;
 using VideoWeb.Swagger;
 
 namespace VideoWeb.Extensions
@@ -107,8 +108,8 @@ namespace VideoWeb.Extensions
             services.AddScoped<IHeartbeatRequestMapper, HeartbeatRequestMapper>();
             services.AddSingleton<IUserCache, DistributedUserCache>();
             services.AddScoped<ILoggingDataExtractor, LoggingDataExtractor>();
-            services.AddScoped<IConsultationResponseCache, DistributedConsultationResponseCache>();
-            services.AddScoped<IConsultationResponseTracker, ConsultationResponseTracker>();
+            services.AddScoped<IConsultationInvitationCache, DistributedConsultationInvitationCache>();
+            services.AddScoped<IConsultationInvitationTracker, ConsultationInvitationTracker>();
             services.AddScoped<IConsultationNotifier, ConsultationNotifier>();
 
             RegisterMappers(services);
