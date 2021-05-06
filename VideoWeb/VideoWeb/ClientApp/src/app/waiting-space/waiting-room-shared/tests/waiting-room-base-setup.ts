@@ -135,6 +135,7 @@ export function initAllWRDependencies() {
     consultationInvitiationService = jasmine.createSpyObj<ConsultationInvitationService>('ConsultationInvitationService', [
         'getInvitation',
         'removeInvitation',
-        'rejectInvitation'
+        'rejectInvitation',
+        'linkedParticipantRejectedInvitation'
     ]);
 }

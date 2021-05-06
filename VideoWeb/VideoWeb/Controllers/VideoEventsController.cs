@@ -31,7 +31,6 @@ namespace VideoWeb.Controllers
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<VideoEventsController> _logger;
         private readonly IMapperFactory _mapperFactory;
-        private readonly IConsultationResponseTracker _consultationResponseTracker;
 
 
         public VideoEventsController(
@@ -39,17 +38,15 @@ namespace VideoWeb.Controllers
             IEventHandlerFactory eventHandlerFactory,
             IConferenceCache conferenceCache,
             ILogger<VideoEventsController> logger,
-            IMapperFactory mapperFactory,
-            IConsultationResponseTracker consultationResponseTracker)
+            IMapperFactory mapperFactory)
         {
             _videoApiClient = videoApiClient;
             _eventHandlerFactory = eventHandlerFactory;
             _conferenceCache = conferenceCache;
             _logger = logger;
             _mapperFactory = mapperFactory;
-            _consultationResponseTracker = consultationResponseTracker;
         }
-
+        
         [HttpPost]
         [SwaggerOperation(OperationId = "SendEvent")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
@@ -73,14 +70,16 @@ namespace VideoWeb.Controllers
                     request.ParticipantId = null;
                     events = request.CreateEventsForParticipantsInRoom(conference, roomId);
                 }
-
+                
                 var callbackEvents = events.Select(e => TransformAndMapRequest(e, conference)).ToList();
+
                 // DO NOT USE Task.WhenAll because the handlers are not thread safe and will overwrite Source<Variable> for each run
                 foreach (var e in events)
                 {
                     await SendEventToVideoApi(e);
                 }
 
+                callbackEvents.RemoveRepeatedVhoCallConferenceEvents();
                 foreach (var cb in callbackEvents)
                 {
                     await PublishEventToUi(cb);
@@ -153,14 +152,12 @@ namespace VideoWeb.Controllers
             var roomId = long.Parse(request.ParticipantRoomId);
             var participantId = Guid.Parse(request.ParticipantId);
 
-
             switch (request.EventType)
             {
                 case EventType.Joined:
                     conference.AddParticipantToRoom(roomId, participantId);
                     break;
                 case EventType.Disconnected:
-                    await _consultationResponseTracker.ClearResponses(conference, participantId);
                     conference.RemoveParticipantFromRoom(roomId, participantId);
                     break;
                 default: return;

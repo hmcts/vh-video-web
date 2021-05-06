@@ -9,6 +9,7 @@ import { NotificationSoundsService } from './notification-sounds.service';
 import { Guid } from 'guid-typescript';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import { TranslateService } from '@ngx-translate/core';
+import { ConsultationInvitation } from './consultation-invitation.service';
 
 @Injectable()
 export class NotificationToastrService {
@@ -34,6 +35,7 @@ export class NotificationToastrService {
     showConsultationInvite(
         roomLabel: string,
         conferenceId: string,
+        consultationInvitation: ConsultationInvitation,
         requestedBy: Participant,
         requestedFor: Participant,
         participants: Participant[],
@@ -42,7 +44,7 @@ export class NotificationToastrService {
     ) {
         const inviteKey = this.getInviteKey(conferenceId, roomLabel);
         if (this.activeRoomInviteRequests.indexOf(inviteKey) >= 0) {
-            return;
+            return null;
         }
         this.activeRoomInviteRequests.push(inviteKey);
         this.logger.debug(`${this.loggerPrefix} creating 'showConsultationInvite' toastr notification`);
@@ -89,7 +91,14 @@ export class NotificationToastrService {
             const index = this.activeRoomInviteRequests.indexOf(inviteKey);
             this.activeRoomInviteRequests.splice(index, 1);
 
-            await this.consultationService.respondToConsultationRequest(conferenceId, requestedById, requestedFor.id, answer, roomLabel);
+            await this.consultationService.respondToConsultationRequest(
+                conferenceId,
+                consultationInvitation.invitationId,
+                requestedById,
+                requestedFor.id,
+                answer,
+                roomLabel
+            );
         };
 
         const toast = this.toastr.show('', '', {
@@ -104,7 +113,7 @@ export class NotificationToastrService {
             color: inHearing ? 'white' : 'black',
             htmlBody: message,
             onNoAction: async () => {
-                await respondToConsultationRequest(ConsultationAnswer.None);
+                await respondToConsultationRequest(ConsultationAnswer.Rejected);
             },
             onRemove: () => {
                 const index = this.activeRoomInviteRequests.indexOf(inviteKey);
@@ -157,7 +166,8 @@ export class NotificationToastrService {
             }
         )}</span>`;
 
-        return (this.activeLinkedParticipantRejectionToasts[inviteKey] = this.createConsultationNotificationToast(message, inHearing));
+        this.activeLinkedParticipantRejectionToasts[inviteKey] = this.createConsultationNotificationToast(message, inHearing);
+        return this.activeLinkedParticipantRejectionToasts[inviteKey];
     }
 
     showWaitingForLinkedParticipantsToAccept(
