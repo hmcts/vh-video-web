@@ -60,7 +60,7 @@ namespace VideoWeb.UnitTests.Common.Caching
             var invitation = ConsultationInvitation.Create(participantGuid, roomLabel, new[] {linkedParticipantGuid});
 
             // Act
-            await _sut.CreateInvitationEntry(invitation);
+            await _sut.Write(invitation);
 
             // Assert
             (await ReadFromCache<ConsultationInvitation>(invitation.InvitationId)).Should().BeEquivalentTo(invitation);
@@ -78,7 +78,7 @@ namespace VideoWeb.UnitTests.Common.Caching
             await WriteToCache(storedInvitation.InvitationId, storedInvitation);
             
             // Act
-            var invitation = await _sut.GetInvitation(storedInvitation.InvitationId);
+            var invitation = await _sut.Read(storedInvitation.InvitationId);
 
             // Assert
             invitation.Should().BeEquivalentTo(storedInvitation);
@@ -95,35 +95,10 @@ namespace VideoWeb.UnitTests.Common.Caching
                 ConsultationInvitation.Create(participantGuid, roomLabel, new[] {linkedParticipantGuid});
 
             // Act
-            var invitation = await _sut.GetInvitation(storedInvitation.InvitationId);
+            var invitation = await _sut.Read(storedInvitation.InvitationId);
 
             // Assert
             invitation.Should().BeNull();
-        }
-        
-        [Test]
-        public async Task Should_update_an_invitation_if_it_exists()
-        {
-            // Arrange
-            var participantGuid = Guid.NewGuid();
-            var linkedParticipantGuid = Guid.NewGuid();
-            var roomLabel = "room_label";
-            var invitationToUpdate =
-                ConsultationInvitation.Create(participantGuid, roomLabel, new[] {linkedParticipantGuid});
-            
-            await WriteToCache(invitationToUpdate.InvitationId, invitationToUpdate);
-            
-            // Act
-            await _sut.UpdateResponseToInvitation(invitationToUpdate.InvitationId, linkedParticipantGuid, ConsultationAnswer.Accepted);
-            var storedInvitation = await ReadFromCache<ConsultationInvitation>(invitationToUpdate.InvitationId);
-
-            // Assert
-            storedInvitation.InvitationId.Should().Be(invitationToUpdate.InvitationId);
-            storedInvitation.RequestedForParticipantId.Should().Be(invitationToUpdate.RequestedForParticipantId);
-            storedInvitation.RoomLabel.Should().Be(invitationToUpdate.RoomLabel);
-            storedInvitation.InvitedParticipantResponses.Count.Should().Be(2);
-            storedInvitation.InvitedParticipantResponses[participantGuid].Should().Be(ConsultationAnswer.None);
-            storedInvitation.InvitedParticipantResponses[linkedParticipantGuid].Should().Be(ConsultationAnswer.Accepted);
         }
     }
 }

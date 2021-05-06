@@ -18,41 +18,18 @@ namespace VideoWeb.Common.Caching
             _distributedCache = distributedCache;
         }
 
-        public async Task CreateInvitationEntry(ConsultationInvitation consultationInvitation)
+        public async Task Write(ConsultationInvitation consultationInvitation)
         {
-            await WriteConsultationInvitationToCache(consultationInvitation);
-        }
-
-        public async Task<ConsultationInvitation> GetInvitation(Guid invitationId)
-        {
-            return await ReadConsultationInvitationToCache(invitationId);
-        }
-
-        public async Task UpdateResponseToInvitation(Guid invitationId, Guid participantId, ConsultationAnswer answer)
-        {
-            var invitation = await GetInvitation(invitationId);
-
-            if (invitation == null)
-                return;
-
-            invitation.InvitedParticipantResponses[participantId] = answer;
-
-            await WriteConsultationInvitationToCache(invitation);
-        }
-
-        private async Task WriteConsultationInvitationToCache(ConsultationInvitation invitation)
-        {
-
-            var serialisedConference = JsonConvert.SerializeObject(invitation, CachingHelper.SerializerSettings);
+            var serialisedConference = JsonConvert.SerializeObject(consultationInvitation, CachingHelper.SerializerSettings);
             var data = Encoding.UTF8.GetBytes(serialisedConference);
-            await _distributedCache.SetAsync(invitation.InvitationId.ToString(), data,
+            await _distributedCache.SetAsync(consultationInvitation.InvitationId.ToString(), data,
                 new DistributedCacheEntryOptions
                 {
                     SlidingExpiration = TimeSpan.FromSeconds(2.5 * 60) // 2.5 minutes
                 });
         }
 
-        private async Task<ConsultationInvitation> ReadConsultationInvitationToCache(Guid invitationId)
+        public async Task<ConsultationInvitation> Read(Guid invitationId)
         {
             try
             {
