@@ -329,7 +329,7 @@ export abstract class WaitingRoomBaseDirective {
                     }
 
                     invitation.invitationId = message.invitationId;
-                    invitation.invitedByName = requestedBy ? requestedBy.displayName : 'a VHO Officer';
+                    invitation.invitedByName = requestedBy ? requestedBy.displayName : 'a Video Hearings Officer';
 
                     if (invitation.answer !== ConsultationAnswer.Accepted && !invitation.activeToast) {
                         const consultationInviteToast = this.notificationToastrService.showConsultationInvite(
