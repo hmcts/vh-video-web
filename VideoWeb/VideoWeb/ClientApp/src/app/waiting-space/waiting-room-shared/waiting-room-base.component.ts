@@ -329,8 +329,9 @@ export abstract class WaitingRoomBaseDirective {
                             this.participant.status !== ParticipantStatus.Available
                         );
 
-                        if (consultationInviteToast)
+                        if (consultationInviteToast) {
                             invitation.activeToast = consultationInviteToast;
+                        }
                     }
 
                     for (const linkedParticipant of this.participant.linked_participants) {
@@ -505,8 +506,9 @@ export abstract class WaitingRoomBaseDirective {
         }
 
         const invitation = this.consultationInvitiationService.getInvitation(roomLabel);
-        if (invitation.answer === ConsultationAnswer.Rejected)
+        if (invitation.answer === ConsultationAnswer.Rejected) {
             return;
+        }
 
         invitation.answer = ConsultationAnswer.Accepted;
 
