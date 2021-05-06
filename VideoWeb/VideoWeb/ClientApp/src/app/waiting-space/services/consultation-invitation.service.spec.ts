@@ -17,7 +17,7 @@ describe('ConsultationInvitationServiceService', () => {
         expect(service).toBeTruthy();
     });
 
-    describe('rejectInvitationByRoomLabel', () => {
+    describe('rejectInvitation', () => {
         const expectedId = 'test-id';
         it('should set answer to rejected on the invitation if it exists', () => {
             // Arrange
@@ -31,6 +31,28 @@ describe('ConsultationInvitationServiceService', () => {
 
             // Assert
             expect(invitation.answer).toBe(ConsultationAnswer.Rejected);
+        });
+    });
+
+    describe('linkedParticipantRejectedInvitation', () => {
+        const expectedId = 'test-id';
+        it('should set answer to rejected on the invitation and update the linked participant status', () => {
+            // Arrange
+            const linkedParticipantGuid = 'guid';
+            const invitation = {
+                answer: ConsultationAnswer.Rejected,
+                linkedParticipantStatuses: {}
+            } as ConsultationInvitation;
+            invitation.linkedParticipantStatuses[linkedParticipantGuid] = true;
+
+            service['consultationInvitations'][expectedId] = invitation;
+
+            // Act
+            service.linkedParticipantRejectedInvitation(expectedId, linkedParticipantGuid);
+
+            // Assert
+            expect(invitation.answer).toBe(ConsultationAnswer.Rejected);
+            expect(invitation.linkedParticipantStatuses[linkedParticipantGuid]).toBeFalse();
         });
     });
 
@@ -55,21 +77,6 @@ describe('ConsultationInvitationServiceService', () => {
             // Assert
             expect(invitation).toBeTruthy();
             expect(invitation.roomLabel).toBe(expectedRoomLabel);
-            expect(invitation.answer).toBe(ConsultationAnswer.None);
-        });
-
-        it('should create a new invitation if the existing one is marked as rejected', () => {
-            // Arrange
-            const existingInvitation = {
-                answer: ConsultationAnswer.Rejected
-            } as ConsultationInvitation;
-            service['consultationInvitations'][expectedRoomLabel] = existingInvitation;
-
-            // Act
-            const invitation = service.getInvitation(expectedRoomLabel);
-
-            // Assert
-            expect(invitation).toBeTruthy();
             expect(invitation.answer).toBe(ConsultationAnswer.None);
         });
     });

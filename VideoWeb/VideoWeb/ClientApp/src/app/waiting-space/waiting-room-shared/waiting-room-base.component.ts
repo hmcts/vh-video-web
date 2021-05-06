@@ -10,6 +10,7 @@ import {
     ConferenceStatus,
     ConsultationAnswer,
     EndpointStatus,
+    LinkedParticipantResponse,
     LinkType,
     LoggedParticipantResponse,
     ParticipantResponse,
@@ -215,19 +216,20 @@ export abstract class WaitingRoomBaseDirective {
         }
     }
 
-    onLinkedParticiantRejectedConsultationInvite(linkedParticipantId: string, consulationRoomLabel: string) {
+    onLinkedParticiantRejectedConsultationInvite(linkedParticipant: ParticipantResponse, consulationRoomLabel: string) {
         const invitation = this.consultationInvitiationService.getInvitation(consulationRoomLabel);
+        console.log('[ROB] linked rejected', invitation);
         if (invitation.activeToast) {
             invitation.activeToast.declinedByThirdParty = true;
             invitation.activeToast.remove();
         }
 
-        this.consultationInvitiationService.rejectInvitation(consulationRoomLabel);
+        this.consultationInvitiationService.linkedParticipantRejectedInvitation(consulationRoomLabel, linkedParticipant.id);
 
         invitation.activeToast = this.notificationToastrService.showConsultationRejectedByLinkedParticipant(
             this.conferenceId,
             consulationRoomLabel,
-            linkedParticipantId,
+            linkedParticipant.display_name,
             invitation.invitedByName,
             this.participant.status === ParticipantStatus.InHearing
         );
@@ -238,6 +240,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     onConsultationRejected(roomLabel: string) {
+        console.log('[ROB] I rejected');
         this.consultationInvitiationService.removeInvitation(roomLabel);
     }
 
@@ -318,6 +321,7 @@ export abstract class WaitingRoomBaseDirective {
                     }
 
                     if (invitation.answer !== ConsultationAnswer.Accepted) {
+                        invitation.answer = ConsultationAnswer.None;
                         const consultationInviteToast = this.notificationToastrService.showConsultationInvite(
                             message.roomLabel,
                             message.conferenceId,
@@ -451,7 +455,7 @@ export abstract class WaitingRoomBaseDirective {
                 if (answer === ConsultationAnswer.Accepted || answer === ConsultationAnswer.Transferring) {
                     this.onLinkedParticiantAcceptedConsultationInvite(roomLabel, linkedParticipant.id);
                 } else {
-                    this.onLinkedParticiantRejectedConsultationInvite(linkedParticipant.display_name, roomLabel);
+                    this.onLinkedParticiantRejectedConsultationInvite(linkedParticipant, roomLabel);
                 }
             }
         }
@@ -506,6 +510,7 @@ export abstract class WaitingRoomBaseDirective {
         }
 
         const invitation = this.consultationInvitiationService.getInvitation(roomLabel);
+        console.log('[ROB] I accepted', invitation);
         if (invitation.answer === ConsultationAnswer.Rejected) {
             return;
         }

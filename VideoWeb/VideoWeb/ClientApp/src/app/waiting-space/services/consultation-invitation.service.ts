@@ -44,6 +44,14 @@ export class ConsultationInvitationService {
         }
     }
 
+    linkedParticipantRejectedInvitation(roomLabel: string, linkedParticipantId: string ) {
+        const invitation = this.consultationInvitations[roomLabel];
+        if (invitation) {
+            invitation.answer = ConsultationAnswer.Rejected;
+            invitation.linkedParticipantStatuses[linkedParticipantId] = false;
+        }
+    }
+
     removeInvitation(roomLabel: string) {
         if (this.consultationInvitations[roomLabel]?.activeToast) {
             this.consultationInvitations[roomLabel].activeToast.remove();
