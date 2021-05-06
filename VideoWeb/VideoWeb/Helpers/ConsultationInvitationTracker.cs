@@ -11,10 +11,8 @@ namespace VideoWeb.Helpers
         Task<Guid> StartTrackingInvitation(Conference conference, string roomLabel, Guid requestedParticipantId);
         Task<ConsultationInvitation> GetInvitation(Guid invitationId);
         Task UpdateConsultationResponse(Guid invitationId, Guid participantId, ConsultationAnswer answer);
-        Task StopTrackingInvitation(Guid invitationId);
         Task<bool> HaveAllParticipantsAccepted(Guid invitationId);
         Task<bool> HaveAllParticipantsResponded(Guid invitationId);
-        Task StopTrackingInvitationsForParticipant(Guid participantId);
     }
 
     public class ConsultationInvitationTracker : IConsultationInvitationTracker
@@ -51,11 +49,6 @@ namespace VideoWeb.Helpers
             await _cache.UpdateResponseToInvitation(invitationId, participantId, answer);
         }
 
-        public async Task StopTrackingInvitation(Guid invitationId)
-        {
-            await _cache.DeleteInvitationEntry(invitationId);
-        }
-
         public async Task<bool> HaveAllParticipantsAccepted(Guid invitationId)
         {
             var invitation = await _cache.GetInvitation(invitationId);
@@ -66,12 +59,6 @@ namespace VideoWeb.Helpers
         {
             var invitation = await _cache.GetInvitation(invitationId);
             return invitation?.HaveAllResponded ?? false;
-        }
-
-        public async Task StopTrackingInvitationsForParticipant(Guid participantId)
-        {
-            var invitations = await _cache.GetInvitationsForParticipant(participantId);
-            await Task.WhenAll(invitations.Select(x => _cache.DeleteInvitationEntry(x.InvitationId)));
         }
     }
 }

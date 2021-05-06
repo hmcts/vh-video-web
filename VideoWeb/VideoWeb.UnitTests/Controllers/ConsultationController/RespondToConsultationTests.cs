@@ -208,7 +208,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             var consultationRequest = ConsultationHelper.GetConsultationRequest(_testConference);
             consultationRequest.Answer = ConsultationAnswer.Accepted;
 
-            _mocker.Mock<IConsultationInvitationTracker>().Setup(x => x.HaveAllParticipantsResponded(It.IsAny<Guid>())).ReturnsAsync(true);
+            _mocker.Mock<IConsultationInvitationTracker>().Setup(x => x.HaveAllParticipantsAccepted(It.IsAny<Guid>())).ReturnsAsync(true);
             
             // Act
             var result = await _controller.RespondToConsultationRequestAsync(consultationRequest);

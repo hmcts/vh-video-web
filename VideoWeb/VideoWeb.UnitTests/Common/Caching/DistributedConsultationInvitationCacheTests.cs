@@ -64,12 +64,6 @@ namespace VideoWeb.UnitTests.Common.Caching
 
             // Assert
             (await ReadFromCache<ConsultationInvitation>(invitation.InvitationId)).Should().BeEquivalentTo(invitation);
-            var participantInvitations = (await ReadFromCache<IEnumerable<Guid>>(participantGuid)).ToList();
-            participantInvitations.Count().Should().Be(1);
-            participantInvitations.First().Should().Be(invitation.InvitationId);
-            var linkedParticipantInvitations = (await ReadFromCache<IEnumerable<Guid>>(linkedParticipantGuid)).ToList();
-            linkedParticipantInvitations.Count().Should().Be(1);
-            linkedParticipantInvitations.First().Should().Be(invitation.InvitationId);
         }
 
         [Test]
@@ -105,67 +99,6 @@ namespace VideoWeb.UnitTests.Common.Caching
 
             // Assert
             invitation.Should().BeNull();
-        }
-
-        [Test]
-        public async Task Should_delete_invitation_from_cache_and_delete_participant_entries_in_participant_to_invitation_map_if_there_are_no_more_mappings()
-        {
-            // Arrange
-            var participantGuid = Guid.NewGuid();
-            var linkedParticipantGuid = Guid.NewGuid();
-            var roomLabel = "room_label";
-            var storedInvitation =
-                ConsultationInvitation.Create(participantGuid, roomLabel, new[] {linkedParticipantGuid});
-
-            await WriteToCache(storedInvitation.InvitationId, storedInvitation);
-            await WriteToCache(participantGuid, new [] { storedInvitation.InvitationId });
-            await WriteToCache(linkedParticipantGuid, new [] { storedInvitation.InvitationId });
-
-            // Act
-            await _sut.DeleteInvitationEntry(storedInvitation.InvitationId);
-
-            // Assert
-            (await ReadFromCache<ConsultationInvitation>(storedInvitation.InvitationId)).Should().BeNull();
-            (await ReadFromCache<IEnumerable<Guid>>(participantGuid)).Should().BeNull();
-            (await ReadFromCache<IEnumerable<Guid>>(linkedParticipantGuid)).Should().BeNull();
-        }
-
-        [Test]
-        public async Task Should_delete_invitation_from_cache_and_update_entries_in_participant_to_invitation_map()
-        {
-            // Arrange
-            var participantGuid = Guid.NewGuid();
-            var linkedParticipantGuid = Guid.NewGuid();
-            var linkedParticipant2Guid = Guid.NewGuid();
-            var roomLabel = "room_label";
-            var storedInvitation =
-                ConsultationInvitation.Create(participantGuid, roomLabel, new[] {linkedParticipantGuid});
-
-            await WriteToCache(storedInvitation.InvitationId, storedInvitation);
-
-            var permanentInvitation =
-                ConsultationInvitation.Create(participantGuid, roomLabel, new[] {linkedParticipant2Guid});
-            
-            await WriteToCache(permanentInvitation.InvitationId, permanentInvitation);
-            await WriteToCache(participantGuid, new [] { storedInvitation.InvitationId, permanentInvitation.InvitationId });
-            await WriteToCache(linkedParticipantGuid, new [] { storedInvitation.InvitationId});
-            await WriteToCache(linkedParticipant2Guid, new [] { permanentInvitation.InvitationId });
-            
-            // Act
-            await _sut.DeleteInvitationEntry(storedInvitation.InvitationId);
-
-            // Assert
-            (await ReadFromCache<ConsultationInvitation>(storedInvitation.InvitationId)).Should().BeNull();
-
-            var participantInvitations = (await ReadFromCache<IEnumerable<Guid>>(participantGuid)).ToList();
-            participantInvitations.Count().Should().Be(1);
-            participantInvitations.First().Should().Be(permanentInvitation.InvitationId);
-            
-            (await ReadFromCache<IEnumerable<Guid>>(linkedParticipantGuid)).Should().BeNull();
-
-            var linkedParticipant2Invitations = (await ReadFromCache<IEnumerable<Guid>>(linkedParticipant2Guid)).ToList();
-            linkedParticipant2Invitations.Count().Should().Be(1);
-            linkedParticipant2Invitations.First().Should().Be(permanentInvitation.InvitationId);
         }
         
         [Test]

@@ -103,13 +103,13 @@ namespace VideoWeb.Controllers
             try
             {
                 await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.InvitationId, request.RoomLabel, request.RequestedForId, request.Answer);
-                var haveAllResponded = await _consultationInvitationTracker.HaveAllParticipantsResponded(request.InvitationId);
-                if (request.Answer == ConsultationAnswer.Accepted && haveAllResponded)
+                var haveAllAccepted = await _consultationInvitationTracker.HaveAllParticipantsAccepted(request.InvitationId);
+                if (haveAllAccepted)
                 {
                     await _consultationNotifier.NotifyConsultationResponseAsync(conference, request.InvitationId, request.RoomLabel, request.RequestedForId, ConsultationAnswer.Transferring);
-                }
-
-                if (request.Answer != ConsultationAnswer.Accepted || haveAllResponded)
+                    await _videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
+                } 
+                else if (request.Answer != ConsultationAnswer.Accepted)
                 {
                     await _videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
                 }

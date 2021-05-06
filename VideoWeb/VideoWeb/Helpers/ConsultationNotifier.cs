@@ -75,14 +75,7 @@ namespace VideoWeb.Helpers
                 return;
 
             if (participantFor.LinkedParticipants.Any())
-            {
                 await NotifyLinkedParticipantsOfConsultationResponseAsync(conference, invitationId, participantFor, roomLabel, answer);
-
-                if (answer != ConsultationAnswer.Accepted)
-                {
-                    await _consultationInvitationTracker.StopTrackingInvitation(invitationId);
-                }
-            }
         }
         
         private async Task NotifyLinkedParticipantsOfConsultationResponseAsync(Conference conference, Guid invitationId, Participant participantFor, string roomLabel, ConsultationAnswer answer)

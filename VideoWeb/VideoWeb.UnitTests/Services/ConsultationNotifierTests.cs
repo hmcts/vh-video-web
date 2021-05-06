@@ -206,39 +206,6 @@ namespace VideoWeb.UnitTests.Services
         }
 
         [Test]
-        public async Task should_clear_responses_when_participant_is_being_transferred()
-        {
-            // arrange
-            var linkedParticipant = _conference.Participants.First(x => !x.IsJudge() && x.LinkedParticipants.Any());
-            var roomLabel = "ConsultationRoom1";
-            var answer = ConsultationAnswer.Transferring;
-            var expectedInvitationId = Guid.NewGuid();
-            
-            // act
-            await _sut.NotifyConsultationResponseAsync(_conference, expectedInvitationId, roomLabel, linkedParticipant.Id, answer);
-            
-            // assert
-            _mocker.Mock<IConsultationInvitationTracker>().Verify(crt => crt.StopTrackingInvitation(expectedInvitationId));
-        }
-
-        [TestCase(ConsultationAnswer.None)]
-        [TestCase(ConsultationAnswer.Failed)]
-        [TestCase(ConsultationAnswer.Rejected)]
-        public async Task should_clear_responses_when_participant_doesnot_accept(ConsultationAnswer answer)
-        {
-            // arrange
-            var linkedParticipant = _conference.Participants.First(x => !x.IsJudge() && x.LinkedParticipants.Any());
-            var roomLabel = "ConsultationRoom1";
-            var expectedInvitationId = Guid.NewGuid();
-            
-            // act
-            await _sut.NotifyConsultationResponseAsync(_conference, expectedInvitationId, roomLabel, linkedParticipant.Id, answer);
-            
-            // assert
-            _mocker.Mock<IConsultationInvitationTracker>().Verify(crt => crt.StopTrackingInvitation(expectedInvitationId));
-        }
-
-        [Test]
         public async Task should_notify_endpoint_transferring()
         {
             // arrange

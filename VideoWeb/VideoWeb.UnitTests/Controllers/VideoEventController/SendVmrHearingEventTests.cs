@@ -89,34 +89,6 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
         }
         
         [Test]
-        public async Task should_remove_participant_from_room_on_disconnect_event()
-        {
-            // Arrange
-            var request = CreateRequest();
-            var room = TestConference.CivilianRooms.First();
-            var roomId = room.Id;
-            var participantId = room.Participants.First();
-            request.ParticipantRoomId = roomId.ToString();
-            request.ParticipantId = participantId.ToString();
-            request.EventType = EventType.Disconnected;
-            
-            // Act
-            var result = await Sut.SendHearingEventAsync(request);
-            
-            // Assert
-            Mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()), Times.Once);
-            Mocker.Mock<IConsultationInvitationTracker>()
-                .Verify(x => x.StopTrackingInvitationsForParticipant(participantId), Times.Once);
-            result.Should().BeOfType<NoContentResult>();
-            var typedResult = (NoContentResult) result;
-            typedResult.Should().NotBeNull();
-            
-            var newCacheRoom = TestConference.CivilianRooms.FirstOrDefault(x => x.Id == roomId);
-            newCacheRoom.Should().NotBeNull();
-            newCacheRoom?.Participants.Any(x => x == participantId).Should().BeFalse();
-        }
-
-        [Test]
         public async Task should_publish_transfer_event_to_all_participants_in_room()
         {
             // Arrange

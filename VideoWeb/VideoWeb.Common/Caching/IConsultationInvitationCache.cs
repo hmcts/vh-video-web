@@ -11,7 +11,5 @@ namespace VideoWeb.Common.Caching
         Task CreateInvitationEntry(ConsultationInvitation consultationInvitation);
         Task<ConsultationInvitation> GetInvitation(Guid invitationId);
         Task UpdateResponseToInvitation(Guid invitationId, Guid participantId, ConsultationAnswer answer);
-        Task DeleteInvitationEntry(Guid invitationId);
-        Task<IEnumerable<ConsultationInvitation>> GetInvitationsForParticipant(Guid participantId);
     }
 }

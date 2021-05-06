@@ -115,19 +115,6 @@ namespace VideoWeb.UnitTests.Services
         }
 
         [Test]
-        public async Task Should_call_delete_invitation_entry()
-        {
-            // Arrange
-            var invitationId = Guid.NewGuid();
-            
-            // Act
-            await _sut.StopTrackingInvitation(invitationId);
-
-            // Assert
-            _mocker.Mock<IConsultationInvitationCache>().Verify(crc => crc.DeleteInvitationEntry(It.Is<Guid>(x => x == invitationId)), Times.Once);
-        }
-
-        [Test]
         public async Task Should_return_HaveAllParticipantsAccepted_result_from_consultation_invite_method()
         {
             // Arrange
@@ -217,34 +204,6 @@ namespace VideoWeb.UnitTests.Services
 
             // Assert
             _mocker.Mock<IConsultationInvitationCache>().Verify(crc => crc.UpdateResponseToInvitation(invitationId, participantId, answer), Times.Once);
-        }
-        
-        [Test]
-        public async Task Should_call_delete_inventory_invitation_on_all_invitations_the_participant_is_part_of()
-        {
-            // Arrange
-            var requestedForParticipant = _conference.Participants.First(p => p.LinkedParticipants.Any());
-            var invitations = new List<ConsultationInvitation>();
-            invitations.Add(ConsultationInvitation.Create(requestedForParticipant.Id, "room_label",
-                requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId)));
-            invitations.Add(ConsultationInvitation.Create(requestedForParticipant.Id, "room_label2",
-                requestedForParticipant.LinkedParticipants.Select(x => x.LinkedId)));
-            
-            _mocker.Mock<IConsultationInvitationCache>()
-                .Setup(x => x.GetInvitationsForParticipant(requestedForParticipant.Id)).ReturnsAsync(invitations);
-            
-            // Act
-            await _sut.StopTrackingInvitationsForParticipant(requestedForParticipant.Id);
-
-            // Assert
-            _mocker.Mock<IConsultationInvitationCache>()
-                .Verify(x => x.GetInvitationsForParticipant(requestedForParticipant.Id), Times.Once);
-
-            foreach (var invitation in invitations)
-            {
-                _mocker.Mock<IConsultationInvitationCache>()
-                    .Verify(x => x.DeleteInvitationEntry(invitation.InvitationId), Times.Once);    
-            }
         }
     }
 }

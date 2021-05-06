@@ -37,25 +37,11 @@ namespace VideoWeb.Common.Caching
 
             invitation.InvitedParticipantResponses[participantId] = answer;
 
-            await WriteConsultationInvitationToCache(invitation, false);
+            await WriteConsultationInvitationToCache(invitation);
         }
 
-        public async Task DeleteInvitationEntry(Guid invitationId)
+        private async Task WriteConsultationInvitationToCache(ConsultationInvitation invitation)
         {
-            await DeleteConsultationInviteFromCache(invitationId);
-        }
-
-        public async Task<IEnumerable<ConsultationInvitation>> GetInvitationsForParticipant(Guid participantId)
-        {
-            return await Task.WhenAll(
-                (await ReadParticipantToInvitationLinksFromCache(participantId)).Select(GetInvitation));
-        }
-
-        private async Task WriteConsultationInvitationToCache(ConsultationInvitation invitation, bool addLink = true)
-        {
-            if (addLink)
-                await Task.WhenAll(invitation.InvitedParticipantResponses.Select(x =>
-                    LinkInvitationToParticipant(invitation.InvitationId, x.Key)));
 
             var serialisedConference = JsonConvert.SerializeObject(invitation, CachingHelper.SerializerSettings);
             var data = Encoding.UTF8.GetBytes(serialisedConference);
@@ -66,18 +52,6 @@ namespace VideoWeb.Common.Caching
                 });
         }
 
-        private async Task DeleteConsultationInviteFromCache(Guid invitationId)
-        {
-            var invitation = await GetInvitation(invitationId);
-            if (invitation == null)
-                return;
-            
-            await Task.WhenAll(
-                invitation.InvitedParticipantResponses.Select(x => UnlinkInvitationToParticipant(invitationId, x.Key)));
-            
-            await _distributedCache.RemoveAsync(invitationId.ToString());
-        }
-        
         private async Task<ConsultationInvitation> ReadConsultationInvitationToCache(Guid invitationId)
         {
             try
@@ -88,58 +62,6 @@ namespace VideoWeb.Common.Caching
                     JsonConvert.DeserializeObject<ConsultationInvitation>(profileSerialised,
                         CachingHelper.SerializerSettings);
                 return invite;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
-        private async Task LinkInvitationToParticipant(Guid invitationId, Guid participantId)
-        {
-            var invitationsForParticipant =
-                await ReadParticipantToInvitationLinksFromCache(participantId) ?? new List<Guid>();
-            invitationsForParticipant.Add(invitationId);
-            await WriteParticipantToInvitationLinksToCache(participantId, invitationsForParticipant);
-        }
-
-        private async Task UnlinkInvitationToParticipant(Guid invitationId, Guid participantId)
-        {
-            var invitationsForParticipant = await ReadParticipantToInvitationLinksFromCache(participantId);
-            invitationsForParticipant.Remove(invitationId);
-
-            if (!invitationsForParticipant.Any())
-            {
-                await _distributedCache.RemoveAsync(participantId.ToString());
-                return;
-            }
-
-            await WriteParticipantToInvitationLinksToCache(participantId, invitationsForParticipant);
-        }
-
-        private async Task WriteParticipantToInvitationLinksToCache(Guid participantId, IEnumerable<Guid> invitationIds)
-        {
-            var serialisedConference = JsonConvert.SerializeObject(invitationIds, CachingHelper.SerializerSettings);
-            var data = Encoding.UTF8.GetBytes(serialisedConference);
-            await _distributedCache.SetAsync(participantId.ToString(), data,
-                new DistributedCacheEntryOptions
-                {
-                    SlidingExpiration = TimeSpan.FromHours(4)
-                });
-        }
-
-        private async Task<List<Guid>> ReadParticipantToInvitationLinksFromCache(Guid participantId)
-        {
-            try
-            {
-                var data = await _distributedCache.GetAsync(participantId.ToString());
-                if (data == null)
-                    return null;
-                
-                var profileSerialised = Encoding.UTF8.GetString(data);
-                var invitations = JsonConvert.DeserializeObject<IEnumerable<Guid>>(profileSerialised,
-                        CachingHelper.SerializerSettings);
-                return invitations?.ToList();
             }
             catch (Exception)
             {
