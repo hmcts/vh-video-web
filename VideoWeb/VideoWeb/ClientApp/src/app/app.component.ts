@@ -92,17 +92,15 @@ export class AppComponent implements OnInit, OnDestroy {
 
     private async postAuthSetup(loggedIn: boolean) {
         this.loggedIn = loggedIn;
-        await this.attemptRetrieveProfile();
+
+        if (this.loggedIn || this.isSignInUrl) {
+            await this.retrieveProfileRole();
+        }
+
         this.checkBrowser();
         this.setPageTitle();
         this.setupSubscribers();
         this.connectionStatusService.start();
-    }
-
-    private async attemptRetrieveProfile() {
-        if (this.loggedIn || this.isSignInUrl) {
-            await this.retrieveProfileRole();
-        }
     }
 
     private setupSubscribers() {
