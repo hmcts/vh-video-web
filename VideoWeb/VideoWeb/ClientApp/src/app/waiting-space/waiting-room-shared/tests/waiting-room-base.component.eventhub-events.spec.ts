@@ -1027,7 +1027,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             // Assert
             expect(notificationToastrService.showConsultationInvite).toHaveBeenCalled();
             expect(consultationInvitiationService.getInvitation).toHaveBeenCalledWith(expectedConsultationRoomLabel);
-            expect(invitation.invitedByName).toBe('a VHO officer');
+            expect(invitation.invitedByName).toBe('a Video Hearings Officer');
             expect(invitation.linkedParticipantStatuses[linkedParticipant.id]).toBeFalse();
             expect(invitation.activeToast).toBe(expectedToast);
         }));
@@ -1068,7 +1068,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
             // Assert
             expect(notificationToastrService.showConsultationInvite).toHaveBeenCalled();
             expect(consultationInvitiationService.getInvitation).toHaveBeenCalledWith(expectedConsultationRoomLabel);
-            expect(invitation.invitedByName).toBe('a VHO officer');
+            expect(invitation.invitedByName).toBe('a Video Hearings Officer');
             expect(invitation.linkedParticipantStatuses).toEqual({});
             expect(invitation.activeToast).toBe(expectedToast);
         }));
