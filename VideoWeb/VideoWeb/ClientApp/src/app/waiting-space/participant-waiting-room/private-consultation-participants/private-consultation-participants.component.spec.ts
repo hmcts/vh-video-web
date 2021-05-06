@@ -133,7 +133,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
         component.roomLabel = 'judgejohconsultationroom';
         const p = conference.participants[0];
         p.current_room.label = 'judgejohconsultationroom';
-        expect(component.getParticipantRowClasses(p)).toEqual('participant-group-row');
+        expect(component.getParticipantRowClasses(p)).toEqual('participant-row');
     });
 
     it('should confirm is last or unique PANEL_MEMBER, JUDGE, WINGER in a consultation room', () => {
