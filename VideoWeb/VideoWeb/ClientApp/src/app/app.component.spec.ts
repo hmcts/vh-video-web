@@ -108,11 +108,6 @@ describe('AppComponent', () => {
         expect(connectionStatusServiceSpy.start).toHaveBeenCalled();
     }));
 
-    it('should prompt user to login if not authenticated', () => {
-        component.ngOnInit();
-        expect(routerSpy.navigate).toHaveBeenCalled();
-    });
-
     it('should navigate to unsupported browser page if browser is not compatible', () => {
         deviceTypeServiceSpy.isSupportedBrowser.and.returnValue(false);
         component.checkBrowser();
