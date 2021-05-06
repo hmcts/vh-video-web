@@ -74,7 +74,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             _browserSteps.GivenInTheUsersBrowser(user);
             Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitToCallAndAnswer));
-            _browsers[_c.CurrentUser].TextOf(PrivateCallPopupPage.IncomingCallMessage).Should().Contain("Video hearings officer");
+            _browsers[_c.CurrentUser].TextOf(PrivateCallPopupPage.IncomingCallMessage).Should().Contain("Video Hearings Officer");
             _browsers[_c.CurrentUser].Click(PrivateCallPopupPage.AcceptPrivateCall);
         }
 

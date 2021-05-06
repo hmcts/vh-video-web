@@ -299,7 +299,7 @@ export abstract class WaitingRoomBaseDirective {
 
                     let requestedBy: Participant | null = null;
                     if (message.requestedBy === Guid.EMPTY) {
-                        requestedBy = new Participant(new ParticipantResponseVho({ display_name: 'a VHO officer' }));
+                        requestedBy = new Participant(new ParticipantResponseVho({ display_name: 'a Video Hearings Officer' }));
                     } else {
                         const _requestedBy = this.findParticipant(message.requestedBy);
 
@@ -329,7 +329,7 @@ export abstract class WaitingRoomBaseDirective {
                     }
 
                     invitation.invitationId = message.invitationId;
-                    invitation.invitedByName = requestedBy ? requestedBy.displayName : 'a Video Hearings Officer';
+                    invitation.invitedByName = requestedBy.displayName;
 
                     if (invitation.answer !== ConsultationAnswer.Accepted && !invitation.activeToast) {
                         const consultationInviteToast = this.notificationToastrService.showConsultationInvite(
