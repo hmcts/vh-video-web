@@ -108,11 +108,6 @@ describe('AppComponent', () => {
         expect(connectionStatusServiceSpy.start).toHaveBeenCalled();
     }));
 
-    it('should prompt user to login if not authenticated', () => {
-        component.ngOnInit();
-        expect(routerSpy.navigate).toHaveBeenCalled();
-    });
-
     it('should navigate to unsupported browser page if browser is not compatible', () => {
         deviceTypeServiceSpy.isSupportedBrowser.and.returnValue(false);
         component.checkBrowser();
@@ -164,14 +159,6 @@ describe('AppComponent', () => {
         mockOidcSecurityService.setAuthenticated(true);
         await component.ngOnInit();
         expect(profileServiceSpy.getUserProfile).toHaveBeenCalled();
-    });
-
-    it('should navigate to login not on logout and not authenticated', async () => {
-        publicEventsServiceSpy.registerForEvents.and.callThrough();
-        mockOidcSecurityService.setAuthenticated(false);
-        await component.ngOnInit();
-        expect(profileServiceSpy.getUserProfile).toHaveBeenCalledTimes(0);
-        expect(routerSpy.navigate).toHaveBeenCalledWith([`/${pageUrls.IdpSelection}`]);
     });
 
     it('should not check auth or get profile on logout', async () => {

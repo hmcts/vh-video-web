@@ -14,6 +14,7 @@ using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Hub;
 using VideoApi.Contract.Responses;
+using VideoWeb.EventHub.Services;
 using VideoWeb.Helpers;
 using VideoWeb.UnitTests.Builders;
 

@@ -6,47 +6,40 @@ using Microsoft.AspNetCore.SignalR;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
+using VideoWeb.EventHub.Services;
 
 namespace VideoWeb.Helpers
 {
-    public interface IConsultationNotifier
-    {
-        Task NotifyConsultationRequestAsync(Conference conference, string roomLabel, Guid requestedById,
-            Guid requestedForId);
-
-        Task NotifyConsultationResponseAsync(Conference conference, string roomLabel,
-            Guid requestedForId, ConsultationAnswer answer);
-
-        Task NotifyRoomUpdateAsync(Conference conference, Room room);
-    }
-    
     public class ConsultationNotifier : IConsultationNotifier
     {
         
         private readonly IHubContext<EventHub.Hub.EventHub, IEventHubClient> _hubContext;
-        private readonly IConsultationResponseTracker _consultationResponseTracker;
+        private readonly IConsultationInvitationTracker _consultationInvitationTracker;
 
-        public ConsultationNotifier(IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext, IConsultationResponseTracker consultationResponseTracker)
+        public ConsultationNotifier(IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext, IConsultationInvitationTracker consultationInvitationTracker)
         {
             _hubContext = hubContext;
-            _consultationResponseTracker = consultationResponseTracker;
+            _consultationInvitationTracker = consultationInvitationTracker;
         }
 
-        public async Task NotifyConsultationRequestAsync(Conference conference, string roomLabel, Guid requestedById, Guid requestedForId)
+        public async Task<Guid> NotifyConsultationRequestAsync(Conference conference, string roomLabel, Guid requestedById, Guid requestedForId)
         {
             var participantFor = conference.Participants.First(x => x.Id == requestedForId);
-            
+            var invitationId = await _consultationInvitationTracker.StartTrackingInvitation(conference, roomLabel, requestedForId);
+
             var tasks = conference.Participants.Select(p =>
                 _hubContext.Clients.Group(p.Username.ToLowerInvariant())
-                    .RequestedConsultationMessage(conference.Id, roomLabel, requestedById, participantFor.Id));
+                    .RequestedConsultationMessage(conference.Id, invitationId, roomLabel, requestedById, participantFor.Id));
             await Task.WhenAll(tasks);
             if (participantFor.LinkedParticipants.Any())
             {
-                await NotifyLinkedParticipantsOfConsultationRequest(conference, participantFor, roomLabel, requestedById);
+                await NotifyLinkedParticipantsOfConsultationRequest(conference, invitationId, participantFor, roomLabel, requestedById);
             }
+
+            return invitationId;
         }
         
-        private async Task NotifyLinkedParticipantsOfConsultationRequest(Conference conference, Participant participantFor, string roomLabel, Guid requestedById)
+        private async Task NotifyLinkedParticipantsOfConsultationRequest(Conference conference, Guid invitationId, Participant participantFor, string roomLabel, Guid requestedById)
         {
             var linkedIds = participantFor.LinkedParticipants.Select(x => x.LinkedId);
             var linkedParticipants = conference.Participants.Where(p => linkedIds.Contains(p.Id));
@@ -55,58 +48,52 @@ namespace VideoWeb.Helpers
             {
                 var tasks = conference.Participants.Select(p =>
                     _hubContext.Clients.Group(p.Username.ToLowerInvariant())
-                        .RequestedConsultationMessage(conference.Id, roomLabel, requestedById, linkedParticipant.Id));
+                        .RequestedConsultationMessage(conference.Id, invitationId, roomLabel, requestedById, linkedParticipant.Id));
                 await Task.WhenAll(tasks);  
             }
         }
 
-        public async Task NotifyConsultationResponseAsync(Conference conference, string roomLabel, Guid requestedForId,
+        public async Task NotifyConsultationResponseAsync(Conference conference, Guid invitationId, string roomLabel, Guid requestedForId,
             ConsultationAnswer answer)
         {
             var endpoint = conference.Endpoints.FirstOrDefault(e => e.Id == requestedForId);
             if (endpoint != null)
             {
-                await PublishResponseMessage(conference, roomLabel, endpoint.Id, answer, endpoint.Id);
+                await PublishResponseMessage(conference, invitationId, roomLabel, endpoint.Id, answer, endpoint.Id);
                 return;
             }
             
             var participantFor = conference.Participants.First(x => x.Id == requestedForId);
-            await _consultationResponseTracker.UpdateConsultationResponse(conference, participantFor.Id, answer);
+            await _consultationInvitationTracker.UpdateConsultationResponse(invitationId, participantFor.Id, answer);
+            
             var haveAllAccepted =
-                await _consultationResponseTracker.HaveAllParticipantsAccepted(conference, participantFor.Id);
+                await _consultationInvitationTracker.HaveAllParticipantsAccepted(invitationId);
 
-            await PublishResponseMessage(conference, roomLabel, participantFor.Id, answer, participantFor.Id);
+            await PublishResponseMessage(conference, invitationId, roomLabel, participantFor.Id, answer, participantFor.Id);
 
             if (answer == ConsultationAnswer.Accepted && !haveAllAccepted)
                 return;
 
             if (participantFor.LinkedParticipants.Any())
-            {
-                await NotifyLinkedParticipantsOfConsultationResponseAsync(conference, participantFor, roomLabel, answer);
-
-                if (answer != ConsultationAnswer.Accepted)
-                {
-                    await _consultationResponseTracker.ClearResponses(conference, requestedForId);
-                }
-            }
+                await NotifyLinkedParticipantsOfConsultationResponseAsync(conference, invitationId, participantFor, roomLabel, answer);
         }
         
-        private async Task NotifyLinkedParticipantsOfConsultationResponseAsync(Conference conference, Participant participantFor, string roomLabel, ConsultationAnswer answer)
+        private async Task NotifyLinkedParticipantsOfConsultationResponseAsync(Conference conference, Guid invitationId, Participant participantFor, string roomLabel, ConsultationAnswer answer)
         {
             var linkedIds = participantFor.LinkedParticipants.Select(x => x.LinkedId);
             var linkedParticipants = conference.Participants.Where(p => linkedIds.Contains(p.Id));
 
             foreach (var linkedParticipant in linkedParticipants)
             {
-                await PublishResponseMessage(conference, roomLabel, linkedParticipant.Id, answer, participantFor.Id);
+                await PublishResponseMessage(conference, invitationId, roomLabel, linkedParticipant.Id, answer, participantFor.Id);
             }
         }
         
-        private async Task PublishResponseMessage(Conference conference, string roomLabel, Guid requestedForId, ConsultationAnswer answer, Guid responseInitiatorId)
+        private async Task PublishResponseMessage(Conference conference, Guid invitationId, string roomLabel, Guid requestedForId, ConsultationAnswer answer, Guid responseInitiatorId)
         {
             var tasks = conference.Participants.Select(p => 
                 _hubContext.Clients?.Group(p.Username.ToLowerInvariant())
-                    .ConsultationRequestResponseMessage(conference.Id, roomLabel, requestedForId, answer, responseInitiatorId) ?? Task.CompletedTask);
+                    .ConsultationRequestResponseMessage(conference.Id, invitationId, roomLabel, requestedForId, answer, responseInitiatorId) ?? Task.CompletedTask);
             await Task.WhenAll(tasks);
         }
 

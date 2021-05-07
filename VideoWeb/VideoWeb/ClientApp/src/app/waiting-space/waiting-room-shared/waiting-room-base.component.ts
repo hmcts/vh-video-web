@@ -1,5 +1,6 @@
 import { Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -12,6 +13,7 @@ import {
     LinkType,
     LoggedParticipantResponse,
     ParticipantResponse,
+    ParticipantResponseVho,
     ParticipantStatus,
     Role,
     RoomSummaryResponse,
@@ -208,24 +210,25 @@ export abstract class WaitingRoomBaseDirective {
         const invitation = this.consultationInvitiationService.getInvitation(roomLabel);
         invitation.linkedParticipantStatuses[id] = true;
 
-        if (invitation.activeParticipantAccepted) {
+        if (invitation.answer === ConsultationAnswer.Accepted) {
             this.createOrUpdateWaitingOnLinkedParticipantsNotification(invitation);
         }
     }
 
-    onLinkedParticiantRejectedConsultationInvite(linkedParticipantId: string, consulationRoomLabel: string) {
+    onLinkedParticiantRejectedConsultationInvite(linkedParticipant: ParticipantResponse, consulationRoomLabel: string) {
         const invitation = this.consultationInvitiationService.getInvitation(consulationRoomLabel);
+        console.log('[ROB] linked rejected', invitation);
         if (invitation.activeToast) {
             invitation.activeToast.declinedByThirdParty = true;
             invitation.activeToast.remove();
         }
 
-        this.consultationInvitiationService.rejectInvitation(consulationRoomLabel);
+        this.consultationInvitiationService.linkedParticipantRejectedInvitation(consulationRoomLabel, linkedParticipant.id);
 
         invitation.activeToast = this.notificationToastrService.showConsultationRejectedByLinkedParticipant(
             this.conferenceId,
             consulationRoomLabel,
-            linkedParticipantId,
+            linkedParticipant.display_name,
             invitation.invitedByName,
             this.participant.status === ParticipantStatus.InHearing
         );
@@ -236,6 +239,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     onConsultationRejected(roomLabel: string) {
+        console.log('[ROB] I rejected');
         this.consultationInvitiationService.removeInvitation(roomLabel);
     }
 
@@ -290,23 +294,37 @@ export abstract class WaitingRoomBaseDirective {
         this.logger.debug(`${this.loggerPrefix} Subscribing to RequestedConsultationMessage`);
         this.eventHubSubscription$.add(
             this.eventService.getRequestedConsultationMessage().subscribe(message => {
-                const requestedFor = new Participant(this.findParticipant(message.requestedFor));
+                const requestedFor = this.resolveParticipant(message.requestedFor);
                 if (requestedFor.id === this.participant.id && this.participant.status !== ParticipantStatus.InHearing) {
                     // A request for you to join a consultation room
                     this.logger.debug(`${this.loggerPrefix} Recieved RequestedConsultationMessage`);
-                    const _requestedBy: Participant | ParticipantResponse = this.findParticipant(message.requestedBy);
-                    const requestedBy = _requestedBy ? new Participant(_requestedBy) : null;
 
+                    const requestedBy = this.resolveParticipant(message.requestedBy);
                     const roomParticipants = this.findParticipantsInRoom(message.roomLabel).map(x => new Participant(x));
                     const roomEndpoints = this.findEndpointsInRoom(message.roomLabel);
 
                     const invitation = this.consultationInvitiationService.getInvitation(message.roomLabel);
+                    invitation.invitationId = message.invitationId;
                     invitation.invitedByName = requestedBy.displayName;
 
-                    if (!invitation.activeParticipantAccepted && !invitation.activeToast) {
+                    // if the invitation has already been accepted; resend the response with the updated invitation id
+                    if (invitation.answer === ConsultationAnswer.Accepted) {
+                        this.consultationService.respondToConsultationRequest(
+                            message.conferenceId,
+                            message.invitationId,
+                            message.requestedBy,
+                            message.requestedFor,
+                            invitation.answer,
+                            message.roomLabel
+                        );
+                    }
+
+                    if (invitation.answer !== ConsultationAnswer.Accepted) {
+                        invitation.answer = ConsultationAnswer.None;
                         const consultationInviteToast = this.notificationToastrService.showConsultationInvite(
                             message.roomLabel,
                             message.conferenceId,
+                            invitation,
                             requestedBy,
                             requestedFor,
                             roomParticipants,
@@ -314,7 +332,9 @@ export abstract class WaitingRoomBaseDirective {
                             this.participant.status !== ParticipantStatus.Available
                         );
 
-                        invitation.activeToast = consultationInviteToast;
+                        if (consultationInviteToast) {
+                            invitation.activeToast = consultationInviteToast;
+                        }
                     }
 
                     for (const linkedParticipant of this.participant.linked_participants) {
@@ -406,6 +426,20 @@ export abstract class WaitingRoomBaseDirective {
             })
         );
     }
+    resolveParticipant(participantId: any): Participant {
+        if (participantId === Guid.EMPTY) {
+            return new Participant(new ParticipantResponseVho({ display_name: 'a Video Hearings Officer' }));
+        } else {
+            const participant = this.findParticipant(participantId);
+
+            if (participant) {
+                return new Participant(participant);
+            } else {
+                this.logger.warn(`${this.loggerPrefix} Could NOT find the requested by participant`, participantId);
+                return;
+            }
+        }
+    }
 
     private handleLinkedParticipantConsultationResponse(
         answer: ConsultationAnswer,
@@ -420,7 +454,7 @@ export abstract class WaitingRoomBaseDirective {
                 if (answer === ConsultationAnswer.Accepted || answer === ConsultationAnswer.Transferring) {
                     this.onLinkedParticiantAcceptedConsultationInvite(roomLabel, linkedParticipant.id);
                 } else {
-                    this.onLinkedParticiantRejectedConsultationInvite(linkedParticipant.display_name, roomLabel);
+                    this.onLinkedParticiantRejectedConsultationInvite(linkedParticipant, roomLabel);
                 }
             }
         }
@@ -475,7 +509,12 @@ export abstract class WaitingRoomBaseDirective {
         }
 
         const invitation = this.consultationInvitiationService.getInvitation(roomLabel);
-        invitation.activeParticipantAccepted = true;
+        console.log('[ROB] I accepted', invitation);
+        if (invitation.answer === ConsultationAnswer.Rejected) {
+            return;
+        }
+
+        invitation.answer = ConsultationAnswer.Accepted;
 
         this.createOrUpdateWaitingOnLinkedParticipantsNotification(invitation);
     }
