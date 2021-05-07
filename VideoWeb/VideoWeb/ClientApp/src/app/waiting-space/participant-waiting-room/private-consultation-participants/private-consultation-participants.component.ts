@@ -137,16 +137,12 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
             });
     }
 
-    getJudgeConsultationParticipants(): ParticipantListItem[] {
-        return this.participantsInConsultation.filter(p => p.hearing_role === HearingRole.JUDGE);
+    getGroupMembers(): string[] {
+        return [ HearingRole.JUDGE, HearingRole.PANEL_MEMBER, HearingRole.WINGER];
     }
 
-    getPanelMemberConsultationParticipants(): ParticipantListItem[] {
-        return this.participantsInConsultation.filter(p => p.hearing_role === HearingRole.PANEL_MEMBER);
-    }
-
-    getWingerConsultationParticipants(): ParticipantListItem[] {
-        return this.participantsInConsultation.filter(p => p.hearing_role === HearingRole.WINGER);
+    geMemberConsultationParticipants(role: any): ParticipantListItem[] {
+        return this.participantsInConsultation.filter(p => p.hearing_role === role);
     }
 
     getParticipantStatus(participant: any): string {
