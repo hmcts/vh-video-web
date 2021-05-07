@@ -489,19 +489,6 @@ describe('PrivateConsultationParticipantsComponent', () => {
         expect(result).toBe('white');
     });
 
-    it('should get participants to a joh consultation room', () => {
-        const participants = new ConferenceTestData().getListOfParticipants();
-        const judge = participants[0];
-        judge.hearing_role = HearingRole.JUDGE;
-        const panelMember = participants[1];
-        panelMember.hearing_role = HearingRole.PANEL_MEMBER;
-        const representative = participants[2];
-        representative.hearing_role = HearingRole.REPRESENTATIVE;
-        component.roomLabel = 'judgejohconsultationroom';
-        component.participantsInConsultation = [judge, panelMember, representative];
-        expect(component.getPrivateConsultationParticipants().length).toBe(3);
-    });
-
     it('should get participants to a private consultation room', () => {
         const participants = new ConferenceTestData().getListOfParticipants();
         const judge = participants[0];
