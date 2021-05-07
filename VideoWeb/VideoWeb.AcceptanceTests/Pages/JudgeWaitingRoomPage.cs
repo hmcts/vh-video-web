@@ -20,5 +20,6 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly By CancelStartHearingButton = By.Id("btnCancelStart");
         public static readonly By EnterPrivateConsultationButton = By.Id("joinPCButton");
         public static readonly By NumberOfJohsInConsultaionRoom = By.Id("numberOfJohsInConsultationBadge");
+        public static readonly By PleaseWaitText = CommonLocators.ElementContainingText(" Please wait while we connect you...");
     }
 }

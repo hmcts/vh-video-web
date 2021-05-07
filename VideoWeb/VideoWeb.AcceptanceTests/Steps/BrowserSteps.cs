@@ -68,7 +68,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             }
             else
             {
-                _c.CurrentUser = UserIsParticipant(user) ? GetDefaultParticipant() : GetMatchingDisplayName(user);
+                _c.CurrentUser = UserIsParticipant(user) ? GetDefaultParticipant() : GetMatchingUserType(user);
             }
 
             if (_c.CurrentUser == null)
