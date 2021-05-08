@@ -1,0 +1,73 @@
+@import '~govuk-frontend/govuk/base';
+:host{  
+  display: block;
+  
+  .joh-participant-row {
+    display: flex;
+    border-bottom: 0.5px none;
+    padding-top: 1em;
+    padding-bottom: 1em;
+
+    > div {
+      margin-right: 0.5em;
+    }
+
+    &:last-child {
+      border-bottom: 0.5px solid rgba(255, 255, 255, 0.2);
+      padding-bottom: 0.2em;
+    }
+  }
+}
+
+.joh-participant-row {
+  display: flex;
+  border-bottom: 0.5px none;
+  padding-top: 1em;
+  padding-bottom: 1em;
+
+  > div {
+    margin-right: 0.5em;
+  }
+
+  &:last-child {
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 0.2em;
+  }
+}
+
+
+  .language-icon {
+    margin: 0.5em 0 -0.5em 1em;
+    font-size: 1.5em;
+  }
+
+.header-left {
+  width: 16px;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.yellow {
+  color: govuk-colour('yellow');
+}
+.red {
+  color: govuk-colour('red');
+}
+.white {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.outline {
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 2px;
+  padding: 4px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.small-crest {
+  width: 30px;
+
+  margin-top: -3px;
+}
