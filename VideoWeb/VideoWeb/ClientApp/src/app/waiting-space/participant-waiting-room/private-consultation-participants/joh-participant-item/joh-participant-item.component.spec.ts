@@ -31,25 +31,25 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 import { HearingRole } from '../../../models/hearing-role-model';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 
-describe('PrivateConsultationParticipantsComponent', () => {
+describe('JohParticipantItemComponent', () => {
     let component: JohParticipantItemComponent;
     let conference: ConferenceResponse;
     const mockOidcSecurityService = new MockOidcSecurityService();
     const eventsService = eventsServiceSpy;
     let oidcSecurityService;
-    //let consultationService: jasmine.SpyObj<ConsultationService>;
+    let consultationService: jasmine.SpyObj<ConsultationService>;
     let logger: jasmine.SpyObj<Logger>;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
     const invitationId = 'invitation-id';
 
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
-    //const translateService = translateServiceSpy;
+    const translateService = translateServiceSpy;
 
     beforeAll(() => {
         oidcSecurityService = mockOidcSecurityService;
 
-        //consultationService = consultationServiceSpyFactory();
+        consultationService = consultationServiceSpyFactory();
         videoWebService = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getObfuscatedName']);
         videoWebService.getObfuscatedName.and.returnValue('t***** u*****');
 
@@ -57,7 +57,7 @@ describe('PrivateConsultationParticipantsComponent', () => {
     });
 
     beforeEach(() => {
-        //consultationService.consultationNameToString.calls.reset();
+        consultationService.consultationNameToString.calls.reset();
         conference = new ConferenceTestData().getConferenceDetailFuture();
         conference.participants.forEach(p => {
             p.status = ParticipantStatus.Available;
@@ -72,17 +72,12 @@ describe('PrivateConsultationParticipantsComponent', () => {
         activatedRoute = <any>{
             snapshot: { data: { loggedUser: logged } }
         };
-        component = new JohParticipantItemComponent(
-            consultationService,
-            eventsService,
-            //translateService
-        );
+        //component = new JohParticipantItemComponent(
+        //    consultationService,
+        //    translateService
+        //);
 
-        //component.conference = conference;
-        //component.participantEndpoints = [];
-
-        //component.loggedInUser = logged;
-       // component.ngOnInit();
+        component.conferenceId = conference.id;
 
         eventsService.getConsultationRequestResponseMessage.calls.reset();
         eventsService.getRequestedConsultationMessage.calls.reset();
@@ -91,17 +86,59 @@ describe('PrivateConsultationParticipantsComponent', () => {
     });
 
    
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+    //it('should return participant available', () => {
+    //    const p = conference.participants[0];
+    //    p.status = ParticipantStatus.Available;
+    //    expect(component.isParticipantAvailable(p)).toEqual(true);
+    //});
+//
+    //it('should return endpoint available', () => {
+    //    const p = conference.endpoints[0];
+    //    p.status = EndpointStatus.Connected;
+    //    expect(component.isParticipantAvailable(p)).toEqual(true);
+    //});
 
-    it('should return participant available', () => {
+    it('should get yellow row classes', () => {
+        component.roomLabel = 'test-room';
         const p = conference.participants[0];
-        p.status = ParticipantStatus.Available;
-        expect(component.isParticipantAvailable(p)).toEqual(true);
+        p.current_room.label = 'test-room';
+        expect(component.getRowClasses(p)).toEqual('yellow');
     });
 
- 
+    it('should get row classes', () => {
+        component.roomLabel = 'test-room';
+        const p = conference.participants[0];
+        p.current_room.label = 'test-room-two';
+        expect(component.getRowClasses(p)).toEqual('');
+    });
 
-   
+    it('should get participant in current room', () => {
+        component.roomLabel = 'Room1';
+        const participant = new ParticipantResponse({
+            id: 'Participant1',
+            current_room: {
+                label: 'Room1'
+            } as RoomSummaryResponse
+        });
+
+        const result = component.isParticipantInCurrentRoom(participant);
+
+        // Assert
+        expect(result).toBeTrue();
+    });
+
+    it('should get participant in current different room', () => {
+        component.roomLabel = 'Room1';
+        const participant = new ParticipantResponse({
+            id: 'Participant1',
+            current_room: {
+                label: 'Room2'
+            } as RoomSummaryResponse
+        });
+
+        const result = component.isParticipantInCurrentRoom(participant);
+
+        // Assert
+        expect(result).toBeFalse();
+    });
 });
