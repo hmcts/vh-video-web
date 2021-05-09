@@ -96,6 +96,63 @@ describe('JohParticipantItemComponent', () => {
         expect(component.isParticipantAvailable(p)).toEqual(true);
     });
 
+    it('should get participant available if available', () => {
+        component.roomLabel = 'Room1';
+        const statuses = [
+            [ParticipantStatus.None, false],
+            [ParticipantStatus.NotSignedIn, false],
+            [ParticipantStatus.UnableToJoin, false],
+            [ParticipantStatus.Joining, false],
+            [ParticipantStatus.Available, true],
+            [ParticipantStatus.InHearing, false],
+            [ParticipantStatus.InConsultation, true],
+            [ParticipantStatus.None, false],
+            [ParticipantStatus.None, false],
+            [ParticipantStatus.Disconnected, false]
+        ];
+        statuses.forEach(([status, available]) => {
+            const participant = new ParticipantResponse({
+                id: 'Participant1',
+                status: status as ParticipantStatus
+            });
+
+            const result = component.isParticipantAvailable(participant);
+
+            // Assert
+            expect(result).toBe(available as boolean);
+        });
+    });
+
+    it('should get participant in current room', () => {
+        component.roomLabel = 'Room1';
+        const participant = new ParticipantResponse({
+            id: 'Participant1',
+            current_room: {
+                label: 'Room1'
+            } as RoomSummaryResponse
+        });
+
+        const result = component.isParticipantInCurrentRoom(participant);
+
+        // Assert
+        expect(result).toBeTrue();
+    });
+
+    it('should get participant in current different room', () => {
+        component.roomLabel = 'Room1';
+        const participant = new ParticipantResponse({
+            id: 'Participant1',
+            current_room: {
+                label: 'Room2'
+            } as RoomSummaryResponse
+        });
+
+        const result = component.isParticipantInCurrentRoom(participant);
+
+        // Assert
+        expect(result).toBeFalse();
+    });
+
     it('should get yellow row classes', () => {
         component.roomLabel = 'test-room';
         const p = conference.participants[0];
