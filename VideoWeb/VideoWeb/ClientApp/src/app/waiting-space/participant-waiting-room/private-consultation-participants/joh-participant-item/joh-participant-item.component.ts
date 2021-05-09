@@ -1,8 +1,7 @@
-import { Component, Input} from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { ConsultationAnswer, ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
-
 
 @Component({
     selector: 'app-joh-participant-item',
@@ -15,10 +14,8 @@ export class JohParticipantItemComponent {
     @Input() roomLabel: string;
     @Input() conferenceId: string;
     @Input() canInvite: boolean;
-   
-    constructor(private translateService: TranslateService , private consultationService: ConsultationService  ) {
-        
-    }
+
+    constructor(private translateService: TranslateService, private consultationService: ConsultationService) {}
 
     getRowClasses(participant: any): string {
         if (this.isParticipantInCurrentRoom(participant)) {
@@ -28,7 +25,6 @@ export class JohParticipantItemComponent {
         return '';
     }
 
-    
     getParticipantStatus(participant: any): string {
         if (this.isParticipantInCurrentRoom(participant)) {
             return '';
@@ -103,5 +99,5 @@ export class JohParticipantItemComponent {
             return 'outline';
         }
         return 'white';
-    }   
+    }
 }

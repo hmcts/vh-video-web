@@ -26,6 +26,7 @@ import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-securit
 import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
 
 import { JohParticipantItemComponent } from './joh-participant-item.component';
+// import { PrivateConsultationParticipantsComponent } from '../private-consultation-participants.component';
 import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { HearingRole } from '../../../models/hearing-role-model';
@@ -33,6 +34,7 @@ import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.serv
 
 describe('JohParticipantItemComponent', () => {
     let component: JohParticipantItemComponent;
+    // let component: PrivateConsultationParticipantsComponent;
     let conference: ConferenceResponse;
     const mockOidcSecurityService = new MockOidcSecurityService();
     const eventsService = eventsServiceSpy;
@@ -72,10 +74,7 @@ describe('JohParticipantItemComponent', () => {
         activatedRoute = <any>{
             snapshot: { data: { loggedUser: logged } }
         };
-        //component = new JohParticipantItemComponent(
-        //    consultationService,
-        //    translateService
-        //);
+        component = new JohParticipantItemComponent(translateService, consultationService);
 
         component.conferenceId = conference.id;
 
@@ -85,18 +84,17 @@ describe('JohParticipantItemComponent', () => {
         eventsService.getParticipantStatusMessage.calls.reset();
     });
 
-   
-    //it('should return participant available', () => {
-    //    const p = conference.participants[0];
-    //    p.status = ParticipantStatus.Available;
-    //    expect(component.isParticipantAvailable(p)).toEqual(true);
-    //});
-//
-    //it('should return endpoint available', () => {
-    //    const p = conference.endpoints[0];
-    //    p.status = EndpointStatus.Connected;
-    //    expect(component.isParticipantAvailable(p)).toEqual(true);
-    //});
+    it('should return participant available', () => {
+        const p = conference.participants[0];
+        p.status = ParticipantStatus.Available;
+        expect(component.isParticipantAvailable(p)).toEqual(true);
+    });
+
+    it('should return endpoint available', () => {
+        const p = conference.endpoints[0];
+        p.status = EndpointStatus.Connected;
+        expect(component.isParticipantAvailable(p)).toEqual(true);
+    });
 
     it('should get yellow row classes', () => {
         component.roomLabel = 'test-room';
@@ -112,33 +110,17 @@ describe('JohParticipantItemComponent', () => {
         expect(component.getRowClasses(p)).toEqual('');
     });
 
-    it('should get participant in current room', () => {
+    it('should get participant status in current room', () => {
         component.roomLabel = 'Room1';
         const participant = new ParticipantResponse({
-            id: 'Participant1',
             current_room: {
                 label: 'Room1'
             } as RoomSummaryResponse
         });
 
-        const result = component.isParticipantInCurrentRoom(participant);
+        const result = component.getParticipantStatus(participant);
 
         // Assert
-        expect(result).toBeTrue();
-    });
-
-    it('should get participant in current different room', () => {
-        component.roomLabel = 'Room1';
-        const participant = new ParticipantResponse({
-            id: 'Participant1',
-            current_room: {
-                label: 'Room2'
-            } as RoomSummaryResponse
-        });
-
-        const result = component.isParticipantInCurrentRoom(participant);
-
-        // Assert
-        expect(result).toBeFalse();
+        expect(result).toBe('');
     });
 });

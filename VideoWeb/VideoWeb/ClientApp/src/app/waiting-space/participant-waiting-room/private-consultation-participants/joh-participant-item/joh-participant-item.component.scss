@@ -1,7 +1,7 @@
 @import '~govuk-frontend/govuk/base';
-:host{  
+:host {
   display: block;
-  
+
   .joh-participant-row {
     display: flex;
     border-bottom: 0.5px none;
@@ -13,7 +13,7 @@
     }
 
     &:last-child {
-      border-bottom: 0.5px solid rgba(255, 255, 255, 0.2);
+      border-bottom: 0.5px none rgba(255, 255, 255, 0.2);
       padding-bottom: 0.2em;
     }
   }
@@ -28,18 +28,11 @@
   > div {
     margin-right: 0.5em;
   }
-
-  &:last-child {
-    border-bottom: 0.5px solid rgba(255, 255, 255, 0.2);
-    padding-bottom: 0.2em;
-  }
 }
-
-
-  .language-icon {
-    margin: 0.5em 0 -0.5em 1em;
-    font-size: 1.5em;
-  }
+.language-icon {
+  margin: 0.5em 0 -0.5em 1em;
+  font-size: 1.5em;
+}
 
 .header-left {
   width: 16px;
