@@ -1,14 +1,13 @@
 <div class="container">
     <h2 class="govuk-heading-s white">{{ 'private-consultation-participants.participants' | translate }}</h2>
     <div class="participant-grid">        
-        <ng-container *ngFor="let groupMember of getGroupMembers();">
-            <ng-container *ngIf="isJohConsultation() && geMemberConsultationParticipants(groupMember).length > 0">
+        <ng-container *ngFor="let groupMember of johRoles">
+            <ng-container *ngIf="isJohConsultation() && geMemberParticipantsByRole(groupMember).length > 0">
                 <div  class="language-icon">
-                    <img  class="small-crest" src="/assets/images/UkGovCrestWhite.png"[attr.alt]="'private-consultation-participants.crest-icon-alt' | translate" />
-                    <br>
+                    <img  class="small-crest" src="/assets/images/UkGovCrestWhite.png"[attr.alt]="'private-consultation-participants.crest-icon-alt' | translate" />                    
                 </div>
                 <div class="panel-member-group">
-                    <ng-container *ngFor="let participant of geMemberConsultationParticipants(groupMember); trackBy: trackParticipant">        
+                    <ng-container *ngFor="let participant of geMemberParticipantsByRole(groupMember); trackBy: trackParticipant">        
                         <app-joh-participant-item
                             [participant]="participant"
                             [conferenceId]="conference.id"
@@ -18,7 +17,6 @@
                             >
                         </app-joh-participant-item>                                
                     </ng-container>
-                   <div class="splitter-group"></div>
                 </div>
             </ng-container>
         </ng-container>

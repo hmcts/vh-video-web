@@ -114,7 +114,7 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
     }
 
     isJohConsultation(): boolean {
-        return this.roomLabel?.toLowerCase().includes('judgejohconsultationroom') ? true : false;
+        return this.roomLabel?.toLowerCase().includes('judgejohconsultationroom');
     }
 
     getPrivateConsultationParticipants(): ParticipantListItem[] {
@@ -137,11 +137,11 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
             });
     }
 
-    getGroupMembers(): string[] {
+    get johRoles(): string[] {
         return [HearingRole.JUDGE, HearingRole.PANEL_MEMBER, HearingRole.WINGER];
     }
 
-    geMemberConsultationParticipants(role: any): ParticipantListItem[] {
+    geMemberParticipantsByRole(role: any): ParticipantListItem[] {
         return this.participantsInConsultation.filter(p => p.hearing_role === role);
     }
 
