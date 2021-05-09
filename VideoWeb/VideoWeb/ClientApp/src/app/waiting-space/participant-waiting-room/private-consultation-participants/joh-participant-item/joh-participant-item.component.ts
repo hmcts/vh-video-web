@@ -25,36 +25,36 @@ export class JohParticipantItemComponent {
         return '';
     }
 
-    getParticipantStatus(participant: any): string {
-        if (this.isParticipantInCurrentRoom(participant)) {
+    getParticipantStatus(roomParticipant: any): string {
+        if (this.isParticipantInCurrentRoom(roomParticipant)) {
             return '';
         }
-        if (this.participantCallStatuses[participant.id] === 'Calling') {
+        if (this.participantCallStatuses[roomParticipant.id] === 'Calling') {
             return this.translateService.instant('private-consultation-participants.calling');
         }
-        if (this.participantCallStatuses[participant.id] === ConsultationAnswer.Rejected) {
+        if (this.participantCallStatuses[roomParticipant.id] === ConsultationAnswer.Rejected) {
             return this.translateService.instant('private-consultation-participants.declined');
         }
-        if (this.participantCallStatuses[participant.id] === ConsultationAnswer.Failed) {
+        if (this.participantCallStatuses[roomParticipant.id] === ConsultationAnswer.Failed) {
             return this.translateService.instant('private-consultation-participants.failed');
         }
-        if (this.participantCallStatuses[participant.id] === ConsultationAnswer.None) {
+        if (this.participantCallStatuses[roomParticipant.id] === ConsultationAnswer.None) {
             return this.translateService.instant('private-consultation-participants.no-answer');
         }
         if (
-            this.participantCallStatuses[participant.id] === ConsultationAnswer.Transferring ||
-            this.participantCallStatuses[participant.id] === ConsultationAnswer.Accepted
+            this.participantCallStatuses[roomParticipant.id] === ConsultationAnswer.Transferring ||
+            this.participantCallStatuses[roomParticipant.id] === ConsultationAnswer.Accepted
         ) {
             return this.translateService.instant('private-consultation-participants.transferring');
         }
-        if (participant.current_room?.label) {
+        if (roomParticipant.current_room?.label) {
             return (
-                this.consultationService.consultationNameToString(participant.current_room?.label, true) +
-                (participant.current_room?.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
+                this.consultationService.consultationNameToString(roomParticipant.current_room?.label, true) +
+                (roomParticipant.current_room?.locked ? ' <span class="fas fa-lock-alt"></span>' : '')
             );
         }
 
-        if (!this.isParticipantAvailable(participant)) {
+        if (!this.isParticipantAvailable(roomParticipant)) {
             return this.translateService.instant('private-consultation-participants.not-available');
         }
     }
@@ -64,38 +64,38 @@ export class JohParticipantItemComponent {
         return availableStatuses.indexOf(participant.status) >= 0;
     }
 
-    participantNameClass(participant: any): string {
-        if (this.isParticipantInCurrentRoom(participant)) {
+    participantNameClass(roomParticipant: any): string {
+        if (this.isParticipantInCurrentRoom(roomParticipant)) {
             return 'yellow';
         }
 
-        return this.isParticipantAvailable(participant) ? 'white' : '';
+        return this.isParticipantAvailable(roomParticipant) ? 'white' : '';
     }
 
-    isParticipantInCurrentRoom(participant: any): boolean {
-        return participant.current_room?.label === this.roomLabel;
+    isParticipantInCurrentRoom(roomParticipant: any): boolean {
+        return roomParticipant.current_room?.label === this.roomLabel;
     }
 
-    getParticipantStatusClasses(participant: ParticipantResponse): string {
-        if (this.participantCallStatuses[participant.id] === 'Calling') {
+    getParticipantStatusClasses(roomParticipant: ParticipantResponse): string {
+        if (this.participantCallStatuses[roomParticipant.id] === 'Calling') {
             return 'yellow';
         }
         if (
-            this.participantCallStatuses[participant.id] === ConsultationAnswer.Transferring ||
-            this.participantCallStatuses[participant.id] === ConsultationAnswer.Accepted
+            this.participantCallStatuses[roomParticipant.id] === ConsultationAnswer.Transferring ||
+            this.participantCallStatuses[roomParticipant.id] === ConsultationAnswer.Accepted
         ) {
             return 'yellow';
         }
-        if (this.participantCallStatuses[participant.id] === ConsultationAnswer.Rejected) {
+        if (this.participantCallStatuses[roomParticipant.id] === ConsultationAnswer.Rejected) {
             return 'red';
         }
-        if (this.participantCallStatuses[participant.id] === ConsultationAnswer.Failed) {
+        if (this.participantCallStatuses[roomParticipant.id] === ConsultationAnswer.Failed) {
             return 'red';
         }
-        if (this.participantCallStatuses[participant.id] === ConsultationAnswer.None) {
+        if (this.participantCallStatuses[roomParticipant.id] === ConsultationAnswer.None) {
             return 'red';
         }
-        if (participant.status === ParticipantStatus.InConsultation && !this.isParticipantInCurrentRoom(participant)) {
+        if (roomParticipant.status === ParticipantStatus.InConsultation && !this.isParticipantInCurrentRoom(roomParticipant)) {
             return 'outline';
         }
         return 'white';
