@@ -10,12 +10,12 @@ import { ConsultationAnswer, ParticipantResponse, ParticipantStatus } from 'src/
 })
 export class JohParticipantItemComponent {
     @Input() participant: ParticipantResponse;
-    @Input() participantCallStatuses: any;
+    @Input() participantCallStatuses: any = {};
     @Input() roomLabel: string;
     @Input() conferenceId: string;
     @Input() canInvite: boolean;
 
-    constructor(private translateService: TranslateService, private consultationService: ConsultationService) {}
+    constructor(private translateService: TranslateService, private consultationService: ConsultationService) { }
 
     getRowClasses(participant: any): string {
         if (this.isParticipantInCurrentRoom(participant)) {

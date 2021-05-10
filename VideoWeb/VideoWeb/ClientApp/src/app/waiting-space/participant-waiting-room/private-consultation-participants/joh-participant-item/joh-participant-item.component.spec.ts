@@ -2,9 +2,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
-    AllowedEndpointResponse,
     ConferenceResponse,
-    ConsultationAnswer,
     EndpointStatus,
     LoggedParticipantResponse,
     ParticipantResponse,
@@ -13,26 +11,16 @@ import {
     RoomSummaryResponse
 } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { ConsultationRequestResponseMessage } from 'src/app/services/models/consultation-request-response-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation.service';
 import {
     eventsServiceSpy,
-    consultationRequestResponseMessageSubjectMock,
-    requestedConsultationMessageSubjectMock,
-    participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
-import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
-
 import { JohParticipantItemComponent } from './joh-participant-item.component';
-// import { PrivateConsultationParticipantsComponent } from '../private-consultation-participants.component';
-import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
-import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
-import { HearingRole } from '../../../models/hearing-role-model';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 
-describe('JohParticipantItemComponent', () => {
+fdescribe('JohParticipantItemComponent', () => {
     let component: JohParticipantItemComponent;
     // let component: PrivateConsultationParticipantsComponent;
     let conference: ConferenceResponse;
@@ -196,7 +184,6 @@ describe('JohParticipantItemComponent', () => {
                 id: 'Participant1'
             });
             component.participantCallStatuses['Participant1'] = status;
-
             translateService.instant.calls.reset();
             const result = component.getParticipantStatus(participant);
 
