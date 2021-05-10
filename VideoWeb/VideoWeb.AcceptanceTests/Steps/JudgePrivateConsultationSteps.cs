@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Helpers;
@@ -82,12 +83,10 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         [When(@"(?:he|she|they) (?:enter|enters) the private consultation room")]
         public void WhenTheyEnterPrivateConsultationRoom()
-        {
+        {;
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.HearingTitle).Displayed.Should().BeTrue();
             WaitForUserStatusToBe(ParticipantState.Available);
-            var ready = _c.Test.Conference.CurrentStatus;
-            _browsers[_c.CurrentUser].Click(JudgeWaitingRoomPage.EnterPrivateConsultationButton);
-            //_browsers[_c.CurrentUser].Driver.WaitUntilElementNotVisible(JudgeWaitingRoomPage.PleaseWaitText, 20);
+            _browsers[_c.CurrentUser].ClickToProgress(JudgeWaitingRoomPage.EnterPrivateConsultationButton, PrivateConsultationRoomPage.LeavePrivateConsultationButton, 10);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateConsultationRoomPage.LeavePrivateConsultationButton, 60).Displayed.Should().BeTrue();
             WaitForUserStatusToBe(ParticipantState.InConsultation);
         }
@@ -96,7 +95,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenTheyLeaveTheConsultationRoom(string user)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            _browsers[_c.CurrentUser].Click(PrivateConsultationRoomPage.LeavePrivateConsultationButton);
+            _browsers[_c.CurrentUser].Click(PrivateConsultationRoomPage.LeavePrivateConsultationButton, 20);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PrivateConsultationRoomPage.ConfirmLeavePrivateConsultationButton).Click();
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeWaitingRoomPage.HearingTitle).Displayed.Should().BeTrue();
         }
