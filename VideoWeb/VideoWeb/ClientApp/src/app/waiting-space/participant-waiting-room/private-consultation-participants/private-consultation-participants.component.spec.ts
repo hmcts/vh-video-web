@@ -612,4 +612,8 @@ describe('PrivateConsultationParticipantsComponent', () => {
     it('should return participant status', () => {
         expect(component.trackParticipant(0, { status: ParticipantStatus.Available })).toBe(ParticipantStatus.Available);
     });
+
+    it('should return joh Roles groups available', () => {
+        expect(component.johRoles.length).toBeGreaterThan(0);
+    });
 });

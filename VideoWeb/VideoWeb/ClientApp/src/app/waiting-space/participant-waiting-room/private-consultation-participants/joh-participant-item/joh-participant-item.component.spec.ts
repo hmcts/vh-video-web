@@ -18,7 +18,7 @@ import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-securit
 import { JohParticipantItemComponent } from './joh-participant-item.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 
-fdescribe('JohParticipantItemComponent', () => {
+describe('JohParticipantItemComponent', () => {
     let component: JohParticipantItemComponent;
     // let component: PrivateConsultationParticipantsComponent;
     let conference: ConferenceResponse;
