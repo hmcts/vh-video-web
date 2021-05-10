@@ -202,7 +202,7 @@ describe('WaitingRoom ParticipantList Base', () => {
         component.loggedInUser.role = Role.Individual;
 
         component.initParticipants();
-        expect(component.participantsInConsultation.length).toBe(2);
+        expect(component.participantsInConsultation.length).toBe(6);
     });
     it('should be allowed to invite in consultation if the participant is in the participants room', () => {
         const indivUser = conference.participants.find(x => x.role === Role.Individual);

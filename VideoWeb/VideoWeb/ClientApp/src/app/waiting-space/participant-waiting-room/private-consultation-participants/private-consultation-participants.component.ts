@@ -113,22 +113,36 @@ export class PrivateConsultationParticipantsComponent extends WRParticipantStatu
         );
     }
 
+    isJohConsultation(): boolean {
+        return this.roomLabel?.toLowerCase().includes('judgejohconsultationroom');
+    }
+
     getPrivateConsultationParticipants(): ParticipantListItem[] {
-        if (this.roomLabel?.toLowerCase().includes('judgejohconsultationroom')) {
-            return this.participantsInConsultation;
-        } else {
-            return this.participantsInConsultation
-                .filter(p => p.hearing_role !== HearingRole.WITNESS && p.hearing_role !== HearingRole.OBSERVER)
-                .filter(p => p.hearing_role !== HearingRole.INTERPRETER)
-                .map(p => {
-                    const interpreterLink = p.linked_participants.find(x => x.link_type === LinkType.Interpreter);
-                    const participant: ParticipantListItem = { ...p };
-                    if (p.linked_participants && interpreterLink) {
-                        participant.interpreter = this.participantsInConsultation.find(x => x.id === interpreterLink.linked_id);
-                    }
-                    return participant;
-                });
-        }
+        return this.participantsInConsultation
+            .filter(c => c.hearing_role !== HearingRole.WITNESS && c.hearing_role !== HearingRole.OBSERVER)
+            .filter(c => c.hearing_role !== HearingRole.INTERPRETER)
+            .filter(
+                c =>
+                    c.hearing_role !== HearingRole.JUDGE &&
+                    c.hearing_role !== HearingRole.PANEL_MEMBER &&
+                    c.hearing_role !== HearingRole.WINGER
+            )
+            .map(c => {
+                const interpreterLink = c.linked_participants.find(x => x.link_type === LinkType.Interpreter);
+                const participant: ParticipantListItem = { ...c };
+                if (c.linked_participants && interpreterLink) {
+                    participant.interpreter = this.participantsInConsultation.find(x => x.id === interpreterLink.linked_id);
+                }
+                return participant;
+            });
+    }
+
+    get johRoles(): string[] {
+        return [HearingRole.JUDGE, HearingRole.PANEL_MEMBER, HearingRole.WINGER];
+    }
+
+    geMemberParticipantsByRole(role: any): ParticipantListItem[] {
+        return this.participantsInConsultation.filter(p => p.hearing_role === role);
     }
 
     getParticipantStatus(participant: any): string {
