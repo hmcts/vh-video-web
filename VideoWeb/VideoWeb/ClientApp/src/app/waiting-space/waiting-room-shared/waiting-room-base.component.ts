@@ -208,6 +208,10 @@ export abstract class WaitingRoomBaseDirective {
 
     onLinkedParticiantAcceptedConsultationInvite(roomLabel: string, id: string) {
         const invitation = this.consultationInvitiationService.getInvitation(roomLabel);
+        if (!invitation.invitationId) {
+            return;
+        }
+
         invitation.linkedParticipantStatuses[id] = true;
 
         if (invitation.answer === ConsultationAnswer.Accepted) {
@@ -217,7 +221,10 @@ export abstract class WaitingRoomBaseDirective {
 
     onLinkedParticiantRejectedConsultationInvite(linkedParticipant: ParticipantResponse, consulationRoomLabel: string) {
         const invitation = this.consultationInvitiationService.getInvitation(consulationRoomLabel);
-        console.log('[ROB] linked rejected', invitation);
+        if (!invitation.invitationId) {
+            return;
+        }
+
         if (invitation.activeToast) {
             invitation.activeToast.declinedByThirdParty = true;
             invitation.activeToast.remove();
@@ -239,7 +246,6 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     onConsultationRejected(roomLabel: string) {
-        console.log('[ROB] I rejected');
         this.consultationInvitiationService.removeInvitation(roomLabel);
     }
 
@@ -509,7 +515,6 @@ export abstract class WaitingRoomBaseDirective {
         }
 
         const invitation = this.consultationInvitiationService.getInvitation(roomLabel);
-        console.log('[ROB] I accepted', invitation);
         if (invitation.answer === ConsultationAnswer.Rejected) {
             return;
         }
