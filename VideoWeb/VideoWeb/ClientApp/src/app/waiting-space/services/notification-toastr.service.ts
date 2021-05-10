@@ -102,7 +102,7 @@ export class NotificationToastrService {
         };
 
         const toast = this.toastr.show('', '', {
-            timeOut: 12000,
+            timeOut: 120000,
             extendedTimeOut: 0,
             toastClass: 'vh-no-pointer',
             tapToDismiss: false,
@@ -200,7 +200,7 @@ export class NotificationToastrService {
 
     createConsultationNotificationToast(message: string, inHearing: boolean): VhToastComponent {
         const toast = this.toastr.show('', '', {
-            timeOut: 12000,
+            timeOut: 120000,
             extendedTimeOut: 0,
             toastClass: 'vh-no-pointer',
             tapToDismiss: false,
@@ -246,7 +246,7 @@ export class NotificationToastrService {
         )}</span>`;
         message += `<br/>${this.translateService.instant('notification-toastr.poor-connection.message')}<br/>`;
         const toast = this.toastr.show('', '', {
-            timeOut: 12000,
+            timeOut: 120000,
             tapToDismiss: false,
             toastComponent: VhToastComponent
         });

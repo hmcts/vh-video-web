@@ -208,6 +208,10 @@ export abstract class WaitingRoomBaseDirective {
 
     onLinkedParticiantAcceptedConsultationInvite(roomLabel: string, id: string) {
         const invitation = this.consultationInvitiationService.getInvitation(roomLabel);
+        if (!invitation.invitationId) {
+            return;
+        }
+
         invitation.linkedParticipantStatuses[id] = true;
 
         if (invitation.answer === ConsultationAnswer.Accepted) {
@@ -217,8 +221,9 @@ export abstract class WaitingRoomBaseDirective {
 
     onLinkedParticiantRejectedConsultationInvite(linkedParticipant: ParticipantResponse, consulationRoomLabel: string) {
         const invitation = this.consultationInvitiationService.getInvitation(consulationRoomLabel);
-        if (!invitation.invitationId)
+        if (!invitation.invitationId) {
             return;
+        }
 
         if (invitation.activeToast) {
             invitation.activeToast.declinedByThirdParty = true;
