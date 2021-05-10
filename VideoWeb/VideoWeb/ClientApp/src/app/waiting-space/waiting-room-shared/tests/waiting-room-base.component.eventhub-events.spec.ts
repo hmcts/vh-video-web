@@ -653,10 +653,11 @@ describe('WaitingRoomComponent EventHub Call', () => {
         });
     });
 
-    describe('onLinkedParticiantRejectedConsultationInvite', () => {
+    fdescribe('onLinkedParticiantRejectedConsultationInvite', () => {
         const linkedParticipant = participantsLinked[1];
         const expectedConsultationRoomLabel = 'ConsultationRoom';
         const expectedInvitedByName = 'invited by';
+        const expectedInvitationId = 'expected invitation id'
         const toastSpy = jasmine.createSpyObj<VhToastComponent>('VhToastComponent', ['remove']);
         const invitation = {} as ConsultationInvitation;
 
@@ -669,7 +670,24 @@ describe('WaitingRoomComponent EventHub Call', () => {
             toastSpy.declinedByThirdParty = false;
             invitation.activeToast = toastSpy;
             invitation.invitedByName = expectedInvitedByName;
+            invitation.invitationId = expectedInvitationId;
             consultationInvitiationService.getInvitation.and.returnValue(invitation);
+        });
+
+        it('should NOT make any calls and should return when the invitation does NOT have an invitation id', () => {
+            // Arrange
+            const expectedIsParticipantInHearing = true;
+            component.participant.status = ParticipantStatus.InHearing;
+            invitation.invitationId = null;
+
+            // Act
+            component.onLinkedParticiantRejectedConsultationInvite(linkedParticipant, expectedConsultationRoomLabel);
+
+            // Assert
+            expect(notificationToastrService.showConsultationRejectedByLinkedParticipant).not.toHaveBeenCalled();
+            expect(consultationInvitiationService.linkedParticipantRejectedInvitation).not.toHaveBeenCalled();
+            expect(toastSpy.remove).not.toHaveBeenCalled();
+            expect(toastSpy.declinedByThirdParty).toBeFalse();
         });
 
         it('should reject the invitation for a room and set the inital toast to rejectedByThirdParty to true if it exists when is in hearing', () => {

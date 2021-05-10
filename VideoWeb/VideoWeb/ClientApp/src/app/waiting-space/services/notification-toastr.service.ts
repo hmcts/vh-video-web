@@ -102,7 +102,7 @@ export class NotificationToastrService {
         };
 
         const toast = this.toastr.show('', '', {
-            timeOut: 120000,
+            timeOut: 12000,
             extendedTimeOut: 0,
             toastClass: 'vh-no-pointer',
             tapToDismiss: false,
@@ -152,6 +152,7 @@ export class NotificationToastrService {
         invitedByName: string,
         inHearing: boolean
     ): VhToastComponent {
+        console.log(' linked participant rejected', invitedByName);
         const inviteKey = this.getInviteKey(conferenceId, roomLabel);
         if (this.activeLinkedParticipantRejectionToasts[inviteKey]) {
             this.activeLinkedParticipantRejectionToasts[inviteKey].remove();
@@ -199,7 +200,7 @@ export class NotificationToastrService {
 
     createConsultationNotificationToast(message: string, inHearing: boolean): VhToastComponent {
         const toast = this.toastr.show('', '', {
-            timeOut: 120000,
+            timeOut: 12000,
             extendedTimeOut: 0,
             toastClass: 'vh-no-pointer',
             tapToDismiss: false,
@@ -245,7 +246,7 @@ export class NotificationToastrService {
         )}</span>`;
         message += `<br/>${this.translateService.instant('notification-toastr.poor-connection.message')}<br/>`;
         const toast = this.toastr.show('', '', {
-            timeOut: 120000,
+            timeOut: 12000,
             tapToDismiss: false,
             toastComponent: VhToastComponent
         });
