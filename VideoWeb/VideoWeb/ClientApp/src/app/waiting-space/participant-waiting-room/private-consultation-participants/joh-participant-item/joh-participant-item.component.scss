@@ -1,9 +1,6 @@
 @import '~govuk-frontend/govuk/base';
-:host {
-  display: block;
-}
 
-.joh-participant-row {
+:host {
   display: flex;
   border-bottom: 0.5px none;
   padding-top: 0.5em;
@@ -13,6 +10,7 @@
     margin-right: 0.5em;
   }
 }
+
 .header-left {
   width: 16px;
 }
