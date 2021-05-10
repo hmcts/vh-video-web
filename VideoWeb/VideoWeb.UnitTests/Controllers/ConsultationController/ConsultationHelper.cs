@@ -62,6 +62,7 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 .With(x => x.RequestedForId = participantsWithoutLinked[1].Id)
                 .With(x => x.RoomLabel = "RoomLabel")
                 .With(x => x.Answer = ConsultationAnswer.None)
+                .With(x => x.InvitationId = Guid.NewGuid())
                 .Build();
         }
 

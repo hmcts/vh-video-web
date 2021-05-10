@@ -655,7 +655,8 @@
     "state-lip": "State LIP",
     "winger": "Winger",
     "witness": "Witness",
-    "intermediary": "Intermediary"
+    "intermediary": "Intermediary",
+    "video-access-point":"Video access point"
   },
   "case-role": {
     "appellant": "Appellant",

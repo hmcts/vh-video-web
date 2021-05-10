@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
+import { ConsultationAnswer } from 'src/app/services/clients/api-client';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 
 export interface ConsultationInvitation {
+    answer: ConsultationAnswer;
+    invitationId: string;
+    roomLabel: string;
     linkedParticipantStatuses: { [participantId: string]: boolean };
     activeToast: VhToastComponent;
-    activeParticipantAccepted: boolean;
     invitedByName: string;
-    rejected: boolean;
 }
 
 @Injectable({
@@ -18,14 +20,18 @@ export class ConsultationInvitationService {
     getInvitation(roomLabel: string): ConsultationInvitation {
         const invitation = this.consultationInvitations[roomLabel];
 
-        if (!invitation || invitation.rejected) {
-            return (this.consultationInvitations[roomLabel] = {
+        if (!invitation) {
+            this.consultationInvitations[roomLabel] = {
+                answer: ConsultationAnswer.None,
+                invitationId: null,
+                roomLabel: roomLabel,
                 linkedParticipantStatuses: {},
                 activeToast: null,
                 activeParticipantAccepted: false,
-                invitedByName: null,
-                rejected: false
-            } as ConsultationInvitation);
+                invitedByName: null
+            } as ConsultationInvitation;
+
+            return this.consultationInvitations[roomLabel];
         }
 
         return invitation;
@@ -34,7 +40,15 @@ export class ConsultationInvitationService {
     rejectInvitation(roomLabel: string) {
         const invitation = this.consultationInvitations[roomLabel];
         if (invitation) {
-            invitation.rejected = true;
+            invitation.answer = ConsultationAnswer.Rejected;
+        }
+    }
+
+    linkedParticipantRejectedInvitation(roomLabel: string, linkedParticipantId: string) {
+        const invitation = this.consultationInvitations[roomLabel];
+        if (invitation) {
+            invitation.answer = ConsultationAnswer.Rejected;
+            invitation.linkedParticipantStatuses[linkedParticipantId] = false;
         }
     }
 
