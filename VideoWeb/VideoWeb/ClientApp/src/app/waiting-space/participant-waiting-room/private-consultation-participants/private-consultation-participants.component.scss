@@ -20,10 +20,25 @@
     }
   }
 
+  .panel-member-group {
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.2);
+  }
+
   .language-icon {
     margin: 0.5em 0 -0.5em 1em;
     font-size: 1.5em;
+    > .small-crest {
+      width: 30px;
+      margin-top: -3px;
+      padding-bottom: 0.2em;
+    }
   }
+}
+
+.header-left {
+  width: 16px;
 }
 
 .text-right {
@@ -45,11 +60,4 @@
   border-radius: 2px;
   padding: 4px;
   color: rgba(255, 255, 255, 0.9);
-}
-
-.small-crest {
-  width: 30px;
-  position: absolute;
-  right: 30px;
-  margin-top: -3px;
 }

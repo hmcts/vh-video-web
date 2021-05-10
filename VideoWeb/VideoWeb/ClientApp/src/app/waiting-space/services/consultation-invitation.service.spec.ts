@@ -1,5 +1,6 @@
 import { ConsultationInvitation, ConsultationInvitationService } from './consultation-invitation.service';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
+import { ConsultationAnswer } from 'src/app/services/clients/api-client';
 
 describe('ConsultationInvitationServiceService', () => {
     let service: ConsultationInvitationService;
@@ -18,10 +19,10 @@ describe('ConsultationInvitationServiceService', () => {
 
     describe('rejectInvitation', () => {
         const expectedId = 'test-id';
-        it('should set rejected to false on the invitation if it exists', () => {
+        it('should set answer to rejected on the invitation if it exists', () => {
             // Arrange
             const invitation = {
-                rejected: false
+                answer: ConsultationAnswer.Rejected
             } as ConsultationInvitation;
             service['consultationInvitations'][expectedId] = invitation;
 
@@ -29,19 +30,41 @@ describe('ConsultationInvitationServiceService', () => {
             service.rejectInvitation(expectedId);
 
             // Assert
-            expect(invitation.rejected).toBeTrue();
+            expect(invitation.answer).toBe(ConsultationAnswer.Rejected);
+        });
+    });
+
+    describe('linkedParticipantRejectedInvitation', () => {
+        const expectedId = 'test-id';
+        it('should set answer to rejected on the invitation and update the linked participant status', () => {
+            // Arrange
+            const linkedParticipantGuid = 'guid';
+            const invitation = {
+                answer: ConsultationAnswer.Rejected,
+                linkedParticipantStatuses: {}
+            } as ConsultationInvitation;
+            invitation.linkedParticipantStatuses[linkedParticipantGuid] = true;
+
+            service['consultationInvitations'][expectedId] = invitation;
+
+            // Act
+            service.linkedParticipantRejectedInvitation(expectedId, linkedParticipantGuid);
+
+            // Assert
+            expect(invitation.answer).toBe(ConsultationAnswer.Rejected);
+            expect(invitation.linkedParticipantStatuses[linkedParticipantGuid]).toBeFalse();
         });
     });
 
     describe('getInvitation', () => {
-        const expectedId = 'test-id';
+        const expectedRoomLabel = 'room-label';
         it('should return the existing invitation', () => {
             // Arrange
             const expectedInvitation = {} as ConsultationInvitation;
-            service['consultationInvitations'][expectedId] = expectedInvitation;
+            service['consultationInvitations'][expectedRoomLabel] = expectedInvitation;
 
             // Act
-            const invitation = service.getInvitation(expectedId);
+            const invitation = service.getInvitation(expectedRoomLabel);
 
             // Assert
             expect(invitation).toBe(expectedInvitation);
@@ -49,29 +72,16 @@ describe('ConsultationInvitationServiceService', () => {
 
         it('should create a new invitation if an existing one does NOT exist', () => {
             // Act
-            const invitation = service.getInvitation(expectedId);
+            const invitation = service.getInvitation(expectedRoomLabel);
 
             // Assert
             expect(invitation).toBeTruthy();
-        });
-
-        it('should create a new invitation if the existing one is marked as rejected', () => {
-            // Arrange
-            const existingInvitation = {
-                rejected: true
-            } as ConsultationInvitation;
-            service['consultationInvitations'][expectedId] = existingInvitation;
-
-            // Act
-            const invitation = service.getInvitation(expectedId);
-
-            // Assert
-            expect(invitation).toBeTruthy();
-            expect(invitation.rejected).toBeFalse();
+            expect(invitation.roomLabel).toBe(expectedRoomLabel);
+            expect(invitation.answer).toBe(ConsultationAnswer.None);
         });
     });
 
-    describe('removeInvitation', () => {
+    describe('removeInvitationByRoomLabel', () => {
         const expectedId = 'test-id';
         it('should attempt to remove the toast and delete the invitation', () => {
             // Arrange
