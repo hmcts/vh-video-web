@@ -152,7 +152,6 @@ export class NotificationToastrService {
         invitedByName: string,
         inHearing: boolean
     ): VhToastComponent {
-        console.log(' linked participant rejected', invitedByName);
         const inviteKey = this.getInviteKey(conferenceId, roomLabel);
         if (this.activeLinkedParticipantRejectionToasts[inviteKey]) {
             this.activeLinkedParticipantRejectionToasts[inviteKey].remove();
