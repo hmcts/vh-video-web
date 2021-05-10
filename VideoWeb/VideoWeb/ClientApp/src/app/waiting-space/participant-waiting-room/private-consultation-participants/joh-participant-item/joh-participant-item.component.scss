@@ -1,0 +1,37 @@
+@import '~govuk-frontend/govuk/base';
+
+:host {
+  display: flex;
+  border-bottom: 0.5px none;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+
+  > div {
+    margin-right: 0.5em;
+  }
+}
+
+.header-left {
+  width: 16px;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.yellow {
+  color: govuk-colour('yellow');
+}
+.red {
+  color: govuk-colour('red');
+}
+.white {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.outline {
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 2px;
+  padding: 4px;
+  color: rgba(255, 255, 255, 0.9);
+}
