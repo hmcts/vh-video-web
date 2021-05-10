@@ -153,6 +153,13 @@ fdescribe('JohParticipantItemComponent', () => {
         expect(component.getRowClasses(p)).toEqual('');
     });
 
+    it('should get same room status', () => {
+        component.roomLabel = 'test-room';
+        const p = conference.participants[0];
+        p.current_room.label = 'test-room';
+        expect(component.getParticipantStatus(p)).toEqual('');
+    });
+
     it('should get participant status in current room', () => {
         component.roomLabel = 'Room1';
         const participant = new ParticipantResponse({
