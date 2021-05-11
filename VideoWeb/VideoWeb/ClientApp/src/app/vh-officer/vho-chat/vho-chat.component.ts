@@ -125,7 +125,7 @@ export class VhoChatComponent extends ChatBaseComponent implements OnInit, OnDes
             is_user: true,
             timestamp: new Date(new Date().toUTCString())
         });
-        await this.sendInstantMessage(im);
+        this.sendInstantMessage(im);
     }
 
     handleIncomingOtherMessage(messsage: InstantMessage) {
