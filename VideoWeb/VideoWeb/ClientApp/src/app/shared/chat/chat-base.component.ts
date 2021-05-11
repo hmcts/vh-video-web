@@ -184,7 +184,7 @@ export abstract class ChatBaseComponent {
             setTimeout(() => {
                 this.checkIfMessageFailed(instantMessage);
             }, 5000);
-        } catch (err) {            
+        } catch (err) {
             this.logger.error(`[ChatHub] - Unable to send im from ${instantMessage.from}`, err);
             this.checkIfMessageFailed(instantMessage);
             throw err;
