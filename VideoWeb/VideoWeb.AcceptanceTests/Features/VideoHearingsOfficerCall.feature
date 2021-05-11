@@ -51,7 +51,6 @@ Scenario: Video Hearings Officer Calls Users
   | first Individual |
 	| Observer         |
   | Panel Member     |
-  | Interpreter      |
   | Winger           |
 
 
