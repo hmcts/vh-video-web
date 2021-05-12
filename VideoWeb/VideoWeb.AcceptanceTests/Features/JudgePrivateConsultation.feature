@@ -14,6 +14,7 @@ Scenario: Judge Can Enter The Consultation Room
 Scenario: Panel Member Can Enter The Consultation Room
   Given I have a hearing with a Panel Member
   And the Panel Member user has progressed to the Waiting Room page for the existing hearing
+  And the hearing status changes to In Session
   When they enter the private consultation room
   Then they will be transferred to the private consultation room
   And they can leave the private consultation room
