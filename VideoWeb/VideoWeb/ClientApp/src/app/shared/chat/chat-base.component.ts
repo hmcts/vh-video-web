@@ -176,6 +176,7 @@ export abstract class ChatBaseComponent {
     async sendInstantMessage(instantMessage: InstantMessage) {
         this.addMessageToPending(instantMessage);
         await this.eventService.sendMessage(instantMessage);
+        this.removeMessageFromPending(instantMessage);
         this.disableScrollDown = false;
         this.scrollToBottom();
         // 5 seconds is sufficient time to check if message has not returned
