@@ -174,8 +174,7 @@ export abstract class ChatBaseComponent {
     }
 
     async sendInstantMessage(instantMessage: InstantMessage) {
-        try {
-            this.addMessageToPending(instantMessage);
+        this.addMessageToPending(instantMessage);
             await this.eventService.sendMessage(instantMessage);
             this.removeMessageFromPending(instantMessage);
             this.disableScrollDown = false;
@@ -184,11 +183,6 @@ export abstract class ChatBaseComponent {
             setTimeout(() => {
                 this.checkIfMessageFailed(instantMessage);
             }, 5000);
-        } catch (err) {
-            this.logger.error(`[ChatHub] - Unable to send im from ${instantMessage.from}`, err);
-            this.checkIfMessageFailed(instantMessage);
-            throw err;
-        }
     }
 
     checkIfMessageFailed(instantMessage: InstantMessage) {
