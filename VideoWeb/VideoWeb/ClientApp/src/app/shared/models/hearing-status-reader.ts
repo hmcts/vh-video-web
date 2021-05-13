@@ -53,7 +53,7 @@ export class HearingTimeReader {
 
     isPastClosedTime(closedDateTime: Date, status: ConferenceStatus): boolean {
         const closed = this.retrieveHearingExpiryTime(closedDateTime, status);
-        console.log("[ROB] closed");
+        console.log('[ROB] closed');
         if (!closed) {
             return false;
         }
