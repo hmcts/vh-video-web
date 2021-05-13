@@ -2,7 +2,7 @@ import * as moment from 'moment';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
 
 export class HearingTimeReader {
-    public minsAllowedForPrivateConsultationsAfterClosing = 30;
+    public minsAllowedForPrivateConsultationsAfterClosing = 120; // two hours
 
     getDurationAsText(duration: number): string {
         const momDuration = moment.duration(duration, 'minutes');
@@ -53,6 +53,7 @@ export class HearingTimeReader {
 
     isPastClosedTime(closedDateTime: Date, status: ConferenceStatus): boolean {
         const closed = this.retrieveHearingExpiryTime(closedDateTime, status);
+        console.log("[ROB] closed");
         if (!closed) {
             return false;
         }

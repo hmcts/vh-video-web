@@ -387,7 +387,7 @@ describe('WaitingRoomComponent message and clock', () => {
         const conf = new ConferenceTestData().getConferenceDetailNow();
         const status = ConferenceStatus.Closed;
         const closedDateTime = new Date(new Date().toUTCString());
-        closedDateTime.setUTCMinutes(closedDateTime.getUTCMinutes() - 30);
+        closedDateTime.setUTCMinutes(closedDateTime.getUTCMinutes() - 120);
         conf.status = status;
         conf.closed_date_time = closedDateTime;
         component.hearing = new Hearing(conf);
