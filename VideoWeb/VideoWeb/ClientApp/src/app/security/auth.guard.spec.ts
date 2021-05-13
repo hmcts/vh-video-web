@@ -31,7 +31,7 @@ describe('authguard', () => {
             oidcSecurityService.setAuthenticated(false);
             const result = await authGuard.canActivate(null, null).toPromise();
             expect(result).toBeFalsy();
-            expect(router.navigate).toHaveBeenCalledWith([`/${pageUrls.IdpSelection}`]);
+            expect(router.navigate).toHaveBeenCalledWith([`/${pageUrls.Login}`]);
         });
     });
 });

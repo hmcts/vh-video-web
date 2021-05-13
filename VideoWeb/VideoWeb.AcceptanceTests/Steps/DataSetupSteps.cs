@@ -269,7 +269,9 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 Application = Application.VideoWeb,
                 ExpiryInMinutes = expiresIn,
-                IsEjud = _c.VideoWebConfig.UsingEjud,
+                // Switch this ON when EJud is reinstated
+                // IsEjud = _c.VideoWebConfig.UsingEjud,
+                IsEjud = false,
                 IsProdUser = _c.VideoWebConfig.IsLive,
                 TestType = TestType.Automated,
                 UserTypes = userTypes
