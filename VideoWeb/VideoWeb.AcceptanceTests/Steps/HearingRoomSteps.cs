@@ -144,9 +144,9 @@ namespace VideoWeb.AcceptanceTests.Steps
 
             var user = Users.GetUserFromText(text, _c.Test.Users);
             var participant = _c.Test.ConferenceParticipants.First(x => x.Username.Equals(user.Username));
-            
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantInWaitingRoom(participant.Id)).Displayed.Should().BeTrue();
-            
+
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantInIframe(participant.DisplayName)).Displayed.Should().BeTrue();
+
             SwitchToDefaultContent();
         }
 
@@ -155,14 +155,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             SwitchToTheVhoIframe();
 
-            var judgeId = _c.Test.Conference.Participants.First(x => x.UserRole == UserRole.Judge).Id;
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantInHearingRoom(judgeId)).Displayed.Should().BeTrue();
+            var judge = _c.Test.Conference.Participants.First(x => x.UserRole == UserRole.Judge);
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantInIframe(judge.DisplayName)).Displayed.Should().BeTrue();
 
             var user = Users.GetUserFromText(text, _c.Test.Users);
             var participant = _c.Test.ConferenceParticipants.First(x => x.Username.Equals(user.Username));
 
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantInHearingRoom(participant.Id)).Displayed.Should().BeTrue();
-            
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(AdminPanelPage.ParticipantInIframe(participant.DisplayName)).Displayed.Should().BeTrue();
+
             SwitchToDefaultContent();
         }
 
