@@ -22,7 +22,7 @@ namespace VideoWeb.UnitTests.Hub
         private static string JudgeUsername => "judge@hmcts.net";
         private static string IndividualUsername => "individual@hmcts.net";
         private static string RepresentativeUsername => "representative@hmcts.net";
-        private static string AdminUsername => "admin@hmcts.net";
+        private static string AdminUsername => "admin@hearings.reform.hmcts.net"; //"admin@hmcts.net";
         private UserProfile JudgeUserProfile { get; set; }
         private UserProfile IndividualUserProfile { get; set; }
         private UserProfile RepresentativeUserProfile { get; set; }
