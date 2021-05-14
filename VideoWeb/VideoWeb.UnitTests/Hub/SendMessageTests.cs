@@ -22,7 +22,7 @@ namespace VideoWeb.UnitTests.Hub
         private static string JudgeUsername => "judge@hmcts.net";
         private static string IndividualUsername => "individual@hmcts.net";
         private static string RepresentativeUsername => "representative@hmcts.net";
-        private static string AdminUsername => "admin@hmcts.net";
+        private static string AdminUsername => "admin@hearings.reform.hmcts.net";
         private UserProfile JudgeUserProfile { get; set; }
         private UserProfile IndividualUserProfile { get; set; }
         private UserProfile RepresentativeUserProfile { get; set; }
@@ -47,7 +47,7 @@ namespace VideoWeb.UnitTests.Hub
 
         [Test]
         public async Task
-            should_send_message_to_admin_group_and_participant_group_when_judge_sends_message_to_default_admin()
+           should_send_message_to_admin_group_and_participant_group_when_judge_sends_message_to_default_admin()
         {
             SetupSendMessageTests();
             // setup claims to return judge username
@@ -326,7 +326,7 @@ namespace VideoWeb.UnitTests.Hub
 
             var judge = Conference.GetJudge();
             var individual = Conference.Participants.First(p => p.Role == Role.Individual);
-            var representative = Conference.Participants.First(p => p.Role == Role.Representative);
+            var representative = Conference.Participants.First(p => p.Role == Role.Representative);           
 
             IndividualParticipantId = individual.Id;
             JudgeParticipantId = judge.Id;
