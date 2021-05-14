@@ -99,15 +99,20 @@ namespace VideoWeb.AcceptanceTests.Steps
         }
 
         [Given(@"I have a hearing in (.*) minutes time")]
+        public void GivenIHaveAHearingAndAConferenceInMinutesTime(int minutes)
+        {
+            GivenIHaveAHearingAndAConferenceInMinutesTime(minutes, false);
+        }
         public void GivenIHaveAHearingAndAConferenceInMinutesTime(int minutes, bool interpreter = false)
         {
             CheckThatTheHearingWillBeCreatedForToday(_c.TimeZone.Adjust(DateTime.Now.ToUniversalTime().AddMinutes(minutes)));
-            var userTypes = interpreter ? CreateUserTypes(1,0,0,0,1) : CreateUserTypes();
+            var userTypes = interpreter ? CreateUserTypes(1, 0, 0, 0, 1) : CreateUserTypes();
             AllocateUsers(userTypes);
             delayMinutes = minutes;
             GivenIHaveAnotherHearingAndAConference();
         }
-        
+
+
         [Given(@"I have another hearing in (.*) minutes time")]
         public void GivenIHaveAnotherHearingAndAConferenceInMinutesTime(int minutes)
         {            
@@ -264,7 +269,9 @@ namespace VideoWeb.AcceptanceTests.Steps
             {
                 Application = Application.VideoWeb,
                 ExpiryInMinutes = expiresIn,
-                IsEjud = _c.VideoWebConfig.UsingEjud,
+                // Switch this ON when EJud is reinstated
+                // IsEjud = _c.VideoWebConfig.UsingEjud,
+                IsEjud = false,
                 IsProdUser = _c.VideoWebConfig.IsLive,
                 TestType = TestType.Automated,
                 UserTypes = userTypes
