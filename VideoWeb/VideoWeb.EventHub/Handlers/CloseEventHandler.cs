@@ -24,8 +24,6 @@ namespace VideoWeb.EventHub.Handlers
         {
             var conferenceState = ConferenceStatus.Closed;
             return PublishConferenceStatusMessage(conferenceState);
-       
-
         }
     }
 }
