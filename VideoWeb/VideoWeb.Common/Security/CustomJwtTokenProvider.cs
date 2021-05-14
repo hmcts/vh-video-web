@@ -9,7 +9,7 @@ namespace VideoWeb.Common.Security
     public interface ICustomJwtTokenProvider
     {
         string GenerateTokenForCallbackEndpoint(string claims, int expiresInMinutes);
-        string GenerateToken(string claims, int expiresInMinutes);
+        string GenerateToken(string claims, int expiresInMinutes, string roleClaim);
     }
 
     public class CustomJwtTokenProvider : ICustomJwtTokenProvider
@@ -27,18 +27,23 @@ namespace VideoWeb.Common.Security
             return BuildToken(claims, expiresInMinutes, key);
         }
 
-        public string GenerateToken(string claims, int expiresInMinutes)
+        public string GenerateToken(string claims, int expiresInMinutes, string roleClaim)
         {
             var key = Convert.FromBase64String(_kinlyConfiguration.ApiSecret);
-            return BuildToken(claims, expiresInMinutes, key);
+            return BuildToken(claims, expiresInMinutes, key, roleClaim);
         }
 
-        private string BuildToken(string claims, int expiresInMinutes, byte[] key)
+        private string BuildToken(string claims, int expiresInMinutes, byte[] key, string roleClaim = null)
         {
             var securityKey = new SymmetricSecurityKey(key);
+            var subject = new ClaimsIdentity(new[] { new Claim(ClaimTypes.Name, claims) });
+
+            if (!string.IsNullOrEmpty(roleClaim))
+                subject.AddClaims(new[] { new Claim(ClaimTypes.Role, roleClaim) });
+
             var descriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[] {new Claim(ClaimTypes.Name, claims)}),
+                Subject = subject,
                 NotBefore = DateTime.UtcNow.AddMinutes(-1),
                 Issuer = _kinlyConfiguration.Issuer,
                 Expires = DateTime.UtcNow.AddMinutes(expiresInMinutes + 1),

@@ -6,6 +6,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using VideoWeb.Common.Security;
 using VideoWeb.Common.Security.HashGen;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.Controllers
 {
@@ -57,8 +58,9 @@ namespace VideoWeb.Controllers
                 return BadRequest(ModelState);
             }
 
+            var roleClaim = (User.IsInRole(AppRoles.JudgeRole) || User.IsInRole(AppRoles.VhOfficerRole)) ? "Admin" : "Individual";
             var expiresOn = DateTime.UtcNow.AddMinutes(_kinlyConfiguration.ExpiresInMinutes).ToUniversalTime().ToString(CultureInfo.InvariantCulture);
-            var token = _customJwtTokenProvider.GenerateToken(participantId.ToString(), _kinlyConfiguration.ExpiresInMinutes);
+            var token = _customJwtTokenProvider.GenerateToken(participantId.ToString(), _kinlyConfiguration.ExpiresInMinutes, roleClaim);
             var tokenResponse = new TokenResponse {ExpiresOn = expiresOn, Token = token}; 
             return Ok(tokenResponse);
         }
