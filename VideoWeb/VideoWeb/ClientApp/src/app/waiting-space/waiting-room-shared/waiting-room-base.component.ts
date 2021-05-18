@@ -81,6 +81,7 @@ export abstract class WaitingRoomBaseDirective {
 
     stream: MediaStream | URL;
     connected: boolean;
+    eventServiceConnected = false;
     outgoingStream: MediaStream | URL;
     presentationStream: MediaStream | URL;
     streamInMain = false;
@@ -104,6 +105,7 @@ export abstract class WaitingRoomBaseDirective {
     @ViewChild('roomTitleLabel', { static: false }) roomTitleLabel: ElementRef<HTMLDivElement>;
     @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
     countdownComplete: boolean;
+    pendingCallSetup: CallSetup;
 
     protected constructor(
         protected route: ActivatedRoute,
@@ -130,6 +132,9 @@ export abstract class WaitingRoomBaseDirective {
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
         this.errorCount = 0;
+        this.eventService.onEventsHubReady().subscribe(() => {
+            this.eventServiceConnected = true;
+        });
     }
 
     get conferenceId(): string {
@@ -412,6 +417,10 @@ export abstract class WaitingRoomBaseDirective {
                     conference: this.conferenceId,
                     participant: this.participant.id
                 });
+                this.eventServiceConnected = true;
+                if (this.pendingCallSetup) {
+                    this.handleCallSetup(this.pendingCallSetup);
+                }
                 this.getConference().then(() => this.updateShowVideo());
             })
         );
@@ -554,6 +563,7 @@ export abstract class WaitingRoomBaseDirective {
             participant: this.participant.id,
             connectionAttempt: reconnectionAttempt
         };
+        this.eventServiceConnected = false;
         if (reconnectionAttempt < 7) {
             this.logger.debug(`${this.loggerPrefix} EventHub disconnection`, logPayload);
             try {
@@ -784,9 +794,16 @@ export abstract class WaitingRoomBaseDirective {
             conference: this.conferenceId,
             participant: this.participant.id
         };
-        this.logger.debug(`${this.loggerPrefix} Conference has setup`, logPayload);
-        this.videoCallService.connect('', null);
-        this.outgoingStream = callSetup.stream;
+        console.log(this.eventService);
+
+        if (this.eventServiceConnected) {
+            this.pendingCallSetup = null;
+            this.logger.debug(`${this.loggerPrefix} Conference has setup`, logPayload);
+            this.videoCallService.connect('', null);
+            this.outgoingStream = callSetup.stream;
+        } else {
+            this.pendingCallSetup = callSetup;
+        }
     }
 
     async handleCallConnected(callConnected: ConnectedCall): Promise<void> {

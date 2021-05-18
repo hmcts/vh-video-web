@@ -238,6 +238,10 @@ export class EventsService {
         this._handlersRegistered = false;
     }
 
+    onEventsHubReady(): Observable<any> {
+        return this.eventsHubService.onEventsHubReady;
+    }
+
     getServiceReconnected(): Observable<any> {
         return this.eventsHubService.getServiceReconnected();
     }
