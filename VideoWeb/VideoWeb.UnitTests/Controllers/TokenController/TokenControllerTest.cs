@@ -23,11 +23,12 @@ namespace VideoWeb.UnitTests.Controllers.TokenController
             participantId = Guid.NewGuid();
             token = "TestToken";
             hashGenerator.Setup(h => h.GenerateSelfTestTokenHash(It.IsAny<string>(), It.IsAny<string>())).Returns(token);
-            customJwtTokenProvider.Setup(v => v.GenerateToken(It.IsAny<string>(), It.IsAny<int>())).Returns(token);
+            customJwtTokenProvider.Setup(v => v.GenerateToken(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>())).Returns(token);
 
             TokenController = new VideoWeb.Controllers.TokenController(hashGenerator.Object, 
                                                                         customJwtTokenProvider.Object, 
                                                                         new KinlyConfiguration() { HashExpiresInMinutes = 30, ExpiresInMinutes = 20 });
+
         }
     }
 }
