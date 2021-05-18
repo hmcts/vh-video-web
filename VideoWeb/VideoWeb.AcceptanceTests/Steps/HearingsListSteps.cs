@@ -106,6 +106,23 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].TextOf(ParticipantHearingListPage.HearingTime(_c.Test.Conference.Id)).Should().Be($"{_c.TimeZone.Adjust(_c.Test.Hearing.ScheduledDateTime):HH:mm}");
         }
 
+        [Then(@"the participant can see a list of hearings including the new hearing whilst url contains the word Judge")]
+        public void ThenTheParticipantCanSeeAListOfHearingsIncludingTheNewHearingWhilstUrlContainsTheWordJudge()
+        {
+            var scheduledDateTime = _c.TimeZone.Adjust(_c.Test.Hearing.ScheduledDateTime);
+            var scheduledDuration = _c.Test.Hearing.ScheduledDuration;
+
+            var rowData = new GetHearingRow()
+                .WithConferenceId(_c.Test.Conference.Id)
+                .WithDriver(_browsers[_c.CurrentUser])
+                .Fetch();
+
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeHearingListPage.Date(scheduledDateTime.ToString(DateFormats.JudgeHearingListDate))).Displayed.Should().BeTrue();
+            rowData.StartTime.Should().Be(scheduledDateTime.ToString(DateFormats.JudgeHearingListTime));
+            rowData.EndTime.Should().Be(scheduledDateTime.AddMinutes(scheduledDuration).ToString(DateFormats.JudgeHearingListTime));
+            rowData.CaseNumber.Trim().Should().Be(_c.Test.Case.Number);
+        }
+
         [Then(@"the user can see their details at the top of the hearing list")]
         public void ThenTheUserCanSeeTheirDetailsAtTheTopOfTheHearingList()
         {
@@ -135,6 +152,13 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         [Then(@"contact us details for the Judge are available")]
         public void ThenContactUsDetailsForTheJudgeAreAvailable()
+        {
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeHearingListPage.ContactUs).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeHearingListPage.PhoneNumber(_c.Test.CommonData.CommonOnScreenData.VhoPhone)).Displayed.Should().BeTrue();
+        }
+
+        [Then(@"contact us details for the Panel Member are available")]
+        public void ThenContactUsDetailsForThePanelMemberAreAvailable()
         {
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeHearingListPage.ContactUs).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeHearingListPage.PhoneNumber(_c.Test.CommonData.CommonOnScreenData.VhoPhone)).Displayed.Should().BeTrue();
