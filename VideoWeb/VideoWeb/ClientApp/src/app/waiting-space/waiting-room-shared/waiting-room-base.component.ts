@@ -794,7 +794,6 @@ export abstract class WaitingRoomBaseDirective {
             conference: this.conferenceId,
             participant: this.participant.id
         };
-        console.log(this.eventService);
 
         if (this.eventServiceConnected) {
             this.pendingCallSetup = null;
