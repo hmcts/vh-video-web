@@ -174,6 +174,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             interpreter.LinkedParticipants.Should().NotBeNullOrEmpty();
             var interpretee = _c.Test.ConferenceParticipants.Single(x => x.Id == interpreter.LinkedParticipants.Single().LinkedId);
             _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(HearingRoomPage.ParticipantPanel);
+            _browsers[_c.CurrentUser].Driver.WaitUntilElementExists(HearingRoomPage.InterPreterName(interpreter.DisplayName));
             var interpreterText = _browsers[_c.CurrentUser].TextOf(HearingRoomPage.InterPreterName(interpreter.DisplayName));
             interpreterText.Should().Contain($"{interpretee.DisplayName}");
         }
