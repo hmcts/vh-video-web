@@ -77,7 +77,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private postConfigSetup() {
         this.checkAuth().subscribe({
             next: async (loggedIn: boolean) => {
-                await this.postAuthSetup(loggedIn);
+                await this.postAuthSetup(loggedIn, false);
             }
         });
 
@@ -86,11 +86,14 @@ export class AppComponent implements OnInit, OnDestroy {
             .pipe(filter(notification => notification.type === EventTypes.NewAuthorizationResult))
             .subscribe(async (value: OidcClientNotification<AuthorizationResult>) => {
                 this.logger.info('[AppComponent] - OidcClientNotification event received with value ', value);
-                await this.postAuthSetup(true);
+                await this.postAuthSetup(true, value.value.isRenewProcess);
             });
     }
 
-    private async postAuthSetup(loggedIn: boolean) {
+    private async postAuthSetup(loggedIn: boolean, skip: boolean) {
+        if (skip) {
+            return;
+        }
         this.loggedIn = loggedIn;
 
         if (this.loggedIn || this.isSignInUrl) {
