@@ -34,6 +34,7 @@ export const participantHandRaisedStatusSubjectMock = new Subject<ParticipantHan
 export const roomUpdateSubjectMock = new Subject<Room>();
 export const roomTransferSubjectMock = new Subject<RoomTransfer>();
 export const adminAnsweredChatSubjectMock = new Subject<ConferenceMessageAnswered>();
+export const onEventsHubReadySubjectMock = new Subject<boolean>();
 
 eventsServiceSpy = jasmine.createSpyObj<EventsService>(
     'EventsService',
@@ -62,7 +63,8 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'getParticipantRemoteMuteStatusMessage',
         'getParticipantHandRaisedMessage',
         'publishParticipantHandRaisedStatus',
-        'publishRemoteMuteStatus'
+        'publishRemoteMuteStatus',
+        'onEventsHubReady'
     ],
     {}
 );
@@ -84,3 +86,4 @@ eventsServiceSpy.getParticipantHandRaisedMessage.and.returnValue(participantHand
 eventsServiceSpy.getRoomUpdate.and.returnValue(roomUpdateSubjectMock.asObservable());
 eventsServiceSpy.getRoomTransfer.and.returnValue(roomTransferSubjectMock.asObservable());
 eventsServiceSpy.getAdminAnsweredChat.and.returnValue(adminAnsweredChatSubjectMock.asObservable());
+eventsServiceSpy.onEventsHubReady.and.returnValue(onEventsHubReadySubjectMock.asObservable());
