@@ -115,7 +115,7 @@ Scenario: Panel Member has 1 or more hearings
 	And a new browser is open for a PanelMember
 	When they attempt to login with valid credentials
 	Then the user is on the Hearing List page
-	And the participant can see a list of hearings including the new hearing whilst url contains the word Judge
+	And the Panel Member can see a list of hearings including the new hearing
 	And contact us details for the Panel Member are available
 	When the user clicks on the Start Hearing button
 	Then the user is on the Waiting Room page
@@ -136,7 +136,7 @@ Scenario: Panel Member has a hearing more than 30 minutes in the future
 	And a new browser is open for a Winger
 	When they attempt to login with valid credentials
 	Then the user is on the Hearing List page
-	And the participant can see a list of hearings including the new hearing whilst url contains the word Judge
+	And the Panel Member can see a list of hearings including the new hearing
 	And contact us details for the Panel Member are available
 	When the user clicks on the Start Hearing button
 	Then the user is on the Waiting Room page

@@ -106,8 +106,8 @@ namespace VideoWeb.AcceptanceTests.Steps
             _browsers[_c.CurrentUser].TextOf(ParticipantHearingListPage.HearingTime(_c.Test.Conference.Id)).Should().Be($"{_c.TimeZone.Adjust(_c.Test.Hearing.ScheduledDateTime):HH:mm}");
         }
 
-        [Then(@"the participant can see a list of hearings including the new hearing whilst url contains the word Judge")]
-        public void ThenTheParticipantCanSeeAListOfHearingsIncludingTheNewHearingWhilstUrlContainsTheWordJudge()
+        [Then(@"the Panel Member can see a list of hearings including the new hearing")]
+        public void ThenThePanelMemberCanSeeAListOfHearingsIncludingTheNewHearing()
         {
             var scheduledDateTime = _c.TimeZone.Adjust(_c.Test.Hearing.ScheduledDateTime);
             var scheduledDuration = _c.Test.Hearing.ScheduledDuration;
@@ -117,7 +117,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 .WithDriver(_browsers[_c.CurrentUser])
                 .Fetch();
 
-            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(JudgeHearingListPage.Date(scheduledDateTime.ToString(DateFormats.JudgeHearingListDate))).Displayed.Should().BeTrue();
+            _browsers[_c.CurrentUser].Driver.WaitUntilVisible(PanelMemberHearingListPage.Date(scheduledDateTime.ToString(DateFormats.JudgeHearingListDate))).Displayed.Should().BeTrue();
             rowData.StartTime.Should().Be(scheduledDateTime.ToString(DateFormats.JudgeHearingListTime));
             rowData.EndTime.Should().Be(scheduledDateTime.AddMinutes(scheduledDuration).ToString(DateFormats.JudgeHearingListTime));
             rowData.CaseNumber.Trim().Should().Be(_c.Test.Case.Number);
