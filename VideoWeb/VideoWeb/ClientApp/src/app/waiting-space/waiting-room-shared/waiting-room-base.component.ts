@@ -359,7 +359,7 @@ export abstract class WaitingRoomBaseDirective {
             })
         );
 
-        this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub room updates`);
+        this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub room updates`, { tags: ['VIH-7730'] });
         this.eventHubSubscription$.add(
             this.eventService.getRoomUpdate().subscribe(async room => {
                 const existingRoom = this.conferenceRooms.find(r => r.label === room.label);
@@ -380,6 +380,11 @@ export abstract class WaitingRoomBaseDirective {
         this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub room transfer`);
         this.eventHubSubscription$.add(
             this.eventService.getRoomTransfer().subscribe(async roomTransfer => {
+                this.logger.info(`${this.loggerPrefix} room transfer event recieved`, {
+                    message: roomTransfer,
+                    tags: ['VIH-7730']
+                });
+
                 const participant = this.conference.participants.find(p => p.id === roomTransfer.participant_id);
                 const endpoint = this.conference.endpoints.find(p => p.id === roomTransfer.participant_id);
 
@@ -416,7 +421,7 @@ export abstract class WaitingRoomBaseDirective {
             })
         );
 
-        this.logger.debug('[WR] - Subscribing to hearing transfer message');
+        this.logger.debug('[WR] - Subscribing to hearing transfer message', { tags: ['VIH-7730'] });
         this.eventHubSubscription$.add(
             this.eventService.getHearingTransfer().subscribe(async message => {
                 this.handleHearingTransferChange(message);
@@ -792,7 +797,7 @@ export abstract class WaitingRoomBaseDirective {
     async handleCallConnected(callConnected: ConnectedCall): Promise<void> {
         this.errorCount = 0;
         this.connected = true;
-        this.logger.debug(`${this.loggerPrefix} Successfully connected to hearing`, { conference: this.conferenceId });
+        this.logger.info(`${this.loggerPrefix} Successfully connected to hearing`, { conference: this.conferenceId, tags: ['VIH-7730'] });
         this.stream = callConnected.stream;
         const incomingFeedElement = document.getElementById('incomingFeed') as any;
         if (this.stream) {
@@ -815,7 +820,8 @@ export abstract class WaitingRoomBaseDirective {
         this.logger.error(`${this.loggerPrefix} Error from pexip. Reason : ${error.reason}`, new Error(error.reason), {
             pexipError: error,
             conference: this.conferenceId,
-            participant: this.participant.id
+            participant: this.participant.id,
+            tags: ['VIH-7730']
         });
         this.errorService.handlePexipError(error, this.conferenceId);
     }
@@ -834,6 +840,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     handleCallTransfer(): void {
+        this.logger.info(`${this.loggerPrefix} handling call transfer`, { conference: this.conferenceId, tags: ['VIH-7730'] });
         this.stream = null;
     }
 
@@ -927,6 +934,13 @@ export abstract class WaitingRoomBaseDirective {
 
     handleHearingTransferChange(message: HearingTransfer) {
         if (!this.validateIsForConference(message.conferenceId)) {
+            this.logger.warn(`${this.loggerPrefix} transfer was not for this hearing`, {
+                message: message,
+                conference: message.conferenceId,
+                transferDirection: message.transferDirection,
+                participant: message.participantId,
+                tags: ['VIH-7730']
+            });
             return;
         }
         const participant = this.hearing.getConference().participants.find(p => p.id === message.participantId);
@@ -940,7 +954,8 @@ export abstract class WaitingRoomBaseDirective {
             this.logger.info(`${this.loggerPrefix} updating transfer status`, {
                 conference: message.conferenceId,
                 transferDirection: message.transferDirection,
-                participant: message.participantId
+                participant: message.participantId,
+                tags: ['VIH-7730']
             });
         }
     }
@@ -978,7 +993,8 @@ export abstract class WaitingRoomBaseDirective {
     async joinJudicialConsultation() {
         this.logger.info(`${this.loggerPrefix} attempting to join a private judicial consultation`, {
             conference: this.conference?.id,
-            participant: this.participant.id
+            participant: this.participant.id,
+            tags: ['VIH-7730']
         });
         await this.consultationService.joinJudicialConsultationRoom(this.conference, this.participant);
     }

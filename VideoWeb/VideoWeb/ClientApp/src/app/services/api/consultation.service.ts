@@ -23,6 +23,7 @@ import { ModalService } from '../modal.service';
 export class ConsultationService {
     static ERROR_PC_MODAL = 'pc-error-modal';
     static LEAVE_PC_MODAL = 'pc-leave-modal';
+    private readonly loggerPrefix = '[ConsultationService] -';
 
     constructor(
         private apiClient: ApiClient,
@@ -49,7 +50,7 @@ export class ConsultationService {
         answer: ConsultationAnswer,
         roomLabel: string
     ): Promise<void> {
-        this.logger.info(`[ConsultationService] - Responding to consultation request`, {
+        this.logger.info(`${this.loggerPrefix} Responding to consultation request`, {
             conference: conferenceId,
             requester: requesterId,
             requestee: requesteeId,
@@ -73,7 +74,7 @@ export class ConsultationService {
                 .toPromise();
         } catch (error) {
             this.displayConsultationErrorModal();
-            this.logger.error(`Failed to response to consultation request`, error);
+            this.logger.error(`${this.loggerPrefix} Failed to response to consultation request`, error);
         }
     }
 
@@ -93,12 +94,12 @@ export class ConsultationService {
                 .toPromise();
         } catch (error) {
             this.displayConsultationErrorModal();
-            this.logger.error(`Failed to join to consultation`, error);
+            this.logger.error(`${this.loggerPrefix} Failed to join to consultation`, error);
         }
     }
 
     async inviteToConsultation(conferenceId: string, roomLabel: string, requestParticipantId: string) {
-        this.logger.info(`[ConsultationService] - Inviting participant to this private consultation`, {
+        this.logger.info(`${this.loggerPrefix} Inviting participant to this private consultation`, {
             conferenceId: conferenceId,
             requestParticipantId: requestParticipantId,
             roomLabel: roomLabel
@@ -115,12 +116,13 @@ export class ConsultationService {
                 .toPromise();
         } catch (error) {
             this.displayConsultationErrorModal();
+            this.logger.error(`${this.loggerPrefix} Failed to invite to consultation`, error);
             throw error;
         }
     }
 
     async addEndpointToConsultation(conferenceId: string, roomLabel: string, endpointId: string) {
-        this.logger.info(`[ConsultationService] - Adding endpoint to this private consultation`, {
+        this.logger.info(`${this.loggerPrefix} Adding endpoint to this private consultation`, {
             conferenceId: conferenceId,
             endpointId: endpointId,
             roomLabel: roomLabel
@@ -137,14 +139,16 @@ export class ConsultationService {
                 .toPromise();
         } catch (error) {
             this.displayConsultationErrorModal();
+            this.logger.error(`${this.loggerPrefix} Failed to add enpoint to consultation`, error);
             throw error;
         }
     }
 
     async joinJudicialConsultationRoom(conference: ConferenceResponse, participant: ParticipantResponse): Promise<void> {
-        this.logger.info(`[ConsultationService] - Attempting to join a private judicial consultation`, {
+        this.logger.info(`${this.loggerPrefix} Attempting to join a private judicial consultation`, {
             conference: conference.id,
-            participant: participant.id
+            participant: participant.id,
+            tags: ['VIH-7730']
         });
         try {
             await this.apiClient
@@ -155,9 +159,13 @@ export class ConsultationService {
                         room_type: VirtualCourtRoomType.JudgeJOH
                     })
                 )
-                .toPromise();
+                .toPromise()
+                .then(() => {
+                    this.logger.info(`${this.loggerPrefix} startOrJoinConsultation promise resolved`, { tags: ['VIH-7730'] });
+                });
         } catch (error) {
             this.displayConsultationErrorModal();
+            this.logger.error(`${this.loggerPrefix} Failed to join judicial consultation`, error, { tags: ['VIH-7730'] });
             throw error;
         }
     }
@@ -168,7 +176,7 @@ export class ConsultationService {
         inviteParticipants: Array<string>,
         inviteEndpoints: Array<string>
     ): Promise<void> {
-        this.logger.info(`[ConsultationService] - Attempting to create a private consultation`, {
+        this.logger.info(`${this.loggerPrefix} Attempting to create a private consultation`, {
             conference: conference.id,
             participant: participant.id
         });
@@ -186,12 +194,13 @@ export class ConsultationService {
                 .toPromise();
         } catch (error) {
             this.displayConsultationErrorModal();
+            this.logger.error(`${this.loggerPrefix} Failed to create a participant consultation`, error);
             throw error;
         }
     }
 
     async leaveConsultation(conference: ConferenceResponse, participant: ParticipantResponse): Promise<void> {
-        this.logger.info(`[ConsultationService] - Leaving a consultation`, {
+        this.logger.info(`${this.loggerPrefix} Leaving a consultation`, {
             conference: conference.id,
             participant: participant.id
         });
@@ -206,7 +215,7 @@ export class ConsultationService {
     }
 
     async lockConsultation(conferenceId: string, roomLabel: string, lock: boolean): Promise<void> {
-        this.logger.info(`[ConsultationService] - Setting consultation room lock state`, {
+        this.logger.info(`${this.loggerPrefix} Setting consultation room lock state`, {
             conference: conferenceId,
             roomLabel: roomLabel,
             lock: lock
@@ -227,12 +236,12 @@ export class ConsultationService {
     }
 
     displayConsultationErrorModal() {
-        this.logger.debug('[ConsultationService] - Displaying consultation error modal.');
+        this.logger.debug(`${this.loggerPrefix} Displaying consultation error modal.`);
         this.displayModal(ConsultationService.ERROR_PC_MODAL);
     }
 
     displayConsultationLeaveModal() {
-        this.logger.debug('[ConsultationService] - Displaying consultation leave modal.');
+        this.logger.debug(`${this.loggerPrefix} Displaying consultation leave modal.`);
         this.displayModal(ConsultationService.LEAVE_PC_MODAL);
     }
 
@@ -242,7 +251,7 @@ export class ConsultationService {
     }
 
     clearModals() {
-        this.logger.debug('[ConsultationService] - Closing all modals.');
+        this.logger.debug(`${this.loggerPrefix} Closing all modals.`);
         this.modalService.closeAll();
     }
 

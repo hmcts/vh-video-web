@@ -16,16 +16,20 @@ namespace VideoWeb.EventHub.Handlers
 {
     public class TransferEventHandler : EventHandlerBase
     {
+        private readonly ILogger<EventHandlerBase> _logger;
+
         public TransferEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
             IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient) : base(
             hubContext, conferenceCache, logger, videoApiClient)
         {
+            _logger = logger;
         }
 
         public override EventType EventType => EventType.Transfer;
 
         protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
+            _logger.LogTrace("Video Web - Transfer Event Handler - Received event - {Tags}", "VIH-7730");
             var participantStatus = DeriveParticipantStatusForTransferEvent(callbackEvent);
             await PublishParticipantStatusMessage(participantStatus);
             await PublishRoomTransferMessage(new RoomTransfer { ParticipantId = callbackEvent.ParticipantId, FromRoom = callbackEvent.TransferFrom, ToRoom = callbackEvent.TransferTo });
