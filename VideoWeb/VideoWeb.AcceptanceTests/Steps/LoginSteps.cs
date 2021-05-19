@@ -8,6 +8,7 @@ using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using TestApi.Contract.Dtos;
+using VideoWeb.AcceptanceTests.Pages;
 
 namespace VideoWeb.AcceptanceTests.Steps
 {
@@ -36,9 +37,12 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"they should have the option to log back in when they logout")]
         public void ThenTheyShouldHaveOptionToLogBackInAfterLogout()
         {
-            _browsers[_c.CurrentUser].ClickLink(CommonPages.SignOutLink);
+            _browsers[_c.CurrentUser].ClickLink(CommonPages.SignOutLink, 2);
+            NUnit.Framework.TestContext.WriteLine($"Selecting account '{_c.CurrentUser.DisplayName}' to sign out.");
+            _browsers[_c.CurrentUser].Click(LogoutPage.ChooseWhoToSignOut(_c.CurrentUser.DisplayName));
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(CommonPages.SignOutMessage).Displayed.Should().BeTrue();
             _browsers[_c.CurrentUser].ClickLink(CommonPages.SignInLink);
+            NUnit.Framework.TestContext.WriteLine($"About to sign account '{_c.CurrentUser.DisplayName}' back in.");
             _browsers[_c.CurrentUser].Retry(() => _browsers[_c.CurrentUser].Driver.Title.Trim().Should().Be(LoginPage.SignInTitle), ReachedThePageRetries);
         }
 
