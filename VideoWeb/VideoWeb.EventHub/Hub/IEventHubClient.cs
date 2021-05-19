@@ -1,3 +1,4 @@
+using BookingsApi.Contract.Responses;
 using System;
 using System.Threading.Tasks;
 using VideoWeb.Common.Models;
@@ -24,5 +25,6 @@ namespace VideoWeb.EventHub.Hub
         Task AdminAnsweredChat(Guid conferenceId, string username);
         Task ReceiveHeartbeat(Guid conferenceId, Guid participantId, HeartbeatHealth heartbeatHealth, string browserName, string browserVersion, string osName, string osVersion);
         Task HearingTransfer(Guid conferenceId, Guid participantId, TransferDirection transferDirection);
+        Task ParticipantAdded(Guid conferenceId, ParticipantResponse participant);
     }
 }

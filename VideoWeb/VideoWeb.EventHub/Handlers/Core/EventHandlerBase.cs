@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using BookingsApi.Contract.Responses;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using VideoApi.Client;
@@ -133,6 +134,21 @@ namespace VideoWeb.EventHub.Handlers.Core
 
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .RoomTransfer(roomTransfer);
+            Logger.LogTrace("RoomTransfer sent to group: {Group}", Hub.EventHub.VhOfficersGroupName);
+        }
+
+        protected async Task PublishParticipantAddedMessage(ParticipantResponse participantAdded)
+        {
+            foreach (var participant in SourceConference.Participants)
+            {
+                await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
+                    .ParticipantAdded(SourceConference.Id, participantAdded);
+                Logger.LogTrace("RoomTransfer sent to group: {Group} | Role: {ParticipantRole}", participant.Username,
+                    participant.Role);
+            }
+
+            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
+                .ParticipantAdded(SourceConference.Id, participantAdded);
             Logger.LogTrace("RoomTransfer sent to group: {Group}", Hub.EventHub.VhOfficersGroupName);
         }
 

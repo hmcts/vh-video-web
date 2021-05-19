@@ -1,3 +1,4 @@
+using BookingsApi.Contract.Responses;
 using System;
 using VideoWeb.EventHub.Enums;
 
@@ -16,5 +17,6 @@ namespace VideoWeb.EventHub.Models
         public string TransferTo { get; set; }
 
         public string Reason { get; set; }
+        public ParticipantResponse ParticipantAdded { get; set; }
     }
 }
