@@ -38,7 +38,8 @@ export class AppInsightsLoggerService implements LogAdapter {
             map(configSettings => {
                 this.appInsights = new ApplicationInsights({
                     config: {
-                        instrumentationKey: configSettings.app_insights_instrumentation_key
+                        instrumentationKey: configSettings.app_insights_instrumentation_key,
+                        isCookieUseDisabled: true
                     }
                 });
                 this.appInsights.loadAppInsights();

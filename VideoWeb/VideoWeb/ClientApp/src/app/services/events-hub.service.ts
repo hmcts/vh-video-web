@@ -106,24 +106,18 @@ export class EventsHubService {
         }
 
         if (!this.isConnectedToHub) {
-            this.oidcSecurityService.isAuthenticated$.subscribe(authenticated => {
-                if (authenticated && !this.isConnectedToHub) {
-                    this._reconnectionAttempt++;
-                    this.connection
-                        .start()
-                        .then(() => {
-                            this.logger.info('[EventsService] - Successfully connected to EventHub');
-                            this._reconnectionAttempt = 0;
-                        })
-                        .catch(async error => {
-                            this.logger.warn(`[EventsService] - Failed to connect to EventHub ${error}`);
-                            this.onEventHubErrorOrClose(error); // TEST I THINK THIS IS REDUNDANT
-                            this.reconnect();
-                        });
-                } else {
-                    this.logger.debug(`[EventsService] - Cannot start - user is not authenticated`);
-                }
-            });
+            this._reconnectionAttempt++;
+            this.connection
+                .start()
+                .then(() => {
+                    this.logger.info('[EventsService] - Successfully connected to EventHub');
+                    this._reconnectionAttempt = 0;
+                })
+                .catch(async error => {
+                    this.logger.warn(`[EventsService] - Failed to connect to EventHub ${error}`);
+                    this.onEventHubErrorOrClose(error); // TEST I THINK THIS IS REDUNDANT
+                    this.reconnect();
+                });
         } else {
             this.logger.debug(`[EventsService] - Cannot start - already connected to the event hub`);
         }
