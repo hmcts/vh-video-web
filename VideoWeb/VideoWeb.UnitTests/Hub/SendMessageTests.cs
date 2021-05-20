@@ -14,6 +14,9 @@ using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using VideoWeb.UnitTests.Builders;
 using VideoWeb.Common.Caching;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using VideoWeb.Common.Configuration;
 
 namespace VideoWeb.UnitTests.Hub
 {
@@ -22,7 +25,7 @@ namespace VideoWeb.UnitTests.Hub
         private static string JudgeUsername => "judge@hmcts.net";
         private static string IndividualUsername => "individual@hmcts.net";
         private static string RepresentativeUsername => "representative@hmcts.net";
-        private static string AdminUsername => "admin@hearings.reform.hmcts.net";
+        private static string AdminUsername { get; set; }
         private UserProfile JudgeUserProfile { get; set; }
         private UserProfile IndividualUserProfile { get; set; }
         private UserProfile RepresentativeUserProfile { get; set; }
@@ -300,6 +303,14 @@ namespace VideoWeb.UnitTests.Hub
 
         private void SetupSendMessageTests()
         {
+            var configRootBuilder = new ConfigurationBuilder()
+               .AddUserSecrets<Startup>();
+            var configRoot = configRootBuilder.Build();
+            var vhServicesConfigurationOptions = Options.Create(configRoot.GetSection("VhServices").Get<HearingServicesConfiguration>());
+            var vhServicesConfiguration = vhServicesConfigurationOptions.Value;
+
+            AdminUsername = AdminUsername + vhServicesConfiguration.EmailReformDomain;
+
             Conference = InitConference();
             AdminUserProfile = InitProfile(AdminUsername, "VhOfficer");
             JudgeUserProfile = InitProfile(JudgeUsername, Role.Judge.ToString());

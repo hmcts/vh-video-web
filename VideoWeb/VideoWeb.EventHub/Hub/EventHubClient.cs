@@ -13,29 +13,31 @@ using VideoWeb.EventHub.Mappers;
 using VideoWeb.EventHub.Models;
 using VideoApi.Client;
 using VideoApi.Contract.Requests;
-
+using VideoWeb.Common.Configuration;
+using Microsoft.Extensions.Options;
 namespace VideoWeb.EventHub.Hub
 {
     public class EventHub : Hub<IEventHubClient>
     {
         public static string VhOfficersGroupName => "VhOfficers";
         public static string DefaultAdminName => "Admin";
-        public static string ReformEmailDomain => "@hearings.reform.hmcts.net";
 
         private readonly IUserProfileService _userProfileService;
         private readonly ILogger<EventHub> _logger;
         private readonly IVideoApiClient _videoApiClient;
         private readonly IConferenceCache _conferenceCache;
         private readonly IHeartbeatRequestMapper _heartbeatRequestMapper;
+        private readonly HearingServicesConfiguration _servicesConfiguration;
 
         public EventHub(IUserProfileService userProfileService, IVideoApiClient videoApiClient,
-            ILogger<EventHub> logger, IConferenceCache conferenceCache, IHeartbeatRequestMapper heartbeatRequestMapper)
+            ILogger<EventHub> logger, IConferenceCache conferenceCache, IHeartbeatRequestMapper heartbeatRequestMapper, IOptions<HearingServicesConfiguration> servicesConfiguration)
         {
             _userProfileService = userProfileService;
             _logger = logger;
             _conferenceCache = conferenceCache;
             _heartbeatRequestMapper = heartbeatRequestMapper;
             _videoApiClient = videoApiClient;
+            _servicesConfiguration = servicesConfiguration.Value;
         }
 
         public override async Task OnConnectedAsync()
@@ -208,7 +210,7 @@ namespace VideoWeb.EventHub.Hub
                 return true;
             }
 
-            if (!recipientUsername.EndsWith(ReformEmailDomain))
+            if (!recipientUsername.EndsWith(_servicesConfiguration.EmailReformDomain))
             {
                 return false;
             }

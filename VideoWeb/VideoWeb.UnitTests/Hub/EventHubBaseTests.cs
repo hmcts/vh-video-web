@@ -16,6 +16,9 @@ using VideoApi.Client;
 using VideoApi.Contract.Responses;
 using VideoWeb.UnitTests.Builders;
 using VideoApi.Contract.Enums;
+using VideoWeb.Common.Configuration;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 
 namespace VideoWeb.UnitTests.Hub
 {
@@ -31,6 +34,7 @@ namespace VideoWeb.UnitTests.Hub
         protected ClaimsPrincipal Claims;
         protected Mock<IConferenceCache> ConferenceCacheMock;
         protected Mock<IHeartbeatRequestMapper> HeartbeatMapper;
+        protected Mock<IOptions<HearingServicesConfiguration>> ServicesConfigurationMock;
 
         [SetUp]
         public void Setup()
@@ -42,6 +46,9 @@ namespace VideoWeb.UnitTests.Hub
             HubCallerContextMock = new Mock<HubCallerContext>();
             GroupManagerMock = new Mock<IGroupManager>();
             HeartbeatMapper = new Mock<IHeartbeatRequestMapper>();
+            ConferenceCacheMock = new Mock<IConferenceCache>();
+            ServicesConfigurationMock = new Mock<IOptions<HearingServicesConfiguration>>();
+
 
             Claims = new ClaimsPrincipalBuilder().Build();
             HubCallerContextMock.Setup(x => x.User).Returns(Claims);
@@ -51,9 +58,18 @@ namespace VideoWeb.UnitTests.Hub
             UserProfileServiceMock.Setup(x => x.GetObfuscatedUsernameAsync(It.IsAny<string>()))
                 .ReturnsAsync("o**** f*****");
 
-            ConferenceCacheMock = new Mock<IConferenceCache>();
+            var configRootBuilder = new ConfigurationBuilder()
+                .AddUserSecrets<Startup>();
+
+            var configRoot = configRootBuilder.Build();
+            var vhServicesConfigurationOptions = Options.Create(configRoot.GetSection("VhServices").Get<HearingServicesConfiguration>());
+            var vhServicesConfiguration = vhServicesConfigurationOptions.Value;
+
+            ServicesConfigurationMock.Setup(x => x.Value).Returns(vhServicesConfiguration);
+
+
             Hub = new EventHub.Hub.EventHub(UserProfileServiceMock.Object, VideoApiClientMock.Object,
-                LoggerMock.Object, ConferenceCacheMock.Object, HeartbeatMapper.Object)
+                LoggerMock.Object, ConferenceCacheMock.Object, HeartbeatMapper.Object, ServicesConfigurationMock.Object)
             {
                 Context = HubCallerContextMock.Object,
                 Groups = GroupManagerMock.Object,
