@@ -107,7 +107,7 @@ export class EventsHubService {
 
         if (!this.isConnectedToHub) {
             this.oidcSecurityService.isAuthenticated$.subscribe(authenticated => {
-                if (authenticated) {
+                if (authenticated && !this.isConnectedToHub) {
                     this._reconnectionAttempt++;
                     this.connection
                         .start()
