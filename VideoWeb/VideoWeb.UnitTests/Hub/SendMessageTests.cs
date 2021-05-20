@@ -303,13 +303,12 @@ namespace VideoWeb.UnitTests.Hub
 
         private void SetupSendMessageTests()
         {
-            var configRootBuilder = new ConfigurationBuilder()
-               .AddUserSecrets<Startup>();
-            var configRoot = configRootBuilder.Build();
-            var vhServicesConfigurationOptions = Options.Create(configRoot.GetSection("VhServices").Get<HearingServicesConfiguration>());
-            var vhServicesConfiguration = vhServicesConfigurationOptions.Value;
+            var vhServicesConfigurationOptions = Options.Create(new HearingServicesConfiguration
+            {
+                EmailReformDomain = "@hearings.reform.hmcts.net"
+            });
 
-            AdminUsername = AdminUsername + vhServicesConfiguration.EmailReformDomain;
+            AdminUsername = AdminUsername + vhServicesConfigurationOptions.Value.EmailReformDomain;
 
             Conference = InitConference();
             AdminUserProfile = InitProfile(AdminUsername, "VhOfficer");

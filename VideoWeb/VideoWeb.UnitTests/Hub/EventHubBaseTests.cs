@@ -58,14 +58,12 @@ namespace VideoWeb.UnitTests.Hub
             UserProfileServiceMock.Setup(x => x.GetObfuscatedUsernameAsync(It.IsAny<string>()))
                 .ReturnsAsync("o**** f*****");
 
-            var configRootBuilder = new ConfigurationBuilder()
-                .AddUserSecrets<Startup>();
+            var vhServicesConfigurationOptions = Options.Create(new HearingServicesConfiguration
+            {
+                EmailReformDomain = "@hearings.reform.hmcts.net"
+            });
 
-            var configRoot = configRootBuilder.Build();
-            var vhServicesConfigurationOptions = Options.Create(configRoot.GetSection("VhServices").Get<HearingServicesConfiguration>());
-            var vhServicesConfiguration = vhServicesConfigurationOptions.Value;
-
-            ServicesConfigurationMock.Setup(x => x.Value).Returns(vhServicesConfiguration);
+            ServicesConfigurationMock.Setup(x => x.Value).Returns(vhServicesConfigurationOptions.Value);
 
 
             Hub = new EventHub.Hub.EventHub(UserProfileServiceMock.Object, VideoApiClientMock.Object,
