@@ -168,7 +168,7 @@ export class VideoCallService {
 
     disconnectFromCall() {
         if (this.pexipAPI) {
-            this.logger.info(`${this.loggerPrefix} Disconnecting from pexip node.`);
+            this.logger.info(`${this.loggerPrefix} Disconnecting from pexip node.`, { tags: ['VIH-7730'] });
             this.pexipAPI.disconnect();
         } else {
             throw new Error(`${this.loggerPrefix} Pexip Client has not been initialised.`);
@@ -331,13 +331,19 @@ export class VideoCallService {
     }
 
     pauseHearing(conferenceId: string): Promise<void> {
-        this.logger.info(`${this.loggerPrefix} Attempting to pause hearing`, { conference: conferenceId });
-        return this.apiClient.pauseVideoHearing(conferenceId).toPromise();
+        this.logger.info(`${this.loggerPrefix} Attempting to pause hearing`, { conference: conferenceId, tags: ['VIH-7730'] });
+        return this.apiClient
+            .pauseVideoHearing(conferenceId)
+            .toPromise()
+            .then(() => this.logger.info(`${this.loggerPrefix} Pause hearing resolved`, { conference: conferenceId, tags: ['VIH-7730'] }));
     }
 
     endHearing(conferenceId: string): Promise<void> {
-        this.logger.info(`${this.loggerPrefix} Attempting to end hearing`, { conference: conferenceId });
-        return this.apiClient.endVideoHearing(conferenceId).toPromise();
+        this.logger.info(`${this.loggerPrefix} Attempting to end hearing`, { conference: conferenceId, tags: ['VIH-7730'] });
+        return this.apiClient
+            .endVideoHearing(conferenceId)
+            .toPromise()
+            .then(() => this.logger.info(`${this.loggerPrefix} End hearing resolved`, { conference: conferenceId, tags: ['VIH-7730'] }));
     }
 
     async callParticipantIntoHearing(conferenceId: string, participantId: string) {

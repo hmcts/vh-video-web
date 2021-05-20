@@ -29,13 +29,20 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override async Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            _logger.LogTrace("Video Web - Transfer Event Handler - Received event - {Tags}", "VIH-7730");
-            var participantStatus = DeriveParticipantStatusForTransferEvent(callbackEvent);
+            var participantStatus = DeriveParticipantStatusForTransferEvent(callbackEvent, _logger);
             await PublishParticipantStatusMessage(participantStatus);
-            await PublishRoomTransferMessage(new RoomTransfer { ParticipantId = callbackEvent.ParticipantId, FromRoom = callbackEvent.TransferFrom, ToRoom = callbackEvent.TransferTo });
+
+            var roomTransferMessage = new RoomTransfer
+            {
+                ParticipantId = callbackEvent.ParticipantId, FromRoom = callbackEvent.TransferFrom,
+                ToRoom = callbackEvent.TransferTo
+            };
+            
+            _logger.LogTrace("Video Web - Transfer Event Handler - Received event - {Status} / {@Message} - {Tags}", participantStatus, roomTransferMessage, "VIH-7730");
+            await PublishRoomTransferMessage(roomTransferMessage);
         }
 
-        private static ParticipantState DeriveParticipantStatusForTransferEvent(CallbackEvent callbackEvent)
+        private static ParticipantState DeriveParticipantStatusForTransferEvent(CallbackEvent callbackEvent, ILogger<EventHandlerBase> logger)
         {
             var isRoomToEnum = Enum.TryParse<RoomType>(callbackEvent.TransferTo, out var transferTo);
             if (!isRoomToEnum && callbackEvent.TransferTo.ToLower().Contains("consultation"))
@@ -57,7 +64,8 @@ namespace VideoWeb.EventHub.Handlers
             {
                 return ParticipantState.InConsultation;
             }
-
+            
+            logger.LogError("Video Web - DeriveParticipantStatusForTransferEvent - Couldn't derrive correct state - throwing - {IsToRoom} / {@Event} - {Tags}", isRoomToEnum, callbackEvent, "VIH-7730");
             throw new RoomTransferException(callbackEvent.TransferFrom, callbackEvent.TransferTo);
         }
     }

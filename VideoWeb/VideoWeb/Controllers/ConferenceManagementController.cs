@@ -81,12 +81,12 @@ namespace VideoWeb.Controllers
             try
             {
                 await _videoApiClient.PauseVideoHearingAsync(conferenceId);
-                _logger.LogDebug("Sent request to pause conference {Conference}", conferenceId);
+                _logger.LogTrace("Sent request to pause conference {Conference} - {Tags}", conferenceId, "VIH-7730");
                 return Accepted();
             }
             catch (VideoApiException ex)
             {
-                _logger.LogError(ex, "Unable to pause video hearing {Conference}", conferenceId);
+                _logger.LogError(ex, "Unable to pause video hearing {Conference} - {Tags}", conferenceId, "VIH-7730");
                 return StatusCode(ex.StatusCode, ex.Response);
             }
         }

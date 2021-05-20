@@ -110,7 +110,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 });
             })
             .catch((error: Error | MediaStreamError) => {
-                this.logger.error(`${this.loggerPrefixJudge} Failed to initialise the judge waiting room`, error);
+                this.logger.error(`${this.loggerPrefixJudge} Failed to initialise the judge waiting room`, error, { tags: ['VIH-7730'] });
                 const conferenceId = this.route.snapshot.paramMap.get('conferenceId');
                 this.errorService.handlePexipError(new CallError(error.name), conferenceId);
             });

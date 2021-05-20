@@ -421,7 +421,7 @@ export abstract class WaitingRoomBaseDirective {
             })
         );
 
-        this.logger.debug('[WR] - Subscribing to hearing transfer message', { tags: ['VIH-7730'] });
+        this.logger.info('[WR] - Subscribing to hearing transfer message', { tags: ['VIH-7730'] });
         this.eventHubSubscription$.add(
             this.eventService.getHearingTransfer().subscribe(async message => {
                 this.handleHearingTransferChange(message);
@@ -557,10 +557,11 @@ export abstract class WaitingRoomBaseDirective {
         const logPayload = {
             conference: this.conferenceId,
             participant: this.participant.id,
-            connectionAttempt: reconnectionAttempt
+            connectionAttempt: reconnectionAttempt,
+            tags: ['VIH-7730']
         };
         if (reconnectionAttempt < 7) {
-            this.logger.debug(`${this.loggerPrefix} EventHub disconnection`, logPayload);
+            this.logger.info(`${this.loggerPrefix} EventHub disconnection`, logPayload);
             try {
                 await this.getConference();
                 this.updateShowVideo();
@@ -787,7 +788,8 @@ export abstract class WaitingRoomBaseDirective {
     handleCallSetup(callSetup: CallSetup) {
         const logPayload = {
             conference: this.conferenceId,
-            participant: this.participant.id
+            participant: this.participant.id,
+            tags: ['VIH-7730']
         };
         this.logger.debug(`${this.loggerPrefix} Conference has setup`, logPayload);
         this.videoCallService.connect('', null);
@@ -797,8 +799,14 @@ export abstract class WaitingRoomBaseDirective {
     async handleCallConnected(callConnected: ConnectedCall): Promise<void> {
         this.errorCount = 0;
         this.connected = true;
-        this.logger.info(`${this.loggerPrefix} Successfully connected to hearing`, { conference: this.conferenceId, tags: ['VIH-7730'] });
         this.stream = callConnected.stream;
+        console.log('[VIH-7730] - Successfully connected to hearing', callConnected);
+        this.logger.info(`${this.loggerPrefix} Successfully connected to hearing`, {
+            conference: this.conferenceId,
+            thisStream: this.stream,
+            callConnected: callConnected,
+            tags: ['VIH-7730']
+        });
         const incomingFeedElement = document.getElementById('incomingFeed') as any;
         if (this.stream) {
             this.updateShowVideo();
@@ -830,9 +838,9 @@ export abstract class WaitingRoomBaseDirective {
         this.connected = false;
         this.stopHeartbeat();
         this.updateShowVideo();
-        this.logger.warn(`${this.loggerPrefix} Disconnected from pexip. Reason : ${reason.reason}`);
+        this.logger.warn(`${this.loggerPrefix} Disconnected from pexip. Reason : ${reason.reason}`, { tags: ['VIH-7730'] });
         if (!this.hearing.isPastClosedTime()) {
-            this.logger.warn(`${this.loggerPrefix} Attempting to reconnect to pexip in ${this.CALL_TIMEOUT}ms`);
+            this.logger.warn(`${this.loggerPrefix} Attempting to reconnect to pexip in ${this.CALL_TIMEOUT}ms`, { tags: ['VIH-7730'] });
             this.callbackTimeout = setTimeout(async () => {
                 await this.call();
             }, this.CALL_TIMEOUT);
@@ -840,8 +848,12 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     handleCallTransfer(): void {
-        this.logger.info(`${this.loggerPrefix} handling call transfer`, { conference: this.conferenceId, tags: ['VIH-7730'] });
         this.stream = null;
+        this.logger.info(`${this.loggerPrefix} handling call transfer`, {
+            thisStream: this.stream,
+            conference: this.conferenceId,
+            tags: ['VIH-7730']
+        });
     }
 
     stopHeartbeat() {
@@ -856,6 +868,11 @@ export abstract class WaitingRoomBaseDirective {
             message
         );
         if (!this.validateIsForConference(message.conferenceId)) {
+            this.logger.info(`${this.loggerPrefix} Message not for this conference - handleConferenceStatusChange`, {
+                message: message,
+                thisConferenceId: this.conferenceId,
+                tags: ['VIH-7730']
+            });
             return;
         }
         this.hearing.getConference().status = message.status;
@@ -894,11 +911,23 @@ export abstract class WaitingRoomBaseDirective {
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
         if (!this.validateIsForConference(message.conferenceId)) {
+            this.logger.info(`${this.loggerPrefix} Message not for this conference - handleConferenceStatusChange`, {
+                message: message,
+                thisConferenceId: this.conferenceId,
+                tags: ['VIH-7730']
+            });
             return;
         }
         const participant = this.hearing.getConference().participants.find(p => p.id === message.participantId);
         const isMe = this.participant.id === participant.id;
         if (isMe) {
+            this.logger.info(`${this.loggerPrefix} Updating my status`, {
+                conference: this.conferenceId,
+                participant: participant.id,
+                status: message.status,
+                oldStatus: participant.status,
+                tags: ['VIH-7730']
+            });
             this.participant.status = message.status;
             this.isTransferringIn = false;
         }
@@ -913,6 +942,13 @@ export abstract class WaitingRoomBaseDirective {
         }
         if (message.status === ParticipantStatus.Disconnected && participant) {
             participant.current_room = null;
+            this.logger.warn(`${this.loggerPrefix} Updating status, participant is disconnected`, {
+                conference: this.conferenceId,
+                participant: participant.id,
+                status: message.status,
+                oldStatus: participant.status,
+                tags: ['VIH-7730']
+            });
         }
     }
 
@@ -980,7 +1016,8 @@ export abstract class WaitingRoomBaseDirective {
         const logPayload = {
             conference: this.conferenceId,
             caseName: this.conference.case_name,
-            participant: this.participant.id
+            participant: this.participant.id,
+            tags: ['VIH-7730']
         };
         this.logger.info(`${this.loggerPrefix} Participant is attempting to leave the private consultation`, logPayload);
         try {
@@ -1002,7 +1039,8 @@ export abstract class WaitingRoomBaseDirective {
     async leaveJudicialConsultation() {
         this.logger.info(`${this.loggerPrefix} attempting to leave a private judicial consultation`, {
             conference: this.conference?.id,
-            participant: this.participant.id
+            participant: this.participant.id,
+            tags: ['VIH-7730']
         });
         await this.consultationService.leaveConsultation(this.conference, this.participant);
     }
@@ -1013,12 +1051,13 @@ export abstract class WaitingRoomBaseDirective {
             caseName: this.conference.case_name,
             participant: this.participant.id,
             showingVideo: false,
-            reason: ''
+            reason: '',
+            tags: ['VIH-7730']
         };
         if (!this.connected) {
             logPaylod.showingVideo = false;
             logPaylod.reason = 'Not showing video because not connecting to pexip node';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
+            this.logger.info(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
             this.showVideo = false;
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;
@@ -1028,7 +1067,7 @@ export abstract class WaitingRoomBaseDirective {
         if (this.hearing.isInSession() && !this.isOrHasWitnessLink()) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because hearing is in session';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
+            this.logger.info(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
             this.displayDeviceChangeModal = false;
             this.showVideo = true;
             this.showConsultationControls = false;
@@ -1039,7 +1078,7 @@ export abstract class WaitingRoomBaseDirective {
         if (this.isOrHasWitnessLink() && this.participant.status === ParticipantStatus.InHearing) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because witness is in hearing';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
+            this.logger.info(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
             this.displayDeviceChangeModal = false;
             this.showVideo = true;
             this.showConsultationControls = false;
@@ -1050,7 +1089,7 @@ export abstract class WaitingRoomBaseDirective {
         if (this.participant.status === ParticipantStatus.InConsultation) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because participant is in a consultation';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
+            this.logger.info(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
             this.displayDeviceChangeModal = false;
             this.showVideo = true;
             this.isPrivateConsultation = true;
@@ -1060,10 +1099,18 @@ export abstract class WaitingRoomBaseDirective {
 
         logPaylod.showingVideo = false;
         logPaylod.reason = 'Not showing video because hearing is not in session and user is not in consultation';
-        this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
+        this.logger.info(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
         this.showVideo = false;
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
+    }
+
+    isParticipantReady(): boolean {
+        return (
+            this.connected &&
+            this.participant.status === ParticipantStatus.Available &&
+            (!this.participant.current_room || this.participant.current_room.label === 'WaitingRoom')
+        );
     }
 
     showChooseCameraDialog() {

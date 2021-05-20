@@ -293,16 +293,20 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     pause() {
-        this.logger.debug(`${this.loggerPrefix} Attempting to pause hearing`, this.logPayload);
+        this.logPayload['tags'] = ['VIH-7730'];
+        this.logger.info(`${this.loggerPrefix} Attempting to pause hearing`, this.logPayload);
         this.videoCallService.pauseHearing(this.conferenceId);
+        delete this.logPayload['tags'];
     }
 
     close(answer: boolean) {
+        this.logPayload['tags'] = ['VIH-7730'];
         this.displayConfirmPopup = false;
         if (answer) {
             this.logger.debug(`${this.loggerPrefix} Attempting to close hearing`, this.logPayload);
             this.videoCallService.endHearing(this.conferenceId);
         }
+        delete this.logPayload['tags'];
     }
 
     displayConfirmationDialog() {
@@ -310,7 +314,9 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     leavePrivateConsultation() {
-        this.logger.debug(`${this.loggerPrefix} Leave private consultation clicked`, this.logPayload);
+        this.logPayload['tags'] = ['VIH-7730'];
+        this.logger.info(`${this.loggerPrefix} Leave private consultation clicked`, this.logPayload);
+        delete this.logPayload['tags'];
         this.leaveConsultation.emit();
     }
 

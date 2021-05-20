@@ -90,6 +90,7 @@
     </div>
   </div>
 </div>
+
 <div *ngIf="!loadingData && conference" [ngClass]="{ 'no-mass': showVideo }">
   <a id="back-to-hearing-list-link" href="javascript:void(0)" (click)="goToJudgeHearingList()" class="govuk-back-link">
     {{ 'judge-waiting-room.return-to-video-hearing-list' | translate }}
@@ -198,7 +199,7 @@
 
     <div>
       <button
-        [disabled]="!connected"
+        [disabled]="!isParticipantReady()"
         *ngIf="isNotStarted()"
         type="button"
         class="govuk-button govuk-button--start govuk-!-margin-right-3 vh-btn-text"
@@ -207,7 +208,7 @@
         {{ 'judge-waiting-room.buttons.start-video-hearing' | translate }}
       </button>
       <button
-        [disabled]="!connected"
+        [disabled]="!isParticipantReady()"
         *ngIf="hearingPaused() || hearingSuspended()"
         type="button"
         class="govuk-button govuk-button--start govuk-!-margin-right-3 vh-btn-text"
@@ -221,7 +222,7 @@
         id="joinPCButton"
         data-module="govuk-button"
         (click)="joinJudicialConsultation()"
-        [disabled]="!connected"
+        [disabled]="!isParticipantReady()"
       >
         {{ 'judge-waiting-room.buttons.enter-consultation-room' | translate }}
         <span *ngIf="numberOfJudgeOrJOHsInConsultation" id="numberOfJohsInConsultationBadge" class="badge">
