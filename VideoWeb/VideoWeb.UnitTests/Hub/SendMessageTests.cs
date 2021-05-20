@@ -26,7 +26,7 @@ namespace VideoWeb.UnitTests.Hub
         private static string IndividualUsername => "individual@hmcts.net";
         private static string RepresentativeUsername => "representative@hmcts.net";
 
-        private static string AdminUsername { get; set; }
+        private static string AdminUsername => "admin@hearings.reform.hmcts.net";
 
         private UserProfile JudgeUserProfile { get; set; }
         private UserProfile IndividualUserProfile { get; set; }
@@ -305,13 +305,6 @@ namespace VideoWeb.UnitTests.Hub
 
         private void SetupSendMessageTests()
         {
-            var vhServicesConfigurationOptions = Options.Create(new HearingServicesConfiguration
-            {
-                EmailReformDomain = "@hearings.reform.hmcts.net"
-            });
-
-            AdminUsername = AdminUsername + vhServicesConfigurationOptions.Value.EmailReformDomain;
-
             Conference = InitConference();
             AdminUserProfile = InitProfile(AdminUsername, "VhOfficer");
             JudgeUserProfile = InitProfile(JudgeUsername, Role.Judge.ToString());

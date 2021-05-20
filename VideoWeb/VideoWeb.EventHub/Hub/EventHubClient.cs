@@ -210,7 +210,7 @@ namespace VideoWeb.EventHub.Hub
                 return true;
             }
 
-            if (!recipientUsername.EndsWith(_servicesConfiguration.EmailReformDomain))
+            if (!recipientUsername.ToLower().EndsWith(_servicesConfiguration.EmailReformDomain))
             {
                 return false;
             }

@@ -34,7 +34,6 @@ namespace VideoWeb.UnitTests.Hub
         protected ClaimsPrincipal Claims;
         protected Mock<IConferenceCache> ConferenceCacheMock;
         protected Mock<IHeartbeatRequestMapper> HeartbeatMapper;
-        protected Mock<IOptions<HearingServicesConfiguration>> ServicesConfigurationMock;
 
         [SetUp]
         public void Setup()
@@ -47,7 +46,6 @@ namespace VideoWeb.UnitTests.Hub
             GroupManagerMock = new Mock<IGroupManager>();
             HeartbeatMapper = new Mock<IHeartbeatRequestMapper>();
             ConferenceCacheMock = new Mock<IConferenceCache>();
-            ServicesConfigurationMock = new Mock<IOptions<HearingServicesConfiguration>>();
 
 
             Claims = new ClaimsPrincipalBuilder().Build();
@@ -63,11 +61,8 @@ namespace VideoWeb.UnitTests.Hub
                 EmailReformDomain = "@hearings.reform.hmcts.net"
             });
 
-            ServicesConfigurationMock.Setup(x => x.Value).Returns(vhServicesConfigurationOptions.Value);
-
-
             Hub = new EventHub.Hub.EventHub(UserProfileServiceMock.Object, VideoApiClientMock.Object,
-                LoggerMock.Object, ConferenceCacheMock.Object, HeartbeatMapper.Object, ServicesConfigurationMock.Object)
+                LoggerMock.Object, ConferenceCacheMock.Object, HeartbeatMapper.Object, vhServicesConfigurationOptions)
             {
                 Context = HubCallerContextMock.Object,
                 Groups = GroupManagerMock.Object,
