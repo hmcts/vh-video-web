@@ -26,6 +26,8 @@ export class SessionStorage<TType> {
     }
 
     clear() {
-        sessionStorage.removeItem(this.storageKey);
+        if (this.get()) {
+            sessionStorage.removeItem(this.storageKey);
+        }
     }
 }
