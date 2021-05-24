@@ -60,7 +60,7 @@
     <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.6.23" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
     <PackageReference Include="TestApi.Client" Version="1.25.2" />
-    <PackageReference Include="VH.AcceptanceTests.Common" Version="1.21.31" />
+    <PackageReference Include="VH.AcceptanceTests.Common" Version="1.21.33" />
   </ItemGroup>
 
   <ItemGroup>

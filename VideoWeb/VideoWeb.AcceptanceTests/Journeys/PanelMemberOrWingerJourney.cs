@@ -12,7 +12,7 @@ namespace VideoWeb.AcceptanceTests.Journeys
             return new List<Page>()
             {
                 Page.Login,
-                Page.HearingList,
+                Page.PanelMemberHearingList,
                 Page.WaitingRoom,
                 Page.HearingRoom
             };

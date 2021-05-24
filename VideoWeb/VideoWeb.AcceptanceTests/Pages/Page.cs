@@ -17,6 +17,8 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly Page IdpSelection = new Page("IDP Selection", "idp-selection");
         public static readonly Page Login = new Page("Login", "login.microsoftonline.com");
         public static readonly Page HearingList = new Page("Hearing List", "hearing-list");
+        public static readonly Page JudgeHearingList = new Page("Judge Hearing List", "hearing-list");
+        public static readonly Page PanelMemberHearingList = new Page("Panel Member Hearing List", "hearing-list");
         public static readonly Page VhoVenueList = new Page("VHO Venue List", "venue-list");
         public static readonly Page VhoHearingList = new Page("VHO Hearing List", "hearing-list");
         public static readonly Page Introduction = new Page("Introduction", "introduction");
@@ -48,6 +50,7 @@ namespace VideoWeb.AcceptanceTests.Pages
 
         public static Page FromString(string name)
         {
+            NUnit.Framework.TestContext.WriteLine($"looking for name; {name} in {Values.ToString()}");
             foreach (var page in Values)
             {
                 if (page.Name.Equals(name))
@@ -55,7 +58,7 @@ namespace VideoWeb.AcceptanceTests.Pages
                     return page;
                 }
             }
-            throw new ArgumentOutOfRangeException($"No page found with name '{name}'");
+            throw new ArgumentOutOfRangeException($"No page object found with name '{name}' the url is ");
         }
 
         private static IEnumerable<Page> Values
@@ -64,6 +67,7 @@ namespace VideoWeb.AcceptanceTests.Pages
             {
                 yield return Login;
                 yield return HearingList;
+                yield return JudgeHearingList;
                 yield return VhoVenueList;
                 yield return VhoHearingList;
                 yield return Introduction;
