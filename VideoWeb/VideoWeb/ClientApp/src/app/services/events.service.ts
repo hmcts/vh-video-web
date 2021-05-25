@@ -84,7 +84,7 @@ export class EventsService {
         ParticipantAddedMessage: (conferenceId: string, participant: ParticipantResponse) => {
             const message = new ParticipantAddedMessage(conferenceId, participant);
             this.logger.debug('[EventsService] - ParticipantAddedMessage received', message);
-            this.hearingStatusSubject.next(message);
+            this.participantAddedSubject.next(participant);
         },
 
         CountdownFinished: (conferenceId: string) => {
@@ -312,6 +312,10 @@ export class EventsService {
     }
     getRoomTransfer(): Observable<RoomTransfer> {
         return this.roomTransferSubject.asObservable();
+    }
+
+    getParticipantAdded(): Observable<ParticipantResponse> {
+        return this.participantAddedSubject.asObservable();
     }
 
     async sendMessage(instantMessage: InstantMessage) {

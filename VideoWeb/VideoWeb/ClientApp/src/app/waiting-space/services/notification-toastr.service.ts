@@ -4,7 +4,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ToastrService } from 'ngx-toastr';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { ConsultationAnswer, VideoEndpointResponse } from 'src/app/services/clients/api-client';
+import { ConsultationAnswer, ParticipantResponse, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 import { NotificationSoundsService } from './notification-sounds.service';
 import { Guid } from 'guid-typescript';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
@@ -291,5 +291,39 @@ export class NotificationToastrService {
             ]
         };
         return toast.toastRef.componentInstance as VhToastComponent;
+    }
+
+    showParticipantAdded(participant: ParticipantResponse) {
+        let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant(
+            'notification-toastr.participant-added.title',
+            {
+                name: participant.display_name
+            }
+        )}</span>`;
+        message += `<br/>${this.translateService.instant('notification-toastr.participant-added.message', {
+            role: participant.hearing_role
+        })}<br/>`;
+
+        const toast = this.toastr.show('', '', {
+            timeOut: 120000,
+            tapToDismiss: false,
+            toastComponent: VhToastComponent
+        });
+        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
+            color: 'white',
+            htmlBody: message,
+            onNoAction: async () => {
+                this.logger.info(`${this.loggerPrefix} No action called on participant added alert`);
+            },
+            buttons: [
+                {
+                    label: this.translateService.instant('notification-toastr.participant-added.dismiss'),
+                    hoverColour: 'green',
+                    action: async () => {
+                        this.toastr.remove(toast.toastId);
+                    }
+                }
+            ]
+        };
     }
 }

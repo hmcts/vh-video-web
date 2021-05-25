@@ -1013,6 +1013,11 @@
       "title": "Alert",
       "message": "Your internet connection is poor. People may have trouble seeing and hearing you.",
       "dismiss": "Dismiss"
+    },
+    "participant-added": {
+      "title": "{{name}}",
+      "message": "{{role}} has been added to the hearing.",
+      "dismiss": "Dismiss"
     }
   },
   "consultation-service": {

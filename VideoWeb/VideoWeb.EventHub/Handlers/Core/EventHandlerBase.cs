@@ -143,13 +143,9 @@ namespace VideoWeb.EventHub.Handlers.Core
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
                     .ParticipantAdded(SourceConference.Id, participantAdded);
-                Logger.LogTrace("RoomTransfer sent to group: {Group} | Role: {ParticipantRole}", participant.Username,
+                Logger.LogTrace("{UserName} | Role: {Role}", participant.Username,
                     participant.Role);
             }
-
-            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
-                .ParticipantAdded(SourceConference.Id, participantAdded);
-            Logger.LogTrace("RoomTransfer sent to group: {Group}", Hub.EventHub.VhOfficersGroupName);
         }
 
         protected abstract Task PublishStatusAsync(CallbackEvent callbackEvent);

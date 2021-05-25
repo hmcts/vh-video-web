@@ -431,6 +431,13 @@ export abstract class WaitingRoomBaseDirective {
                 this.updateShowVideo();
             })
         );
+
+        this.eventHubSubscription$.add(
+            this.eventService.getParticipantAdded().subscr -
+                ibe(async participant => {
+                    this.notificationToastrService.showParticipantAdded(participant);
+                })
+        );
     }
     resolveParticipant(participantId: any): Participant {
         if (participantId === Guid.EMPTY) {
