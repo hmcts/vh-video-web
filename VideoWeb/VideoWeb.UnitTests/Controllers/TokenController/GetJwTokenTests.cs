@@ -36,5 +36,30 @@ namespace VideoWeb.UnitTests.Controllers.TokenController
             tokenResponse.ExpiresOn.Length.Should().Be(19);
             customJwtTokenProvider.Verify(v => v.GenerateToken(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()), Times.Once);
         }
+
+        [Test]
+        public void Should_return_admin_token_response()
+        {
+            var cp = new ClaimsPrincipalBuilder().WithRole(AppRoles.JudgeRole)
+                .WithUsername("judge@test.com").Build();
+            var context = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = cp
+                }
+            };
+
+            TokenController.ControllerContext = context;
+
+            var result = TokenController.GetJwToken(participantId);
+
+            var typedResult = (OkObjectResult)result;
+            typedResult.Should().NotBeNull();
+            var tokenResponse = (TokenResponse)typedResult.Value;
+            tokenResponse.Token.Should().Be(token);
+            tokenResponse.ExpiresOn.Length.Should().Be(19);
+            customJwtTokenProvider.Verify(v => v.GenerateToken(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>()), Times.Once);
+        }
     }
 }
