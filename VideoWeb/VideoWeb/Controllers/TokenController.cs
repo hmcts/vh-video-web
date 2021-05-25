@@ -58,7 +58,7 @@ namespace VideoWeb.Controllers
                 return BadRequest(ModelState);
             }
 
-            var roleClaim = (User.IsInRole(AppRoles.JudgeRole) || User.IsInRole(AppRoles.VhOfficerRole)) ? "Admin" : "Individual";
+            var roleClaim = (User.IsInRole(AppRoles.JudgeRole)) ? "Judge" : "Civilian";
             var expiresOn = DateTime.UtcNow.AddMinutes(_kinlyConfiguration.ExpiresInMinutes).ToUniversalTime().ToString(CultureInfo.InvariantCulture);
             var token = _customJwtTokenProvider.GenerateToken(participantId.ToString(), _kinlyConfiguration.ExpiresInMinutes, roleClaim);
             var tokenResponse = new TokenResponse {ExpiresOn = expiresOn, Token = token}; 
