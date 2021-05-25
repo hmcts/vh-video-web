@@ -15,7 +15,14 @@ import { pageUrls } from './shared/page-url.constants';
 import { MockOidcSecurityService } from './testing/mocks/mock-oidc-security.service';
 import { TestLanguageService } from './shared/test-language.service';
 import { translateServiceSpy } from './testing/mocks/mock-translation.service';
-import { PublicEventsService, OidcClientNotification, EventTypes } from 'angular-auth-oidc-client';
+import {
+    PublicEventsService,
+    OidcClientNotification,
+    EventTypes,
+    AuthorizationResult,
+    AuthorizedState,
+    ValidationResult
+} from 'angular-auth-oidc-client';
 import { MockLogger } from './testing/mocks/mock-logger';
 
 describe('AppComponent', () => {
@@ -29,7 +36,6 @@ describe('AppComponent', () => {
     let connectionStatusServiceSpy: jasmine.SpyObj<ConnectionStatusService>;
     let pageTrackerServiceSpy: jasmine.SpyObj<PageTrackerService>;
     let testLanguageServiceSpy: jasmine.SpyObj<TestLanguageService>;
-    let oidcClientNotificationSpy: jasmine.SpyObj<OidcClientNotification<any>>;
     const mockOidcSecurityService = new MockOidcSecurityService();
     let oidcSecurityService;
     const clientSettings = new ClientSettingsResponse({
@@ -100,8 +106,11 @@ describe('AppComponent', () => {
     });
 
     it('should start connection status service if authenticated oninit', fakeAsync(() => {
-        oidcClientNotificationSpy = jasmine.createSpyObj('OidcClientNotification', {}, { type: EventTypes.NewAuthorizationResult });
-        publicEventsServiceSpy.registerForEvents.and.returnValue(of(oidcClientNotificationSpy));
+        const eventValue: OidcClientNotification<AuthorizationResult> = {
+            type: EventTypes.NewAuthorizationResult,
+            value: { isRenewProcess: false, authorizationState: AuthorizedState.Authorized, validationResult: ValidationResult.Ok }
+        };
+        publicEventsServiceSpy.registerForEvents.and.returnValue(of(eventValue));
         mockOidcSecurityService.setAuthenticated(true);
         component.ngOnInit();
         flush();
