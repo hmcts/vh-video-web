@@ -10,17 +10,17 @@ export abstract class PanelModel {
     /**
      * Has been muted by the judge
      */
-    private isRemoteMuted: boolean;
+    protected isRemoteMuted: boolean;
 
     /**
      * Has been spotlighted by the judge
      */
-    private isSpotlighted: boolean;
+    protected isSpotlighted: boolean;
 
     /**
      * Has hand raised
      */
-    private handRaised: boolean;
+    protected handRaised: boolean;
 
     /**
      * The display name other participants see
