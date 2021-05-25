@@ -20,6 +20,7 @@ namespace VideoWeb.EventHub.Hub
     {
         public static string VhOfficersGroupName => "VhOfficers";
         public static string DefaultAdminName => "Admin";
+        public static string ReformEmailDomain => "@hearings.reform.hmcts.net";
 
         private readonly IUserProfileService _userProfileService;
         private readonly ILogger<EventHub> _logger;
@@ -206,6 +207,12 @@ namespace VideoWeb.EventHub.Hub
             {
                 return true;
             }
+
+            if (!recipientUsername.EndsWith(ReformEmailDomain))
+            {
+                return false;
+            }
+
 
             var user = await _userProfileService.GetUserAsync(recipientUsername);
             return user != null && user.UserRole.Equals("VHOfficer", StringComparison.InvariantCultureIgnoreCase);
