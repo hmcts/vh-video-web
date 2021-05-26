@@ -1008,6 +1008,11 @@
         "rejected": "{{rejector}} rejected the invitation from {{invitedBy}}.",
         "button-close": "Close"
     },
+    "participant-added": {
+      "title": "{{name}}",
+      "message": "{{role}} has been added to the hearing.",
+      "dismiss": "Dismiss"
+    },
     "poor-connection": {
       "title": "Alert",
       "message": "Your internet connection is poor. People may have trouble seeing and hearing you.",
