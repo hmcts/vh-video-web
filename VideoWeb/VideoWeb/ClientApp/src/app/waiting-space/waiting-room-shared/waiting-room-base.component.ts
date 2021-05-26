@@ -132,6 +132,12 @@ export abstract class WaitingRoomBaseDirective {
         this.errorCount = 0;
     }
 
+    isParticipantInCorrectWaitingRoomState(): boolean {
+        return  this.connected &&
+                this.participant.current_room?.label === "WaitingRoom" &&
+                this.participant.status === ParticipantStatus.Available;
+    }
+
     get conferenceId(): string {
         if (this.conference) {
             return this.conference.id;
