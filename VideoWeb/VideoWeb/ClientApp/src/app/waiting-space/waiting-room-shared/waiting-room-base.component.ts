@@ -403,7 +403,7 @@ export abstract class WaitingRoomBaseDirective {
                     }
                 }
 
-                this.logger.info(`${this.conferenceId} ${this.loggerPrefix} participant transfered`, {
+                this.logger.info(`${this.conferenceId} ${this.loggerPrefix} participant (${roomTransfer.participant_id}) transfered from ${roomTransfer.from_room} to ${roomTransfer.to_room}`, {
                     message: roomTransfer,
                     currentParticipantState: participant,
                     tags: ['VIH-7730', 'RoomOrStatusUpdate', 'TransferParticipant']
