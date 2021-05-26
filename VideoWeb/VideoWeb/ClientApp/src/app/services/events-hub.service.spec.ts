@@ -269,30 +269,6 @@ describe('EventsHubService', () => {
             expect(connectionSpy.start).not.toHaveBeenCalled();
             expect(serviceUnderTest.reconnect).not.toHaveBeenCalled();
         }));
-
-        it('should NOT try to start the connection if the user is NOT authenticated', fakeAsync(() => {
-            // Arrange
-            const connectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['start']);
-
-            spyPropertyGetter(oidcSecurityServiceSpy, 'isAuthenticated$').and.returnValue(
-                new Observable<boolean>(observer => {
-                    observer.next(false);
-                })
-            );
-
-            spyOn(serviceUnderTest, 'reconnect');
-            spyOnProperty(serviceUnderTest, 'isWaitingToReconnect', 'get').and.returnValue(false);
-            spyOnProperty(serviceUnderTest, 'isConnectedToHub', 'get').and.returnValue(false);
-            spyOnProperty(serviceUnderTest, 'connection', 'get').and.returnValue(connectionSpy);
-
-            // Act
-            serviceUnderTest.start();
-            tick();
-
-            // Assert
-            expect(connectionSpy.start).not.toHaveBeenCalled();
-            expect(serviceUnderTest.reconnect).not.toHaveBeenCalled();
-        }));
     });
 
     describe('reconnect', () => {
