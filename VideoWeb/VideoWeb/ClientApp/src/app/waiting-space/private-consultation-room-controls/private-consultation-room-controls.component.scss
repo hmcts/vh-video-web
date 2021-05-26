@@ -98,6 +98,10 @@
   vertical-align: top;
   margin-right: 15px;
   cursor: pointer;
+
+  &:disabled {
+    opacity: 20%;
+  }
 }
 
 .small-button.red {

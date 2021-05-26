@@ -148,6 +148,7 @@
       data-module="govuk-button"
       (click)="pause()"
       type="button"
+      [hidden]="!canCloseOrPauseHearing()"
     >
       {{ 'private-consultation-room-controls.pause' | translate }}
     </button>
@@ -159,6 +160,7 @@
       data-module="govuk-button"
       (click)="displayConfirmationDialog()"
       type="button"
+      [hidden]="!canCloseOrPauseHearing()"
     >
       {{ 'private-consultation-room-controls.close' | translate }}
     </button>
@@ -184,6 +186,7 @@
       data-module="govuk-button"
       (click)="leavePrivateConsultation()"
       type="button"
+      [hidden]="!canLeaveConsultation()"
     >
       {{ 'private-consultation-room-controls.leave' | translate }}
     </button>

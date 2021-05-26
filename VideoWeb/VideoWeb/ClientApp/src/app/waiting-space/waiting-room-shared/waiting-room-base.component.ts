@@ -133,9 +133,12 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     isParticipantInCorrectWaitingRoomState(): boolean {
-        return  this.connected &&
-                this.participant.current_room?.label === "WaitingRoom" &&
-                this.participant.status === ParticipantStatus.Available;
+        // console.log(`[VIH-7730] isParticipantInCorrectWaitingRoomState - con. to pexip ${this.connected} - status ${this.participant.status} - room ${this.participant.current_room}`)
+        return (
+            this.connected &&
+            this.participant.status === ParticipantStatus.Available &&
+            (!this.participant.current_room || this.participant.current_room.label === 'WaitingRoom')
+        );
     }
 
     get conferenceId(): string {
