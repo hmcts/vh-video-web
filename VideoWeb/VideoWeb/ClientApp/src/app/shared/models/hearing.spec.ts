@@ -195,7 +195,7 @@ describe('Hearing', () => {
         const c = testData.getConferenceDetailFuture();
         c.status = ConferenceStatus.Closed;
         const closedDateTime = new Date(new Date().toUTCString());
-        closedDateTime.setUTCMinutes(closedDateTime.getUTCMinutes() - 30);
+        closedDateTime.setUTCMinutes(closedDateTime.getUTCMinutes() - 120);
         c.closed_date_time = closedDateTime;
         const hearing = new Hearing(c);
         expect(hearing.isPastClosedTime()).toBeTruthy();

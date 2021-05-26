@@ -18,7 +18,7 @@ export class ConferenceGuard implements CanActivate {
             const data = await this.videoWebService.getConferenceById(conferenceId);
             const hearing = new Hearing(data);
             if (hearing.isPastClosedTime()) {
-                this.logger.info('[ConferenceGuard] Returning back to hearing list because hearing has been closed for over 30 minutes.');
+                this.logger.info('[ConferenceGuard] Returning back to hearing list because hearing has been closed for over 2 hours.');
                 this.router.navigate([pageUrls.JudgeHearingList]);
 
                 return false;

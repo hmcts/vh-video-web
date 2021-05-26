@@ -105,16 +105,16 @@ describe('HearingTimeReader', () => {
         expect(timereader.isPastClosedTime(closedDateTime, status)).toBeFalsy();
     });
 
-    it('should return false given conference is closed for less than 30 minutes when checking if past closed time', () => {
+    it('should return false given conference is closed for less than 120 minutes when checking if past closed time', () => {
         const status = ConferenceStatus.Closed;
         const closedDateTime = new Date();
         expect(timereader.isPastClosedTime(closedDateTime, status)).toBeFalsy();
     });
 
-    it('should return true given conference is closed for more than 30 minutes when checking if past closed time', () => {
+    it('should return true given conference is closed for more than 120 minutes when checking if past closed time', () => {
         const status = ConferenceStatus.Closed;
         const closedDateTime = new Date(new Date().toUTCString());
-        closedDateTime.setUTCMinutes(closedDateTime.getUTCMinutes() - 30);
+        closedDateTime.setUTCMinutes(closedDateTime.getUTCMinutes() - 120);
         expect(timereader.isPastClosedTime(closedDateTime, status)).toBeTruthy();
     });
 
