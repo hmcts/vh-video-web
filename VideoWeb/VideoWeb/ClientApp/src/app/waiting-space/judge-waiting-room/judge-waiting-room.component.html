@@ -34,12 +34,15 @@
 
         <div *ngIf="hearing" class="panel-wrapper" [ngClass]="{ 'hide-panel': !isPrivateConsultation && !panelStates['Participants'] }">
           <app-private-consultation-participants
-            *ngIf="isPrivateConsultation"
+            *ngIf="canShowPrivateConsultationParticipants()"
             [conference]="hearing.getConference()"
             [participantEndpoints]="participantEndpoints"
             [roomLabel]="this.participant.current_room?.label"
           >
           </app-private-consultation-participants>
+          <div *ngIf="!canShowPrivateConsultationParticipants()" class="govuk-!-padding-top-2">
+            <h1 class="govuk-body" style="color: white;">{{ 'participant-hearings.loading-please-wait' | translate }}</h1>
+          </div>
           <app-participants-panel *ngIf="!isPrivateConsultation"> </app-participants-panel>
         </div>
         <div *ngIf="hearing && !isPrivateConsultation" class="panel-wrapper" [ngClass]="{ 'hide-panel': !panelStates['Chat'] }">

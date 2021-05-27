@@ -104,6 +104,7 @@ export abstract class WaitingRoomBaseDirective {
     @ViewChild('roomTitleLabel', { static: false }) roomTitleLabel: ElementRef<HTMLDivElement>;
     @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
     countdownComplete: boolean;
+    showConsultation: boolean = false;
 
     protected constructor(
         protected route: ActivatedRoute,
@@ -134,10 +135,11 @@ export abstract class WaitingRoomBaseDirective {
 
     isParticipantInCorrectWaitingRoomState(): boolean {
         // console.log(`[VIH-7730] isParticipantInCorrectWaitingRoomState - con. to pexip ${this.connected} - status ${this.participant.status} - room ${this.participant.current_room}`)
+        const loggedParticipant = this.getLoggedParticipant();
         return (
             this.connected &&
-            this.participant.status === ParticipantStatus.Available &&
-            (!this.participant.current_room || this.participant.current_room.label === 'WaitingRoom')
+            loggedParticipant.status === ParticipantStatus.Available &&
+            (!loggedParticipant.current_room || this.participant.current_room.label === 'WaitingRoom')
         );
     }
 
@@ -151,6 +153,7 @@ export abstract class WaitingRoomBaseDirective {
     get numberOfJudgeOrJOHsInConsultation(): number {
         return this.conference.participants.filter(
             x =>
+                x.id !== this.participant.id &&
                 (x.role === Role.Judge || x.role === Role.JudicialOfficeHolder) &&
                 x.status === ParticipantStatus.InConsultation &&
                 x.current_room?.label.toLowerCase().startsWith('judgejohconsultationroom')
@@ -252,6 +255,7 @@ export abstract class WaitingRoomBaseDirective {
 
     onTransferingToConsultation(roomLabel: string) {
         this.consultationInvitiationService.removeInvitation(roomLabel);
+        this.showConsultation = true;
     }
 
     onConsultationRejected(roomLabel: string) {
@@ -978,17 +982,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     async onConsultationCancelled() {
-        const logPayload = {
-            conference: this.conferenceId,
-            caseName: this.conference.case_name,
-            participant: this.participant.id
-        };
-        this.logger.info(`${this.loggerPrefix} Participant is attempting to leave the private consultation`, logPayload);
-        try {
-            await this.consultationService.leaveConsultation(this.conference, this.participant);
-        } catch (error) {
-            this.logger.error(`${this.loggerPrefix} Failed to leave private consultation`, error, logPayload);
-        }
+        await this.leaveJudicialConsultation();
     }
 
     async joinJudicialConsultation() {
@@ -998,14 +992,27 @@ export abstract class WaitingRoomBaseDirective {
             Tags: ['VIH-7730', 'ButtonAction']
         });
         await this.consultationService.joinJudicialConsultationRoom(this.conference, this.participant);
+        this.showConsultation = true;
+        this.updateShowVideo();
     }
 
     async leaveJudicialConsultation() {
+        const logPayload = {
+            conference: this.conferenceId,
+            caseName: this.conference.case_name,
+            participant: this.participant.id
+        };
         this.logger.info(`${this.loggerPrefix} attempting to leave a private judicial consultation`, {
             conference: this.conference?.id,
             participant: this.participant.id
         });
-        await this.consultationService.leaveConsultation(this.conference, this.participant);
+        try {
+            await this.consultationService.leaveConsultation(this.conference, this.participant);
+        } catch (error) {
+            this.logger.error(`${this.loggerPrefix} Failed to leave private consultation`, error, logPayload);
+        }
+        this.showConsultation = false;
+        this.updateShowVideo();
     }
 
     updateShowVideo(): void {
@@ -1014,12 +1021,13 @@ export abstract class WaitingRoomBaseDirective {
             caseName: this.conference.case_name,
             participant: this.participant.id,
             showingVideo: false,
-            reason: ''
+            reason: '',
+            tags: ['VIH-7730']
         };
         if (!this.connected) {
             logPaylod.showingVideo = false;
             logPaylod.reason = 'Not showing video because not connecting to pexip node';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
+            this.logger.info(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
             this.showVideo = false;
             this.showConsultationControls = false;
             this.isPrivateConsultation = false;
@@ -1029,7 +1037,7 @@ export abstract class WaitingRoomBaseDirective {
         if (this.hearing.isInSession() && !this.isOrHasWitnessLink()) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because hearing is in session';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
+            this.logger.info(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
             this.displayDeviceChangeModal = false;
             this.showVideo = true;
             this.showConsultationControls = false;
@@ -1040,7 +1048,7 @@ export abstract class WaitingRoomBaseDirective {
         if (this.isOrHasWitnessLink() && this.participant.status === ParticipantStatus.InHearing) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because witness is in hearing';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
+            this.logger.info(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
             this.displayDeviceChangeModal = false;
             this.showVideo = true;
             this.showConsultationControls = false;
@@ -1048,10 +1056,10 @@ export abstract class WaitingRoomBaseDirective {
             return;
         }
 
-        if (this.participant.status === ParticipantStatus.InConsultation) {
+        if /*(this.participant.status === ParticipantStatus.InConsultation) {*/ (this.showConsultation) {
             logPaylod.showingVideo = true;
             logPaylod.reason = 'Showing video because participant is in a consultation';
-            this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
+            this.logger.info(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
             this.displayDeviceChangeModal = false;
             this.showVideo = true;
             this.isPrivateConsultation = true;
@@ -1061,7 +1069,7 @@ export abstract class WaitingRoomBaseDirective {
 
         logPaylod.showingVideo = false;
         logPaylod.reason = 'Not showing video because hearing is not in session and user is not in consultation';
-        this.logger.debug(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
+        this.logger.info(`${this.loggerPrefix} ${logPaylod.reason}`, logPaylod);
         this.showVideo = false;
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;

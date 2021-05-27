@@ -194,12 +194,15 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): void {
+        if (this.participant.id === message.participantId) {
+            this.participant.status = message.status;
+            return;
+        }
+
         if (message.status === ParticipantStatus.InConsultation) {
             this.logger.debug(`${this.loggerPrefix} Participant moved to consultation room, unmuting participant`, this.logPayload);
             this.resetMute();
         }
-
-        this.participant.status = message.status;
     }
 
     handleParticipantRemoteMuteChange(message: ParticipantRemoteMuteMessage) {

@@ -291,4 +291,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             this.leaveJudicialConsultation();
         }
     }
+
+    canShowPrivateConsultationParticipants() {
+        return this.getLoggedParticipant()?.status === ParticipantStatus.InConsultation;
+    }
 }
