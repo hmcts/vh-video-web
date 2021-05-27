@@ -13,7 +13,7 @@ namespace VideoWeb.AcceptanceTests.Journeys
             {
                 Page.Login,
                 Page.JudgeHearingList,
-                Page.WaitingRoom,
+                Page.JudgeWaitingRoomPage,
                 Page.HearingRoom
             };
         }

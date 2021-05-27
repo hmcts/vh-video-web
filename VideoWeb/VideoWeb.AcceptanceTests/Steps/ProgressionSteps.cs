@@ -18,6 +18,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         private readonly LoginSteps _loginSteps;
         private readonly HearingsListSteps _hearingListSteps;
         private readonly VhoHearingListSteps _vhoHearingListSteps;
+        private readonly JudgeHearingListSteps _judgeHearingListSteps;
         private readonly VenueListSteps _vhoVenueListSteps;
         private readonly IntroductionSteps _introductionSteps;
         private readonly EquipmentCheckSteps _equipmentCheckSteps;
@@ -36,6 +37,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             HearingsListSteps hearingListSteps, 
             VenueListSteps vhoVenueListSteps,
             VhoHearingListSteps vhoHearingListSteps,
+            JudgeHearingListSteps judgeHearingListSteps,
             IntroductionSteps introductionSteps,
             EquipmentCheckSteps equipmentCheckSteps, 
             SwitchOnCamAndMicSteps switchOnCamAndMicSteps,
@@ -53,6 +55,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             _hearingListSteps = hearingListSteps;
             _vhoVenueListSteps = vhoVenueListSteps;
             _vhoHearingListSteps = vhoHearingListSteps;
+            _judgeHearingListSteps = judgeHearingListSteps;
             _introductionSteps = introductionSteps;
             _equipmentCheckSteps = equipmentCheckSteps;
             _switchOnCamAndMicSteps = switchOnCamAndMicSteps;
@@ -162,6 +165,7 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private void Progression(Journey userJourney, string pageAsString)
         {
+            NUnit.Framework.TestContext.WriteLine($"Progression navigating to  {pageAsString}");
             var endPage = Page.FromString(pageAsString);
             var journeys = new Dictionary<Journey, IJourney>
             {
@@ -179,8 +183,10 @@ namespace VideoWeb.AcceptanceTests.Steps
             var steps = Steps();
             foreach (var page in journey)
             {
+                NUnit.Framework.TestContext.WriteLine($"Currently on {page.Name} and {page.Url}");
                 if (page != Page.Login) _browserSteps.ThenTheUserIsOnThePage(page.Name);
                 if (page.Equals(endPage)) break;
+                NUnit.Framework.TestContext.WriteLine($"Progress to next page using {steps[page].GetType()}");
                 steps[page].ProgressToNextPage();
             }
         }
@@ -193,6 +199,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {Page.HearingList, _hearingListSteps},
                 {Page.VhoVenueList, _vhoVenueListSteps},
                 {Page.VhoHearingList, _vhoHearingListSteps},
+                {Page.JudgeHearingList, _judgeHearingListSteps},
                 {Page.Introduction, _introductionSteps},
                 {Page.EquipmentCheck, _equipmentCheckSteps},
                 {Page.SwitchOnCamAndMic, _switchOnCamAndMicSteps},
@@ -203,6 +210,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {Page.Rules, _rulesSteps},
                 {Page.Declaration, _declarationSteps},
                 {Page.WaitingRoom, _waitingRoomSteps},
+                {Page.JudgeWaitingRoomPage, _waitingRoomSteps},
                 {Page.HearingRoom, _hearingRoomSteps}
             };
         }

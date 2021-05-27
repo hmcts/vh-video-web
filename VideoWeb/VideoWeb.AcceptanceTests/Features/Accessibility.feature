@@ -65,7 +65,7 @@ Scenario: Declaration page accessibility
 
 @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
 Scenario: Change camera and microphone page accessibility
-    Given the Judge user has progressed to the Waiting Room page
+    Given the Judge user has progressed to the Judge Waiting Room page
     When the waiting room page has loaded for the Judge
     Then the page should be accessible 
 

@@ -31,8 +31,9 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly Page Rules = new Page("Rules", "hearing-rules");
         public static readonly Page Declaration = new Page("Declaration", "declaration");
         public static readonly Page WaitingRoom = new Page("Waiting Room", "waiting-room");
+        public static readonly Page JudgeWaitingRoomPage = new Page("Judge Waiting Room", "waiting-room");
         public static readonly Page Countdown = new Page("Countdown", "waiting-room");
-        public static readonly Page HearingRoom = new Page("Hearing Room", "waiting-room");
+        public static readonly Page HearingRoom = new Page("Hearing Room", "hearing-room");
         public static readonly Page NotFound = new Page("Not Found", "not-found");
         public static readonly Page Unauthorised = new Page("Unauthorised", "unauthorised");
         public static readonly Page Help = new Page("Help", "get-help");
@@ -50,11 +51,12 @@ namespace VideoWeb.AcceptanceTests.Pages
 
         public static Page FromString(string name)
         {
-            NUnit.Framework.TestContext.WriteLine($"looking for name; {name} in {Values.ToString()}");
+            NUnit.Framework.TestContext.WriteLine($"looking for name; {name}");
             foreach (var page in Values)
             {
                 if (page.Name.Equals(name))
                 {
+                    NUnit.Framework.TestContext.WriteLine($"Found page in list {name}");
                     return page;
                 }
             }
@@ -68,6 +70,8 @@ namespace VideoWeb.AcceptanceTests.Pages
                 yield return Login;
                 yield return HearingList;
                 yield return JudgeHearingList;
+                yield return JudgeHearingList;
+                yield return PanelMemberHearingList;
                 yield return VhoVenueList;
                 yield return VhoHearingList;
                 yield return Introduction;
@@ -80,6 +84,7 @@ namespace VideoWeb.AcceptanceTests.Pages
                 yield return Rules;
                 yield return Declaration;
                 yield return WaitingRoom;
+                yield return JudgeWaitingRoomPage;
                 yield return Countdown;
                 yield return HearingRoom;
                 yield return NotFound;
