@@ -435,4 +435,76 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
         expect(component.isJOHRoom).toBe(false);
     });
+
+    describe('canCloseOrPauseHearing', () => {
+        it('should return true when the participants status is in hearing', () => {
+            // Arrange
+            component.participant.status = ParticipantStatus.InHearing;
+
+            // Act
+            const result = component.canCloseOrPauseHearing();
+
+            // Assert
+            expect(result).toBeTrue();
+        });
+
+        const testCases = [
+            {key: "Available", value: ParticipantStatus.Available},
+            {key: "Available", value: ParticipantStatus.InConsultation},
+            {key: "Available", value: ParticipantStatus.None},
+            {key: "Available", value: ParticipantStatus.NotSignedIn},
+            {key: "Available", value: ParticipantStatus.Joining},
+            {key: "Available", value: ParticipantStatus.UnableToJoin},
+            {key: "Available", value: ParticipantStatus.Disconnected}
+        ];
+        for (const testCase of testCases)
+        {
+            it(`should return false when the participants status is ${testCase.key}`, () => {
+                // Arrange
+                component.participant.status = testCase.value;
+
+                // Act
+                const result = component.canCloseOrPauseHearing();
+
+                // Assert
+                expect(result).toBeFalse();
+            });
+        }
+    });
+
+    describe('canLeaveConsultation', () => {
+        it('should return true when the participants status is in hearing', () => {
+            // Arrange
+            component.participant.status = ParticipantStatus.InConsultation;
+
+            // Act
+            const result = component.canLeaveConsultation();
+
+            // Assert
+            expect(result).toBeTrue();
+        });
+
+        const testCases = [
+            {key: "Available", value: ParticipantStatus.Available},
+            {key: "Available", value: ParticipantStatus.InHearing},
+            {key: "Available", value: ParticipantStatus.None},
+            {key: "Available", value: ParticipantStatus.NotSignedIn},
+            {key: "Available", value: ParticipantStatus.Joining},
+            {key: "Available", value: ParticipantStatus.UnableToJoin},
+            {key: "Available", value: ParticipantStatus.Disconnected}
+        ];
+        for (const testCase of testCases)
+        {
+            it(`should return false when the participants status is ${testCase.key}`, () => {
+                // Arrange
+                component.participant.status = testCase.value;
+
+                // Act
+                const result = component.canLeaveConsultation();
+
+                // Assert
+                expect(result).toBeFalse();
+            });
+        }
+    });
 });
