@@ -133,7 +133,6 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     isParticipantInCorrectWaitingRoomState(): boolean {
-        // console.log(`[VIH-7730] isParticipantInCorrectWaitingRoomState - con. to pexip ${this.connected} - status ${this.participant.status} - room ${this.participant.current_room}`)
         return (
             this.connected &&
             this.participant.status === ParticipantStatus.Available &&

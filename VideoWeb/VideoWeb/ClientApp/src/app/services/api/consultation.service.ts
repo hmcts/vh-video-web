@@ -158,7 +158,6 @@ export class ConsultationService {
                 .toPromise();
         } catch (error) {
             this.displayConsultationErrorModal();
-            console.log('[VIH-7730]', error);
             throw error;
         }
     }
