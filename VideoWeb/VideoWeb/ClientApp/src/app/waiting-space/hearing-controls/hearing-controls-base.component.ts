@@ -280,7 +280,8 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     toggleView(): boolean {
         this.logger.info(`${this.loggerPrefix} Participant turning self-view ${this.selfViewOpen ? 'off' : 'on'}`, this.logPayload);
-        return (this.selfViewOpen = !this.selfViewOpen);
+        this.selfViewOpen = !this.selfViewOpen;
+        return this.selfViewOpen;
     }
 
     toggleHandRaised() {
