@@ -411,7 +411,7 @@ export abstract class WaitingRoomBaseDirective {
                     }
                 }
 
-                this.logger.info(`${this.conferenceId} ${this.loggerPrefix} participant (${roomTransfer.participant_id}) transfered from ${roomTransfer.from_room} to ${roomTransfer.to_room}`, {
+                this.logger.info(`${this.loggerPrefix} participant (${roomTransfer.participant_id}) transfered from ${roomTransfer.from_room} to ${roomTransfer.to_room} - Conference: ${this.conferenceId}`, {
                     message: roomTransfer,
                     currentParticipantState: participant,
                     tags: ['VIH-7730', 'RoomOrStatusUpdate', 'TransferParticipant']
@@ -991,7 +991,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     async joinJudicialConsultation() {
-        this.logger.info(`${this.conferenceId} ${this.loggerPrefix} attempting to join a private judicial consultation`, {
+        this.logger.info(`${this.loggerPrefix} attempting to join a private judicial consultation`, {
             conference: this.conference?.id,
             participant: this.participant.id,
             Tags: ['VIH-7730', 'ButtonAction']
