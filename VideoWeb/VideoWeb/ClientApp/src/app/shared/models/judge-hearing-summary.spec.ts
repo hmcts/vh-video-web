@@ -73,17 +73,17 @@ describe('JudgeHearingSummary', () => {
         expect(hearing.isExpired()).toBeFalsy();
     });
 
-    it('should return isExpired false when hearing closed for less than 30 minutes', () => {
+    it('should return isExpired false when hearing closed for less than 120 minutes', () => {
         conference.status = ConferenceStatus.Closed;
         conference.closed_date_time = new Date();
         const hearing = new JudgeHearingSummary(conference);
         expect(hearing.isExpired()).toBeFalsy();
     });
 
-    it('should return isExpired true when hearing closed for more than 30 minutes', () => {
+    it('should return isExpired true when hearing closed for more than 120 minutes', () => {
         conference.status = ConferenceStatus.Closed;
         const closedDateTime = new Date(new Date().toUTCString());
-        closedDateTime.setUTCMinutes(closedDateTime.getUTCMinutes() - 30);
+        closedDateTime.setUTCMinutes(closedDateTime.getUTCMinutes() - 120);
         conference.closed_date_time = closedDateTime;
         const hearing = new JudgeHearingSummary(conference);
         expect(hearing.isExpired()).toBeTruthy();

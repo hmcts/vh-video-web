@@ -76,7 +76,7 @@ namespace VideoWeb.Controllers
         }
 
         /// <summary>
-        /// Get conferences today for individual or representative excluding those that have been closed for over 30 minutes
+        /// Get conferences today for individual or representative excluding those that have been closed for over 120 minutes
         /// </summary>
         /// <returns>List of conferences, if any</returns>
         [HttpGet("individuals")]

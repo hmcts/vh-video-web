@@ -18,7 +18,7 @@ namespace VideoWeb.Helpers
                 throw new ArgumentNullException(nameof(closedDateTime), "A closed conference must have a closed time");
             }
             // After a conference is closed, VH Officers can still administer conferences until this period of time
-            const int postClosedVisibilityTime = 30;
+            const int postClosedVisibilityTime = 120;
             var endTime = closedDateTime.Value.AddMinutes(postClosedVisibilityTime);
             return DateTime.UtcNow < endTime;
         }

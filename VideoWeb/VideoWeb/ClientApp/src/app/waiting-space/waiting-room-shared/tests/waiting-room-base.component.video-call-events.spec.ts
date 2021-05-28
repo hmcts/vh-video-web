@@ -210,11 +210,11 @@ describe('WaitingRoomComponent Video Call', () => {
         expect(component.callbackTimeout).toBeDefined();
     });
 
-    it('should stop reconnection on disconnect when hearing has been closed beyond 30 minutes', () => {
+    it('should stop reconnection on disconnect when hearing has been closed beyond 120 minutes', () => {
         const c = new ConferenceTestData().getConferenceDetailFuture();
         c.status = ConferenceStatus.Closed;
         const closedDateTime = new Date(new Date().toUTCString());
-        closedDateTime.setUTCMinutes(closedDateTime.getUTCMinutes() - 30);
+        closedDateTime.setUTCMinutes(closedDateTime.getUTCMinutes() - 120);
         c.closed_date_time = closedDateTime;
         component.hearing = new Hearing(c);
         component.conference = c;
