@@ -448,6 +448,17 @@ describe('PrivateConsultationRoomControlsComponent', () => {
             expect(result).toBeTrue();
         });
 
+        it('should return false when participant is null', () => {
+            // Arrange
+            component.participant = null;
+
+            // Act
+            const result = component.canCloseOrPauseHearing();
+
+            // Assert
+            expect(result).toBeFalse();
+        });
+
         const testCases = [
             { key: 'Available', value: ParticipantStatus.Available },
             { key: 'In Consultation', value: ParticipantStatus.InConsultation },
@@ -481,6 +492,17 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
             // Assert
             expect(result).toBeTrue();
+        });
+
+        it('should return false when participant is null', () => {
+            // Arrange
+            component.participant = null;
+
+            // Act
+            const result = component.canLeaveConsultation();
+
+            // Assert
+            expect(result).toBeFalse();
         });
 
         const testCases = [

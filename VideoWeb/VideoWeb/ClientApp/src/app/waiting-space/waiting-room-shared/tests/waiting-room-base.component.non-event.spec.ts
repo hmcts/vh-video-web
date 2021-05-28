@@ -11,7 +11,8 @@ import {
     LoggedParticipantResponse,
     ParticipantResponse,
     ParticipantStatus,
-    Role
+    Role,
+    RoomSummaryResponse
 } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { SelectedUserMediaDevice } from 'src/app/shared/models/selected-user-media-device';
@@ -545,5 +546,87 @@ describe('WaitingRoomComponent message and clock', () => {
     it('should return true if case name has been truncated', () => {
         component.roomTitleLabel = null;
         expect(component.hasCaseNameOverflowed).toBeFalsy();
+    });
+
+    describe('isParticipantInCorrectWaitingRoomState', () => {
+        it('should return true when the participant is connected, available and in the waiting room', () => {
+            // Arrange
+            component.connected = true;
+            component.participant.status = ParticipantStatus.Available;
+            component.participant.current_room = new RoomSummaryResponse();
+            component.participant.current_room.label = "WaitingRoom";
+
+            // Act
+            const result = component.isParticipantInCorrectWaitingRoomState();
+
+            // Assert
+            expect(result).toBeTrue();
+        });
+
+        it('should return false when the participant is NOT connected but is available and in the waiting room', () => {
+            // Arrange
+            component.connected = false;
+            component.participant.status = ParticipantStatus.Available;
+            component.participant.current_room = new RoomSummaryResponse();
+            component.participant.current_room.label = "WaitingRoom";
+
+            // Act
+            const result = component.isParticipantInCorrectWaitingRoomState();
+
+            // Assert
+            expect(result).toBeFalse();
+        });
+
+        it('should return false when the participant is connected and is available but is NOT in the waiting room', () => {
+            // Arrange
+            component.connected = true;
+            component.participant.status = ParticipantStatus.Available;
+            component.participant.current_room = new RoomSummaryResponse();
+            component.participant.current_room.label = "HearingRoom";
+
+            // Act
+            const result = component.isParticipantInCorrectWaitingRoomState();
+
+            // Assert
+            expect(result).toBeFalse();
+        });
+
+        it('should return true when the participant is connected and is available but the current room is null', () => {
+            // Arrange
+            component.connected = true;
+            component.participant.status = ParticipantStatus.Available;
+            component.participant.current_room = null;
+
+            // Act
+            const result = component.isParticipantInCorrectWaitingRoomState();
+
+            // Assert
+            expect(result).toBeTrue();
+        });
+
+        const testCases = [
+            {key: 'Disconnected', value: ParticipantStatus.Disconnected},
+            {key: 'In Consultation', value: ParticipantStatus.InConsultation},
+            {key: 'In Hearing', value: ParticipantStatus.InHearing},
+            {key: 'Joining', value: ParticipantStatus.Joining},
+            {key: 'None', value: ParticipantStatus.None},
+            {key: 'Not Signed In', value: ParticipantStatus.NotSignedIn},
+            {key: 'Unable To Join', value: ParticipantStatus.UnableToJoin}
+        ];
+
+        testCases.forEach((testCase) => {
+            it(`should return true when the participant is connected and the room is valid but the status is ${testCase.key}`, () => {
+                // Arrange
+                component.connected = true;
+                component.participant.status = ParticipantStatus.Available;
+                component.participant.current_room = null;
+
+                // Act
+                const result = component.isParticipantInCorrectWaitingRoomState();
+
+                // Assert
+                expect(result).toBeTrue();
+            });
+        });
     });
 });
