@@ -450,12 +450,12 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
         const testCases = [
             {key: "Available", value: ParticipantStatus.Available},
-            {key: "Available", value: ParticipantStatus.InConsultation},
-            {key: "Available", value: ParticipantStatus.None},
-            {key: "Available", value: ParticipantStatus.NotSignedIn},
-            {key: "Available", value: ParticipantStatus.Joining},
-            {key: "Available", value: ParticipantStatus.UnableToJoin},
-            {key: "Available", value: ParticipantStatus.Disconnected}
+            {key: "In Consultation", value: ParticipantStatus.InConsultation},
+            {key: "None", value: ParticipantStatus.None},
+            {key: "Not Signed In", value: ParticipantStatus.NotSignedIn},
+            {key: "Joining", value: ParticipantStatus.Joining},
+            {key: "Unable To Join", value: ParticipantStatus.UnableToJoin},
+            {key: "Disconnected", value: ParticipantStatus.Disconnected}
         ];
         for (const testCase of testCases)
         {
@@ -473,7 +473,7 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     });
 
     describe('canLeaveConsultation', () => {
-        it('should return true when the participants status is in hearing', () => {
+        it('should return true when the participants status is in consultation', () => {
             // Arrange
             component.participant.status = ParticipantStatus.InConsultation;
 
@@ -486,12 +486,12 @@ describe('PrivateConsultationRoomControlsComponent', () => {
 
         const testCases = [
             {key: "Available", value: ParticipantStatus.Available},
-            {key: "Available", value: ParticipantStatus.InHearing},
-            {key: "Available", value: ParticipantStatus.None},
-            {key: "Available", value: ParticipantStatus.NotSignedIn},
-            {key: "Available", value: ParticipantStatus.Joining},
-            {key: "Available", value: ParticipantStatus.UnableToJoin},
-            {key: "Available", value: ParticipantStatus.Disconnected}
+            {key: "In Hearing", value: ParticipantStatus.InHearing},
+            {key: "None", value: ParticipantStatus.None},
+            {key: "Not Signed In", value: ParticipantStatus.NotSignedIn},
+            {key: "Joining", value: ParticipantStatus.Joining},
+            {key: "Unable To Join", value: ParticipantStatus.UnableToJoin},
+            {key: "Disconnected", value: ParticipantStatus.Disconnected}
         ];
         for (const testCase of testCases)
         {
