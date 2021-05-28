@@ -198,7 +198,7 @@
 
     <div>
       <button
-        [disabled]="!connected"
+        [disabled]="!isParticipantInCorrectWaitingRoomState()"
         *ngIf="isNotStarted()"
         type="button"
         class="govuk-button govuk-button--start govuk-!-margin-right-3 vh-btn-text"
@@ -207,7 +207,7 @@
         {{ 'judge-waiting-room.buttons.start-video-hearing' | translate }}
       </button>
       <button
-        [disabled]="!connected"
+        [disabled]="!isParticipantInCorrectWaitingRoomState()"
         *ngIf="hearingPaused() || hearingSuspended()"
         type="button"
         class="govuk-button govuk-button--start govuk-!-margin-right-3 vh-btn-text"
@@ -221,7 +221,7 @@
         id="joinPCButton"
         data-module="govuk-button"
         (click)="joinJudicialConsultation()"
-        [disabled]="!connected"
+        [disabled]="!isParticipantInCorrectWaitingRoomState()"
       >
         {{ 'judge-waiting-room.buttons.enter-consultation-room' | translate }}
         <span *ngIf="numberOfJudgeOrJOHsInConsultation" id="numberOfJohsInConsultationBadge" class="badge">
@@ -229,7 +229,7 @@
         </span>
       </button>
     </div>
-    <div *ngIf="!connected" class="govuk-warning-text">
+    <div *ngIf="!isParticipantInCorrectWaitingRoomState()" class="govuk-warning-text">
       <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
       <strong class="govuk-warning-text__text">
         <span class="govuk-warning-text__assistive">{{ 'judge-waiting-room.warning' | translate }}</span>
