@@ -554,7 +554,7 @@ describe('WaitingRoomComponent message and clock', () => {
             component.connected = true;
             component.participant.status = ParticipantStatus.Available;
             component.participant.current_room = new RoomSummaryResponse();
-            component.participant.current_room.label = "WaitingRoom";
+            component.participant.current_room.label = 'WaitingRoom';
 
             // Act
             const result = component.isParticipantInCorrectWaitingRoomState();
@@ -568,7 +568,7 @@ describe('WaitingRoomComponent message and clock', () => {
             component.connected = false;
             component.participant.status = ParticipantStatus.Available;
             component.participant.current_room = new RoomSummaryResponse();
-            component.participant.current_room.label = "WaitingRoom";
+            component.participant.current_room.label = 'WaitingRoom';
 
             // Act
             const result = component.isParticipantInCorrectWaitingRoomState();
@@ -582,7 +582,7 @@ describe('WaitingRoomComponent message and clock', () => {
             component.connected = true;
             component.participant.status = ParticipantStatus.Available;
             component.participant.current_room = new RoomSummaryResponse();
-            component.participant.current_room.label = "HearingRoom";
+            component.participant.current_room.label = 'HearingRoom';
 
             // Act
             const result = component.isParticipantInCorrectWaitingRoomState();
@@ -605,16 +605,16 @@ describe('WaitingRoomComponent message and clock', () => {
         });
 
         const testCases = [
-            {key: 'Disconnected', value: ParticipantStatus.Disconnected},
-            {key: 'In Consultation', value: ParticipantStatus.InConsultation},
-            {key: 'In Hearing', value: ParticipantStatus.InHearing},
-            {key: 'Joining', value: ParticipantStatus.Joining},
-            {key: 'None', value: ParticipantStatus.None},
-            {key: 'Not Signed In', value: ParticipantStatus.NotSignedIn},
-            {key: 'Unable To Join', value: ParticipantStatus.UnableToJoin}
+            { key: 'Disconnected', value: ParticipantStatus.Disconnected },
+            { key: 'In Consultation', value: ParticipantStatus.InConsultation },
+            { key: 'In Hearing', value: ParticipantStatus.InHearing },
+            { key: 'Joining', value: ParticipantStatus.Joining },
+            { key: 'None', value: ParticipantStatus.None },
+            { key: 'Not Signed In', value: ParticipantStatus.NotSignedIn },
+            { key: 'Unable To Join', value: ParticipantStatus.UnableToJoin }
         ];
 
-        testCases.forEach((testCase) => {
+        testCases.forEach(testCase => {
             it(`should return true when the participant is connected and the room is valid but the status is ${testCase.key}`, () => {
                 // Arrange
                 component.connected = true;
