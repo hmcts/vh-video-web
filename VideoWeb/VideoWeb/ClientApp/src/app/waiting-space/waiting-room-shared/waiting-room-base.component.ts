@@ -413,8 +413,7 @@ export abstract class WaitingRoomBaseDirective {
 
                 this.logger.info(`${this.loggerPrefix} participant (${roomTransfer.participant_id}) transfered from ${roomTransfer.from_room} to ${roomTransfer.to_room} - Conference: ${this.conferenceId}`, {
                     message: roomTransfer,
-                    currentParticipantState: participant,
-                    tags: ['VIH-7730', 'RoomOrStatusUpdate', 'TransferParticipant']
+                    currentParticipantState: participant
                 });
             })
         );
@@ -913,8 +912,7 @@ export abstract class WaitingRoomBaseDirective {
         this.logger.info(`${this.conferenceId} ${this.loggerPrefix} Handling participant update status change`, {
             conference: this.conferenceId,
             participant: participant.id,
-            status: participant.status,
-            tags: ['VIH-7730', 'RoomOrStatusUpdate']
+            status: participant.status
         });
         if (message.status !== ParticipantStatus.InConsultation && isMe) {
             this.isAdminConsultation = false;
@@ -993,8 +991,7 @@ export abstract class WaitingRoomBaseDirective {
     async joinJudicialConsultation() {
         this.logger.info(`${this.loggerPrefix} attempting to join a private judicial consultation`, {
             conference: this.conference?.id,
-            participant: this.participant.id,
-            Tags: ['VIH-7730', 'ButtonAction']
+            participant: this.participant.id
         });
         await this.consultationService.joinJudicialConsultationRoom(this.conference, this.participant);
     }
