@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { ParticipantStatus } from 'src/app/services/clients/api-client';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -31,5 +32,13 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         protected translateService: TranslateService
     ) {
         super(videoCallService, eventService, deviceTypeService, logger, translateService);
+    }
+
+    canCloseOrPauseHearing() {
+        return this.participant?.status === ParticipantStatus.InHearing;
+    }
+
+    canLeaveConsultation() {
+        return this.participant?.status === ParticipantStatus.InConsultation;
     }
 }
