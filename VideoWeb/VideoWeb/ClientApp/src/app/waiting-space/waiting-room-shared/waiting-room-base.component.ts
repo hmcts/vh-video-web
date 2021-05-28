@@ -411,10 +411,13 @@ export abstract class WaitingRoomBaseDirective {
                     }
                 }
 
-                this.logger.info(`${this.loggerPrefix} participant (${roomTransfer.participant_id}) transfered from ${roomTransfer.from_room} to ${roomTransfer.to_room} - Conference: ${this.conferenceId}`, {
-                    message: roomTransfer,
-                    currentParticipantState: participant
-                });
+                this.logger.info(
+                    `${this.loggerPrefix} participant (${roomTransfer.participant_id}) transfered from ${roomTransfer.from_room} to ${roomTransfer.to_room} - Conference: ${this.conferenceId}`,
+                    {
+                        message: roomTransfer,
+                        currentParticipantState: participant
+                    }
+                );
             })
         );
 

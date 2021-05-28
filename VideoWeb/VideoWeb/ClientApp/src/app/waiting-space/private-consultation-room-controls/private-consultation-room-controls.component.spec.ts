@@ -449,16 +449,15 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         });
 
         const testCases = [
-            {key: "Available", value: ParticipantStatus.Available},
-            {key: "In Consultation", value: ParticipantStatus.InConsultation},
-            {key: "None", value: ParticipantStatus.None},
-            {key: "Not Signed In", value: ParticipantStatus.NotSignedIn},
-            {key: "Joining", value: ParticipantStatus.Joining},
-            {key: "Unable To Join", value: ParticipantStatus.UnableToJoin},
-            {key: "Disconnected", value: ParticipantStatus.Disconnected}
+            { key: 'Available', value: ParticipantStatus.Available },
+            { key: 'In Consultation', value: ParticipantStatus.InConsultation },
+            { key: 'None', value: ParticipantStatus.None },
+            { key: 'Not Signed In', value: ParticipantStatus.NotSignedIn },
+            { key: 'Joining', value: ParticipantStatus.Joining },
+            { key: 'Unable To Join', value: ParticipantStatus.UnableToJoin },
+            { key: 'Disconnected', value: ParticipantStatus.Disconnected }
         ];
-        for (const testCase of testCases)
-        {
+        for (const testCase of testCases) {
             it(`should return false when the participants status is ${testCase.key}`, () => {
                 // Arrange
                 component.participant.status = testCase.value;
@@ -485,16 +484,15 @@ describe('PrivateConsultationRoomControlsComponent', () => {
         });
 
         const testCases = [
-            {key: "Available", value: ParticipantStatus.Available},
-            {key: "In Hearing", value: ParticipantStatus.InHearing},
-            {key: "None", value: ParticipantStatus.None},
-            {key: "Not Signed In", value: ParticipantStatus.NotSignedIn},
-            {key: "Joining", value: ParticipantStatus.Joining},
-            {key: "Unable To Join", value: ParticipantStatus.UnableToJoin},
-            {key: "Disconnected", value: ParticipantStatus.Disconnected}
+            { key: 'Available', value: ParticipantStatus.Available },
+            { key: 'In Hearing', value: ParticipantStatus.InHearing },
+            { key: 'None', value: ParticipantStatus.None },
+            { key: 'Not Signed In', value: ParticipantStatus.NotSignedIn },
+            { key: 'Joining', value: ParticipantStatus.Joining },
+            { key: 'Unable To Join', value: ParticipantStatus.UnableToJoin },
+            { key: 'Disconnected', value: ParticipantStatus.Disconnected }
         ];
-        for (const testCase of testCases)
-        {
+        for (const testCase of testCases) {
             it(`should return false when the participants status is ${testCase.key}`, () => {
                 // Arrange
                 component.participant.status = testCase.value;
