@@ -233,7 +233,7 @@ resources:
           type: github
           name: hmcts/azure-devops-templates
           ref: refs/heads/master
-          endpoint: hmcts_shaed
+          endpoint: hmcts
     containers:
         - container: dotnetsdk
           image: sspublicsbox.azurecr.io/vh/dotnet-angular:3.1.102
