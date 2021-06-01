@@ -19,6 +19,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly Page HearingList = new Page("Hearing List", "hearing-list");
         public static readonly Page JudgeHearingList = new Page("Judge Hearing List", "hearing-list");
         public static readonly Page PanelMemberHearingList = new Page("Panel Member Hearing List", "hearing-list");
+        public static readonly Page ParticipantHearingList = new Page("Participant Hearing List", "hearing-list");
         public static readonly Page VhoVenueList = new Page("VHO Venue List", "venue-list");
         public static readonly Page VhoHearingList = new Page("VHO Hearing List", "hearing-list");
         public static readonly Page Introduction = new Page("Introduction", "introduction");
@@ -72,6 +73,7 @@ namespace VideoWeb.AcceptanceTests.Pages
                 yield return JudgeHearingList;
                 yield return JudgeHearingList;
                 yield return PanelMemberHearingList;
+                yield return ParticipantHearingList;
                 yield return VhoVenueList;
                 yield return VhoHearingList;
                 yield return Introduction;

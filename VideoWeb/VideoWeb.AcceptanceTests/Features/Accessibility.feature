@@ -5,12 +5,12 @@ Feature: Accessibility
 
 @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
 Scenario Outline: Hearing List page accessibility
-	Given the <Role> user has progressed to the Hearing List page
+	Given the <Role> user has progressed to the <Hearing List> page
 	Then the page should be accessible
 	Examples: 
-	| Role        |
-	| Judge       |
-	| Participant |
+	| Role        | Hearing List       |
+	| Judge       | Judge Hearing List |
+	| Participant | Hearing List       |
 
 @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
 Scenario: Introduction page accessibility
@@ -71,19 +71,19 @@ Scenario: Change camera and microphone page accessibility
 
 @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
 Scenario: Judge Waiting Room page accessibility
-    Given the Judge user has progressed to the Waiting Room page
+    Given the Judge user has progressed to the Judge Waiting Room page
     When the waiting room page has loaded for the Judge
     Then the page should be accessible
 
 @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
 Scenario: Judge Consultation Room page accessibility
-  Given the Judge user is on the Waiting Room page
+  Given the Judge user is on the Judge Waiting Room page
   When they enter the private consultation room
   Then the page should be accessible
 
   @Accessibility @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
 Scenario: Judge Waiting Room Change Camera popup accessibility
-    Given the Judge user has progressed to the Waiting Room page
+    Given the Judge user has progressed to the Judge Waiting Room page
     When the waiting room page has loaded for the Judge
     And the judge opens the change camera and microphone popup
     Then the page should be accessible 
@@ -112,7 +112,7 @@ Scenario: Help page accessibility
 @Accessibility @HearingTest @NotEdge @NotEdgeChromium @NotFirefox @NotIE @NotSafari
 Scenario: Hearing Room page accessibility
 	Given the the first Individual user has progressed to the Waiting Room page
-	And the Judge user has progressed to the Waiting Room page for the existing hearing
+	And the Judge user has progressed to the Judge Waiting Room page for the existing hearing
 	Then the participant status for the first Individual's is displayed as Connected
 	When the Judge starts the hearing
   And the countdown finishes

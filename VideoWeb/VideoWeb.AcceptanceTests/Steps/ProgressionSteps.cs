@@ -200,6 +200,7 @@ namespace VideoWeb.AcceptanceTests.Steps
                 {Page.VhoVenueList, _vhoVenueListSteps},
                 {Page.VhoHearingList, _vhoHearingListSteps},
                 {Page.JudgeHearingList, _judgeHearingListSteps},
+                {Page.ParticipantHearingList, _hearingListSteps},
                 {Page.Introduction, _introductionSteps},
                 {Page.EquipmentCheck, _equipmentCheckSteps},
                 {Page.SwitchOnCamAndMic, _switchOnCamAndMicSteps},
