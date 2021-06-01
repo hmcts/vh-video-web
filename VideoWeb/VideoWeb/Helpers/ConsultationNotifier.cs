@@ -104,5 +104,13 @@ namespace VideoWeb.Helpers
                     .RoomUpdate(room) ?? Task.CompletedTask);
             await Task.WhenAll(tasks);
         }
+
+        public async Task NotifyParticipantTransferring(Conference conference, Guid participantId, string roomLabel)
+        {
+            var tasks = conference.Participants.Select(p => 
+                _hubContext.Clients?.Group(p.Username.ToLowerInvariant())
+                    .ConsultationRequestResponseMessage(conference.Id, Guid.Empty, roomLabel, participantId, ConsultationAnswer.Transferring, participantId) ?? Task.CompletedTask);
+            await Task.WhenAll(tasks);
+        }
     }
 }
