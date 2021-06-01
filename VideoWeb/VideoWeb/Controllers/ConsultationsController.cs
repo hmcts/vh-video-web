@@ -132,13 +132,18 @@ namespace VideoWeb.Controllers
         {
             try
             {
+                _logger.LogTrace("Attempting to join a private consultation {ConferenceId} {ParticipantId} {RoomLabel}",
+                    request.ConferenceId, request.ParticipantId, request.RoomLabel);
                 var authenticatedUsername = User.Identity.Name?.ToLower().Trim();
                 var conference = await GetConference(request.ConferenceId);
                 var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.ParticipantId && x.Username.Trim().Equals(authenticatedUsername, StringComparison.CurrentCultureIgnoreCase));
 
                 if (participant == null)
+                {
+                    _logger.LogWarning("Couldn't join private consultation. Couldn't find participant.  {ConferenceId} {ParticipantId} {RoomLabel}", request.ConferenceId, request.ParticipantId, request.RoomLabel);
                     return NotFound("Couldn't find participant.");
-                
+                }
+
                 var consultationRequestMapper = _mapperFactory.Get<JoinPrivateConsultationRequest, ConsultationRequestResponse>();
                 var mappedRequest = consultationRequestMapper.Map(request);
                 
@@ -147,7 +152,7 @@ namespace VideoWeb.Controllers
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, "Start consultation error Conference");
+                _logger.LogError(e, "Join private consultation error {ConferenceId} {ParticipantId} {RoomLabel}", request.ConferenceId, request.ParticipantId, request.RoomLabel);
                 return StatusCode(e.StatusCode);
             }
 
