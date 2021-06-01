@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Autofac.Extras.Moq;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -13,6 +14,8 @@ using VideoWeb.Common.Models;
 using VideoWeb.Contract.Request;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Services;
+using VideoWeb.Mappings;
+using VideoWeb.UnitTests.Builders;
 using ConsultationAnswer = VideoApi.Contract.Requests.ConsultationAnswer;
 
 namespace VideoWeb.UnitTests.Controllers.ConsultationController
@@ -28,6 +31,17 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
         {
             _mocker = AutoMock.GetLoose();
             _consultationsController = _mocker.Create<ConsultationsController>();
+            
+            var claimsPrincipal = new ClaimsPrincipalBuilder().Build();
+            var context = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = claimsPrincipal
+                }
+            };
+            
+            _consultationsController.ControllerContext = context;
         }
 
         [Test]
@@ -42,10 +56,11 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             conference.Id = expectedConferenceId;
             conference.Participants.Add(new Participant()
             {
-                Id = expectedParticipantId
+                Id = expectedParticipantId,
+                Username = ClaimsPrincipalBuilder.Username
             });
             
-            _mocker.Mock<ConferenceCache>()
+            _mocker.Mock<IConferenceCache>()
                 .Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(id => id == expectedConferenceId),
                     It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .ReturnsAsync(conference);
@@ -57,6 +72,10 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
                 RoomLabel = expectedRoomLabel
             };
             
+            _mocker.Mock<IMapperFactory>()
+                .Setup(x => x.Get<JoinPrivateConsultationRequest, ConsultationRequestResponse>())
+                .Returns(new JoinPrivateConsultationRequestMapper());
+
             // Act
             var result = await _consultationsController.JoinPrivateConsultation(request);
 
@@ -88,10 +107,11 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             conference.Id = expectedConferenceId;
             conference.Participants.Add(new Participant()
             {
-                Id = Guid.NewGuid()
+                Id = Guid.NewGuid(),
+                Username = ClaimsPrincipalBuilder.Username
             });
             
-            _mocker.Mock<ConferenceCache>()
+            _mocker.Mock<IConferenceCache>()
                 .Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(id => id == expectedConferenceId),
                     It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .ReturnsAsync(conference);
@@ -136,10 +156,11 @@ namespace VideoWeb.UnitTests.Controllers.ConsultationController
             conference.Id = expectedConferenceId;
             conference.Participants.Add(new Participant()
             {
-                Id = Guid.NewGuid()
+                Id = Guid.NewGuid(),
+                Username = ClaimsPrincipalBuilder.Username
             });
             
-            _mocker.Mock<ConferenceCache>()
+            _mocker.Mock<IConferenceCache>()
                 .Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(id => id == expectedConferenceId),
                     It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
                 .ThrowsAsync(new VideoApiException("message", expectedStatusCode, "response", null, null));

@@ -130,7 +130,28 @@ namespace VideoWeb.Controllers
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
         public async Task<IActionResult> JoinPrivateConsultation(JoinPrivateConsultationRequest request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var authenticatedUsername = User.Identity.Name?.ToLower().Trim();
+                var conference = await GetConference(request.ConferenceId);
+                var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.ParticipantId && x.Username.Trim().Equals(authenticatedUsername, StringComparison.CurrentCultureIgnoreCase));
+
+                if (participant == null)
+                    return NotFound("Couldn't find participant.");
+                
+                var consultationRequestMapper = _mapperFactory.Get<JoinPrivateConsultationRequest, ConsultationRequestResponse>();
+                var mappedRequest = consultationRequestMapper.Map(request);
+                
+                await _videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
+                await _consultationNotifier.NotifyParticipantTransferring(conference, request.ParticipantId, request.RoomLabel);
+            }
+            catch (VideoApiException e)
+            {
+                _logger.LogError(e, "Start consultation error Conference");
+                return StatusCode(e.StatusCode);
+            }
+
+            return Accepted();
         }
         
         [HttpPost("start")]
