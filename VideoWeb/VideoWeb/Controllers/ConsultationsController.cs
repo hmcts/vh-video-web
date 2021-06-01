@@ -124,6 +124,42 @@ namespace VideoWeb.Controllers
             }
         }
 
+        [HttpPost("joinPrivateConsultation")]
+        [SwaggerOperation(OperationId = "JoinPrivateConsultation")]
+        [ProducesResponseType((int) HttpStatusCode.Accepted)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        public async Task<IActionResult> JoinPrivateConsultation(JoinPrivateConsultationRequest request)
+        {
+            try
+            {
+                _logger.LogTrace("Attempting to join a private consultation {ConferenceId} {ParticipantId} {RoomLabel}",
+                    request.ConferenceId, request.ParticipantId, request.RoomLabel);
+                var authenticatedUsername = User.Identity.Name?.ToLower().Trim();
+                var conference = await GetConference(request.ConferenceId);
+                var participant = conference.Participants?.SingleOrDefault(x => x.Id == request.ParticipantId && x.Username.Trim().Equals(authenticatedUsername, StringComparison.CurrentCultureIgnoreCase));
+
+                if (participant == null)
+                {
+                    _logger.LogWarning("Couldn't join private consultation. Couldn't find participant.  {ConferenceId} {ParticipantId} {RoomLabel}", request.ConferenceId, request.ParticipantId, request.RoomLabel);
+                    return NotFound("Couldn't find participant.");
+                }
+
+                var consultationRequestMapper = _mapperFactory.Get<JoinPrivateConsultationRequest, ConsultationRequestResponse>();
+                var mappedRequest = consultationRequestMapper.Map(request);
+                
+                await _videoApiClient.RespondToConsultationRequestAsync(mappedRequest);
+                await _consultationNotifier.NotifyParticipantTransferring(conference, request.ParticipantId, request.RoomLabel);
+            }
+            catch (VideoApiException e)
+            {
+                _logger.LogError(e, "Join private consultation error {ConferenceId} {ParticipantId} {RoomLabel}", request.ConferenceId, request.ParticipantId, request.RoomLabel);
+                return StatusCode(e.StatusCode);
+            }
+
+            return Accepted();
+        }
+        
         [HttpPost("start")]
         [SwaggerOperation(OperationId = "StartOrJoinConsultation")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
