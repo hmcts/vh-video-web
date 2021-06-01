@@ -14,5 +14,6 @@ namespace VideoWeb.EventHub.Services
             Guid requestedForId, ConsultationAnswer answer);
 
         Task NotifyRoomUpdateAsync(Conference conference, Room room);
+        Task NotifyParticipantTransferring(Conference conference, Guid participantId, string roomLabel);
     }
 }

@@ -124,6 +124,15 @@ namespace VideoWeb.Controllers
             }
         }
 
+        [HttpPost("joinPrivateConsultation")]
+        [SwaggerOperation(OperationId = "JoinPrivateConsultation")]
+        [ProducesResponseType((int) HttpStatusCode.Accepted)]
+        [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        public async Task<IActionResult> JoinPrivateConsultation(JoinPrivateConsultationRequest request)
+        {
+            throw new NotImplementedException();
+        }
+        
         [HttpPost("start")]
         [SwaggerOperation(OperationId = "StartOrJoinConsultation")]
         [ProducesResponseType((int)HttpStatusCode.Accepted)]
