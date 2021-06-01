@@ -206,6 +206,26 @@ namespace VideoWeb.UnitTests.Services
         }
 
         [Test]
+        public async Task Should_notify_all_participants_that_the_user_is_transfering()
+        {
+            // arrange
+            var participants = _conference.Participants;
+            var participant = participants.First();
+            var roomLabel = "ConsultationRoom1";
+            var expectedAnswer = ConsultationAnswer.Transferring;
+            var expectedInvitationId = Guid.Empty;
+            
+            // act
+            await _sut.NotifyParticipantTransferring(_conference, participant.Id, roomLabel);
+            
+            // assert
+            _mocker.Mock<IEventHubClient>().Verify(
+                x => x.ConsultationRequestResponseMessage(_conference.Id, expectedInvitationId, roomLabel,
+                    participant.Id, expectedAnswer, participant.Id),
+                Times.Exactly(participants.Count));
+        }
+
+        [Test]
         public async Task should_notify_endpoint_transferring()
         {
             // arrange
