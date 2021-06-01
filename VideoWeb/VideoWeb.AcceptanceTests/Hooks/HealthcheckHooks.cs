@@ -26,6 +26,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
                     });
 
             var response = retryOnForbiddenFirewallExceptions.Execute(() => context.Apis.TestApi.HealthCheck());
+            NUnit.Framework.TestContext.WriteLine($"Healthcheck response: {response.Content}");
             response.StatusCode.Should().Be(HttpStatusCode.OK, $"Healthcheck failed with '{response.StatusCode}' and error message '{response.ErrorMessage}'");
         }
     }
