@@ -128,6 +128,7 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "JoinPrivateConsultation")]
         [ProducesResponseType((int) HttpStatusCode.Accepted)]
         [ProducesResponseType((int) HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> JoinPrivateConsultation(JoinPrivateConsultationRequest request)
         {
             try
