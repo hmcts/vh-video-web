@@ -17,6 +17,9 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly Page IdpSelection = new Page("IDP Selection", "idp-selection");
         public static readonly Page Login = new Page("Login", "login.microsoftonline.com");
         public static readonly Page HearingList = new Page("Hearing List", "hearing-list");
+        public static readonly Page JudgeHearingList = new Page("Judge Hearing List", "hearing-list");
+        public static readonly Page PanelMemberHearingList = new Page("Panel Member Hearing List", "hearing-list");
+        public static readonly Page ParticipantHearingList = new Page("Participant Hearing List", "hearing-list");
         public static readonly Page VhoVenueList = new Page("VHO Venue List", "venue-list");
         public static readonly Page VhoHearingList = new Page("VHO Hearing List", "hearing-list");
         public static readonly Page Introduction = new Page("Introduction", "introduction");
@@ -29,8 +32,9 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly Page Rules = new Page("Rules", "hearing-rules");
         public static readonly Page Declaration = new Page("Declaration", "declaration");
         public static readonly Page WaitingRoom = new Page("Waiting Room", "waiting-room");
+        public static readonly Page JudgeWaitingRoomPage = new Page("Judge Waiting Room", "waiting-room");
         public static readonly Page Countdown = new Page("Countdown", "waiting-room");
-        public static readonly Page HearingRoom = new Page("Hearing Room", "waiting-room");
+        public static readonly Page HearingRoom = new Page("Hearing Room", "hearing-room");
         public static readonly Page NotFound = new Page("Not Found", "not-found");
         public static readonly Page Unauthorised = new Page("Unauthorised", "unauthorised");
         public static readonly Page Help = new Page("Help", "get-help");
@@ -48,14 +52,16 @@ namespace VideoWeb.AcceptanceTests.Pages
 
         public static Page FromString(string name)
         {
+            NUnit.Framework.TestContext.WriteLine($"looking for name; {name}");
             foreach (var page in Values)
             {
                 if (page.Name.Equals(name))
                 {
+                    NUnit.Framework.TestContext.WriteLine($"Found page in list {name}");
                     return page;
                 }
             }
-            throw new ArgumentOutOfRangeException($"No page found with name '{name}'");
+            throw new ArgumentOutOfRangeException($"No page object found with name '{name}' the url is ");
         }
 
         private static IEnumerable<Page> Values
@@ -64,6 +70,10 @@ namespace VideoWeb.AcceptanceTests.Pages
             {
                 yield return Login;
                 yield return HearingList;
+                yield return JudgeHearingList;
+                yield return JudgeHearingList;
+                yield return PanelMemberHearingList;
+                yield return ParticipantHearingList;
                 yield return VhoVenueList;
                 yield return VhoHearingList;
                 yield return Introduction;
@@ -76,6 +86,7 @@ namespace VideoWeb.AcceptanceTests.Pages
                 yield return Rules;
                 yield return Declaration;
                 yield return WaitingRoom;
+                yield return JudgeWaitingRoomPage;
                 yield return Countdown;
                 yield return HearingRoom;
                 yield return NotFound;
