@@ -26,7 +26,7 @@ Scenario: Participant waiting room with Interpreter
 
 @VIH-4610 @Smoketest @Smoketest-Extended
 Scenario: Judge waiting room smoke test
-	Given the Judge user has progressed to the Waiting Room page
+	Given the Judge user has progressed to the Judge Waiting Room page
 	Then the user is on the Waiting Room page
 	And a phone number for help is provided
 	And the users status has updated to Available
@@ -58,7 +58,7 @@ Scenario: Participant is in the waiting room early
 @VIH-6131
 Scenario: Observer and Panel Member visible on Judge Waiting Room
   Given I have a hearing with an Observer and Panel Member
-  And the Judge user has progressed to the Waiting Room page for the existing hearing
+  And the Judge user has progressed to the Judge Waiting Room page for the existing hearing
   Then the Judge can see a list of participants and their representatives
 
 @VIH-6131
@@ -81,7 +81,7 @@ Scenario: Observer Waiting Room
 @VIH-6131 @Smoketest-Extended
 Scenario: Panel Member Waiting Room
   Given I have a hearing with an Observer and Panel Member
-  And the Panel Member user has progressed to the Waiting Room page for the existing hearing
+  And the Panel Member user has progressed to the Judge Waiting Room page for the existing hearing
   Then the user is on the Waiting Room page
 	And a phone number for help is provided
 	And the users status has updated to Available
@@ -93,7 +93,7 @@ Scenario: Panel Member Waiting Room
 @VIH-6420 @Smoketest-Extended
 Scenario: Winger Waiting Room
   Given I have a CACD hearing with a Winger
-  And the Winger user has progressed to the Waiting Room page for the existing hearing
+   And the Winger user has progressed to the Judge Waiting Room page for the existing hearing
   Then the user is on the Waiting Room page
 	And a phone number for help is provided
 	And the users status has updated to Available

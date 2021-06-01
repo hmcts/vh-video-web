@@ -12,8 +12,8 @@ namespace VideoWeb.AcceptanceTests.Journeys
             return new List<Page>()
             {
                 Page.Login,
-                Page.PanelMemberHearingList,
-                Page.WaitingRoom,
+                Page.JudgeHearingList,
+                Page.JudgeWaitingRoomPage,
                 Page.HearingRoom
             };
         }
