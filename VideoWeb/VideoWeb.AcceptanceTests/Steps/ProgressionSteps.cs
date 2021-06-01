@@ -114,6 +114,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the (.*) user has progressed to the (.*) page for the existing hearing")]
         public void GivenHearingExistsAndIAmOnThePage(string user, string page)
         {
+            NUnit.Framework.TestContext.WriteLine($"User is {user} and page is {page.ToString()}");
             _browserSteps.GivenANewBrowserIsOpenFor(user);
             Progression(FromString(user), page);
         }

@@ -5,7 +5,7 @@ Feature: Judge Private Consultation
   
 @VIH-6523 @Video
 Scenario: Judge Can Enter The Consultation Room
-  Given the Judge user is on the Waiting Room page
+  Given the Judge user is on the Judge Waiting Room page
   When they enter the private consultation room
   Then they will be transferred to the private consultation room
   And they can leave the private consultation room
@@ -13,7 +13,7 @@ Scenario: Judge Can Enter The Consultation Room
 @VIH-6524 @Video
 Scenario: Panel Member Can Enter The Consultation Room
   Given I have a hearing with a Panel Member
-  And the Panel Member user has progressed to the Waiting Room page for the existing hearing
+  And the Panel Member user has progressed to the Judge Waiting Room page for the existing hearing
   And the hearing status changes to In Session
   When they enter the private consultation room
   Then they will be transferred to the private consultation room
@@ -22,7 +22,7 @@ Scenario: Panel Member Can Enter The Consultation Room
 @VIH-6524 @Video
 Scenario: Winger Can Enter The Consultation Room
   Given I have a CACD hearing with a Winger
-  And the Winger user has progressed to the Waiting Room page for the existing hearing
+  And the Winger user has progressed to the Judge Waiting Room page for the existing hearing
   When they enter the private consultation room
   Then they will be transferred to the private consultation room
   And they can leave the private consultation room
@@ -86,7 +86,7 @@ Scenario: Private Consultation Room Remains Open When Others In Room
 @VIH-6524 @Video
 Scenario: Panel Member Transferred To Hearing When Hearing Starts
   Given a Panel Member has entered the private consultation room
-  And the Judge user has progressed to the Waiting Room page for the existing hearing
+  And the Judge user has progressed to the Judge Waiting Room page for the existing hearing
   When the Judge starts the hearing
   Then the Panel Member is transferred to the Hearing Room
   And the Judge can close the hearing
@@ -94,7 +94,7 @@ Scenario: Panel Member Transferred To Hearing When Hearing Starts
 @VIH-6524 @Video
 Scenario: Winger Transferred To Hearing When Hearing Starts
   Given a Winger has entered the private consultation room
-  And the Judge user has progressed to the Waiting Room page for the existing hearing
+  And the Judge user has progressed to the Judge Waiting Room page for the existing hearing
   When the Judge starts the hearing
   Then the Winger is transferred to the Hearing Room
   And the Judge can close the hearing
@@ -102,7 +102,7 @@ Scenario: Winger Transferred To Hearing When Hearing Starts
 @VIH-6842 @Video
 Scenario: Judge Can See Panel Member In Consultation
   Given a Panel Member has entered the private consultation room
-  When the Judge user has progressed to the Waiting Room page for the existing hearing
+  When the Judge user has progressed to the Judge Waiting Room page for the existing hearing
   Then the participant status for Panel Member is displayed as In Consultation
   And the number of people in the consultation room is 1
   And the Panel Member can leave the private consultation room
@@ -110,7 +110,7 @@ Scenario: Judge Can See Panel Member In Consultation
 @VIH-6842 @Video
 Scenario: Judge Can See Winger In Consultation
   Given a Winger has entered the private consultation room
-  When the Judge user has progressed to the Waiting Room page for the existing hearing
+  When the Judge user has progressed to the Judge Waiting Room page for the existing hearing
   Then the participant status for Winger is displayed as In Consultation
   And the number of people in the consultation room is 1
   And the Winger can leave the private consultation room
@@ -118,7 +118,7 @@ Scenario: Judge Can See Winger In Consultation
 @VIH-6842 @Video
 Scenario: Panel Member Can See Judge In Consultation
   Given a Panel Member is in the waiting room
-  And the Judge user has progressed to the Waiting Room page for the existing hearing
+  And the Judge user has progressed to the Judge Waiting Room page for the existing hearing
   When they enter the private consultation room
   Then the Panel Member will see the status for Judge is displayed as In Consultation
   And the number of people in the consultation room is 1
@@ -127,7 +127,7 @@ Scenario: Panel Member Can See Judge In Consultation
 @VIH-6842 @Video
 Scenario: Winger Can See Judge In Consultation
   Given a Winger is in the waiting room
-  And the Judge user has progressed to the Waiting Room page for the existing hearing
+  And the Judge user has progressed to the Judge Waiting Room page for the existing hearing
   When they enter the private consultation room
   Then the Winger will see the status for Judge is displayed as In Consultation
   And the number of people in the consultation room is 1
