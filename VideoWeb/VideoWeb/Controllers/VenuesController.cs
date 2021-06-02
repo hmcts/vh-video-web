@@ -1,5 +1,8 @@
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using BookingsApi.Client;
+using BookingsApi.Contract.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -18,11 +21,14 @@ namespace VideoWeb.Controllers
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<VenuesController> _logger;
+        private readonly IBookingsApiClient _bookingsApiClient;
 
-        public VenuesController(IVideoApiClient videoApiClient, ILogger<VenuesController> logger)
+
+        public VenuesController(IVideoApiClient videoApiClient, ILogger<VenuesController> logger, IBookingsApiClient bookingsApiClient)
         {
             _videoApiClient = videoApiClient;
             _logger = logger;
+            _bookingsApiClient = bookingsApiClient;
         }
 
         /// <summary>
@@ -45,6 +51,28 @@ namespace VideoWeb.Controllers
             catch (VideoApiException e)
             {
                 _logger.LogError(e, "Unable to retrieve judge names");
+                return NotFound();
+            }
+        }
+        /// <summary>
+        ///     Get available courts
+        /// </summary>
+        /// <returns>List of courts</returns>
+        [HttpGet("courts", Name = "GetCourts")]
+        [ProducesResponseType(typeof(IList<HearingVenueResponse>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [SwaggerOperation(OperationId = "GetVenues ")]
+        public async Task<ActionResult<IList<HearingVenueResponse>>> GetCourts()
+        {
+            _logger.LogDebug("GetVenues");
+            try
+            {
+                var response = await _bookingsApiClient.GetHearingVenuesAsync();
+                return Ok(response);
+            }
+            catch (VideoApiException e)
+            {
+                _logger.LogError(e, "Unable to retrieve venues");
                 return NotFound();
             }
         }

@@ -120,7 +120,8 @@ namespace VideoWeb.Controllers
             _logger.LogDebug("GetConferencesForVhOfficer");
             try
             {
-                var conferences = await _videoApiClient.GetConferencesTodayForAdminAsync(query.UserNames);
+                var conferences = await _videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(null,query.HearingVenueNames);
+
                 var conferenceForVhOfficerResponseMapper = _mapperFactory.Get<ConferenceForAdminResponse, ConferenceForVhOfficerResponse>();
                 var responses = conferences
                     .Where(c => ConferenceHelper.HasNotPassed(c.Status, c.ClosedDateTime))

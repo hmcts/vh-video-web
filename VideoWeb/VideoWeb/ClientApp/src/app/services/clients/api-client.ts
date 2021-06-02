@@ -718,85 +718,71 @@ export class ApiClient {
 
     /**
      * Get conferences for user
-     * @param userNames (optional)
+     * @param hearingVenueNames (optional) 
      * @return Success
      */
-    getConferencesForVhOfficer(userNames: string[] | undefined): Observable<ConferenceForVhOfficerResponse[]> {
-        let url_ = this.baseUrl + '/conferences/vhofficer?';
-        if (userNames === null) throw new Error("The parameter 'userNames' cannot be null.");
-        else if (userNames !== undefined)
-            userNames &&
-                userNames.forEach(item => {
-                    url_ += 'UserNames=' + encodeURIComponent('' + item) + '&';
-                });
-        url_ = url_.replace(/[?&]$/, '');
+    getConferencesForVhOfficer(hearingVenueNames: string[] | undefined): Observable<ConferenceForVhOfficerResponse[]> {
+        let url_ = this.baseUrl + "/conferences/vhofficer?";
+        if (hearingVenueNames === null)
+            throw new Error("The parameter 'hearingVenueNames' cannot be null.");
+        else if (hearingVenueNames !== undefined)
+            hearingVenueNames && hearingVenueNames.forEach(item => { url_ += "HearingVenueNames=" + encodeURIComponent("" + item) + "&"; });
+        url_ = url_.replace(/[?&]$/, "");
 
         let options_: any = {
-            observe: 'response',
-            responseType: 'blob',
+            observe: "response",
+            responseType: "blob",
             headers: new HttpHeaders({
-                Accept: 'application/json'
+                "Accept": "application/json"
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processGetConferencesForVhOfficer(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processGetConferencesForVhOfficer(<any>response_);
-                        } catch (e) {
-                            return <Observable<ConferenceForVhOfficerResponse[]>>(<any>_observableThrow(e));
-                        }
-                    } else return <Observable<ConferenceForVhOfficerResponse[]>>(<any>_observableThrow(response_));
-                })
-            );
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_: any) => {
+            return this.processGetConferencesForVhOfficer(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetConferencesForVhOfficer(<any>response_);
+                } catch (e) {
+                    return <Observable<ConferenceForVhOfficerResponse[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ConferenceForVhOfficerResponse[]>><any>_observableThrow(response_);
+        }));
     }
 
     protected processGetConferencesForVhOfficer(response: HttpResponseBase): Observable<ConferenceForVhOfficerResponse[]> {
         const status = response.status;
         const responseBlob =
-            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+            response instanceof HttpResponse ? response.body :
+                (<any>response).error instanceof Blob ? (<any>response).error : undefined;
 
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); } }
         if (status === 200) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result200: any = null;
-                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    if (Array.isArray(resultData200)) {
-                        result200 = [] as any;
-                        for (let item of resultData200) result200!.push(ConferenceForVhOfficerResponse.fromJS(item));
-                    }
-                    return _observableOf(result200);
-                })
-            );
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+                let result200: any = null;
+                let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                if (Array.isArray(resultData200)) {
+                    result200 = [] as any;
+                    for (let item of resultData200)
+                        result200!.push(ConferenceForVhOfficerResponse.fromJS(item));
+                }
+                else {
+                    result200 = <any>null;
+                }
+                return _observableOf(result200);
+            }));
         } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result401: any = null;
-                    let resultData401 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result401 = ProblemDetails.fromJS(resultData401);
-                    return throwException('Unauthorized', status, _responseText, _headers, result401);
-                })
-            );
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+                let result401: any = null;
+                let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result401 = ProblemDetails.fromJS(resultData401);
+                return throwException("Unauthorized", status, _responseText, _headers, result401);
+            }));
         } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
         }
         return _observableOf<ConferenceForVhOfficerResponse[]>(<any>null);
     }
@@ -3630,92 +3616,76 @@ export class ApiClient {
     }
 
     /**
-     * Get Court rooms accounts (judges)
-     * @param userNames (optional)
-     * @return Success
-     */
-    getCourtRoomAccounts(userNames: string[] | undefined): Observable<CourtRoomsAccountResponse[]> {
-        let url_ = this.baseUrl + '/api/accounts/courtrooms?';
-        if (userNames === null) throw new Error("The parameter 'userNames' cannot be null.");
-        else if (userNames !== undefined)
-            userNames &&
-                userNames.forEach(item => {
-                    url_ += 'UserNames=' + encodeURIComponent('' + item) + '&';
-                });
-        url_ = url_.replace(/[?&]$/, '');
+      * Get Court rooms accounts (judges)
+      * @param hearingVenueNames (optional) 
+      * @return Success
+      */
+    getCourtRoomAccounts(hearingVenueNames: string[] | undefined): Observable<CourtRoomsAccountResponse[]> {
+        let url_ = this.baseUrl + "/api/accounts/courtrooms?";
+        if (hearingVenueNames === null)
+            throw new Error("The parameter 'hearingVenueNames' cannot be null.");
+        else if (hearingVenueNames !== undefined)
+            hearingVenueNames && hearingVenueNames.forEach(item => { url_ += "HearingVenueNames=" + encodeURIComponent("" + item) + "&"; });
+        url_ = url_.replace(/[?&]$/, "");
 
         let options_: any = {
-            observe: 'response',
-            responseType: 'blob',
+            observe: "response",
+            responseType: "blob",
             headers: new HttpHeaders({
-                Accept: 'application/json'
+                "Accept": "application/json"
             })
         };
 
-        return this.http
-            .request('get', url_, options_)
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processGetCourtRoomAccounts(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processGetCourtRoomAccounts(<any>response_);
-                        } catch (e) {
-                            return <Observable<CourtRoomsAccountResponse[]>>(<any>_observableThrow(e));
-                        }
-                    } else return <Observable<CourtRoomsAccountResponse[]>>(<any>_observableThrow(response_));
-                })
-            );
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_: any) => {
+            return this.processGetCourtRoomAccounts(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetCourtRoomAccounts(<any>response_);
+                } catch (e) {
+                    return <Observable<CourtRoomsAccountResponse[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<CourtRoomsAccountResponse[]>><any>_observableThrow(response_);
+        }));
     }
 
     protected processGetCourtRoomAccounts(response: HttpResponseBase): Observable<CourtRoomsAccountResponse[]> {
         const status = response.status;
         const responseBlob =
-            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+            response instanceof HttpResponse ? response.body :
+                (<any>response).error instanceof Blob ? (<any>response).error : undefined;
 
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); } }
         if (status === 200) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result200: any = null;
-                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    if (Array.isArray(resultData200)) {
-                        result200 = [] as any;
-                        for (let item of resultData200) result200!.push(CourtRoomsAccountResponse.fromJS(item));
-                    }
-                    return _observableOf(result200);
-                })
-            );
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+                let result200: any = null;
+                let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                if (Array.isArray(resultData200)) {
+                    result200 = [] as any;
+                    for (let item of resultData200)
+                        result200!.push(CourtRoomsAccountResponse.fromJS(item));
+                }
+                else {
+                    result200 = <any>null;
+                }
+                return _observableOf(result200);
+            }));
         } else if (status === 404) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result404: any = null;
-                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result404 = ProblemDetails.fromJS(resultData404);
-                    return throwException('Not Found', status, _responseText, _headers, result404);
-                })
-            );
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+                let result404: any = null;
+                let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result404 = ProblemDetails.fromJS(resultData404);
+                return throwException("Not Found", status, _responseText, _headers, result404);
+            }));
         } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+                return throwException("Unauthorized", status, _responseText, _headers);
+            }));
         } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
         }
         return _observableOf<CourtRoomsAccountResponse[]>(<any>null);
     }
@@ -3799,6 +3769,71 @@ export class ApiClient {
             );
         }
         return _observableOf<JudgeNameListResponse>(<any>null);
+    }
+    /**
+         * Get available courts
+         * @return Success
+         */
+    getVenues(): Observable<HearingVenueResponse[]> {
+        let url_ = this.baseUrl + '/hearing-venues/courts';
+        url_ = url_.replace(/[?&]$/, '');
+        let options_: any = {
+            observe: 'response',
+            responseType: 'blob',
+            headers: new HttpHeaders({
+                'Accept': 'application/json'
+            })
+        };
+        return this.http.request('get', url_, options_).pipe(_observableMergeMap((response_: any) => {
+            return this.processGetVenues(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetVenues(<any>response_);
+                } catch (e) {
+                    return <Observable<HearingVenueResponse[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<HearingVenueResponse[]>><any>_observableThrow(response_);
+        }));
+    }
+    protected processGetVenues(response: HttpResponseBase): Observable<HearingVenueResponse[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+                (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); } }
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+                let result200: any = null;
+                let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                if (Array.isArray(resultData200)) {
+                    result200 = [] as any;
+                    for (let item of resultData200)
+                        result200!.push(HearingVenueResponse.fromJS(item));
+                }
+                else {
+                    result200 = <any>null;
+                }
+                return _observableOf(result200);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+                let result404: any = null;
+                let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result404 = ProblemDetails.fromJS(resultData404);
+                return throwException('Not Found', status, _responseText, _headers, result404);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+                return throwException('Unauthorized', status, _responseText, _headers);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+                return throwException('An unexpected server error occurred.', status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<HearingVenueResponse[]>(<any>null);
     }
 
     /**
@@ -6647,6 +6682,41 @@ export class JudgeNameListResponse implements IJudgeNameListResponse {
 
 export interface IJudgeNameListResponse {
     first_names?: string[] | undefined;
+}
+
+export class HearingVenueResponse implements IHearingVenueResponse {
+    id?: number;
+    name?: string | undefined;
+    constructor(data?: IHearingVenueResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data['id'];
+            this.name = _data['name'];
+        }
+    }
+    static fromJS(data: any): HearingVenueResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new HearingVenueResponse();
+        result.init(data);
+        return result;
+    }
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data['id'] = this.id;
+        data['name'] = this.name;
+        return data;
+    }
+}
+export interface IHearingVenueResponse {
+    id?: number;
+    name?: string | undefined;
 }
 
 export class ConferenceEventRequest implements IConferenceEventRequest {

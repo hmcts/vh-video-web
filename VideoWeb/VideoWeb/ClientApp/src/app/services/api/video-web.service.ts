@@ -21,7 +21,8 @@ import {
     ParticipantForUserResponse,
     VideoEndpointResponse,
     LoggedParticipantResponse,
-    AllowedEndpointResponse
+    AllowedEndpointResponse,
+    HearingVenueResponse
 } from '../clients/api-client';
 import { ConferenceLite } from '../models/conference-lite';
 import { SessionStorage } from '../session-storage';
@@ -92,6 +93,10 @@ export class VideoWebService implements IVideoWebApiService {
 
     getDistinctJudgeNames(): Promise<JudgeNameListResponse> {
         return this.apiClient.getDistinctJudgeNames().toPromise();
+    }
+
+    getVenues(): Observable<HearingVenueResponse[]> {
+        return this.apiClient.getVenues();
     }
 
     /**

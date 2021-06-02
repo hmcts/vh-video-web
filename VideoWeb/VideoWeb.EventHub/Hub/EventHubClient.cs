@@ -111,7 +111,7 @@ namespace VideoWeb.EventHub.Hub
         {
             if (isAdmin)
             {
-                var conferences = await _videoApiClient.GetConferencesTodayForAdminAsync(null);
+                var conferences = await _videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(null, null);
                 return conferences.Select(x => x.Id);
             }
 

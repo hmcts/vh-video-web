@@ -7,7 +7,7 @@ import { VhoStorageKeys } from '../services/models/session-keys';
 import { CourtRoomsAccounts } from 'src/app/vh-officer/services/models/court-rooms-accounts';
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { CourtRoomsAccountResponse } from '../../services/clients/api-client';
+import { CourtRoomsAccountResponse, HearingVenueResponse } from '../../services/clients/api-client';
 
 @Component({
     selector: 'app-venue-list',
@@ -17,7 +17,7 @@ import { CourtRoomsAccountResponse } from '../../services/clients/api-client';
 export class VenueListComponent implements OnInit {
     private readonly judgeAllocationStorage: SessionStorage<string[]>;
     private readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
-    judges: string[];
+    venues: HearingVenueResponse[];
     selectedJudges: string[];
     venueListLoading: boolean;
     filterCourtRoomsAccounts: CourtRoomsAccounts[];
@@ -35,8 +35,8 @@ export class VenueListComponent implements OnInit {
 
     ngOnInit() {
         this.venueListLoading = false;
-        this.videoWebService.getDistinctJudgeNames().then(response => {
-            this.judges = response.first_names;
+        this.videoWebService.getVenues().subscribe((venues) => {
+            this.venues = venues;
             this.selectedJudges = this.judgeAllocationStorage.get();
             this.venueListLoading = false;
         });

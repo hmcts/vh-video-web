@@ -1,5 +1,6 @@
 using System.Net;
 using System.Threading.Tasks;
+using BookingsApi.Client;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -16,13 +17,15 @@ namespace VideoWeb.UnitTests.Controllers
         private VenuesController _controller;
         private Mock<IVideoApiClient> _videoApiClientMock;
         private Mock<ILogger<VenuesController>> _mockLogger;
+        private Mock<IBookingsApiClient> _bookingsApiClientMock;
 
         [SetUp]
         public void Setup()
         {
             _videoApiClientMock = new Mock<IVideoApiClient>();
             _mockLogger = new Mock<ILogger<VenuesController>>();
-            _controller = new VenuesController(_videoApiClientMock.Object, _mockLogger.Object);
+            _bookingsApiClientMock = new Mock<IBookingsApiClient>();
+            _controller = new VenuesController(_videoApiClientMock.Object, _mockLogger.Object, _bookingsApiClientMock.Object);
         }
 
         [Test]

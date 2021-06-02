@@ -70,7 +70,7 @@ namespace VideoWeb.UnitTests.Hub
             Claims = new ClaimsPrincipalBuilder().WithRole(AppRoles.VhOfficerRole).Build();
             HubCallerContextMock.Setup(x => x.User).Returns(Claims);
 
-            VideoApiClientMock.Setup(x => x.GetConferencesTodayForAdminAsync(It.IsAny<IEnumerable<string>>())).ReturnsAsync(conferences);
+            VideoApiClientMock.Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(conferences);
 
             return conferences;
         }
@@ -93,7 +93,7 @@ namespace VideoWeb.UnitTests.Hub
             Claims = new ClaimsPrincipalBuilder().WithRole(AppRoles.JudgeRole).Build();
             HubCallerContextMock.Setup(x => x.User).Returns(Claims);
 
-            VideoApiClientMock.Setup(x => x.GetConferencesTodayForAdminAsync(It.IsAny<IEnumerable<string>>()))
+            VideoApiClientMock.Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>()))
                 .ReturnsAsync(conferences);
 
             return conferences
