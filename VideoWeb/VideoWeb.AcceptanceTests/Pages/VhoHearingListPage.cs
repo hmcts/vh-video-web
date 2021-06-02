@@ -9,6 +9,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By CaseNumber(Guid conferenceId) => By.Id($"{conferenceId:D}-case-number");
         public static By CaseNumbers = By.XPath("//*[contains(@id, 'case-number')]");
         public static By HearingTime(Guid conferenceId) => By.Id($"{conferenceId:D}-time");
+        public static By HearingTimes = By.XPath("//*[contains(@id, 'time')]");
         public static By ListedFor(Guid conferenceId) => By.Id($"{conferenceId:D}-duration");
         public static By NumberOfAlerts(Guid conferenceId) => By.Id($"{conferenceId:D}--pending-tasks");
         public static By StatusBadge(Guid conferenceId) => By.Id($"{conferenceId:D}-hearing-status");
