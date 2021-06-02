@@ -53,8 +53,6 @@ namespace VideoWeb.AcceptanceTests.Steps
             var automationOnlyCases = displayedCaseOrder.Select(caseNumber => caseNumber.Text.Trim()).Where(caseNumberText => caseNumberText.Trim().Length.Equals(automationCaseNumberLength) && caseNumberText.Contains("/")).ToList();
             automationOnlyCases = RemoveAutomationCasesForOtherJudges(automationOnlyCases);
             automationOnlyCases.Should().BeInAscendingOrder();
-            //automationOnlyCases.First().
-            //automationOnlyCases.First().Should().Be(_c.Test.Case.Number);
         }
 
         private List<string> RemoveAutomationCasesForOtherJudges(IEnumerable<string> caseNumbers)
