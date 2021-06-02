@@ -8,11 +8,11 @@ using VideoWeb.EventHub.Models;
 using VideoApi.Client;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
-
+using VideoWeb.Contract.Responses;
 
 namespace VideoWeb.EventHub.Handlers
 {
-    class ParticipantAddedEventHandler : EventHandlerBase
+    public class ParticipantAddedEventHandler : EventHandlerBase
     {
         public ParticipantAddedEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
             IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient) : base(
@@ -24,7 +24,9 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            return PublishParticipantAddedMessage(callbackEvent.ParticipantAdded);
+            var participantAdded = SourceConference.Participants.Find(participant => participant.Id == callbackEvent.ParticipantId);
+            var participantResponse = new ParticipantResponse() { DisplayName = participantAdded.DisplayName, Role = participantAdded.Role, HearingRole = participantAdded.HearingRole };
+            return PublishParticipantAddedMessage(participantResponse);
         }
     }
 }

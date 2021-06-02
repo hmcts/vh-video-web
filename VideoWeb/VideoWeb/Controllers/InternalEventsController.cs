@@ -19,7 +19,6 @@ using VideoApi.Contract.Requests;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using BookingsApi.Contract.Responses;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using VideoApi.Client;
@@ -32,6 +31,8 @@ using EndpointState = VideoWeb.EventHub.Enums.EndpointState;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
 using Task = System.Threading.Tasks.Task;
+using VideoWeb.Contract.Responses;
+using VideoWeb.EventHub.Models;
 
 namespace VideoWeb.Controllers
 {
@@ -68,37 +69,44 @@ namespace VideoWeb.Controllers
         [SwaggerOperation(OperationId = "InternalEvent")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> SendInternalEventAsync(string conferenceId, string participantId)
+        public async Task<IActionResult> SendInternalEventAsync(InternalEvent request)
         {
             _logger.LogDebug("");
             try
             {
-                var _conferenceId = Guid.Parse(conferenceId);
-                var conference = await _conferenceCache.GetOrAddConferenceAsync(_conferenceId, () =>
+                var conferenceId = request.ConferenceId;
+                var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
                 {
-                    _logger.LogTrace("Retrieving conference details for conference: {ConferenceId}", _conferenceId);
-                    return _videoApiClient.GetConferenceDetailsByIdAsync(_conferenceId);
+                    _logger.LogTrace("Retrieving conference details for conference: {ConferenceId}", conferenceId);
+                    return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
                 });
 
-                // var participantAdded = 
-
-                foreach (var participant in conference.Participants)
-                {
-                    await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
-                        .ParticipantAdded(_conferenceId, new ParticipantResponse());
-                    _logger.LogTrace("{UserName} | Role: {Role}", participant.Username,
-                        participant.Role);
-                }
-
+                // TODO: How do we update cache?
+                // TODO: Mapper
+                CallbackEvent callbackEvent = new CallbackEvent() { ConferenceId = conferenceId, EventType = request.EventType, ParticipantId = request.ParticipantId, TimeStampUtc = request.TimeStampUtc };
+                
+                await PublishEventToUi(callbackEvent);
 
                 return NoContent();
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", conferenceId,
+                _logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", request.ConferenceId,
                     e.StatusCode);
                 return StatusCode(e.StatusCode, e.Response);
             }            
         }
+        private Task PublishEventToUi(CallbackEvent callbackEvent)
+        {
+            if (callbackEvent == null)
+            {
+                return Task.CompletedTask;
+            }
+
+            var handler = _eventHandlerFactory.Get(callbackEvent.EventType);
+            return handler.HandleAsync(callbackEvent);
+        }
     }
+
+    
 }

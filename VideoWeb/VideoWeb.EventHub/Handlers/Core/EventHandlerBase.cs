@@ -1,12 +1,12 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using BookingsApi.Contract.Responses;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using VideoApi.Client;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
@@ -55,7 +55,7 @@ namespace VideoWeb.EventHub.Handlers.Core
             await PublishStatusAsync(callbackEvent);
         }
 
-        private async Task<Conference> GetConference(Guid conferenceId)
+        protected async Task<Conference> GetConference(Guid conferenceId)
         {
             var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));

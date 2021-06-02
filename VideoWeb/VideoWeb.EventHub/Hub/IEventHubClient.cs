@@ -1,7 +1,7 @@
-using BookingsApi.Contract.Responses;
 using System;
 using System.Threading.Tasks;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Models;
 

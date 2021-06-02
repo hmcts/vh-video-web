@@ -433,10 +433,10 @@ export abstract class WaitingRoomBaseDirective {
         );
 
         this.eventHubSubscription$.add(
-            this.eventService.getParticipantAdded().subscr -
-                ibe(async participant => {
-                    this.notificationToastrService.showParticipantAdded(participant);
-                })
+            this.eventService.getParticipantAdded().subscribe(async participant => {
+                console.log('ParticipantAdded WaitingRoomBase');
+                this.notificationToastrService.showParticipantAdded(participant, this.participant.status === ParticipantStatus.InHearing);
+            })
         );
     }
     resolveParticipant(participantId: any): Participant {

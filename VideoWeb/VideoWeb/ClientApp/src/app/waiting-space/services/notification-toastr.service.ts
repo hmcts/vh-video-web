@@ -293,7 +293,7 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
-    showParticipantAdded(participant: ParticipantResponse) {
+    showParticipantAdded(participant: ParticipantResponse, inHearing: boolean = false) {
         let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant(
             'notification-toastr.participant-added.title',
             {
@@ -305,12 +305,12 @@ export class NotificationToastrService {
         })}<br/>`;
 
         const toast = this.toastr.show('', '', {
-            timeOut: 120000,
+            timeOut: 0,
             tapToDismiss: false,
             toastComponent: VhToastComponent
         });
         (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
-            color: 'white',
+            color: inHearing ? 'white' : 'black',
             htmlBody: message,
             onNoAction: async () => {
                 this.logger.info(`${this.loggerPrefix} No action called on participant added alert`);

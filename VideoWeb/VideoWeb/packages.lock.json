@@ -2296,7 +2296,8 @@
           "System.Text.Json": "4.7.1",
           "UserApi.Client": "1.24.2",
           "VideoApi.Client": "1.25.1",
-          "VideoWeb.Common": "1.0.0"
+          "VideoWeb.Common": "1.0.0",
+          "VideoWeb.Contract": "1.0.0"
         }
       }
     }
