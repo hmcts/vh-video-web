@@ -7,6 +7,7 @@ import {
     ConferenceResponse,
     ConsultationAnswer,
     InviteToConsultationRequest,
+    JoinPrivateConsultationRequest,
     LeavePrivateConsultationRequest,
     LockConsultationRoomRequest,
     ParticipantResponse,
@@ -81,12 +82,10 @@ export class ConsultationService {
         try {
             this.clearModals();
             await this.apiClient
-                .respondToConsultationRequest(
-                    new PrivateConsultationRequest({
+                .joinPrivateConsultation(
+                    new JoinPrivateConsultationRequest({
                         conference_id: conferenceId,
-                        requested_by_id: participantId,
-                        requested_for_id: participantId,
-                        answer: ConsultationAnswer.Accepted,
+                        participant_id: participantId,
                         room_label: roomLabel
                     })
                 )

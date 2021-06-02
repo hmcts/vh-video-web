@@ -2,6 +2,16 @@
   "version": 1,
   "dependencies": {
     ".NETCoreApp,Version=v3.1": {
+      "BookingsApi.Client": {
+        "type": "Direct",
+        "requested": "[1.25.8, )",
+        "resolved": "1.25.8",
+        "contentHash": "QwHQtoFZlHoVk2K5KfS87Nktest+1wYiNC4ZYJBAfk5y7f58QMGJ+DJWeyB5cBHWER0zwBjygFXHSn1yH5ZYXA==",
+        "dependencies": {
+          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
+          "Newtonsoft.Json": "12.0.3"
+        }
+      },
       "DotNetSeleniumExtras.PageObjects": {
         "type": "Direct",
         "requested": "[3.11.0, )",
@@ -238,11 +248,21 @@
           "VideoApi.Client": "1.23.57"
         }
       },
+      "UserApi.Client": {
+        "type": "Direct",
+        "requested": "[1.24.3, )",
+        "resolved": "1.24.3",
+        "contentHash": "CbbYvdREAv1x4P2FBXJn9DkUOAyPn6yZcfOvWaT19wAjsziabV6qfITbUYiVGOWpwdqdB2H7lyOH/V//AC66fg==",
+        "dependencies": {
+          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
+          "Newtonsoft.Json": "12.0.3"
+        }
+      },
       "VH.AcceptanceTests.Common": {
         "type": "Direct",
-        "requested": "[1.21.31, )",
-        "resolved": "1.21.31",
-        "contentHash": "VyS8k5lxrVrndLzXdgwaghtgBp1KeRhlzNgRAYKXFbYRU4NwOgpNjUDpXMC1fEMsCyJ6Gr+Ganj68cp+It1Z/g==",
+        "requested": "[1.21.34, )",
+        "resolved": "1.21.34",
+        "contentHash": "pk7IubjMR58OIBZOB2d4ve6xbT+ISui5dGadYQPa7uJU+xPx8o1sIs21KguqKk3YTKJuyG1sugFOOjDoncjOPA==",
         "dependencies": {
           "Appium.WebDriver": "4.3.1",
           "Azure.Storage.Blobs": "12.8.0",
@@ -271,7 +291,7 @@
           "Selenium.Firefox.WebDriver": "0.27.0",
           "Selenium.Support": "3.141.0",
           "Selenium.WebDriver": "3.141.0",
-          "Selenium.WebDriver.ChromeDriver": "89.0.4389.2300",
+          "Selenium.WebDriver.ChromeDriver": "91.0.4472.1900",
           "Selenium.WebDriver.IEDriver": "3.150.1.2",
           "Selenium.WebDriver.MicrosoftDriver": "17.17134.0",
           "SpecFlow": "3.6.23",
@@ -280,6 +300,16 @@
           "System.Collections": "4.3.0",
           "System.Configuration.ConfigurationManager": "5.0.0",
           "TimeZoneConverter": "3.4.0"
+        }
+      },
+      "VideoApi.Client": {
+        "type": "Direct",
+        "requested": "[1.25.12, )",
+        "resolved": "1.25.12",
+        "contentHash": "qtcYVcTJrtc3HVYZqo2Id3jIlxn/x26w0IgXRIq+rlGpd4N04hGDQkuT7JBRo4H5BmO2wSW7ChPnaDpnDZfZbQ==",
+        "dependencies": {
+          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
+          "Newtonsoft.Json": "12.0.3"
         }
       },
       "Appium.WebDriver": {
@@ -330,15 +360,6 @@
         "type": "Transitive",
         "resolved": "1.4.1",
         "contentHash": "x1D7r5VDm7zog+3DlyOo1fXas1RhYmw9e/wIemdjcTeHV4fp4OoGb0Jz4i2E9RShPoOItUfFklm3nxTLcLLwSg=="
-      },
-      "BookingsApi.Client": {
-        "type": "Transitive",
-        "resolved": "1.24.26",
-        "contentHash": "Ify+XcJoCVPr0p8H0OSbUJCJFnfqDTM4pwVHfj1Q1XQh98xUyRQn9jCn1jfSYDmp350nz6h5bv5LPRRFU3BLTw==",
-        "dependencies": {
-          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
-          "Newtonsoft.Json": "12.0.3"
-        }
       },
       "Castle.Core": {
         "type": "Transitive",
@@ -1318,8 +1339,8 @@
       },
       "Selenium.WebDriver.ChromeDriver": {
         "type": "Transitive",
-        "resolved": "89.0.4389.2300",
-        "contentHash": "/lnt6U3hogvJtFBP9l9Vm3F7zVBTClCANeVzcyWwyUf/uW686KEgGU+9x6sebstjd02qrmvcP42MKHTID1tq/A=="
+        "resolved": "91.0.4472.1900",
+        "contentHash": "H8N5+WEr6o1pEcQpq8pODJwjMeWqxU3zvMZZLBTPjMBI+rJ51OPDeWHCdOLniXo4YrawrnvkHC7luwfMp64UpA=="
       },
       "StackExchange.Redis": {
         "type": "Transitive",
@@ -2441,15 +2462,6 @@
         "resolved": "3.4.0",
         "contentHash": "4rqXd06uLqaLPGpO+whrZnSTJyG3SG5DEbeldMTvaGit0+gI6XLVb9YMnfM+5wtV0DDM1QPd/QhbE6j5vJCWDw=="
       },
-      "UserApi.Client": {
-        "type": "Transitive",
-        "resolved": "1.24.3",
-        "contentHash": "CbbYvdREAv1x4P2FBXJn9DkUOAyPn6yZcfOvWaT19wAjsziabV6qfITbUYiVGOWpwdqdB2H7lyOH/V//AC66fg==",
-        "dependencies": {
-          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
-          "Newtonsoft.Json": "12.0.3"
-        }
-      },
       "Utf8Json": {
         "type": "Transitive",
         "resolved": "1.3.7",
@@ -2461,18 +2473,10 @@
           "System.ValueTuple": "4.4.0"
         }
       },
-      "VideoApi.Client": {
-        "type": "Transitive",
-        "resolved": "1.25.1",
-        "contentHash": "6B6Y+bPx4lqn5c/AH3exeISVNJeTvjv2u7mYjJgOMN7Y8uh5o9rRUpf6Bt5A95LgvRvjx4EkD0xqRZhCu3/AAw==",
-        "dependencies": {
-          "Microsoft.AspNetCore.Mvc.Core": "2.2.5",
-          "Newtonsoft.Json": "12.0.3"
-        }
-      },
       "videoweb.common": {
         "type": "Project",
         "dependencies": {
+          "BookingsApi.Client": "1.25.7",
           "Microsoft.ApplicationInsights": "2.16.0",
           "Microsoft.ApplicationInsights.AspNetCore": "2.16.0",
           "Microsoft.AspNetCore.SignalR": "1.1.0",
@@ -2481,26 +2485,29 @@
           "Microsoft.IdentityModel.Clients.ActiveDirectory": "5.2.8",
           "StackExchange.Redis": "2.1.28",
           "System.IdentityModel.Tokens.Jwt": "5.6.0",
-          "UserApi.Client": "1.24.2",
-          "VideoApi.Client": "1.25.1"
+          "UserApi.Client": "1.24.3",
+          "VideoApi.Client": "1.25.10"
         }
       },
       "videoweb.contract": {
         "type": "Project",
         "dependencies": {
+          "BookingsApi.Client": "1.25.7",
+          "UserApi.Client": "1.24.3",
+          "VideoApi.Client": "1.25.10",
           "VideoWeb.Common": "1.0.0"
         }
       },
       "videoweb.eventhub": {
         "type": "Project",
         "dependencies": {
-          "BookingsApi.Client": "1.24.17",
+          "BookingsApi.Client": "1.25.7",
           "Microsoft.ApplicationInsights.AspNetCore": "2.16.0",
           "Microsoft.AspNetCore.SignalR": "1.1.0",
           "Microsoft.Extensions.Caching.Abstractions": "3.1.10",
           "System.Text.Json": "4.7.1",
-          "UserApi.Client": "1.24.2",
-          "VideoApi.Client": "1.25.1",
+          "UserApi.Client": "1.24.3",
+          "VideoApi.Client": "1.25.10",
           "VideoWeb.Common": "1.0.0"
         }
       }

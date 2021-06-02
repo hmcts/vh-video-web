@@ -197,10 +197,13 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         if (message.participantId !== this.participant.id) {
             return;
         }
+
         if (message.status === ParticipantStatus.InConsultation) {
             this.logger.debug(`${this.loggerPrefix} Participant moved to consultation room, unmuting participant`, this.logPayload);
             this.resetMute();
         }
+
+        this.participant.status = message.status;
     }
 
     handleParticipantRemoteMuteChange(message: ParticipantRemoteMuteMessage) {
@@ -277,7 +280,8 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
 
     toggleView(): boolean {
         this.logger.info(`${this.loggerPrefix} Participant turning self-view ${this.selfViewOpen ? 'off' : 'on'}`, this.logPayload);
-        return (this.selfViewOpen = !this.selfViewOpen);
+        this.selfViewOpen = !this.selfViewOpen;
+        return this.selfViewOpen;
     }
 
     toggleHandRaised() {

@@ -44,7 +44,7 @@ Scenario: Judge has 1 or more hearings
 	Given I have a hearing
 	And a new browser is open for a Judge
 	When they attempt to login with valid credentials
-	Then the user is on the Hearing List page
+	Then the user is on the Judge Hearing List page
 	And a phone number for help is provided
 	And the user can see their details at the top of the hearing list 
 	And the Judge can see a list of hearings including the new hearing
@@ -100,7 +100,7 @@ Scenario: Video Hearings Officer can see all hearings for today only
 Scenario: Judge cannot access Closed hearing
 	Given I have a hearing
 	And the hearing status changes to Closed
-  And the Judge user has progressed to the Hearing List page for the existing hearing
+  And the Judge user has progressed to the Judge Hearing List page for the existing hearing
   Then the hearing status should be displayed as Closed on the hearing list page
   And the Judge is unable to access the Waiting Room
 
@@ -115,8 +115,8 @@ Scenario: Panel Member has 1 or more hearings
 	And a new browser is open for a PanelMember
 	When they attempt to login with valid credentials
 	Then the user is on the Hearing List page
-	And the participant can see a list of hearings including the new hearing
-	And contact us details are available
+	And the Panel Member can see a list of hearings including the new hearing
+	And contact us details for the Panel Member are available
 	When the user clicks on the Start Hearing button
 	Then the user is on the Waiting Room page
 
@@ -124,7 +124,7 @@ Scenario: Panel Member has a hearing more than 30 minutes in the future
 	Given I have a hearing in 31 minutes time with Observer and Panel Member
 	And a new browser is open for a PanelMember
 	When they attempt to login with valid credentials
-	Then the user is on the Hearing List page
+	Then the user is on the Judge Hearing List page
 	And the new hearing isn't available to join yet
 	And when the hearing is ready to start the hearing button appears
 	When the user clicks on the Start Hearing button
@@ -136,8 +136,8 @@ Scenario: Panel Member has a hearing more than 30 minutes in the future
 	And a new browser is open for a Winger
 	When they attempt to login with valid credentials
 	Then the user is on the Hearing List page
-	And the participant can see a list of hearings including the new hearing
-	And contact us details are available
+	And the Panel Member can see a list of hearings including the new hearing
+	And contact us details for the Panel Member are available
 	When the user clicks on the Start Hearing button
 	Then the user is on the Waiting Room page
 
@@ -146,7 +146,7 @@ Scenario: Winger has a hearing more than 30 minutes in the future
 	Given I have a hearing in 31 minutes time with winger 
 	And a new browser is open for a Winger
 	When they attempt to login with valid credentials
-	Then the user is on the Hearing List page
+	Then the user is on the Judge Hearing List page
 	And the new hearing isn't available to join yet
 	And when the hearing is ready to start the hearing button appears
 	When the user clicks on the Start Hearing button
