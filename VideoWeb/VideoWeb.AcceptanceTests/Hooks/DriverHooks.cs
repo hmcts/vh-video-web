@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using AcceptanceTests.Common.Api;
 using AcceptanceTests.Common.Driver.Drivers;
+using AcceptanceTests.Common.Driver.Enums;
 using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.Driver.Settings;
 using AcceptanceTests.Common.PageObject.Pages;
@@ -32,7 +33,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
         {
             DriverManager.KillAnyLocalDriverProcesses();
         }
-        
+
         [BeforeScenario(Order = (int)HooksSequence.InitialiseBrowserHooks)]
         public void InitialiseBrowserContainer()
         {
@@ -40,7 +41,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             _objectContainer.RegisterInstanceAs(_browsers);
         }
 
-        [BeforeScenario(Order = (int) HooksSequence.ConfigureDriverHooks)]
+        [BeforeScenario(Order = (int)HooksSequence.ConfigureDriverHooks)]
         public void ConfigureDriver(TestContext context, ScenarioContext scenario)
         {
             context.VideoWebConfig.TestConfig.TargetBrowser = DriverManager.GetTargetBrowser(NUnit.Framework.TestContext.Parameters["TargetBrowser"]);
@@ -63,7 +64,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
                 EnableLogging = false,
                 Name = scenario.ScenarioInfo.Title
             };
-
+            if (context.VideoWebConfig.TestConfig.TargetOS == TargetOS.iOS) sauceLabsOptions.Timezone = "UTC";
             OpenQA.Selenium.Proxy proxy = null;
 
             if (Zap.SetupProxy)
@@ -83,7 +84,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             context.TimeZone = new TimeZone(context.VideoWebConfig.SauceLabsConfiguration.RunningOnSauceLabs(), context.VideoWebConfig.TestConfig.TargetOS);
         }
 
-        [AfterScenario(Order = (int) HooksSequence.SignOutHooks)]
+        [AfterScenario(Order = (int)HooksSequence.SignOutHooks)]
         public void SignOutIfPossible(TestContext context)
         {
             if (context.CurrentUser == null) return;
