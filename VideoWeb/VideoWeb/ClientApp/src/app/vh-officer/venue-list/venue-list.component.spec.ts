@@ -23,9 +23,9 @@ describe('VenueListComponent', () => {
     const roomSessionStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
 
     const venueNames: HearingVenueResponse[] = [];
-    var venueName1 = new HearingVenueResponse({ id: 1, name: 'Birmingham' })
-    var venueName2 = new HearingVenueResponse({ id: 2, name: 'Manchester' })
-    var venueName3 = new HearingVenueResponse({ id: 3, name: 'Taylor House' })
+    const venueName1 = new HearingVenueResponse({ id: 1, name: 'Birmingham' });
+    const venueName2 = new HearingVenueResponse({ id: 2, name: 'Manchester' });
+    const venueName3 = new HearingVenueResponse({ id: 3, name: 'Taylor House' });
     venueNames.push(venueName1);
     venueNames.push(venueName2);
     venueNames.push(venueName3);

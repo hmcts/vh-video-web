@@ -35,7 +35,7 @@ export class VenueListComponent implements OnInit {
 
     ngOnInit() {
         this.venueListLoading = false;
-        this.videoWebService.getVenues().subscribe((venues) => {
+        this.videoWebService.getVenues().subscribe(venues => {
             this.venues = venues;
             this.selectedJudges = this.judgeAllocationStorage.get();
             this.venueListLoading = false;
