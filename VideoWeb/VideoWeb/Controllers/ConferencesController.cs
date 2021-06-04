@@ -226,10 +226,19 @@ namespace VideoWeb.Controllers
 
             var username = User.Identity.Name.ToLower().Trim();
 
-            ConferenceDetailsResponse conference;
+            ConferenceDetailsResponse conference = null;
             try
             {
-                conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+                await _conferenceCache.GetOrAddConferenceAsync(conferenceId, async () =>
+                {
+                    _logger.LogTrace("Retrieving conference details for conference: {ConferenceId}", conferenceId);
+                    conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+                    return conference;
+                });
+
+                
+                
+                // conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
             }
             catch (VideoApiException e)
             {
