@@ -48,7 +48,7 @@ namespace VideoWeb.UnitTests.Controllers
             judgeList.Should().NotBeNull();
             judgeList.Count.Should().Be(2);
             judgeList[0].CourtRooms.Count.Should().Be(3);
-            judgeList[1].CourtRooms.Count.Should().Be(2);
+            judgeList[1].CourtRooms.Count.Should().Be(1);
 
             judgeList[0].Venue.Should().Be("FirstName1");
             judgeList[1].Venue.Should().Be("FirstName4");
@@ -58,7 +58,6 @@ namespace VideoWeb.UnitTests.Controllers
             judgeList[0].CourtRooms[2].Should().Be("LastName3");
 
             judgeList[1].CourtRooms[0].Should().Be("LastName4");
-            judgeList[1].CourtRooms[1].Should().Be("LastName4");
 
         }
 

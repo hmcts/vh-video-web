@@ -11,20 +11,16 @@ namespace VideoWeb.Mappings
     {
         public List<CourtRoomsAccountResponse> Map(IEnumerable<ConferenceForAdminResponse> userResponses)
         {
-            var accountLissst = userResponses
-                .Select(x => x.Participants.FindAll(s => s.HearingRole == "Judge").First())
-                .Select(s => new {firstName = s.FirstName, lastName = s.LastName})
-                .GroupBy(x => new {x.firstName, x.lastName});
 
             var accountList = userResponses
                 .Select(x => x.Participants.FindAll(s => s.HearingRole == "Judge").First())
-                .Select(s => new { firstName = s.FirstName, lastName = s.LastName })
-                .GroupBy(x => new { x.firstName, x.lastName } )
-                .Select(s => new CourtRoomsAccountResponse(s.Key.firstName, s.Select(g => g.lastName).OrderBy(o => o).ToList()))
+                .Select(s => new { firstName = s.FirstName, lastName = s.LastName }).Distinct()
+                .GroupBy(x => x.firstName)
+                .Select(s => new CourtRoomsAccountResponse(s.Key, s.Select(g => g.lastName).OrderBy(o => o).ToList()))
                 .OrderBy(s => s.Venue)
                 .ToList();
 
-            return accountList;
+            return accountList; 
         }
     }
 }

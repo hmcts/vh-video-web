@@ -4,12 +4,13 @@ import { SessionStorage } from 'src/app/services/session-storage';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VhoStorageKeys } from '../services/models/session-keys';
 import { VenueListComponent } from './venue-list.component';
-import { JudgeNameListResponse, CourtRoomsAccountResponse } from 'src/app/services/clients/api-client';
+import { CourtRoomsAccountResponse, HearingVenueResponse } from 'src/app/services/clients/api-client';
 import { CourtRoomsAccounts } from '../services/models/court-rooms-accounts';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { of } from 'rxjs';
 
 describe('VenueListComponent', () => {
     let component: VenueListComponent;
@@ -21,12 +22,18 @@ describe('VenueListComponent', () => {
     const venueSessionStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
     const roomSessionStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
 
-    const judges = new JudgeNameListResponse();
-    const judgeNames: string[] = [];
-    judgeNames.push('Birmingham');
-    judgeNames.push('Manchester');
-    judgeNames.push('Taylor House');
-    judges.first_names = judgeNames;
+    const venueNames: HearingVenueResponse[] = [];
+    var venueName1 = new HearingVenueResponse({ id: 1, name: 'Birmingham' })
+    var venueName2 = new HearingVenueResponse({ id: 2, name: 'Manchester' })
+    var venueName3 = new HearingVenueResponse({ id: 3, name: 'Taylor House' })
+    venueNames.push(venueName1);
+    venueNames.push(venueName2);
+    venueNames.push(venueName3);
+
+    const selectedJudgeNames: string[] = [];
+    selectedJudgeNames.push(venueName1.name);
+    selectedJudgeNames.push(venueName2.name);
+    selectedJudgeNames.push(venueName3.name);
 
     const courtRoomsAccounts1 = new CourtRoomsAccountResponse({ venue: 'Birmingham', court_rooms: ['Room 01', 'Room 02'] });
     const courtRoomsAccounts2 = new CourtRoomsAccountResponse({ venue: 'Manchester', court_rooms: ['Room 01', 'Room 02'] });
@@ -41,31 +48,31 @@ describe('VenueListComponent', () => {
     venueAccounts.push(venueAccounts2);
 
     beforeAll(() => {
-        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getDistinctJudgeNames']);
+        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebService', ['getVenues']);
         router = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
         vhoQueryService = jasmine.createSpyObj<VhoQueryService>('VhoQueryService', ['getCourtRoomsAccounts']);
     });
 
     beforeEach(() => {
         component = new VenueListComponent(videoWebServiceSpy, router, vhoQueryService, logger);
-        videoWebServiceSpy.getDistinctJudgeNames.and.returnValue(Promise.resolve(judges));
+        videoWebServiceSpy.getVenues.and.returnValue(of(venueNames));
         vhoQueryService.getCourtRoomsAccounts.and.returnValue(Promise.resolve(courtAccounts));
         venueSessionStorage.clear();
     });
 
     it('should retrieve and populate venues on init', async () => {
-        expect(component.judges).toBeUndefined();
+        expect(component.venues).toBeUndefined();
         await component.ngOnInit();
-        expect(component.judges).toBeDefined();
+        expect(component.venues).toBeDefined();
     });
 
     it('should update storage with selection', () => {
-        const selection = [judges.first_names[0]];
+        const selection = [venueNames[0].name];
         component.selectedJudges = selection;
         component.updateSelection();
         const result = venueSessionStorage.get();
         expect(result.length).toBe(selection.length);
-        expect(result[0]).toBe(judges.first_names[0]);
+        expect(result[0]).toBe(venueNames[0].name);
     });
 
     it('should navigate to admin hearing list', fakeAsync(() => {
@@ -80,11 +87,11 @@ describe('VenueListComponent', () => {
     });
 
     it('should return true when allocations are selected', () => {
-        component.selectedJudges = [judges[0]];
+        component.selectedJudges = [venueNames[0].name];
         expect(component.venuesSelected).toBeTruthy();
     });
     it('should  create filter records with all options are selected and store in storage', fakeAsync(() => {
-        component.selectedJudges = judgeNames;
+        component.selectedJudges = selectedJudgeNames;
         component.goToHearingList();
         tick();
         expect(component.filterCourtRoomsAccounts.length).toBe(2);
@@ -103,7 +110,7 @@ describe('VenueListComponent', () => {
         expect(result[1].courtsRooms[1].selected).toBeTrue();
     }));
     it('should update filter records with select options from filter in storage', fakeAsync(() => {
-        component.selectedJudges = judgeNames;
+        component.selectedJudges = selectedJudgeNames;
         venueAccounts[0].courtsRooms[0].selected = false;
         venueAccounts[1].courtsRooms[0].selected = false;
 
