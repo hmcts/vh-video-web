@@ -2378,7 +2378,7 @@
           "Swashbuckle.AspNetCore.Newtonsoft": "5.0.0",
           "UserApi.Client": "1.24.3",
           "VH.Core.Configuration": "0.1.12",
-          "VideoApi.Client": "1.25.12",
+          "VideoApi.Client": "1.25.13-pullrequest0391-0005",
           "VideoWeb.Common": "1.0.0",
           "VideoWeb.Contract": "1.0.0",
           "VideoWeb.EventHub": "1.0.0"
@@ -2405,7 +2405,7 @@
         "dependencies": {
           "BookingsApi.Client": "1.25.8",
           "UserApi.Client": "1.24.3",
-          "VideoApi.Client": "1.25.12",
+          "VideoApi.Client": "1.25.13-pullrequest0391-0005",
           "VideoWeb.Common": "1.0.0"
         }
       },
@@ -2418,7 +2418,7 @@
           "Microsoft.Extensions.Caching.Abstractions": "3.1.10",
           "System.Text.Json": "4.7.1",
           "UserApi.Client": "1.24.3",
-          "VideoApi.Client": "1.25.13-pullrequest0391-0005"
+          "VideoApi.Client": "1.25.13-pullrequest0391-0005",
           "VideoWeb.Common": "1.0.0"
         }
       }
