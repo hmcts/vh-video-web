@@ -24,7 +24,8 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            var participantAdded = SourceConference.Participants.Find(participant => participant.Id == callbackEvent.ParticipantId);
+            // var participantAdded = SourceConference.Participants.Find(participant => participant.Id == callbackEvent.ParticipantId);
+            var participantAdded = callbackEvent.ParticipantAdded;
             var participantResponse = new ParticipantResponse() { DisplayName = participantAdded.DisplayName, Role = participantAdded.Role, HearingRole = participantAdded.HearingRole };
             return PublishParticipantAddedMessage(participantResponse);
         }

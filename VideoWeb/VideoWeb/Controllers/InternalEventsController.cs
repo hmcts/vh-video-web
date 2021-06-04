@@ -81,11 +81,27 @@ namespace VideoWeb.Controllers
                     return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
                 });
 
-                // TODO: How do we update cache?
-                // TODO: Mapper
-                CallbackEvent callbackEvent = new CallbackEvent() { ConferenceId = conferenceId, EventType = request.EventType, ParticipantId = request.ParticipantId, TimeStampUtc = request.TimeStampUtc };
-                
-                await PublishEventToUi(callbackEvent);
+                var participantMapper = _mapperFactory.Get<ParticipantRequest, Participant>(); //TODO inject directly?? Or create in constructor?
+
+                //request.AddParticipantsToConferenceRequest.Participants.Select(participant => {
+                //    return participantMapper.Map(participant);
+                //}).ToList().ForEach(participant =>
+
+                foreach(var participant in request.AddParticipantsToConferenceRequest.Participants)
+                {
+                    var mapped = participantMapper.Map(participant);
+                    conference.AddParticipant(mapped);
+                };
+
+                await _conferenceCache.UpdateConferenceAsync(conference);
+
+                foreach (var participant in request.AddParticipantsToConferenceRequest.Participants)
+                {
+                    var mapped = participantMapper.Map(participant);
+                    CallbackEvent callbackEvent = new CallbackEvent() { ConferenceId = conferenceId, EventType = request.EventType, ParticipantId = Guid.Empty, TimeStampUtc = request.TimeStampUtc, ParticipantAdded = mapped }; // TODO remove new Guid
+
+                    await PublishEventToUi(callbackEvent);
+                };
 
                 return NoContent();
             }
