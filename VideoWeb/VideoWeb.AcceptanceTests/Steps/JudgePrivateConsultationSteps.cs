@@ -42,14 +42,14 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"the (.*) user has entered the private consultation room")]
         public void GivenTheUserHasEnteredThePrivateConsultationRoom(string user)
         {
-            _progressionSteps.GivenIAmOnThePage(user, "Waiting Room");
+            _progressionSteps.GivenIAmOnThePage(user, "Judge Waiting Room");
             WhenTheyEnterPrivateConsultationRoom();
         }
 
         [Given(@"the (.*) user has also entered the private consultation room")]
         public void GivenTheUserHasAlsoEnteredThePrivateConsultationRoom(string user)
         {
-            _progressionSteps.GivenHearingExistsAndIAmOnThePage(user, "Waiting Room");
+            _progressionSteps.GivenHearingExistsAndIAmOnThePage(user, "Judge Waiting Room");
             WhenTheyEnterPrivateConsultationRoom();
         }
 
@@ -57,7 +57,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void GivenAPanelMemberIsInTheWaitingRoom()
         {
             _dataSetupSteps.GivenIHaveAHearingWithUser("panel member");
-            _progressionSteps.GivenHearingExistsAndIAmOnThePage("panel member", "Waiting Room");
+            _progressionSteps.GivenHearingExistsAndIAmOnThePage("panel member", "Judge Waiting Room");
         }
 
         [Given(@"a Panel Member has entered the private consultation room")]
@@ -71,7 +71,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void GivenAWingerIsInTheWaitingRoom()
         {
             _dataSetupSteps.GivenIHaveAHearingWithUser("winger");
-            _progressionSteps.GivenHearingExistsAndIAmOnThePage("winger", "Waiting Room");
+            _progressionSteps.GivenHearingExistsAndIAmOnThePage("winger", "Judge Waiting Room");
         }
         
         [Given(@"a Winger has entered the private consultation room")]

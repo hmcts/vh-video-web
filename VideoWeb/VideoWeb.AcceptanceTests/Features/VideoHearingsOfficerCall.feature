@@ -24,7 +24,7 @@ Scenario: Video Hearings Officer cannot call users in private consultation
 @VIH-4613 @DisableLogging
 Scenario: Video Hearings Officer cannot call users in a hearing
 	Given the the first Individual user has progressed to the Waiting Room page
-	And the Judge user has progressed to the Waiting Room page for the existing hearing
+	And the Judge user has progressed to the Judge Waiting Room page for the existing hearing
 	When the Judge starts the hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
@@ -37,7 +37,7 @@ Scenario: Video Hearings Officer cannot call users in a hearing
 @VIH-4611 @VIH-4613 @VIH-4730 @VIH-6132 @VIH-6420 @VIH-7413 @Smoketest-Extended @DisableLogging
 Scenario: Video Hearings Officer Calls Users
   Given I have a hearing with a <User>
-  And the <User> user has progressed to the Waiting Room page for the existing hearing
+  And the <User> user has progressed to the <Waiting Room> page for the existing hearing
 	And the Video Hearings Officer user has progressed to the VHO Hearing List page for the existing hearing
 	When the Video Hearings Officer starts a call with <User>
 	And <User> accepts the VHO call
@@ -47,11 +47,11 @@ Scenario: Video Hearings Officer Calls Users
 	When the Video Hearings Officer ends the call
 	Then the user is on the Hearing List page
     Examples: 
-  | User             |
-  | first Individual |
-	| Observer         |
-  | Panel Member     |
-  | Winger           |
+  | User             | Waiting Room       |
+  | first Individual | Waiting Room       |
+  | Observer         | Waiting Room       |
+  | Panel Member     | Judge Waiting Room |
+  | Winger           | Judge Waiting Room |
 
 
 @VIH-7413

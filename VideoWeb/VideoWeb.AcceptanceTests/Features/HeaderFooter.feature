@@ -5,7 +5,7 @@ Feature: Header and Footer
 
 @VIH-4090
 Scenario: Judge beta banner
-	Given the Judge user has progressed to the Hearing List page
+	Given the Judge user has progressed to the Judge Hearing List page
 	Then the banner should not be displayed
 
 @VIH-4090
@@ -18,7 +18,7 @@ Scenario: Participant beta banner
 
 @VIH-4701
 Scenario: Judge privacy policy page
-	Given the Judge user has progressed to the Hearing List page
+	Given the Judge user has progressed to the Judge Hearing List page
 	When the user clicks the Privacy policy link
 	And switches to the privacy tab
 	Then the user is on the Privacy Policy page 
@@ -32,7 +32,7 @@ Scenario: Participant privacy page
 
 @VIH-5023
 Scenario: Judge accessibility statement
-	Given the Judge user has progressed to the Hearing List page
+	Given the Judge user has progressed to the Judge Hearing List page
 	When the user clicks the Accessibility link
 	Then the user is on the Accessibility page 
 
@@ -44,7 +44,7 @@ Scenario: Participant accessibility statement
 
 @VIH-4090
 Scenario: Judge open government licence
-	Given the Judge user has progressed to the Hearing List page
+	Given the Judge user has progressed to the Judge Hearing List page
 	When the user clicks the Open Government Licence link
 	Then the user is on the Open Government Licence page 
 
