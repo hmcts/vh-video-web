@@ -32,29 +32,6 @@ namespace VideoWeb.Controllers
         }
 
         /// <summary>
-        /// Get Judge names
-        /// </summary>
-        /// <returns>List of judges with hearing scheduled, if any</returns>
-        [HttpGet]
-        [ProducesResponseType(typeof(JudgeNameListResponse), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        [SwaggerOperation(OperationId = "GetDistinctJudgeNames")]
-        public async Task<ActionResult<JudgeNameListResponse>> GetDistinctJudgeNamesAsync()
-        {
-            _logger.LogDebug("GetDistinctJudgeNames");
-            try
-            {
-                var judges = await _videoApiClient.GetDistinctJudgeNamesAsync();
-
-                return Ok(judges);
-            }
-            catch (VideoApiException e)
-            {
-                _logger.LogError(e, "Unable to retrieve judge names");
-                return NotFound();
-            }
-        }
-        /// <summary>
         ///     Get available courts
         /// </summary>
         /// <returns>List of courts</returns>
@@ -70,7 +47,7 @@ namespace VideoWeb.Controllers
                 var response = await _bookingsApiClient.GetHearingVenuesAsync();
                 return Ok(response);
             }
-            catch (VideoApiException e)
+            catch (BookingsApiException e)
             {
                 _logger.LogError(e, "Unable to retrieve venues");
                 return NotFound();
