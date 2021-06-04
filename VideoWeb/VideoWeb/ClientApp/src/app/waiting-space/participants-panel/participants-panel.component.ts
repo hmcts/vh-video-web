@@ -203,7 +203,16 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         }
 
         participant.assignPexipId(updatedParticipant.uuid);
-        participant.updateParticipant(updatedParticipant.isRemoteMuted, updatedParticipant.handRaised, updatedParticipant.isSpotlighted);
+        if (participant instanceof LinkedParticipantPanelModel) {
+            participant.updateParticipant(updatedParticipant.isRemoteMuted, null, updatedParticipant.isSpotlighted);
+        } else {
+            participant.updateParticipant(
+                updatedParticipant.isRemoteMuted,
+                updatedParticipant.handRaised,
+                updatedParticipant.isSpotlighted
+            );
+        }
+
         if (participant instanceof LinkedParticipantPanelModel) {
             participant.participants.forEach(async p => {
                 await this.eventService.publishRemoteMuteStatus(this.conferenceId, p.id, updatedParticipant.isRemoteMuted);

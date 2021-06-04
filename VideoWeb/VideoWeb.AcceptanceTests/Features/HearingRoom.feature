@@ -7,7 +7,7 @@ Feature: Hearing Room
 @VIH-4610 @VIH-4615 @HearingTest @Smoketest-Extended @DisableLogging
 Scenario: Judge pauses and closes hearing
 	Given the first Individual user has progressed to the Waiting Room page
-	And the Judge user has progressed to the Waiting Room page for the existing hearing
+	And the Judge user has progressed to the Judge Waiting Room page for the existing hearing
 	Then the participant status for the first Individual's is displayed as Connected
 	When the Judge starts the hearing
 	And the countdown finishes
@@ -38,7 +38,7 @@ Scenario: Interpreter And Interpretee joins hearing
   Given I have a hearing with an Interpreter
   And the first Individual user has progressed to the Waiting Room page for the existing hearing
 	And the first Interpreter user has progressed to the Waiting Room page for the existing hearing
-  And the Judge user has progressed to the Waiting Room page for the existing hearing
+  And the Judge user has progressed to the Judge Waiting Room page for the existing hearing
 	When the Judge starts the hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
@@ -64,7 +64,7 @@ Scenario: Four participants join hearing
 	And the first Representative user has progressed to the Waiting Room page for the existing hearing
 	And the second Individual user has progressed to the Waiting Room page for the existing hearing
 	And the second Representative user has progressed to the Waiting Room page for the existing hearing
-	And the Judge user has progressed to the Waiting Room page for the existing hearing
+	And the Judge user has progressed to the Judge Waiting Room page for the existing hearing
 	When the Judge starts the hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
@@ -85,7 +85,7 @@ Scenario: Four participants join hearing
 Scenario: Audio Recording
   Given I have a hearing with audio recording enabled
   And the first Individual user has progressed to the Waiting Room page for the existing hearing
-	And the Judge user has progressed to the Waiting Room page for the existing hearing
+	And the Judge user has progressed to the Judge Waiting Room page for the existing hearing
 	When the Judge starts the hearing
 	And the countdown finishes
 	And the Judge is on the Hearing Room page for 20 seconds
@@ -100,7 +100,7 @@ Scenario: VHO Monitors Hearing
 	Then the VHO can see the Judge status is Unavailable
   And the VHO can see the participants statuses are Not signed in
   Given the first Individual user has progressed to the Waiting Room page for the existing hearing
-	And the Judge user has progressed to the Waiting Room page for the existing hearing
+	And the Judge user has progressed to the Judge Waiting Room page for the existing hearing
   And in the Video Hearings Officer's browser
   Then the VHO can see the status of participant the first Individual's is Available
   And the VHO can see that the first Individual's is in the Waiting Room
@@ -124,8 +124,8 @@ Scenario: VHO Monitors Hearing
 Scenario: Observer and Panel Member join hearing
   Given I have a hearing with an Observer and Panel Member
 	And the Observer user has progressed to the Waiting Room page for the existing hearing
-	And the Panel Member user has progressed to the Waiting Room page for the existing hearing
-	And the Judge user has progressed to the Waiting Room page for the existing hearing
+	And the Panel Member user has progressed to the Judge Waiting Room page for the existing hearing
+	And the Judge user has progressed to the Judge Waiting Room page for the existing hearing
 	When the Judge starts the hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
@@ -143,8 +143,8 @@ Scenario: Observer and Panel Member join hearing
 @HearingTest @Smoketest-Extended @DisableLogging
 Scenario: Winger joins hearing
   Given I have a CACD hearing with a Winger
-	And the Winger user has progressed to the Waiting Room page for the existing hearing
-	And the Judge user has progressed to the Waiting Room page for the existing hearing
+	And the Winger user has progressed to the Judge Waiting Room page for the existing hearing
+	And the Judge user has progressed to the Judge Waiting Room page for the existing hearing
 	When the Judge starts the hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
@@ -160,7 +160,7 @@ Scenario: Winger joins hearing
   
 @HearingTest @DisableLogging
 Scenario: Judge opens a closed hearing
-	Given the Judge user has progressed to the Waiting Room page
+	Given the Judge user has progressed to the Judge Waiting Room page
 	Then the user is on the Waiting Room page
 	When the Judge starts the hearing  
   And the Judge closes the hearing 

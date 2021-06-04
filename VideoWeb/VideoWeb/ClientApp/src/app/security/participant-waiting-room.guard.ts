@@ -21,7 +21,7 @@ export class ParticipantWaitingRoomGuard implements CanActivate {
 
             if (this.hearing.isPastClosedTime()) {
                 this.logger.info(
-                    '[ParticipantWaitingRoomGuard] - Returning back to hearing list because hearing has been closed for over 30 minutes.'
+                    '[ParticipantWaitingRoomGuard] - Returning back to hearing list because hearing has been closed for over 2 hours.'
                 );
                 this.router.navigate([pageUrls.ParticipantHearingList]);
 

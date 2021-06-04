@@ -6,7 +6,7 @@ Feature: Hearing Status
 @VIH-4195
 Scenario Outline: VHO views hearing status
 	Given I have a hearing in 5 minutes time
-	And I have another hearing
+	And I have another hearing in 10 minutes time
 	And the hearing status changes to <Status>
 	And a new browser is open for a Video Hearings Officer
 	When they attempt to login with valid credentials

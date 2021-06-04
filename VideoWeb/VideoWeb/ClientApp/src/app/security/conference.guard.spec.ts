@@ -30,7 +30,7 @@ describe('ConferenceGuard', () => {
 
     it('should not be able to activate component when conference closed and expired', async () => {
         const date = new Date(new Date().toUTCString());
-        date.setUTCMinutes(date.getUTCMinutes() - 32);
+        date.setUTCMinutes(date.getUTCMinutes() - 122);
         const response = new ConferenceResponse({ status: ConferenceStatus.Closed, closed_date_time: date });
         videoWebServiceSpy.getConferenceById.and.returnValue(Promise.resolve(response));
         const result = await guard.canActivate(activateRoute);

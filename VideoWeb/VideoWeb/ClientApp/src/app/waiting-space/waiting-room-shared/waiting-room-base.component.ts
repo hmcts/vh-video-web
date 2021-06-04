@@ -132,6 +132,14 @@ export abstract class WaitingRoomBaseDirective {
         this.errorCount = 0;
     }
 
+    isParticipantInCorrectWaitingRoomState(): boolean {
+        return (
+            this.connected &&
+            this.participant.status === ParticipantStatus.Available &&
+            (!this.participant.current_room || this.participant.current_room.label === 'WaitingRoom')
+        );
+    }
+
     get conferenceId(): string {
         if (this.conference) {
             return this.conference.id;
@@ -402,6 +410,14 @@ export abstract class WaitingRoomBaseDirective {
                         endpoint.current_room = null;
                     }
                 }
+
+                this.logger.info(
+                    `${this.loggerPrefix} participant (${roomTransfer.participant_id}) transfered from ${roomTransfer.from_room} to ${roomTransfer.to_room} - Conference: ${this.conferenceId}`,
+                    {
+                        message: roomTransfer,
+                        currentParticipantState: participant
+                    }
+                );
             })
         );
 
@@ -905,7 +921,7 @@ export abstract class WaitingRoomBaseDirective {
             this.isTransferringIn = false;
         }
         participant.status = message.status;
-        this.logger.info(`${this.loggerPrefix} Handling participant update status change`, {
+        this.logger.info(`${this.conferenceId} ${this.loggerPrefix} Handling participant update status change`, {
             conference: this.conferenceId,
             participant: participant.id,
             status: participant.status
