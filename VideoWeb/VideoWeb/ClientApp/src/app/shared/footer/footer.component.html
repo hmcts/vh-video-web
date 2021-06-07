@@ -14,13 +14,8 @@
             </a>
           </li>
           <li class="govuk-footer__inline-list-item">
-            <a class="govuk-footer__link" id="translateSwitch" (click)="switchLaguage();">
+            <a class="govuk-footer__link" id="translateSwitch" [routerLink]="" (click)="switchLaguage();">
               {{ 'footer.translate-to' | translate }}
-            </a>
-          </li>
-          <li class="govuk-footer__inline-list-item">
-            <a class="govuk-footer__link" id="translateToTl" (click)="setLanguage('tl');">
-              {{ 'footer.translate-to-test' | translate }}
             </a>
           </li>
         </ul>
