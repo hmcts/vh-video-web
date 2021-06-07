@@ -49,10 +49,9 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void ThenTheHearingsShouldBeInChronologicalOrder()
         {
             var displayedCaseOrder = _browsers[_c.CurrentUser].Driver.WaitUntilElementsVisible(VhoHearingListPage.CaseNumbers);
-            var automationCaseNumberLength = _c.Test.Case.Number.Length;
-            var automationOnlyCases = displayedCaseOrder.Select(caseNumber => caseNumber.Text.Trim()).Where(caseNumberText => caseNumberText.Trim().Length.Equals(automationCaseNumberLength) && caseNumberText.Contains("/")).ToList();
-            automationOnlyCases = RemoveAutomationCasesForOtherJudges(automationOnlyCases);
-            automationOnlyCases.Should().BeInAscendingOrder();
+            var hearingsTime = _browsers[_c.CurrentUser].Driver.FindElements(VhoHearingListPage.HearingTimes);
+            var automationOnlyTimes = hearingsTime.Select(hearingtime => hearingtime.Text.Trim()).ToList();
+            automationOnlyTimes.Should().BeInAscendingOrder();
         }
 
         private List<string> RemoveAutomationCasesForOtherJudges(IEnumerable<string> caseNumbers)
