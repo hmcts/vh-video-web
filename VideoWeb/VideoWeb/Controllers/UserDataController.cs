@@ -50,7 +50,7 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var conferences = await _videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(null, query.HearingVenueNames);
+                var conferences = await _videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(query.HearingVenueNames);
                 var courtRoomsAccountResponsesMapper = _mapperFactory.Get<IEnumerable<ConferenceForAdminResponse>, List<CourtRoomsAccountResponse>>();
                 var accountList = courtRoomsAccountResponsesMapper.Map(conferences);
 

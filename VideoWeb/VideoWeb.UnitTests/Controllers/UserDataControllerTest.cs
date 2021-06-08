@@ -38,7 +38,7 @@ namespace VideoWeb.UnitTests.Controllers
         {
             var conferences = ConferenceResponseBuilder.BuildData();
 
-            _mocker.Mock<IVideoApiClient>().Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(null, _query.HearingVenueNames)).ReturnsAsync(conferences);
+            _mocker.Mock<IVideoApiClient>().Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(_query.HearingVenueNames)).ReturnsAsync(conferences);
 
             var result = await _sut.GetCourtRoomsAccounts(_query);
 
@@ -68,7 +68,7 @@ namespace VideoWeb.UnitTests.Controllers
             var apiException = new UserApiException("Court rooms accounts not found", (int)HttpStatusCode.BadRequest,
                 "Error", null, null);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(null, _query.HearingVenueNames))
+                .Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(_query.HearingVenueNames))
                 .ThrowsAsync(apiException);
 
             var result = await _sut.GetCourtRoomsAccounts(_query);

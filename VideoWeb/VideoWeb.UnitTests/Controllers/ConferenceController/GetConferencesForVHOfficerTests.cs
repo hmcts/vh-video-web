@@ -46,7 +46,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 (int) HttpStatusCode.InternalServerError,
                 "Stacktrace goes here", null, default, null);
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>()))
+                .Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(It.IsAny<IEnumerable<string>>()))
                 .ThrowsAsync(apiException);
 
             var result = await _controller.GetConferencesForVhOfficerAsync(new VhoConferenceFilterQuery());
@@ -90,7 +90,7 @@ namespace VideoWeb.UnitTests.Controllers.ConferenceController
                 .Select(x => x.Id).ToList();
 
             _mocker.Mock<IVideoApiClient>()
-                .Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(It.IsAny<IEnumerable<string>>(), It.IsAny<IEnumerable<string>>()))
+                .Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(It.IsAny<IEnumerable<string>>()))
                 .ReturnsAsync(conferences);
 
             var conferenceWithMessages = conferences.First();
