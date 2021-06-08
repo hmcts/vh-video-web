@@ -17,7 +17,6 @@ import {
     UpdateParticipantDisplayNameRequest,
     UpdateParticipantStatusEventRequest,
     UnreadInstantMessageConferenceCountResponse,
-    JudgeNameListResponse,
     ParticipantForUserResponse,
     VideoEndpointResponse,
     LoggedParticipantResponse,
@@ -89,10 +88,6 @@ export class VideoWebService implements IVideoWebApiService {
 
     getObfuscatedName(displayName: string): string {
         return displayName.replace(/(?!\b)\w/g, '*');
-    }
-
-    getDistinctJudgeNames(): Promise<JudgeNameListResponse> {
-        return this.apiClient.getDistinctJudgeNames().toPromise();
     }
 
     getVenues(): Observable<HearingVenueResponse[]> {

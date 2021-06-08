@@ -3833,86 +3833,6 @@ export class ApiClient {
     }
 
     /**
-     * Get Judge names
-     * @return Success
-     */
-    getDistinctJudgeNames(): Observable<JudgeNameListResponse> {
-        let url_ = this.baseUrl + '/hearing-venues';
-        url_ = url_.replace(/[?&]$/, '');
-
-        let options_: any = {
-            observe: 'response',
-            responseType: 'blob',
-            headers: new HttpHeaders({
-                Accept: 'application/json'
-            })
-        };
-
-        return this.http
-            .request('get', url_, options_)
-            .pipe(
-                _observableMergeMap((response_: any) => {
-                    return this.processGetDistinctJudgeNames(response_);
-                })
-            )
-            .pipe(
-                _observableCatch((response_: any) => {
-                    if (response_ instanceof HttpResponseBase) {
-                        try {
-                            return this.processGetDistinctJudgeNames(<any>response_);
-                        } catch (e) {
-                            return <Observable<JudgeNameListResponse>>(<any>_observableThrow(e));
-                        }
-                    } else return <Observable<JudgeNameListResponse>>(<any>_observableThrow(response_));
-                })
-            );
-    }
-
-    protected processGetDistinctJudgeNames(response: HttpResponseBase): Observable<JudgeNameListResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {};
-        if (response.headers) {
-            for (let key of response.headers.keys()) {
-                _headers[key] = response.headers.get(key);
-            }
-        }
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result200: any = null;
-                    let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result200 = JudgeNameListResponse.fromJS(resultData200);
-                    return _observableOf(result200);
-                })
-            );
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    let result400: any = null;
-                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = ProblemDetails.fromJS(resultData400);
-                    return throwException('Bad Request', status, _responseText, _headers, result400);
-                })
-            );
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('Unauthorized', status, _responseText, _headers);
-                })
-            );
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(
-                _observableMergeMap(_responseText => {
-                    return throwException('An unexpected server error occurred.', status, _responseText, _headers);
-                })
-            );
-        }
-        return _observableOf<JudgeNameListResponse>(<any>null);
-    }
-    /**
      * Get available courts
      * @return Success
      */
@@ -6842,47 +6762,6 @@ export interface ICourtRoomsAccountResponse {
     /** The venue name (judge first name) */
     venue?: string | undefined;
     court_rooms?: string[] | undefined;
-}
-
-export class JudgeNameListResponse implements IJudgeNameListResponse {
-    first_names?: string[] | undefined;
-
-    constructor(data?: IJudgeNameListResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            if (Array.isArray(_data['first_names'])) {
-                this.first_names = [] as any;
-                for (let item of _data['first_names']) this.first_names!.push(item);
-            }
-        }
-    }
-
-    static fromJS(data: any): JudgeNameListResponse {
-        data = typeof data === 'object' ? data : {};
-        let result = new JudgeNameListResponse();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.first_names)) {
-            data['first_names'] = [];
-            for (let item of this.first_names) data['first_names'].push(item);
-        }
-        return data;
-    }
-}
-
-export interface IJudgeNameListResponse {
-    first_names?: string[] | undefined;
 }
 
 export class HearingVenueResponse implements IHearingVenueResponse {

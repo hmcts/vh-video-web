@@ -68,7 +68,7 @@ describe('VenueListComponent', () => {
 
     it('should update storage with selection', () => {
         const selection = [venueNames[0].name];
-        component.selectedJudges = selection;
+        component.selectedVenues = selection;
         component.updateSelection();
         const result = venueSessionStorage.get();
         expect(result.length).toBe(selection.length);
@@ -82,16 +82,16 @@ describe('VenueListComponent', () => {
     }));
 
     it('should return false when no allocations are selected', () => {
-        component.selectedJudges = [];
+        component.selectedVenues = [];
         expect(component.venuesSelected).toBeFalsy();
     });
 
     it('should return true when allocations are selected', () => {
-        component.selectedJudges = [venueNames[0].name];
+        component.selectedVenues = [venueNames[0].name];
         expect(component.venuesSelected).toBeTruthy();
     });
     it('should  create filter records with all options are selected and store in storage', fakeAsync(() => {
-        component.selectedJudges = selectedJudgeNames;
+        component.selectedVenues = selectedJudgeNames;
         component.goToHearingList();
         tick();
         expect(component.filterCourtRoomsAccounts.length).toBe(2);
@@ -110,7 +110,7 @@ describe('VenueListComponent', () => {
         expect(result[1].courtsRooms[1].selected).toBeTrue();
     }));
     it('should update filter records with select options from filter in storage', fakeAsync(() => {
-        component.selectedJudges = selectedJudgeNames;
+        component.selectedVenues = selectedJudgeNames;
         venueAccounts[0].courtsRooms[0].selected = false;
         venueAccounts[1].courtsRooms[0].selected = false;
 
@@ -132,7 +132,7 @@ describe('VenueListComponent', () => {
         expect(result[1].courtsRooms[1].selected).toBeTrue();
     }));
     it('should not get court rooms accounts if no venues selected', fakeAsync(() => {
-        component.selectedJudges = null;
+        component.selectedVenues = null;
         spyOn(logger, 'warn');
         component.goToHearingList();
         tick();

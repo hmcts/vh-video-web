@@ -16,7 +16,7 @@ import {
     ConferenceForJudgeResponse,
     UpdateParticipantDisplayNameRequest,
     ConferenceResponseVho,
-    JudgeNameListResponse,
+    HearingVenueResponse,
     VideoEndpointResponse,
     ParticipantForUserResponse
 } from 'src/app/services/clients/api-client';
@@ -57,7 +57,7 @@ export class MockVideoWebService implements IVideoWebApiService {
     getObfuscatedName(displayName: string): string {
         return displayName.replace(/(?!\b)\w/g, '*');
     }
-    getDistinctJudgeNames(): Promise<JudgeNameListResponse> {
+    getVenues(): Observable<HearingVenueResponse[]> {
         throw new Error('Method not implemented.');
     }
     getConferencesForJudge(): Observable<ConferenceForJudgeResponse[]> {

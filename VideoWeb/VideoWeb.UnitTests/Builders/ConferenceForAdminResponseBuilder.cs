@@ -5,7 +5,7 @@ using VideoApi.Contract.Responses;
 
 namespace VideoWeb.UnitTests.Builders
 {
-    public static class ConferenceResponseBuilder
+    public static class ConferenceForAdminResponseBuilder
     {
         public static List<ConferenceForAdminResponse> BuildData()
         {

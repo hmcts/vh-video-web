@@ -36,7 +36,7 @@ namespace VideoWeb.UnitTests.Controllers
         [Test]
         public async Task Should_return_list_of_court_rooms_accounts_with_status_ok()
         {
-            var conferences = ConferenceResponseBuilder.BuildData();
+            var conferences = ConferenceForAdminResponseBuilder.BuildData();
 
             _mocker.Mock<IVideoApiClient>().Setup(x => x.GetConferencesTodayForAdminByHearingVenueNameAsync(_query.HearingVenueNames)).ReturnsAsync(conferences);
 
@@ -44,20 +44,20 @@ namespace VideoWeb.UnitTests.Controllers
 
             var typedResult = (OkObjectResult)result.Result;
             typedResult.Should().NotBeNull();
-            var judgeList = typedResult.Value as List<CourtRoomsAccountResponse>;
-            judgeList.Should().NotBeNull();
-            judgeList.Count.Should().Be(2);
-            judgeList[0].CourtRooms.Count.Should().Be(3);
-            judgeList[1].CourtRooms.Count.Should().Be(1);
+            var courtRoomsAccounts = typedResult.Value as List<CourtRoomsAccountResponse>;
+            courtRoomsAccounts.Should().NotBeNull();
+            courtRoomsAccounts.Count.Should().Be(2);
+            courtRoomsAccounts[0].LastNames.Count.Should().Be(3);
+            courtRoomsAccounts[1].LastNames.Count.Should().Be(1);
 
-            judgeList[0].Venue.Should().Be("FirstName1");
-            judgeList[1].Venue.Should().Be("FirstName4");
+            courtRoomsAccounts[0].FirstName.Should().Be("FirstName1");
+            courtRoomsAccounts[1].FirstName.Should().Be("FirstName4");
 
-            judgeList[0].CourtRooms[0].Should().Be("LastName1");
-            judgeList[0].CourtRooms[1].Should().Be("LastName2");
-            judgeList[0].CourtRooms[2].Should().Be("LastName3");
+            courtRoomsAccounts[0].LastNames[0].Should().Be("LastName1");
+            courtRoomsAccounts[0].LastNames[1].Should().Be("LastName2");
+            courtRoomsAccounts[0].LastNames[2].Should().Be("LastName3");
 
-            judgeList[1].CourtRooms[0].Should().Be("LastName4");
+            courtRoomsAccounts[1].LastNames[0].Should().Be("LastName4");
 
         }
 

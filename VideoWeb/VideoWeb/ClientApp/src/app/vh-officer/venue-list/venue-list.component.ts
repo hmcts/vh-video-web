@@ -18,7 +18,7 @@ export class VenueListComponent implements OnInit {
     private readonly judgeAllocationStorage: SessionStorage<string[]>;
     private readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
     venues: HearingVenueResponse[];
-    selectedJudges: string[];
+    selectedVenues: string[];
     venueListLoading: boolean;
     filterCourtRoomsAccounts: CourtRoomsAccounts[];
 
@@ -28,7 +28,7 @@ export class VenueListComponent implements OnInit {
         private vhoQueryService: VhoQueryService,
         private logger: Logger
     ) {
-        this.selectedJudges = [];
+        this.selectedVenues = [];
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
         this.courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
     }
@@ -37,17 +37,17 @@ export class VenueListComponent implements OnInit {
         this.venueListLoading = false;
         this.videoWebService.getVenues().subscribe(venues => {
             this.venues = venues;
-            this.selectedJudges = this.judgeAllocationStorage.get();
+            this.selectedVenues = this.judgeAllocationStorage.get();
             this.venueListLoading = false;
         });
     }
 
     get venuesSelected(): boolean {
-        return this.selectedJudges && this.selectedJudges.length > 0;
+        return this.selectedVenues && this.selectedVenues.length > 0;
     }
 
     updateSelection() {
-        this.judgeAllocationStorage.set(this.selectedJudges);
+        this.judgeAllocationStorage.set(this.selectedVenues);
     }
 
     getFiltersCourtRoomsAccounts(response: CourtRoomsAccountResponse[]) {
@@ -74,7 +74,7 @@ export class VenueListComponent implements OnInit {
 
     goToHearingList() {
         this.updateSelection();
-        this.vhoQueryService.getCourtRoomsAccounts(this.selectedJudges).then(response => {
+        this.vhoQueryService.getCourtRoomsAccounts(this.selectedVenues).then(response => {
             this.getFiltersCourtRoomsAccounts(response);
             this.router.navigateByUrl(pageUrls.AdminHearingList);
         });
