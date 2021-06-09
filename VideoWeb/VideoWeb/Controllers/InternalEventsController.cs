@@ -33,6 +33,7 @@ using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
 using Task = System.Threading.Tasks.Task;
 using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Models;
+using VideoWeb.EventHub.Enums;
 
 namespace VideoWeb.Controllers
 {
@@ -46,71 +47,70 @@ namespace VideoWeb.Controllers
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<InternalEventsController> _logger;
         private readonly IMapperFactory _mapperFactory;
-        
-        protected readonly IHubContext<EventHub.Hub.EventHub, IEventHubClient> HubContext;
 
         public InternalEventsController(
             IVideoApiClient videoApiClient,
             IEventHandlerFactory eventHandlerFactory,
             IConferenceCache conferenceCache,
             ILogger<InternalEventsController> logger,
-            IMapperFactory mapperFactory,
-            IHubContext<EventHub.Hub.EventHub, IEventHubClient> hubContext)
+            IMapperFactory mapperFactory)
         {
             _videoApiClient = videoApiClient;
             _eventHandlerFactory = eventHandlerFactory;
             _conferenceCache = conferenceCache;
             _logger = logger;
             _mapperFactory = mapperFactory;
-            HubContext = hubContext;
         }
 
-        [HttpPost]
-        [SwaggerOperation(OperationId = "InternalEvent")]
+        [HttpPost("ParticipantsAdded")]
+        [SwaggerOperation(OperationId = "ParticipantsAdded")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> SendInternalEventAsync(InternalEvent request)
+        public async Task<IActionResult> ParticipantsAdded(Guid conferenceId, AddParticipantsToConferenceRequest request)
         {
-            _logger.LogDebug("");
+            var participantMapper = _mapperFactory.Get<ParticipantRequest, Participant>(); //TODO inject directly?? Or create in constructor?
+            List<Participant> participantsAdded = request.Participants.Select(participant => participantMapper.Map(participant)).ToList();
+
             try
             {
-                var conferenceId = request.ConferenceId;
                 var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId, () =>
                 {
                     _logger.LogTrace("Retrieving conference details for conference: {ConferenceId}", conferenceId);
                     return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
                 });
+                _logger.LogDebug("ParticipantsAdded called. ConferenceId: {ConferenceId}, ParticipantCount: {ParticipantCount}",
+                    conferenceId, request.Participants.Count);
 
-                var participantMapper = _mapperFactory.Get<ParticipantRequest, Participant>(); //TODO inject directly?? Or create in constructor?
-
-                //request.AddParticipantsToConferenceRequest.Participants.Select(participant => {
-                //    return participantMapper.Map(participant);
-                //}).ToList().ForEach(participant =>
-
-                foreach(var participant in request.AddParticipantsToConferenceRequest.Participants)
+                
+                foreach (var participant in participantsAdded)
                 {
-                    var mapped = participantMapper.Map(participant);
-                    conference.AddParticipant(mapped);
-                };
+                    conference.AddParticipant(participant);
+                }
 
                 await _conferenceCache.UpdateConferenceAsync(conference);
 
-                foreach (var participant in request.AddParticipantsToConferenceRequest.Participants)
+                
+                foreach (var participant in participantsAdded)
                 {
-                    var mapped = participantMapper.Map(participant);
-                    CallbackEvent callbackEvent = new CallbackEvent() { ConferenceId = conferenceId, EventType = request.EventType, ParticipantId = Guid.Empty, TimeStampUtc = request.TimeStampUtc, ParticipantAdded = mapped }; // TODO remove new Guid
+                    CallbackEvent callbackEvent = new CallbackEvent() 
+                    { 
+                        ConferenceId = conferenceId, 
+                        EventType = EventType.ParticipantAdded, 
+                        TimeStampUtc = DateTime.UtcNow, 
+                        ParticipantAdded = participant 
+                    };
 
                     await PublishEventToUi(callbackEvent);
-                };
+                }
 
                 return NoContent();
             }
             catch (VideoApiException e)
             {
-                _logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", request.ConferenceId,
+                _logger.LogError(e, "ConferenceId: {ConferenceId}, ErrorCode: {StatusCode}", conferenceId,
                     e.StatusCode);
                 return StatusCode(e.StatusCode, e.Response);
-            }            
+            }
         }
         private Task PublishEventToUi(CallbackEvent callbackEvent)
         {
