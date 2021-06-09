@@ -19,14 +19,12 @@ namespace VideoWeb.Controllers
     [Authorize(AppRoles.VhOfficerRole)]
     public class VenuesController : Controller
     {
-        private readonly IVideoApiClient _videoApiClient;
         private readonly ILogger<VenuesController> _logger;
         private readonly IBookingsApiClient _bookingsApiClient;
 
 
         public VenuesController(IVideoApiClient videoApiClient, ILogger<VenuesController> logger, IBookingsApiClient bookingsApiClient)
         {
-            _videoApiClient = videoApiClient;
             _logger = logger;
             _bookingsApiClient = bookingsApiClient;
         }

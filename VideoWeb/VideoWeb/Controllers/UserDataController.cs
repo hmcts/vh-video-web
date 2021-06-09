@@ -22,7 +22,6 @@ namespace VideoWeb.Controllers
     [Authorize(AppRoles.VhOfficerRole)]
     public class UserDataController : ControllerBase
     {
-        private readonly IUserApiClient _userApiClient;
         private readonly ILogger<UserDataController> _logger;
         private readonly IMapperFactory _mapperFactory;
         private readonly IVideoApiClient _videoApiClient;
@@ -34,7 +33,6 @@ namespace VideoWeb.Controllers
             IMapperFactory mapperFactory,
             IVideoApiClient videoApiClient)
         {
-            _userApiClient = userApiClient;
             _logger = logger;
             _mapperFactory = mapperFactory;
             _videoApiClient = videoApiClient;
