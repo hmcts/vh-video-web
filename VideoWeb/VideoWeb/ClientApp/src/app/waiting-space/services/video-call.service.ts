@@ -267,6 +267,11 @@ export class VideoCallService {
         this.pexipAPI.setParticipantMute(pexipParticipantId, mute);
     }
 
+    // NOTE: Temporary place until this class if refactored to store the state for mute etc.
+    getSpotlightedParticipants(conferenceId: string) : Observable<string[]> {
+        throw Error("Not implemented");
+    }
+
     spotlightParticipant(pexipParticipantId: string, spotlight: boolean, conferenceId: string, participantId: string) {
         this.logger.info(`${this.loggerPrefix} Attempting to set participant spotlight`, {
             spotlightEnabled: spotlight,

@@ -6,6 +6,7 @@ import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
+import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -65,7 +66,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
         protected translateService: TranslateService,
-        protected consultationInvitiationService: ConsultationInvitationService
+        protected consultationInvitiationService: ConsultationInvitationService,
+        protected participantService: ParticipantService
     ) {
         super(
             route,
@@ -173,6 +175,9 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 status: this.conference.status
             });
             await this.videoCallService.startHearing(this.hearing.id, this.videoCallService.getPreferredLayout(this.conferenceId));
+
+            this.restoreSpotlightedParticipants();
+
         } catch (err) {
             this.logger.error(`${this.loggerPrefixJudge} Failed to ${action} a hearing for conference`, err, {
                 conference: this.conferenceId,
@@ -180,6 +185,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             });
             this.errorService.handleApiError(err);
         }
+    }
+
+    restoreSpotlightedParticipants() {
+
     }
 
     goToJudgeHearingList(): void {

@@ -366,4 +366,8 @@ describe('VideoCallService', () => {
 
         expect(apiClient.getParticipantRoomForParticipant).toHaveBeenCalledWith(conferenceId, participantId, 'Judicial');
     });
+
+    describe('getSpotlightedParticipants', () => {
+
+    });
 });

@@ -1,4 +1,4 @@
-import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
+import { fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import {
@@ -36,6 +36,10 @@ import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { ConsultationInvitation } from '../../services/consultation-invitation.service';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
+import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
+import { Subject } from 'rxjs';
+import { Guid } from 'guid-typescript';
+import { ParticipantService } from 'src/app/services/conference/participant.service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
@@ -44,6 +48,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     let logged: LoggedParticipantResponse;
     const translateService = translateServiceSpy;
     let consultationInvitiation: ConsultationInvitation;
+    let participantServiceSpy : jasmine.SpyObj<ParticipantService>;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -60,6 +65,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         activatedRoute = <any>{
             snapshot: { data: { loggedUser: logged }, paramMap: convertToParamMap({ conferenceId: globalConference.id }) }
         };
+
+        participantServiceSpy = jasmine.createSpyObj<ParticipantService>("ParticipantService", ['getPexipIdForParticipant'])
 
         userMediaService.setDefaultDevicesInCache.and.returnValue(Promise.resolve());
         component = new JudgeWaitingRoomComponent(
@@ -81,7 +88,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             roomClosingToastrService,
             clockService,
             translateService,
-            consultationInvitiationService
+            consultationInvitiationService,
+            participantServiceSpy
         );
 
         consultationInvitiationService.getInvitation.and.returnValue(consultationInvitiation);
@@ -415,5 +423,82 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         deviceTypeService.isIpad.and.returnValue(true);
         component.showVideo = true;
         expect(component.defineIsIMEnabled()).toBeFalsy();
+    });
+
+    describe('spotlight judge when hearing is started', () => {
+        it('should spotlight the judge when starting a hearing', () => {
+
+        });
+
+        it('should NOT spotlight the judge when resuming a hearing', () => {
+
+        });
+    });
+
+    describe('restoreSpotlightedParticipants', () => {
+        beforeEach(() => {
+            videoCallService.spotlightParticipant.calls.reset()
+            videoCallService.getSpotlightedParticipants.calls.reset()
+        });
+
+        it('should spotlight all participants that are retrived from videoCallService.restoreSpotlightedParticipants()', fakeAsync(() => {
+            // Arrange
+            const conferenceId = Guid.create().toString();
+            const participantOneId = Guid.create().toString();
+            const participantTwoId = Guid.create().toString();
+            const participantOnePexipId = Guid.create().toString();
+            const participantTwoPexipId = Guid.create().toString();
+
+            component.conference.id = conferenceId;
+
+            participantServiceSpy.getPexipIdForParticipant.and.callFake(id => {
+                switch (id.toString()) {
+                    default:
+                        return Guid.EMPTY;
+
+                    case participantOneId:
+                        return participantOnePexipId;
+
+                    case participantTwoId:
+                        return participantTwoPexipId;
+                }
+            });
+
+            const spotlightedParticipantsSubject = new Subject<string[]>();
+            videoCallServiceSpy.getSpotlightedParticipants.and.returnValue(spotlightedParticipantsSubject.asObservable());
+
+            // Act
+            component.restoreSpotlightedParticipants();
+            spotlightedParticipantsSubject.next([
+                participantOneId.toString(),
+                participantTwoId.toString()
+            ]);
+
+            flush();
+
+            // Assert
+            expect(videoCallService.getSpotlightedParticipants).toHaveBeenCalledOnceWith(conferenceId);
+            expect(videoCallService.spotlightParticipant).toHaveBeenCalledOnceWith(participantOnePexipId, true, conferenceId, participantOneId);
+            expect(videoCallService.spotlightParticipant).toHaveBeenCalledOnceWith(participantTwoPexipId, true, conferenceId, participantTwoId);
+        }));
+
+        it('should NOT spotlight any participants if NONE are retrived from videoCallService.restoreSpotlightedParticipants()', fakeAsync(() => {
+            // Arrange
+            const conferenceId = Guid.create().toString();
+            component.conference.id = conferenceId;
+
+            const spotlightedParticipantsSubject = new Subject<string[]>();
+            videoCallServiceSpy.getSpotlightedParticipants.and.returnValue(spotlightedParticipantsSubject.asObservable());
+
+            // Act
+            component.restoreSpotlightedParticipants();
+            spotlightedParticipantsSubject.next([]);
+
+            flush();
+
+            // Assert
+            expect(videoCallService.getSpotlightedParticipants).toHaveBeenCalledOnceWith(conferenceId);
+            expect(videoCallService.spotlightParticipant).not.toHaveBeenCalled();
+        }));
     });
 });
