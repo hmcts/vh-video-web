@@ -1,9 +1,10 @@
 import { fakeAsync, flush } from '@angular/core/testing';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
+import { ConferenceResponse } from '../clients/api-client';
 import { Logger } from '../logging/logger-base';
 import { ConferenceService } from './conference.service';
 import { ParticipantService } from './participant.service';
-
 import { VideoControlCacheService, VideoControlService } from './video-control.service';
 
 fdescribe('VideoControlService', () => {
@@ -42,6 +43,9 @@ fdescribe('VideoControlService', () => {
             const pexipParticipantId = 'pexip-participant-id';
             const conferenceId = 'conferenceId';
 
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference').and.returnValue(({
+                id: conferenceId
+            } as unknown) as ConferenceResponse);
             participantServiceSpy.getPexipIdForParticipant.and.returnValue(pexipParticipantId);
 
             // Act
@@ -49,7 +53,7 @@ fdescribe('VideoControlService', () => {
             flush();
 
             // Assert
-            expect(conferenceServiceSpy.currentConference);
+            expect(getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference')).toHaveBeenCalledTimes(1);
             expect(videoCallServiceSpy.spotlightParticipant).toHaveBeenCalledOnceWith(
                 pexipParticipantId,
                 true,

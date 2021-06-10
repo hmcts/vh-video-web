@@ -32,7 +32,10 @@ export class VideoControlService {
     }
 
     spotlightParticipant(participantId: string) {
-        throw Error('Not implemented');
+        const pexipId = this.participantService.getPexipIdForParticipant(participantId);
+        const conferenceId = this.conferenceService.currentConference.id;
+        this.videoCallService.spotlightParticipant(pexipId, true, conferenceId, participantId);
+        this.videoControlCacheService.setSpotlightStatus(conferenceId, participantId, true);
     }
 
     isParticipantSpotlighted(participantId: string) {
