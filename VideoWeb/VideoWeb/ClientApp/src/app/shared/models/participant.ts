@@ -1,16 +1,20 @@
-import { ParticipantResponse, ParticipantStatus, Role, ParticipantResponseVho } from 'src/app/services/clients/api-client';
+import {
+    ParticipantResponse,
+    ParticipantStatus,
+    Role,
+    ParticipantResponseVho,
+    ParticipantForUserResponse
+} from 'src/app/services/clients/api-client';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
 export class Participant {
-    private participant: ParticipantResponseVho;
+    private participant: ParticipantResponse | ParticipantForUserResponse | ParticipantForUserResponse;
 
-    constructor(participant: ParticipantResponseVho) {
+    constructor(participant: ParticipantResponse | ParticipantForUserResponse | ParticipantForUserResponse) {
         const isVhResponse = participant instanceof ParticipantResponseVho;
         const isParticipantResponse = participant instanceof ParticipantResponse;
+        const isParticipantForUserResponse = participant instanceof ParticipantForUserResponse;
 
-        if (!(isVhResponse || isParticipantResponse)) {
-            throw new Error('Object not a ParticipantResponseVho or ParticipantResponse');
-        }
         this.participant = participant;
     }
 

@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { Observable } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { from, Observable } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 import { Participant } from 'src/app/shared/models/participant';
 import { VideoWebService } from '../api/video-web.service';
-import { ParticipantResponse } from '../clients/api-client';
+import { ConferenceResponse, ParticipantResponse, ParticipantResponseVho } from '../clients/api-client';
 
 @Injectable({
     providedIn: 'root'
@@ -14,6 +14,8 @@ export class ParticipantService {
     public get participants() {
         return this._participants;
     }
+
+    private participantIdToPexipIdMap: [{ string: string }];
 
     constructor(private videoWebService: VideoWebService) {
         this.initialise();
@@ -28,7 +30,9 @@ export class ParticipantService {
     }
 
     getParticipants(conferenceId: Guid | string): Observable<Participant[]> {
-        throw new Error('Not Implemented');
+        return from(this.videoWebService.getParticipantsByConferenceId(conferenceId.toString())).pipe(
+            map(participants => participants.map(participantResponse => new Participant(participantResponse)))
+        );
     }
 
     getPexipIdForParticipant(participantId: Guid | string): string {
