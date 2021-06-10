@@ -1,16 +1,58 @@
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, flush } from '@angular/core/testing';
+import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
+import { Logger } from '../logging/logger-base';
+import { ConferenceService } from './conference.service';
+import { ParticipantService } from './participant.service';
 
-import { VideoControlService } from './video-control.service';
+import { VideoControlCacheService, VideoControlService } from './video-control.service';
 
-describe('VideoControlService', () => {
-  let service: VideoControlService;
+fdescribe('VideoControlService', () => {
+    let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
+    let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
+    let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
+    let videoControlCacheServiceSpy: jasmine.SpyObj<VideoControlCacheService>;
+    let loggerSpy: jasmine.SpyObj<Logger>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(VideoControlService);
-  });
+    let sut: VideoControlService;
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+    beforeEach(() => {
+        conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>('ConferenceService', ['getConferenceById'], ['currentConference']);
+
+        sut = new VideoControlService(
+            conferenceServiceSpy,
+            participantServiceSpy,
+            videoCallServiceSpy,
+            videoControlCacheServiceSpy,
+            loggerSpy
+        );
+    });
+
+    it('should be created', () => {
+        expect(sut).toBeTruthy();
+    });
+
+    describe('spotlightParticipant', () => {
+        it('should spotlight the participant and update the value in the cache', fakeAsync(() => {
+            // Arrange
+            const participantId = 'participant-id';
+            const pexipParticipantId = 'pexip-participant-id';
+            const conferenceId = 'conferenceId';
+
+            participantServiceSpy.getPexipIdForParticipant.and.returnValue(pexipParticipantId);
+
+            // Act
+            sut.spotlightParticipant(participantId);
+            flush();
+
+            // Assert
+            expect(conferenceServiceSpy.currentConference);
+            expect(videoCallServiceSpy.spotlightParticipant).toHaveBeenCalledOnceWith(
+                pexipParticipantId,
+                true,
+                conferenceId,
+                participantId
+            );
+            expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(conferenceId, participantId, true);
+        }));
+    });
 });
