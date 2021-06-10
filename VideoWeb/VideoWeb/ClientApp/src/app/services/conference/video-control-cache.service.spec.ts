@@ -154,7 +154,7 @@ fdescribe('VideoControlCacheService', () => {
     });
 
     describe('setSpotlightStatus', () => {
-        it('should set the participants spotlight value to true', () => {
+        it('should set the participants spotlight value to true and save it to the local session storage', () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -163,9 +163,14 @@ fdescribe('VideoControlCacheService', () => {
 
             // Assert
             expect(sut.hearingControlStates[conferenceId].participantState[participantId].isSpotlighted).toBeTrue();
+            expect(
+                JSON.parse(window.localStorage.getItem(sut.localStorageKey)).hearingControlStates[conferenceId].participantState[
+                    participantId
+                ].isSpotlighted
+            ).toBeTrue();
         });
 
-        it('should set the participants spotlight value to false', () => {
+        it('should set the participants spotlight value to false and save it to the local session storage', () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -175,9 +180,14 @@ fdescribe('VideoControlCacheService', () => {
 
             // Assert
             expect(sut.hearingControlStates[conferenceId].participantState[participantId].isSpotlighted).toBeTrue();
+            expect(
+                JSON.parse(window.localStorage.getItem(sut.localStorageKey)).hearingControlStates[conferenceId].participantState[
+                    participantId
+                ].isSpotlighted
+            ).toBeTrue();
         });
 
-        it('should update the participants spotlight value', () => {
+        it('should update the participants spotlight value and save it to the local session storage', () => {
             // Arrange
             const conferenceId = 'conference-id';
             const participantId = 'participant-id';
@@ -195,6 +205,11 @@ fdescribe('VideoControlCacheService', () => {
 
             // Assert
             expect(sut.hearingControlStates[conferenceId].participantState[participantId].isSpotlighted).toBeFalse();
+            expect(
+                JSON.parse(window.localStorage.getItem(sut.localStorageKey)).hearingControlStates[conferenceId].participantState[
+                    participantId
+                ].isSpotlighted
+            ).toBeFalse();
         });
     });
 });
