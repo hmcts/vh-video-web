@@ -35,11 +35,11 @@ export class VideoControlService {
     }
 
     getSpotlightedParticipants(): string[] {
-        var participantStates = this.videoControlCacheService.getStateForConference(this.conferenceService.currentConference.id);
+        var hearingControlState = this.videoControlCacheService.getStateForConference(this.conferenceService.currentConference.id);
 
         const participantIds = [];
-        for (var participantId in participantStates) {
-            if (participantStates[participantId].isSpotlighted) participantIds.push(participantId);
+        for (var participantId in hearingControlState.participantState) {
+            if (hearingControlState.participantState[participantId].isSpotlighted) participantIds.push(participantId);
         }
 
         return participantIds;

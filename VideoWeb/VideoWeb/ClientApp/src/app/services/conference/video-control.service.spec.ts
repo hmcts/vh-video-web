@@ -132,6 +132,8 @@ fdescribe('VideoControlService', () => {
             stateForConference.participantState[participantIdTwo] = { isSpotlighted: true };
             stateForConference.participantState[participantIdThree] = { isSpotlighted: false };
 
+            videoControlCacheServiceSpy.getStateForConference.and.returnValue(stateForConference);
+
             // Act
             const result = sut.getSpotlightedParticipants();
 

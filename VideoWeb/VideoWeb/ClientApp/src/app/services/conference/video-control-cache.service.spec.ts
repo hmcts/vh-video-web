@@ -38,6 +38,7 @@ fdescribe('VideoControlCacheService', () => {
             window.localStorage.setItem(sut.localStorageKey, JSON.stringify(hearingState));
 
             // Act
+            sut.loadFromLocalStorage();
             const result = sut.getStateForConference(conferenceId);
 
             // Act
@@ -60,6 +61,7 @@ fdescribe('VideoControlCacheService', () => {
             window.localStorage.setItem(sut.localStorageKey, JSON.stringify(hearingState));
 
             // Act
+            sut.loadFromLocalStorage();
             const result = sut.getStateForConference(conferenceId);
 
             // Act
