@@ -34,7 +34,8 @@ export class ParticipantService {
     }
 
     getPexipIdForParticipant(participantId: Guid | string): string {
-        throw new Error('Not Implemented');
+        const pexipId = this.participantIdToPexipIdMap[participantId.toString()];
+        return pexipId ? pexipId : Guid.EMPTY;
     }
 
     private initialise() {
