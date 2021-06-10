@@ -4,27 +4,7 @@ import { VideoCallService } from 'src/app/waiting-space/services/video-call.serv
 import { Logger } from '../logging/logger-base';
 import { ConferenceService } from './conference.service';
 import { ParticipantService } from './participant.service';
-
-export interface IParticipantControlsState {
-    isSpotlighted: boolean;
-}
-
-@Injectable({
-    providedIn: 'root'
-})
-export class VideoControlCacheService {
-    setSpotlightStatus(conferenceId: string, participantId: string, spotlightValue: boolean) {
-        throw new Error('Not Implemented');
-    }
-
-    getSpotlightStatus(conferenceId: string, participantId: string): boolean {
-        throw new Error('Not Implemented');
-    }
-
-    getStateForConference(conferenceId: string): { [participantId: string]: IParticipantControlsState } {
-        throw new Error('Not Implemented');
-    }
-}
+import { VideoControlCacheService } from './video-control-cache.service';
 
 @Injectable({
     providedIn: 'root'

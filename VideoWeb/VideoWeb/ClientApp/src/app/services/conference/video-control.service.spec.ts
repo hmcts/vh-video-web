@@ -5,7 +5,8 @@ import { ConferenceResponse } from '../clients/api-client';
 import { Logger } from '../logging/logger-base';
 import { ConferenceService } from './conference.service';
 import { ParticipantService } from './participant.service';
-import { IParticipantControlsState, VideoControlCacheService, VideoControlService } from './video-control.service';
+import { IHearingControlsState, IParticipantControlsState, VideoControlCacheService } from './video-control-cache.service';
+import { VideoControlService } from './video-control.service';
 
 fdescribe('VideoControlService', () => {
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
@@ -124,12 +125,12 @@ fdescribe('VideoControlService', () => {
             const participantIdThree = 'participant-id-3';
             const expectedResult = [participantIdOne, participantIdTwo];
 
-            const stateForConference: { [participantId: string]: IParticipantControlsState } = {};
-            stateForConference[participantIdOne] = { isSpotlighted: true };
-            stateForConference[participantIdTwo] = { isSpotlighted: true };
-            stateForConference[participantIdThree] = { isSpotlighted: false };
-
-            videoControlCacheServiceSpy.getStateForConference.and.returnValue(stateForConference);
+            const stateForConference: IHearingControlsState = {
+                participantState: {}
+            };
+            stateForConference.participantState[participantIdOne] = { isSpotlighted: true };
+            stateForConference.participantState[participantIdTwo] = { isSpotlighted: true };
+            stateForConference.participantState[participantIdThree] = { isSpotlighted: false };
 
             // Act
             const result = sut.getSpotlightedParticipants();
@@ -152,10 +153,12 @@ fdescribe('VideoControlService', () => {
             const participantIdTwo = 'participant-id-2';
             const participantIdThree = 'participant-id-3';
 
-            const stateForConference: { [participantId: string]: IParticipantControlsState } = {};
-            stateForConference[participantIdOne] = { isSpotlighted: false };
-            stateForConference[participantIdTwo] = { isSpotlighted: false };
-            stateForConference[participantIdThree] = { isSpotlighted: false };
+            const stateForConference: IHearingControlsState = {
+                participantState: {}
+            };
+            stateForConference.participantState[participantIdOne] = { isSpotlighted: false };
+            stateForConference.participantState[participantIdTwo] = { isSpotlighted: false };
+            stateForConference.participantState[participantIdThree] = { isSpotlighted: false };
 
             videoControlCacheServiceSpy.getStateForConference.and.returnValue(stateForConference);
 
@@ -176,7 +179,9 @@ fdescribe('VideoControlService', () => {
                 id: conferenceId
             } as unknown) as ConferenceResponse);
 
-            const stateForConference: { [participantId: string]: IParticipantControlsState } = {};
+            const stateForConference: IHearingControlsState = {
+                participantState: {}
+            };
 
             videoControlCacheServiceSpy.getStateForConference.and.returnValue(stateForConference);
 
