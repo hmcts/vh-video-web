@@ -55,6 +55,13 @@ export class VideoControlService {
     }
 
     getSpotlightedParticipants(): string[] {
-        throw Error('Not implemented');
+        var participantStates = this.videoControlCacheService.getStateForConference(this.conferenceService.currentConference.id);
+
+        const participantIds = [];
+        for (var participantId in participantStates) {
+            if (participantStates[participantId].isSpotlighted) participantIds.push(participantId);
+        }
+
+        return participantIds;
     }
 }
