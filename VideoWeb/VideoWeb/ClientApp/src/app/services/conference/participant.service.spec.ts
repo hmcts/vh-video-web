@@ -1,10 +1,11 @@
 import { fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { Subject } from 'rxjs';
+import { IHttpRequestResult } from 'src/app/shared/http-request-result/http-request-result';
 import { Participant } from 'src/app/shared/models/participant';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
-import { VideoWebService } from '../api/video-web.service';
-import { ApiClient, LinkedParticipantResponse, LinkType, ParticipantForUserResponse, ParticipantStatus, Role } from '../clients/api-client';
+import { ApiClient, ParticipantForUserResponse, ParticipantStatus, Role } from '../clients/api-client';
+import { Logger } from '../logging/logger-base';
 import { ParticipantService } from './participant.service';
 
 fdescribe('ParticipantService', () => {
@@ -49,7 +50,10 @@ fdescribe('ParticipantService', () => {
         getParticipantsByConferenceId$ = new Subject<ParticipantForUserResponse[]>();
         apiClientSpy.getParticipantsByConferenceId.and.returnValue(getParticipantsByConferenceId$.asObservable());
 
-        sut = new ParticipantService(apiClientSpy);
+        sut = new ParticipantService(
+            apiClientSpy,
+            jasmine.createSpyObj<Logger>('Logger', ['error'])
+        );
 
         apiClientSpy.getParticipantsByConferenceId.calls.reset();
     });
@@ -65,7 +69,7 @@ fdescribe('ParticipantService', () => {
         expect(sut.participants).toEqual(participantResponses.map(participantResponse => new Participant(participantResponse)));
     }));
 
-    describe('getParticipants', () => {
+    describe('getParticipantsForConference', () => {
         it('should return the participants from VideoWebService', fakeAsync(() => {
             // Arrange
             const conferenceId = 'conference-id';
@@ -74,7 +78,7 @@ fdescribe('ParticipantService', () => {
             let result: Participant[];
 
             // Act
-            sut.getParticipants(conferenceId).subscribe(participants => (result = participants));
+            sut.getParticipantsForConference(conferenceId).subscribe(participants => (result = participants));
             getParticipantsByConferenceId$.next(participantResponses);
             flush();
 
@@ -91,7 +95,7 @@ fdescribe('ParticipantService', () => {
             let result: Participant[];
 
             // Act
-            sut.getParticipants(conferenceId).subscribe(participants => (result = participants));
+            sut.getParticipantsForConference(conferenceId).subscribe(participants => (result = participants));
             getParticipantsByConferenceId$.next(participantResponses);
             flush();
 
@@ -108,7 +112,7 @@ fdescribe('ParticipantService', () => {
             let result: Participant[];
 
             // Act
-            sut.getParticipants(conferenceId).subscribe(participants => (result = participants));
+            sut.getParticipantsForConference(conferenceId).subscribe(participants => (result = participants));
             getParticipantsByConferenceId$.next(participantResponses);
             flush();
 
