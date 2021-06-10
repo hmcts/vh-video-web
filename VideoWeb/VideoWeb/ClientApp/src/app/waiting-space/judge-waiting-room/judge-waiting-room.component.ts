@@ -1,12 +1,14 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { take } from 'rxjs/operators';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
+import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
@@ -67,7 +69,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected clockService: ClockService,
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
-        protected participantService: ParticipantService
+        protected participantService: ParticipantService,
+        protected videoControlService: VideoControlService
     ) {
         super(
             route,
@@ -174,10 +177,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 conference: this.conferenceId,
                 status: this.conference.status
             });
+
             await this.videoCallService.startHearing(this.hearing.id, this.videoCallService.getPreferredLayout(this.conferenceId));
 
             this.restoreSpotlightedParticipants();
-
         } catch (err) {
             this.logger.error(`${this.loggerPrefixJudge} Failed to ${action} a hearing for conference`, err, {
                 conference: this.conferenceId,
@@ -188,7 +191,19 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     restoreSpotlightedParticipants() {
-
+        this.videoControlService
+            .getSpotlightedParticipants(this.conference.id)
+            .pipe(take(1))
+            .subscribe(participantIds => {
+                for (var participantId of participantIds) {
+                    this.videoCallService.spotlightParticipant(
+                        this.participantService.getPexipIdForParticipant(participantId),
+                        true,
+                        this.conference.id,
+                        participantId
+                    );
+                }
+            });
     }
 
     goToJudgeHearingList(): void {

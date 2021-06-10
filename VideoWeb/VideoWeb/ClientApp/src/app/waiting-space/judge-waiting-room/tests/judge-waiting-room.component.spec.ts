@@ -40,6 +40,8 @@ import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.servi
 import { Subject } from 'rxjs';
 import { Guid } from 'guid-typescript';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
+import { VideoCallService } from '../../services/video-call.service';
+import { VideoControlService } from 'src/app/services/conference/video-control.service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
@@ -48,7 +50,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     let logged: LoggedParticipantResponse;
     const translateService = translateServiceSpy;
     let consultationInvitiation: ConsultationInvitation;
-    let participantServiceSpy : jasmine.SpyObj<ParticipantService>;
+    let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
+    let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -66,7 +69,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             snapshot: { data: { loggedUser: logged }, paramMap: convertToParamMap({ conferenceId: globalConference.id }) }
         };
 
-        participantServiceSpy = jasmine.createSpyObj<ParticipantService>("ParticipantService", ['getPexipIdForParticipant'])
+        participantServiceSpy = jasmine.createSpyObj<ParticipantService>('ParticipantService', ['getPexipIdForParticipant']);
+        videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', ['getSpotlightedParticipants']);
 
         userMediaService.setDefaultDevicesInCache.and.returnValue(Promise.resolve());
         component = new JudgeWaitingRoomComponent(
@@ -89,7 +93,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             clockService,
             translateService,
             consultationInvitiationService,
-            participantServiceSpy
+            participantServiceSpy,
+            videoControlServiceSpy
         );
 
         consultationInvitiationService.getInvitation.and.returnValue(consultationInvitiation);
@@ -382,21 +387,50 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.displayConfirmStartHearingPopup).toBeTruthy();
     });
 
-    it('should start hearing when confirmation answered no', () => {
+    fit('should NOT start hearing when confirmation answered no', fakeAsync(() => {
+        // Arrange
         component.displayConfirmStartHearingPopup = true;
+        const restoreSpotlightedParticipantsSpy = spyOn(component, 'restoreSpotlightedParticipants');
         videoCallService.startHearing.calls.reset();
-        component.onStartConfirmAnswered(false);
-        expect(component.displayConfirmStartHearingPopup).toBeFalsy();
-        expect(videoCallService.startHearing).toHaveBeenCalledTimes(0);
-    });
+        videoCallService.startHearing.and.resolveTo();
 
-    it('should start hearing when confirmation answered yes', () => {
-        component.displayConfirmStartHearingPopup = true;
-        videoCallService.startHearing.calls.reset();
-        component.onStartConfirmAnswered(true);
+        // Act
+        component.onStartConfirmAnswered(false);
+        flush();
+
+        // Assert
         expect(component.displayConfirmStartHearingPopup).toBeFalsy();
-        expect(videoCallService.startHearing).toHaveBeenCalled();
-    });
+        expect(videoCallService.startHearing).not.toHaveBeenCalled();
+        expect(component.restoreSpotlightedParticipants).not.toHaveBeenCalled();
+    }));
+
+    fit('should start hearing when confirmation answered yes', fakeAsync(() => {
+        // Arrange
+        component.displayConfirmStartHearingPopup = true;
+        const restoreSpotlightedParticipantsSpy = spyOn(component, 'restoreSpotlightedParticipants');
+        videoCallService.startHearing.calls.reset();
+        videoCallService.startHearing.and.resolveTo();
+
+        const conferenceId = Guid.create().toString();
+        component.conference.id = conferenceId;
+        spyOnProperty(component, 'conferenceId', 'get').and.returnValue(conferenceId);
+
+        const hearingLayout = HearingLayout.Dynamic;
+        videoCallService.getPreferredLayout.and.returnValue(hearingLayout);
+
+        const hearingId = Guid.create();
+        spyOnProperty(component.hearing, 'id', 'get').and.returnValue(hearingId);
+
+        // Act
+        component.onStartConfirmAnswered(true);
+        flush();
+
+        // Assert
+        expect(videoCallService.getPreferredLayout).toHaveBeenCalledOnceWith(conferenceId);
+        expect(component.displayConfirmStartHearingPopup).toBeFalsy();
+        expect(videoCallService.startHearing).toHaveBeenCalledOnceWith(hearingId, hearingLayout);
+        expect(component.restoreSpotlightedParticipants).toHaveBeenCalledTimes(1);
+    }));
 
     it('should not enable IM when hearing has not been initalised', () => {
         component.hearing = null;
@@ -426,22 +460,18 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     describe('spotlight judge when hearing is started', () => {
-        it('should spotlight the judge when starting a hearing', () => {
+        it('should spotlight the judge when starting a hearing', () => {});
 
-        });
-
-        it('should NOT spotlight the judge when resuming a hearing', () => {
-
-        });
+        it('should NOT spotlight the judge when resuming a hearing', () => {});
     });
 
-    describe('restoreSpotlightedParticipants', () => {
+    fdescribe('restoreSpotlightedParticipants', () => {
         beforeEach(() => {
-            videoCallService.spotlightParticipant.calls.reset()
-            videoCallService.getSpotlightedParticipants.calls.reset()
+            videoCallService.spotlightParticipant.calls.reset();
+            videoControlServiceSpy.getSpotlightedParticipants.calls.reset();
         });
 
-        it('should spotlight all participants that are retrived from videoCallService.restoreSpotlightedParticipants()', fakeAsync(() => {
+        it('should spotlight all participants that are retrived from videoControlServiceSpy.restoreSpotlightedParticipants()', fakeAsync(() => {
             // Arrange
             const conferenceId = Guid.create().toString();
             const participantOneId = Guid.create().toString();
@@ -465,30 +495,28 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             });
 
             const spotlightedParticipantsSubject = new Subject<string[]>();
-            videoCallServiceSpy.getSpotlightedParticipants.and.returnValue(spotlightedParticipantsSubject.asObservable());
+            videoControlServiceSpy.getSpotlightedParticipants.and.returnValue(spotlightedParticipantsSubject.asObservable());
 
             // Act
             component.restoreSpotlightedParticipants();
-            spotlightedParticipantsSubject.next([
-                participantOneId.toString(),
-                participantTwoId.toString()
-            ]);
+            spotlightedParticipantsSubject.next([participantOneId.toString(), participantTwoId.toString()]);
 
             flush();
 
             // Assert
-            expect(videoCallService.getSpotlightedParticipants).toHaveBeenCalledOnceWith(conferenceId);
-            expect(videoCallService.spotlightParticipant).toHaveBeenCalledOnceWith(participantOnePexipId, true, conferenceId, participantOneId);
-            expect(videoCallService.spotlightParticipant).toHaveBeenCalledOnceWith(participantTwoPexipId, true, conferenceId, participantTwoId);
+            expect(videoControlServiceSpy.getSpotlightedParticipants).toHaveBeenCalledOnceWith(conferenceId);
+            expect(videoCallService.spotlightParticipant).toHaveBeenCalledTimes(2);
+            expect(videoCallService.spotlightParticipant).toHaveBeenCalledWith(participantOnePexipId, true, conferenceId, participantOneId);
+            expect(videoCallService.spotlightParticipant).toHaveBeenCalledWith(participantTwoPexipId, true, conferenceId, participantTwoId);
         }));
 
-        it('should NOT spotlight any participants if NONE are retrived from videoCallService.restoreSpotlightedParticipants()', fakeAsync(() => {
+        it('should NOT spotlight any participants if NONE are retrived from videoControlServiceSpy.restoreSpotlightedParticipants()', fakeAsync(() => {
             // Arrange
             const conferenceId = Guid.create().toString();
             component.conference.id = conferenceId;
 
             const spotlightedParticipantsSubject = new Subject<string[]>();
-            videoCallServiceSpy.getSpotlightedParticipants.and.returnValue(spotlightedParticipantsSubject.asObservable());
+            videoControlServiceSpy.getSpotlightedParticipants.and.returnValue(spotlightedParticipantsSubject.asObservable());
 
             // Act
             component.restoreSpotlightedParticipants();
@@ -497,7 +525,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             flush();
 
             // Assert
-            expect(videoCallService.getSpotlightedParticipants).toHaveBeenCalledOnceWith(conferenceId);
+            expect(videoControlServiceSpy.getSpotlightedParticipants).toHaveBeenCalledOnceWith(conferenceId);
             expect(videoCallService.spotlightParticipant).not.toHaveBeenCalled();
         }));
     });
