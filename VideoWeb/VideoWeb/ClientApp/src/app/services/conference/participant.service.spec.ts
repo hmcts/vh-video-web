@@ -151,7 +151,71 @@ fdescribe('ParticipantService', () => {
         }));
     });
 
-    describe('getPexipIdForParticipant', () => {});
+    describe('getPexipIdForParticipant', () => {
+        it('should return the pexip id for the given participant id', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const pexipId = 'pexip-id';
+
+            const participantIdToPexipIdMap = {};
+            participantIdToPexipIdMap[participantId] = pexipId;
+
+            spyOnProperty(sut, 'participantIdToPexipIdMap', 'get').and.returnValue(participantIdToPexipIdMap);
+
+            // Act
+            const result = sut.getPexipIdForParticipant(participantId);
+
+            // Assert
+            expect(result).toEqual(pexipId);
+        });
+
+        it('should return the pexip id for the given participant id when participant id is a guid', () => {
+            // Arrange
+            const participantId = Guid.create();
+            const pexipId = 'pexip-id';
+
+            const participantIdToPexipIdMap = {};
+            participantIdToPexipIdMap[participantId.toString()] = pexipId;
+
+            spyOnProperty(sut, 'participantIdToPexipIdMap', 'get').and.returnValue(participantIdToPexipIdMap);
+
+            // Act
+            const result = sut.getPexipIdForParticipant(participantId);
+
+            // Assert
+            expect(result).toEqual(pexipId);
+        });
+
+        it('should an empty guid if the participant does not exist', () => {
+            // Arrange
+
+            const participantIdToPexipIdMap = {};
+
+            spyOnProperty(sut, 'participantIdToPexipIdMap', 'get').and.returnValue(participantIdToPexipIdMap);
+
+            // Act
+            const result = sut.getPexipIdForParticipant('participant-id');
+
+            // Assert
+            expect(result).toBe(Guid.EMPTY);
+        });
+
+        it('should an empty guid if the pexip id is null', () => {
+            // Arrange
+            const participantId = Guid.create();
+
+            const participantIdToPexipIdMap = {};
+            participantIdToPexipIdMap[participantId.toString()] = null;
+
+            spyOnProperty(sut, 'participantIdToPexipIdMap', 'get').and.returnValue(participantIdToPexipIdMap);
+
+            // Act
+            const result = sut.getPexipIdForParticipant(participantId);
+
+            // Assert
+            expect(result).toBe(Guid.EMPTY);
+        });
+    });
 
     describe('handle VideoCallService.onParticipantUpdated', () => {
         it('should set the pexip ID when the event is raised', fakeAsync(() => {
