@@ -22,32 +22,47 @@ export class VideoControlCacheService {
     }
 
     setSpotlightStatus(conferenceId: string, participantId: string, spotlightValue: boolean) {
-        throw new Error('Not Implemented');
+        if (!this.hearingControlStates[conferenceId]) {
+            this.hearingControlStates[conferenceId] = {
+                participantState: {}
+            };
+        }
+
+        if (!this.hearingControlStates[conferenceId].participantState[participantId]) {
+            this.hearingControlStates[conferenceId].participantState[participantId] = {
+                isSpotlighted: spotlightValue
+            };
+        } else {
+            this.hearingControlStates[conferenceId].participantState[participantId].isSpotlighted = spotlightValue;
+        }
+
+        this.saveToLocalStorage();
     }
 
     getSpotlightStatus(conferenceId: string, participantId: string): boolean {
-        throw new Error('Not Implemented');
+        return this.hearingControlStates[conferenceId]?.participantState[participantId]?.isSpotlighted ?? false;
     }
 
     getStateForConference(conferenceId: string): IHearingControlsState {
         return this.hearingControlStates[conferenceId] ?? { participantState: {} };
     }
 
+    private initialise() {
+        this.loadFromLocalStorage();
+    }
+
     loadFromLocalStorage(): { [conferenceId: string]: IHearingControlsState } {
         const hearingControlStatesJson = window.localStorage.getItem(this.localStorageKey);
 
-        if (hearingControlStatesJson === undefined) return;
+        if (!hearingControlStatesJson) return;
 
         this.hearingControlStates = JSON.parse(hearingControlStatesJson);
 
         return this.hearingControlStates;
     }
 
-    private initialise() {
-        this.loadFromLocalStorage();
-    }
-
     private saveToLocalStorage() {
         window.localStorage.setItem(this.localStorageKey, JSON.stringify(this.hearingControlStates));
+        console.log(window.localStorage.getItem(this.localStorageKey));
     }
 }

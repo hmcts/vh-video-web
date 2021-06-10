@@ -7,6 +7,8 @@ fdescribe('VideoControlCacheService', () => {
 
     beforeEach(() => {
         sut = new VideoControlCacheService();
+
+        window.localStorage.clear();
     });
 
     it('should be created', () => {
@@ -118,7 +120,7 @@ fdescribe('VideoControlCacheService', () => {
             const participantId = 'participant-id';
 
             sut.hearingControlStates = {};
-            sut.hearingControlStates['conferenceId'] = {
+            sut.hearingControlStates[conferenceId] = {
                 participantState: {}
             };
             sut.hearingControlStates[conferenceId].participantState['not-participant-id'] = {
@@ -138,7 +140,7 @@ fdescribe('VideoControlCacheService', () => {
             const participantId = 'participant-id';
 
             sut.hearingControlStates = {};
-            sut.hearingControlStates['conferenceId'] = {
+            sut.hearingControlStates[conferenceId] = {
                 participantState: {}
             };
             sut.hearingControlStates[conferenceId].participantState['not-conference-id'] = {
@@ -164,9 +166,7 @@ fdescribe('VideoControlCacheService', () => {
             // Assert
             expect(sut.hearingControlStates[conferenceId].participantState[participantId].isSpotlighted).toBeTrue();
             expect(
-                JSON.parse(window.localStorage.getItem(sut.localStorageKey)).hearingControlStates[conferenceId].participantState[
-                    participantId
-                ].isSpotlighted
+                JSON.parse(window.localStorage.getItem(sut.localStorageKey))[conferenceId].participantState[participantId].isSpotlighted
             ).toBeTrue();
         });
 
@@ -179,12 +179,10 @@ fdescribe('VideoControlCacheService', () => {
             sut.setSpotlightStatus(conferenceId, participantId, false);
 
             // Assert
-            expect(sut.hearingControlStates[conferenceId].participantState[participantId].isSpotlighted).toBeTrue();
+            expect(sut.hearingControlStates[conferenceId].participantState[participantId].isSpotlighted).toBeFalse();
             expect(
-                JSON.parse(window.localStorage.getItem(sut.localStorageKey)).hearingControlStates[conferenceId].participantState[
-                    participantId
-                ].isSpotlighted
-            ).toBeTrue();
+                JSON.parse(window.localStorage.getItem(sut.localStorageKey))[conferenceId].participantState[participantId].isSpotlighted
+            ).toBeFalse();
         });
 
         it('should update the participants spotlight value and save it to the local session storage', () => {
@@ -206,9 +204,7 @@ fdescribe('VideoControlCacheService', () => {
             // Assert
             expect(sut.hearingControlStates[conferenceId].participantState[participantId].isSpotlighted).toBeFalse();
             expect(
-                JSON.parse(window.localStorage.getItem(sut.localStorageKey)).hearingControlStates[conferenceId].participantState[
-                    participantId
-                ].isSpotlighted
+                JSON.parse(window.localStorage.getItem(sut.localStorageKey))[conferenceId].participantState[participantId].isSpotlighted
             ).toBeFalse();
         });
     });
