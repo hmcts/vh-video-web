@@ -43,7 +43,7 @@ export class VideoControlService {
     }
 
     isParticipantSpotlighted(participantId: string): boolean {
-        throw Error('Not implemented');
+        return this.videoControlCacheService.getSpotlightStatus(this.conferenceService.currentConference.id, participantId);
     }
 
     getSpotlightedParticipants(): Observable<string[]> {
