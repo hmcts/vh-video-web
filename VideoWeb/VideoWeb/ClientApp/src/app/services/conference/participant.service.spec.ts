@@ -1,9 +1,10 @@
-import { fakeAsync, flush } from '@angular/core/testing';
+import { fakeAsync, flush, flushMicrotasks } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { Subject } from 'rxjs';
-import { IHttpRequestResult } from 'src/app/shared/http-request-result/http-request-result';
+import { Observable, Subject } from 'rxjs';
 import { Participant } from 'src/app/shared/models/participant';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
+import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
+import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { ApiClient, ParticipantForUserResponse, ParticipantStatus, Role } from '../clients/api-client';
 import { Logger } from '../logging/logger-base';
 import { ParticipantService } from './participant.service';
@@ -42,6 +43,10 @@ fdescribe('ParticipantService', () => {
     let apiClientSpy: jasmine.SpyObj<ApiClient>;
     let getParticipantsByConferenceId$: Subject<ParticipantForUserResponse[]>;
 
+    let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
+    let participantUpdatedSubject: Subject<ParticipantUpdated>;
+    let participantUpdated$: Observable<ParticipantUpdated>;
+
     let sut: ParticipantService;
 
     beforeEach(() => {
@@ -50,24 +55,48 @@ fdescribe('ParticipantService', () => {
         getParticipantsByConferenceId$ = new Subject<ParticipantForUserResponse[]>();
         apiClientSpy.getParticipantsByConferenceId.and.returnValue(getParticipantsByConferenceId$.asObservable());
 
+        videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['onParticipantUpdated']);
+
+        participantUpdatedSubject = new Subject<ParticipantUpdated>();
+        participantUpdated$ = participantUpdatedSubject.asObservable();
+        spyOn(participantUpdated$, 'subscribe').and.callThrough();
+        videoCallServiceSpy.onParticipantUpdated.and.returnValue(participantUpdated$);
+
         sut = new ParticipantService(
             apiClientSpy,
+            videoCallServiceSpy,
             jasmine.createSpyObj<Logger>('Logger', ['error'])
         );
 
         apiClientSpy.getParticipantsByConferenceId.calls.reset();
     });
 
-    it('should be created and the initialise participant list', fakeAsync(() => {
-        // Act
-        const participantResponses = [participantOne, participantTwo];
-        getParticipantsByConferenceId$.next(participantResponses);
-        flush();
+    describe('construction', () => {
+        it('should be created and the initialise participant list', fakeAsync(() => {
+            // Act
+            const participantResponses = [participantOne, participantTwo];
+            getParticipantsByConferenceId$.next(participantResponses);
+            flush();
 
-        // Assert
-        expect(sut).toBeTruthy();
-        expect(sut.participants).toEqual(participantResponses.map(participantResponse => new Participant(participantResponse)));
-    }));
+            // Assert
+            expect(sut).toBeTruthy();
+            expect(sut.participants).toEqual(participantResponses.map(participantResponse => new Participant(participantResponse)));
+        }));
+
+        it('should subscribe to onParticipantUpdated', fakeAsync(() => {
+            // Arrange
+            videoCallServiceSpy.onParticipantUpdated.and.returnValue(participantUpdated$);
+
+            // Act
+            const participantResponses = [participantOne, participantTwo];
+            getParticipantsByConferenceId$.next(participantResponses);
+            flush();
+
+            // Assert
+            expect(videoCallServiceSpy.onParticipantUpdated).toHaveBeenCalledTimes(1);
+            expect(participantUpdated$.subscribe).toHaveBeenCalledTimes(1);
+        }));
+    });
 
     describe('getParticipantsForConference', () => {
         it('should return the participants from VideoWebService', fakeAsync(() => {
@@ -119,6 +148,109 @@ fdescribe('ParticipantService', () => {
             // Assert
             expect(apiClientSpy.getParticipantsByConferenceId).toHaveBeenCalledOnceWith(conferenceId);
             expect(result).toEqual([]);
+        }));
+    });
+
+    describe('handle VideoCallService.onParticipantUpdated', () => {
+        it('should set the pexip ID when the event is raised', fakeAsync(() => {
+            // Arrange
+            const pexipId = 'pexip-id';
+            const participantId = participantOne.id;
+            const pexipName = `pexip-name-${participantId}`;
+            const participantUpdated = ({
+                pexipDisplayName: pexipName,
+                uuid: pexipId
+            } as unknown) as ParticipantUpdated;
+
+            const expectedValue: { [participantId: string]: string } = {};
+            expectedValue[participantId] = pexipId;
+
+            spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne, participantTwo]);
+
+            // Act
+            participantUpdatedSubject.next(participantUpdated);
+            flush();
+
+            // Assert
+            expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
+        }));
+
+        it('should set a second pexip ID when the event is raised again', fakeAsync(() => {
+            // Arrange
+            const pexipIdOne = 'pexip-id-one';
+            const pexipIdTwo = 'pexip-id-two';
+            const participantOneId = participantOne.id;
+            const participantTwoId = participantTwo.id;
+            const pexipNameOne = `pexip-name-${participantOneId}`;
+            const pexipNameTwo = `pexip-name-${participantTwoId}`;
+
+            const participantUpdatedOne = ({
+                pexipDisplayName: pexipNameOne,
+                uuid: pexipIdOne
+            } as unknown) as ParticipantUpdated;
+
+            const participantUpdatedTwo = ({
+                pexipDisplayName: pexipNameTwo,
+                uuid: pexipIdTwo
+            } as unknown) as ParticipantUpdated;
+
+            const expectedValue: { [participantId: string]: string } = {};
+            expectedValue[participantOneId] = pexipIdOne;
+            expectedValue[participantTwoId] = pexipIdTwo;
+
+            spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne, participantTwo]);
+
+            // Act
+            participantUpdatedSubject.next(participantUpdatedOne);
+            flush();
+            participantUpdatedSubject.next(participantUpdatedTwo);
+            flush();
+
+            // Assert
+            expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
+        }));
+
+        it('should update an existing ID when the event is raised again', fakeAsync(() => {
+            // Arrange
+            const pexipIdOne = 'pexip-id-one';
+            const pexipIdTwo = 'pexip-id-two';
+            const pexipIdThree = 'pexip-id-three';
+            const participantOneId = participantOne.id;
+            const participantTwoId = participantTwo.id;
+            const pexipNameOne = `pexip-name-${participantOneId}`;
+            const pexipNameTwo = `pexip-name-${participantTwoId}`;
+
+            const participantUpdatedOne = ({
+                pexipDisplayName: pexipNameOne,
+                uuid: pexipIdOne
+            } as unknown) as ParticipantUpdated;
+
+            const participantUpdatedTwo = ({
+                pexipDisplayName: pexipNameTwo,
+                uuid: pexipIdTwo
+            } as unknown) as ParticipantUpdated;
+
+            const participantUpdatedThree = ({
+                pexipDisplayName: pexipNameOne,
+                uuid: pexipIdThree
+            } as unknown) as ParticipantUpdated;
+
+            const expectedValue: { [participantId: string]: string } = {};
+            expectedValue[participantOneId] = pexipIdThree;
+            expectedValue[participantTwoId] = pexipIdTwo;
+
+            spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne, participantTwo]);
+
+            // Act
+            participantUpdatedSubject.next(participantUpdatedOne);
+            flush();
+            participantUpdatedSubject.next(participantUpdatedTwo);
+            flush();
+            participantUpdatedSubject.next(participantUpdatedThree);
+            flush();
+
+            // Assert
+            expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
         }));
     });
 
