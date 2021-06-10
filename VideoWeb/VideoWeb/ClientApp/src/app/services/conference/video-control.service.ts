@@ -12,6 +12,10 @@ export class VideoControlCacheService {
     setSpotlightStatus(conferenceId: string, participantId: string, spotlightValue: boolean) {
         throw new Error('Not Implemented');
     }
+
+    getSpotlightStatus(conferenceId: string, participantId: string): boolean {
+        throw new Error('Not Implemented');
+    }
 }
 
 @Injectable({
@@ -38,7 +42,7 @@ export class VideoControlService {
         this.videoControlCacheService.setSpotlightStatus(conferenceId, participantId, true);
     }
 
-    isParticipantSpotlighted(participantId: string) {
+    isParticipantSpotlighted(participantId: string): boolean {
         throw Error('Not implemented');
     }
 

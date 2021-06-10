@@ -41,7 +41,7 @@ fdescribe('VideoControlService', () => {
             // Arrange
             const participantId = 'participant-id';
             const pexipParticipantId = 'pexip-participant-id';
-            const conferenceId = 'conferenceId';
+            const conferenceId = 'conference-id';
 
             getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference').and.returnValue(({
                 id: conferenceId
@@ -62,5 +62,49 @@ fdescribe('VideoControlService', () => {
             );
             expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(conferenceId, participantId, true);
         }));
+    });
+
+    describe('getSpotlightedParticipants', () => {});
+
+    describe('isParticipantSpotlighted', () => {
+        it('should return true if the user is spotlighted', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const conferenceId = 'conference-id';
+
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference').and.returnValue(({
+                id: conferenceId
+            } as unknown) as ConferenceResponse);
+
+            videoControlCacheServiceSpy.getSpotlightStatus.and.returnValue(true);
+
+            // Act
+            const result = sut.isParticipantSpotlighted(participantId);
+
+            // Assert
+            expect(result).toBeTrue();
+            expect(getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference')).toHaveBeenCalledTimes(1);
+            expect(videoControlCacheServiceSpy.getSpotlightStatus).toHaveBeenCalledOnceWith(conferenceId, participantId);
+        });
+
+        it('should return false if the user is NOT spotlighted', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const conferenceId = 'conference-id';
+
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference').and.returnValue(({
+                id: conferenceId
+            } as unknown) as ConferenceResponse);
+
+            videoControlCacheServiceSpy.getSpotlightStatus.and.returnValue(false);
+
+            // Act
+            const result = sut.isParticipantSpotlighted(participantId);
+
+            // Assert
+            expect(result).toBeFalse();
+            expect(getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference')).toHaveBeenCalledTimes(1);
+            expect(videoControlCacheServiceSpy.getSpotlightStatus).toHaveBeenCalledOnceWith(conferenceId, participantId);
+        });
     });
 });
