@@ -5,6 +5,10 @@ import { Logger } from '../logging/logger-base';
 import { ConferenceService } from './conference.service';
 import { ParticipantService } from './participant.service';
 
+export interface IParticipantControlsState {
+    isSpotlighted: boolean;
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -14,6 +18,10 @@ export class VideoControlCacheService {
     }
 
     getSpotlightStatus(conferenceId: string, participantId: string): boolean {
+        throw new Error('Not Implemented');
+    }
+
+    getStateForConference(conferenceId: string): { [participantId: string]: IParticipantControlsState } {
         throw new Error('Not Implemented');
     }
 }
@@ -46,7 +54,7 @@ export class VideoControlService {
         return this.videoControlCacheService.getSpotlightStatus(this.conferenceService.currentConference.id, participantId);
     }
 
-    getSpotlightedParticipants(): Observable<string[]> {
+    getSpotlightedParticipants(): string[] {
         throw Error('Not implemented');
     }
 }

@@ -5,7 +5,7 @@ import { ConferenceResponse } from '../clients/api-client';
 import { Logger } from '../logging/logger-base';
 import { ConferenceService } from './conference.service';
 import { ParticipantService } from './participant.service';
-import { VideoControlCacheService, VideoControlService } from './video-control.service';
+import { IParticipantControlsState, VideoControlCacheService, VideoControlService } from './video-control.service';
 
 fdescribe('VideoControlService', () => {
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
@@ -67,8 +67,6 @@ fdescribe('VideoControlService', () => {
         }));
     });
 
-    describe('getSpotlightedParticipants', () => {});
-
     describe('isParticipantSpotlighted', () => {
         it('should return true if the user is spotlighted', () => {
             // Arrange
@@ -108,6 +106,37 @@ fdescribe('VideoControlService', () => {
             expect(result).toBeFalse();
             expect(getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference')).toHaveBeenCalledTimes(1);
             expect(videoControlCacheServiceSpy.getSpotlightStatus).toHaveBeenCalledOnceWith(conferenceId, participantId);
+        });
+    });
+
+    describe('getSpotlightedParticipants', () => {
+        it('should return spotlighted participants', () => {
+            // Arrange
+            const conferenceId = 'conference-id';
+
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference').and.returnValue(({
+                id: conferenceId
+            } as unknown) as ConferenceResponse);
+
+            const participantIdOne = 'participant-id-1';
+            const participantIdTwo = 'participant-id-2';
+            const participantIdThree = 'participant-id-3';
+            const expectedResult = [participantIdOne, participantIdTwo];
+
+            const stateForConference: { [participantId: string]: IParticipantControlsState } = {};
+            stateForConference[participantIdOne] = { isSpotlighted: true };
+            stateForConference[participantIdTwo] = { isSpotlighted: true };
+            stateForConference[participantIdThree] = { isSpotlighted: false };
+
+            videoControlCacheServiceSpy.getStateForConference.and.returnValue(stateForConference);
+
+            // Act
+            const result = sut.getSpotlightedParticipants();
+
+            // Assert
+            expect(result).toEqual(expectedResult);
+            expect(getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference')).toHaveBeenCalledTimes(1);
+            expect(videoControlCacheServiceSpy.getStateForConference).toHaveBeenCalledOnceWith(conferenceId);
         });
     });
 });

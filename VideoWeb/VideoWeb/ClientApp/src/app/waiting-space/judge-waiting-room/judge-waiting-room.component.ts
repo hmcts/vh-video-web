@@ -191,19 +191,14 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     restoreSpotlightedParticipants() {
-        this.videoControlService
-            .getSpotlightedParticipants()
-            .pipe(take(1))
-            .subscribe(participantIds => {
-                for (var participantId of participantIds) {
-                    this.videoCallService.spotlightParticipant(
-                        this.participantService.getPexipIdForParticipant(participantId),
-                        true,
-                        this.conference.id,
-                        participantId
-                    );
-                }
-            });
+        for (var participantId of this.videoControlService.getSpotlightedParticipants()) {
+            this.videoCallService.spotlightParticipant(
+                this.participantService.getPexipIdForParticipant(participantId),
+                true,
+                this.conference.id,
+                participantId
+            );
+        }
     }
 
     goToJudgeHearingList(): void {

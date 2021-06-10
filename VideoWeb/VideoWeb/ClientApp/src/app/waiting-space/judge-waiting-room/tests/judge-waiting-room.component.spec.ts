@@ -471,7 +471,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             videoControlServiceSpy.getSpotlightedParticipants.calls.reset();
         });
 
-        it('should spotlight all participants that are retrived from videoControlServiceSpy.restoreSpotlightedParticipants()', fakeAsync(() => {
+        it('should spotlight all participants that are retrived from videoControlServiceSpy.restoreSpotlightedParticipants()', () => {
             // Arrange
             const conferenceId = Guid.create().toString();
             const participantOneId = Guid.create().toString();
@@ -494,39 +494,31 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
                 }
             });
 
-            const spotlightedParticipantsSubject = new Subject<string[]>();
-            videoControlServiceSpy.getSpotlightedParticipants.and.returnValue(spotlightedParticipantsSubject.asObservable());
+            videoControlServiceSpy.getSpotlightedParticipants.and.returnValue([participantOneId.toString(), participantTwoId.toString()]);
 
             // Act
             component.restoreSpotlightedParticipants();
-            spotlightedParticipantsSubject.next([participantOneId.toString(), participantTwoId.toString()]);
-
-            flush();
 
             // Assert
             expect(videoControlServiceSpy.getSpotlightedParticipants).toHaveBeenCalledTimes(1);
             expect(videoCallService.spotlightParticipant).toHaveBeenCalledTimes(2);
             expect(videoCallService.spotlightParticipant).toHaveBeenCalledWith(participantOnePexipId, true, conferenceId, participantOneId);
             expect(videoCallService.spotlightParticipant).toHaveBeenCalledWith(participantTwoPexipId, true, conferenceId, participantTwoId);
-        }));
+        });
 
-        it('should NOT spotlight any participants if NONE are retrived from videoControlServiceSpy.restoreSpotlightedParticipants()', fakeAsync(() => {
+        it('should NOT spotlight any participants if NONE are retrived from videoControlServiceSpy.restoreSpotlightedParticipants()', () => {
             // Arrange
             const conferenceId = Guid.create().toString();
             component.conference.id = conferenceId;
 
-            const spotlightedParticipantsSubject = new Subject<string[]>();
-            videoControlServiceSpy.getSpotlightedParticipants.and.returnValue(spotlightedParticipantsSubject.asObservable());
+            videoControlServiceSpy.getSpotlightedParticipants.and.returnValue([]);
 
             // Act
             component.restoreSpotlightedParticipants();
-            spotlightedParticipantsSubject.next([]);
-
-            flush();
 
             // Assert
             expect(videoControlServiceSpy.getSpotlightedParticipants).toHaveBeenCalledTimes(1);
             expect(videoCallService.spotlightParticipant).not.toHaveBeenCalled();
-        }));
+        });
     });
 });
