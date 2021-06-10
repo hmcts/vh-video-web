@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { from, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
+import { toHttpRequestResult } from 'src/app/shared/http-request-result/http-request-result';
 import { Participant } from 'src/app/shared/models/participant';
-import { VideoWebService } from '../api/video-web.service';
-import { ConferenceResponse, ParticipantResponse, ParticipantResponseVho } from '../clients/api-client';
+import { ApiClient, ParticipantForUserResponse } from '../clients/api-client';
 
 @Injectable({
     providedIn: 'root'
@@ -17,7 +17,7 @@ export class ParticipantService {
 
     private participantIdToPexipIdMap: [{ string: string }];
 
-    constructor(private videoWebService: VideoWebService) {
+    constructor(private apiClient: ApiClient) {
         this.initialise();
     }
 
@@ -30,8 +30,9 @@ export class ParticipantService {
     }
 
     getParticipants(conferenceId: Guid | string): Observable<Participant[]> {
-        return from(this.videoWebService.getParticipantsByConferenceId(conferenceId.toString())).pipe(
-            map(participants => participants.map(participantResponse => new Participant(participantResponse)))
+        return this.apiClient.getParticipantsByConferenceId(conferenceId.toString()).pipe(
+            toHttpRequestResult(),
+            map(participants => participants.result?.map(participantResponse => new Participant(participantResponse)))
         );
     }
 

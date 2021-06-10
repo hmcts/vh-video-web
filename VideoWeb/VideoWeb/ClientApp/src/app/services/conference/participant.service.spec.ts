@@ -1,9 +1,10 @@
 import { fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
+import { Subject } from 'rxjs';
 import { Participant } from 'src/app/shared/models/participant';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { VideoWebService } from '../api/video-web.service';
-import { LinkedParticipantResponse, LinkType, ParticipantForUserResponse, ParticipantStatus, Role } from '../clients/api-client';
+import { ApiClient, LinkedParticipantResponse, LinkType, ParticipantForUserResponse, ParticipantStatus, Role } from '../clients/api-client';
 import { ParticipantService } from './participant.service';
 
 fdescribe('ParticipantService', () => {
@@ -37,70 +38,82 @@ fdescribe('ParticipantService', () => {
         linked_participants: []
     });
 
-    const participantResponses = [participantOne, participantTwo];
-
-    let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
+    let apiClientSpy: jasmine.SpyObj<ApiClient>;
+    let getParticipantsByConferenceId$: Subject<ParticipantForUserResponse[]>;
 
     let sut: ParticipantService;
 
-    beforeEach(fakeAsync(() => {
-        videoWebServiceSpy = jasmine.createSpyObj<VideoWebService>('VideoWebSerivce', ['getParticipantsByConferenceId']);
-        videoWebServiceSpy.getParticipantsByConferenceId.and.resolveTo(participantResponses);
+    beforeEach(() => {
+        apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['getParticipantsByConferenceId']);
 
-        sut = new ParticipantService(videoWebServiceSpy);
+        getParticipantsByConferenceId$ = new Subject<ParticipantForUserResponse[]>();
+        apiClientSpy.getParticipantsByConferenceId.and.returnValue(getParticipantsByConferenceId$.asObservable());
+
+        sut = new ParticipantService(apiClientSpy);
+
+        apiClientSpy.getParticipantsByConferenceId.calls.reset();
+    });
+
+    it('should be created and the initialise participant list', fakeAsync(() => {
+        // Act
+        const participantResponses = [participantOne, participantTwo];
+        getParticipantsByConferenceId$.next(participantResponses);
         flush();
 
-        videoWebServiceSpy.getParticipantsByConferenceId.calls.reset();
-    }));
-
-    it('should be created and the initialise participant list', () => {
+        // Assert
         expect(sut).toBeTruthy();
         expect(sut.participants).toEqual(participantResponses.map(participantResponse => new Participant(participantResponse)));
-    });
+    }));
 
     describe('getParticipants', () => {
         it('should return the participants from VideoWebService', fakeAsync(() => {
             // Arrange
             const conferenceId = 'conference-id';
+            const participantResponses = [participantOne, participantTwo];
+
+            let result: Participant[];
 
             // Act
-            let result: Participant[];
             sut.getParticipants(conferenceId).subscribe(participants => (result = participants));
+            getParticipantsByConferenceId$.next(participantResponses);
             flush();
 
             // Assert
-            expect(videoWebServiceSpy.getParticipantsByConferenceId).toHaveBeenCalledOnceWith(conferenceId);
+            expect(apiClientSpy.getParticipantsByConferenceId).toHaveBeenCalledOnceWith(conferenceId);
             expect(result).toEqual(participantResponses.map(participantResponse => new Participant(participantResponse)));
         }));
 
         it('should return the participants from VideoWebService when called with a GUID', fakeAsync(() => {
             // Arrange
+            const participantResponses = [participantOne, participantTwo];
             const conferenceId = Guid.create();
 
-            // Act
             let result: Participant[];
+
+            // Act
             sut.getParticipants(conferenceId).subscribe(participants => (result = participants));
+            getParticipantsByConferenceId$.next(participantResponses);
             flush();
 
             // Assert
-            expect(videoWebServiceSpy.getParticipantsByConferenceId).toHaveBeenCalledOnceWith(conferenceId.toString());
+            expect(apiClientSpy.getParticipantsByConferenceId).toHaveBeenCalledOnceWith(conferenceId.toString());
             expect(result).toEqual(participantResponses.map(participantResponse => new Participant(participantResponse)));
         }));
 
         it('should return an empty array if no particiapnts are returned from VideoWebService', fakeAsync(() => {
             // Arrange
             const conferenceId = 'conference-id';
-            const participantResponses = [];
+            const participantResponses: ParticipantForUserResponse[] = [];
 
-            videoWebServiceSpy.getParticipantsByConferenceId.and.resolveTo(participantResponses);
+            let result: Participant[];
 
             // Act
-            let result: Participant[];
             sut.getParticipants(conferenceId).subscribe(participants => (result = participants));
+            getParticipantsByConferenceId$.next(participantResponses);
             flush();
 
             // Assert
-            expect(videoWebServiceSpy.getParticipantsByConferenceId).toHaveBeenCalledOnceWith(conferenceId);
+            expect(apiClientSpy.getParticipantsByConferenceId).toHaveBeenCalledOnceWith(conferenceId);
             expect(result).toEqual([]);
         }));
     });

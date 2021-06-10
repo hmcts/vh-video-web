@@ -1,14 +1,14 @@
 import { Observable } from 'rxjs';
 
-interface IHttpRequestResult {
+export interface IHttpRequestResult<TResult> {
     status: number;
-    result: any;
+    result: TResult;
     error: any;
 }
 
-function toHttpRequestResult() {
-    return function <T>(source: Observable<T>): Observable<IHttpRequestResult> {
-        return new Observable<IHttpRequestResult>(subscriber => {
+export function toHttpRequestResult<TResult>() {
+    return function (source: Observable<TResult>): Observable<IHttpRequestResult<TResult>> {
+        return new Observable<IHttpRequestResult<TResult>>(subscriber => {
             return source.subscribe({
                 next(value) {
                     subscriber.next({ status: 200, result: value, error: null });
