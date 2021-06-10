@@ -47,6 +47,8 @@ fdescribe('ParticipantService', () => {
     let participantUpdatedSubject: Subject<ParticipantUpdated>;
     let participantUpdated$: Observable<ParticipantUpdated>;
 
+    let loggerSpy: jasmine.SpyObj<Logger>;
+
     let sut: ParticipantService;
 
     beforeEach(() => {
@@ -62,11 +64,9 @@ fdescribe('ParticipantService', () => {
         spyOn(participantUpdated$, 'subscribe').and.callThrough();
         videoCallServiceSpy.onParticipantUpdated.and.returnValue(participantUpdated$);
 
-        sut = new ParticipantService(
-            apiClientSpy,
-            videoCallServiceSpy,
-            jasmine.createSpyObj<Logger>('Logger', ['error'])
-        );
+        loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['error', 'warn']);
+
+        sut = new ParticipantService(apiClientSpy, videoCallServiceSpy, loggerSpy);
 
         apiClientSpy.getParticipantsByConferenceId.calls.reset();
     });
@@ -150,6 +150,8 @@ fdescribe('ParticipantService', () => {
             expect(result).toEqual([]);
         }));
     });
+
+    describe('getPexipIdForParticipant', () => {});
 
     describe('handle VideoCallService.onParticipantUpdated', () => {
         it('should set the pexip ID when the event is raised', fakeAsync(() => {
@@ -252,7 +254,27 @@ fdescribe('ParticipantService', () => {
             // Assert
             expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
         }));
-    });
 
-    describe('getPexipIdForParticipant', () => {});
+        it('should NOT set an ID if the participant cannot be found', fakeAsync(() => {
+            // Arrange
+            const pexipId = 'pexip-id';
+            const participantId = Guid.create().toString();
+            const pexipName = `pexip-name-${participantId}`;
+            const participantUpdated = ({
+                pexipDisplayName: pexipName,
+                uuid: pexipId
+            } as unknown) as ParticipantUpdated;
+
+            const expectedValue: { [participantId: string]: string } = {};
+
+            spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne, participantTwo]);
+
+            // Act
+            participantUpdatedSubject.next(participantUpdated);
+            flush();
+
+            // Assert
+            expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
+        }));
+    });
 });
