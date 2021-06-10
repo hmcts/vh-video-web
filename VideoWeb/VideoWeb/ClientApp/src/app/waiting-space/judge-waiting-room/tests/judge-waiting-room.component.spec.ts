@@ -504,7 +504,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             flush();
 
             // Assert
-            expect(videoControlServiceSpy.getSpotlightedParticipants).toHaveBeenCalledOnceWith(conferenceId);
+            expect(videoControlServiceSpy.getSpotlightedParticipants).toHaveBeenCalledTimes(1);
             expect(videoCallService.spotlightParticipant).toHaveBeenCalledTimes(2);
             expect(videoCallService.spotlightParticipant).toHaveBeenCalledWith(participantOnePexipId, true, conferenceId, participantOneId);
             expect(videoCallService.spotlightParticipant).toHaveBeenCalledWith(participantTwoPexipId, true, conferenceId, participantTwoId);
@@ -525,7 +525,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             flush();
 
             // Assert
-            expect(videoControlServiceSpy.getSpotlightedParticipants).toHaveBeenCalledOnceWith(conferenceId);
+            expect(videoControlServiceSpy.getSpotlightedParticipants).toHaveBeenCalledTimes(1);
             expect(videoCallService.spotlightParticipant).not.toHaveBeenCalled();
         }));
     });

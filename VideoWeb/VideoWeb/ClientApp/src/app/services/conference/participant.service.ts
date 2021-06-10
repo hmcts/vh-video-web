@@ -1,18 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { from, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import { IHttpRequestResult, toHttpRequestResult } from 'src/app/shared/http-request-result/http-request-result';
 import { Participant } from 'src/app/shared/models/participant';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
-import { ApiClient, ParticipantForUserResponse } from '../clients/api-client';
+import { ApiClient } from '../clients/api-client';
 import { Logger } from '../logging/logger-base';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ParticipantService {
+    private loggingPrefix = 'ParticipantService -';
     private _participants: Participant[] = [];
     public get participants() {
         return this._participants;
@@ -53,7 +53,7 @@ export class ParticipantService {
     private handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): void {
         const participant = this.participants.find(x => updatedParticipant.pexipDisplayName.includes(x.id));
         if (!participant) {
-            this.logger.warn('Could not set pexip ID for participant as participant could not be found.');
+            this.logger.warn(`${this.loggingPrefix} Could not set pexip ID for participant as participant could not be found.`);
             return;
         }
 

@@ -17,6 +17,10 @@ fdescribe('VideoControlService', () => {
 
     beforeEach(() => {
         conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>('ConferenceService', ['getConferenceById'], ['currentConference']);
+        participantServiceSpy = jasmine.createSpyObj<ParticipantService>('ParticipantService', ['getPexipIdForParticipant']);
+        videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['spotlightParticipant']);
+        videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', ['setSpotlightStatus']);
+        loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['error']);
 
         sut = new VideoControlService(
             conferenceServiceSpy,

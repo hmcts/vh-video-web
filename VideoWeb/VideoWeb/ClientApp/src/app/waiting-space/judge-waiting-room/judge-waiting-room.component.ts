@@ -192,7 +192,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     restoreSpotlightedParticipants() {
         this.videoControlService
-            .getSpotlightedParticipants(this.conference.id)
+            .getSpotlightedParticipants()
             .pipe(take(1))
             .subscribe(participantIds => {
                 for (var participantId of participantIds) {
