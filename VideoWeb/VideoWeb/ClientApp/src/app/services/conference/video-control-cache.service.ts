@@ -33,10 +33,6 @@ export class VideoControlCacheService {
         return this.hearingControlStates[conferenceId] ?? { participantState: {} };
     }
 
-    private initialise() {
-        this.loadFromLocalStorage();
-    }
-
     loadFromLocalStorage(): { [conferenceId: string]: IHearingControlsState } {
         const hearingControlStatesJson = window.localStorage.getItem(this.localStorageKey);
 
@@ -45,6 +41,10 @@ export class VideoControlCacheService {
         this.hearingControlStates = JSON.parse(hearingControlStatesJson);
 
         return this.hearingControlStates;
+    }
+
+    private initialise() {
+        this.loadFromLocalStorage();
     }
 
     private saveToLocalStorage() {
