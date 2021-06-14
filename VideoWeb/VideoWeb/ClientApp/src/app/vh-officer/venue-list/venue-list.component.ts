@@ -7,7 +7,7 @@ import { VhoStorageKeys } from '../services/models/session-keys';
 import { CourtRoomsAccounts } from 'src/app/vh-officer/services/models/court-rooms-accounts';
 import { VhoQueryService } from 'src/app/vh-officer/services/vho-query-service.service';
 import { Logger } from 'src/app/services/logging/logger-base';
-import { CourtRoomsAccountResponse } from '../../services/clients/api-client';
+import { CourtRoomsAccountResponse, HearingVenueResponse } from '../../services/clients/api-client';
 
 @Component({
     selector: 'app-venue-list',
@@ -17,8 +17,8 @@ import { CourtRoomsAccountResponse } from '../../services/clients/api-client';
 export class VenueListComponent implements OnInit {
     private readonly judgeAllocationStorage: SessionStorage<string[]>;
     private readonly courtAccountsAllocationStorage: SessionStorage<CourtRoomsAccounts[]>;
-    judges: string[];
-    selectedJudges: string[];
+    venues: HearingVenueResponse[];
+    selectedVenues: string[];
     venueListLoading: boolean;
     filterCourtRoomsAccounts: CourtRoomsAccounts[];
 
@@ -28,26 +28,26 @@ export class VenueListComponent implements OnInit {
         private vhoQueryService: VhoQueryService,
         private logger: Logger
     ) {
-        this.selectedJudges = [];
+        this.selectedVenues = [];
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
         this.courtAccountsAllocationStorage = new SessionStorage<CourtRoomsAccounts[]>(VhoStorageKeys.COURT_ROOMS_ACCOUNTS_ALLOCATION_KEY);
     }
 
     ngOnInit() {
         this.venueListLoading = false;
-        this.videoWebService.getDistinctJudgeNames().then(response => {
-            this.judges = response.first_names;
-            this.selectedJudges = this.judgeAllocationStorage.get();
+        this.videoWebService.getVenues().subscribe(venues => {
+            this.venues = venues;
+            this.selectedVenues = this.judgeAllocationStorage.get();
             this.venueListLoading = false;
         });
     }
 
     get venuesSelected(): boolean {
-        return this.selectedJudges && this.selectedJudges.length > 0;
+        return this.selectedVenues && this.selectedVenues.length > 0;
     }
 
     updateSelection() {
-        this.judgeAllocationStorage.set(this.selectedJudges);
+        this.judgeAllocationStorage.set(this.selectedVenues);
     }
 
     getFiltersCourtRoomsAccounts(response: CourtRoomsAccountResponse[]) {
@@ -74,7 +74,7 @@ export class VenueListComponent implements OnInit {
 
     goToHearingList() {
         this.updateSelection();
-        this.vhoQueryService.getCourtRoomsAccounts(this.selectedJudges).then(response => {
+        this.vhoQueryService.getCourtRoomsAccounts(this.selectedVenues).then(response => {
             this.getFiltersCourtRoomsAccounts(response);
             this.router.navigateByUrl(pageUrls.AdminHearingList);
         });
