@@ -3,8 +3,9 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
 import { HearingLayout } from 'src/app/services/clients/api-client';
 import { SelectHearingLayoutComponent } from './select-hearing-layout.component';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { onLangChangeSpy, translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { fakeAsync, tick } from '@angular/core/testing';
+import { LangChangeEvent } from '@ngx-translate/core';
 
 describe('SelectHearingLayoutComponent', () => {
     let component: SelectHearingLayoutComponent;
@@ -34,6 +35,17 @@ describe('SelectHearingLayoutComponent', () => {
         videoCallService.getPreferredLayout.and.returnValue(layout);
         component.ngOnInit();
         expect(component.selectedLayout).toBe(layout);
+    });
+
+    it('should call translate service to update hearing layout option when language changes', () => {
+        component.currentText = textButton.innerHTML.toLowerCase().split(' ').join('-');
+        component.accordionOpenAllElement = document.getElementsByClassName('govuk-accordion__open-all').item(0) as HTMLButtonElement;
+        component.ngOnChanges();
+        onLangChangeSpy.emit({ lang: 'tl' } as LangChangeEvent);
+        expect(component.currentText).toBe('open-all');
+        expect(translateServiceSpy.instant).toHaveBeenCalledWith('select-hearing-layout.choose-hearing-layout');
+        expect(translateServiceSpy.instant).toHaveBeenCalledWith(`select-hearing-layout.${component.currentText}`);
+        expect(component.accordionOpenAllElement.innerHTML).toContain(textButton.innerHTML);
     });
 
     it('should translate button text on text click', () => {
