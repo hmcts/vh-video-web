@@ -505,8 +505,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             // Assert
             expect(videoControlServiceSpy.getSpotlightedParticipants).toHaveBeenCalledTimes(1);
             expect(videoControlServiceSpy.spotlightParticipant).toHaveBeenCalledTimes(2);
-            expect(videoControlServiceSpy.spotlightParticipant).toHaveBeenCalledWith(participantOneId);
-            expect(videoControlServiceSpy.spotlightParticipant).toHaveBeenCalledWith(participantTwoId);
+            expect(videoControlServiceSpy.spotlightParticipant).toHaveBeenCalledWith(conferenceId, participantOneId);
+            expect(videoControlServiceSpy.spotlightParticipant).toHaveBeenCalledWith(conferenceId, participantTwoId);
         });
 
         it('should NOT spotlight any participants if NONE are retrived from videoControlServiceSpy.restoreSpotlightedParticipants()', () => {
