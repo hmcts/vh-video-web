@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
-import { Logger } from '../logging/logger-base';
 import { ConferenceService } from './conference.service';
 import { ParticipantService } from './participant.service';
 import { VideoControlCacheService } from './video-control-cache.service';
@@ -14,8 +13,7 @@ export class VideoControlService {
         private conferenceService: ConferenceService,
         private participantService: ParticipantService,
         private videoCallService: VideoCallService,
-        private videoControlCacheService: VideoControlCacheService,
-        private logger: Logger
+        private videoControlCacheService: VideoControlCacheService
     ) {}
 
     private onParticipantsSpotlightStatusChangedSubject: Subject<boolean>;

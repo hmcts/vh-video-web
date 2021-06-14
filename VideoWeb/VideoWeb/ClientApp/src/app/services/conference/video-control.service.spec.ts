@@ -28,13 +28,7 @@ fdescribe('VideoControlService', () => {
         ]);
         loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['error']);
 
-        sut = new VideoControlService(
-            conferenceServiceSpy,
-            participantServiceSpy,
-            videoCallServiceSpy,
-            videoControlCacheServiceSpy,
-            loggerSpy
-        );
+        sut = new VideoControlService(conferenceServiceSpy, participantServiceSpy, videoCallServiceSpy, videoControlCacheServiceSpy);
     });
 
     it('should be created', () => {

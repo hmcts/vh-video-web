@@ -1,7 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { take } from 'rxjs/operators';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -192,12 +191,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     restoreSpotlightedParticipants() {
         for (var participantId of this.videoControlService.getSpotlightedParticipants()) {
-            this.videoCallService.spotlightParticipant(
-                this.participantService.getPexipIdForParticipant(participantId),
-                true,
-                this.conference.id,
-                participantId
-            );
+            this.videoControlService.spotlightParticipant(participantId);
         }
     }
 

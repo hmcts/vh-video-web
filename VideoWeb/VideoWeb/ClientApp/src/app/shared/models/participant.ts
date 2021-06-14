@@ -11,10 +11,6 @@ export class Participant {
     private participant: ParticipantResponse | ParticipantForUserResponse | ParticipantForUserResponse;
 
     constructor(participant: ParticipantResponse | ParticipantForUserResponse | ParticipantForUserResponse) {
-        const isVhResponse = participant instanceof ParticipantResponseVho;
-        const isParticipantResponse = participant instanceof ParticipantResponse;
-        const isParticipantForUserResponse = participant instanceof ParticipantForUserResponse;
-
         this.participant = participant;
     }
 

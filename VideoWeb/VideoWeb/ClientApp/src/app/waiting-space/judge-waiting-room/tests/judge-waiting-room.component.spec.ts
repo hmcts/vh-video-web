@@ -70,7 +70,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         };
 
         participantServiceSpy = jasmine.createSpyObj<ParticipantService>('ParticipantService', ['getPexipIdForParticipant']);
-        videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', ['getSpotlightedParticipants']);
+        videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
+            'spotlightParticipant',
+            'getSpotlightedParticipants'
+        ]);
 
         userMediaService.setDefaultDevicesInCache.and.returnValue(Promise.resolve());
         component = new JudgeWaitingRoomComponent(
@@ -501,9 +504,9 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
             // Assert
             expect(videoControlServiceSpy.getSpotlightedParticipants).toHaveBeenCalledTimes(1);
-            expect(videoCallService.spotlightParticipant).toHaveBeenCalledTimes(2);
-            expect(videoCallService.spotlightParticipant).toHaveBeenCalledWith(participantOnePexipId, true, conferenceId, participantOneId);
-            expect(videoCallService.spotlightParticipant).toHaveBeenCalledWith(participantTwoPexipId, true, conferenceId, participantTwoId);
+            expect(videoControlServiceSpy.spotlightParticipant).toHaveBeenCalledTimes(2);
+            expect(videoControlServiceSpy.spotlightParticipant).toHaveBeenCalledWith(participantOneId);
+            expect(videoControlServiceSpy.spotlightParticipant).toHaveBeenCalledWith(participantTwoId);
         });
 
         it('should NOT spotlight any participants if NONE are retrived from videoControlServiceSpy.restoreSpotlightedParticipants()', () => {
@@ -518,7 +521,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
             // Assert
             expect(videoControlServiceSpy.getSpotlightedParticipants).toHaveBeenCalledTimes(1);
-            expect(videoCallService.spotlightParticipant).not.toHaveBeenCalled();
+            expect(videoControlServiceSpy.spotlightParticipant).not.toHaveBeenCalled();
         });
     });
 });

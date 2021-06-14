@@ -1,12 +1,14 @@
 import { fakeAsync, flush, flushMicrotasks } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { Observable, Subject } from 'rxjs';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { Participant } from 'src/app/shared/models/participant';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
-import { ApiClient, ParticipantForUserResponse, ParticipantStatus, Role } from '../clients/api-client';
+import { ApiClient, ConferenceResponse, ParticipantForUserResponse, ParticipantStatus, Role } from '../clients/api-client';
 import { Logger } from '../logging/logger-base';
+import { ConferenceService } from './conference.service';
 import { ParticipantService } from './participant.service';
 
 fdescribe('ParticipantService', () => {
@@ -43,6 +45,8 @@ fdescribe('ParticipantService', () => {
     let apiClientSpy: jasmine.SpyObj<ApiClient>;
     let getParticipantsByConferenceId$: Subject<ParticipantForUserResponse[]>;
 
+    let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
+
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
     let participantUpdatedSubject: Subject<ParticipantUpdated>;
     let participantUpdated$: Observable<ParticipantUpdated>;
@@ -57,6 +61,8 @@ fdescribe('ParticipantService', () => {
         getParticipantsByConferenceId$ = new Subject<ParticipantForUserResponse[]>();
         apiClientSpy.getParticipantsByConferenceId.and.returnValue(getParticipantsByConferenceId$.asObservable());
 
+        conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>('ConferenceService', ['getConferenceById'], ['currentConference$']);
+
         videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['onParticipantUpdated']);
 
         participantUpdatedSubject = new Subject<ParticipantUpdated>();
@@ -66,7 +72,7 @@ fdescribe('ParticipantService', () => {
 
         loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['error', 'warn']);
 
-        sut = new ParticipantService(apiClientSpy, videoCallServiceSpy, loggerSpy);
+        sut = new ParticipantService(apiClientSpy, conferenceServiceSpy, videoCallServiceSpy, loggerSpy);
 
         apiClientSpy.getParticipantsByConferenceId.calls.reset();
     });
@@ -95,6 +101,31 @@ fdescribe('ParticipantService', () => {
             // Assert
             expect(videoCallServiceSpy.onParticipantUpdated).toHaveBeenCalledTimes(1);
             expect(participantUpdated$.subscribe).toHaveBeenCalledTimes(1);
+        }));
+
+        it('should subscribe to currentConference and get participants for conference each time a value is emmited', fakeAsync(() => {
+            // Arrange
+            const currentConferenceSubject = new Subject<ConferenceResponse>();
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference$').and.returnValue(currentConferenceSubject.asObservable());
+
+            const getParticipantsForConferenceSpy = spyOn(sut, 'getParticipantsForConference').and.callThrough();
+
+            const conferenceIdOne = 'conference-id-one';
+            const conferenceIdTwo = 'conference-id-two';
+            const conference = new ConferenceResponse();
+            conference.id = conferenceIdOne;
+            // Act
+            currentConferenceSubject.next(conference);
+            flush();
+
+            conference.id = conferenceIdTwo;
+            currentConferenceSubject.next(conference);
+            flush();
+
+            // Assert
+            expect(getParticipantsForConferenceSpy).toHaveBeenCalledTimes(2);
+            expect(getParticipantsForConferenceSpy).toHaveBeenCalledOnceWith(conferenceIdOne);
+            expect(getParticipantsForConferenceSpy).toHaveBeenCalledOnceWith(conferenceIdTwo);
         }));
     });
 

@@ -7,6 +7,7 @@ import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-mode
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { ApiClient } from '../clients/api-client';
 import { Logger } from '../logging/logger-base';
+import { ConferenceService } from './conference.service';
 
 @Injectable({
     providedIn: 'root'
@@ -23,7 +24,12 @@ export class ParticipantService {
         return this._participantIdToPexipIdMap;
     }
 
-    constructor(private apiClient: ApiClient, private videoCallService: VideoCallService, private logger: Logger) {
+    constructor(
+        private apiClient: ApiClient,
+        private conferenceService: ConferenceService,
+        private videoCallService: VideoCallService,
+        private logger: Logger
+    ) {
         this.initialise();
     }
 
