@@ -45,11 +45,13 @@ export class ParticipantService {
     }
 
     private initialise() {
-        this.getParticipantsForConference(Guid.EMPTY)
-            .pipe(take(1))
-            .subscribe(participants => {
-                this._participants = participants;
-            });
+        this.conferenceService.currentConference$.subscribe(conference => {
+            this.getParticipantsForConference(conference.id)
+                .pipe(take(1))
+                .subscribe(participants => {
+                    this._participants = participants;
+                });
+        });
 
         this.videoCallService
             .onParticipantUpdated()

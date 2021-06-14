@@ -46,6 +46,7 @@ fdescribe('ParticipantService', () => {
     let getParticipantsByConferenceId$: Subject<ParticipantForUserResponse[]>;
 
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
+    let currentConferenceSubject: Subject<ConferenceResponse>;
 
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
     let participantUpdatedSubject: Subject<ParticipantUpdated>;
@@ -62,6 +63,9 @@ fdescribe('ParticipantService', () => {
         apiClientSpy.getParticipantsByConferenceId.and.returnValue(getParticipantsByConferenceId$.asObservable());
 
         conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>('ConferenceService', ['getConferenceById'], ['currentConference$']);
+
+        currentConferenceSubject = new Subject<ConferenceResponse>();
+        getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference$').and.returnValue(currentConferenceSubject.asObservable());
 
         videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['onParticipantUpdated']);
 
@@ -80,6 +84,11 @@ fdescribe('ParticipantService', () => {
     describe('construction', () => {
         it('should be created and the initialise participant list', fakeAsync(() => {
             // Act
+            const conference = new ConferenceResponse();
+            conference.id = 'conference-id';
+            currentConferenceSubject.next(conference);
+            flush();
+
             const participantResponses = [participantOne, participantTwo];
             getParticipantsByConferenceId$.next(participantResponses);
             flush();
@@ -105,8 +114,6 @@ fdescribe('ParticipantService', () => {
 
         it('should subscribe to currentConference and get participants for conference each time a value is emmited', fakeAsync(() => {
             // Arrange
-            const currentConferenceSubject = new Subject<ConferenceResponse>();
-            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference$').and.returnValue(currentConferenceSubject.asObservable());
 
             const getParticipantsForConferenceSpy = spyOn(sut, 'getParticipantsForConference').and.callThrough();
 
@@ -124,8 +131,8 @@ fdescribe('ParticipantService', () => {
 
             // Assert
             expect(getParticipantsForConferenceSpy).toHaveBeenCalledTimes(2);
-            expect(getParticipantsForConferenceSpy).toHaveBeenCalledOnceWith(conferenceIdOne);
-            expect(getParticipantsForConferenceSpy).toHaveBeenCalledOnceWith(conferenceIdTwo);
+            expect(getParticipantsForConferenceSpy).toHaveBeenCalledWith(conferenceIdOne);
+            expect(getParticipantsForConferenceSpy).toHaveBeenCalledWith(conferenceIdTwo);
         }));
     });
 
