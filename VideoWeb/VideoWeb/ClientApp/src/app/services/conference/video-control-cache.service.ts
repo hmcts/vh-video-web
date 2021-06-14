@@ -8,11 +8,15 @@ export interface IParticipantControlsState {
     isSpotlighted: boolean;
 }
 
+export interface IHearingControlStates {
+    [conferenceId: string]: IHearingControlsState;
+}
+
 @Injectable({
     providedIn: 'root'
 })
 export class VideoControlCacheService {
-    hearingControlStates: { [conferenceId: string]: IHearingControlsState } = {};
+    hearingControlStates: IHearingControlStates = {};
     get localStorageKey() {
         return 'conferenceControlStates';
     }
@@ -51,10 +55,10 @@ export class VideoControlCacheService {
         this.loadFromLocalStorage();
     }
 
-    loadFromLocalStorage(): { [conferenceId: string]: IHearingControlsState } {
+    private loadFromLocalStorage(): IHearingControlStates {
         const hearingControlStatesJson = window.localStorage.getItem(this.localStorageKey);
 
-        if (!hearingControlStatesJson) return;
+        if (!hearingControlStatesJson) return null;
 
         this.hearingControlStates = JSON.parse(hearingControlStatesJson);
 
@@ -63,6 +67,5 @@ export class VideoControlCacheService {
 
     private saveToLocalStorage() {
         window.localStorage.setItem(this.localStorageKey, JSON.stringify(this.hearingControlStates));
-        console.log(window.localStorage.getItem(this.localStorageKey));
     }
 }

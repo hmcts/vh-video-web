@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { IHearingControlsState, VideoControlCacheService } from './video-control-cache.service';
+import { IHearingControlsState, IHearingControlStates, VideoControlCacheService } from './video-control-cache.service';
 
 fdescribe('VideoControlCacheService', () => {
     let sut: VideoControlCacheService;
@@ -13,6 +13,36 @@ fdescribe('VideoControlCacheService', () => {
 
     it('should be created', () => {
         expect(sut).toBeTruthy();
+    });
+
+    it('should load settings from local storage when constructed', () => {
+        // Arrange
+        const conferenceIdOne = 'conference-id-one';
+        const conferenceIdTwo = 'conference-id-two';
+        var hearingStates: IHearingControlStates = {};
+        hearingStates[conferenceIdOne] = {
+            participantState: {
+                'participant-id': {
+                    isSpotlighted: false
+                }
+            }
+        };
+
+        hearingStates[conferenceIdTwo] = {
+            participantState: {
+                'participant-id': {
+                    isSpotlighted: false
+                }
+            }
+        };
+
+        window.localStorage.setItem(sut.localStorageKey, JSON.stringify(hearingStates));
+
+        // Act
+        const service = new VideoControlCacheService();
+
+        // Assert
+        expect(service.hearingControlStates).toEqual(hearingStates);
     });
 
     describe('getStateForConference', () => {
@@ -40,7 +70,7 @@ fdescribe('VideoControlCacheService', () => {
             window.localStorage.setItem(sut.localStorageKey, JSON.stringify(hearingState));
 
             // Act
-            sut.loadFromLocalStorage();
+            sut['loadFromLocalStorage']();
             const result = sut.getStateForConference(conferenceId);
 
             // Act
@@ -63,7 +93,7 @@ fdescribe('VideoControlCacheService', () => {
             window.localStorage.setItem(sut.localStorageKey, JSON.stringify(hearingState));
 
             // Act
-            sut.loadFromLocalStorage();
+            sut['loadFromLocalStorage']();
             const result = sut.getStateForConference(conferenceId);
 
             // Act
