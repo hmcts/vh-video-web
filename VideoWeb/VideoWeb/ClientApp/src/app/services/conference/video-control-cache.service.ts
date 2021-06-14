@@ -16,6 +16,8 @@ export interface IHearingControlStates {
     providedIn: 'root'
 })
 export class VideoControlCacheService {
+    private loggerPrefix = '[VideoControlCacheService] -';
+
     hearingControlStates: IHearingControlStates = {};
     get localStorageKey() {
         return 'conferenceControlStates';
@@ -67,5 +69,6 @@ export class VideoControlCacheService {
 
     private saveToLocalStorage() {
         window.localStorage.setItem(this.localStorageKey, JSON.stringify(this.hearingControlStates));
+        console.log(`${this.loggerPrefix} Saving control states: ${JSON.stringify(this.hearingControlStates)}`);
     }
 }

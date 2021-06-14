@@ -14,6 +14,7 @@ import { ConferenceService } from './conference.service';
 })
 export class ParticipantService {
     private loggingPrefix = 'ParticipantService -';
+
     private _participants: Participant[] = [];
     public get participants() {
         return this._participants;
@@ -60,8 +61,12 @@ export class ParticipantService {
 
     private handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): void {
         const participant = this.participants.find(x => updatedParticipant.pexipDisplayName.includes(x.id));
+
         if (!participant) {
-            this.logger.warn(`${this.loggingPrefix} Could not set pexip ID for participant as participant could not be found.`);
+            this.logger.warn(`${this.loggingPrefix} Could not set pexip ID for participant as participant could not be found.`, {
+                checkedParticipants: this.participants.map(x => x.id),
+                pexipDisplayNameOfUpdatedParticipant: updatedParticipant.pexipDisplayName
+            });
             return;
         }
 

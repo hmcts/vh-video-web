@@ -5,13 +5,14 @@ import { ConferenceResponse } from '../clients/api-client';
 import { Logger } from '../logging/logger-base';
 import { ConferenceService } from './conference.service';
 import { ParticipantService } from './participant.service';
-import { IHearingControlsState, IParticipantControlsState, VideoControlCacheService } from './video-control-cache.service';
+import { IHearingControlsState, VideoControlCacheService } from './video-control-cache.service';
 import { VideoControlService } from './video-control.service';
 
 fdescribe('VideoControlService', () => {
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
     let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
+
     let videoControlCacheServiceSpy: jasmine.SpyObj<VideoControlCacheService>;
     let loggerSpy: jasmine.SpyObj<Logger>;
 
@@ -19,16 +20,26 @@ fdescribe('VideoControlService', () => {
 
     beforeEach(() => {
         conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>('ConferenceService', ['getConferenceById'], ['currentConference']);
+
         participantServiceSpy = jasmine.createSpyObj<ParticipantService>('ParticipantService', ['getPexipIdForParticipant']);
-        videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['spotlightParticipant']);
+
+        videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['spotlightParticipant', 'onParticipantUpdated']);
+
         videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', [
             'setSpotlightStatus',
             'getSpotlightStatus',
             'getStateForConference'
         ]);
-        loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['error']);
 
-        sut = new VideoControlService(conferenceServiceSpy, participantServiceSpy, videoCallServiceSpy, videoControlCacheServiceSpy);
+        loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['error', 'info']);
+
+        sut = new VideoControlService(
+            conferenceServiceSpy,
+            participantServiceSpy,
+            videoCallServiceSpy,
+            videoControlCacheServiceSpy,
+            loggerSpy
+        );
     });
 
     it('should be created', () => {

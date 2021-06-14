@@ -36,6 +36,7 @@ import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-mode
 import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
 import { ParticipantsPanelComponent } from './participants-panel.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { VideoControlService } from 'src/app/services/conference/video-control.service';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -53,14 +54,18 @@ describe('ParticipantsPanelComponent', () => {
     const eventService = eventsServiceSpy;
     const logger = new MockLogger();
     const translateService = translateServiceSpy;
+    let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
 
     let component: ParticipantsPanelComponent;
 
     beforeEach(() => {
+        videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', ['spotlightParticipant']);
+
         component = new ParticipantsPanelComponent(
             videoWebServiceSpy,
             activatedRoute,
             videocallService,
+            videoControlServiceSpy,
             eventService,
             logger,
             translateService

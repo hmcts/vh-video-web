@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantResponse } from 'src/app/services/clients/api-client';
+import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
@@ -48,6 +49,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private videoWebService: VideoWebService,
         private route: ActivatedRoute,
         private videoCallService: VideoCallService,
+        private videoControlService: VideoControlService,
         private eventService: EventsService,
         private logger: Logger,
         protected translateService: TranslateService
@@ -307,7 +309,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             current: p.hasSpotlight(),
             new: !p.hasSpotlight()
         });
-        this.videoCallService.spotlightParticipant(p.pexipId, !p.hasSpotlight(), this.conferenceId, p.id);
+        this.videoControlService.spotlightParticipant(p.id);
     }
 
     toggleMuteParticipant(participant: PanelModel) {
