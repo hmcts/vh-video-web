@@ -68,15 +68,6 @@ namespace VideoWeb.EventHub.Handlers.Core
         /// <returns></returns>
         protected async Task PublishParticipantStatusMessage(ParticipantState participantState)
         {
-            /*
-             * [P1, P2] - VMR
-             * P1 -> Hearing Room; P2 -> Hearing Room
-             * [P1] -> Raise Status Change to In Hearing
-             * [P2] -> Raise Status Change to In Hearing
-             * --------------------------------------------
-             * [P1, P2] - VMR -> Hearing Room
-             * [P1] -> Raise Status Change to In Hearing
-             */
             foreach (var participant in SourceConference.Participants)
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
