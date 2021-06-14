@@ -7,7 +7,7 @@ import { VideoCallService } from '../services/video-call.service';
     selector: 'app-select-hearing-layout',
     templateUrl: './select-hearing-layout.component.html'
 })
-export class SelectHearingLayoutComponent implements OnInit, OnChanges {
+export class SelectHearingLayoutComponent implements OnInit {
     availableLayouts = HearingLayout;
     selectedLayout: HearingLayout;
     accordionOpenAllElement: HTMLButtonElement;
@@ -29,9 +29,7 @@ export class SelectHearingLayoutComponent implements OnInit, OnChanges {
         this.accordionOpenAllElement = document.getElementsByClassName('govuk-accordion__open-all').item(0) as HTMLButtonElement;
         this.accordionOpenAllElement.onclick = e => this.setAccordionText(e);
         this.setAccordionText({} as MouseEvent);
-    }
 
-    ngOnChanges(): void {
         this.translateService.onLangChange.subscribe(event => {
             const headingElement = document.getElementById('accordion-choose-layout-heading');
             headingElement.innerHTML = this.translateService.instant('select-hearing-layout.choose-hearing-layout');

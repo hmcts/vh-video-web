@@ -40,7 +40,7 @@ describe('SelectHearingLayoutComponent', () => {
     it('should call translate service to update hearing layout option when language changes', () => {
         component.currentText = textButton.innerHTML.toLowerCase().split(' ').join('-');
         component.accordionOpenAllElement = document.getElementsByClassName('govuk-accordion__open-all').item(0) as HTMLButtonElement;
-        component.ngOnChanges();
+        component.ngOnInit();
         onLangChangeSpy.emit({ lang: 'tl' } as LangChangeEvent);
         expect(component.currentText).toBe('open-all');
         expect(translateServiceSpy.instant).toHaveBeenCalledWith('select-hearing-layout.choose-hearing-layout');
