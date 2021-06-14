@@ -61,6 +61,7 @@ import { ElementRef } from '@angular/core';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { ConsultationInvitation } from '../../services/consultation-invitation.service';
 import { Participant } from 'src/app/shared/models/participant';
+import { CallSetup } from '../../models/video-call-models';
 
 describe('WaitingRoomComponent EventHub Call', () => {
     function spyPropertyGetter<T, K extends keyof T>(spyObj: jasmine.SpyObj<T>, propName: K): jasmine.Spy<() => T[K]> {
@@ -315,11 +316,35 @@ describe('WaitingRoomComponent EventHub Call', () => {
         expect(videoWebService.getConferenceById).toHaveBeenCalledTimes(0);
     });
 
-    it('should get conference on eventhub reconnect', () => {
-        videoWebService.getConferenceById.calls.reset();
-        errorService.goToServiceError.calls.reset();
-        eventHubReconnectSubject.next();
-        expect(videoWebService.getConferenceById).toHaveBeenCalledTimes(1);
+    describe('eventhub reconnect', () => {
+        let expectCallSetup: boolean;
+        const testCallSetup = new CallSetup(new MediaStream());
+
+        beforeEach(() => {
+            videoWebService.getConferenceById.calls.reset();
+            errorService.goToServiceError.calls.reset();
+            spyOn(component, 'handleCallSetup');
+        });
+        it('should get conference on eventhub reconnect and not call handleCallSetup if not ', () => {
+            expectCallSetup = false;
+            component.pendingCallSetup = null;
+        });
+
+        it('should get conference on eventhub reconnect and not call ', () => {
+            expectCallSetup = true;
+            component.pendingCallSetup = testCallSetup;
+        });
+
+        afterEach(() => {
+            eventHubReconnectSubject.next();
+            expect(videoWebService.getConferenceById).toHaveBeenCalledTimes(1);
+            if (expectCallSetup) {
+                expect(component.handleCallSetup).toHaveBeenCalledWith(testCallSetup);
+                expect(component.handleCallSetup).toHaveBeenCalledTimes(1);
+            } else {
+                expect(component.handleCallSetup).not.toHaveBeenCalled();
+            }
+        });
     });
 
     it('should update conference status and not show video when "in session" message received and participant is a witness', fakeAsync(() => {

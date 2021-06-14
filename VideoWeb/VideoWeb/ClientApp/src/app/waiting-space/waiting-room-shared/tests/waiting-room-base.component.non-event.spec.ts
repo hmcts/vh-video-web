@@ -47,6 +47,7 @@ import { WRTestComponent } from './WRTestComponent';
 import { HearingRole } from '../../models/hearing-role-model';
 import { ElementRef } from '@angular/core';
 import { PrivateConsultationRoomControlsComponent } from '../../private-consultation-room-controls/private-consultation-room-controls.component';
+import { eventsServiceSpy, onEventsHubReadySubjectMock } from 'src/app/testing/mocks/mock-events-service';
 
 describe('WaitingRoomComponent message and clock', () => {
     let component: WRTestComponent;
@@ -113,6 +114,12 @@ describe('WaitingRoomComponent message and clock', () => {
 
         // Assert
         expect(consultationService.displayConsultationLeaveModal).toHaveBeenCalledTimes(1);
+    });
+
+    it('should set eventServiceConnect to true when onEventsHubReady triggers', () => {
+        component.eventServiceConnected = false;
+        onEventsHubReadySubjectMock.next(true);
+        expect(component.eventServiceConnected).toBe(true);
     });
 
     it('should get conference', fakeAsync(async () => {
