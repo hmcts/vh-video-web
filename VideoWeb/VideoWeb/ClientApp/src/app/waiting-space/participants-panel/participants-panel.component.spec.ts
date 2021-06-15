@@ -59,7 +59,7 @@ describe('ParticipantsPanelComponent', () => {
     let component: ParticipantsPanelComponent;
 
     beforeEach(() => {
-        videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', ['spotlightParticipant']);
+        videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', ['setSpotlightStatus']);
 
         component = new ParticipantsPanelComponent(
             videoWebServiceSpy,

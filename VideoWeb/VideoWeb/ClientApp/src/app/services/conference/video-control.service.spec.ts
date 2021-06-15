@@ -1,7 +1,11 @@
-import { fakeAsync, flush } from '@angular/core/testing';
+import { fakeAsync, flush, tick } from '@angular/core/testing';
+import { Observable, of, Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { Participant } from 'src/app/shared/models/participant';
+import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
+import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
-import { ConferenceResponse } from '../clients/api-client';
+import { ConferenceResponse, ParticipantForUserResponse, ParticipantStatus, Role } from '../clients/api-client';
 import { Logger } from '../logging/logger-base';
 import { ConferenceService } from './conference.service';
 import { ParticipantService } from './participant.service';
@@ -37,20 +41,109 @@ fdescribe('VideoControlService', () => {
         expect(sut).toBeTruthy();
     });
 
-    describe('spotlightParticipant', () => {
-        it('should spotlight the participant and update the value in the cache', fakeAsync(() => {
+    describe('setSpotlightStatus', () => {
+        it('should spotlight the participant and update the value in the cache when the response is recieved', fakeAsync(() => {
             // Arrange
             const participantId = 'participant-id';
             const pexipParticipantId = 'pexip-participant-id';
             const conferenceId = 'conference-id';
+            const pexipId = 'pexip-id';
 
             participantServiceSpy.getPexipIdForParticipant.and.returnValue(pexipParticipantId);
 
+            const pexipName = `pexip-name-${participantId}`;
+            const participantUpdated = ({
+                pexipDisplayName: pexipName,
+                uuid: pexipId,
+                isSpotlighted: true
+            } as unknown) as ParticipantUpdated;
+
+            videoCallServiceSpy.onParticipantUpdated.and.returnValue(of(participantUpdated));
+
+            let result = null;
             // Act
-            sut.spotlightParticipant(conferenceId, participantId);
+            sut.setSpotlightStatus(conferenceId, participantId, true).subscribe(updatedParticipant => (result = updatedParticipant));
             flush();
 
             // Assert
+            expect(result).toBe(participantUpdated);
+            expect(videoCallServiceSpy.spotlightParticipant).toHaveBeenCalledOnceWith(
+                pexipParticipantId,
+                true,
+                conferenceId,
+                participantId
+            );
+            expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(conferenceId, participantId, true);
+        }));
+
+        it('should throw when the response times out', fakeAsync(() => {
+            // Arrange
+            const participantId = 'participant-id';
+            const pexipParticipantId = 'pexip-participant-id';
+            const conferenceId = 'conference-id';
+            const pexipId = 'pexip-id';
+
+            participantServiceSpy.getPexipIdForParticipant.and.returnValue(pexipParticipantId);
+
+            const pexipName = `pexip-name-${participantId}`;
+            const participantUpdated = ({
+                pexipDisplayName: pexipName,
+                uuid: pexipId,
+                isSpotlighted: true
+            } as unknown) as ParticipantUpdated;
+
+            const onParticipantUpdatedSubject = new Subject<ParticipantUpdated>();
+            videoCallServiceSpy.onParticipantUpdated.and.returnValue(onParticipantUpdatedSubject.asObservable());
+
+            let result = null;
+            const timeoutInMS = 15;
+            // Act
+            sut.setSpotlightStatus(conferenceId, participantId, true, timeoutInMS).subscribe(
+                updatedParticipant => (result = updatedParticipant),
+                err => (result = err)
+            );
+            tick(timeoutInMS * 1000 + 1000);
+            onParticipantUpdatedSubject.next(participantUpdated);
+            flush();
+
+            // Assert
+            expect(result).not.toBeNull();
+            expect(result).toBeInstanceOf(Error);
+            expect(videoCallServiceSpy.spotlightParticipant).toHaveBeenCalledOnceWith(
+                pexipParticipantId,
+                true,
+                conferenceId,
+                participantId
+            );
+            expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(conferenceId, participantId, true);
+        }));
+
+        it('should not time out when zero is passed in as responseTimeoutInMS', fakeAsync(() => {
+            // Arrange
+            const participantId = 'participant-id';
+            const pexipParticipantId = 'pexip-participant-id';
+            const conferenceId = 'conference-id';
+            const pexipId = 'pexip-id';
+
+            participantServiceSpy.getPexipIdForParticipant.and.returnValue(pexipParticipantId);
+
+            const pexipName = `pexip-name-${participantId}`;
+            const participantUpdated = ({
+                pexipDisplayName: pexipName,
+                uuid: pexipId,
+                isSpotlighted: true
+            } as unknown) as ParticipantUpdated;
+
+            videoCallServiceSpy.onParticipantUpdated.and.returnValue(of(participantUpdated));
+
+            let result = null;
+            // Act
+            sut.setSpotlightStatus(conferenceId, participantId, true, 0).subscribe(updatedParticipant => (result = updatedParticipant));
+            tick(30 * 1000);
+            flush();
+
+            // Assert
+            expect(result).toBe(participantUpdated);
             expect(videoCallServiceSpy.spotlightParticipant).toHaveBeenCalledOnceWith(
                 pexipParticipantId,
                 true,

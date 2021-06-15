@@ -256,127 +256,191 @@ fdescribe('ParticipantService', () => {
     });
 
     describe('handle VideoCallService.onParticipantUpdated', () => {
-        it('should set the pexip ID when the event is raised', fakeAsync(() => {
-            // Arrange
-            const pexipId = 'pexip-id';
-            const participantId = participantOne.id;
-            const pexipName = `pexip-name-${participantId}`;
-            const participantUpdated = ({
-                pexipDisplayName: pexipName,
-                uuid: pexipId
-            } as unknown) as ParticipantUpdated;
+        describe('maintains pexip id map', () => {
+            it('should set the pexip ID when the event is raised', fakeAsync(() => {
+                // Arrange
+                const pexipId = 'pexip-id';
+                const participantId = participantOne.id;
+                const pexipName = `pexip-name-${participantId}`;
+                const participantUpdated = ({
+                    pexipDisplayName: pexipName,
+                    uuid: pexipId
+                } as unknown) as ParticipantUpdated;
 
-            const expectedValue: { [participantId: string]: string } = {};
-            expectedValue[participantId] = pexipId;
+                const expectedValue: { [participantId: string]: string } = {};
+                expectedValue[participantId] = pexipId;
 
-            spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne, participantTwo]);
+                spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne, participantTwo]);
 
-            // Act
-            participantUpdatedSubject.next(participantUpdated);
-            flush();
+                // Act
+                participantUpdatedSubject.next(participantUpdated);
+                flush();
 
-            // Assert
-            expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
-        }));
+                // Assert
+                expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
+            }));
 
-        it('should set a second pexip ID when the event is raised again', fakeAsync(() => {
-            // Arrange
-            const pexipIdOne = 'pexip-id-one';
-            const pexipIdTwo = 'pexip-id-two';
-            const participantOneId = participantOne.id;
-            const participantTwoId = participantTwo.id;
-            const pexipNameOne = `pexip-name-${participantOneId}`;
-            const pexipNameTwo = `pexip-name-${participantTwoId}`;
+            it('should set a second pexip ID when the event is raised again', fakeAsync(() => {
+                // Arrange
+                const pexipIdOne = 'pexip-id-one';
+                const pexipIdTwo = 'pexip-id-two';
+                const participantOneId = participantOne.id;
+                const participantTwoId = participantTwo.id;
+                const pexipNameOne = `pexip-name-${participantOneId}`;
+                const pexipNameTwo = `pexip-name-${participantTwoId}`;
 
-            const participantUpdatedOne = ({
-                pexipDisplayName: pexipNameOne,
-                uuid: pexipIdOne
-            } as unknown) as ParticipantUpdated;
+                const participantUpdatedOne = ({
+                    pexipDisplayName: pexipNameOne,
+                    uuid: pexipIdOne
+                } as unknown) as ParticipantUpdated;
 
-            const participantUpdatedTwo = ({
-                pexipDisplayName: pexipNameTwo,
-                uuid: pexipIdTwo
-            } as unknown) as ParticipantUpdated;
+                const participantUpdatedTwo = ({
+                    pexipDisplayName: pexipNameTwo,
+                    uuid: pexipIdTwo
+                } as unknown) as ParticipantUpdated;
 
-            const expectedValue: { [participantId: string]: string } = {};
-            expectedValue[participantOneId] = pexipIdOne;
-            expectedValue[participantTwoId] = pexipIdTwo;
+                const expectedValue: { [participantId: string]: string } = {};
+                expectedValue[participantOneId] = pexipIdOne;
+                expectedValue[participantTwoId] = pexipIdTwo;
 
-            spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne, participantTwo]);
+                spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne, participantTwo]);
 
-            // Act
-            participantUpdatedSubject.next(participantUpdatedOne);
-            flush();
-            participantUpdatedSubject.next(participantUpdatedTwo);
-            flush();
+                // Act
+                participantUpdatedSubject.next(participantUpdatedOne);
+                flush();
+                participantUpdatedSubject.next(participantUpdatedTwo);
+                flush();
 
-            // Assert
-            expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
-        }));
+                // Assert
+                expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
+            }));
 
-        it('should update an existing ID when the event is raised again', fakeAsync(() => {
-            // Arrange
-            const pexipIdOne = 'pexip-id-one';
-            const pexipIdTwo = 'pexip-id-two';
-            const pexipIdThree = 'pexip-id-three';
-            const participantOneId = participantOne.id;
-            const participantTwoId = participantTwo.id;
-            const pexipNameOne = `pexip-name-${participantOneId}`;
-            const pexipNameTwo = `pexip-name-${participantTwoId}`;
+            it('should update an existing ID when the event is raised again', fakeAsync(() => {
+                // Arrange
+                const pexipIdOne = 'pexip-id-one';
+                const pexipIdTwo = 'pexip-id-two';
+                const pexipIdThree = 'pexip-id-three';
+                const participantOneId = participantOne.id;
+                const participantTwoId = participantTwo.id;
+                const pexipNameOne = `pexip-name-${participantOneId}`;
+                const pexipNameTwo = `pexip-name-${participantTwoId}`;
 
-            const participantUpdatedOne = ({
-                pexipDisplayName: pexipNameOne,
-                uuid: pexipIdOne
-            } as unknown) as ParticipantUpdated;
+                const participantUpdatedOne = ({
+                    pexipDisplayName: pexipNameOne,
+                    uuid: pexipIdOne
+                } as unknown) as ParticipantUpdated;
 
-            const participantUpdatedTwo = ({
-                pexipDisplayName: pexipNameTwo,
-                uuid: pexipIdTwo
-            } as unknown) as ParticipantUpdated;
+                const participantUpdatedTwo = ({
+                    pexipDisplayName: pexipNameTwo,
+                    uuid: pexipIdTwo
+                } as unknown) as ParticipantUpdated;
 
-            const participantUpdatedThree = ({
-                pexipDisplayName: pexipNameOne,
-                uuid: pexipIdThree
-            } as unknown) as ParticipantUpdated;
+                const participantUpdatedThree = ({
+                    pexipDisplayName: pexipNameOne,
+                    uuid: pexipIdThree
+                } as unknown) as ParticipantUpdated;
 
-            const expectedValue: { [participantId: string]: string } = {};
-            expectedValue[participantOneId] = pexipIdThree;
-            expectedValue[participantTwoId] = pexipIdTwo;
+                const expectedValue: { [participantId: string]: string } = {};
+                expectedValue[participantOneId] = pexipIdThree;
+                expectedValue[participantTwoId] = pexipIdTwo;
 
-            spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne, participantTwo]);
+                spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne, participantTwo]);
 
-            // Act
-            participantUpdatedSubject.next(participantUpdatedOne);
-            flush();
-            participantUpdatedSubject.next(participantUpdatedTwo);
-            flush();
-            participantUpdatedSubject.next(participantUpdatedThree);
-            flush();
+                // Act
+                participantUpdatedSubject.next(participantUpdatedOne);
+                flush();
+                participantUpdatedSubject.next(participantUpdatedTwo);
+                flush();
+                participantUpdatedSubject.next(participantUpdatedThree);
+                flush();
 
-            // Assert
-            expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
-        }));
+                // Assert
+                expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
+            }));
 
-        it('should NOT set an ID if the participant cannot be found', fakeAsync(() => {
-            // Arrange
-            const pexipId = 'pexip-id';
-            const participantId = Guid.create().toString();
-            const pexipName = `pexip-name-${participantId}`;
-            const participantUpdated = ({
-                pexipDisplayName: pexipName,
-                uuid: pexipId
-            } as unknown) as ParticipantUpdated;
+            it('should NOT set an ID if the participant cannot be found', fakeAsync(() => {
+                // Arrange
+                const pexipId = 'pexip-id';
+                const participantId = Guid.create().toString();
+                const pexipName = `pexip-name-${participantId}`;
+                const participantUpdated = ({
+                    pexipDisplayName: pexipName,
+                    uuid: pexipId
+                } as unknown) as ParticipantUpdated;
 
-            const expectedValue: { [participantId: string]: string } = {};
+                const expectedValue: { [participantId: string]: string } = {};
 
-            spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne, participantTwo]);
+                spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne, participantTwo]);
 
-            // Act
-            participantUpdatedSubject.next(participantUpdated);
-            flush();
+                // Act
+                participantUpdatedSubject.next(participantUpdated);
+                flush();
 
-            // Assert
-            expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
-        }));
+                // Assert
+                expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
+            }));
+        });
+
+        describe('handles spotlight status changes', () => {
+            it('should emit an onParticipantSpotlightStatusChanged event when a participants spotlight status changes', fakeAsync(() => {
+                // Arrange
+                const pexipId = 'pexip-id';
+                const participant = new Participant(participantOne);
+                const participantId = participant.id;
+                const pexipName = `pexip-name-${participantId}`;
+                const participantUpdated = ({
+                    pexipDisplayName: pexipName,
+                    uuid: pexipId,
+                    isSpotlighted: true
+                } as unknown) as ParticipantUpdated;
+
+                let result: Participant = null;
+                const subscriber = sut.onParticipantSpotlightStatusChanged$.subscribe(participant => {
+                    result = participant;
+                });
+
+                participant.isSpotlighted = false;
+                spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
+
+                // Act
+                participantUpdatedSubject.next(participantUpdated);
+                flush();
+                subscriber.unsubscribe();
+
+                // Assert
+                expect(result).not.toBeNull();
+                expect(result.isSpotlighted).toBeTrue();
+                expect(result.id).toBe(participantId);
+            }));
+
+            it('should NOT emit an onParticipantSpotlightStatusChanged event when a participants spotlight status does NOT change', fakeAsync(() => {
+                // Arrange
+                const pexipId = 'pexip-id';
+                const participant = new Participant(participantOne);
+                const participantId = participant.id;
+                const pexipName = `pexip-name-${participantId}`;
+                const participantUpdated = ({
+                    pexipDisplayName: pexipName,
+                    uuid: pexipId,
+                    isSpotlighted: true
+                } as unknown) as ParticipantUpdated;
+
+                let result: Participant = null;
+                const subscriber = sut.onParticipantSpotlightStatusChanged$.subscribe(participant => {
+                    result = participant;
+                });
+
+                participant.isSpotlighted = true;
+                spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
+
+                // Act
+                participantUpdatedSubject.next(participantUpdated);
+                flush();
+                subscriber.unsubscribe();
+
+                // Assert
+                expect(result).toBeNull();
+            }));
+        });
     });
 });

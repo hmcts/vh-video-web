@@ -14,6 +14,8 @@ export class Participant {
         this.participant = participant;
     }
 
+    isSpotlighted: boolean = false;
+
     get base(): ParticipantResponseVho {
         return this.participant;
     }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { Participant } from 'src/app/shared/models/participant';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
@@ -23,6 +23,11 @@ export class ParticipantService {
     private _participantIdToPexipIdMap: { [participantId: string]: string } = {};
     public get participantIdToPexipIdMap() {
         return this._participantIdToPexipIdMap;
+    }
+
+    private participantSpotlightStatusChangedSubject: Subject<Participant> = new Subject<Participant>();
+    get onParticipantSpotlightStatusChanged$(): Observable<Participant> {
+        return this.participantSpotlightStatusChangedSubject.asObservable();
     }
 
     constructor(
@@ -56,14 +61,14 @@ export class ParticipantService {
 
         this.videoCallService
             .onParticipantUpdated()
-            .subscribe(updatedParticipant => this.handleParticipantUpdatedInVideoCall(updatedParticipant));
+            .subscribe(updatedParticipant => this.handlePexipParticipantUpdates(updatedParticipant));
     }
 
-    private handleParticipantUpdatedInVideoCall(updatedParticipant: ParticipantUpdated): void {
+    private handlePexipParticipantUpdates(updatedParticipant: ParticipantUpdated): void {
         const participant = this.participants.find(x => updatedParticipant.pexipDisplayName.includes(x.id));
 
         if (!participant) {
-            this.logger.warn(`${this.loggingPrefix} Could not set pexip ID for participant as participant could not be found.`, {
+            this.logger.warn(`${this.loggingPrefix} Could find participant where their ID was contained in the pexip display name.`, {
                 checkedParticipants: this.participants.map(x => x.id),
                 pexipDisplayNameOfUpdatedParticipant: updatedParticipant.pexipDisplayName
             });
@@ -71,6 +76,11 @@ export class ParticipantService {
         }
 
         this.setPexipIdForParticipant(updatedParticipant.uuid, participant.id);
+
+        if (participant.isSpotlighted != updatedParticipant.isSpotlighted) {
+            participant.isSpotlighted = updatedParticipant.isSpotlighted;
+            this.participantSpotlightStatusChangedSubject.next(participant);
+        }
     }
 
     private setPexipIdForParticipant(pexipId: string, participantId: string | Guid) {

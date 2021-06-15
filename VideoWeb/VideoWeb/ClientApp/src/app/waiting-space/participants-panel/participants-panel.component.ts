@@ -309,7 +309,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             current: p.hasSpotlight(),
             new: !p.hasSpotlight()
         });
-        this.videoControlService.spotlightParticipant(this.conferenceId, p.id);
+        this.videoControlService.setSpotlightStatus(this.conferenceId, p.id, true);
     }
 
     toggleMuteParticipant(participant: PanelModel) {

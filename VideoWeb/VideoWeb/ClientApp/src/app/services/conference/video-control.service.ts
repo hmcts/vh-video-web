@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+import { filter, take, timeout } from 'rxjs/operators';
+import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { Logger } from '../logging/logger-base';
 import { ParticipantService } from './participant.service';
@@ -23,12 +25,31 @@ export class VideoControlService {
         return this.onParticipantsSpotlightStatusChangedSubject.asObservable();
     }
 
-    spotlightParticipant(conferenceId: string, participantId: string) {
+    setSpotlightStatus(
+        conferenceId: string,
+        participantId: string,
+        spotlightStatus: boolean,
+        responseTimeoutInMS: number = 15000
+    ): Observable<ParticipantUpdated> {
         this.logger.info(`${this.loggerPrefix} Attempting to spotlight participant in conference: ${participantId} in ${conferenceId}`);
 
         const pexipId = this.participantService.getPexipIdForParticipant(participantId);
-        this.videoCallService.spotlightParticipant(pexipId, true, conferenceId, participantId);
-        this.videoControlCacheService.setSpotlightStatus(conferenceId, participantId, true);
+        this.videoCallService.spotlightParticipant(pexipId, spotlightStatus, conferenceId, participantId);
+
+        let onResponse$ = this.videoCallService.onParticipantUpdated().pipe(
+            filter(x => x.pexipDisplayName.includes(participantId)),
+            take(1)
+        );
+
+        onResponse$.subscribe(updatedParticipant => {
+            this.videoControlCacheService.setSpotlightStatus(conferenceId, participantId, updatedParticipant.isSpotlighted);
+        });
+
+        if (responseTimeoutInMS > 0) {
+            onResponse$ = onResponse$.pipe(timeout(responseTimeoutInMS));
+        }
+
+        return onResponse$;
     }
 
     isParticipantSpotlighted(conferenceId: string, participantId: string): boolean {

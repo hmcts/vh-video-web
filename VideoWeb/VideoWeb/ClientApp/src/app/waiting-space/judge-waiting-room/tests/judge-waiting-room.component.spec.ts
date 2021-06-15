@@ -71,7 +71,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         participantServiceSpy = jasmine.createSpyObj<ParticipantService>('ParticipantService', ['getPexipIdForParticipant']);
         videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
-            'spotlightParticipant',
+            'setSpotlightStatus',
             'getSpotlightedParticipants'
         ]);
 
@@ -504,9 +504,9 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
             // Assert
             expect(videoControlServiceSpy.getSpotlightedParticipants).toHaveBeenCalledTimes(1);
-            expect(videoControlServiceSpy.spotlightParticipant).toHaveBeenCalledTimes(2);
-            expect(videoControlServiceSpy.spotlightParticipant).toHaveBeenCalledWith(conferenceId, participantOneId);
-            expect(videoControlServiceSpy.spotlightParticipant).toHaveBeenCalledWith(conferenceId, participantTwoId);
+            expect(videoControlServiceSpy.setSpotlightStatus).toHaveBeenCalledTimes(2);
+            expect(videoControlServiceSpy.setSpotlightStatus).toHaveBeenCalledWith(conferenceId, participantOneId, true);
+            expect(videoControlServiceSpy.setSpotlightStatus).toHaveBeenCalledWith(conferenceId, participantTwoId, true);
         });
 
         it('should NOT spotlight any participants if NONE are retrived from videoControlServiceSpy.restoreSpotlightedParticipants()', () => {
@@ -521,7 +521,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
             // Assert
             expect(videoControlServiceSpy.getSpotlightedParticipants).toHaveBeenCalledTimes(1);
-            expect(videoControlServiceSpy.spotlightParticipant).not.toHaveBeenCalled();
+            expect(videoControlServiceSpy.setSpotlightStatus).not.toHaveBeenCalled();
         });
     });
 });
