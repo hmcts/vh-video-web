@@ -23,6 +23,14 @@ export class ParticipantService {
         return this._participants;
     }
 
+    public get nonEndpointParticipants(): ParticipantModel[] {
+        return this._participants.filter(x => !x.isEndPoint);
+    }
+
+    public get endpointParticipants(): ParticipantModel[] {
+        return this._participants.filter(x => x.isEndPoint);
+    }
+
     private _participantIdToPexipIdMap: { [participantId: string]: string } = {};
     public get participantIdToPexipIdMap() {
         return this._participantIdToPexipIdMap;
@@ -64,6 +72,16 @@ export class ParticipantService {
             .pipe(
                 map(participants =>
                     participants.map(participantResponse => ParticipantModel.fromParticipantForUserResponse(participantResponse))
+                )
+            );
+    }
+
+    getEndpointsForConference(conferenceId: Guid | string): Observable<ParticipantModel[]> {
+        return this.apiClient
+            .getVideoEndpointsForConference(conferenceId.toString())
+            .pipe(
+                map(participants =>
+                    participants.map(videoEndpointResponse => ParticipantModel.fromVideoEndpointResponse(videoEndpointResponse))
                 )
             );
     }
@@ -127,10 +145,17 @@ export class ParticipantService {
 
     private initialise() {
         this.conferenceService.currentConference$.subscribe(conference => {
+            this._participants = [];
             this.getParticipantsForConference(conference.id)
                 .pipe(take(1))
-                .subscribe(participants => {
-                    this._participants = participants;
+                .subscribe(nonEndpointParticipants => {
+                    this._participants = this._participants.concat(nonEndpointParticipants);
+                });
+
+            this.getEndpointsForConference(conference.id)
+                .pipe(take(1))
+                .subscribe(endpointParticipants => {
+                    this._participants = this._participants.concat(endpointParticipants);
                 });
 
             this.subscribeToConferenceEvents(conference);

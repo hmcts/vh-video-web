@@ -6,7 +6,9 @@ import {
     ParticipantResponseVho,
     ParticipantForUserResponse,
     LinkedParticipantResponse,
-    RoomSummaryResponse
+    RoomSummaryResponse,
+    VideoEndpointResponse,
+    EndpointStatus
 } from 'src/app/services/clients/api-client';
 import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
@@ -21,7 +23,6 @@ export interface IParticipantHearingState {
 
 export interface IParticipantConferenceState {
     id: string;
-    status: ParticipantStatus;
     currentRoom: RoomSummaryResponse;
 }
 
@@ -29,18 +30,23 @@ export interface IParticipantDetails {
     id: string;
     name: string;
     displayName: string;
+    pexipDisplayName: string;
     caseGroup: CaseTypeGroup;
     role: Role;
     hearingRole: HearingRole;
+    status: ParticipantStatus;
     isEndPoint: boolean;
     linkedParticipants: LinkedParticipantResponse[];
 }
+
+export interface IEndpointDetails {}
 
 export class ParticipantModel implements IParticipantDetails, IParticipantConferenceState, IParticipantHearingState {
     constructor(
         public id: string,
         public name: string,
         public displayName: string,
+        public pexipDisplayName: string,
         public caseGroup: CaseTypeGroup,
         public role: Role,
         public hearingRole: HearingRole,
@@ -59,6 +65,7 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
             participant.id,
             participant.name,
             participant.display_name,
+            participant.tiled_display_name, // = pexip_display_name
             CaseTypeGroup[participant.case_type_group],
             participant.role,
             HearingRole[participant.hearing_role],
@@ -78,6 +85,22 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
 
     static fromParticipantResponseVho(participant: ParticipantResponseVho) {
         return this.fromAParticipantResponseType(participant);
+    }
+
+    static fromVideoEndpointResponse(videoEndpointResponse: VideoEndpointResponse): any {
+        return new ParticipantModel(
+            videoEndpointResponse.id,
+            videoEndpointResponse.defence_advocate_username,
+            videoEndpointResponse.display_name,
+            videoEndpointResponse.pexip_display_name, // = tiled_display_name
+            null,
+            null,
+            null,
+            true,
+            null,
+            ParticipantStatus[videoEndpointResponse.status], // Will be undefined when not joining...
+            videoEndpointResponse.current_room
+        );
     }
 }
 

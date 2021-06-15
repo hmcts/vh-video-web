@@ -6,9 +6,18 @@ import { ParticipantModel, Participant } from 'src/app/shared/models/participant
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
-import { ApiClient, ConferenceResponse, ParticipantForUserResponse, ParticipantStatus, Role } from '../clients/api-client';
+import {
+    ApiClient,
+    ConferenceResponse,
+    EndpointStatus,
+    ParticipantForUserResponse,
+    ParticipantStatus,
+    Role,
+    VideoEndpointResponse
+} from '../clients/api-client';
 import { EventsService } from '../events.service';
 import { Logger } from '../logging/logger-base';
+import { EndpointStatusMessage } from '../models/EndpointStatusMessage';
 import { ParticipantStatusMessage } from '../models/participant-status-message';
 import { ConferenceService } from './conference.service';
 import { ParticipantService } from './participant.service';
@@ -44,8 +53,27 @@ fdescribe('ParticipantService', () => {
         linked_participants: []
     });
 
+    const endpointOneId = Guid.create().toString();
+    const endpointOne = new VideoEndpointResponse({
+        id: endpointOneId,
+        display_name: 'Endpoint 1',
+        status: EndpointStatus.Disconnected,
+        defence_advocate_username: 'username 1',
+        pexip_display_name: `CIVILIAN;ENDPOINT;${endpointOneId}`
+    });
+
+    const endpointTwoId = Guid.create().toString();
+    const endpointTwo = new VideoEndpointResponse({
+        id: endpointTwoId,
+        display_name: 'Endpoint 2',
+        status: EndpointStatus.Connected,
+        defence_advocate_username: 'username 2',
+        pexip_display_name: `CIVILIAN;ENDPOINT;${endpointTwoId}`
+    });
+
     let apiClientSpy: jasmine.SpyObj<ApiClient>;
     let getParticipantsByConferenceId$: Subject<ParticipantForUserResponse[]>;
+    let getEndpointsByConferenceId$: Subject<VideoEndpointResponse[]>;
 
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
     let currentConferenceSubject: Subject<ConferenceResponse>;
@@ -62,10 +90,12 @@ fdescribe('ParticipantService', () => {
     let sut: ParticipantService;
 
     beforeEach(() => {
-        apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['getParticipantsByConferenceId']);
+        apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['getParticipantsByConferenceId', 'getVideoEndpointsForConference']);
 
         getParticipantsByConferenceId$ = new Subject<ParticipantForUserResponse[]>();
+        getEndpointsByConferenceId$ = new Subject<VideoEndpointResponse[]>();
         apiClientSpy.getParticipantsByConferenceId.and.returnValue(getParticipantsByConferenceId$.asObservable());
+        apiClientSpy.getVideoEndpointsForConference.and.returnValue(getEndpointsByConferenceId$.asObservable());
 
         conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>('ConferenceService', ['getConferenceById'], ['currentConference$']);
 
@@ -93,20 +123,28 @@ fdescribe('ParticipantService', () => {
 
     describe('construction', () => {
         it('should be created and the initialise participant list', fakeAsync(() => {
+            // Arrange
+            const participantResponses = [participantOne, participantTwo];
+            const endpointResponses = [endpointOne, endpointTwo];
+
             // Act
             const conference = new ConferenceResponse();
             conference.id = 'conference-id';
             currentConferenceSubject.next(conference);
             flush();
 
-            const participantResponses = [participantOne, participantTwo];
             getParticipantsByConferenceId$.next(participantResponses);
+            flush();
+
+            getEndpointsByConferenceId$.next(endpointResponses);
             flush();
 
             // Assert
             expect(sut).toBeTruthy();
             expect(sut.participants).toEqual(
-                participantResponses.map(participantResponse => ParticipantModel.fromParticipantForUserResponse(participantResponse))
+                participantResponses
+                    .map(participantResponse => ParticipantModel.fromParticipantForUserResponse(participantResponse))
+                    .concat(endpointResponses.map(endpointResponse => ParticipantModel.fromVideoEndpointResponse(endpointResponse)))
             );
         }));
 
@@ -127,6 +165,7 @@ fdescribe('ParticipantService', () => {
         it('should subscribe to currentConference; then get participants for conference each time a value is emmited and setup conference specific subscribers', fakeAsync(() => {
             // Arrange
             const getParticipantsForConferenceSpy = spyOn(sut, 'getParticipantsForConference').and.callThrough();
+            const getEndpointsForConferenceSpy = spyOn(sut, 'getEndpointsForConference').and.callThrough();
 
             const participantStatusUpdate$ = new Observable<ParticipantStatusMessage>();
             const expectedUnsubscribed = [jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe'])];
@@ -153,6 +192,9 @@ fdescribe('ParticipantService', () => {
             expect(getParticipantsForConferenceSpy).toHaveBeenCalledTimes(2);
             expect(getParticipantsForConferenceSpy).toHaveBeenCalledWith(conferenceIdOne);
             expect(getParticipantsForConferenceSpy).toHaveBeenCalledWith(conferenceIdTwo);
+            expect(getEndpointsForConferenceSpy).toHaveBeenCalledTimes(2);
+            expect(getEndpointsForConferenceSpy).toHaveBeenCalledWith(conferenceIdOne);
+            expect(getEndpointsForConferenceSpy).toHaveBeenCalledWith(conferenceIdTwo);
             expectedUnsubscribed.forEach(x => expect(x.unsubscribe).toHaveBeenCalledTimes(1));
             expect(sut['conferenceSubscriptions'].length).toEqual(expectedSubscriptions.length);
             expect(participantStatusUpdate$.subscribe).toHaveBeenCalledTimes(2);
