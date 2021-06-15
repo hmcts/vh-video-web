@@ -14,6 +14,8 @@ describe('SelectHearingLayoutComponent', () => {
     const translateService = translateServiceSpy;
     const headingButton = document.createElement('button');
     const textButton = document.createElement('button');
+    const buttonContentKeyWhenOpen = 'open-all';
+    const buttonContentKeyWhenClosed = 'close-all';
 
     beforeEach(() => {
         conference = new ConferenceTestData().getConferenceDetailNow();
@@ -21,6 +23,11 @@ describe('SelectHearingLayoutComponent', () => {
         component.conference = conference;
         textButton.innerHTML = 'Open all';
         document.getElementById = jasmine.createSpy('accordion-choose-layout-heading').and.returnValue(headingButton);
+        document.getElementsByClassName = jasmine.createSpy('govuk-accordion__section-button').and.returnValue({
+            item() {
+                return headingButton;
+            }
+        });
         document.getElementsByClassName = jasmine.createSpy('govuk-accordion__open-all').and.returnValue({
             item() {
                 return textButton;
@@ -35,17 +42,30 @@ describe('SelectHearingLayoutComponent', () => {
         videoCallService.getPreferredLayout.and.returnValue(layout);
         component.ngOnInit();
         expect(component.selectedLayout).toBe(layout);
+        expect(component.currentButtonContentKey).toBe(buttonContentKeyWhenOpen);
     });
 
-    it('should call translate service to update hearing layout option when language changes', () => {
-        component.currentText = textButton.innerHTML.toLowerCase().split(' ').join('-');
-        component.accordionOpenAllElement = document.getElementsByClassName('govuk-accordion__open-all').item(0) as HTMLButtonElement;
+    it('should call translate service to update accordion button when language changes', () => {
+        const expectedTranslatedContentForButton = 'this is translated for open all button';
+        component.currentButtonContentKey = buttonContentKeyWhenOpen;
+        translateServiceSpy.instant
+            .withArgs(`select-hearing-layout.${component.currentButtonContentKey}`)
+            .and.returnValue(expectedTranslatedContentForButton);
         component.ngOnInit();
         onLangChangeSpy.emit({ lang: 'tl' } as LangChangeEvent);
-        expect(component.currentText).toBe('open-all');
-        expect(translateServiceSpy.instant).toHaveBeenCalledWith('select-hearing-layout.choose-hearing-layout');
-        expect(translateServiceSpy.instant).toHaveBeenCalledWith(`select-hearing-layout.${component.currentText}`);
-        expect(component.accordionOpenAllElement.innerHTML).toContain(textButton.innerHTML);
+        expect(component.accordionOpenAllElement.innerHTML).toContain(expectedTranslatedContentForButton);
+        expect(component.currentButtonContentKey).toBe(buttonContentKeyWhenOpen);
+    });
+
+    it('should call translate service to update accordion header when language changes', () => {
+        const expectedTranslatedContentForHeader = 'this is translated for the accordion header';
+        component.currentButtonContentKey = buttonContentKeyWhenOpen;
+        translateServiceSpy.instant
+            .withArgs('select-hearing-layout.choose-hearing-layout')
+            .and.returnValue(expectedTranslatedContentForHeader);
+        component.ngOnInit();
+        onLangChangeSpy.emit({ lang: 'tl' } as LangChangeEvent);
+        expect(headingButton.innerHTML).toContain(expectedTranslatedContentForHeader);
     });
 
     it('should translate button text on text click', () => {
@@ -53,6 +73,7 @@ describe('SelectHearingLayoutComponent', () => {
         textButton.innerHTML = 'Close all';
         textButton.click();
         expect(textButton.innerHTML).toBe('<span>select-hearing-layout.close-all</span>');
+        expect(component.currentButtonContentKey).toBe(buttonContentKeyWhenClosed);
     });
 
     it('should translate button text on header click', () => {
@@ -60,6 +81,7 @@ describe('SelectHearingLayoutComponent', () => {
         textButton.innerHTML = 'Close all';
         headingButton.click();
         expect(textButton.innerHTML).toBe('<span>select-hearing-layout.close-all</span>');
+        expect(component.currentButtonContentKey).toBe(buttonContentKeyWhenClosed);
     });
 
     it('should translate button text on after time for header click', fakeAsync(() => {
@@ -68,6 +90,7 @@ describe('SelectHearingLayoutComponent', () => {
         textButton.innerHTML = 'Close all';
         tick(10);
         expect(textButton.innerHTML).toBe('<span>select-hearing-layout.close-all</span>');
+        expect(component.currentButtonContentKey).toBe(buttonContentKeyWhenClosed);
     }));
 
     it('should use recommended layout when cached layout preference is empty on init', () => {

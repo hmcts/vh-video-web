@@ -11,7 +11,7 @@ export class SelectHearingLayoutComponent implements OnInit {
     availableLayouts = HearingLayout;
     selectedLayout: HearingLayout;
     accordionOpenAllElement: HTMLButtonElement;
-    currentText: string;
+    currentButtonContentKey: string;
     @Input() conference: ConferenceResponse;
     constructor(private videoCallService: VideoCallService, protected translateService: TranslateService) {}
 
@@ -26,16 +26,20 @@ export class SelectHearingLayoutComponent implements OnInit {
 
         (<any>window).GOVUKFrontend.initAll();
         headingElement.onclick = e => this.setAccordionText(e);
+        const sectionHeadingElement = document.getElementsByClassName('govuk-accordion__section-button').item(0) as HTMLButtonElement;
+        sectionHeadingElement.onclick = e => this.setAccordionText(e);
         this.accordionOpenAllElement = document.getElementsByClassName('govuk-accordion__open-all').item(0) as HTMLButtonElement;
         this.accordionOpenAllElement.onclick = e => this.setAccordionText(e);
         this.setAccordionText({} as MouseEvent);
 
         this.translateService.onLangChange.subscribe(event => {
-            const headingElement = document.getElementById('accordion-choose-layout-heading');
-            headingElement.innerHTML = this.translateService.instant('select-hearing-layout.choose-hearing-layout');
+            const updatedHeadingElement = document.getElementById('accordion-choose-layout-heading');
+            const currentHeaderText = updatedHeadingElement.innerText;
+            const updatedHeaderText = this.translateService.instant('select-hearing-layout.choose-hearing-layout');
+
+            updatedHeadingElement.innerHTML = updatedHeadingElement.innerHTML.replace(currentHeaderText, updatedHeaderText);
             const currentTextValue = this.accordionOpenAllElement.innerText.split('\n')[0];
-            const translatedText = this.translateService.instant(`select-hearing-layout.${this.currentText}`);
-            const translatedElement = `<span>${translatedText}</span>`;
+            const translatedElement = this.translateService.instant(`select-hearing-layout.${this.currentButtonContentKey}`);
             this.accordionOpenAllElement.innerHTML = this.accordionOpenAllElement.innerHTML.replace(currentTextValue, translatedElement);
         });
     }
@@ -49,8 +53,8 @@ export class SelectHearingLayoutComponent implements OnInit {
         const text = this.accordionOpenAllElement.innerHTML;
         if (!text.startsWith('<')) {
             const originalText = text.split('<')[0];
-            this.currentText = originalText.toLowerCase().split(' ').join('-').trim();
-            const translated = `<span>${this.translateService.instant(`select-hearing-layout.${this.currentText}`)}</span>`;
+            this.currentButtonContentKey = originalText.toLowerCase().split(' ').join('-').trim();
+            const translated = `<span>${this.translateService.instant(`select-hearing-layout.${this.currentButtonContentKey}`)}</span>`;
             this.accordionOpenAllElement.innerHTML = this.accordionOpenAllElement.innerHTML.replace(originalText, translated);
         }
     }
