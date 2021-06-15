@@ -12,7 +12,7 @@
     </button>
   </div>
   <div>
-    <p class="govuk-caption-xl">{{ today | date: 'fullDate' }}</p>
+    <p class="govuk-caption-xl">{{ today | date: 'fullDate' | DateLanguage}}</p>
   </div>
   <app-judge-hearing-table [conferences]="conferences" (selectedConference)="onConferenceSelected($event)"> </app-judge-hearing-table>
 </div>

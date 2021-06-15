@@ -34,6 +34,7 @@ import { JoinPrivateConsultationComponent } from '../waiting-space/participant-w
 import { TranslateModule } from '@ngx-translate/core';
 import { TestLanguageService } from './test-language.service';
 import { MultilinePipe } from './pipes/multiline.pipe';
+import { NgxDatePipe } from './pipes/ngx-date.pipe';
 
 @NgModule({
     imports: [
@@ -76,7 +77,8 @@ import { MultilinePipe } from './pipes/multiline.pipe';
         ErrorCameraMicrophoneComponent,
         VhToastComponent,
         RoomClosingToastComponent,
-        MultilinePipe
+        MultilinePipe,
+        NgxDatePipe
     ],
     providers: [WindowScrolling, ScreenHelper, TestLanguageService],
     exports: [
@@ -102,7 +104,8 @@ import { MultilinePipe } from './pipes/multiline.pipe';
         TooltipDirective,
         ErrorCameraMicrophoneComponent,
         TranslateModule,
-        MultilinePipe
+        MultilinePipe,
+        NgxDatePipe
     ]
 })
 export class SharedModule {}
