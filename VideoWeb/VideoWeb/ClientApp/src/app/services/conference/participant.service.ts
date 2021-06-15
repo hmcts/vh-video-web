@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { Observable, Subject, Subscriber, Subscription } from 'rxjs';
+import { combineLatest, merge, Observable, Subject, Subscriber, Subscription } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
@@ -10,6 +10,8 @@ import { EventsService } from '../events.service';
 import { Logger } from '../logging/logger-base';
 import { ParticipantStatusMessage } from '../models/participant-status-message';
 import { ConferenceService } from './conference.service';
+
+export const InvalidNumberOfNonEndpointParticipantsError = () => new Error('Invalid number of non-endpoint participants.');
 
 @Injectable({
     providedIn: 'root'
@@ -24,11 +26,15 @@ export class ParticipantService {
     }
 
     public get nonEndpointParticipants(): ParticipantModel[] {
-        return this._participants.filter(x => !x.isEndPoint);
+        const participants = this.participants.filter(x => !x.isEndPoint);
+
+        if (participants.length < 1) throw InvalidNumberOfNonEndpointParticipantsError();
+
+        return participants;
     }
 
     public get endpointParticipants(): ParticipantModel[] {
-        return this._participants.filter(x => x.isEndPoint);
+        return this.participants.filter(x => x.isEndPoint);
     }
 
     private _participantIdToPexipIdMap: { [participantId: string]: string } = {};
@@ -146,16 +152,16 @@ export class ParticipantService {
     private initialise() {
         this.conferenceService.currentConference$.subscribe(conference => {
             this._participants = [];
-            this.getParticipantsForConference(conference.id)
-                .pipe(take(1))
-                .subscribe(nonEndpointParticipants => {
-                    this._participants = this._participants.concat(nonEndpointParticipants);
-                });
-
-            this.getEndpointsForConference(conference.id)
-                .pipe(take(1))
-                .subscribe(endpointParticipants => {
-                    this._participants = this._participants.concat(endpointParticipants);
+            combineLatest([
+                this.getParticipantsForConference(conference.id).pipe(take(1)),
+                this.getEndpointsForConference(conference.id).pipe(take(1))
+            ])
+                .pipe(
+                    take(1), // Ensure this observable also completes
+                    map(x => x[0].concat(x[1]))
+                )
+                .subscribe(participants => {
+                    this._participants = participants;
                 });
 
             this.subscribeToConferenceEvents(conference);

@@ -20,7 +20,7 @@ import { Logger } from '../logging/logger-base';
 import { EndpointStatusMessage } from '../models/EndpointStatusMessage';
 import { ParticipantStatusMessage } from '../models/participant-status-message';
 import { ConferenceService } from './conference.service';
-import { ParticipantService } from './participant.service';
+import { InvalidNumberOfNonEndpointParticipantsError, ParticipantService } from './participant.service';
 
 fdescribe('ParticipantService', () => {
     const participantOneId = Guid.create().toString();
@@ -199,6 +199,61 @@ fdescribe('ParticipantService', () => {
             expect(sut['conferenceSubscriptions'].length).toEqual(expectedSubscriptions.length);
             expect(participantStatusUpdate$.subscribe).toHaveBeenCalledTimes(2);
         }));
+    });
+
+    describe('get endpointParticipants', () => {
+        it('should return an empty array if there are no endpoints', () => {
+            // Arrange
+            const participants = [participantOne, participantTwo].map(x => ParticipantModel.fromParticipantForUserResponse(x));
+            spyOnProperty(sut, 'participants', 'get').and.returnValue(participants);
+
+            // Act
+            const result = sut.endpointParticipants;
+
+            // Assert
+            expect(result.length).toEqual(0);
+        });
+
+        it('should only return endpoints', () => {
+            // Arrange
+            const participants = [participantOne, participantTwo].map(x => ParticipantModel.fromParticipantForUserResponse(x));
+            const endpointParticipants = [endpointOne, endpointTwo].map(x => ParticipantModel.fromVideoEndpointResponse(x));
+            spyOnProperty(sut, 'participants', 'get').and.returnValue(participants.concat(endpointParticipants));
+
+            // Act
+            const result = sut.endpointParticipants;
+
+            // Assert
+            expect(result.length).toEqual(endpointParticipants.length);
+            participants.forEach(x => expect(result).not.toContain(x));
+            endpointParticipants.forEach(x => expect(result).toContain(x));
+        });
+    });
+
+    describe('get nonEndpointParticipants', () => {
+        it('should throw if there are no non-endpoints as this should NOT be possible', () => {
+            // Arrange
+            const endpointParticipants = [endpointOne, endpointTwo].map(x => ParticipantModel.fromVideoEndpointResponse(x));
+            spyOnProperty(sut, 'participants', 'get').and.returnValue(endpointParticipants);
+
+            // Act & Assert
+            expect(() => sut.nonEndpointParticipants).toThrow(InvalidNumberOfNonEndpointParticipantsError());
+        });
+
+        it('should only return endpoints', () => {
+            // Arrange
+            const participants = [participantOne, participantTwo].map(x => ParticipantModel.fromParticipantForUserResponse(x));
+            const endpointParticipants = [endpointOne, endpointTwo].map(x => ParticipantModel.fromVideoEndpointResponse(x));
+            spyOnProperty(sut, 'participants', 'get').and.returnValue(participants.concat(endpointParticipants));
+
+            // Act
+            const result = sut.nonEndpointParticipants;
+
+            // Assert
+            expect(result.length).toEqual(participants.length);
+            participants.forEach(x => expect(result).toContain(x));
+            endpointParticipants.forEach(x => expect(result).not.toContain(x));
+        });
     });
 
     describe('getParticipantsForConference', () => {
