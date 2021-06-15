@@ -3,11 +3,31 @@ import {
     ParticipantStatus,
     Role,
     ParticipantResponseVho,
-    ParticipantForUserResponse
+    ParticipantForUserResponse,
+    LinkedParticipantResponse
 } from 'src/app/services/clients/api-client';
+import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
-export class Participant {
+export interface IParticipantHearingState {
+    isSpotlighted: boolean;
+}
+
+export interface IParticipantConferenceState {
+    status: ParticipantStatus;
+    linkedParticipants: LinkedParticipantResponse[];
+}
+
+export interface IParticipantDetails {
+    id: string;
+    name: string;
+    displayName: string;
+    caseGroup: CaseTypeGroup;
+    role: Role;
+    hearingRole: HearingRole;
+}
+
+export class Participant implements IParticipantHearingState {
     private participant: ParticipantResponse | ParticipantForUserResponse | ParticipantForUserResponse;
 
     constructor(participant: ParticipantResponse | ParticipantForUserResponse | ParticipantForUserResponse) {

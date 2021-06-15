@@ -147,6 +147,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             })
         );
     }
+
     handleParticipantHandRaiseChange(message: ParticipantHandRaisedMessage) {
         const participant = this.participants.find(x => x.hasParticipant(message.participantId));
         if (!participant) {
@@ -208,11 +209,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         if (participant instanceof LinkedParticipantPanelModel) {
             participant.updateParticipant(updatedParticipant.isRemoteMuted, null, updatedParticipant.isSpotlighted);
         } else {
-            participant.updateParticipant(
-                updatedParticipant.isRemoteMuted,
-                updatedParticipant.handRaised,
-                updatedParticipant.isSpotlighted
-            );
+            participant.updateParticipant(updatedParticipant.isRemoteMuted, updatedParticipant.handRaised, participant.hasSpotlight());
         }
 
         if (participant instanceof LinkedParticipantPanelModel) {
@@ -309,7 +306,11 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             current: p.hasSpotlight(),
             new: !p.hasSpotlight()
         });
-        this.videoControlService.setSpotlightStatus(this.conferenceId, p.id, true);
+        this.videoControlService
+            .setSpotlightStatus(this.conferenceId, p.id, !p.hasSpotlight())
+            .subscribe(updatedParticipant =>
+                p.updateParticipant(p.isMicRemoteMuted(), p.hasHandRaised(), updatedParticipant.isSpotlighted)
+            );
     }
 
     toggleMuteParticipant(participant: PanelModel) {
