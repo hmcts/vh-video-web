@@ -1,21 +1,28 @@
+import { Guid } from 'guid-typescript';
 import {
     ParticipantResponse,
     ParticipantStatus,
     Role,
     ParticipantResponseVho,
     ParticipantForUserResponse,
-    LinkedParticipantResponse
+    LinkedParticipantResponse,
+    RoomSummaryResponse
 } from 'src/app/services/clients/api-client';
 import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
 export interface IParticipantHearingState {
+    id: string;
+    pexipId: string;
     isSpotlighted: boolean;
+    isRemoteMuted: boolean;
+    isHandRaised: boolean;
 }
 
 export interface IParticipantConferenceState {
+    id: string;
     status: ParticipantStatus;
-    linkedParticipants: LinkedParticipantResponse[];
+    currentRoom: RoomSummaryResponse;
 }
 
 export interface IParticipantDetails {
@@ -25,16 +32,61 @@ export interface IParticipantDetails {
     caseGroup: CaseTypeGroup;
     role: Role;
     hearingRole: HearingRole;
+    isEndPoint: boolean;
+    linkedParticipants: LinkedParticipantResponse[];
 }
 
-export class Participant implements IParticipantHearingState {
+export class ParticipantModel implements IParticipantDetails, IParticipantConferenceState, IParticipantHearingState {
+    constructor(
+        public id: string,
+        public name: string,
+        public displayName: string,
+        public caseGroup: CaseTypeGroup,
+        public role: Role,
+        public hearingRole: HearingRole,
+        public isEndPoint: boolean,
+        public linkedParticipants: LinkedParticipantResponse[],
+        public status: ParticipantStatus = ParticipantStatus.None,
+        public currentRoom: RoomSummaryResponse = null,
+        public pexipId: string = Guid.EMPTY,
+        public isSpotlighted: boolean = false,
+        public isRemoteMuted: boolean = false,
+        public isHandRaised: boolean = false
+    ) {}
+
+    private static fromAParticipantResponseType(participant: ParticipantResponse | ParticipantForUserResponse | ParticipantResponseVho) {
+        return new ParticipantModel(
+            participant.id,
+            participant.name,
+            participant.display_name,
+            CaseTypeGroup[participant.case_type_group],
+            participant.role,
+            HearingRole[participant.hearing_role],
+            false,
+            participant.linked_participants,
+            participant.status
+        );
+    }
+
+    static fromParticipantResponse(participant: ParticipantResponse) {
+        return this.fromAParticipantResponseType(participant);
+    }
+
+    static fromParticipantForUserResponse(participant: ParticipantForUserResponse) {
+        return this.fromAParticipantResponseType(participant);
+    }
+
+    static fromParticipantResponseVho(participant: ParticipantResponseVho) {
+        return this.fromAParticipantResponseType(participant);
+    }
+}
+
+export class Participant {
     private participant: ParticipantResponse | ParticipantForUserResponse | ParticipantForUserResponse;
 
     constructor(participant: ParticipantResponse | ParticipantForUserResponse | ParticipantForUserResponse) {
         this.participant = participant;
     }
-
-    isSpotlighted: boolean = false;
 
     get base(): ParticipantResponseVho {
         return this.participant;

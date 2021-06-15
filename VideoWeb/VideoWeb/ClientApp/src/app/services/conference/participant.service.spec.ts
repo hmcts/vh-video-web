@@ -1,13 +1,15 @@
 import { fakeAsync, flush, flushMicrotasks } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { Participant } from 'src/app/shared/models/participant';
+import { ParticipantModel, Participant } from 'src/app/shared/models/participant';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { ApiClient, ConferenceResponse, ParticipantForUserResponse, ParticipantStatus, Role } from '../clients/api-client';
+import { EventsService } from '../events.service';
 import { Logger } from '../logging/logger-base';
+import { ParticipantStatusMessage } from '../models/participant-status-message';
 import { ConferenceService } from './conference.service';
 import { ParticipantService } from './participant.service';
 
@@ -52,6 +54,9 @@ fdescribe('ParticipantService', () => {
     let participantUpdatedSubject: Subject<ParticipantUpdated>;
     let participantUpdated$: Observable<ParticipantUpdated>;
 
+    let eventsServiceSpy: jasmine.SpyObj<EventsService>;
+    let participantStatusUpdateSubject: Subject<ParticipantStatusMessage>;
+
     let loggerSpy: jasmine.SpyObj<Logger>;
 
     let sut: ParticipantService;
@@ -74,9 +79,14 @@ fdescribe('ParticipantService', () => {
         spyOn(participantUpdated$, 'subscribe').and.callThrough();
         videoCallServiceSpy.onParticipantUpdated.and.returnValue(participantUpdated$);
 
+        eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', ['getParticipantStatusMessage']);
+
+        participantStatusUpdateSubject = new Subject<ParticipantStatusMessage>();
+        eventsServiceSpy.getParticipantStatusMessage.and.returnValue(participantStatusUpdateSubject.asObservable());
+
         loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['error', 'warn']);
 
-        sut = new ParticipantService(apiClientSpy, conferenceServiceSpy, videoCallServiceSpy, loggerSpy);
+        sut = new ParticipantService(apiClientSpy, conferenceServiceSpy, videoCallServiceSpy, eventsServiceSpy, loggerSpy);
 
         apiClientSpy.getParticipantsByConferenceId.calls.reset();
     });
@@ -95,7 +105,9 @@ fdescribe('ParticipantService', () => {
 
             // Assert
             expect(sut).toBeTruthy();
-            expect(sut.participants).toEqual(participantResponses.map(participantResponse => new Participant(participantResponse)));
+            expect(sut.participants).toEqual(
+                participantResponses.map(participantResponse => ParticipantModel.fromParticipantForUserResponse(participantResponse))
+            );
         }));
 
         it('should subscribe to onParticipantUpdated', fakeAsync(() => {
@@ -112,15 +124,23 @@ fdescribe('ParticipantService', () => {
             expect(participantUpdated$.subscribe).toHaveBeenCalledTimes(1);
         }));
 
-        it('should subscribe to currentConference and get participants for conference each time a value is emmited', fakeAsync(() => {
+        it('should subscribe to currentConference; then get participants for conference each time a value is emmited and setup conference specific subscribers', fakeAsync(() => {
             // Arrange
-
             const getParticipantsForConferenceSpy = spyOn(sut, 'getParticipantsForConference').and.callThrough();
+
+            const participantStatusUpdate$ = new Observable<ParticipantStatusMessage>();
+            const expectedUnsubscribed = [jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe'])];
+            const expectedSubscriptions = [jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe'])];
+            spyOn(participantStatusUpdate$, 'subscribe').and.returnValues(...expectedUnsubscribed, ...expectedSubscriptions);
+
+            spyOn(participantStatusUpdateSubject, 'asObservable').and.returnValue(participantStatusUpdate$);
+            eventsServiceSpy.getParticipantStatusMessage.and.returnValue(participantStatusUpdateSubject.asObservable());
 
             const conferenceIdOne = 'conference-id-one';
             const conferenceIdTwo = 'conference-id-two';
             const conference = new ConferenceResponse();
             conference.id = conferenceIdOne;
+
             // Act
             currentConferenceSubject.next(conference);
             flush();
@@ -133,6 +153,9 @@ fdescribe('ParticipantService', () => {
             expect(getParticipantsForConferenceSpy).toHaveBeenCalledTimes(2);
             expect(getParticipantsForConferenceSpy).toHaveBeenCalledWith(conferenceIdOne);
             expect(getParticipantsForConferenceSpy).toHaveBeenCalledWith(conferenceIdTwo);
+            expectedUnsubscribed.forEach(x => expect(x.unsubscribe).toHaveBeenCalledTimes(1));
+            expect(sut['conferenceSubscriptions'].length).toEqual(expectedSubscriptions.length);
+            expect(participantStatusUpdate$.subscribe).toHaveBeenCalledTimes(2);
         }));
     });
 
@@ -142,7 +165,7 @@ fdescribe('ParticipantService', () => {
             const conferenceId = 'conference-id';
             const participantResponses = [participantOne, participantTwo];
 
-            let result: Participant[];
+            let result: ParticipantModel[];
 
             // Act
             sut.getParticipantsForConference(conferenceId).subscribe(participants => (result = participants));
@@ -151,7 +174,9 @@ fdescribe('ParticipantService', () => {
 
             // Assert
             expect(apiClientSpy.getParticipantsByConferenceId).toHaveBeenCalledOnceWith(conferenceId);
-            expect(result).toEqual(participantResponses.map(participantResponse => new Participant(participantResponse)));
+            expect(result).toEqual(
+                participantResponses.map(participantResponse => ParticipantModel.fromParticipantForUserResponse(participantResponse))
+            );
         }));
 
         it('should return the participants from VideoWebService when called with a GUID', fakeAsync(() => {
@@ -159,7 +184,7 @@ fdescribe('ParticipantService', () => {
             const participantResponses = [participantOne, participantTwo];
             const conferenceId = Guid.create();
 
-            let result: Participant[];
+            let result: ParticipantModel[];
 
             // Act
             sut.getParticipantsForConference(conferenceId).subscribe(participants => (result = participants));
@@ -168,7 +193,9 @@ fdescribe('ParticipantService', () => {
 
             // Assert
             expect(apiClientSpy.getParticipantsByConferenceId).toHaveBeenCalledOnceWith(conferenceId.toString());
-            expect(result).toEqual(participantResponses.map(participantResponse => new Participant(participantResponse)));
+            expect(result).toEqual(
+                participantResponses.map(participantResponse => ParticipantModel.fromParticipantForUserResponse(participantResponse))
+            );
         }));
 
         it('should return an empty array if no particiapnts are returned from VideoWebService', fakeAsync(() => {
@@ -176,7 +203,7 @@ fdescribe('ParticipantService', () => {
             const conferenceId = 'conference-id';
             const participantResponses: ParticipantForUserResponse[] = [];
 
-            let result: Participant[];
+            let result: ParticipantModel[];
 
             // Act
             sut.getParticipantsForConference(conferenceId).subscribe(participants => (result = participants));
@@ -255,9 +282,9 @@ fdescribe('ParticipantService', () => {
         });
     });
 
-    describe('handle VideoCallService.onParticipantUpdated', () => {
+    describe('handlePexipParticipantUpdates', () => {
         describe('maintains pexip id map', () => {
-            it('should set the pexip ID when the event is raised', fakeAsync(() => {
+            it('should set the pexip ID when the event is raised', () => {
                 // Arrange
                 const pexipId = 'pexip-id';
                 const participantId = participantOne.id;
@@ -273,14 +300,13 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne, participantTwo]);
 
                 // Act
-                participantUpdatedSubject.next(participantUpdated);
-                flush();
+                sut.handlePexipParticipantUpdate(participantUpdated);
 
                 // Assert
                 expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
-            }));
+            });
 
-            it('should set a second pexip ID when the event is raised again', fakeAsync(() => {
+            it('should set a second pexip ID when the event is raised again', () => {
                 // Arrange
                 const pexipIdOne = 'pexip-id-one';
                 const pexipIdTwo = 'pexip-id-two';
@@ -306,16 +332,14 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne, participantTwo]);
 
                 // Act
-                participantUpdatedSubject.next(participantUpdatedOne);
-                flush();
-                participantUpdatedSubject.next(participantUpdatedTwo);
-                flush();
+                sut.handlePexipParticipantUpdate(participantUpdatedOne);
+                sut.handlePexipParticipantUpdate(participantUpdatedTwo);
 
                 // Assert
                 expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
-            }));
+            });
 
-            it('should update an existing ID when the event is raised again', fakeAsync(() => {
+            it('should update an existing ID when the event is raised again', () => {
                 // Arrange
                 const pexipIdOne = 'pexip-id-one';
                 const pexipIdTwo = 'pexip-id-two';
@@ -347,18 +371,15 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne, participantTwo]);
 
                 // Act
-                participantUpdatedSubject.next(participantUpdatedOne);
-                flush();
-                participantUpdatedSubject.next(participantUpdatedTwo);
-                flush();
-                participantUpdatedSubject.next(participantUpdatedThree);
-                flush();
+                sut.handlePexipParticipantUpdate(participantUpdatedOne);
+                sut.handlePexipParticipantUpdate(participantUpdatedTwo);
+                sut.handlePexipParticipantUpdate(participantUpdatedThree);
 
                 // Assert
                 expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
-            }));
+            });
 
-            it('should NOT set an ID if the participant cannot be found', fakeAsync(() => {
+            it('should NOT set an ID if the participant cannot be found', () => {
                 // Arrange
                 const pexipId = 'pexip-id';
                 const participantId = Guid.create().toString();
@@ -373,19 +394,18 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne, participantTwo]);
 
                 // Act
-                participantUpdatedSubject.next(participantUpdated);
-                flush();
+                sut.handlePexipParticipantUpdate(participantUpdated);
 
                 // Assert
                 expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
-            }));
+            });
         });
 
         describe('handles spotlight status changes', () => {
             it('should emit an onParticipantSpotlightStatusChanged event when a participants spotlight status changes', fakeAsync(() => {
                 // Arrange
                 const pexipId = 'pexip-id';
-                const participant = new Participant(participantOne);
+                const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
                 const participantId = participant.id;
                 const pexipName = `pexip-name-${participantId}`;
                 const participantUpdated = ({
@@ -394,7 +414,7 @@ fdescribe('ParticipantService', () => {
                     isSpotlighted: true
                 } as unknown) as ParticipantUpdated;
 
-                let result: Participant = null;
+                let result: ParticipantModel = null;
                 const subscriber = sut.onParticipantSpotlightStatusChanged$.subscribe(participant => {
                     result = participant;
                 });
@@ -403,7 +423,7 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
 
                 // Act
-                participantUpdatedSubject.next(participantUpdated);
+                sut.handlePexipParticipantUpdate(participantUpdated);
                 flush();
                 subscriber.unsubscribe();
 
@@ -411,12 +431,13 @@ fdescribe('ParticipantService', () => {
                 expect(result).not.toBeNull();
                 expect(result.isSpotlighted).toBeTrue();
                 expect(result.id).toBe(participantId);
+                expect(participant.isSpotlighted).toBeTrue();
             }));
 
             it('should NOT emit an onParticipantSpotlightStatusChanged event when a participants spotlight status does NOT change', fakeAsync(() => {
                 // Arrange
                 const pexipId = 'pexip-id';
-                const participant = new Participant(participantOne);
+                const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
                 const participantId = participant.id;
                 const pexipName = `pexip-name-${participantId}`;
                 const participantUpdated = ({
@@ -425,7 +446,7 @@ fdescribe('ParticipantService', () => {
                     isSpotlighted: true
                 } as unknown) as ParticipantUpdated;
 
-                let result: Participant = null;
+                let result: ParticipantModel = null;
                 const subscriber = sut.onParticipantSpotlightStatusChanged$.subscribe(participant => {
                     result = participant;
                 });
@@ -434,13 +455,207 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
 
                 // Act
-                participantUpdatedSubject.next(participantUpdated);
+                sut.handlePexipParticipantUpdate(participantUpdated);
                 flush();
                 subscriber.unsubscribe();
 
                 // Assert
                 expect(result).toBeNull();
+                expect(participant.isSpotlighted).toBeTrue();
             }));
         });
+
+        describe('handles remote muted status changes', () => {
+            it('should emit an onParticipantRemoteMuteStatusChanged event when a participants remote mute status changes', fakeAsync(() => {
+                // Arrange
+                const pexipId = 'pexip-id';
+                const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
+                const participantId = participant.id;
+                const pexipName = `pexip-name-${participantId}`;
+                const participantUpdated = ({
+                    pexipDisplayName: pexipName,
+                    uuid: pexipId,
+                    isRemoteMuted: true
+                } as unknown) as ParticipantUpdated;
+
+                let result: ParticipantModel = null;
+                const subscriber = sut.onParticipantRemoteMuteStatusChanged$.subscribe(participant => {
+                    result = participant;
+                });
+
+                participant.isRemoteMuted = false;
+                spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
+
+                // Act
+                sut.handlePexipParticipantUpdate(participantUpdated);
+                flush();
+                subscriber.unsubscribe();
+
+                // Assert
+                expect(result).not.toBeNull();
+                expect(result.isRemoteMuted).toBeTrue();
+                expect(result.id).toBe(participantId);
+                expect(participant.isRemoteMuted).toBeTrue();
+            }));
+
+            it('should NOT emit an onParticipantRemoteMuteStatusChanged event when a participants remote mute status does NOT change', fakeAsync(() => {
+                // Arrange
+                const pexipId = 'pexip-id';
+                const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
+                const participantId = participant.id;
+                const pexipName = `pexip-name-${participantId}`;
+                const participantUpdated = ({
+                    pexipDisplayName: pexipName,
+                    uuid: pexipId,
+                    isRemoteMuted: true
+                } as unknown) as ParticipantUpdated;
+
+                let result: ParticipantModel = null;
+                const subscriber = sut.onParticipantRemoteMuteStatusChanged$.subscribe(participant => {
+                    result = participant;
+                });
+
+                participant.isRemoteMuted = true;
+                spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
+
+                // Act
+                sut.handlePexipParticipantUpdate(participantUpdated);
+                flush();
+                subscriber.unsubscribe();
+
+                // Assert
+                expect(result).toBeNull();
+                expect(participant.isRemoteMuted).toBeTrue();
+            }));
+        });
+
+        describe('handles hand raised status changes', () => {
+            it('should emit an onParticipantHandRaisedStatusChanged event when a participants hand raised status changes', fakeAsync(() => {
+                // Arrange
+                const pexipId = 'pexip-id';
+                const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
+                const participantId = participant.id;
+                const pexipName = `pexip-name-${participantId}`;
+                const participantUpdated = ({
+                    pexipDisplayName: pexipName,
+                    uuid: pexipId,
+                    handRaised: true
+                } as unknown) as ParticipantUpdated;
+
+                let result: ParticipantModel = null;
+                const subscriber = sut.onParticipantRemoteMuteStatusChanged$.subscribe(participant => {
+                    result = participant;
+                });
+
+                participant.isHandRaised = false;
+                spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
+
+                // Act
+                sut.handlePexipParticipantUpdate(participantUpdated);
+                flush();
+                subscriber.unsubscribe();
+
+                // Assert
+                expect(result).not.toBeNull();
+                expect(result.isHandRaised).toBeTrue();
+                expect(result.id).toBe(participantId);
+                expect(participant.isHandRaised).toBeTrue();
+            }));
+
+            it('should NOT emit an onParticipantHandRaisedStatusChanged event when a participants hand raised status does NOT change', fakeAsync(() => {
+                // Arrange
+                const pexipId = 'pexip-id';
+                const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
+                const participantId = participant.id;
+                const pexipName = `pexip-name-${participantId}`;
+                const participantUpdated = ({
+                    pexipDisplayName: pexipName,
+                    uuid: pexipId,
+                    handRaised: true
+                } as unknown) as ParticipantUpdated;
+
+                let result: ParticipantModel = null;
+                const subscriber = sut.onParticipantHandRaisedStatusChanged$.subscribe(participant => {
+                    result = participant;
+                });
+
+                participant.isHandRaised = true;
+                spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
+
+                // Act
+                sut.handlePexipParticipantUpdate(participantUpdated);
+                flush();
+                subscriber.unsubscribe();
+
+                // Assert
+                expect(result).toBeNull();
+                expect(participant.isHandRaised).toBeTrue();
+            }));
+        });
+    });
+
+    describe('handleParticipantStatusChange', () => {
+        it('should update the status if it is different and emit onParticipantStatusChanged event', fakeAsync(() => {
+            // Arrange
+            const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
+            const participantId = participant.id;
+            const conferenceId = 'conference-id';
+            const participantStatusMessage = new ParticipantStatusMessage(participantId, '', conferenceId, ParticipantStatus.Available);
+
+            participant.status = ParticipantStatus.Joining;
+            spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
+
+            let result = null;
+            // Act
+            sut.onParticipantStatusChanged$.subscribe(participant => (result = participant));
+            sut.handleParticipantStatusUpdate(participantStatusMessage);
+            flush();
+
+            // Assert
+            expect(result).not.toBeNull();
+            expect(result.status).toEqual(ParticipantStatus.Available);
+            expect(result.id).toBe(participantId);
+            expect(participant.status).toEqual(ParticipantStatus.Available);
+        }));
+
+        it('should NOT update the status if it is NOT different and should NOT emit onParticipantStatusChanged event', fakeAsync(() => {
+            // Arrange
+            const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
+            const participantId = participant.id;
+            const conferenceId = 'conference-id';
+            const participantStatusMessage = new ParticipantStatusMessage(participantId, '', conferenceId, ParticipantStatus.Joining);
+
+            participant.status = ParticipantStatus.Joining;
+            spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
+
+            let result = null;
+            // Act
+            sut.onParticipantStatusChanged$.subscribe(participant => (result = participant));
+            sut.handleParticipantStatusUpdate(participantStatusMessage);
+            flush();
+
+            // Assert
+            expect(result).toBeNull();
+            expect(participant.status).toEqual(ParticipantStatus.Joining);
+        }));
+
+        it('should NOT update the status and should NOT emit onParticipantStatusChanged event if the participant cannot be found', fakeAsync(() => {
+            // Arrange
+            const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
+            const participantId = participant.id;
+            const conferenceId = 'conference-id';
+            const participantStatusMessage = new ParticipantStatusMessage(participantId, '', conferenceId, ParticipantStatus.Joining);
+
+            spyOnProperty(sut, 'participants', 'get').and.returnValue([]);
+
+            let result = null;
+            // Act
+            sut.onParticipantStatusChanged$.subscribe(participant => (result = participant));
+            sut.handleParticipantStatusUpdate(participantStatusMessage);
+            flush();
+
+            // Assert
+            expect(result).toBeNull();
+        }));
     });
 });

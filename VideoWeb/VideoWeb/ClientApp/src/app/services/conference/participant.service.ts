@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { Observable, Subject } from 'rxjs';
-import { map, take } from 'rxjs/operators';
-import { Participant } from 'src/app/shared/models/participant';
+import { Observable, Subject, Subscriber, Subscription } from 'rxjs';
+import { filter, map, take } from 'rxjs/operators';
+import { ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
-import { ApiClient } from '../clients/api-client';
+import { ApiClient, ConferenceResponse } from '../clients/api-client';
+import { EventsService } from '../events.service';
 import { Logger } from '../logging/logger-base';
+import { ParticipantStatusMessage } from '../models/participant-status-message';
 import { ConferenceService } from './conference.service';
 
 @Injectable({
@@ -14,9 +16,10 @@ import { ConferenceService } from './conference.service';
 })
 export class ParticipantService {
     private loggingPrefix = 'ParticipantService -';
+    private conferenceSubscriptions: Subscription[] = [];
 
-    private _participants: Participant[] = [];
-    public get participants() {
+    private _participants: ParticipantModel[] = [];
+    public get participants(): ParticipantModel[] {
         return this._participants;
     }
 
@@ -25,24 +28,44 @@ export class ParticipantService {
         return this._participantIdToPexipIdMap;
     }
 
-    private participantSpotlightStatusChangedSubject: Subject<Participant> = new Subject<Participant>();
-    get onParticipantSpotlightStatusChanged$(): Observable<Participant> {
+    private participantStatusChangedSubject: Subject<ParticipantModel> = new Subject<ParticipantModel>();
+    get onParticipantStatusChanged$(): Observable<ParticipantModel> {
+        return this.participantStatusChangedSubject.asObservable();
+    }
+
+    private participantSpotlightStatusChangedSubject: Subject<ParticipantModel> = new Subject<ParticipantModel>();
+    get onParticipantSpotlightStatusChanged$(): Observable<ParticipantModel> {
         return this.participantSpotlightStatusChangedSubject.asObservable();
+    }
+
+    private participantRemoteMuteStatusChangedSubject: Subject<ParticipantModel> = new Subject<ParticipantModel>();
+    get onParticipantRemoteMuteStatusChanged$(): Observable<ParticipantModel> {
+        return this.participantRemoteMuteStatusChangedSubject.asObservable();
+    }
+
+    private participantHandRaisedStatusChangedSubject: Subject<ParticipantModel> = new Subject<ParticipantModel>();
+    get onParticipantHandRaisedStatusChanged$(): Observable<ParticipantModel> {
+        return this.participantHandRaisedStatusChangedSubject.asObservable();
     }
 
     constructor(
         private apiClient: ApiClient,
         private conferenceService: ConferenceService,
         private videoCallService: VideoCallService,
+        private eventsService: EventsService,
         private logger: Logger
     ) {
         this.initialise();
     }
 
-    getParticipantsForConference(conferenceId: Guid | string): Observable<Participant[]> {
+    getParticipantsForConference(conferenceId: Guid | string): Observable<ParticipantModel[]> {
         return this.apiClient
             .getParticipantsByConferenceId(conferenceId.toString())
-            .pipe(map(participants => participants.map(participantResponse => new Participant(participantResponse))));
+            .pipe(
+                map(participants =>
+                    participants.map(participantResponse => ParticipantModel.fromParticipantForUserResponse(participantResponse))
+                )
+            );
     }
 
     getPexipIdForParticipant(participantId: Guid | string): string {
@@ -50,21 +73,7 @@ export class ParticipantService {
         return pexipId ? pexipId : Guid.EMPTY;
     }
 
-    private initialise() {
-        this.conferenceService.currentConference$.subscribe(conference => {
-            this.getParticipantsForConference(conference.id)
-                .pipe(take(1))
-                .subscribe(participants => {
-                    this._participants = participants;
-                });
-        });
-
-        this.videoCallService
-            .onParticipantUpdated()
-            .subscribe(updatedParticipant => this.handlePexipParticipantUpdates(updatedParticipant));
-    }
-
-    private handlePexipParticipantUpdates(updatedParticipant: ParticipantUpdated): void {
+    handlePexipParticipantUpdate(updatedParticipant: ParticipantUpdated): void {
         const participant = this.participants.find(x => updatedParticipant.pexipDisplayName.includes(x.id));
 
         if (!participant) {
@@ -81,9 +90,64 @@ export class ParticipantService {
             participant.isSpotlighted = updatedParticipant.isSpotlighted;
             this.participantSpotlightStatusChangedSubject.next(participant);
         }
+
+        if (participant.isRemoteMuted != updatedParticipant.isRemoteMuted) {
+            participant.isRemoteMuted = updatedParticipant.isRemoteMuted;
+            this.participantRemoteMuteStatusChangedSubject.next(participant);
+        }
+
+        if (participant.isHandRaised != updatedParticipant.handRaised) {
+            participant.isHandRaised = updatedParticipant.handRaised;
+            this.participantHandRaisedStatusChangedSubject.next(participant);
+        }
+    }
+
+    handleParticipantStatusUpdate(participantStatusMessage: ParticipantStatusMessage) {
+        const participantToUpdate = this.participants.find(x => x.id === participantStatusMessage.participantId);
+
+        if (!participantToUpdate) {
+            this.logger.warn(`${this.loggingPrefix} Cannot find participant in conference. Failed to updated status.`, {
+                conferenceId: participantStatusMessage.conferenceId,
+                participantId: participantStatusMessage.participantId,
+                status: participantStatusMessage.status
+            });
+
+            return;
+        }
+
+        if (participantToUpdate.status !== participantStatusMessage.status) {
+            participantToUpdate.status = participantStatusMessage.status;
+            this.participantStatusChangedSubject.next(participantToUpdate);
+        }
     }
 
     private setPexipIdForParticipant(pexipId: string, participantId: string | Guid) {
         this._participantIdToPexipIdMap[participantId.toString()] = pexipId;
+    }
+
+    private initialise() {
+        this.conferenceService.currentConference$.subscribe(conference => {
+            this.getParticipantsForConference(conference.id)
+                .pipe(take(1))
+                .subscribe(participants => {
+                    this._participants = participants;
+                });
+
+            this.subscribeToConferenceEvents(conference);
+        });
+
+        this.videoCallService.onParticipantUpdated().subscribe(updatedParticipant => this.handlePexipParticipantUpdate(updatedParticipant));
+    }
+
+    private subscribeToConferenceEvents(conference: ConferenceResponse) {
+        this.conferenceSubscriptions.forEach(x => x.unsubscribe());
+        this.conferenceSubscriptions = [];
+
+        this.conferenceSubscriptions.push(
+            this.eventsService
+                .getParticipantStatusMessage()
+                .pipe(filter(x => x.conferenceId === conference.id))
+                .subscribe(participantStatusMessage => this.handleParticipantStatusUpdate(participantStatusMessage))
+        );
     }
 }
