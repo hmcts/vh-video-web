@@ -12,6 +12,7 @@ import { ConferenceStatusMessage } from 'src/app/services/models/conference-stat
 import { vhContactDetails } from 'src/app/shared/contact-information';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { ScreenHelper } from 'src/app/shared/screen-helper';
+import { DatePatternOption } from 'src/app/services/models/date-patterns';
 
 @Component({
     selector: 'app-judge-hearing-list',
@@ -19,6 +20,9 @@ import { ScreenHelper } from 'src/app/shared/screen-helper';
     styleUrls: ['./judge-hearing-list.component.scss']
 })
 export class JudgeHearingListComponent implements OnInit, OnDestroy {
+    public datePatternOption = DatePatternOption;
+    datePatternPipe: DatePatternOption;
+
     contact = {
         phone: vhContactDetails.phone
     };
@@ -49,6 +53,7 @@ export class JudgeHearingListComponent implements OnInit, OnDestroy {
         this.profileService.getUserProfile().then(profile => {
             this.profile = profile;
         });
+        this.datePatternPipe = this.datePatternOption.FullDate;
         this.retrieveHearingsForUser();
         this.setupSubscribers();
         this.interval = setInterval(() => {

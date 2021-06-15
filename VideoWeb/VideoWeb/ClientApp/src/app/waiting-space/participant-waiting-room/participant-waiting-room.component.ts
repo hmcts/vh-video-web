@@ -22,6 +22,7 @@ import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
+import { DatePatternOption } from 'src/app/services/models/date-patterns';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -29,6 +30,8 @@ import { ConsultationInvitationService } from '../services/consultation-invitati
     styleUrls: ['../waiting-room-global-styles.scss', './participant-waiting-room.component.scss']
 })
 export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
+    public datePatternOption = DatePatternOption;
+    datePatternPipe: DatePatternOption;
     currentTime: Date;
     hearingStartingAnnounced: boolean;
 
@@ -80,6 +83,7 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         this.errorCount = 0;
         this.logger.debug('[Participant WR] - Loading participant waiting room');
         this.connected = false;
+        this.datePatternPipe = this.datePatternOption.Date;
         this.notificationSoundsService.initHearingAlertSound();
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
         this.getConference().then(() => {
