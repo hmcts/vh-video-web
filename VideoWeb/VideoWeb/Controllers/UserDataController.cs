@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -10,6 +11,8 @@ using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
 using UserApi.Client;
 using UserApi.Contract.Responses;
+using VideoApi.Client;
+using VideoApi.Contract.Responses;
 
 namespace VideoWeb.Controllers
 {
@@ -19,18 +22,20 @@ namespace VideoWeb.Controllers
     [Authorize(AppRoles.VhOfficerRole)]
     public class UserDataController : ControllerBase
     {
-        private readonly IUserApiClient _userApiClient;
         private readonly ILogger<UserDataController> _logger;
         private readonly IMapperFactory _mapperFactory;
+        private readonly IVideoApiClient _videoApiClient;
+
 
         public UserDataController(
             IUserApiClient userApiClient,
             ILogger<UserDataController> logger,
-            IMapperFactory mapperFactory)
+            IMapperFactory mapperFactory,
+            IVideoApiClient videoApiClient)
         {
-            _userApiClient = userApiClient;
             _logger = logger;
             _mapperFactory = mapperFactory;
+            _videoApiClient = videoApiClient;
         }
 
         /// <summary>
@@ -43,9 +48,9 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var response = await _userApiClient.GetJudgesAsync();
-                var courtRoomsAccountResponsesMapper = _mapperFactory.Get<IEnumerable<UserResponse>, IEnumerable<string>, List<CourtRoomsAccountResponse>>();
-                var accountList = courtRoomsAccountResponsesMapper.Map(response, query.UserNames);
+                var conferences = await _videoApiClient.GetConferencesTodayForAdminByHearingVenueNameAsync(query.HearingVenueNames);
+                var courtRoomsAccountResponsesMapper = _mapperFactory.Get<IEnumerable<ConferenceForAdminResponse>, List<CourtRoomsAccountResponse>>();
+                var accountList = courtRoomsAccountResponsesMapper.Map(conferences);
 
                 return Ok(accountList);
             }
