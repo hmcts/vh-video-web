@@ -23,11 +23,6 @@ describe('SelectHearingLayoutComponent', () => {
         component.conference = conference;
         textButton.innerHTML = 'Open all';
         document.getElementById = jasmine.createSpy('accordion-choose-layout-heading').and.returnValue(headingButton);
-        document.getElementsByClassName = jasmine.createSpy('govuk-accordion__section-button').and.returnValue({
-            item() {
-                return headingButton;
-            }
-        });
         document.getElementsByClassName = jasmine.createSpy('govuk-accordion__open-all').and.returnValue({
             item() {
                 return textButton;
@@ -59,7 +54,6 @@ describe('SelectHearingLayoutComponent', () => {
 
     it('should call translate service to update accordion header when language changes', () => {
         const expectedTranslatedContentForHeader = 'this is translated for the accordion header';
-        component.currentButtonContentKey = buttonContentKeyWhenOpen;
         translateServiceSpy.instant
             .withArgs('select-hearing-layout.choose-hearing-layout')
             .and.returnValue(expectedTranslatedContentForHeader);
