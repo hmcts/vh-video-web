@@ -9,8 +9,8 @@ import { TranslateService } from '@ngx-translate/core';
 export class NgxDatePipe implements PipeTransform {
     constructor(private translateService: TranslateService) {}
 
-    public transform(value: any, pattern: string): any {
+    public transform(value: any, format: string): any {
         const datePipe = new DatePipe(this.translateService.currentLang);
-        return datePipe.transform(value, pattern);
+        return datePipe.transform(value, format);
     }
 }
