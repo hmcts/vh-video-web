@@ -31,11 +31,15 @@ export class ConferenceService {
     }
 
     getConferenceById(conferenceId: string | Guid): Observable<ConferenceResponse> {
+        this.logger.info(`${this.loggerPrefix} getting conference by ID: ${conferenceId}`);
+
         return this.apiClient.getConferenceById(conferenceId.toString());
     }
 
     private onRouteParamsChanged(params: ParamMap): void {
         this._currentConferenceId = params.get('conferenceId');
+        this._currentConference = null;
+
         this.logger.info(`${this.loggerPrefix} New route - Conference ID: ${this._currentConferenceId}`, {
             routeParams: params
         });
@@ -47,7 +51,13 @@ export class ConferenceService {
             return;
         }
 
+        this.logger.info(`${this.loggerPrefix} attempting to get conference details.`);
         this.getConferenceById(this.currentConferenceId).subscribe(conference => {
+            this.logger.info(`${this.loggerPrefix} conference details retrieved.`, {
+                oldDetails: this.currentConference,
+                newDetails: conference
+            });
+
             this._currentConference = conference;
             this.currentConferenceSubject.next(conference);
         });
