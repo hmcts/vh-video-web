@@ -20,6 +20,7 @@ import { EventsService } from '../events.service';
 import { LoggerService } from '../logging/logger.service';
 import { ParticipantStatusMessage } from '../models/participant-status-message';
 import { ConferenceService } from './conference.service';
+import { VirtualMeetingRoomModel } from './models/virtual-meeting-room.model';
 import { InvalidNumberOfNonEndpointParticipantsError, ParticipantService } from './participant.service';
 
 fdescribe('ParticipantService', () => {
@@ -301,6 +302,26 @@ fdescribe('ParticipantService', () => {
             expect(result.length).toEqual(participants.length);
             participants.forEach(x => expect(result).toContain(x));
             endpointParticipants.forEach(x => expect(result).not.toContain(x));
+        });
+    });
+
+    describe('get virtualMeetingRooms', () => {
+        it('should return a list of virtual meeting rooms', () => {
+            // Arrange
+            const nonVmrParticipants = asParticipantModels([participantOne, participantTwo]).concat(
+                [endpointOne, endpointTwo].map(x => ParticipantModel.fromVideoEndpointResponse(x))
+            );
+            const vmrParticipants = asParticipantModels([vmrParticipantOne, vmrParticipantTwo]);
+            const expectedVmrs = [new VirtualMeetingRoomModel(vmrId, vmrLabel, vmrLocked, vmrParticipants)];
+            spyOnProperty(sut, 'participants', 'get').and.returnValue(nonVmrParticipants.concat(vmrParticipants));
+
+            // Act
+            const result = sut.endpointParticipants;
+
+            // Assert
+            expect(result.length).toEqual(expectedVmrs.length);
+            expectedVmrs.forEach(x => expect(expectedVmrs).toContain(x));
+            expectedVmrs.forEach(x => nonVmrParticipants.forEach(y => expect(x.participants).not.toContain(y)));
         });
     });
 

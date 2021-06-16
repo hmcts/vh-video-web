@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { timeStamp } from 'console';
 import { Guid } from 'guid-typescript';
 import { combineLatest, Observable, Subject, Subscription } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
@@ -10,6 +11,7 @@ import { EventsService } from '../events.service';
 import { LoggerService } from '../logging/logger.service';
 import { ParticipantStatusMessage } from '../models/participant-status-message';
 import { ConferenceService } from './conference.service';
+import { VirtualMeetingRoomModel } from './models/virtual-meeting-room.model';
 
 export const InvalidNumberOfNonEndpointParticipantsError = () => new Error('Invalid number of non-endpoint participants.');
 
@@ -35,6 +37,35 @@ export class ParticipantService {
 
     public get endpointParticipants(): ParticipantModel[] {
         return this.participants.filter(x => x.isEndPoint);
+    }
+
+    public get virtualMeetingRooms(): VirtualMeetingRoomModel[] {
+        const vmrs: VirtualMeetingRoomModel[] = [];
+        console.log('vmrs', vmrs);
+
+        for (const participant of this.participants) {
+            const existingVmr = vmrs.find(x => x.id === participant.virtualMeetingRoom?.id);
+            console.log('Existing vmr', existingVmr);
+            if (existingVmr) {
+                console.log('add part vmr', existingVmr);
+
+                existingVmr.participants.push(participant);
+            } else {
+                console.log('new vmr', participant);
+
+                vmrs.push(
+                    new VirtualMeetingRoomModel(
+                        participant.virtualMeetingRoom.id,
+                        participant.virtualMeetingRoom.label,
+                        participant.virtualMeetingRoom.locked,
+                        [participant]
+                    )
+                );
+            }
+        }
+
+        console.log('vmrs end', vmrs);
+        return vmrs;
     }
 
     private _participantIdToPexipIdMap: { [participantId: string]: string } = {};
@@ -101,35 +132,6 @@ export class ParticipantService {
         return pexipId ? pexipId : Guid.EMPTY;
     }
 
-    private getParticipantOrVmrParticipantsFromPexipId(pexipDisplayName: string): ParticipantModel[] {
-        const participant = this.participants.find(x => pexipDisplayName.includes(x.id));
-
-        if (!participant) {
-            this.logger.warn(`${this.loggingPrefix} Could not find participant where their ID was contained in their pexip display name.`, {
-                checkedParticipantIds: this.participants.map(x => x.id),
-                pexipDisplayNameOfUpdatedParticipant: pexipDisplayName
-            });
-        } else {
-            return [participant];
-        }
-
-        const vmrParticipants = this.participants.filter(x => x.virtualMeetingRoom && pexipDisplayName.includes(x.virtualMeetingRoom.id));
-
-        if (!vmrParticipants || vmrParticipants.length === 0) {
-            this.logger.warn(
-                `${this.loggingPrefix} Could not find vmr participants where their VMR ID was contained in the pexip display name.`,
-                {
-                    checkedVirtualMeetingRoomIds: this.participants.map(x => x.virtualMeetingRoom?.id),
-                    pexipDisplayNameOfUpdatedParticipant: pexipDisplayName
-                }
-            );
-        } else {
-            return vmrParticipants;
-        }
-
-        return [];
-    }
-
     handlePexipParticipantUpdate(updatedParticipant: ParticipantUpdated): void {
         this.logger.info(`${this.loggingPrefix} handling pexip participant update`, {
             participantUpdate: updatedParticipant
@@ -143,6 +145,7 @@ export class ParticipantService {
             if (participant.isSpotlighted != updatedParticipant.isSpotlighted) {
                 this.logger.info(`${this.loggingPrefix} updating participants spotlight status`, {
                     participantId: participant.id,
+                    pexipDisplayName: updatedParticipant.pexipDisplayName,
                     oldValue: participant.isSpotlighted,
                     newValue: updatedParticipant.isSpotlighted
                 });
@@ -154,6 +157,7 @@ export class ParticipantService {
             if (participant.isRemoteMuted != updatedParticipant.isRemoteMuted) {
                 this.logger.info(`${this.loggingPrefix} updating participants remote muted status`, {
                     participantId: participant.id,
+                    pexipDisplayName: updatedParticipant.pexipDisplayName,
                     oldValue: participant.isRemoteMuted,
                     newValue: updatedParticipant.isRemoteMuted
                 });
@@ -165,6 +169,7 @@ export class ParticipantService {
             if (participant.isHandRaised != updatedParticipant.handRaised) {
                 this.logger.info(`${this.loggingPrefix} updating participants hand raised status`, {
                     participantId: participant.id,
+                    pexipDisplayName: updatedParticipant.pexipDisplayName,
                     oldValue: participant.isHandRaised,
                     newValue: updatedParticipant.handRaised
                 });
@@ -210,6 +215,35 @@ export class ParticipantService {
         });
 
         this._participantIdToPexipIdMap[participantId.toString()] = pexipId;
+    }
+
+    private getParticipantOrVmrParticipantsFromPexipId(pexipDisplayName: string): ParticipantModel[] {
+        const participant = this.participants.find(x => pexipDisplayName.includes(x.id));
+
+        if (!participant) {
+            this.logger.warn(`${this.loggingPrefix} Could not find participant where their ID was contained in their pexip display name.`, {
+                checkedParticipantIds: this.participants.map(x => x.id),
+                pexipDisplayNameOfUpdatedParticipant: pexipDisplayName
+            });
+        } else {
+            return [participant];
+        }
+
+        const vmrParticipants = this.participants.filter(x => x.virtualMeetingRoom && pexipDisplayName.includes(x.virtualMeetingRoom.id));
+
+        if (!vmrParticipants || vmrParticipants.length === 0) {
+            this.logger.warn(
+                `${this.loggingPrefix} Could not find vmr participants where their VMR ID was contained in the pexip display name.`,
+                {
+                    checkedVirtualMeetingRoomIds: this.participants.map(x => x.virtualMeetingRoom?.id),
+                    pexipDisplayNameOfUpdatedParticipant: pexipDisplayName
+                }
+            );
+        } else {
+            return vmrParticipants;
+        }
+
+        return [];
     }
 
     private initialise() {
