@@ -23,6 +23,9 @@ import { ConferenceService } from './conference.service';
 import { InvalidNumberOfNonEndpointParticipantsError, ParticipantService } from './participant.service';
 
 fdescribe('ParticipantService', () => {
+    const asParticipantModels = (participants: ParticipantForUserResponse[]) =>
+        participants.map(x => ParticipantModel.fromParticipantForUserResponse(x));
+
     const participantOneId = Guid.create().toString();
     const participantOne = new ParticipantForUserResponse({
         id: participantOneId,
@@ -55,7 +58,7 @@ fdescribe('ParticipantService', () => {
         linked_participants: []
     });
 
-    const vmrId = 'vmr-id';
+    const vmrId = '1234';
     const vmrLabel = 'vmr-label';
     const vmrLocked = false;
     const vmrParticipantOneId = Guid.create().toString();
@@ -471,7 +474,7 @@ fdescribe('ParticipantService', () => {
                 expectedValue[participantOneId] = pexipIdOne;
                 expectedValue[participantTwoId] = pexipIdTwo;
 
-                spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne, participantTwo]);
+                spyOnProperty(sut, 'participants', 'get').and.returnValue(asParticipantModels([participantOne, participantTwo]));
 
                 // Act
                 sut.handlePexipParticipantUpdate(participantUpdatedOne);
@@ -510,7 +513,7 @@ fdescribe('ParticipantService', () => {
                 expectedValue[participantOneId] = pexipIdThree;
                 expectedValue[participantTwoId] = pexipIdTwo;
 
-                spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne, participantTwo]);
+                spyOnProperty(sut, 'participants', 'get').and.returnValue(asParticipantModels([participantOne, participantTwo]));
 
                 // Act
                 sut.handlePexipParticipantUpdate(participantUpdatedOne);
@@ -533,7 +536,7 @@ fdescribe('ParticipantService', () => {
 
                 const expectedValue: { [participantId: string]: string } = {};
 
-                spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne, participantTwo]);
+                spyOnProperty(sut, 'participants', 'get').and.returnValue(asParticipantModels([participantOne, participantTwo]));
 
                 // Act
                 sut.handlePexipParticipantUpdate(participantUpdated);
@@ -555,12 +558,9 @@ fdescribe('ParticipantService', () => {
                 expectedValue[vmrParticipantOneId] = pexipId;
                 expectedValue[vmrParticipantTwoId] = pexipId;
 
-                spyOnProperty(sut, 'participants', 'get').and.returnValue([
-                    participantOne,
-                    participantTwo,
-                    vmrParticipantOne,
-                    vmrParticipantTwo
-                ]);
+                spyOnProperty(sut, 'participants', 'get').and.returnValue(
+                    asParticipantModels([participantOne, participantTwo, vmrParticipantOne, vmrParticipantTwo])
+                );
 
                 // Act
                 sut.handlePexipParticipantUpdate(participantUpdated);

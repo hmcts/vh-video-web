@@ -27,7 +27,6 @@ export interface IParticipantConferenceState {
 
 export interface IParticipantDetails {
     id: string;
-    virtualMeetingRoomId: string;
     name: string;
     displayName: string;
     pexipDisplayName: string;
@@ -62,10 +61,6 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
         public isHandRaised: boolean = false
     ) {}
 
-    get virtualMeetingRoomId(): string {
-        return this.virtualMeetingRoom?.label;
-    }
-
     private static fromAParticipantResponseType(participant: ParticipantResponse | ParticipantForUserResponse | ParticipantResponseVho) {
         return new ParticipantModel(
             participant.id,
@@ -78,7 +73,8 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
             false,
             participant.interpreter_room,
             participant.linked_participants,
-            participant.status
+            participant.status,
+            participant.current_room
         );
     }
 

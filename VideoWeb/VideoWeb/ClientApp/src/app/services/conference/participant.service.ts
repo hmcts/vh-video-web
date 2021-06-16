@@ -101,54 +101,77 @@ export class ParticipantService {
         return pexipId ? pexipId : Guid.EMPTY;
     }
 
+    private getParticipantOrVmrParticipantsFromPexipId(pexipDisplayName: string): ParticipantModel[] {
+        const participant = this.participants.find(x => pexipDisplayName.includes(x.id));
+
+        if (!participant) {
+            this.logger.warn(`${this.loggingPrefix} Could not find participant where their ID was contained in their pexip display name.`, {
+                checkedParticipantIds: this.participants.map(x => x.id),
+                pexipDisplayNameOfUpdatedParticipant: pexipDisplayName
+            });
+        } else {
+            return [participant];
+        }
+
+        const vmrParticipants = this.participants.filter(x => x.virtualMeetingRoom && pexipDisplayName.includes(x.virtualMeetingRoom.id));
+
+        if (!vmrParticipants || vmrParticipants.length === 0) {
+            this.logger.warn(
+                `${this.loggingPrefix} Could not find vmr participants where their VMR ID was contained in the pexip display name.`,
+                {
+                    checkedVirtualMeetingRoomIds: this.participants.map(x => x.virtualMeetingRoom?.id),
+                    pexipDisplayNameOfUpdatedParticipant: pexipDisplayName
+                }
+            );
+        } else {
+            return vmrParticipants;
+        }
+
+        return [];
+    }
+
     handlePexipParticipantUpdate(updatedParticipant: ParticipantUpdated): void {
         this.logger.info(`${this.loggingPrefix} handling pexip participant update`, {
             participantUpdate: updatedParticipant
         });
 
-        const participant = this.participants.find(x => updatedParticipant.pexipDisplayName.includes(x.id));
+        const participantsToUpdate = this.getParticipantOrVmrParticipantsFromPexipId(updatedParticipant.pexipDisplayName);
 
-        if (!participant) {
-            this.logger.warn(`${this.loggingPrefix} Could not find participant where their ID was contained in their pexip display name.`, {
-                checkedParticipants: this.participants.map(x => x.id),
-                pexipDisplayNameOfUpdatedParticipant: updatedParticipant.pexipDisplayName
-            });
-            return;
-        }
+        for (const participant of participantsToUpdate) {
+            this.setPexipIdForParticipant(updatedParticipant.uuid, participant.id);
 
-        this.setPexipIdForParticipant(updatedParticipant.uuid, participant.id);
+            if (participant.isSpotlighted != updatedParticipant.isSpotlighted) {
+                this.logger.info(`${this.loggingPrefix} updating participants spotlight status`, {
+                    participantId: participant.id,
+                    oldValue: participant.isSpotlighted,
+                    newValue: updatedParticipant.isSpotlighted
+                });
 
-        if (participant.isSpotlighted != updatedParticipant.isSpotlighted) {
-            this.logger.info(`${this.loggingPrefix} updating participants spotlight status`, {
-                participantId: participant.id,
-                oldValue: participant.isSpotlighted,
-                newValue: updatedParticipant.isSpotlighted
-            });
+                participant.isSpotlighted = updatedParticipant.isSpotlighted;
+                this.participantSpotlightStatusChangedSubject.next(participant);
+            }
 
-            participant.isSpotlighted = updatedParticipant.isSpotlighted;
-            this.participantSpotlightStatusChangedSubject.next(participant);
-        }
+            if (participant.isRemoteMuted != updatedParticipant.isRemoteMuted) {
+                this.logger.info(`${this.loggingPrefix} updating participants remote muted status`, {
+                    participantId: participant.id,
+                    oldValue: participant.isRemoteMuted,
+                    newValue: updatedParticipant.isRemoteMuted
+                });
 
-        if (participant.isRemoteMuted != updatedParticipant.isRemoteMuted) {
-            this.logger.info(`${this.loggingPrefix} updating participants remote muted status`, {
-                participantId: participant.id,
-                oldValue: participant.isRemoteMuted,
-                newValue: updatedParticipant.isRemoteMuted
-            });
+                participant.isRemoteMuted = updatedParticipant.isRemoteMuted;
+                this.participantRemoteMuteStatusChangedSubject.next(participant);
+            }
 
-            participant.isRemoteMuted = updatedParticipant.isRemoteMuted;
-            this.participantRemoteMuteStatusChangedSubject.next(participant);
-        }
+            if (participant.isHandRaised != updatedParticipant.handRaised) {
+                this.logger.info(`${this.loggingPrefix} updating participants hand raised status`, {
+                    participantId: participant.id,
+                    oldValue: participant.isHandRaised,
+                    newValue: updatedParticipant.handRaised
+                });
 
-        if (participant.isHandRaised != updatedParticipant.handRaised) {
-            this.logger.info(`${this.loggingPrefix} updating participants hand raised status`, {
-                participantId: participant.id,
-                oldValue: participant.isHandRaised,
-                newValue: updatedParticipant.handRaised
-            });
-
-            participant.isHandRaised = updatedParticipant.handRaised;
-            this.participantHandRaisedStatusChangedSubject.next(participant);
+                participant.isHandRaised = updatedParticipant.handRaised;
+                this.participantHandRaisedStatusChangedSubject.next(participant);
+            }
         }
     }
 
