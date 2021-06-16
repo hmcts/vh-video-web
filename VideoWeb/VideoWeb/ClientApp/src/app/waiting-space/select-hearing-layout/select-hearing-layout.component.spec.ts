@@ -40,7 +40,7 @@ describe('SelectHearingLayoutComponent', () => {
         expect(component.currentButtonContentKey).toBe(buttonContentKeyWhenOpen);
     });
 
-    it('should call translate service to update accordion button when language changes', () => {
+    it('should show translated text on open accordion button', () => {
         const expectedTranslatedContentForButton = 'this is translated for open all button';
         component.currentButtonContentKey = buttonContentKeyWhenOpen;
         translateServiceSpy.instant
@@ -51,7 +51,7 @@ describe('SelectHearingLayoutComponent', () => {
         expect(component.accordionOpenAllElement.innerHTML).toContain(expectedTranslatedContentForButton);
     });
 
-    it('should call translate service to update accordion header when language changes', () => {
+    it('should show translated text on open/close toggle button', () => {
         const expectedTranslatedContentForHeader = 'this is translated for the accordion header';
         translateServiceSpy.instant
             .withArgs('select-hearing-layout.choose-hearing-layout')
