@@ -49,7 +49,6 @@ describe('SelectHearingLayoutComponent', () => {
         component.ngOnInit();
         onLangChangeSpy.emit({ lang: 'tl' } as LangChangeEvent);
         expect(component.accordionOpenAllElement.innerHTML).toContain(expectedTranslatedContentForButton);
-        expect(component.currentButtonContentKey).toBe(buttonContentKeyWhenOpen);
     });
 
     it('should call translate service to update accordion header when language changes', () => {
