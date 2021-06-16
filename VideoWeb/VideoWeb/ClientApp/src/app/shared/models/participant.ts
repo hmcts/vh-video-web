@@ -7,8 +7,7 @@ import {
     ParticipantForUserResponse,
     LinkedParticipantResponse,
     RoomSummaryResponse,
-    VideoEndpointResponse,
-    EndpointStatus
+    VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';

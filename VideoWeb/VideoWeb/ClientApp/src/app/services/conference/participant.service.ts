@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { combineLatest, merge, Observable, Subject, Subscriber, Subscription } from 'rxjs';
+import { combineLatest, Observable, Subject, Subscription } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { ApiClient, ConferenceResponse } from '../clients/api-client';
 import { EventsService } from '../events.service';
-import { Logger } from '../logging/logger-base';
+import { LoggerService } from '../logging/logger.service';
 import { ParticipantStatusMessage } from '../models/participant-status-message';
 import { ConferenceService } from './conference.service';
 
@@ -17,7 +17,7 @@ export const InvalidNumberOfNonEndpointParticipantsError = () => new Error('Inva
     providedIn: 'root'
 })
 export class ParticipantService {
-    private loggingPrefix = 'ParticipantService -';
+    private loggingPrefix = '[ParticipantService] -';
     private conferenceSubscriptions: Subscription[] = [];
 
     private _participants: ParticipantModel[] = [];
@@ -67,12 +67,14 @@ export class ParticipantService {
         private conferenceService: ConferenceService,
         private videoCallService: VideoCallService,
         private eventsService: EventsService,
-        private logger: Logger
+        private logger: LoggerService
     ) {
         this.initialise();
     }
 
     getParticipantsForConference(conferenceId: Guid | string): Observable<ParticipantModel[]> {
+        this.logger.info(`${this.loggingPrefix} getting participants for conference.`);
+
         return this.apiClient
             .getParticipantsByConferenceId(conferenceId.toString())
             .pipe(
@@ -83,6 +85,8 @@ export class ParticipantService {
     }
 
     getEndpointsForConference(conferenceId: Guid | string): Observable<ParticipantModel[]> {
+        this.logger.info(`${this.loggingPrefix} getting endpoints for conference.`);
+
         return this.apiClient
             .getVideoEndpointsForConference(conferenceId.toString())
             .pipe(
@@ -98,10 +102,14 @@ export class ParticipantService {
     }
 
     handlePexipParticipantUpdate(updatedParticipant: ParticipantUpdated): void {
+        this.logger.info(`${this.loggingPrefix} handling pexip participant update`, {
+            participantUpdate: updatedParticipant
+        });
+
         const participant = this.participants.find(x => updatedParticipant.pexipDisplayName.includes(x.id));
 
         if (!participant) {
-            this.logger.warn(`${this.loggingPrefix} Could find participant where their ID was contained in the pexip display name.`, {
+            this.logger.warn(`${this.loggingPrefix} Could not find participant where their ID was contained in their pexip display name.`, {
                 checkedParticipants: this.participants.map(x => x.id),
                 pexipDisplayNameOfUpdatedParticipant: updatedParticipant.pexipDisplayName
             });
@@ -111,25 +119,45 @@ export class ParticipantService {
         this.setPexipIdForParticipant(updatedParticipant.uuid, participant.id);
 
         if (participant.isSpotlighted != updatedParticipant.isSpotlighted) {
+            this.logger.info(`${this.loggingPrefix} updating participants spotlight status`, {
+                participantId: participant.id,
+                oldValue: participant.isSpotlighted,
+                newValue: updatedParticipant.isSpotlighted
+            });
+
             participant.isSpotlighted = updatedParticipant.isSpotlighted;
             this.participantSpotlightStatusChangedSubject.next(participant);
         }
 
         if (participant.isRemoteMuted != updatedParticipant.isRemoteMuted) {
+            this.logger.info(`${this.loggingPrefix} updating participants remote muted status`, {
+                participantId: participant.id,
+                oldValue: participant.isRemoteMuted,
+                newValue: updatedParticipant.isRemoteMuted
+            });
+
             participant.isRemoteMuted = updatedParticipant.isRemoteMuted;
             this.participantRemoteMuteStatusChangedSubject.next(participant);
         }
 
         if (participant.isHandRaised != updatedParticipant.handRaised) {
+            this.logger.info(`${this.loggingPrefix} updating participants hand raised status`, {
+                participantId: participant.id,
+                oldValue: participant.isHandRaised,
+                newValue: updatedParticipant.handRaised
+            });
+
             participant.isHandRaised = updatedParticipant.handRaised;
             this.participantHandRaisedStatusChangedSubject.next(participant);
         }
     }
 
     handleParticipantStatusUpdate(participantStatusMessage: ParticipantStatusMessage) {
-        const participantToUpdate = this.participants.find(x => x.id === participantStatusMessage.participantId);
+        this.logger.info(`${this.loggingPrefix} handling participant status update`);
 
-        if (!participantToUpdate) {
+        const participant = this.participants.find(x => x.id === participantStatusMessage.participantId);
+
+        if (!participant) {
             this.logger.warn(`${this.loggingPrefix} Cannot find participant in conference. Failed to updated status.`, {
                 conferenceId: participantStatusMessage.conferenceId,
                 participantId: participantStatusMessage.participantId,
@@ -139,28 +167,50 @@ export class ParticipantService {
             return;
         }
 
-        if (participantToUpdate.status !== participantStatusMessage.status) {
-            participantToUpdate.status = participantStatusMessage.status;
-            this.participantStatusChangedSubject.next(participantToUpdate);
+        if (participant.status !== participantStatusMessage.status) {
+            this.logger.info(`${this.loggingPrefix} updating participants status`, {
+                participantId: participant.id,
+                oldValue: participant.status,
+                newValue: participantStatusMessage.status
+            });
+
+            participant.status = participantStatusMessage.status;
+            this.participantStatusChangedSubject.next(participant);
         }
     }
 
     private setPexipIdForParticipant(pexipId: string, participantId: string | Guid) {
+        this.logger.info(`${this.loggingPrefix} updating participants pexip ID`, {
+            participantId: participantId,
+            oldValue: this._participantIdToPexipIdMap[participantId.toString()],
+            newValue: pexipId
+        });
+
         this._participantIdToPexipIdMap[participantId.toString()] = pexipId;
     }
 
     private initialise() {
         this.conferenceService.currentConference$.subscribe(conference => {
+            this.logger.info(`${this.loggingPrefix} new conference recieved`, {
+                conference: conference
+            });
+
             this._participants = [];
+            this.logger.info(`${this.loggingPrefix} fetching new participant list`);
             combineLatest([
                 this.getParticipantsForConference(conference.id).pipe(take(1)),
                 this.getEndpointsForConference(conference.id).pipe(take(1))
             ])
                 .pipe(
                     take(1), // Ensure this observable also completes
-                    map(x => x[0].concat(x[1]))
+                    map(participantLists => participantLists[0].concat(participantLists[1]))
                 )
                 .subscribe(participants => {
+                    this.logger.info(`${this.loggingPrefix} new participant list retrieved`, {
+                        oldValue: this.participants,
+                        newValue: participants
+                    });
+
                     this._participants = participants;
                 });
 
