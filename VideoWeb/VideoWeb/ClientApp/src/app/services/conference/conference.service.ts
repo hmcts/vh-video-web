@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, ParamMap, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { Observable, ReplaySubject } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { ApiClient, ConferenceResponse } from '../clients/api-client';
-import { Logger } from '../logging/logger-base';
 
 @Injectable({
     providedIn: 'root'
@@ -11,8 +11,22 @@ import { Logger } from '../logging/logger-base';
 export class ConferenceService {
     private loggerPrefix = '[ConferenceService] -';
 
-    constructor(route: ActivatedRoute, private apiClient: ApiClient, private logger: Logger) {
-        route.firstChild.paramMap.subscribe(params => this.onRouteParamsChanged(params));
+    constructor(router: Router, private activatedRoute: ActivatedRoute, private apiClient: ApiClient) {
+        router.events
+            .pipe(
+                filter(x => x instanceof NavigationEnd),
+                map(() => activatedRoute.snapshot),
+                map(route => {
+                    while (route && !route.paramMap.has('conferenceId')) {
+                        route = route.firstChild;
+                    }
+
+                    return route.paramMap;
+                })
+            )
+            .subscribe(paramMap => {
+                this.onRouteParamsChanged(paramMap);
+            });
     }
 
     private _currentConference: ConferenceResponse;
@@ -31,7 +45,7 @@ export class ConferenceService {
     }
 
     getConferenceById(conferenceId: string | Guid): Observable<ConferenceResponse> {
-        this.logger.info(`${this.loggerPrefix} getting conference by ID: ${conferenceId}`);
+        console.log(`${this.loggerPrefix} getting conference by ID: ${conferenceId}`);
 
         return this.apiClient.getConferenceById(conferenceId.toString());
     }
@@ -40,20 +54,21 @@ export class ConferenceService {
         this._currentConferenceId = params.get('conferenceId');
         this._currentConference = null;
 
-        this.logger.info(`${this.loggerPrefix} New route - Conference ID: ${this._currentConferenceId}`, {
+        console.log(`${this.loggerPrefix} New route - Conference ID: ${this._currentConferenceId}`, {
             routeParams: params
         });
 
         if (!this._currentConferenceId) {
-            this.logger.warn(`${this.loggerPrefix} Could not get conference id from the route parameters: ${params.get('conferenceId')}`, {
-                routeParams: params
+            console.warn(`${this.loggerPrefix} Could not get conference id from the route parameters: ${params.get('conferenceId')}`, {
+                routeParams: params,
+                route: this.activatedRoute
             });
             return;
         }
 
-        this.logger.info(`${this.loggerPrefix} attempting to get conference details.`);
+        console.log(`${this.loggerPrefix} attempting to get conference details.`);
         this.getConferenceById(this.currentConferenceId).subscribe(conference => {
-            this.logger.info(`${this.loggerPrefix} conference details retrieved.`, {
+            console.log(`${this.loggerPrefix} conference details retrieved.`, {
                 oldDetails: this.currentConference,
                 newDetails: conference
             });

@@ -27,6 +27,7 @@ export interface IParticipantConferenceState {
 
 export interface IParticipantDetails {
     id: string;
+    virtualMeetingRoomId: string;
     name: string;
     displayName: string;
     pexipDisplayName: string;
@@ -35,6 +36,7 @@ export interface IParticipantDetails {
     hearingRole: HearingRole;
     status: ParticipantStatus;
     isEndPoint: boolean;
+    virtualMeetingRoom: RoomSummaryResponse;
     linkedParticipants: LinkedParticipantResponse[];
 }
 
@@ -50,6 +52,7 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
         public role: Role,
         public hearingRole: HearingRole,
         public isEndPoint: boolean,
+        public virtualMeetingRoom: RoomSummaryResponse,
         public linkedParticipants: LinkedParticipantResponse[],
         public status: ParticipantStatus = ParticipantStatus.None,
         public currentRoom: RoomSummaryResponse = null,
@@ -58,6 +61,10 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
         public isRemoteMuted: boolean = false,
         public isHandRaised: boolean = false
     ) {}
+
+    get virtualMeetingRoomId(): string {
+        return this.virtualMeetingRoom?.label;
+    }
 
     private static fromAParticipantResponseType(participant: ParticipantResponse | ParticipantForUserResponse | ParticipantResponseVho) {
         return new ParticipantModel(
@@ -69,6 +76,7 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
             participant.role,
             HearingRole[participant.hearing_role],
             false,
+            participant.interpreter_room,
             participant.linked_participants,
             participant.status
         );
@@ -96,6 +104,7 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
             null,
             null,
             true,
+            null,
             null,
             ParticipantStatus[videoEndpointResponse.status], // Will be undefined when not joining...
             videoEndpointResponse.current_room

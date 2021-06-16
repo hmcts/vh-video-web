@@ -1,8 +1,8 @@
-import { fakeAsync, flush, flushMicrotasks } from '@angular/core/testing';
+import { fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { ParticipantModel, Participant } from 'src/app/shared/models/participant';
+import { ParticipantModel } from 'src/app/shared/models/participant';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
@@ -13,6 +13,7 @@ import {
     ParticipantForUserResponse,
     ParticipantStatus,
     Role,
+    RoomSummaryResponse,
     VideoEndpointResponse
 } from '../clients/api-client';
 import { EventsService } from '../events.service';
@@ -34,6 +35,7 @@ fdescribe('ParticipantService', () => {
         hearing_role: HearingRole.INTERPRETER,
         first_name: 'Interpreter',
         last_name: 'Doe',
+        interpreter_room: null,
         linked_participants: []
     });
 
@@ -49,6 +51,50 @@ fdescribe('ParticipantService', () => {
         hearing_role: HearingRole.LITIGANT_IN_PERSON,
         first_name: 'Interpretee',
         last_name: 'Doe',
+        interpreter_room: null,
+        linked_participants: []
+    });
+
+    const vmrId = 'vmr-id';
+    const vmrLabel = 'vmr-label';
+    const vmrLocked = false;
+    const vmrParticipantOneId = Guid.create().toString();
+    const vmrParticipantOne = new ParticipantForUserResponse({
+        id: vmrParticipantOneId,
+        status: ParticipantStatus.NotSignedIn,
+        display_name: 'PanelMember 1',
+        role: Role.JudicialOfficeHolder,
+        representee: null,
+        case_type_group: 'PanelMember',
+        tiled_display_name: `JOH;PannelMember;${vmrParticipantOneId}`,
+        hearing_role: HearingRole.PANEL_MEMBER,
+        first_name: 'PanelMember',
+        last_name: 'One',
+        interpreter_room: new RoomSummaryResponse({
+            id: vmrId,
+            label: vmrLabel,
+            locked: vmrLocked
+        }),
+        linked_participants: []
+    });
+
+    const vmrParticipantTwoId = Guid.create().toString();
+    const vmrParticipantTwo = new ParticipantForUserResponse({
+        id: vmrParticipantTwoId,
+        status: ParticipantStatus.NotSignedIn,
+        display_name: 'PanelMember 2',
+        role: Role.JudicialOfficeHolder,
+        representee: null,
+        case_type_group: 'PanelMember',
+        tiled_display_name: `JOH;PannelMember;${vmrParticipantTwoId}`,
+        hearing_role: HearingRole.PANEL_MEMBER,
+        first_name: 'PanelMember',
+        last_name: 'Two',
+        interpreter_room: new RoomSummaryResponse({
+            id: vmrId,
+            label: vmrLabel,
+            locked: vmrLocked
+        }),
         linked_participants: []
     });
 
@@ -488,6 +534,33 @@ fdescribe('ParticipantService', () => {
                 const expectedValue: { [participantId: string]: string } = {};
 
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne, participantTwo]);
+
+                // Act
+                sut.handlePexipParticipantUpdate(participantUpdated);
+
+                // Assert
+                expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
+            });
+
+            it('should update the pexip id map for VMR participants', () => {
+                // Arrange
+                const pexipId = 'pexip-id';
+                const pexipName = `pexip-name-${vmrId}`;
+                const participantUpdated = ({
+                    pexipDisplayName: pexipName,
+                    uuid: pexipId
+                } as unknown) as ParticipantUpdated;
+
+                const expectedValue: { [participantId: string]: string } = {};
+                expectedValue[vmrParticipantOneId] = pexipId;
+                expectedValue[vmrParticipantTwoId] = pexipId;
+
+                spyOnProperty(sut, 'participants', 'get').and.returnValue([
+                    participantOne,
+                    participantTwo,
+                    vmrParticipantOne,
+                    vmrParticipantTwo
+                ]);
 
                 // Act
                 sut.handlePexipParticipantUpdate(participantUpdated);

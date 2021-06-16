@@ -197,10 +197,7 @@ export class ParticipantService {
 
             this._participants = [];
             this.logger.info(`${this.loggingPrefix} fetching new participant list`);
-            combineLatest([
-                this.getParticipantsForConference(conference.id).pipe(take(1)),
-                this.getEndpointsForConference(conference.id).pipe(take(1))
-            ])
+            combineLatest([this.getParticipantsForConference(conference.id), this.getEndpointsForConference(conference.id)])
                 .pipe(
                     take(1), // Ensure this observable also completes
                     map(participantLists => participantLists[0].concat(participantLists[1]))
