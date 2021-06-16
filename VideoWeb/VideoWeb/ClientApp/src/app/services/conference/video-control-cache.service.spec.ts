@@ -1,12 +1,15 @@
 import { TestBed } from '@angular/core/testing';
+import { LoggerService } from '../logging/logger.service';
 
 import { IHearingControlsState, IHearingControlStates, VideoControlCacheService } from './video-control-cache.service';
 
 fdescribe('VideoControlCacheService', () => {
     let sut: VideoControlCacheService;
+    let loggerSpy: jasmine.SpyObj<LoggerService>;
 
     beforeEach(() => {
-        sut = new VideoControlCacheService();
+        loggerSpy = jasmine.createSpyObj<LoggerService>('LoggerService', ['warn', 'info']);
+        sut = new VideoControlCacheService(loggerSpy);
 
         window.localStorage.clear();
     });
@@ -21,7 +24,7 @@ fdescribe('VideoControlCacheService', () => {
         const conferenceIdTwo = 'conference-id-two';
         var hearingStates: IHearingControlStates = {};
         hearingStates[conferenceIdOne] = {
-            participantState: {
+            participantStates: {
                 'participant-id': {
                     isSpotlighted: false
                 }
@@ -29,7 +32,7 @@ fdescribe('VideoControlCacheService', () => {
         };
 
         hearingStates[conferenceIdTwo] = {
-            participantState: {
+            participantStates: {
                 'participant-id': {
                     isSpotlighted: false
                 }
@@ -39,7 +42,7 @@ fdescribe('VideoControlCacheService', () => {
         window.localStorage.setItem(sut.localStorageKey, JSON.stringify(hearingStates));
 
         // Act
-        const service = new VideoControlCacheService();
+        const service = new VideoControlCacheService(loggerSpy);
 
         // Assert
         expect(service.hearingControlStates).toEqual(hearingStates);
@@ -52,7 +55,7 @@ fdescribe('VideoControlCacheService', () => {
 
             var hearingState: { [conferenceId: string]: IHearingControlsState } = {};
             hearingState[conferenceId] = {
-                participantState: {
+                participantStates: {
                     'participant-id': {
                         isSpotlighted: false
                     }
@@ -60,7 +63,7 @@ fdescribe('VideoControlCacheService', () => {
             };
 
             hearingState['not-conference-id'] = {
-                participantState: {
+                participantStates: {
                     'participant-id': {
                         isSpotlighted: false
                     }
@@ -83,7 +86,7 @@ fdescribe('VideoControlCacheService', () => {
 
             var hearingState: { [conferenceId: string]: IHearingControlsState } = {};
             hearingState['not-conference-id'] = {
-                participantState: {
+                participantStates: {
                     'participant-id': {
                         isSpotlighted: false
                     }
@@ -98,7 +101,7 @@ fdescribe('VideoControlCacheService', () => {
 
             // Act
             expect(result).toEqual({
-                participantState: {}
+                participantStates: {}
             } as IHearingControlsState);
         });
     });
@@ -111,9 +114,9 @@ fdescribe('VideoControlCacheService', () => {
 
             sut.hearingControlStates = {};
             sut.hearingControlStates[conferenceId] = {
-                participantState: {}
+                participantStates: {}
             };
-            sut.hearingControlStates[conferenceId].participantState[participantId] = {
+            sut.hearingControlStates[conferenceId].participantStates[participantId] = {
                 isSpotlighted: true
             };
 
@@ -131,9 +134,9 @@ fdescribe('VideoControlCacheService', () => {
 
             sut.hearingControlStates = {};
             sut.hearingControlStates[conferenceId] = {
-                participantState: {}
+                participantStates: {}
             };
-            sut.hearingControlStates[conferenceId].participantState[participantId] = {
+            sut.hearingControlStates[conferenceId].participantStates[participantId] = {
                 isSpotlighted: false
             };
 
@@ -151,9 +154,9 @@ fdescribe('VideoControlCacheService', () => {
 
             sut.hearingControlStates = {};
             sut.hearingControlStates[conferenceId] = {
-                participantState: {}
+                participantStates: {}
             };
-            sut.hearingControlStates[conferenceId].participantState['not-participant-id'] = {
+            sut.hearingControlStates[conferenceId].participantStates['not-participant-id'] = {
                 isSpotlighted: false
             };
 
@@ -171,9 +174,9 @@ fdescribe('VideoControlCacheService', () => {
 
             sut.hearingControlStates = {};
             sut.hearingControlStates[conferenceId] = {
-                participantState: {}
+                participantStates: {}
             };
-            sut.hearingControlStates[conferenceId].participantState['not-conference-id'] = {
+            sut.hearingControlStates[conferenceId].participantStates['not-conference-id'] = {
                 isSpotlighted: false
             };
 
@@ -194,9 +197,9 @@ fdescribe('VideoControlCacheService', () => {
             sut.setSpotlightStatus(conferenceId, participantId, true);
 
             // Assert
-            expect(sut.hearingControlStates[conferenceId].participantState[participantId].isSpotlighted).toBeTrue();
+            expect(sut.hearingControlStates[conferenceId].participantStates[participantId].isSpotlighted).toBeTrue();
             expect(
-                JSON.parse(window.localStorage.getItem(sut.localStorageKey))[conferenceId].participantState[participantId].isSpotlighted
+                JSON.parse(window.localStorage.getItem(sut.localStorageKey))[conferenceId].participantStates[participantId].isSpotlighted
             ).toBeTrue();
         });
 
@@ -209,9 +212,9 @@ fdescribe('VideoControlCacheService', () => {
             sut.setSpotlightStatus(conferenceId, participantId, false);
 
             // Assert
-            expect(sut.hearingControlStates[conferenceId].participantState[participantId].isSpotlighted).toBeFalse();
+            expect(sut.hearingControlStates[conferenceId].participantStates[participantId].isSpotlighted).toBeFalse();
             expect(
-                JSON.parse(window.localStorage.getItem(sut.localStorageKey))[conferenceId].participantState[participantId].isSpotlighted
+                JSON.parse(window.localStorage.getItem(sut.localStorageKey))[conferenceId].participantStates[participantId].isSpotlighted
             ).toBeFalse();
         });
 
@@ -222,9 +225,9 @@ fdescribe('VideoControlCacheService', () => {
 
             sut.hearingControlStates = {};
             sut.hearingControlStates[conferenceId] = {
-                participantState: {}
+                participantStates: {}
             };
-            sut.hearingControlStates[conferenceId].participantState[participantId] = {
+            sut.hearingControlStates[conferenceId].participantStates[participantId] = {
                 isSpotlighted: true
             };
 
@@ -232,9 +235,10 @@ fdescribe('VideoControlCacheService', () => {
             sut.setSpotlightStatus(conferenceId, participantId, false);
 
             // Assert
-            expect(sut.hearingControlStates[conferenceId].participantState[participantId].isSpotlighted).toBeFalse();
+            expect(sut.hearingControlStates[conferenceId].participantStates[participantId].isSpotlighted).toBeFalse();
+
             expect(
-                JSON.parse(window.localStorage.getItem(sut.localStorageKey))[conferenceId].participantState[participantId].isSpotlighted
+                JSON.parse(window.localStorage.getItem(sut.localStorageKey))[conferenceId].participantStates[participantId].isSpotlighted
             ).toBeFalse();
         });
     });

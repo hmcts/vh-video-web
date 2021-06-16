@@ -196,11 +196,11 @@ fdescribe('VideoControlService', () => {
             const expectedResult = [participantIdOne, participantIdTwo];
 
             const stateForConference: IHearingControlsState = {
-                participantState: {}
+                participantStates: {}
             };
-            stateForConference.participantState[participantIdOne] = { isSpotlighted: true };
-            stateForConference.participantState[participantIdTwo] = { isSpotlighted: true };
-            stateForConference.participantState[participantIdThree] = { isSpotlighted: false };
+            stateForConference.participantStates[participantIdOne] = { isSpotlighted: true };
+            stateForConference.participantStates[participantIdTwo] = { isSpotlighted: true };
+            stateForConference.participantStates[participantIdThree] = { isSpotlighted: false };
 
             videoControlCacheServiceSpy.getStateForConference.and.returnValue(stateForConference);
 
@@ -220,11 +220,11 @@ fdescribe('VideoControlService', () => {
             const participantIdThree = 'participant-id-3';
 
             const stateForConference: IHearingControlsState = {
-                participantState: {}
+                participantStates: {}
             };
-            stateForConference.participantState[participantIdOne] = { isSpotlighted: false };
-            stateForConference.participantState[participantIdTwo] = { isSpotlighted: false };
-            stateForConference.participantState[participantIdThree] = { isSpotlighted: false };
+            stateForConference.participantStates[participantIdOne] = { isSpotlighted: false };
+            stateForConference.participantStates[participantIdTwo] = { isSpotlighted: false };
+            stateForConference.participantStates[participantIdThree] = { isSpotlighted: false };
 
             videoControlCacheServiceSpy.getStateForConference.and.returnValue(stateForConference);
 
@@ -241,7 +241,7 @@ fdescribe('VideoControlService', () => {
             const conferenceId = 'conference-id';
 
             const stateForConference: IHearingControlsState = {
-                participantState: {}
+                participantStates: {}
             };
 
             videoControlCacheServiceSpy.getStateForConference.and.returnValue(stateForConference);

@@ -33,9 +33,9 @@ fdescribe('LoggerService', () => {
 
         const conferenceId = 'conference-id';
         const expectedProperties = {
-            message: message,
-            conferenceId: conferenceId
+            message: message
         };
+        expectedProperties[LoggerService.currentConferenceIdPropertyKey] = conferenceId;
 
         getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
 
@@ -56,9 +56,9 @@ fdescribe('LoggerService', () => {
 
         const conferenceId = 'conference-id';
         const expectedProperties = {
-            message: message,
-            conferenceId: conferenceId
+            message: message
         };
+        expectedProperties[LoggerService.currentConferenceIdPropertyKey] = conferenceId;
 
         getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
 
@@ -78,9 +78,9 @@ fdescribe('LoggerService', () => {
 
         const conferenceId = 'conference-id';
         const expectedProperties = {
-            message: message,
-            conferenceId: conferenceId
+            message: message
         };
+        expectedProperties[LoggerService.currentConferenceIdPropertyKey] = conferenceId;
 
         getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
 
@@ -100,9 +100,9 @@ fdescribe('LoggerService', () => {
 
         const conferenceId = 'conference-id';
         const expectedProperties = {
-            message: message,
-            conferenceId: conferenceId
+            message: message
         };
+        expectedProperties[LoggerService.currentConferenceIdPropertyKey] = conferenceId;
 
         getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
 
