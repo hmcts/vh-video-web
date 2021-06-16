@@ -46,17 +46,25 @@ describe('SelectHearingLayoutComponent', () => {
             component.currentButtonContentKey = buttonContentKeyWhenOpen;
             translateServiceSpy.instant
                 .withArgs(`select-hearing-layout.${component.currentButtonContentKey}`)
-                .and.returnValue(expectedTranslatedContentForButton);
+                .and.returnValue('initial content');
             component.ngOnInit();
+            translateServiceSpy.instant
+                .withArgs(`select-hearing-layout.${component.currentButtonContentKey}`)
+                .and.returnValue(expectedTranslatedContentForButton);
+            translateServiceSpy.onLangChange.emit({ lang: 'tl' } as LangChangeEvent);
             expect(component.accordionOpenAllElement.innerHTML).toContain(expectedTranslatedContentForButton);
         });
 
         it('should show translated text on open/close toggle button', () => {
             const expectedTranslatedContentForHeader = 'this is translated for the accordion header';
             translateServiceSpy.instant
+                .withArgs(`select-hearing-layout.${component.currentButtonContentKey}`)
+                .and.returnValue('initial content');
+            component.ngOnInit();
+            translateServiceSpy.instant
                 .withArgs('select-hearing-layout.choose-hearing-layout')
                 .and.returnValue(expectedTranslatedContentForHeader);
-            component.ngOnInit();
+            translateServiceSpy.onLangChange.emit({ lang: 'tl' } as LangChangeEvent);
             expect(headingButton.innerHTML).toContain(expectedTranslatedContentForHeader);
         });
     });
