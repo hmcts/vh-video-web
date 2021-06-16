@@ -40,25 +40,25 @@ describe('SelectHearingLayoutComponent', () => {
         expect(component.currentButtonContentKey).toBe(buttonContentKeyWhenOpen);
     });
 
-    it('should show translated text on open accordion button', () => {
-        const expectedTranslatedContentForButton = 'this is translated for open all button';
-        component.currentButtonContentKey = buttonContentKeyWhenOpen;
-        translateServiceSpy.instant
-            .withArgs(`select-hearing-layout.${component.currentButtonContentKey}`)
-            .and.returnValue(expectedTranslatedContentForButton);
-        component.ngOnInit();
-        onLangChangeSpy.emit({ lang: 'tl' } as LangChangeEvent);
-        expect(component.accordionOpenAllElement.innerHTML).toContain(expectedTranslatedContentForButton);
-    });
+    describe('onLangChange event', () => {
+        it('should show translated text on open accordion button', () => {
+            const expectedTranslatedContentForButton = 'this is translated for open all button';
+            component.currentButtonContentKey = buttonContentKeyWhenOpen;
+            translateServiceSpy.instant
+                .withArgs(`select-hearing-layout.${component.currentButtonContentKey}`)
+                .and.returnValue(expectedTranslatedContentForButton);
+            component.ngOnInit();
+            expect(component.accordionOpenAllElement.innerHTML).toContain(expectedTranslatedContentForButton);
+        });
 
-    it('should show translated text on open/close toggle button', () => {
-        const expectedTranslatedContentForHeader = 'this is translated for the accordion header';
-        translateServiceSpy.instant
-            .withArgs('select-hearing-layout.choose-hearing-layout')
-            .and.returnValue(expectedTranslatedContentForHeader);
-        component.ngOnInit();
-        onLangChangeSpy.emit({ lang: 'tl' } as LangChangeEvent);
-        expect(headingButton.innerHTML).toContain(expectedTranslatedContentForHeader);
+        it('should show translated text on open/close toggle button', () => {
+            const expectedTranslatedContentForHeader = 'this is translated for the accordion header';
+            translateServiceSpy.instant
+                .withArgs('select-hearing-layout.choose-hearing-layout')
+                .and.returnValue(expectedTranslatedContentForHeader);
+            component.ngOnInit();
+            expect(headingButton.innerHTML).toContain(expectedTranslatedContentForHeader);
+        });
     });
 
     it('should translate button text on text click', () => {
