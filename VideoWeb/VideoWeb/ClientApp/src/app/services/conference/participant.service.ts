@@ -41,18 +41,12 @@ export class ParticipantService {
 
     public get virtualMeetingRooms(): VirtualMeetingRoomModel[] {
         const vmrs: VirtualMeetingRoomModel[] = [];
-        console.log('vmrs', vmrs);
 
-        for (const participant of this.participants) {
+        for (const participant of this.participants.filter(x => x.virtualMeetingRoom)) {
             const existingVmr = vmrs.find(x => x.id === participant.virtualMeetingRoom?.id);
-            console.log('Existing vmr', existingVmr);
             if (existingVmr) {
-                console.log('add part vmr', existingVmr);
-
                 existingVmr.participants.push(participant);
             } else {
-                console.log('new vmr', participant);
-
                 vmrs.push(
                     new VirtualMeetingRoomModel(
                         participant.virtualMeetingRoom.id,
@@ -64,7 +58,6 @@ export class ParticipantService {
             }
         }
 
-        console.log('vmrs end', vmrs);
         return vmrs;
     }
 

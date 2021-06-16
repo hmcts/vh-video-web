@@ -316,7 +316,7 @@ fdescribe('ParticipantService', () => {
             spyOnProperty(sut, 'participants', 'get').and.returnValue(nonVmrParticipants.concat(vmrParticipants));
 
             // Act
-            const result = sut.endpointParticipants;
+            const result = sut.virtualMeetingRooms;
 
             // Assert
             expect(result.length).toEqual(expectedVmrs.length);
