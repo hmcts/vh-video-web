@@ -1,7 +1,7 @@
 import { NgxDatePipe } from './ngx-date.pipe';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 
-fdescribe('DatePipe', () => {
+describe('DatePipe', () => {
     const translateService = translateServiceSpy;
     const testDate = new Date('2021-06-16');
     const testFormat = 'TestFormat';
