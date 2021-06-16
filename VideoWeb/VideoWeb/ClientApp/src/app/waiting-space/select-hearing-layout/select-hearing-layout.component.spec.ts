@@ -1,11 +1,10 @@
-import { ConferenceResponse } from 'src/app/services/clients/api-client';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
-import { HearingLayout } from 'src/app/services/clients/api-client';
-import { SelectHearingLayoutComponent } from './select-hearing-layout.component';
-import { onLangChangeSpy, translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { fakeAsync, tick } from '@angular/core/testing';
 import { LangChangeEvent } from '@ngx-translate/core';
+import { ConferenceResponse, HearingLayout } from 'src/app/services/clients/api-client';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
+import { SelectHearingLayoutComponent } from './select-hearing-layout.component';
 
 describe('SelectHearingLayoutComponent', () => {
     let component: SelectHearingLayoutComponent;
