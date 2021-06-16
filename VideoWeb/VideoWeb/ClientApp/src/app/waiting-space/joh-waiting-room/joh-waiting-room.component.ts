@@ -19,7 +19,6 @@ import { NotificationToastrService } from '../services/notification-toastr.servi
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
-import { DatePatternOption } from 'src/app/services/models/date-patterns';
 
 @Component({
     selector: 'app-joh-waiting-room',
@@ -27,8 +26,6 @@ import { DatePatternOption } from 'src/app/services/models/date-patterns';
     styleUrls: ['../waiting-room-global-styles.scss', './joh-waiting-room.component.scss']
 })
 export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
-    public datePatternOption = DatePatternOption;
-    datePatternPipe: DatePatternOption;
     private readonly loggerPrefixJOH = '[JOH WR] -';
 
     constructor(
@@ -78,7 +75,6 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         this.logger.debug(`${this.loggerPrefixJOH} Loading JOH waiting room`);
         this.connected = false;
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
-        this.datePatternPipe = this.datePatternOption.Date;
         this.notificationSoundsService.initHearingAlertSound();
         this.getConference().then(() => {
             this.subscribeToClock();

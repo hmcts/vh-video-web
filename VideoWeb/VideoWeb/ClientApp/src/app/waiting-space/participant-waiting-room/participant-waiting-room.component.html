@@ -152,7 +152,7 @@
             <strong>{{ hearing.caseNumber }}</strong>
           </td>
           <td class="govuk-table__cell hearing-details-col2-width">
-            {{ hearing.scheduledStartTime | translateDate  : datePatternPipe  }}
+            {{ hearing.scheduledStartTime | translateDate  : 'dd MMMM yyyy'  }}
             <span class="govuk-!-font-weight-bold">
               {{ hearing.scheduledStartTime | date: 'HH:mm' }} {{ 'participant-waiting-room.to' | translate }}
               {{ hearing.scheduledEndTime | date: 'HH:mm' }}

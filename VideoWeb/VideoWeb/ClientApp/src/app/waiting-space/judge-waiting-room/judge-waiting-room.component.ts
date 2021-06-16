@@ -22,7 +22,6 @@ import { NotificationToastrService } from '../services/notification-toastr.servi
 import { RoomClosingToastrService } from '../services/room-closing-toast.service';
 import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
-import { DatePatternOption } from 'src/app/services/models/date-patterns';
 
 @Component({
     selector: 'app-judge-waiting-room',
@@ -30,8 +29,6 @@ import { DatePatternOption } from 'src/app/services/models/date-patterns';
     styleUrls: ['./judge-waiting-room.component.scss', '../waiting-room-global-styles.scss']
 })
 export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
-    public datePatternOption = DatePatternOption;
-    datePatternPipe: DatePatternOption;
     private readonly loggerPrefixJudge = '[Judge WR] -';
     audioRecordingInterval: NodeJS.Timer;
     isRecording: boolean;
@@ -97,7 +94,6 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.errorCount = 0;
         this.logger.debug(`${this.loggerPrefixJudge} Loading judge waiting room`);
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
-        this.datePatternPipe = this.datePatternOption.Date;
 
         this.userMediaService
             .setDefaultDevicesInCache()
