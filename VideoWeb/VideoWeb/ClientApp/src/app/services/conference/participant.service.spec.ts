@@ -16,8 +16,7 @@ import {
     VideoEndpointResponse
 } from '../clients/api-client';
 import { EventsService } from '../events.service';
-import { Logger } from '../logging/logger-base';
-import { EndpointStatusMessage } from '../models/EndpointStatusMessage';
+import { LoggerService } from '../logging/logger.service';
 import { ParticipantStatusMessage } from '../models/participant-status-message';
 import { ConferenceService } from './conference.service';
 import { InvalidNumberOfNonEndpointParticipantsError, ParticipantService } from './participant.service';
@@ -85,7 +84,7 @@ fdescribe('ParticipantService', () => {
     let eventsServiceSpy: jasmine.SpyObj<EventsService>;
     let participantStatusUpdateSubject: Subject<ParticipantStatusMessage>;
 
-    let loggerSpy: jasmine.SpyObj<Logger>;
+    let loggerSpy: jasmine.SpyObj<LoggerService>;
 
     let sut: ParticipantService;
 
@@ -114,7 +113,7 @@ fdescribe('ParticipantService', () => {
         participantStatusUpdateSubject = new Subject<ParticipantStatusMessage>();
         eventsServiceSpy.getParticipantStatusMessage.and.returnValue(participantStatusUpdateSubject.asObservable());
 
-        loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['error', 'warn']);
+        loggerSpy = jasmine.createSpyObj<LoggerService>('Logger', ['error', 'warn', 'info']);
 
         sut = new ParticipantService(apiClientSpy, conferenceServiceSpy, videoCallServiceSpy, eventsServiceSpy, loggerSpy);
 

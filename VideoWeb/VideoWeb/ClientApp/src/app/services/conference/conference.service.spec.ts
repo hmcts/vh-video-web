@@ -27,7 +27,7 @@ describe('ConferenceService', () => {
 
         apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['getConferenceById']);
 
-        loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['warn']);
+        loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['warn', 'info']);
 
         sut = new ConferenceService(activatedRouteSpy, apiClientSpy, loggerSpy);
     });
