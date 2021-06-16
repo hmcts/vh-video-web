@@ -10,8 +10,27 @@ describe('DatePipe', () => {
     });
 
     it('should return date format', () => {
-        const pipe = new NgxDatePipe(translateService);
-        expect(pipe.transform(today, 'dd MMM yyyy')).toBe('16 Jun 2021');
+describe('DatePipe', () => {
+    const translateService = translateServiceSpy;
+    const testDate = new Date('2021-06-16');
+    const testFormat = 'TestFormat';
+
+    let pipe: NgxDatePipe;
+    const expectedValue = 'expectedValue';
+
+    beforeEach(() => {
+        translateService.instant.calls.reset();
+        pipe = new NgxDatePipe(translateService);
+        spyOn(DatePipe.prototype, 'transform').and.returnValue('expectedValue');
+    });
+
+    it('should return correct value from DatePipe', () => {
+        const value = pipe.transform(testDate, testFormat);
+        expect(DatePipe.prototype.transform).toHaveBeenCalledWith(testDate, testFormat);
+        expect(DatePipe.prototype.transform).toHaveBeenCalledTimes(1);
+        expect(value).toBe(expectedValue);
+    });
+});
     });
 
     it('should return fullDate format', () => {
