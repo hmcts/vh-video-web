@@ -1,5 +1,6 @@
 import { NgxDatePipe } from './ngx-date.pipe';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { DatePipe } from '@angular/common';
 
 describe('DatePipe', () => {
     const translateService = translateServiceSpy;
@@ -12,13 +13,13 @@ describe('DatePipe', () => {
     beforeEach(() => {
         translateService.instant.calls.reset();
         pipe = new NgxDatePipe(translateService);
-        spyOn(NgxDatePipe.prototype, 'transform').and.returnValue('expectedValue');
+        spyOn(DatePipe.prototype, 'transform').and.returnValue('expectedValue');
     });
 
     it('should return correct value from DatePipe', () => {
         const value = pipe.transform(testDate, testFormat);
-        expect(NgxDatePipe.prototype.transform).toHaveBeenCalledWith(testDate, testFormat);
-        expect(NgxDatePipe.prototype.transform).toHaveBeenCalledTimes(1);
+        expect(DatePipe.prototype.transform).toHaveBeenCalledWith(testDate, testFormat);
+        expect(DatePipe.prototype.transform).toHaveBeenCalledTimes(1);
         expect(value).toBe(expectedValue);
     });
 });
