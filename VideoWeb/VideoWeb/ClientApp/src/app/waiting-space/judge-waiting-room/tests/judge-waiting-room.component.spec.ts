@@ -393,7 +393,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     fit('should NOT start hearing when confirmation answered no', fakeAsync(() => {
         // Arrange
         component.displayConfirmStartHearingPopup = true;
-        const restoreSpotlightedParticipantsSpy = spyOn(component, 'restoreSpotlightedParticipants');
+        spyOn(component, 'restoreSpotlightedParticipants');
         videoCallService.startHearing.calls.reset();
         videoCallService.startHearing.and.resolveTo();
 
@@ -410,7 +410,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     fit('should start hearing when confirmation answered yes', fakeAsync(() => {
         // Arrange
         component.displayConfirmStartHearingPopup = true;
-        const restoreSpotlightedParticipantsSpy = spyOn(component, 'restoreSpotlightedParticipants');
+        spyOn(component, 'restoreSpotlightedParticipants');
         videoCallService.startHearing.calls.reset();
         videoCallService.startHearing.and.resolveTo();
 
@@ -434,6 +434,48 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(videoCallService.startHearing).toHaveBeenCalledOnceWith(hearingId, hearingLayout);
         expect(component.restoreSpotlightedParticipants).toHaveBeenCalledTimes(1);
     }));
+
+    fdescribe('restoreSpotlightedParticipants', () => {
+        it('should iterate all spotlighted participants and call the video control service.', () => {
+            // Arrange
+            const participantIdOne = Guid.create().toString();
+            const participantIdTwo = Guid.create().toString();
+            const participantIdThree = Guid.create().toString();
+            const participants = [participantIdOne, participantIdTwo, participantIdThree];
+
+            const conferenceId = Guid.create().toString();
+            component.conference.id = conferenceId;
+            spyOnProperty(component, 'conferenceId', 'get').and.returnValue(conferenceId);
+
+            videoControlServiceSpy.getSpotlightedParticipants.and.returnValue(participants);
+
+            // Act
+            component.restoreSpotlightedParticipants();
+
+            // Assert
+            expect(videoControlServiceSpy.getSpotlightedParticipants).toHaveBeenCalledOnceWith(conferenceId);
+            expect(videoControlServiceSpy.setSpotlightStatus).toHaveBeenCalledTimes(participants.length);
+            participants.forEach(x => expect(videoControlServiceSpy.setSpotlightStatus).toHaveBeenCalledWith(conferenceId, x, true));
+        });
+
+        it('should handle no participants spotlighted.', () => {
+            // Arrange
+            const participants = [];
+
+            const conferenceId = Guid.create().toString();
+            component.conference.id = conferenceId;
+            spyOnProperty(component, 'conferenceId', 'get').and.returnValue(conferenceId);
+
+            videoControlServiceSpy.getSpotlightedParticipants.and.returnValue(participants);
+
+            // Act
+            component.restoreSpotlightedParticipants();
+
+            // Assert
+            expect(videoControlServiceSpy.getSpotlightedParticipants).toHaveBeenCalledOnceWith(conferenceId);
+            expect(videoControlServiceSpy.setSpotlightStatus).not.toHaveBeenCalled();
+        });
+    });
 
     it('should not enable IM when hearing has not been initalised', () => {
         component.hearing = null;

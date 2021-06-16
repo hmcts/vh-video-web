@@ -29,7 +29,7 @@ export class VideoControlService {
         conferenceId: string,
         participantId: string,
         spotlightStatus: boolean,
-        responseTimeoutInMS: number = 15000
+        responseTimeoutInMS: number = 0
     ): Observable<ParticipantUpdated> {
         this.logger.info(
             `${this.loggerPrefix} Attempting to set spotlight status of participant in conference: ${participantId} in ${conferenceId}.`,
