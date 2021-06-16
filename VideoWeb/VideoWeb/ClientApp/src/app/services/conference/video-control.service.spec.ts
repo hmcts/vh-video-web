@@ -1,13 +1,8 @@
 import { fakeAsync, flush, tick } from '@angular/core/testing';
-import { Observable, of, Subject } from 'rxjs';
-import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { Participant } from 'src/app/shared/models/participant';
-import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
+import { of, Subject } from 'rxjs';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
-import { ConferenceResponse, ParticipantForUserResponse, ParticipantStatus, Role } from '../clients/api-client';
-import { Logger } from '../logging/logger-base';
-import { ConferenceService } from './conference.service';
+import { LoggerService } from '../logging/logger.service';
 import { ParticipantService } from './participant.service';
 import { IHearingControlsState, VideoControlCacheService } from './video-control-cache.service';
 import { VideoControlService } from './video-control.service';
@@ -17,7 +12,7 @@ fdescribe('VideoControlService', () => {
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
 
     let videoControlCacheServiceSpy: jasmine.SpyObj<VideoControlCacheService>;
-    let loggerSpy: jasmine.SpyObj<Logger>;
+    let loggerSpy: jasmine.SpyObj<LoggerService>;
 
     let sut: VideoControlService;
 
@@ -32,7 +27,7 @@ fdescribe('VideoControlService', () => {
             'getStateForConference'
         ]);
 
-        loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['error', 'info']);
+        loggerSpy = jasmine.createSpyObj<LoggerService>('Logger', ['error', 'info']);
 
         sut = new VideoControlService(participantServiceSpy, videoCallServiceSpy, videoControlCacheServiceSpy, loggerSpy);
     });
