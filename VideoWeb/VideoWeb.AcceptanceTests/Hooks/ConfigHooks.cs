@@ -41,8 +41,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             RegisterTestUserSecrets(context);
             RegisterDefaultData(context);
             RegisterIsLive(context);
-            // Switch this ON when EJud is reinstated
-            // RegisterUsingEjud(context);
+            RegisterUsingEjud(context);
             RegisterHearingServices(context);
             RegisterWowzaSettings(context);
             RegisterSauceLabsSettings(context);
