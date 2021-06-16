@@ -17,11 +17,11 @@ export class ConferenceService {
                 filter(x => x instanceof NavigationEnd),
                 map(() => activatedRoute.snapshot),
                 map(route => {
-                    while (route && !route.paramMap.has('conferenceId')) {
+                    while (route && !route.paramMap?.has('conferenceId')) {
                         route = route.firstChild;
                     }
 
-                    return route.paramMap;
+                    return route?.paramMap;
                 })
             )
             .subscribe(paramMap => {
@@ -51,15 +51,14 @@ export class ConferenceService {
     }
 
     private onRouteParamsChanged(params: ParamMap): void {
-        this._currentConferenceId = params.get('conferenceId');
-        this._currentConference = null;
+        this._currentConferenceId = params?.get('conferenceId');
 
         console.log(`${this.loggerPrefix} New route - Conference ID: ${this._currentConferenceId}`, {
             routeParams: params
         });
 
         if (!this._currentConferenceId) {
-            console.warn(`${this.loggerPrefix} Could not get conference id from the route parameters: ${params.get('conferenceId')}`, {
+            console.warn(`${this.loggerPrefix} Could not get conference id from the route parameters: ${params?.get('conferenceId')}`, {
                 routeParams: params,
                 route: this.activatedRoute
             });
