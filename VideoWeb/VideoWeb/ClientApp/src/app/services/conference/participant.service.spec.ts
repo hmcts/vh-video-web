@@ -429,13 +429,12 @@ fdescribe('ParticipantService', () => {
     describe('getPexipIdForParticipant', () => {
         it('should return the pexip id for the given participant id', () => {
             // Arrange
-            const participantId = 'participant-id';
             const pexipId = 'pexip-id';
+            const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
+            const participantId = participant.id;
+            participant.pexipId = pexipId;
 
-            const participantIdToPexipIdMap = {};
-            participantIdToPexipIdMap[participantId] = pexipId;
-
-            spyOnProperty(sut, 'participantIdToPexipIdMap', 'get').and.returnValue(participantIdToPexipIdMap);
+            spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
 
             // Act
             const result = sut.getPexipIdForParticipant(participantId);
@@ -446,13 +445,13 @@ fdescribe('ParticipantService', () => {
 
         it('should return the pexip id for the given participant id when participant id is a guid', () => {
             // Arrange
-            const participantId = Guid.create();
             const pexipId = 'pexip-id';
+            const participantId = Guid.create();
+            const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
+            participant.id = participantId.toString();
+            participant.pexipId = pexipId;
 
-            const participantIdToPexipIdMap = {};
-            participantIdToPexipIdMap[participantId.toString()] = pexipId;
-
-            spyOnProperty(sut, 'participantIdToPexipIdMap', 'get').and.returnValue(participantIdToPexipIdMap);
+            spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
 
             // Act
             const result = sut.getPexipIdForParticipant(participantId);
@@ -461,34 +460,46 @@ fdescribe('ParticipantService', () => {
             expect(result).toEqual(pexipId);
         });
 
-        it('should an empty guid if the participant does not exist', () => {
-            // Arrange
-
-            const participantIdToPexipIdMap = {};
-
-            spyOnProperty(sut, 'participantIdToPexipIdMap', 'get').and.returnValue(participantIdToPexipIdMap);
-
+        it('should return null the participant does not exist', () => {
             // Act
             const result = sut.getPexipIdForParticipant('participant-id');
 
             // Assert
-            expect(result).toBe(Guid.EMPTY);
+            expect(result).toBe(null);
         });
 
-        it('should an empty guid if the pexip id is null', () => {
+        it('should return null if the pexip id is null', () => {
             // Arrange
+            const pexipId = 'pexip-id';
             const participantId = Guid.create();
+            const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
+            participant.id = participantId.toString();
+            participant.pexipId = null;
 
-            const participantIdToPexipIdMap = {};
-            participantIdToPexipIdMap[participantId.toString()] = null;
-
-            spyOnProperty(sut, 'participantIdToPexipIdMap', 'get').and.returnValue(participantIdToPexipIdMap);
+            spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
 
             // Act
             const result = sut.getPexipIdForParticipant(participantId);
 
             // Assert
-            expect(result).toBe(Guid.EMPTY);
+            expect(result).toBe(null);
+        });
+
+        it('should return null if the pexip id is undefined', () => {
+            // Arrange
+            const pexipId = 'pexip-id';
+            const participantId = Guid.create();
+            const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
+            participant.id = participantId.toString();
+            participant.pexipId = undefined;
+
+            spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
+
+            // Act
+            const result = sut.getPexipIdForParticipant(participantId);
+
+            // Assert
+            expect(result).toBe(null);
         });
     });
 
@@ -496,24 +507,21 @@ fdescribe('ParticipantService', () => {
         describe('maintains pexip id map', () => {
             it('should set the pexip ID when the event is raised', () => {
                 // Arrange
-                const pexipId = 'pexip-id';
+                const newPexipId = 'new-pexip-id';
                 const participantId = participantOne.id;
                 const pexipName = `pexip-name-${participantId}`;
                 const participantUpdated = ({
                     pexipDisplayName: pexipName,
-                    uuid: pexipId
+                    uuid: newPexipId
                 } as unknown) as ParticipantUpdated;
 
-                const expectedValue: { [participantId: string]: string } = {};
-                expectedValue[participantId] = pexipId;
-
-                spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne, participantTwo]);
+                spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne]);
 
                 // Act
                 sut.handlePexipParticipantUpdate(participantUpdated);
 
                 // Assert
-                expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
+                expect(sut.participants[0].pexipId).toEqual(newPexipId);
             });
 
             it('should set a second pexip ID when the event is raised again', () => {
@@ -535,10 +543,6 @@ fdescribe('ParticipantService', () => {
                     uuid: pexipIdTwo
                 } as unknown) as ParticipantUpdated;
 
-                const expectedValue: { [participantId: string]: string } = {};
-                expectedValue[participantOneId] = pexipIdOne;
-                expectedValue[participantTwoId] = pexipIdTwo;
-
                 spyOnProperty(sut, 'participants', 'get').and.returnValue(asParticipantModels([participantOne, participantTwo]));
 
                 // Act
@@ -546,7 +550,8 @@ fdescribe('ParticipantService', () => {
                 sut.handlePexipParticipantUpdate(participantUpdatedTwo);
 
                 // Assert
-                expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
+                expect(sut.participants[0].pexipId).toEqual(pexipIdOne);
+                expect(sut.participants[1].pexipId).toEqual(pexipIdTwo);
             });
 
             it('should update an existing ID when the event is raised again', () => {
@@ -574,10 +579,6 @@ fdescribe('ParticipantService', () => {
                     uuid: pexipIdThree
                 } as unknown) as ParticipantUpdated;
 
-                const expectedValue: { [participantId: string]: string } = {};
-                expectedValue[participantOneId] = pexipIdThree;
-                expectedValue[participantTwoId] = pexipIdTwo;
-
                 spyOnProperty(sut, 'participants', 'get').and.returnValue(asParticipantModels([participantOne, participantTwo]));
 
                 // Act
@@ -586,7 +587,8 @@ fdescribe('ParticipantService', () => {
                 sut.handlePexipParticipantUpdate(participantUpdatedThree);
 
                 // Assert
-                expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
+                expect(sut.participants[0].pexipId).toEqual(pexipIdThree);
+                expect(sut.participants[1].pexipId).toEqual(pexipIdTwo);
             });
 
             it('should NOT set an ID if the participant cannot be found', () => {
@@ -607,7 +609,8 @@ fdescribe('ParticipantService', () => {
                 sut.handlePexipParticipantUpdate(participantUpdated);
 
                 // Assert
-                expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
+                expect(sut.participants[0].pexipId).toEqual(null);
+                expect(sut.participants[1].pexipId).toEqual(null);
             });
 
             it('should update the pexip id map for VMR participants', () => {
@@ -618,10 +621,6 @@ fdescribe('ParticipantService', () => {
                     pexipDisplayName: pexipName,
                     uuid: pexipId
                 } as unknown) as ParticipantUpdated;
-
-                const expectedValue: { [participantId: string]: string } = {};
-                expectedValue[vmrParticipantOneId] = pexipId;
-                expectedValue[vmrParticipantTwoId] = pexipId;
 
                 const participants = asParticipantModels([participantOne, participantTwo, vmrParticipantOne, vmrParticipantTwo]);
                 participants[2].virtualMeetingRoom = VirtualMeetingRoomModel.fromRoomSummaryResponse(
@@ -637,7 +636,8 @@ fdescribe('ParticipantService', () => {
                 sut.handlePexipParticipantUpdate(participantUpdated);
 
                 // Assert
-                expect(sut.participantIdToPexipIdMap).toEqual(expectedValue);
+                expect(sut.participants[2].pexipId).toEqual(pexipId);
+                expect(sut.participants[3].pexipId).toEqual(pexipId);
             });
         });
 

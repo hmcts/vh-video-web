@@ -57,7 +57,7 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
         public linkedParticipants: LinkedParticipantResponse[],
         public status: ParticipantStatus = ParticipantStatus.None,
         public currentRoom: RoomSummaryResponse = null,
-        public pexipId: string = Guid.EMPTY,
+        public pexipId: string = null,
         public isSpotlighted: boolean = false,
         public isRemoteMuted: boolean = false,
         public isHandRaised: boolean = false

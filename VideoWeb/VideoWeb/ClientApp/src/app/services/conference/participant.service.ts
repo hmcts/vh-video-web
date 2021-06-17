@@ -43,11 +43,6 @@ export class ParticipantService {
         return this._virtualMeetingRooms;
     }
 
-    private _participantIdToPexipIdMap: { [participantId: string]: string } = {};
-    public get participantIdToPexipIdMap() {
-        return this._participantIdToPexipIdMap;
-    }
-
     private participantStatusChangedSubject: Subject<ParticipantModel> = new Subject<ParticipantModel>();
     get onParticipantStatusChanged$(): Observable<ParticipantModel> {
         return this.participantStatusChangedSubject.asObservable();
@@ -103,8 +98,7 @@ export class ParticipantService {
     }
 
     getPexipIdForParticipant(participantId: Guid | string): string {
-        const pexipId = this.participantIdToPexipIdMap[participantId.toString()];
-        return pexipId ? pexipId : Guid.EMPTY;
+        return this.participants.find(p => p.id === participantId.toString())?.pexipId ?? null;
     }
 
     handlePexipParticipantUpdate(updatedParticipant: ParticipantUpdated): void {
@@ -115,7 +109,13 @@ export class ParticipantService {
         const participantsToUpdate = this.getParticipantOrVmrParticipantsFromPexipId(updatedParticipant.pexipDisplayName);
 
         for (const participant of participantsToUpdate) {
-            this.setPexipIdForParticipant(updatedParticipant.uuid, participant.id);
+            console.log(`${this.loggingPrefix} updating participants pexip ID`, {
+                participantId: participant.id,
+                oldValue: participant.pexipId,
+                newValue: updatedParticipant.uuid
+            });
+
+            participant.pexipId = updatedParticipant.uuid;
 
             if (participant.isSpotlighted != updatedParticipant.isSpotlighted) {
                 this.logger.info(`${this.loggingPrefix} updating participants spotlight status`, {
@@ -180,16 +180,6 @@ export class ParticipantService {
             participant.status = participantStatusMessage.status;
             this.participantStatusChangedSubject.next(participant);
         }
-    }
-
-    private setPexipIdForParticipant(pexipId: string, participantId: string | Guid) {
-        this.logger.info(`${this.loggingPrefix} updating participants pexip ID`, {
-            participantId: participantId,
-            oldValue: this._participantIdToPexipIdMap[participantId.toString()],
-            newValue: pexipId
-        });
-
-        this._participantIdToPexipIdMap[participantId.toString()] = pexipId;
     }
 
     private getParticipantOrVmrParticipantsFromPexipId(pexipDisplayName: string): ParticipantModel[] {
