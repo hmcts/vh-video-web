@@ -45,7 +45,7 @@ export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        this.translateService?.onLangChange.unsubscribe();
+        this.translateService.onLangChange.unsubscribe();
     }
 
     setAccordionText(event: MouseEvent) {
