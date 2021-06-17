@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, ParamMap, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import { Observable, ReplaySubject } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, take } from 'rxjs/operators';
 import { ApiClient, ConferenceResponse } from '../clients/api-client';
 
 @Injectable({
@@ -18,7 +18,7 @@ export class ConferenceService {
                 map(() => activatedRoute.snapshot),
                 map(route => {
                     while (route && !route.paramMap?.has('conferenceId')) {
-                        route = route.firstChild;
+                        route = route?.firstChild;
                     }
 
                     return route?.paramMap;
@@ -66,14 +66,16 @@ export class ConferenceService {
         }
 
         console.log(`${this.loggerPrefix} attempting to get conference details.`);
-        this.getConferenceById(this.currentConferenceId).subscribe(conference => {
-            console.log(`${this.loggerPrefix} conference details retrieved.`, {
-                oldDetails: this.currentConference,
-                newDetails: conference
-            });
+        this.getConferenceById(this.currentConferenceId)
+            .pipe(take(1))
+            .subscribe(conference => {
+                console.log(`${this.loggerPrefix} conference details retrieved.`, {
+                    oldDetails: this.currentConference,
+                    newDetails: conference
+                });
 
-            this._currentConference = conference;
-            this.currentConferenceSubject.next(conference);
-        });
+                this._currentConference = conference;
+                this.currentConferenceSubject.next(conference);
+            });
     }
 }
