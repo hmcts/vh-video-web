@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -80,7 +80,7 @@ import { NgxDatePipe } from './pipes/ngx-date.pipe';
         MultilinePipe,
         NgxDatePipe
     ],
-    providers: [WindowScrolling, ScreenHelper, TestLanguageService],
+    providers: [WindowScrolling, ScreenHelper, TestLanguageService, DatePipe],
     exports: [
         HeaderComponent,
         FooterComponent,

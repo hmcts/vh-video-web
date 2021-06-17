@@ -1,24 +1,34 @@
 import { NgxDatePipe } from './ngx-date.pipe';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { DatePipe } from '@angular/common';
+import { TranslateService } from '@ngx-translate/core';
 
 describe('DatePipe', () => {
-    const translateService = translateServiceSpy;
+    let pipe: NgxDatePipe;
+    let translateServiceSpy: jasmine.SpyObj<TranslateService>;
+    let datePipeSpy: jasmine.SpyObj<DatePipe>;
+
     const testDate = new Date('2021-06-16');
     const testFormat = 'TestFormat';
-
-    let pipe: NgxDatePipe;
+    const testLocale = 'TestLocale';
     const expectedValue = 'expectedValue';
 
     beforeEach(() => {
-        translateService.instant.calls.reset();
-        pipe = new NgxDatePipe(translateService);
-        spyOn(NgxDatePipe.prototype, 'transform').and.returnValue('expectedValue');
+        translateServiceSpy = jasmine.createSpyObj('TranslateService', ['instant'], { currentLang: testLocale });
+        datePipeSpy = jasmine.createSpyObj('DatePipe', ['transform']);
+
+        datePipeSpy.transform.and.returnValue(expectedValue);
+
+        pipe = new NgxDatePipe(translateServiceSpy, datePipeSpy);
+    });
+
+    it('should be created', () => {
+        expect(pipe).toBeTruthy();
     });
 
     it('should return correct value from DatePipe', () => {
         const value = pipe.transform(testDate, testFormat);
-        expect(NgxDatePipe.prototype.transform).toHaveBeenCalledWith(testDate, testFormat);
-        expect(NgxDatePipe.prototype.transform).toHaveBeenCalledTimes(1);
+        expect(datePipeSpy.transform).toHaveBeenCalledWith(testDate, testFormat, null, testLocale);
+        expect(datePipeSpy.transform).toHaveBeenCalledTimes(1);
         expect(value).toBe(expectedValue);
     });
 });
