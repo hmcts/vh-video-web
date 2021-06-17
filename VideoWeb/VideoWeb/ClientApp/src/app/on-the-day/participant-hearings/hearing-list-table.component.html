@@ -10,7 +10,7 @@
     <tr *ngFor="let conference of conferences" id="judges-list-{{ conference.id }}" class="govuk-table__row">
       <td class="govuk-table__cell">
         <p id="participant-scheduled-date-{{ conference.id }}" class="govuk-!-margin-0 govuk-!-padding-0">
-          {{ conference.scheduled_date_time | date: 'dd MMM yyyy' }}
+          {{ conference.scheduled_date_time | translateDate: 'dd MMM yyyy' }}
         </p>
         <p id="participant-scheduled-time-{{ conference.id }}" class="govuk-!-margin-0 govuk-!-padding-0">
           {{ conference.scheduled_date_time | date: 'HH:mm' }}
