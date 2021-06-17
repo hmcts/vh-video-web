@@ -39,35 +39,6 @@ describe('SelectHearingLayoutComponent', () => {
         expect(component.currentButtonContentKey).toBe(buttonContentKeyWhenOpen);
     });
 
-    describe('onLangChange event', () => {
-        it('should show translated text on open accordion button', () => {
-            const expectedTranslatedContentForButton = 'this is translated for open all button';
-            component.currentButtonContentKey = buttonContentKeyWhenOpen;
-            translateServiceSpy.instant
-                .withArgs(`select-hearing-layout.${component.currentButtonContentKey}`)
-                .and.returnValue('initial content');
-            component.ngOnInit();
-            translateServiceSpy.instant
-                .withArgs(`select-hearing-layout.${component.currentButtonContentKey}`)
-                .and.returnValue(expectedTranslatedContentForButton);
-            translateServiceSpy.onLangChange.emit({ lang: 'tl' } as LangChangeEvent);
-            expect(component.accordionOpenAllElement.innerHTML).toContain(expectedTranslatedContentForButton);
-        });
-
-        it('should show translated text on open/close toggle button', () => {
-            const expectedTranslatedContentForHeader = 'this is translated for the accordion header';
-            translateServiceSpy.instant
-                .withArgs(`select-hearing-layout.${component.currentButtonContentKey}`)
-                .and.returnValue('initial content');
-            component.ngOnInit();
-            translateServiceSpy.instant
-                .withArgs('select-hearing-layout.choose-hearing-layout')
-                .and.returnValue(expectedTranslatedContentForHeader);
-            translateServiceSpy.onLangChange.emit({ lang: 'tl' } as LangChangeEvent);
-            expect(headingButton.innerHTML).toContain(expectedTranslatedContentForHeader);
-        });
-    });
-
     it('should translate button text on text click', () => {
         component.ngOnInit();
         textButton.innerHTML = 'Close all';
@@ -179,5 +150,39 @@ describe('SelectHearingLayoutComponent', () => {
         expect(component.recommendDynamic).toBeFalsy();
         expect(component.recommend1Plus7).toBeTruthy();
         expect(component.recommend2Plus21).toBeFalsy();
+    });
+
+    describe('onLangChange event', () => {
+        it('should show translated text on open accordion button', () => {
+            const expectedTranslatedContentForButton = 'this is translated for open all button';
+            component.currentButtonContentKey = buttonContentKeyWhenOpen;
+            translateServiceSpy.instant
+                .withArgs(`select-hearing-layout.${component.currentButtonContentKey}`)
+                .and.returnValue('initial content');
+            component.ngOnInit();
+            translateServiceSpy.instant
+                .withArgs(`select-hearing-layout.${component.currentButtonContentKey}`)
+                .and.returnValue(expectedTranslatedContentForButton);
+            translateServiceSpy.onLangChange.emit({ lang: 'tl' } as LangChangeEvent);
+            expect(component.accordionOpenAllElement.innerHTML).toContain(expectedTranslatedContentForButton);
+        });
+
+        it('should show translated text on open/close toggle button', () => {
+            const expectedTranslatedContentForHeader = 'this is translated for the accordion header';
+            translateServiceSpy.instant
+                .withArgs(`select-hearing-layout.${component.currentButtonContentKey}`)
+                .and.returnValue('initial content');
+            component.ngOnInit();
+            translateServiceSpy.instant
+                .withArgs('select-hearing-layout.choose-hearing-layout')
+                .and.returnValue(expectedTranslatedContentForHeader);
+            translateServiceSpy.onLangChange.emit({ lang: 'tl' } as LangChangeEvent);
+            expect(headingButton.innerHTML).toContain(expectedTranslatedContentForHeader);
+        });
+
+        it('should unsubscribe from onLangChange', () => {
+            component.ngOnDestroy();
+            expect(translateServiceSpy.onLangChange.closed).toBeTruthy();
+        });
     });
 });

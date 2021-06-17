@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ConferenceResponse, HearingLayout } from 'src/app/services/clients/api-client';
 import { VideoCallService } from '../services/video-call.service';
@@ -7,7 +7,7 @@ import { VideoCallService } from '../services/video-call.service';
     selector: 'app-select-hearing-layout',
     templateUrl: './select-hearing-layout.component.html'
 })
-export class SelectHearingLayoutComponent implements OnInit {
+export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
     availableLayouts = HearingLayout;
     selectedLayout: HearingLayout;
     accordionOpenAllElement: HTMLButtonElement;
@@ -44,6 +44,10 @@ export class SelectHearingLayoutComponent implements OnInit {
         });
     }
 
+    ngOnDestroy(): void {
+        this.translateService?.onLangChange.unsubscribe();
+    }
+
     setAccordionText(event: MouseEvent) {
         const element = event.target as HTMLButtonElement;
         if (element?.id === 'accordion-choose-layout-heading') {
@@ -54,7 +58,8 @@ export class SelectHearingLayoutComponent implements OnInit {
         if (!text.startsWith('<')) {
             const originalText = text.split('<')[0];
             this.currentButtonContentKey = originalText.toLowerCase().split(' ').join('-').trim();
-            const translated = `<span>${this.translateService.instant(`select-hearing-layout.${this.currentButtonContentKey}`)}</span>`;
+            const translatedText = this.translateService.instant(`select-hearing-layout.${this.currentButtonContentKey}`);
+            const translated = `<span>${translatedText}</span>`;
             this.accordionOpenAllElement.innerHTML = this.accordionOpenAllElement.innerHTML.replace(originalText, translated);
         }
     }
