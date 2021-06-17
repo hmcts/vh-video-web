@@ -9,6 +9,7 @@ import {
     RoomSummaryResponse,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
+import { VirtualMeetingRoomModel } from 'src/app/services/conference/models/virtual-meeting-room.model';
 import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
@@ -35,7 +36,8 @@ export interface IParticipantDetails {
     hearingRole: HearingRole;
     status: ParticipantStatus;
     isEndPoint: boolean;
-    virtualMeetingRoom: RoomSummaryResponse;
+    virtualMeetingRoom: VirtualMeetingRoomModel;
+    virtualMeetingRoomSummary: RoomSummaryResponse;
     linkedParticipants: LinkedParticipantResponse[];
 }
 
@@ -51,7 +53,7 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
         public role: Role,
         public hearingRole: HearingRole,
         public isEndPoint: boolean,
-        public virtualMeetingRoom: RoomSummaryResponse,
+        virtualMeetingRoom: RoomSummaryResponse | VirtualMeetingRoomModel | null,
         public linkedParticipants: LinkedParticipantResponse[],
         public status: ParticipantStatus = ParticipantStatus.None,
         public currentRoom: RoomSummaryResponse = null,
@@ -59,7 +61,16 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
         public isSpotlighted: boolean = false,
         public isRemoteMuted: boolean = false,
         public isHandRaised: boolean = false
-    ) {}
+    ) {
+        if (virtualMeetingRoom instanceof RoomSummaryResponse) {
+            this.virtualMeetingRoomSummary = virtualMeetingRoom;
+        } else if (virtualMeetingRoom instanceof VirtualMeetingRoomModel) {
+            this.virtualMeetingRoom = virtualMeetingRoom;
+        }
+    }
+
+    public virtualMeetingRoomSummary: RoomSummaryResponse = null;
+    public virtualMeetingRoom: VirtualMeetingRoomModel = null;
 
     private static fromAParticipantResponseType(participant: ParticipantResponse | ParticipantForUserResponse | ParticipantResponseVho) {
         return new ParticipantModel(

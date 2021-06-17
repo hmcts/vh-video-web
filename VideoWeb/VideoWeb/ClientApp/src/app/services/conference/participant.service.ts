@@ -38,26 +38,9 @@ export class ParticipantService {
         return this.participants.filter(x => x.isEndPoint);
     }
 
+    private _virtualMeetingRooms: VirtualMeetingRoomModel[];
     public get virtualMeetingRooms(): VirtualMeetingRoomModel[] {
-        const vmrs: VirtualMeetingRoomModel[] = [];
-
-        for (const participant of this.participants.filter(x => x.virtualMeetingRoom)) {
-            const existingVmr = vmrs.find(x => x.id === participant.virtualMeetingRoom?.id);
-            if (existingVmr) {
-                existingVmr.participants.push(participant);
-            } else {
-                vmrs.push(
-                    new VirtualMeetingRoomModel(
-                        participant.virtualMeetingRoom.id,
-                        participant.virtualMeetingRoom.label,
-                        participant.virtualMeetingRoom.locked,
-                        [participant]
-                    )
-                );
-            }
-        }
-
-        return vmrs;
+        return this._virtualMeetingRooms;
     }
 
     private _participantIdToPexipIdMap: { [participantId: string]: string } = {};
@@ -245,6 +228,7 @@ export class ParticipantService {
             });
 
             this._participants = [];
+            this._virtualMeetingRooms = [];
             this.logger.info(`${this.loggingPrefix} fetching new participant list`);
             combineLatest([this.getParticipantsForConference(conference.id), this.getEndpointsForConference(conference.id)])
                 .pipe(
@@ -258,12 +242,40 @@ export class ParticipantService {
                     });
 
                     this._participants = participants;
+                    this.populateVirtualMeetingRooms();
                 });
 
             this.subscribeToConferenceEvents(conference);
         });
 
         this.videoCallService.onParticipantUpdated().subscribe(updatedParticipant => this.handlePexipParticipantUpdate(updatedParticipant));
+    }
+
+    private populateVirtualMeetingRooms() {
+        const oldValue = [...this.virtualMeetingRooms];
+        for (const participant of this.participants.filter(x => x.virtualMeetingRoomSummary)) {
+            const existingVmr = this._virtualMeetingRooms.find(x => x.id === participant.virtualMeetingRoomSummary?.id);
+            if (existingVmr) {
+                existingVmr.participants.push(participant);
+                participant.virtualMeetingRoom = existingVmr;
+            } else {
+                const vmr = new VirtualMeetingRoomModel(
+                    participant.virtualMeetingRoomSummary.id,
+                    participant.virtualMeetingRoomSummary.label,
+                    participant.virtualMeetingRoomSummary.locked,
+                    [participant]
+                );
+
+                this._virtualMeetingRooms.push(vmr);
+
+                participant.virtualMeetingRoom = vmr;
+            }
+
+            this.logger.info(`${this.loggingPrefix} populated VMRs`, {
+                oldValue: oldValue,
+                newValue: this.virtualMeetingRooms
+            });
+        }
     }
 
     private subscribeToConferenceEvents(conference: ConferenceResponse) {

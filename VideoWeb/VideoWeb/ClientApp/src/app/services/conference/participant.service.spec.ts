@@ -121,11 +121,12 @@ fdescribe('ParticipantService', () => {
     });
 
     let apiClientSpy: jasmine.SpyObj<ApiClient>;
-    let getParticipantsByConferenceId$: Subject<ParticipantForUserResponse[]>;
-    let getEndpointsByConferenceId$: Subject<VideoEndpointResponse[]>;
+    let getParticipantsByConferenceIdSubject: Subject<ParticipantForUserResponse[]>;
+    let getEndpointsByConferenceIdSubject: Subject<VideoEndpointResponse[]>;
 
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
     let currentConferenceSubject: Subject<ConferenceResponse>;
+    let currentConference$: Observable<ConferenceResponse>;
 
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
     let participantUpdatedSubject: Subject<ParticipantUpdated>;
@@ -141,15 +142,17 @@ fdescribe('ParticipantService', () => {
     beforeEach(() => {
         apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['getParticipantsByConferenceId', 'getVideoEndpointsForConference']);
 
-        getParticipantsByConferenceId$ = new Subject<ParticipantForUserResponse[]>();
-        getEndpointsByConferenceId$ = new Subject<VideoEndpointResponse[]>();
-        apiClientSpy.getParticipantsByConferenceId.and.returnValue(getParticipantsByConferenceId$.asObservable());
-        apiClientSpy.getVideoEndpointsForConference.and.returnValue(getEndpointsByConferenceId$.asObservable());
+        getParticipantsByConferenceIdSubject = new Subject<ParticipantForUserResponse[]>();
+        getEndpointsByConferenceIdSubject = new Subject<VideoEndpointResponse[]>();
+        apiClientSpy.getParticipantsByConferenceId.and.returnValue(getParticipantsByConferenceIdSubject.asObservable());
+        apiClientSpy.getVideoEndpointsForConference.and.returnValue(getEndpointsByConferenceIdSubject.asObservable());
 
         conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>('ConferenceService', ['getConferenceById'], ['currentConference$']);
 
         currentConferenceSubject = new Subject<ConferenceResponse>();
-        getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference$').and.returnValue(currentConferenceSubject.asObservable());
+        currentConference$ = currentConferenceSubject.asObservable();
+        spyOn(currentConference$, 'subscribe').and.callThrough();
+        getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference$').and.returnValue(currentConference$);
 
         videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['onParticipantUpdated']);
 
@@ -182,10 +185,10 @@ fdescribe('ParticipantService', () => {
             currentConferenceSubject.next(conference);
             flush();
 
-            getParticipantsByConferenceId$.next(participantResponses);
+            getParticipantsByConferenceIdSubject.next(participantResponses);
             flush();
 
-            getEndpointsByConferenceId$.next(endpointResponses);
+            getEndpointsByConferenceIdSubject.next(endpointResponses);
             flush();
 
             // Assert
@@ -203,7 +206,7 @@ fdescribe('ParticipantService', () => {
 
             // Act
             const participantResponses = [participantOne, participantTwo];
-            getParticipantsByConferenceId$.next(participantResponses);
+            getParticipantsByConferenceIdSubject.next(participantResponses);
             flush();
 
             // Assert
@@ -211,42 +214,9 @@ fdescribe('ParticipantService', () => {
             expect(participantUpdated$.subscribe).toHaveBeenCalledTimes(1);
         }));
 
-        it('should subscribe to currentConference; then get participants for conference each time a value is emmited and setup conference specific subscribers', fakeAsync(() => {
-            // Arrange
-            const getParticipantsForConferenceSpy = spyOn(sut, 'getParticipantsForConference').and.callThrough();
-            const getEndpointsForConferenceSpy = spyOn(sut, 'getEndpointsForConference').and.callThrough();
-
-            const participantStatusUpdate$ = new Observable<ParticipantStatusMessage>();
-            const expectedUnsubscribed = [jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe'])];
-            const expectedSubscriptions = [jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe'])];
-            spyOn(participantStatusUpdate$, 'subscribe').and.returnValues(...expectedUnsubscribed, ...expectedSubscriptions);
-
-            spyOn(participantStatusUpdateSubject, 'asObservable').and.returnValue(participantStatusUpdate$);
-            eventsServiceSpy.getParticipantStatusMessage.and.returnValue(participantStatusUpdateSubject.asObservable());
-
-            const conferenceIdOne = 'conference-id-one';
-            const conferenceIdTwo = 'conference-id-two';
-            const conference = new ConferenceResponse();
-            conference.id = conferenceIdOne;
-
-            // Act
-            currentConferenceSubject.next(conference);
-            flush();
-
-            conference.id = conferenceIdTwo;
-            currentConferenceSubject.next(conference);
-            flush();
-
+        it('should subscribe to currentConference$', fakeAsync(() => {
             // Assert
-            expect(getParticipantsForConferenceSpy).toHaveBeenCalledTimes(2);
-            expect(getParticipantsForConferenceSpy).toHaveBeenCalledWith(conferenceIdOne);
-            expect(getParticipantsForConferenceSpy).toHaveBeenCalledWith(conferenceIdTwo);
-            expect(getEndpointsForConferenceSpy).toHaveBeenCalledTimes(2);
-            expect(getEndpointsForConferenceSpy).toHaveBeenCalledWith(conferenceIdOne);
-            expect(getEndpointsForConferenceSpy).toHaveBeenCalledWith(conferenceIdTwo);
-            expectedUnsubscribed.forEach(x => expect(x.unsubscribe).toHaveBeenCalledTimes(1));
-            expect(sut['conferenceSubscriptions'].length).toEqual(expectedSubscriptions.length);
-            expect(participantStatusUpdate$.subscribe).toHaveBeenCalledTimes(2);
+            expect(currentConference$.subscribe).toHaveBeenCalledTimes(1);
         }));
     });
 
@@ -305,24 +275,98 @@ fdescribe('ParticipantService', () => {
         });
     });
 
-    describe('get virtualMeetingRooms', () => {
-        it('should return a list of virtual meeting rooms', () => {
+    describe('handle current conference changed', () => {
+        it('should call get participants and end points and subscribe to the relevant conference events', fakeAsync(() => {
             // Arrange
-            const nonVmrParticipants = asParticipantModels([participantOne, participantTwo]).concat(
-                [endpointOne, endpointTwo].map(x => ParticipantModel.fromVideoEndpointResponse(x))
-            );
-            const vmrParticipants = asParticipantModels([vmrParticipantOne, vmrParticipantTwo]);
-            const expectedVmrs = [new VirtualMeetingRoomModel(vmrId, vmrLabel, vmrLocked, vmrParticipants)];
-            spyOnProperty(sut, 'participants', 'get').and.returnValue(nonVmrParticipants.concat(vmrParticipants));
+            const participantStatusUpdate$ = new Observable<ParticipantStatusMessage>();
+            const expectedUnsubscribed = [jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe'])];
+            const expectedSubscriptions = [jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe'])];
+            spyOn(participantStatusUpdate$, 'subscribe').and.returnValues(...expectedUnsubscribed, ...expectedSubscriptions);
+
+            spyOn(participantStatusUpdateSubject, 'asObservable').and.returnValue(participantStatusUpdate$);
+            eventsServiceSpy.getParticipantStatusMessage.and.returnValue(participantStatusUpdateSubject.asObservable());
+
+            const conferenceIdOne = 'conference-id-one';
+            const conferenceIdTwo = 'conference-id-two';
+            const conference = new ConferenceResponse();
+            conference.id = conferenceIdOne;
 
             // Act
-            const result = sut.virtualMeetingRooms;
+            currentConferenceSubject.next(conference);
+            flush();
+
+            conference.id = conferenceIdTwo;
+            currentConferenceSubject.next(conference);
+            flush();
 
             // Assert
-            expect(result.length).toEqual(expectedVmrs.length);
-            expectedVmrs.forEach(x => expect(expectedVmrs).toContain(x));
-            expectedVmrs.forEach(x => nonVmrParticipants.forEach(y => expect(x.participants).not.toContain(y)));
-        });
+            expect(apiClientSpy.getParticipantsByConferenceId).toHaveBeenCalledTimes(2);
+            expect(apiClientSpy.getParticipantsByConferenceId).toHaveBeenCalledWith(conferenceIdOne);
+            expect(apiClientSpy.getParticipantsByConferenceId).toHaveBeenCalledWith(conferenceIdTwo);
+
+            expect(apiClientSpy.getVideoEndpointsForConference).toHaveBeenCalledTimes(2);
+            expect(apiClientSpy.getVideoEndpointsForConference).toHaveBeenCalledWith(conferenceIdOne);
+            expect(apiClientSpy.getVideoEndpointsForConference).toHaveBeenCalledWith(conferenceIdTwo);
+
+            expectedUnsubscribed.forEach(x => expect(x.unsubscribe).toHaveBeenCalledTimes(1));
+            expect(sut['conferenceSubscriptions'].length).toEqual(expectedSubscriptions.length);
+            expect(participantStatusUpdate$.subscribe).toHaveBeenCalledTimes(2);
+        }));
+
+        it('should populate the virtual meeting rooms when get participants and get endpoints resolve', fakeAsync(() => {
+            // Arrange
+            const conferenceIdOne = 'conference-id-one';
+            const conference = new ConferenceResponse();
+            conference.id = conferenceIdOne;
+
+            const nonVmrParticipants = [participantOne, participantTwo];
+            const nonVmrEndpoints = [endpointOne, endpointTwo];
+            const vmrParticipants = [vmrParticipantOne, vmrParticipantTwo];
+            const expectedParticipants = nonVmrParticipants
+                .concat(vmrParticipants)
+                .map(x => ParticipantModel.fromParticipantForUserResponse(x))
+                .concat(nonVmrEndpoints.map(x => ParticipantModel.fromVideoEndpointResponse(x)));
+
+            const expectedVmrs = [
+                new VirtualMeetingRoomModel(
+                    vmrId,
+                    vmrLabel,
+                    vmrLocked,
+                    vmrParticipants.map(x => ParticipantModel.fromParticipantForUserResponse(x))
+                )
+            ];
+
+            // Act
+            currentConferenceSubject.next(conference);
+            flush();
+
+            getParticipantsByConferenceIdSubject.next(nonVmrParticipants.concat(vmrParticipants));
+            flush();
+
+            expect(sut.participants.length).toEqual(0);
+            expect(sut.virtualMeetingRooms.length).toEqual(0);
+
+            getEndpointsByConferenceIdSubject.next(nonVmrEndpoints);
+            flush();
+
+            // Assert
+            expect(apiClientSpy.getParticipantsByConferenceId).toHaveBeenCalledOnceWith(conferenceIdOne);
+            expect(apiClientSpy.getVideoEndpointsForConference).toHaveBeenCalledOnceWith(conferenceIdOne);
+
+            expect(sut.participants.length).toEqual(expectedParticipants.length);
+            // We can't do a deep comparison due to the link Participant <-> VMR
+            expectedParticipants.forEach(x => expect(sut.participants.find(y => y.id == x.id)).toBeTruthy());
+
+            expect(sut.virtualMeetingRooms.length).toEqual(expectedVmrs.length);
+            // We can't do a deep comparison due to the link Participant <-> VMR
+            // Check if all the vmrs are there
+            expectedVmrs.forEach(x => expect(sut.virtualMeetingRooms.find(y => y.id === x.id)).toBeTruthy());
+            // Check the participants where linked
+            sut.virtualMeetingRooms.forEach(x => {
+                const expectedX = expectedVmrs.find(y => y.id == x.id);
+                expectedX.participants.forEach(p => expect(x.participants.find(z => z.id === p.id)).toBeTruthy());
+            });
+        }));
     });
 
     describe('getParticipantsForConference', () => {
@@ -335,7 +379,7 @@ fdescribe('ParticipantService', () => {
 
             // Act
             sut.getParticipantsForConference(conferenceId).subscribe(participants => (result = participants));
-            getParticipantsByConferenceId$.next(participantResponses);
+            getParticipantsByConferenceIdSubject.next(participantResponses);
             flush();
 
             // Assert
@@ -354,7 +398,7 @@ fdescribe('ParticipantService', () => {
 
             // Act
             sut.getParticipantsForConference(conferenceId).subscribe(participants => (result = participants));
-            getParticipantsByConferenceId$.next(participantResponses);
+            getParticipantsByConferenceIdSubject.next(participantResponses);
             flush();
 
             // Assert
@@ -373,7 +417,7 @@ fdescribe('ParticipantService', () => {
 
             // Act
             sut.getParticipantsForConference(conferenceId).subscribe(participants => (result = participants));
-            getParticipantsByConferenceId$.next(participantResponses);
+            getParticipantsByConferenceIdSubject.next(participantResponses);
             flush();
 
             // Assert
@@ -579,9 +623,15 @@ fdescribe('ParticipantService', () => {
                 expectedValue[vmrParticipantOneId] = pexipId;
                 expectedValue[vmrParticipantTwoId] = pexipId;
 
-                spyOnProperty(sut, 'participants', 'get').and.returnValue(
-                    asParticipantModels([participantOne, participantTwo, vmrParticipantOne, vmrParticipantTwo])
+                const participants = asParticipantModels([participantOne, participantTwo, vmrParticipantOne, vmrParticipantTwo]);
+                participants[2].virtualMeetingRoom = VirtualMeetingRoomModel.fromRoomSummaryResponse(
+                    participants[2].virtualMeetingRoomSummary
                 );
+                participants[3].virtualMeetingRoom = VirtualMeetingRoomModel.fromRoomSummaryResponse(
+                    participants[3].virtualMeetingRoomSummary
+                );
+
+                spyOnProperty(sut, 'participants', 'get').and.returnValue(participants);
 
                 // Act
                 sut.handlePexipParticipantUpdate(participantUpdated);
