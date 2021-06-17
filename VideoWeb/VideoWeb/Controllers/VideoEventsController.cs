@@ -46,7 +46,7 @@ namespace VideoWeb.Controllers
             _logger = logger;
             _mapperFactory = mapperFactory;
         }
-        
+
         [HttpPost]
         [SwaggerOperation(OperationId = "SendEvent")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
@@ -67,16 +67,15 @@ namespace VideoWeb.Controllers
                 if (request.IsParticipantAVmr(conference, out var roomId))
                 {
                     request.ParticipantRoomId = roomId.ToString();
-                    request.ParticipantId = null;
                     events = request.CreateEventsForParticipantsInRoom(conference, roomId);
                 }
-                
+
                 var callbackEvents = events.Select(e => TransformAndMapRequest(e, conference)).ToList();
 
                 // DO NOT USE Task.WhenAll because the handlers are not thread safe and will overwrite Source<Variable> for each run
                 foreach (var e in events)
                 {
-                    await SendEventToVideoApi(e);
+                    await SendEventToVideoApi(e, conference, roomId);
                 }
 
                 callbackEvents.RemoveRepeatedVhoCallConferenceEvents();
@@ -95,14 +94,14 @@ namespace VideoWeb.Controllers
             }
         }
 
-        private Task SendEventToVideoApi(ConferenceEventRequest request)
+        private Task SendEventToVideoApi(ConferenceEventRequest request, Conference conference, long roomId)
         {
             if (request.EventType == EventType.VhoCall)
             {
                 return Task.CompletedTask;
             }
 
-            request = request.UpdateEventTypeForVideoApi();
+            request = request.UpdateEventTypeForVideoApi(conference, roomId);
 
             _logger.LogTrace("Raising video event: ConferenceId: {ConferenceId}, EventType: {EventType}",
                 request.ConferenceId, request.EventType);
