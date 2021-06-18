@@ -8,6 +8,7 @@ import {
     RoomSummaryResponse,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
+import { PexipDisplayNameModel } from 'src/app/services/conference/models/pexip-display-name.model';
 import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
@@ -28,7 +29,7 @@ export interface IParticipantDetails {
     id: string;
     name: string;
     displayName: string;
-    pexipDisplayName: string;
+    pexipDisplayName: PexipDisplayNameModel;
     caseGroup: CaseTypeGroup;
     role: Role;
     hearingRole: HearingRole;
@@ -41,11 +42,13 @@ export interface IParticipantDetails {
 export interface IEndpointDetails {}
 
 export class ParticipantModel implements IParticipantDetails, IParticipantConferenceState, IParticipantHearingState {
+    public pexipDisplayName: PexipDisplayNameModel;
+
     constructor(
         public id: string,
         public name: string,
         public displayName: string,
-        public pexipDisplayName: string,
+        pexipDisplayName: string | PexipDisplayNameModel,
         public caseGroup: CaseTypeGroup,
         public role: Role,
         public hearingRole: HearingRole,
@@ -58,7 +61,13 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
         public isSpotlighted: boolean = false,
         public isRemoteMuted: boolean = false,
         public isHandRaised: boolean = false
-    ) {}
+    ) {
+        if (typeof pexipDisplayName === 'string') {
+            this.pexipDisplayName = PexipDisplayNameModel.fromString(pexipDisplayName as string);
+        } else {
+            this.pexipDisplayName = pexipDisplayName;
+        }
+    }
 
     private static fromAParticipantResponseType(participant: ParticipantResponse | ParticipantForUserResponse | ParticipantResponseVho) {
         return new ParticipantModel(

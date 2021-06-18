@@ -10,6 +10,7 @@ import { EventsService } from '../events.service';
 import { LoggerService } from '../logging/logger.service';
 import { ParticipantStatusMessage } from '../models/participant-status-message';
 import { ConferenceService } from './conference.service';
+import { PexipDisplayNameModel } from './models/pexip-display-name.model';
 import { VirtualMeetingRoomModel } from './models/virtual-meeting-room.model';
 
 export const InvalidNumberOfNonEndpointParticipantsError = () => new Error('Invalid number of non-endpoint participants.');
@@ -138,6 +139,7 @@ export class ParticipantService {
         if (participantOrVmr instanceof VirtualMeetingRoomModel) {
             const vmr = participantOrVmr as VirtualMeetingRoomModel;
             vmr.pexipId = updatedParticipant.uuid;
+            vmr.pexipDisplayName = PexipDisplayNameModel.fromString(updatedParticipant.pexipDisplayName);
             participantsToUpdate = vmr.participants;
 
             this.logger.info(`${this.loggingPrefix} updating VMRs pexip ID`, {
