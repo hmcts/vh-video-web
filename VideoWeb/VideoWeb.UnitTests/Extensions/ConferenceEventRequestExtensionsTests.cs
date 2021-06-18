@@ -14,11 +14,13 @@ namespace VideoWeb.UnitTests.Extensions
     public class ConferenceEventRequestExtensionsTests
     {
         private Conference _testConference;
+        private static long _participantRoomId;
         
         [SetUp]
         public void Setup()
         {
             _testConference = BuildConferenceForTest();
+            _participantRoomId = 1234;
         }
 
         [TestCase(EventType.Joined, EventType.RoomParticipantJoined)]
@@ -46,6 +48,20 @@ namespace VideoWeb.UnitTests.Extensions
 
             var result = request.CreateEventsForParticipantsInRoom(_testConference, civilianRoom.Id);
             result.All(r => r.EventType == EventType.RoomParticipantTransfer).Should().BeTrue();
+        }
+
+        [Test]
+        public void should_update_event_to_participant_room_transfer_event()
+        {
+            var civilianRoom = _testConference.CivilianRooms.First();
+            var request = CreateRequest();
+            request.EventType = EventType.Joined;
+            request.ParticipantId = civilianRoom.Participants.First().ToString();
+            request.ParticipantRoomId = _participantRoomId.ToString();
+            _testConference.CivilianRooms.First().Id = _participantRoomId;
+            request.UpdateEventsTypeForVmrParticipants(_testConference);
+
+            (request.EventType == EventType.RoomParticipantTransfer).Should().BeTrue();
         }
 
         protected Conference BuildConferenceForTest()
@@ -78,8 +94,9 @@ namespace VideoWeb.UnitTests.Extensions
                 HearingVenueName = "Hearing Venue Test",
                 CivilianRooms = new List<CivilianRoom>
                 {
-                    new CivilianRoom {Id = 1, RoomLabel = "Interpreter1", Participants = new List<Guid>()}
-                }
+                    new CivilianRoom {Id = _participantRoomId, RoomLabel = "Interpreter1", Participants = new List<Guid>()}
+                },
+                CurrentStatus = ConferenceState.InSession,
             };
 
 
