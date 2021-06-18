@@ -78,7 +78,7 @@ namespace VideoWeb.Controllers
                 // DO NOT USE Task.WhenAll because the handlers are not thread safe and will overwrite Source<Variable> for each run
                 foreach (var e in events)
                 {
-                    await SendEventToVideoApi(e, conference, roomId);
+                    await SendEventToVideoApi(e);
                 }
 
                 callbackEvents.RemoveRepeatedVhoCallConferenceEvents();
@@ -97,7 +97,7 @@ namespace VideoWeb.Controllers
             }
         }
 
-        private Task SendEventToVideoApi(ConferenceEventRequest request, Conference conference, long roomId)
+        private Task SendEventToVideoApi(ConferenceEventRequest request)
         {
             if (request.EventType == EventType.VhoCall)
             {

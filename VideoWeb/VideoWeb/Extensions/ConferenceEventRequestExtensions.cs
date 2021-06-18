@@ -51,12 +51,7 @@ namespace VideoWeb.Extensions
                             .RoomParticipantTransfer,
                         _ => participantEventRequest.EventType
                     };
-                    participantEventRequest.TransferTo = request.EventType switch
-                    {
-                        EventType.Joined when !participantEventRequest.ParticipantRoomId.IsNullOrEmpty() &&
-                                              conference.CurrentStatus == ConferenceState.InSession => nameof(RoomType.HearingRoom),
-                        _ => request.TransferTo
-                    };
+                    
                     return participantEventRequest;
                 })
                 .ToList();

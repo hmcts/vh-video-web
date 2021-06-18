@@ -25,12 +25,6 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            var isRoomToEnum = Enum.TryParse<RoomType>(callbackEvent.TransferTo, out var transferTo);
-
-            if (transferTo == RoomType.HearingRoom)
-            {
-                return PublishParticipantStatusMessage(ParticipantState.InHearing);
-            }
             return PublishParticipantStatusMessage(ParticipantState.Available);
         }
     }
