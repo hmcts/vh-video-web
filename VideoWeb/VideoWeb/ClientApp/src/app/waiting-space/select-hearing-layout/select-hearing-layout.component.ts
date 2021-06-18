@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ConferenceResponse, HearingLayout } from 'src/app/services/clients/api-client';
 import { VideoCallService } from '../services/video-call.service';
@@ -7,10 +7,11 @@ import { VideoCallService } from '../services/video-call.service';
     selector: 'app-select-hearing-layout',
     templateUrl: './select-hearing-layout.component.html'
 })
-export class SelectHearingLayoutComponent implements OnInit {
+export class SelectHearingLayoutComponent implements OnInit, OnDestroy {
     availableLayouts = HearingLayout;
     selectedLayout: HearingLayout;
     accordionOpenAllElement: HTMLButtonElement;
+    currentButtonContentKey: string;
     @Input() conference: ConferenceResponse;
     constructor(private videoCallService: VideoCallService, protected translateService: TranslateService) {}
 
@@ -25,9 +26,26 @@ export class SelectHearingLayoutComponent implements OnInit {
 
         (<any>window).GOVUKFrontend.initAll();
         headingElement.onclick = e => this.setAccordionText(e);
+        const sectionHeadingElement = document.getElementsByClassName('govuk-accordion__section-button').item(0) as HTMLButtonElement;
+        sectionHeadingElement.onclick = e => this.setAccordionText(e);
         this.accordionOpenAllElement = document.getElementsByClassName('govuk-accordion__open-all').item(0) as HTMLButtonElement;
         this.accordionOpenAllElement.onclick = e => this.setAccordionText(e);
         this.setAccordionText({} as MouseEvent);
+
+        this.translateService.onLangChange.subscribe(event => {
+            const updatedHeadingElement = document.getElementById('accordion-choose-layout-heading');
+            const currentHeaderText = updatedHeadingElement.innerText;
+            const updatedHeaderText = this.translateService.instant('select-hearing-layout.choose-hearing-layout');
+
+            updatedHeadingElement.innerHTML = updatedHeadingElement.innerHTML.replace(currentHeaderText, updatedHeaderText);
+            const currentTextValue = this.accordionOpenAllElement.innerText.split('\n')[0];
+            const translatedElement = this.translateService.instant(`select-hearing-layout.${this.currentButtonContentKey}`);
+            this.accordionOpenAllElement.innerHTML = this.accordionOpenAllElement.innerHTML.replace(currentTextValue, translatedElement);
+        });
+    }
+
+    ngOnDestroy(): void {
+        this.translateService.onLangChange.unsubscribe();
     }
 
     setAccordionText(event: MouseEvent) {
@@ -39,8 +57,9 @@ export class SelectHearingLayoutComponent implements OnInit {
         const text = this.accordionOpenAllElement.innerHTML;
         if (!text.startsWith('<')) {
             const originalText = text.split('<')[0];
-            const currentText = originalText.toLowerCase().split(' ').join('-').trim();
-            const translated = `<span>${this.translateService.instant(`select-hearing-layout.${currentText}`)}</span>`;
+            this.currentButtonContentKey = originalText.toLowerCase().split(' ').join('-').trim();
+            const translatedText = this.translateService.instant(`select-hearing-layout.${this.currentButtonContentKey}`);
+            const translated = `<span>${translatedText}</span>`;
             this.accordionOpenAllElement.innerHTML = this.accordionOpenAllElement.innerHTML.replace(originalText, translated);
         }
     }
