@@ -17,10 +17,16 @@ namespace VideoWeb.Extensions
             return !request.ParticipantRoomId.IsNullOrEmpty() && !request.ParticipantId.IsNullOrEmpty();
         }
 
+        private static bool IsParticipantInVmr(this ConferenceEventRequest request, Conference conference)
+        {
+            return conference.CivilianRooms.First(x => x.Id.ToString() == request.ParticipantRoomId)
+                .Participants.Any(x => x.ToString() == request.ParticipantId);
+        }
+
         public static bool IsParticipantAVmr(this ConferenceEventRequest request, Conference conference,
             out long roomId)
         {
-            if (!long.TryParse(request.ParticipantRoomId, out roomId)) return false;
+            if (!long.TryParse(request.ParticipantId, out roomId)) return false;
             var id = roomId;
             return conference.CivilianRooms.Any(x => x.Id == id);
         }
@@ -28,8 +34,7 @@ namespace VideoWeb.Extensions
         public static List<ConferenceEventRequest> CreateEventsForParticipantsInRoom(
             this ConferenceEventRequest request, Conference conference, long roomId)
         {
-            var civilianRoom = conference.CivilianRooms.First(x => x.Id == roomId);
-            return civilianRoom.Participants.Where(x=>x.ToString()== request.ParticipantId).Select(p =>
+            return conference.CivilianRooms.First(x => x.Id == roomId).Participants.Select(p =>
                 {
                     var json = JsonConvert.SerializeObject(request);
                     var participantEventRequest = JsonConvert.DeserializeObject<ConferenceEventRequest>(json);
@@ -37,9 +42,6 @@ namespace VideoWeb.Extensions
                     participantEventRequest.ParticipantRoomId = roomId.ToString();
                     participantEventRequest.EventType = request.EventType switch
                     {
-                        EventType.Joined when !participantEventRequest.ParticipantRoomId.IsNullOrEmpty() &&
-                                              conference.CurrentStatus == ConferenceState.InSession => EventType
-                            .RoomParticipantTransfer,
                         EventType.Joined when !participantEventRequest.ParticipantRoomId.IsNullOrEmpty() => EventType
                             .RoomParticipantJoined,
                         EventType.Disconnected when !participantEventRequest.ParticipantRoomId.IsNullOrEmpty() =>
@@ -60,22 +62,26 @@ namespace VideoWeb.Extensions
                 .ToList();
         }
 
-        public static ConferenceEventRequest UpdateEventTypeForVideoApi(this ConferenceEventRequest request, Conference conference, long roomId)
+        public static ConferenceEventRequest UpdateEventTypeForVideoApi(this ConferenceEventRequest request)
         {
             request.EventType = request.EventType switch
             {
-                EventType.Joined when !request.ParticipantRoomId.IsNullOrEmpty() &&
-                                              conference.CurrentStatus == ConferenceState.InSession => EventType
-                            .RoomParticipantTransfer,
-                EventType.Joined when !request.ParticipantRoomId.IsNullOrEmpty() => EventType
-                    .RoomParticipantJoined,
+                EventType.Joined when !request.ParticipantRoomId.IsNullOrEmpty() => EventType.RoomParticipantJoined,
                 EventType.Disconnected when !request.ParticipantRoomId.IsNullOrEmpty() => EventType
                     .RoomParticipantDisconnected,
-                EventType.Transfer when !request.ParticipantRoomId.IsNullOrEmpty() => EventType
-                    .RoomParticipantTransfer,
+                EventType.Transfer when !request.ParticipantRoomId.IsNullOrEmpty() => EventType.RoomParticipantTransfer,
                 _ => request.EventType
             };
             return request;
+        }
+
+        public static void UpdateEventsTypeForVmrParticipants(this ConferenceEventRequest request,
+            Conference conference)
+        {
+            if (request.ParticipantRoomId.IsNullOrEmpty() || !conference.IsConferenceInSession() ||
+                !request.IsParticipantInVmr(conference)) return;
+            request.EventType = EventType.RoomParticipantTransfer;
+            request.TransferTo = nameof(RoomType.HearingRoom);
         }
     }
 }
