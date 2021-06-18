@@ -199,7 +199,7 @@ stages:
           - name: KinlyConfiguration:CallbackSecret
             value: $(CallbackKey)
           - name: KinlyConfiguration:ApiSecret
-            value: $(KinlyApiKey)
+            value: $(KinlyHeartBeatApiKey)
           - name: KinlyConfiguration:SelfTestApiSecret
             value: $(SelfTestApiKey)
           - name: KinlyConfiguration:JoinByPhoneFromDate
@@ -296,7 +296,7 @@ stages:
           - name: KinlyConfiguration:CallbackSecret
             value: $(CallbackKey)
           - name: KinlyConfiguration:ApiSecret
-            value: $(KinlyApiKey)
+            value: $(KinlyHeartBeatApiKey)
           - name: KinlyConfiguration:SelfTestApiSecret
             value: $(SelfTestApiKey)
           - name: KinlyConfiguration:JoinByPhoneFromDate
