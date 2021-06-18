@@ -10,7 +10,6 @@ import { EventsService } from '../events.service';
 import { LoggerService } from '../logging/logger.service';
 import { ParticipantStatusMessage } from '../models/participant-status-message';
 import { ConferenceService } from './conference.service';
-import { PexipDisplayNameModel } from './models/pexip-display-name.model';
 import { VirtualMeetingRoomModel } from './models/virtual-meeting-room.model';
 
 export const InvalidNumberOfNonEndpointParticipantsError = () => new Error('Invalid number of non-endpoint participants.');
@@ -127,90 +126,109 @@ export class ParticipantService {
         return this.participants.find(p => p.id === participantId?.toString())?.pexipId ?? null;
     }
 
-    handlePexipParticipantUpdate(updatedParticipant: ParticipantUpdated): void {
-        this.logger.info(`${this.loggingPrefix} handling pexip participant update`, {
-            participantUpdate: updatedParticipant
-        });
+    private handlePexipVmrUpdate(vmr: VirtualMeetingRoomModel, update: ParticipantUpdated) {
+        if (!vmr.pexipId) {
+            vmr.pexipId = update.uuid;
 
-        // const participantsToUpdate = this.getParticipantOrVmrParticipantsFromPexipId(updatedParticipant.pexipDisplayName);
+            this.logger.warn(
+                `${this.loggingPrefix} not updating VMR participants hearing state, restoring cached values instead, as it was their first pexip id`,
+                {
+                    vmrId: vmr.id,
+                    participantUpdate: update
+                }
+            );
 
-        let participantsToUpdate: ParticipantModel[] = [];
-        const participantOrVmr = this.getParticipantOrVirtualMeetingRoomByPexipDisplayName(updatedParticipant.pexipDisplayName);
-        if (participantOrVmr instanceof VirtualMeetingRoomModel) {
-            const vmr = participantOrVmr as VirtualMeetingRoomModel;
-            vmr.pexipId = updatedParticipant.uuid;
-            vmr.pexipDisplayName = PexipDisplayNameModel.fromString(updatedParticipant.pexipDisplayName);
-            participantsToUpdate = vmr.participants;
-
-            this.logger.info(`${this.loggingPrefix} updating VMRs pexip ID`, {
-                vmrId: vmr.id,
-                vmr: vmr,
-                oldValue: vmr.pexipId,
-                newValue: updatedParticipant.uuid
-            });
-        } else if (participantOrVmr) {
-            participantsToUpdate = [participantOrVmr as ParticipantModel];
+            return;
         }
 
-        for (const participant of participantsToUpdate) {
-            const isParticipantsFirstPexipId = !participant.pexipId;
-            this.logger.info(`${this.loggingPrefix} updating participants pexip ID`, {
-                participantId: participant.id,
-                participant: participant,
-                oldValue: participant.pexipId,
-                newValue: updatedParticipant.uuid
-            });
+        this.logger.info(`${this.loggingPrefix} updating VMRs pexip ID`, {
+            vmrId: vmr.id,
+            oldValue: vmr.pexipId,
+            newValue: update.uuid
+        });
 
-            // TODO: Add pexip display name service
-            // CIVILIAN;Judge Name;GUID 4 part id || long for a VMR id
+        vmr.pexipId = update.uuid;
 
-            participant.pexipId = updatedParticipant.uuid;
+        this.updateParticipantHearingState(vmr.participants, update);
+    }
 
-            if (isParticipantsFirstPexipId) {
-                this.logger.warn(`${this.loggingPrefix} not updating participants hearing state as it was their first pexip id`, {
+    private handlePexipParticipantUpdate(participant: ParticipantModel, update: ParticipantUpdated) {
+        if (!participant.pexipId) {
+            participant.pexipId = update.uuid;
+
+            this.logger.warn(
+                `${this.loggingPrefix} not updating participants hearing state, restoring cached values instead, as it was their first pexip id`,
+                {
                     participantId: participant.id,
                     participantsHearingState: participant as IParticipantHearingState,
-                    participantUpdate: updatedParticipant
-                });
+                    participantUpdate: update
+                }
+            );
 
-                continue;
-            }
+            return;
+        }
 
-            if (participant.isSpotlighted != updatedParticipant.isSpotlighted) {
+        this.updateParticipantHearingState([participant], update);
+    }
+
+    private updateParticipantHearingState(participants: ParticipantModel[], update: ParticipantUpdated) {
+        for (const participant of participants) {
+            this.logger.info(`${this.loggingPrefix} updating participants pexip ID`, {
+                participantId: participant.id,
+                oldValue: participant.pexipId,
+                newValue: update.uuid
+            });
+
+            participant.pexipId = update.uuid;
+
+            if (participant.isSpotlighted != update.isSpotlighted) {
                 this.logger.info(`${this.loggingPrefix} updating participants spotlight status`, {
                     participantId: participant.id,
-                    pexipDisplayName: updatedParticipant.pexipDisplayName,
+                    pexipDisplayName: update.pexipDisplayName,
                     oldValue: participant.isSpotlighted,
-                    newValue: updatedParticipant.isSpotlighted
+                    newValue: update.isSpotlighted
                 });
 
-                participant.isSpotlighted = updatedParticipant.isSpotlighted;
+                participant.isSpotlighted = update.isSpotlighted;
                 this.participantSpotlightStatusChangedSubject.next(participant);
             }
 
-            if (participant.isRemoteMuted != updatedParticipant.isRemoteMuted) {
+            if (participant.isRemoteMuted != update.isRemoteMuted) {
                 this.logger.info(`${this.loggingPrefix} updating participants remote muted status`, {
                     participantId: participant.id,
-                    pexipDisplayName: updatedParticipant.pexipDisplayName,
+                    pexipDisplayName: update.pexipDisplayName,
                     oldValue: participant.isRemoteMuted,
-                    newValue: updatedParticipant.isRemoteMuted
+                    newValue: update.isRemoteMuted
                 });
 
-                participant.isRemoteMuted = updatedParticipant.isRemoteMuted;
+                participant.isRemoteMuted = update.isRemoteMuted;
                 this.participantRemoteMuteStatusChangedSubject.next(participant);
             }
 
-            if (participant.isHandRaised != updatedParticipant.handRaised) {
+            if (participant.isHandRaised != update.handRaised) {
                 this.logger.info(`${this.loggingPrefix} updating participants hand raised status`, {
                     participantId: participant.id,
-                    pexipDisplayName: updatedParticipant.pexipDisplayName,
+                    pexipDisplayName: update.pexipDisplayName,
                     oldValue: participant.isHandRaised,
-                    newValue: updatedParticipant.handRaised
+                    newValue: update.handRaised
                 });
 
-                participant.isHandRaised = updatedParticipant.handRaised;
+                participant.isHandRaised = update.handRaised;
                 this.participantHandRaisedStatusChangedSubject.next(participant);
             }
+        }
+    }
+
+    handlePexipUpdate(update: ParticipantUpdated): void {
+        this.logger.info(`${this.loggingPrefix} handling pexip update`, {
+            participantUpdate: update
+        });
+
+        const participantOrVmr = this.getParticipantOrVirtualMeetingRoomByPexipDisplayName(update.pexipDisplayName);
+        if (participantOrVmr instanceof VirtualMeetingRoomModel) {
+            this.handlePexipVmrUpdate(participantOrVmr, update);
+        } else if (participantOrVmr) {
+            this.handlePexipParticipantUpdate(participantOrVmr, update);
         }
     }
 
@@ -283,7 +301,7 @@ export class ParticipantService {
             this.subscribeToConferenceEvents(conference);
         });
 
-        this.videoCallService.onParticipantUpdated().subscribe(updatedParticipant => this.handlePexipParticipantUpdate(updatedParticipant));
+        this.videoCallService.onParticipantUpdated().subscribe(updatedParticipant => this.handlePexipUpdate(updatedParticipant));
     }
 
     private populateVirtualMeetingRooms() {

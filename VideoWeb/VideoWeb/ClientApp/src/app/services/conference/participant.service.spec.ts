@@ -22,6 +22,7 @@ import { ParticipantStatusMessage } from '../models/participant-status-message';
 import { ConferenceService } from './conference.service';
 import { VirtualMeetingRoomModel } from './models/virtual-meeting-room.model';
 import { InvalidNumberOfNonEndpointParticipantsError, ParticipantService } from './participant.service';
+import { VideoControlService } from './video-control.service';
 
 fdescribe('ParticipantService', () => {
     const asParticipantModels = (participants: ParticipantForUserResponse[]) =>
@@ -518,7 +519,7 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participantOne]);
 
                 // Act
-                sut.handlePexipParticipantUpdate(participantUpdated);
+                sut.handlePexipUpdate(participantUpdated);
 
                 // Assert
                 expect(sut.participants[0].pexipId).toEqual(newPexipId);
@@ -546,8 +547,8 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'participants', 'get').and.returnValue(asParticipantModels([participantOne, participantTwo]));
 
                 // Act
-                sut.handlePexipParticipantUpdate(participantUpdatedOne);
-                sut.handlePexipParticipantUpdate(participantUpdatedTwo);
+                sut.handlePexipUpdate(participantUpdatedOne);
+                sut.handlePexipUpdate(participantUpdatedTwo);
 
                 // Assert
                 expect(sut.participants[0].pexipId).toEqual(pexipIdOne);
@@ -582,9 +583,9 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'participants', 'get').and.returnValue(asParticipantModels([participantOne, participantTwo]));
 
                 // Act
-                sut.handlePexipParticipantUpdate(participantUpdatedOne);
-                sut.handlePexipParticipantUpdate(participantUpdatedTwo);
-                sut.handlePexipParticipantUpdate(participantUpdatedThree);
+                sut.handlePexipUpdate(participantUpdatedOne);
+                sut.handlePexipUpdate(participantUpdatedTwo);
+                sut.handlePexipUpdate(participantUpdatedThree);
 
                 // Assert
                 expect(sut.participants[0].pexipId).toEqual(pexipIdThree);
@@ -607,7 +608,7 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'virtualMeetingRooms', 'get').and.returnValue([]);
 
                 // Act
-                sut.handlePexipParticipantUpdate(participantUpdated);
+                sut.handlePexipUpdate(participantUpdated);
 
                 // Assert
                 expect(sut.participants[0].pexipId).toEqual(null);
@@ -625,13 +626,14 @@ fdescribe('ParticipantService', () => {
 
                 const participants = asParticipantModels([participantOne, participantTwo, vmrParticipantOne, vmrParticipantTwo]);
                 const vmr = VirtualMeetingRoomModel.fromRoomSummaryResponse(participants[2].virtualMeetingRoomSummary);
+                vmr.pexipId = pexipId;
                 vmr.participants = [participants[2], participants[3]];
 
                 spyOnProperty(sut, 'participants', 'get').and.returnValue(participants);
                 spyOnProperty(sut, 'virtualMeetingRooms', 'get').and.returnValue([vmr]);
 
                 // Act
-                sut.handlePexipParticipantUpdate(participantUpdated);
+                sut.handlePexipUpdate(participantUpdated);
 
                 // Assert
                 expect(participants[2].pexipId).toEqual(pexipId);
@@ -662,7 +664,7 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
 
                 // Act
-                sut.handlePexipParticipantUpdate(participantUpdated);
+                sut.handlePexipUpdate(participantUpdated);
                 flush();
                 subscriber.unsubscribe();
 
@@ -694,7 +696,7 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
 
                 // Act
-                sut.handlePexipParticipantUpdate(participantUpdated);
+                sut.handlePexipUpdate(participantUpdated);
                 flush();
                 subscriber.unsubscribe();
 
@@ -724,7 +726,7 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
 
                 // Act
-                sut.handlePexipParticipantUpdate(participantUpdated);
+                sut.handlePexipUpdate(participantUpdated);
                 flush();
                 subscriber.unsubscribe();
 
@@ -757,7 +759,7 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
 
                 // Act
-                sut.handlePexipParticipantUpdate(participantUpdated);
+                sut.handlePexipUpdate(participantUpdated);
                 flush();
                 subscriber.unsubscribe();
 
@@ -789,7 +791,7 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
 
                 // Act
-                sut.handlePexipParticipantUpdate(participantUpdated);
+                sut.handlePexipUpdate(participantUpdated);
                 flush();
                 subscriber.unsubscribe();
 
@@ -819,7 +821,7 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
 
                 // Act
-                sut.handlePexipParticipantUpdate(participantUpdated);
+                sut.handlePexipUpdate(participantUpdated);
                 flush();
                 subscriber.unsubscribe();
 
@@ -852,7 +854,7 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
 
                 // Act
-                sut.handlePexipParticipantUpdate(participantUpdated);
+                sut.handlePexipUpdate(participantUpdated);
                 flush();
                 subscriber.unsubscribe();
 
@@ -884,7 +886,7 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
 
                 // Act
-                sut.handlePexipParticipantUpdate(participantUpdated);
+                sut.handlePexipUpdate(participantUpdated);
                 flush();
                 subscriber.unsubscribe();
 
@@ -914,7 +916,7 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
 
                 // Act
-                sut.handlePexipParticipantUpdate(participantUpdated);
+                sut.handlePexipUpdate(participantUpdated);
                 flush();
                 subscriber.unsubscribe();
 
