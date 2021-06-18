@@ -27,31 +27,35 @@ export class VideoControlService {
 
     setSpotlightStatus(
         conferenceId: string,
-        participantId: string,
+        participantOrVmrId: string,
         spotlightStatus: boolean,
         responseTimeoutInMS: number = 0
     ): Observable<ParticipantUpdated> {
+        const participantOrVmr = this.participantService.getParticipantOrVirtualMeetingRoomById(participantOrVmrId);
+
         this.logger.info(
-            `${this.loggerPrefix} Attempting to set spotlight status of participant in conference: ${participantId} in ${conferenceId}.`,
+            `${this.loggerPrefix} Attempting to set spotlight status of participant in conference: ${participantOrVmrId} in ${conferenceId}.`,
             {
                 spotlightStatus: spotlightStatus,
                 conferenceId: conferenceId,
-                participantId: participantId,
+                participantOrVmrId: participantOrVmrId,
+                pexipId: participantOrVmr.pexipId,
+                participantOrVmr: participantOrVmr,
                 responseTimeoutInMSForReturnedObservable: responseTimeoutInMS
             }
         );
 
-        const pexipId = this.participantService.getPexipIdForParticipant(participantId);
-        this.videoCallService.spotlightParticipant(pexipId, spotlightStatus, conferenceId, participantId);
+        // const pexipId = this.participantService.getPexipIdForParticipant(participantId);
+        this.videoCallService.spotlightParticipant(participantOrVmr.pexipId, spotlightStatus, conferenceId, participantOrVmr.id);
 
-        this.logger.info(`${this.loggerPrefix} Attempted to make pexip call. Subscribing for update.`, {
+        this.logger.info(`${this.loggerPrefix} Attempted to make call to pexip to update spotlight status. Subscribing for update.`, {
             spotlightStatus: spotlightStatus,
             conferenceId: conferenceId,
-            participantId: participantId
+            participantId: participantOrVmrId
         });
 
         let onResponse$ = this.videoCallService.onParticipantUpdated().pipe(
-            filter(x => x.pexipDisplayName.includes(participantId)),
+            filter(x => x.pexipDisplayName.includes(participantOrVmrId)),
             take(1)
         );
 
@@ -61,10 +65,10 @@ export class VideoControlService {
                 updatedValue: updatedParticipant.isSpotlighted,
                 wasValueChangedPerRequest: spotlightStatus === updatedParticipant.isSpotlighted,
                 conferenceId: conferenceId,
-                participantId: participantId
+                participantId: participantOrVmrId
             });
 
-            this.videoControlCacheService.setSpotlightStatus(conferenceId, participantId, updatedParticipant.isSpotlighted);
+            this.videoControlCacheService.setSpotlightStatus(conferenceId, participantOrVmrId, updatedParticipant.isSpotlighted);
         });
 
         if (responseTimeoutInMS > 0) {

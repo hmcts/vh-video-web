@@ -604,6 +604,7 @@ fdescribe('ParticipantService', () => {
                 const expectedValue: { [participantId: string]: string } = {};
 
                 spyOnProperty(sut, 'participants', 'get').and.returnValue(asParticipantModels([participantOne, participantTwo]));
+                spyOnProperty(sut, 'virtualMeetingRooms', 'get').and.returnValue([]);
 
                 // Act
                 sut.handlePexipParticipantUpdate(participantUpdated);
@@ -623,21 +624,18 @@ fdescribe('ParticipantService', () => {
                 } as unknown) as ParticipantUpdated;
 
                 const participants = asParticipantModels([participantOne, participantTwo, vmrParticipantOne, vmrParticipantTwo]);
-                participants[2].virtualMeetingRoom = VirtualMeetingRoomModel.fromRoomSummaryResponse(
-                    participants[2].virtualMeetingRoomSummary
-                );
-                participants[3].virtualMeetingRoom = VirtualMeetingRoomModel.fromRoomSummaryResponse(
-                    participants[3].virtualMeetingRoomSummary
-                );
+                const vmr = VirtualMeetingRoomModel.fromRoomSummaryResponse(participants[2].virtualMeetingRoomSummary);
+                vmr.participants = [participants[2], participants[3]];
 
                 spyOnProperty(sut, 'participants', 'get').and.returnValue(participants);
+                spyOnProperty(sut, 'virtualMeetingRooms', 'get').and.returnValue([vmr]);
 
                 // Act
                 sut.handlePexipParticipantUpdate(participantUpdated);
 
                 // Assert
-                expect(sut.participants[2].pexipId).toEqual(pexipId);
-                expect(sut.participants[3].pexipId).toEqual(pexipId);
+                expect(participants[2].pexipId).toEqual(pexipId);
+                expect(participants[3].pexipId).toEqual(pexipId);
             });
         });
 
@@ -660,6 +658,7 @@ fdescribe('ParticipantService', () => {
                 });
 
                 participant.isSpotlighted = false;
+                participant.pexipId = pexipId;
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
 
                 // Act
@@ -703,6 +702,36 @@ fdescribe('ParticipantService', () => {
                 expect(result).toBeNull();
                 expect(participant.isSpotlighted).toBeTrue();
             }));
+
+            it('should NOT change the participants spotlight status if the participant has been assigned their first pexip id', fakeAsync(() => {
+                // Arrange
+                const pexipId = 'pexip-id';
+                const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
+                const participantId = participant.id;
+                const pexipName = `pexip-name-${participantId}`;
+                const participantUpdated = ({
+                    pexipDisplayName: pexipName,
+                    uuid: pexipId,
+                    isSpotlighted: false
+                } as unknown) as ParticipantUpdated;
+
+                let result: ParticipantModel = null;
+                const subscriber = sut.onParticipantHandRaisedStatusChanged$.subscribe(participant => {
+                    result = participant;
+                });
+
+                participant.isSpotlighted = true;
+                spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
+
+                // Act
+                sut.handlePexipParticipantUpdate(participantUpdated);
+                flush();
+                subscriber.unsubscribe();
+
+                // Assert
+                expect(result).toBeNull();
+                expect(participant.isSpotlighted).toBeTrue();
+            }));
         });
 
         describe('handles remote muted status changes', () => {
@@ -724,6 +753,7 @@ fdescribe('ParticipantService', () => {
                 });
 
                 participant.isRemoteMuted = false;
+                participant.pexipId = pexipId;
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
 
                 // Act
@@ -767,6 +797,36 @@ fdescribe('ParticipantService', () => {
                 expect(result).toBeNull();
                 expect(participant.isRemoteMuted).toBeTrue();
             }));
+
+            it('should NOT change the participants remote mute status if the participant has been assigned their first pexip id', fakeAsync(() => {
+                // Arrange
+                const pexipId = 'pexip-id';
+                const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
+                const participantId = participant.id;
+                const pexipName = `pexip-name-${participantId}`;
+                const participantUpdated = ({
+                    pexipDisplayName: pexipName,
+                    uuid: pexipId,
+                    isRemoteMuted: false
+                } as unknown) as ParticipantUpdated;
+
+                let result: ParticipantModel = null;
+                const subscriber = sut.onParticipantHandRaisedStatusChanged$.subscribe(participant => {
+                    result = participant;
+                });
+
+                participant.isRemoteMuted = true;
+                spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
+
+                // Act
+                sut.handlePexipParticipantUpdate(participantUpdated);
+                flush();
+                subscriber.unsubscribe();
+
+                // Assert
+                expect(result).toBeNull();
+                expect(participant.isRemoteMuted).toBeTrue();
+            }));
         });
 
         describe('handles hand raised status changes', () => {
@@ -788,6 +848,7 @@ fdescribe('ParticipantService', () => {
                 });
 
                 participant.isHandRaised = false;
+                participant.pexipId = pexipId;
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
 
                 // Act
@@ -812,6 +873,36 @@ fdescribe('ParticipantService', () => {
                     pexipDisplayName: pexipName,
                     uuid: pexipId,
                     handRaised: true
+                } as unknown) as ParticipantUpdated;
+
+                let result: ParticipantModel = null;
+                const subscriber = sut.onParticipantHandRaisedStatusChanged$.subscribe(participant => {
+                    result = participant;
+                });
+
+                participant.isHandRaised = true;
+                spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
+
+                // Act
+                sut.handlePexipParticipantUpdate(participantUpdated);
+                flush();
+                subscriber.unsubscribe();
+
+                // Assert
+                expect(result).toBeNull();
+                expect(participant.isHandRaised).toBeTrue();
+            }));
+
+            it('should NOT change the participants hand raised status if the participant has been assigned their first pexip id', fakeAsync(() => {
+                // Arrange
+                const pexipId = 'pexip-id';
+                const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
+                const participantId = participant.id;
+                const pexipName = `pexip-name-${participantId}`;
+                const participantUpdated = ({
+                    pexipDisplayName: pexipName,
+                    uuid: pexipId,
+                    handRaised: false
                 } as unknown) as ParticipantUpdated;
 
                 let result: ParticipantModel = null;
@@ -897,5 +988,41 @@ fdescribe('ParticipantService', () => {
             // Assert
             expect(result).toBeNull();
         }));
+    });
+
+    describe('getParticipantOrRoomById', () => {
+        it('should return a participant if the ID is a Guid', () => {
+            // Arrange
+            const participantId = Guid.create().toString();
+            participantOne.id = participantId.toString();
+            const participants = asParticipantModels([participantOne, participantTwo]);
+            spyOnProperty(sut, 'participants').and.returnValue(participants);
+
+            const vmrs = [VirtualMeetingRoomModel.fromRoomSummaryResponse(vmrParticipantOne.interpreter_room)];
+            spyOnProperty(sut, 'virtualMeetingRooms').and.returnValue(vmrs);
+
+            // Act
+            const result = sut.getParticipantOrVirtualMeetingRoomById(participantId);
+
+            // Assert
+            expect(result).toBe(participants[0]);
+        });
+
+        it('should return a virtual meeting room if the ID is a VMR', () => {
+            // Arrange
+            const participantId = Guid.create().toString();
+            participantOne.id = participantId.toString();
+            const participants = asParticipantModels([participantOne, participantTwo]);
+            spyOnProperty(sut, 'participants').and.returnValue(participants);
+
+            const vmrs = [VirtualMeetingRoomModel.fromRoomSummaryResponse(vmrParticipantOne.interpreter_room)];
+            spyOnProperty(sut, 'virtualMeetingRooms').and.returnValue(vmrs);
+
+            // Act
+            const result = sut.getParticipantOrVirtualMeetingRoomById(vmrs[0].id);
+
+            // Assert
+            expect(result).toBe(vmrs[0]);
+        });
     });
 });

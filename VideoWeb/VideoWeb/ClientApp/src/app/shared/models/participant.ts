@@ -1,4 +1,3 @@
-import { Guid } from 'guid-typescript';
 import {
     ParticipantResponse,
     ParticipantStatus,
@@ -9,7 +8,6 @@ import {
     RoomSummaryResponse,
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
-import { VirtualMeetingRoomModel } from 'src/app/services/conference/models/virtual-meeting-room.model';
 import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
@@ -36,7 +34,6 @@ export interface IParticipantDetails {
     hearingRole: HearingRole;
     status: ParticipantStatus;
     isEndPoint: boolean;
-    virtualMeetingRoom: VirtualMeetingRoomModel;
     virtualMeetingRoomSummary: RoomSummaryResponse;
     linkedParticipants: LinkedParticipantResponse[];
 }
@@ -53,7 +50,7 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
         public role: Role,
         public hearingRole: HearingRole,
         public isEndPoint: boolean,
-        virtualMeetingRoom: RoomSummaryResponse | VirtualMeetingRoomModel | null,
+        public virtualMeetingRoomSummary: RoomSummaryResponse,
         public linkedParticipants: LinkedParticipantResponse[],
         public status: ParticipantStatus = ParticipantStatus.None,
         public currentRoom: RoomSummaryResponse = null,
@@ -61,16 +58,7 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
         public isSpotlighted: boolean = false,
         public isRemoteMuted: boolean = false,
         public isHandRaised: boolean = false
-    ) {
-        if (virtualMeetingRoom instanceof RoomSummaryResponse) {
-            this.virtualMeetingRoomSummary = virtualMeetingRoom;
-        } else if (virtualMeetingRoom instanceof VirtualMeetingRoomModel) {
-            this.virtualMeetingRoom = virtualMeetingRoom;
-        }
-    }
-
-    public virtualMeetingRoomSummary: RoomSummaryResponse = null;
-    public virtualMeetingRoom: VirtualMeetingRoomModel = null;
+    ) {}
 
     private static fromAParticipantResponseType(participant: ParticipantResponse | ParticipantForUserResponse | ParticipantResponseVho) {
         return new ParticipantModel(
@@ -120,9 +108,9 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
 }
 
 export class Participant {
-    private participant: ParticipantResponse | ParticipantForUserResponse | ParticipantForUserResponse;
+    private participant: ParticipantResponse | ParticipantResponseVho | ParticipantForUserResponse;
 
-    constructor(participant: ParticipantResponse | ParticipantForUserResponse | ParticipantForUserResponse) {
+    constructor(participant: ParticipantResponse | ParticipantResponseVho | ParticipantForUserResponse) {
         this.participant = participant;
     }
 

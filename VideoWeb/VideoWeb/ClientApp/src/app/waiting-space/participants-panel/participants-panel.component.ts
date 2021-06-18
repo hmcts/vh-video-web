@@ -1,9 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantResponse } from 'src/app/services/clients/api-client';
+import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -52,6 +54,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private videoControlService: VideoControlService,
         private eventService: EventsService,
         private logger: Logger,
+        private participantsService: ParticipantService,
         protected translateService: TranslateService
     ) {}
 
@@ -299,13 +302,14 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     toggleSpotlightParticipant(participant: PanelModel) {
         const p = this.participants.find(x => x.id === participant.id);
-        this.logger.debug(`${this.loggerPrefix} Judge is attempting to toggle spotlight for participant`, {
-            conference: this.conferenceId,
-            participant: p.id,
-            pexipParticipant: p.pexipId,
+        this.logger.info(`${this.loggerPrefix} Judge is attempting to toggle spotlight for participant`, {
+            conferenceId: this.conferenceId,
+            participantId: p.id ?? null,
+            pexipId: p.pexipId ?? null,
             current: p.hasSpotlight(),
             new: !p.hasSpotlight()
         });
+
         this.videoControlService
             .setSpotlightStatus(this.conferenceId, p.id, !p.hasSpotlight())
             .subscribe(updatedParticipant =>
