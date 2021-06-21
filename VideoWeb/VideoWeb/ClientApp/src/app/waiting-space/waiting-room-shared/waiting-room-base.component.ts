@@ -1,7 +1,7 @@
 import { Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -81,7 +81,7 @@ export abstract class WaitingRoomBaseDirective {
 
     stream: MediaStream | URL;
     connected: boolean;
-    eventServiceConnected = false;
+    videoServiceConnected$ = new Subject<boolean>();
     outgoingStream: MediaStream | URL;
     presentationStream: MediaStream | URL;
     streamInMain = false;
@@ -132,9 +132,6 @@ export abstract class WaitingRoomBaseDirective {
         this.showConsultationControls = false;
         this.isPrivateConsultation = false;
         this.errorCount = 0;
-        this.eventService.onEventsHubReady().subscribe(() => {
-            this.eventServiceConnected = true;
-        });
     }
 
     isParticipantInCorrectWaitingRoomState(): boolean {
@@ -428,15 +425,23 @@ export abstract class WaitingRoomBaseDirective {
 
         this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub reconnects`);
         this.eventHubSubscription$.add(
-            this.eventService.getServiceReconnected().subscribe(() => {
+            this.eventService.getServiceReconnected().subscribe(async () => {
                 this.logger.info(`${this.loggerPrefix} EventHub re-connected`, {
                     conference: this.conferenceId,
                     participant: this.participant.id
                 });
-                this.eventServiceConnected = true;
-                if (this.pendingCallSetup) {
-                    this.handleCallSetup(this.pendingCallSetup);
-                }
+                await this.call();
+                this.getConference().then(() => this.updateShowVideo());
+            })
+        );
+
+        this.eventHubSubscription$.add(
+            this.eventService.onEventsHubReady().subscribe(async () => {
+                this.logger.info(`${this.loggerPrefix} EventHub ready`, {
+                    conference: this.conferenceId,
+                    participant: this.participant.id
+                });
+                await this.call();
                 this.getConference().then(() => this.updateShowVideo());
             })
         );
@@ -457,6 +462,7 @@ export abstract class WaitingRoomBaseDirective {
             })
         );
     }
+
     resolveParticipant(participantId: any): Participant {
         if (participantId === Guid.EMPTY) {
             return new Participant(new ParticipantResponseVho({ display_name: 'a Video Hearings Officer' }));
@@ -574,12 +580,13 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     async handleEventHubDisconnection(reconnectionAttempt: number) {
+        this.disconnect();
+
         const logPayload = {
             conference: this.conferenceId,
             participant: this.participant.id,
             connectionAttempt: reconnectionAttempt
         };
-        this.eventServiceConnected = false;
         if (reconnectionAttempt < 7) {
             this.logger.debug(`${this.loggerPrefix} EventHub disconnection`, logPayload);
             try {
@@ -707,6 +714,10 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     async call() {
+        if (!this.eventService.eventHubIsConnected) {
+            return;
+        }
+
         const logPayload = {
             conference: this.conferenceId,
             participant: this.participant.id
@@ -793,7 +804,7 @@ export abstract class WaitingRoomBaseDirective {
         }
         this.stream = null;
         this.outgoingStream = null;
-        this.connected = false;
+        this.setConnected(false);
         this.showVideo = false;
     }
 
@@ -811,19 +822,16 @@ export abstract class WaitingRoomBaseDirective {
             participant: this.participant.id
         };
 
-        if (this.eventServiceConnected) {
-            this.pendingCallSetup = null;
-            this.logger.debug(`${this.loggerPrefix} Conference has setup`, logPayload);
-            this.videoCallService.connect('', null);
-            this.outgoingStream = callSetup.stream;
-        } else {
-            this.pendingCallSetup = callSetup;
-        }
+        this.logger.debug(`${this.loggerPrefix} Conference has setup`, logPayload);
+        this.videoCallService.connect('', null);
+        this.outgoingStream = callSetup.stream;
+        this.pendingCallSetup = callSetup;
     }
 
     async handleCallConnected(callConnected: ConnectedCall): Promise<void> {
+        console.log('Faz - callConnected', callConnected);
         this.errorCount = 0;
-        this.connected = true;
+        this.setConnected(true);
         this.logger.debug(`${this.loggerPrefix} Successfully connected to hearing`, { conference: this.conferenceId });
         this.stream = callConnected.stream;
         const incomingFeedElement = document.getElementById('incomingFeed') as any;
@@ -840,9 +848,10 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     handleCallError(error: CallError): void {
+        console.log('Faz - callError');
         this.stopHeartbeat();
         this.errorCount++;
-        this.connected = false;
+        this.setConnected(false);
         this.updateShowVideo();
         this.logger.error(`${this.loggerPrefix} Error from pexip. Reason : ${error.reason}`, new Error(error.reason), {
             pexipError: error,
@@ -853,13 +862,16 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     handleCallDisconnect(reason: DisconnectedCall): void {
-        this.connected = false;
+        console.log('Faz - Disconnect');
+        this.setConnected(false);
         this.stopHeartbeat();
         this.updateShowVideo();
         this.logger.warn(`${this.loggerPrefix} Disconnected from pexip. Reason : ${reason.reason}`);
         if (!this.hearing.isPastClosedTime()) {
+            console.log('Faz - reconnect attempt');
             this.logger.warn(`${this.loggerPrefix} Attempting to reconnect to pexip in ${this.CALL_TIMEOUT}ms`);
             this.callbackTimeout = setTimeout(async () => {
+                console.log('Faz - callbackTimeout');
                 await this.call();
             }, this.CALL_TIMEOUT);
         }
@@ -1024,6 +1036,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     updateShowVideo(): void {
+        console.log('Faz - updateShowVideo');
         const logPaylod = {
             conference: this.conferenceId,
             caseName: this.conference.case_name,
@@ -1205,5 +1218,10 @@ export abstract class WaitingRoomBaseDirective {
 
     switchStreamWindows(): void {
         this.streamInMain = !this.streamInMain;
+    }
+
+    setConnected(connected: boolean) {
+        this.connected = connected;
+        this.videoServiceConnected$.next(connected);
     }
 }

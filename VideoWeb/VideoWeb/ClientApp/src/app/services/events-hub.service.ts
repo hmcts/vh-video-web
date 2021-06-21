@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { ReplaySubject, Subject, Observable } from 'rxjs';
+import { ReplaySubject, Subject, Observable, BehaviorSubject } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import { ConfigService } from './api/config.service';
 import { ConnectionStatusService } from './connection-status.service';
@@ -18,6 +18,11 @@ export class EventsHubService {
     private eventsHubReady = new ReplaySubject<void>();
     get onEventsHubReady(): Observable<void> {
         return this.eventsHubReady.asObservable();
+    }
+
+    private _isConnected = new BehaviorSubject<boolean>(false);
+    get isConnected(): BehaviorSubject<boolean> {
+        return this._isConnected;
     }
 
     private _connection: signalR.HubConnection;
@@ -71,7 +76,7 @@ export class EventsHubService {
             this._connection = this.buildConnection(clientSettings.event_hub_path);
             this.configureConnection();
 
-            connectionStatusService.onConnectionStatusChange().subscribe(isConnected => this.handleConnectionStatusChanged(isConnected));
+            // connectionStatusService.onConnectionStatusChange().subscribe(isConnected => this.handleConnectionStatusChanged(isConnected));
         });
     }
 
@@ -100,6 +105,7 @@ export class EventsHubService {
     }
 
     start() {
+        console.log('Faz - start');
         if (this.isWaitingToReconnect) {
             this.logger.info('[EventsService] - A reconnection promise already exists');
             return;
@@ -112,6 +118,7 @@ export class EventsHubService {
                 .then(() => {
                     this.logger.info('[EventsService] - Successfully connected to EventHub');
                     this._reconnectionAttempt = 0;
+                    this.onEventHubReconnected();
                 })
                 .catch(async error => {
                     this.logger.warn(`[EventsService] - Failed to connect to EventHub ${error}`);
@@ -124,6 +131,7 @@ export class EventsHubService {
     }
 
     reconnect() {
+        console.log('Faz - reconnect');
         if (this.reconnectionTimes.length >= this.reconnectionAttempt) {
             const delayMs = this.reconnectionTimes[this.reconnectionAttempt - 1];
             this.logger.info(`[EventsService] - Reconnecting in ${delayMs}ms`);
@@ -144,6 +152,7 @@ export class EventsHubService {
     }
 
     stop() {
+        console.log('Faz - stop');
         if (!this.isDisconnectedFromHub) {
             this.logger.debug(`[EventsService] - Ending connection to EventHub. Current state: ${this.connection.state}`);
             this.connection
@@ -165,6 +174,7 @@ export class EventsHubService {
     }
 
     private onEventHubErrorOrClose(error: Error): void {
+        console.log('Faz - onEventHubErrorOrClose');
         const message = error ? 'EventHub connection error' : 'EventHub connection closed';
         this.logger.error(`[EventsService] - ${message}`, error);
         this.eventHubDisconnectSubject.next(this.reconnectionAttempt);
@@ -175,6 +185,7 @@ export class EventsHubService {
     }
 
     private onEventHubReconnected(): void {
+        console.log('Faz - ononEventHubReconnected');
         this.logger.info('[EventsService] - Successfully reconnected to EventHub');
         this._reconnectionAttempt = 0;
         this.eventHubReconnectSubject.next();
@@ -185,18 +196,21 @@ export class EventsHubService {
     }
 
     private onEventHubReconnecting(error: Error): void {
+        console.log('Faz - ononEventHubReconnecting');
         this._reconnectionAttempt++;
         this.logger.info('[EventsService] - Attempting to reconnect to EventHub: attempt #' + this.reconnectionAttempt);
         if (error) {
+            console.log('Faz - onEventHubReconnecting error');
             this.logger.error('[EventsService] - Error during reconnect to EventHub', error);
             this.eventHubDisconnectSubject.next(this.reconnectionAttempt);
         }
     }
 
-    handleConnectionStatusChanged(isConnected: boolean) {
-        if (isConnected) {
-            this.logger.info('[EventsService] - Connection status changed: connected.');
-            this.start();
-        }
-    }
+    // handleConnectionStatusChanged(isConnected: boolean) {
+    //     if (isConnected) {
+    //         this.logger.info('[EventsService] - Connection status changed: connected.');
+    //         this.start();
+    //     }
+    //     this.connected.next(isConnected);
+    // }
 }
