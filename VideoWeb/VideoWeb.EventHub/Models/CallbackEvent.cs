@@ -16,5 +16,8 @@ namespace VideoWeb.EventHub.Models
         public string TransferTo { get; set; }
 
         public string Reason { get; set; }
+        public bool IsParticipantInVmr { get; set; }
+        public bool IsConferenceInSession { get; set; }
+
     }
 }

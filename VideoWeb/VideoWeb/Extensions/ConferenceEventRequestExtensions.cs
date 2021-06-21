@@ -17,7 +17,7 @@ namespace VideoWeb.Extensions
             return !request.ParticipantRoomId.IsNullOrEmpty() && !request.ParticipantId.IsNullOrEmpty();
         }
 
-        private static bool IsParticipantInVmr(this ConferenceEventRequest request, Conference conference)
+        public static bool IsParticipantInVmr(this ConferenceEventRequest request, Conference conference)
         {
             return conference.CivilianRooms.First(x => x.Id.ToString() == request.ParticipantRoomId)
                 .Participants.Any(x => x.ToString() == request.ParticipantId);
@@ -68,15 +68,6 @@ namespace VideoWeb.Extensions
                 _ => request.EventType
             };
             return request;
-        }
-
-        public static void UpdateEventsTypeForVmrParticipants(this ConferenceEventRequest request,
-            Conference conference)
-        {
-            if (request.ParticipantRoomId.IsNullOrEmpty() || !conference.IsConferenceInSession() ||
-                !request.IsParticipantInVmr(conference)) return;
-            request.EventType = EventType.RoomParticipantTransfer;
-            request.TransferTo = nameof(RoomType.HearingRoom);
         }
     }
 }

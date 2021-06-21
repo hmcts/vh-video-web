@@ -71,8 +71,6 @@ namespace VideoWeb.Controllers
                     events = request.CreateEventsForParticipantsInRoom(conference, roomId);
                 }
 
-                request.UpdateEventsTypeForVmrParticipants(conference);
-                
                 var callbackEvents = events.Select(e => TransformAndMapRequest(e, conference)).ToList();
 
                 // DO NOT USE Task.WhenAll because the handlers are not thread safe and will overwrite Source<Variable> for each run

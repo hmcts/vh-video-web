@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
+using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings.Interfaces;
 using VideoApi.Contract.Requests;
+using VideoWeb.Extensions;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.Mappings
@@ -33,7 +35,9 @@ namespace VideoWeb.Mappings
                 TransferTo = request.TransferTo,
                 TransferFrom = request.TransferFrom,
                 TimeStampUtc = request.TimeStampUtc,
-                ParticipantId = participantId
+                ParticipantId = participantId,
+                IsParticipantInVmr = request.IsParticipantInVmr(conference),
+                IsConferenceInSession = conference.CurrentStatus == ConferenceState.InSession
             };
             
             if (IsEndpointJoined(callbackEvent, conference))

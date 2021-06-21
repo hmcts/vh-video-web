@@ -50,20 +50,6 @@ namespace VideoWeb.UnitTests.Extensions
             result.All(r => r.EventType == EventType.RoomParticipantTransfer).Should().BeTrue();
         }
 
-        [Test]
-        public void should_update_event_to_participant_room_transfer_event()
-        {
-            var civilianRoom = _testConference.CivilianRooms.First();
-            var request = CreateRequest();
-            request.EventType = EventType.Joined;
-            request.ParticipantId = civilianRoom.Participants.First().ToString();
-            request.ParticipantRoomId = _participantRoomId.ToString();
-            _testConference.CivilianRooms.First().Id = _participantRoomId;
-            request.UpdateEventsTypeForVmrParticipants(_testConference);
-
-            (request.EventType == EventType.RoomParticipantTransfer).Should().BeTrue();
-        }
-
         protected Conference BuildConferenceForTest()
         {
             var conference = new Conference

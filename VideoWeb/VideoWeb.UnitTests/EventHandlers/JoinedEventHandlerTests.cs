@@ -47,6 +47,39 @@ namespace VideoWeb.UnitTests.EventHandlers
             
             VideoApiClientMock.Verify(x => x.GetConferenceDetailsByIdAsync(TestConference.Id), Times.Once);
         }
+        [Test]
+        public async Task Should_send_in_hearing_message_to_participants_and_service_bus_when_participant_joins()
+        {
+            MemoryCache.Remove(TestConference.Id);
+            var confDetail = CreateConferenceDetailsResponse();
+            VideoApiClientMock.Setup(x => x.GetConferenceDetailsByIdAsync(TestConference.Id)).ReturnsAsync(confDetail);
+
+            _eventHandler = new JoinedEventHandler(EventHubContextMock.Object, ConferenceCache, LoggerMock.Object,
+                VideoApiClientMock.Object);
+
+            var conference = TestConference;
+            var participantForEvent = conference.Participants.First(x => x.Role == Role.Individual);
+            var participantCount = conference.Participants.Count + 1; // plus one for admin
+
+            var callbackEvent = new CallbackEvent
+            {
+                EventType = EventType.Joined,
+                EventId = Guid.NewGuid().ToString(),
+                ConferenceId = conference.Id,
+                ParticipantId = participantForEvent.Id,
+                TimeStampUtc = DateTime.UtcNow,
+                IsParticipantInVmr = true,
+                IsConferenceInSession = true
+            };
+
+            await _eventHandler.HandleAsync(callbackEvent);
+
+            EventHubClientMock.Verify(
+                x => x.ParticipantStatusMessage(_eventHandler.SourceParticipant.Id, _eventHandler.SourceParticipant.Username, conference.Id,
+                    ParticipantState.InHearing), Times.Exactly(participantCount));
+
+            VideoApiClientMock.Verify(x => x.GetConferenceDetailsByIdAsync(TestConference.Id), Times.Once);
+        }
 
         private ConferenceDetailsResponse CreateConferenceDetailsResponse()
         {

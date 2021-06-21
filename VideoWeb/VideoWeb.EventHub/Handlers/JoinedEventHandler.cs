@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -25,6 +26,9 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
+            if (callbackEvent.IsConferenceInSession && callbackEvent.IsParticipantInVmr)
+                return PublishParticipantStatusMessage(ParticipantState.InHearing);
+
             return PublishParticipantStatusMessage(ParticipantState.Available);
         }
     }
