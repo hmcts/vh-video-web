@@ -28,6 +28,8 @@ namespace VideoWeb.EventHub.Handlers
         {
             if (callbackEvent.IsConferenceInSession && callbackEvent.IsParticipantInVmr)
                 return PublishParticipantStatusMessage(ParticipantState.InHearing);
+            else if (callbackEvent.ParticipantStatus == ParticipantStatus.InConsultation)
+                return PublishParticipantStatusMessage(ParticipantState.InConsultation);
 
             return PublishParticipantStatusMessage(ParticipantState.Available);
         }

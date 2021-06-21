@@ -4,9 +4,7 @@ using Castle.Core.Internal;
 using Newtonsoft.Json;
 using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
-using VideoApi.Contract.Responses;
 using VideoWeb.Common.Models;
-using RoomType = VideoWeb.Common.Models.RoomType;
 
 namespace VideoWeb.Extensions
 {
@@ -21,6 +19,13 @@ namespace VideoWeb.Extensions
         {
             return conference.CivilianRooms.First(x => x.Id.ToString() == request.ParticipantRoomId)
                 .Participants.Any(x => x.ToString() == request.ParticipantId);
+        }
+        public static ParticipantStatus GetParticipantsStatus(this ConferenceEventRequest request, Conference conference)
+        {
+            var participant = conference.Participants.Single(x =>
+                x.Id.ToString() == request.ParticipantId);
+
+            return participant.ParticipantStatus;
         }
 
         public static bool IsParticipantAVmr(this ConferenceEventRequest request, Conference conference,

@@ -1,4 +1,5 @@
 using System;
+using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Enums;
 
 namespace VideoWeb.EventHub.Models
@@ -18,6 +19,8 @@ namespace VideoWeb.EventHub.Models
         public string Reason { get; set; }
         public bool IsParticipantInVmr { get; set; }
         public bool IsConferenceInSession { get; set; }
+        public ParticipantStatus ParticipantStatus { get; set; }
+
 
     }
 }

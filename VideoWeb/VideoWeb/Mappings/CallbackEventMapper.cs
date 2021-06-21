@@ -37,7 +37,8 @@ namespace VideoWeb.Mappings
                 TimeStampUtc = request.TimeStampUtc,
                 ParticipantId = participantId,
                 IsParticipantInVmr = request.IsParticipantInVmr(conference),
-                IsConferenceInSession = conference.CurrentStatus == ConferenceState.InSession
+                IsConferenceInSession = conference.CurrentStatus == ConferenceState.InSession,
+                ParticipantStatus = request.GetParticipantsStatus(conference)
             };
             
             if (IsEndpointJoined(callbackEvent, conference))
