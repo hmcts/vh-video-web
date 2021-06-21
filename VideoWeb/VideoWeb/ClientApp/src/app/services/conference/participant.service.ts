@@ -43,6 +43,31 @@ export class ParticipantService {
         return this._virtualMeetingRooms;
     }
 
+    private participantsLoadedSubject: Subject<ParticipantModel[]> = new Subject<ParticipantModel[]>();
+    get onParticipantsLoaded$(): Observable<ParticipantModel[]> {
+        return this.participantsLoadedSubject.asObservable();
+    }
+
+    private participantConnectedToPexipSubject: Subject<ParticipantModel> = new Subject<ParticipantModel>();
+    get onParticipantConnectedToPexip$(): Observable<ParticipantModel> {
+        return this.participantConnectedToPexipSubject.asObservable();
+    }
+
+    private participantPexipIdChangedSubject: Subject<ParticipantModel> = new Subject<ParticipantModel>();
+    get onParticipantPexipIdChanged$(): Observable<ParticipantModel> {
+        return this.participantPexipIdChangedSubject.asObservable();
+    }
+
+    private vmrConnectedToPexipSubject: Subject<VirtualMeetingRoomModel> = new Subject<VirtualMeetingRoomModel>();
+    get onVmrConnectedToPexip$(): Observable<VirtualMeetingRoomModel> {
+        return this.vmrConnectedToPexipSubject.asObservable();
+    }
+
+    private vmrPexipIdChangedSubject: Subject<VirtualMeetingRoomModel> = new Subject<VirtualMeetingRoomModel>();
+    get onVmrPexipIdChanged$(): Observable<VirtualMeetingRoomModel> {
+        return this.vmrPexipIdChangedSubject.asObservable();
+    }
+
     private participantStatusChangedSubject: Subject<ParticipantModel> = new Subject<ParticipantModel>();
     get onParticipantStatusChanged$(): Observable<ParticipantModel> {
         return this.participantStatusChangedSubject.asObservable();
@@ -129,6 +154,7 @@ export class ParticipantService {
     private handlePexipVmrUpdate(vmr: VirtualMeetingRoomModel, update: ParticipantUpdated) {
         if (!vmr.pexipId) {
             vmr.pexipId = update.uuid;
+            this.vmrConnectedToPexipSubject.next(vmr);
 
             this.logger.warn(
                 `${this.loggingPrefix} not updating VMR participants hearing state, restoring cached values instead, as it was their first pexip id`,
@@ -139,15 +165,16 @@ export class ParticipantService {
             );
 
             return;
+        } else if (vmr.pexipId !== update.uuid) {
+            this.logger.info(`${this.loggingPrefix} updating VMRs pexip ID`, {
+                vmrId: vmr.id,
+                oldValue: vmr.pexipId,
+                newValue: update.uuid
+            });
+
+            vmr.pexipId = update.uuid;
+            this.vmrPexipIdChangedSubject.next(vmr);
         }
-
-        this.logger.info(`${this.loggingPrefix} updating VMRs pexip ID`, {
-            vmrId: vmr.id,
-            oldValue: vmr.pexipId,
-            newValue: update.uuid
-        });
-
-        vmr.pexipId = update.uuid;
 
         this.updateParticipantHearingState(vmr.participants, update);
     }
@@ -155,6 +182,7 @@ export class ParticipantService {
     private handlePexipParticipantUpdate(participant: ParticipantModel, update: ParticipantUpdated) {
         if (!participant.pexipId) {
             participant.pexipId = update.uuid;
+            this.participantConnectedToPexipSubject.next(participant);
 
             this.logger.warn(
                 `${this.loggingPrefix} not updating participants hearing state, restoring cached values instead, as it was their first pexip id`,
@@ -173,13 +201,16 @@ export class ParticipantService {
 
     private updateParticipantHearingState(participants: ParticipantModel[], update: ParticipantUpdated) {
         for (const participant of participants) {
-            this.logger.info(`${this.loggingPrefix} updating participants pexip ID`, {
-                participantId: participant.id,
-                oldValue: participant.pexipId,
-                newValue: update.uuid
-            });
+            if (participant.pexipId !== update.uuid) {
+                this.logger.info(`${this.loggingPrefix} participant pexip ID changed.`, {
+                    participantId: participant.id,
+                    participantsHearingState: participant as IParticipantHearingState,
+                    participantUpdate: update
+                });
 
-            participant.pexipId = update.uuid;
+                participant.pexipId = update.uuid;
+                this.participantPexipIdChangedSubject.next(participant);
+            }
 
             if (participant.isSpotlighted != update.isSpotlighted) {
                 this.logger.info(`${this.loggingPrefix} updating participants spotlight status`, {
@@ -295,6 +326,8 @@ export class ParticipantService {
                     });
 
                     this._participants = participants;
+                    this.participantsLoadedSubject.next(this.participants);
+
                     this.populateVirtualMeetingRooms();
                 });
 

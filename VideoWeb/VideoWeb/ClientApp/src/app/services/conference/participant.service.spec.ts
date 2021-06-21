@@ -1,6 +1,7 @@
 import { fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { Observable, Subject, Subscription } from 'rxjs';
+import { FindValueSubscriber } from 'rxjs/internal/operators/find';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
@@ -180,6 +181,9 @@ fdescribe('ParticipantService', () => {
             const participantResponses = [participantOne, participantTwo];
             const endpointResponses = [endpointOne, endpointTwo];
 
+            let result = [];
+            sut.onParticipantsLoaded$.subscribe(participants => (result = participants));
+
             // Act
             const conference = new ConferenceResponse();
             conference.id = 'conference-id';
@@ -199,6 +203,10 @@ fdescribe('ParticipantService', () => {
                     .map(participantResponse => ParticipantModel.fromParticipantForUserResponse(participantResponse))
                     .concat(endpointResponses.map(endpointResponse => ParticipantModel.fromVideoEndpointResponse(endpointResponse)))
             );
+            expect(result).toEqual([
+                ...participantResponses.map(x => ParticipantModel.fromParticipantForUserResponse(x)),
+                ...endpointResponses.map(x => ParticipantModel.fromVideoEndpointResponse(x))
+            ]);
         }));
 
         it('should subscribe to onParticipantUpdated', fakeAsync(() => {
@@ -639,6 +647,161 @@ fdescribe('ParticipantService', () => {
                 expect(participants[2].pexipId).toEqual(pexipId);
                 expect(participants[3].pexipId).toEqual(pexipId);
             });
+        });
+
+        describe('raises relevant events', () => {
+            it('should raise participant connected to pexip event when it is their first id', fakeAsync(() => {
+                // Arrange
+                const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
+                const newPexipId = 'new-pexip-id';
+                const participantId = participant.id;
+                const pexipName = `pexip-name-${participantId}`;
+                const participantUpdated = ({
+                    pexipDisplayName: pexipName,
+                    uuid: newPexipId
+                } as unknown) as ParticipantUpdated;
+                participant.pexipId = null;
+
+                spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
+
+                let connectedResult = null;
+                sut.onParticipantConnectedToPexip$.subscribe(participant => (connectedResult = participant));
+
+                let changedResult = null;
+                sut.onParticipantPexipIdChanged$.subscribe(participant => (changedResult = participant));
+
+                // Act
+                sut.handlePexipUpdate(participantUpdated);
+                flush();
+
+                // Assert
+                expect(sut.participants[0].pexipId).toEqual(newPexipId);
+                expect(connectedResult).toBe(participant);
+                expect(changedResult).toBeNull();
+            }));
+
+            it('should raise participant pexip id changed event when it is NOT their first id', fakeAsync(() => {
+                // Arrange
+                const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
+                const newPexipId = 'new-pexip-id';
+                const participantId = participant.id;
+                const pexipName = `pexip-name-${participantId}`;
+                const participantUpdated = ({
+                    pexipDisplayName: pexipName,
+                    uuid: newPexipId
+                } as unknown) as ParticipantUpdated;
+                participant.pexipId = 'old-pexip-id';
+
+                spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
+
+                let connectedResult = null;
+                sut.onParticipantConnectedToPexip$.subscribe(participant => (connectedResult = participant));
+
+                let changedResult = null;
+                sut.onParticipantPexipIdChanged$.subscribe(participant => (changedResult = participant));
+
+                // Act
+                sut.handlePexipUpdate(participantUpdated);
+                flush();
+
+                // Assert
+                expect(sut.participants[0].pexipId).toEqual(newPexipId);
+                expect(connectedResult).toBeNull();
+                expect(changedResult).toBe(participant);
+            }));
+
+            it('should raise VMR connected changed event when it is their first id', fakeAsync(() => {
+                // Arrange
+                const pexipId = 'pexip-id';
+                const pexipName = `pexip-name-${vmrId}`;
+                const participantUpdated = ({
+                    pexipDisplayName: pexipName,
+                    uuid: pexipId
+                } as unknown) as ParticipantUpdated;
+
+                const participants = asParticipantModels([participantOne, participantTwo, vmrParticipantOne, vmrParticipantTwo]);
+                const vmr = VirtualMeetingRoomModel.fromRoomSummaryResponse(participants[2].virtualMeetingRoomSummary);
+                vmr.pexipId = null;
+                vmr.participants = [participants[2], participants[3]];
+
+                spyOnProperty(sut, 'participants', 'get').and.returnValue(participants);
+                spyOnProperty(sut, 'virtualMeetingRooms', 'get').and.returnValue([vmr]);
+
+                let i = 0;
+                let participantConnectedResults = [null, null];
+                sut.onParticipantConnectedToPexip$.subscribe(participant => (participantConnectedResults[i++] = participant));
+
+                let j = 0;
+                let participantChangedResults = [null, null];
+                sut.onParticipantPexipIdChanged$.subscribe(participant => (participantChangedResults[j++] = participant));
+
+                let vmrConnectedResult = null;
+                sut.onVmrConnectedToPexip$.subscribe(vmr => (vmrConnectedResult = vmr));
+
+                let vmrChangedResult = null;
+                sut.onVmrPexipIdChanged$.subscribe(vmr => (vmrChangedResult = vmr));
+
+                // Act
+                sut.handlePexipUpdate(participantUpdated);
+                flush();
+
+                // Assert
+                expect(vmrConnectedResult).toBe(vmr);
+                expect(vmrChangedResult).toBeNull();
+                expect(participants[2].pexipId).toBeNull();
+                expect(participants[3].pexipId).toBeNull();
+                expect(participantConnectedResults[0]).toBeNull();
+                expect(participantConnectedResults[1]).toBeNull();
+                expect(participantChangedResults[0]).toBeNull();
+                expect(participantChangedResults[1]).toBeNull();
+            }));
+
+            it('should raise VMR updated and participant updated event when it is their first id', fakeAsync(() => {
+                // Arrange
+                const pexipId = 'pexip-id';
+                const pexipName = `pexip-name-${vmrId}`;
+                const participantUpdated = ({
+                    pexipDisplayName: pexipName,
+                    uuid: pexipId
+                } as unknown) as ParticipantUpdated;
+
+                const participants = asParticipantModels([participantOne, participantTwo, vmrParticipantOne, vmrParticipantTwo]);
+                const vmr = VirtualMeetingRoomModel.fromRoomSummaryResponse(participants[2].virtualMeetingRoomSummary);
+                vmr.pexipId = 'existing-pexip-id';
+                vmr.participants = [participants[2], participants[3]];
+                vmr.participants.forEach(x => (x.pexipId = 'existing-pexip-id'));
+
+                spyOnProperty(sut, 'participants', 'get').and.returnValue(participants);
+                spyOnProperty(sut, 'virtualMeetingRooms', 'get').and.returnValue([vmr]);
+
+                let i = 0;
+                let participantConnectedResults = [null, null];
+                sut.onParticipantConnectedToPexip$.subscribe(participant => (participantConnectedResults[i++] = participant));
+
+                let j = 0;
+                let participantChangedResults = [null, null];
+                sut.onParticipantPexipIdChanged$.subscribe(participant => (participantChangedResults[j++] = participant));
+
+                let vmrConnectedResult = null;
+                sut.onVmrConnectedToPexip$.subscribe(vmr => (vmrConnectedResult = vmr));
+
+                let vmrChangedResult = null;
+                sut.onVmrPexipIdChanged$.subscribe(vmr => (vmrChangedResult = vmr));
+
+                // Act
+                sut.handlePexipUpdate(participantUpdated);
+                flush();
+
+                // Assert
+                expect(vmrConnectedResult).toBeNull();
+                expect(vmrChangedResult).toBe(vmr);
+                expect(participants[2].pexipId).toBe(pexipId);
+                expect(participants[3].pexipId).toBe(pexipId);
+                expect(participantConnectedResults[0]).toBeNull();
+                expect(participantConnectedResults[1]).toBeNull();
+                expect(participantChangedResults[0]).toBe(vmr.participants[0]);
+                expect(participantChangedResults[1]).toBe(vmr.participants[1]);
+            }));
         });
 
         describe('handles spotlight status changes', () => {
