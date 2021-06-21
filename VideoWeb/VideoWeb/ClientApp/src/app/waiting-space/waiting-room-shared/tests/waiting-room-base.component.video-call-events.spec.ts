@@ -120,23 +120,12 @@ describe('WaitingRoomComponent Video Call', () => {
     it('should define outgoing stream when video call has been setup', () => {
         const outgoingStream = <any>{};
         const payload = new CallSetup(outgoingStream);
-        component.eventServiceConnected = true;
+        // component.eventServiceConnected = true;
 
         onSetupSubject.next(payload);
 
         expect(videoCallService.connect).toHaveBeenCalledWith('', null);
         expect(component.outgoingStream).toBeDefined();
-    });
-
-    it('should not connect when eventServiceConnect is false', () => {
-        const calledBefore = videoCallService.connect.calls.count();
-        const outgoingStream = <any>{};
-        const payload = new CallSetup(outgoingStream);
-        component.eventServiceConnected = false;
-
-        onSetupSubject.next(payload);
-        expect(videoCallService.connect).toHaveBeenCalledTimes(calledBefore);
-        expect(component.outgoingStream).not.toBeDefined();
     });
 
     it('should define incoming stream when video call has connected', () => {

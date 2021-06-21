@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
-import { ReplaySubject, Subject, Observable, BehaviorSubject } from 'rxjs';
+import { ReplaySubject, Subject, Observable } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import { ConfigService } from './api/config.service';
 import { ConnectionStatusService } from './connection-status.service';
@@ -18,11 +18,6 @@ export class EventsHubService {
     private eventsHubReady = new ReplaySubject<void>();
     get onEventsHubReady(): Observable<void> {
         return this.eventsHubReady.asObservable();
-    }
-
-    private _isConnected = new BehaviorSubject<boolean>(false);
-    get isConnected(): BehaviorSubject<boolean> {
-        return this._isConnected;
     }
 
     private _connection: signalR.HubConnection;
@@ -198,11 +193,10 @@ export class EventsHubService {
         }
     }
 
-    // handleConnectionStatusChanged(isConnected: boolean) {
-    //     if (isConnected) {
-    //         this.logger.info('[EventsService] - Connection status changed: connected.');
-    //         this.start();
-    //     }
-    //     this.connected.next(isConnected);
-    // }
+    handleConnectionStatusChanged(isConnected: boolean) {
+        if (isConnected) {
+            this.logger.info('[EventsService] - Connection status changed: connected.');
+            this.start();
+        }
+    }
 }

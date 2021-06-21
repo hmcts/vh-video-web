@@ -27,7 +27,8 @@ import {
     participantStatusSubjectMock,
     roomUpdateSubjectMock,
     roomTransferSubjectMock,
-    hearingCountdownCompleteSubjectMock
+    hearingCountdownCompleteSubjectMock,
+    onEventsHubReadySubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import {
     clockService,
@@ -314,37 +315,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
     it('should go to service error when disconnected from eventhub more than 7 times', () => {
         eventHubDisconnectSubject.next(8);
         expect(videoWebService.getConferenceById).toHaveBeenCalledTimes(0);
-    });
-
-    describe('eventhub reconnect', () => {
-        let expectCallSetup: boolean;
-        const testCallSetup = new CallSetup(new MediaStream());
-
-        beforeEach(() => {
-            videoWebService.getConferenceById.calls.reset();
-            errorService.goToServiceError.calls.reset();
-            spyOn(component, 'handleCallSetup');
-        });
-        it('should get conference on eventhub reconnect and not call handleCallSetup if not ', () => {
-            expectCallSetup = false;
-            component.pendingCallSetup = null;
-        });
-
-        it('should get conference on eventhub reconnect and not call ', () => {
-            expectCallSetup = true;
-            component.pendingCallSetup = testCallSetup;
-        });
-
-        afterEach(() => {
-            eventHubReconnectSubject.next();
-            expect(videoWebService.getConferenceById).toHaveBeenCalledTimes(1);
-            if (expectCallSetup) {
-                expect(component.handleCallSetup).toHaveBeenCalledWith(testCallSetup);
-                expect(component.handleCallSetup).toHaveBeenCalledTimes(1);
-            } else {
-                expect(component.handleCallSetup).not.toHaveBeenCalled();
-            }
-        });
     });
 
     it('should update conference status and not show video when "in session" message received and participant is a witness', fakeAsync(() => {

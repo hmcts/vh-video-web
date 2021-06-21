@@ -1,7 +1,7 @@
 import { Directive, ElementRef, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
-import { Subject, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import {
@@ -81,7 +81,6 @@ export abstract class WaitingRoomBaseDirective {
 
     stream: MediaStream | URL;
     connected: boolean;
-    videoServiceConnected$ = new Subject<boolean>();
     outgoingStream: MediaStream | URL;
     presentationStream: MediaStream | URL;
     streamInMain = false;
@@ -105,7 +104,6 @@ export abstract class WaitingRoomBaseDirective {
     @ViewChild('roomTitleLabel', { static: false }) roomTitleLabel: ElementRef<HTMLDivElement>;
     @ViewChild('hearingControls', { static: false }) hearingControls: PrivateConsultationRoomControlsComponent;
     countdownComplete: boolean;
-    pendingCallSetup: CallSetup;
 
     protected constructor(
         protected route: ActivatedRoute,
@@ -166,32 +164,30 @@ export abstract class WaitingRoomBaseDirective {
         return str.replace(/\s/g, '-').toLowerCase();
     }
 
-    getConference() {
-        return this.videoWebService
-            .getConferenceById(this.conferenceId)
-            .then((data: ConferenceResponse) => {
-                this.errorCount = 0;
-                this.loadingData = false;
-                this.countdownComplete = data.status === ConferenceStatus.InSession;
-                this.hearing = new Hearing(data);
-                this.conference = this.hearing.getConference();
-                this.videoWebService.getAllowedEndpointsForConference(this.conferenceId).then((endpoints: AllowedEndpointResponse[]) => {
-                    this.participantEndpoints = endpoints;
-                });
-
-                this.participant = this.getLoggedParticipant();
-                this.logger.debug(`${this.loggerPrefix} Getting conference details`, {
-                    conference: this.conferenceId,
-                    participant: this.participant.id
-                });
-            })
-            .catch(error => {
-                this.logger.error(`${this.loggerPrefix} There was an error getting a conference ${this.conferenceId}`, error, {
-                    conference: this.conferenceId
-                });
-                this.loadingData = false;
-                this.errorService.handleApiError(error);
+    async getConference(): Promise<void> {
+        try {
+            const data = await this.videoWebService.getConferenceById(this.conferenceId);
+            this.errorCount = 0;
+            this.loadingData = false;
+            this.countdownComplete = data.status === ConferenceStatus.InSession;
+            this.hearing = new Hearing(data);
+            this.conference = this.hearing.getConference();
+            this.videoWebService.getAllowedEndpointsForConference(this.conferenceId).then((endpoints: AllowedEndpointResponse[]) => {
+                this.participantEndpoints = endpoints;
             });
+
+            this.participant = this.getLoggedParticipant();
+            this.logger.debug(`${this.loggerPrefix} Getting conference details`, {
+                conference: this.conferenceId,
+                participant: this.participant.id
+            });
+        } catch (error) {
+            this.logger.error(`${this.loggerPrefix} There was an error getting a conference ${this.conferenceId}`, error, {
+                conference: this.conferenceId
+            });
+            this.loadingData = false;
+            this.errorService.handleApiError(error);
+        }
     }
 
     async getConferenceClosedTime(conferenceId: string): Promise<void> {
@@ -430,8 +426,7 @@ export abstract class WaitingRoomBaseDirective {
                     conference: this.conferenceId,
                     participant: this.participant.id
                 });
-                await this.call();
-                this.getConference().then(() => this.updateShowVideo());
+                await this.call().then(() => this.getConference().then(() => this.updateShowVideo()));
             })
         );
 
@@ -441,8 +436,7 @@ export abstract class WaitingRoomBaseDirective {
                     conference: this.conferenceId,
                     participant: this.participant.id
                 });
-                await this.call();
-                this.getConference().then(() => this.updateShowVideo());
+                await this.call().then(() => this.getConference().then(() => this.updateShowVideo()));
             })
         );
 
@@ -804,7 +798,7 @@ export abstract class WaitingRoomBaseDirective {
         }
         this.stream = null;
         this.outgoingStream = null;
-        this.setConnected(false);
+        this.connected = false;
         this.showVideo = false;
     }
 
@@ -825,13 +819,11 @@ export abstract class WaitingRoomBaseDirective {
         this.logger.debug(`${this.loggerPrefix} Conference has setup`, logPayload);
         this.videoCallService.connect('', null);
         this.outgoingStream = callSetup.stream;
-        this.pendingCallSetup = callSetup;
     }
 
     async handleCallConnected(callConnected: ConnectedCall): Promise<void> {
-        console.log('Faz - callConnected', callConnected);
         this.errorCount = 0;
-        this.setConnected(true);
+        this.connected = true;
         this.logger.debug(`${this.loggerPrefix} Successfully connected to hearing`, { conference: this.conferenceId });
         this.stream = callConnected.stream;
         const incomingFeedElement = document.getElementById('incomingFeed') as any;
@@ -848,10 +840,9 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     handleCallError(error: CallError): void {
-        console.log('Faz - callError');
         this.stopHeartbeat();
         this.errorCount++;
-        this.setConnected(false);
+        this.connected = false;
         this.updateShowVideo();
         this.logger.error(`${this.loggerPrefix} Error from pexip. Reason : ${error.reason}`, new Error(error.reason), {
             pexipError: error,
@@ -862,17 +853,14 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     handleCallDisconnect(reason: DisconnectedCall): void {
-        console.log('Faz - Disconnect');
-        this.setConnected(false);
+        this.connected = false;
         this.stopHeartbeat();
         this.updateShowVideo();
         this.logger.warn(`${this.loggerPrefix} Disconnected from pexip. Reason : ${reason.reason}`);
         if (!this.hearing.isPastClosedTime()) {
-            console.log('Faz - reconnect attempt');
             this.logger.warn(`${this.loggerPrefix} Attempting to reconnect to pexip in ${this.CALL_TIMEOUT}ms`);
             this.callbackTimeout = setTimeout(async () => {
-                console.log('Faz - callbackTimeout');
-                await this.call();
+                await this.callAndUpdateView();
             }, this.CALL_TIMEOUT);
         }
     }
@@ -1036,7 +1024,6 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     updateShowVideo(): void {
-        console.log('Faz - updateShowVideo');
         const logPaylod = {
             conference: this.conferenceId,
             caseName: this.conference.case_name,
@@ -1220,8 +1207,8 @@ export abstract class WaitingRoomBaseDirective {
         this.streamInMain = !this.streamInMain;
     }
 
-    setConnected(connected: boolean) {
-        this.connected = connected;
-        this.videoServiceConnected$.next(connected);
+    private async callAndUpdateView(): Promise<void> {
+        console.log('HELLKO');
+        return this.call().then(() => this.getConference().then(() => this.updateShowVideo()));
     }
 }

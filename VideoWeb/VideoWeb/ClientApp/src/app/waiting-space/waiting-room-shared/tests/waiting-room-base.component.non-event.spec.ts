@@ -47,7 +47,7 @@ import { WRTestComponent } from './WRTestComponent';
 import { HearingRole } from '../../models/hearing-role-model';
 import { ElementRef } from '@angular/core';
 import { PrivateConsultationRoomControlsComponent } from '../../private-consultation-room-controls/private-consultation-room-controls.component';
-import { eventsServiceSpy, onEventsHubReadySubjectMock } from 'src/app/testing/mocks/mock-events-service';
+import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 
 describe('WaitingRoomComponent message and clock', () => {
     let component: WRTestComponent;
@@ -114,12 +114,6 @@ describe('WaitingRoomComponent message and clock', () => {
 
         // Assert
         expect(consultationService.displayConsultationLeaveModal).toHaveBeenCalledTimes(1);
-    });
-
-    it('should set eventServiceConnect to true when onEventsHubReady triggers', () => {
-        component.eventServiceConnected = false;
-        onEventsHubReadySubjectMock.next(true);
-        expect(component.eventServiceConnected).toBe(true);
     });
 
     it('should get conference', fakeAsync(async () => {
@@ -434,72 +428,94 @@ describe('WaitingRoomComponent message and clock', () => {
         expect(roomClosingToastrService.currentToast).toBeTruthy();
     });
 
-    it('should use interpreter room when participant has links', async () => {
-        component.participant.linked_participants = [
-            new LinkedParticipantResponse({ linked_id: Guid.create().toString(), link_type: LinkType.Interpreter })
-        ];
-        const room = new SharedParticipantRoom({
-            participant_join_uri: 'patjoinuri',
-            pexip_node: 'sip.test.node',
-            display_name: 'foo',
-            tile_display_name: `I1;Interpreter1;${component.participant.id}`
+    describe('call', () => {
+        beforeAll(() => {
+            jasmine.getEnv().allowRespy(true);
         });
-        videoCallService.retrieveInterpreterRoom.and.resolveTo(room);
-
-        await component.call();
-
-        expect(videoCallService.makeCall).toHaveBeenCalledWith(
-            room.pexip_node,
-            room.participant_join_uri,
-            room.tile_display_name,
-            component.maxBandwidth
-        );
-    });
-
-    it('should use witness interpreter room when participant or links is a witness', async () => {
-        const witness = component.conference.participants.find(x => x.hearing_role === HearingRole.WITNESS);
-        witness.linked_participants = [
-            new LinkedParticipantResponse({ linked_id: component.participant.id, link_type: LinkType.Interpreter })
-        ];
-        component.participant.linked_participants = [
-            new LinkedParticipantResponse({ linked_id: witness.id, link_type: LinkType.Interpreter })
-        ];
-        const room = new SharedParticipantRoom({
-            participant_join_uri: 'patjoinuri',
-            pexip_node: 'sip.test.node',
-            display_name: 'foo',
-            tile_display_name: `I1;Interpreter1;${component.participant.id}`
+        afterAll(() => {
+            jasmine.getEnv().allowRespy(false);
         });
-        videoCallService.retrieveWitnessInterpreterRoom.and.resolveTo(room);
 
-        await component.call();
+        it('should not call when event hub is not connected', async () => {
+            videoCallService.makeCall.calls.reset();
+            spyOnProperty(eventsServiceSpy, 'eventHubIsConnected').and.returnValue(false);
+            await component.call();
 
-        expect(videoCallService.makeCall).toHaveBeenCalledWith(
-            room.pexip_node,
-            room.participant_join_uri,
-            room.tile_display_name,
-            component.maxBandwidth
-        );
-    });
-
-    it('should use judicial room when participant is a joh', async () => {
-        component.participant.role = Role.JudicialOfficeHolder;
-        const room = new SharedParticipantRoom({
-            participant_join_uri: 'patjoinuri',
-            pexip_node: 'sip.test.node',
-            display_name: 'foo',
-            tile_display_name: `T1;PanelMember;${component.participant.id}`
+            expect(videoCallService.makeCall).not.toHaveBeenCalled();
         });
-        videoCallService.retrieveJudicialRoom.and.resolveTo(room);
 
-        await component.call();
+        describe('when eventHubIsConnected', () => {
+            beforeEach(() => {
+                spyOnProperty(eventsServiceSpy, 'eventHubIsConnected').and.returnValue(true);
+            });
+            it('should use interpreter room when participant has links', async () => {
+                component.participant.linked_participants = [
+                    new LinkedParticipantResponse({ linked_id: Guid.create().toString(), link_type: LinkType.Interpreter })
+                ];
+                const room = new SharedParticipantRoom({
+                    participant_join_uri: 'patjoinuri',
+                    pexip_node: 'sip.test.node',
+                    display_name: 'foo',
+                    tile_display_name: `I1;Interpreter1;${component.participant.id}`
+                });
+                videoCallService.retrieveInterpreterRoom.and.resolveTo(room);
 
-        expect(videoCallService.makeCall).toHaveBeenCalledWith(
-            room.pexip_node,
-            room.participant_join_uri,
-            room.tile_display_name,
-            component.maxBandwidth
-        );
+                await component.call();
+
+                expect(videoCallService.makeCall).toHaveBeenCalledWith(
+                    room.pexip_node,
+                    room.participant_join_uri,
+                    room.tile_display_name,
+                    component.maxBandwidth
+                );
+            });
+
+            it('should use witness interpreter room when participant or links is a witness', async () => {
+                const witness = component.conference.participants.find(x => x.hearing_role === HearingRole.WITNESS);
+                witness.linked_participants = [
+                    new LinkedParticipantResponse({ linked_id: component.participant.id, link_type: LinkType.Interpreter })
+                ];
+                component.participant.linked_participants = [
+                    new LinkedParticipantResponse({ linked_id: witness.id, link_type: LinkType.Interpreter })
+                ];
+                const room = new SharedParticipantRoom({
+                    participant_join_uri: 'patjoinuri',
+                    pexip_node: 'sip.test.node',
+                    display_name: 'foo',
+                    tile_display_name: `I1;Interpreter1;${component.participant.id}`
+                });
+                videoCallService.retrieveWitnessInterpreterRoom.and.resolveTo(room);
+
+                await component.call();
+
+                expect(videoCallService.makeCall).toHaveBeenCalledWith(
+                    room.pexip_node,
+                    room.participant_join_uri,
+                    room.tile_display_name,
+                    component.maxBandwidth
+                );
+            });
+
+            it('should use judicial room when participant is a joh', async () => {
+                component.participant.role = Role.JudicialOfficeHolder;
+                const room = new SharedParticipantRoom({
+                    participant_join_uri: 'patjoinuri',
+                    pexip_node: 'sip.test.node',
+                    display_name: 'foo',
+                    tile_display_name: `T1;PanelMember;${component.participant.id}`
+                });
+                videoCallService.retrieveJudicialRoom.and.resolveTo(room);
+
+                await component.call();
+
+                expect(videoCallService.makeCall).toHaveBeenCalledWith(
+                    room.pexip_node,
+                    room.participant_join_uri,
+                    room.tile_display_name,
+                    component.maxBandwidth
+                );
+            });
+        });
     });
 
     it('should mute video stream when hearing is in session and countdown is not complete', () => {

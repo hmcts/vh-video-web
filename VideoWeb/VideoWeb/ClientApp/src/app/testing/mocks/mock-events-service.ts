@@ -35,6 +35,7 @@ export const roomUpdateSubjectMock = new Subject<Room>();
 export const roomTransferSubjectMock = new Subject<RoomTransfer>();
 export const adminAnsweredChatSubjectMock = new Subject<ConferenceMessageAnswered>();
 export const onEventsHubReadySubjectMock = new Subject<boolean>();
+export let eventHubIsConnectedMock: boolean;
 
 eventsServiceSpy = jasmine.createSpyObj<EventsService>(
     'EventsService',
@@ -66,7 +67,7 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'publishRemoteMuteStatus',
         'onEventsHubReady'
     ],
-    {}
+    ['eventHubIsConnected']
 );
 
 eventsServiceSpy.getHearingStatusMessage.and.returnValue(hearingStatusSubjectMock.asObservable());
