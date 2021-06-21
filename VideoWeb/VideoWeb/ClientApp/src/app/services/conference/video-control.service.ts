@@ -5,6 +5,7 @@ import { ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { LoggerService } from '../logging/logger.service';
+import { ConferenceService } from './conference.service';
 import { VirtualMeetingRoomModel } from './models/virtual-meeting-room.model';
 import { VideoControlCacheService } from './video-control-cache.service';
 
@@ -15,6 +16,7 @@ export class VideoControlService {
     private loggerPrefix = '[VideoControlService] -';
 
     constructor(
+        private conferenceService: ConferenceService,
         private videoCallService: VideoCallService,
         private videoControlCacheService: VideoControlCacheService,
         private logger: LoggerService
@@ -26,16 +28,17 @@ export class VideoControlService {
     }
 
     setSpotlightStatus(
-        conferenceId: string,
         participantOrVmr: ParticipantModel | VirtualMeetingRoomModel,
         spotlightStatus: boolean,
         responseTimeoutInMS: number = 0
     ): Observable<ParticipantUpdated> {
+        const conferenceId = this.conferenceService.currentConferenceId;
+
         this.logger.info(
             `${this.loggerPrefix} Attempting to set spotlight status of participant in conference: ${participantOrVmr.id} in ${conferenceId}.`,
             {
                 spotlightStatus: spotlightStatus,
-                conferenceId: conferenceId,
+                conferenceId: this.conferenceService.currentConferenceId,
                 participantOrVmrId: participantOrVmr.id,
                 pexipId: participantOrVmr.pexipId,
                 participantOrVmr: participantOrVmr,
@@ -44,7 +47,12 @@ export class VideoControlService {
         );
 
         // const pexipId = this.participantService.getPexipIdForParticipant(participantId);
-        this.videoCallService.spotlightParticipant(participantOrVmr.pexipId, spotlightStatus, conferenceId, participantOrVmr.id);
+        this.videoCallService.spotlightParticipant(
+            participantOrVmr.pexipId,
+            spotlightStatus,
+            this.conferenceService.currentConferenceId,
+            participantOrVmr.id
+        );
 
         this.logger.info(`${this.loggerPrefix} Attempted to make call to pexip to update spotlight status. Subscribing for update.`, {
             spotlightStatus: spotlightStatus,
@@ -76,12 +84,12 @@ export class VideoControlService {
         return onResponse$;
     }
 
-    isParticipantSpotlighted(conferenceId: string, participantId: string): boolean {
-        return this.videoControlCacheService.getSpotlightStatus(conferenceId, participantId);
+    isParticipantSpotlighted(participantId: string): boolean {
+        return this.videoControlCacheService.getSpotlightStatus(this.conferenceService.currentConferenceId, participantId);
     }
 
-    getSpotlightedParticipants(conferenceId: string): string[] {
-        var hearingControlState = this.videoControlCacheService.getStateForConference(conferenceId);
+    getSpotlightedParticipants(): string[] {
+        var hearingControlState = this.videoControlCacheService.getStateForConference(this.conferenceService.currentConferenceId);
 
         const participantIds = [];
         for (var participantId in hearingControlState.participantStates) {
@@ -89,5 +97,9 @@ export class VideoControlService {
         }
 
         return participantIds;
+    }
+
+    restoreParticipantState(id: string, pexipId: string) {
+        throw new Error('Method not implemented.');
     }
 }

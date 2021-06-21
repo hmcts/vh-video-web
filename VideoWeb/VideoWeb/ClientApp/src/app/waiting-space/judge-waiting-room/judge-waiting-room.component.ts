@@ -1,11 +1,13 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription, merge } from 'rxjs';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
+import { VirtualMeetingRoomModel } from 'src/app/services/conference/models/virtual-meeting-room.model';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
@@ -15,6 +17,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
+import { ParticipantModel } from 'src/app/shared/models/participant';
 import { pageUrls } from 'src/app/shared/page-url.constants';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { CallError } from '../models/video-call-models';
@@ -47,6 +50,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     };
     unreadMessageCount = 0;
     audioErrorToast: VhToastComponent;
+    onParticipantOrVmrPexipConnectedOrIdUpdatedSubscription: Subscription;
 
     constructor(
         protected route: ActivatedRoute,
@@ -99,6 +103,15 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.logger.debug(`${this.loggerPrefixJudge} Loading judge waiting room`);
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
 
+        this.onParticipantOrVmrPexipConnectedOrIdUpdatedSubscription = merge<ParticipantModel | VirtualMeetingRoomModel>(
+            this.participantService.onParticipantConnectedToPexip$,
+            this.participantService.onParticipantPexipIdChanged$,
+            this.participantService.onVmrConnectedToPexip$,
+            this.participantService.onVmrPexipIdChanged$
+        ).subscribe(participantOrVmr => {
+            this.videoControlService.restoreParticipantState(participantOrVmr.id, participantOrVmr.pexipId);
+        });
+
         this.userMediaService
             .setDefaultDevicesInCache()
             .then(() => {
@@ -122,6 +135,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     @HostListener('window:beforeunload')
     async ngOnDestroy(): Promise<void> {
+        this.onParticipantOrVmrPexipConnectedOrIdUpdatedSubscription?.unsubscribe();
         clearInterval(this.audioRecordingInterval);
         this.executeWaitingRoomCleanup();
     }

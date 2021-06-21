@@ -310,7 +310,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         });
 
         this.videoControlService
-            .setSpotlightStatus(this.conferenceId, this.participantsService.getParticipantOrVirtualMeetingRoomById(p.id), !p.hasSpotlight())
+            .setSpotlightStatus(this.participantsService.getParticipantOrVirtualMeetingRoomById(p.id), !p.hasSpotlight())
             .subscribe(updatedParticipant =>
                 p.updateParticipant(p.isMicRemoteMuted(), p.hasHandRaised(), updatedParticipant.isSpotlighted)
             );
