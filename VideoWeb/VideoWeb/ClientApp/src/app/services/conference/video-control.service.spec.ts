@@ -314,4 +314,21 @@ fdescribe('VideoControlService', () => {
             expect(videoControlCacheServiceSpy.getStateForConference).toHaveBeenCalledOnceWith(conferenceId);
         });
     });
+
+    describe('restoreParticipantState', () => {
+        it('should retore spotlight state for a participent', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const pexipId = 'pexip-id';
+            const spotlightState = true;
+
+            videoControlCacheServiceSpy.getSpotlightStatus.and.returnValue(spotlightState);
+
+            // Act
+            sut.restoreParticipantSpotlightState(participantId, pexipId);
+
+            // Assert
+            expect(videoCallServiceSpy.spotlightParticipant).toHaveBeenCalledOnceWith(pexipId, spotlightState, conferenceId, participantId);
+        });
+    });
 });

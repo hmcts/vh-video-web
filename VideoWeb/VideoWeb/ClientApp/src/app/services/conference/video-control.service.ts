@@ -99,7 +99,9 @@ export class VideoControlService {
         return participantIds;
     }
 
-    restoreParticipantState(id: string, pexipId: string) {
-        throw new Error('Method not implemented.');
+    restoreParticipantSpotlightState(participantId: string, pexipId: string) {
+        const conferenceId = this.conferenceService.currentConferenceId;
+        const isSpotlighted = this.videoControlCacheService.getSpotlightStatus(conferenceId, participantId);
+        this.videoCallService.spotlightParticipant(pexipId, isSpotlighted, conferenceId, participantId);
     }
 }
