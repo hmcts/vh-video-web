@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { filter, take, timeout } from 'rxjs/operators';
+import { ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { LoggerService } from '../logging/logger.service';
-import { ParticipantService } from './participant.service';
+import { VirtualMeetingRoomModel } from './models/virtual-meeting-room.model';
 import { VideoControlCacheService } from './video-control-cache.service';
 
 @Injectable({
@@ -14,7 +15,6 @@ export class VideoControlService {
     private loggerPrefix = '[VideoControlService] -';
 
     constructor(
-        private participantService: ParticipantService,
         private videoCallService: VideoCallService,
         private videoControlCacheService: VideoControlCacheService,
         private logger: LoggerService
@@ -27,18 +27,16 @@ export class VideoControlService {
 
     setSpotlightStatus(
         conferenceId: string,
-        participantOrVmrId: string,
+        participantOrVmr: ParticipantModel | VirtualMeetingRoomModel,
         spotlightStatus: boolean,
         responseTimeoutInMS: number = 0
     ): Observable<ParticipantUpdated> {
-        const participantOrVmr = this.participantService.getParticipantOrVirtualMeetingRoomById(participantOrVmrId);
-
         this.logger.info(
-            `${this.loggerPrefix} Attempting to set spotlight status of participant in conference: ${participantOrVmrId} in ${conferenceId}.`,
+            `${this.loggerPrefix} Attempting to set spotlight status of participant in conference: ${participantOrVmr.id} in ${conferenceId}.`,
             {
                 spotlightStatus: spotlightStatus,
                 conferenceId: conferenceId,
-                participantOrVmrId: participantOrVmrId,
+                participantOrVmrId: participantOrVmr.id,
                 pexipId: participantOrVmr.pexipId,
                 participantOrVmr: participantOrVmr,
                 responseTimeoutInMSForReturnedObservable: responseTimeoutInMS
@@ -51,11 +49,11 @@ export class VideoControlService {
         this.logger.info(`${this.loggerPrefix} Attempted to make call to pexip to update spotlight status. Subscribing for update.`, {
             spotlightStatus: spotlightStatus,
             conferenceId: conferenceId,
-            participantId: participantOrVmrId
+            participantId: participantOrVmr.id
         });
 
         let onResponse$ = this.videoCallService.onParticipantUpdated().pipe(
-            filter(x => x.pexipDisplayName.includes(participantOrVmrId)),
+            filter(x => x.pexipDisplayName.includes(participantOrVmr.id)),
             take(1)
         );
 
@@ -65,10 +63,10 @@ export class VideoControlService {
                 updatedValue: updatedParticipant.isSpotlighted,
                 wasValueChangedPerRequest: spotlightStatus === updatedParticipant.isSpotlighted,
                 conferenceId: conferenceId,
-                participantId: participantOrVmrId
+                participantId: participantOrVmr.id
             });
 
-            this.videoControlCacheService.setSpotlightStatus(conferenceId, participantOrVmrId, updatedParticipant.isSpotlighted);
+            this.videoControlCacheService.setSpotlightStatus(conferenceId, participantOrVmr.id, updatedParticipant.isSpotlighted);
         });
 
         if (responseTimeoutInMS > 0) {

@@ -6,7 +6,7 @@ import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
-import { ParticipantStatus, Role } from '../clients/api-client';
+import { ParticipantForUserResponse, ParticipantStatus, Role } from '../clients/api-client';
 import { LoggerService } from '../logging/logger.service';
 import { VirtualMeetingRoomModel } from './models/virtual-meeting-room.model';
 import { ParticipantService } from './participant.service';
@@ -14,7 +14,6 @@ import { IHearingControlsState, VideoControlCacheService } from './video-control
 import { VideoControlService } from './video-control.service';
 
 fdescribe('VideoControlService', () => {
-    let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
     let videoCallServiceSpy: jasmine.SpyObj<VideoCallService>;
 
     let videoControlCacheServiceSpy: jasmine.SpyObj<VideoControlCacheService>;
@@ -22,8 +21,27 @@ fdescribe('VideoControlService', () => {
 
     let sut: VideoControlService;
 
+    const participantOneId = Guid.create().toString();
+    const participantOnePeixpId = Guid.create().toString();
+    const participantOne = ParticipantModel.fromParticipantForUserResponse(
+        new ParticipantForUserResponse({
+            id: participantOneId,
+            status: ParticipantStatus.NotSignedIn,
+            display_name: 'Interpreter',
+            role: Role.Individual,
+            representee: null,
+            case_type_group: 'applicant',
+            tiled_display_name: `CIVILIAN;Interpreter;${participantOneId}`,
+            hearing_role: HearingRole.INTERPRETER,
+            first_name: 'Interpreter',
+            last_name: 'Doe',
+            interpreter_room: null,
+            linked_participants: []
+        })
+    );
+
     beforeEach(() => {
-        participantServiceSpy = jasmine.createSpyObj<ParticipantService>('ParticipantService', ['getParticipantOrVirtualMeetingRoomById']);
+        participantOne.pexipId = participantOnePeixpId;
 
         videoCallServiceSpy = jasmine.createSpyObj<VideoCallService>('VideoCallService', ['spotlightParticipant', 'onParticipantUpdated']);
 
@@ -35,7 +53,7 @@ fdescribe('VideoControlService', () => {
 
         loggerSpy = jasmine.createSpyObj<LoggerService>('Logger', ['error', 'info']);
 
-        sut = new VideoControlService(participantServiceSpy, videoCallServiceSpy, videoControlCacheServiceSpy, loggerSpy);
+        sut = new VideoControlService(videoCallServiceSpy, videoControlCacheServiceSpy, loggerSpy);
     });
 
     it('should be created', () => {
@@ -59,14 +77,14 @@ fdescribe('VideoControlService', () => {
             null,
             pexipId
         );
+
         const vmr = new VirtualMeetingRoomModel(Guid.create().toString(), 'Display Name', false, [participant]);
+
         it('should spotlight the participant and update the value in the cache when the response is recieved', fakeAsync(() => {
             // Arrange
             const participantId = participant.id;
             const pexipParticipantId = participant.pexipId;
             const conferenceId = 'conference-id';
-
-            participantServiceSpy.getParticipantOrVirtualMeetingRoomById.and.returnValue(participant);
 
             const pexipName = `pexip-name-${participantId}`;
             const participantUpdated = ({
@@ -79,7 +97,7 @@ fdescribe('VideoControlService', () => {
 
             let result = null;
             // Act
-            sut.setSpotlightStatus(conferenceId, participantId, true).subscribe(updatedParticipant => (result = updatedParticipant));
+            sut.setSpotlightStatus(conferenceId, participant, true).subscribe(updatedParticipant => (result = updatedParticipant));
             flush();
 
             // Assert
@@ -99,8 +117,6 @@ fdescribe('VideoControlService', () => {
             const pexipParticipantId = vmr.pexipId;
             const conferenceId = 'conference-id';
 
-            participantServiceSpy.getParticipantOrVirtualMeetingRoomById.and.returnValue(vmr);
-
             const pexipName = `pexip-name-${participantId}`;
             const participantUpdated = ({
                 pexipDisplayName: pexipName,
@@ -112,7 +128,7 @@ fdescribe('VideoControlService', () => {
 
             let result = null;
             // Act
-            sut.setSpotlightStatus(conferenceId, participantId, true).subscribe(updatedParticipant => (result = updatedParticipant));
+            sut.setSpotlightStatus(conferenceId, vmr, true).subscribe(updatedParticipant => (result = updatedParticipant));
             flush();
 
             // Assert
@@ -132,8 +148,6 @@ fdescribe('VideoControlService', () => {
             const pexipParticipantId = participant.pexipId;
             const conferenceId = 'conference-id';
 
-            participantServiceSpy.getParticipantOrVirtualMeetingRoomById.and.returnValue(participant);
-
             const pexipName = `pexip-name-${participantId}`;
             const participantUpdated = ({
                 pexipDisplayName: pexipName,
@@ -146,8 +160,9 @@ fdescribe('VideoControlService', () => {
 
             let result = null;
             const timeoutInMS = 15;
+
             // Act
-            sut.setSpotlightStatus(conferenceId, participantId, true, timeoutInMS).subscribe(
+            sut.setSpotlightStatus(conferenceId, participant, true, timeoutInMS).subscribe(
                 updatedParticipant => (result = updatedParticipant),
                 err => (result = err)
             );
@@ -173,8 +188,6 @@ fdescribe('VideoControlService', () => {
             const pexipParticipantId = participant.pexipId;
             const conferenceId = 'conference-id';
 
-            participantServiceSpy.getParticipantOrVirtualMeetingRoomById.and.returnValue(participant);
-
             const pexipName = `pexip-name-${participantId}`;
             const participantUpdated = ({
                 pexipDisplayName: pexipName,
@@ -185,8 +198,9 @@ fdescribe('VideoControlService', () => {
             videoCallServiceSpy.onParticipantUpdated.and.returnValue(of(participantUpdated));
 
             let result = null;
+
             // Act
-            sut.setSpotlightStatus(conferenceId, participantId, true, 0).subscribe(updatedParticipant => (result = updatedParticipant));
+            sut.setSpotlightStatus(conferenceId, participant, true, 0).subscribe(updatedParticipant => (result = updatedParticipant));
             tick(30 * 1000);
             flush();
 

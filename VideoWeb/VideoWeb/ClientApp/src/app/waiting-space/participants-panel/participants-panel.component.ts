@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Guid } from 'guid-typescript';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantResponse } from 'src/app/services/clients/api-client';
@@ -311,7 +310,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         });
 
         this.videoControlService
-            .setSpotlightStatus(this.conferenceId, p.id, !p.hasSpotlight())
+            .setSpotlightStatus(this.conferenceId, this.participantsService.getParticipantOrVirtualMeetingRoomById(p.id), !p.hasSpotlight())
             .subscribe(updatedParticipant =>
                 p.updateParticipant(p.isMicRemoteMuted(), p.hasHandRaised(), updatedParticipant.isSpotlighted)
             );
