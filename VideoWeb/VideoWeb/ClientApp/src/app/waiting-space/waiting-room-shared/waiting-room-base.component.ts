@@ -1208,7 +1208,6 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     private async callAndUpdateView(): Promise<void> {
-        console.log('HELLKO');
         return this.call().then(() => this.getConference().then(() => this.updateShowVideo()));
     }
 }
