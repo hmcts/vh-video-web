@@ -120,7 +120,6 @@ describe('WaitingRoomComponent Video Call', () => {
     it('should define outgoing stream when video call has been setup', () => {
         const outgoingStream = <any>{};
         const payload = new CallSetup(outgoingStream);
-        // component.eventServiceConnected = true;
 
         onSetupSubject.next(payload);
 

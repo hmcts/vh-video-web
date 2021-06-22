@@ -114,13 +114,6 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
         TestBed.configureTestingModule({
             declarations: [WRTestComponent],
-            // declarations: [ErrorComponent, ContactUsFoldingComponent, Mock1Component, Mock2Component, TranslatePipeMock],
-            // imports: [
-            //     RouterTestingModule.withRoutes([
-            //         { path: 'testUrl-test-error1', component: Mock1Component },
-            //         { path: 'testUrl-test-error2', component: Mock2Component }
-            //     ])
-            // ],
             providers: [
                 { provide: ActivatedRoute, useValue: activatedRoute },
                 { provide: VideoWebService, useValue: videoWebService },
