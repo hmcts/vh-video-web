@@ -157,11 +157,11 @@ describe('WaitingRoomComponent EventHub Call', () => {
 
     describe('event hub status changes', () => {
         beforeEach(() => {
-            spyOn(component, 'callAndUpdateView');
+            spyOn(component, 'callAndUpdateShowVideo');
         });
 
         afterEach(() => {
-            expect(component.callAndUpdateView).toHaveBeenCalledTimes(1);
+            expect(component.callAndUpdateShowVideo).toHaveBeenCalledTimes(1);
         });
 
         it('should call and update video when event hub is ready', fakeAsync(() => {
@@ -173,12 +173,12 @@ describe('WaitingRoomComponent EventHub Call', () => {
         });
     });
 
-    it('callAndUpdateView', done => {
+    it('callAndUpdateShowVideo', done => {
         spyOn(component, 'call').and.returnValue(Promise.resolve());
         spyOn(component, 'getConference').and.returnValue(Promise.resolve());
         spyOn(component, 'updateShowVideo');
 
-        component.callAndUpdateView().then(res => {
+        component.callAndUpdateShowVideo().then(res => {
             expect(component.call).toHaveBeenCalledTimes(1);
             expect(component.getConference).toHaveBeenCalledTimes(1);
             expect(component.updateShowVideo).toHaveBeenCalledTimes(1);
