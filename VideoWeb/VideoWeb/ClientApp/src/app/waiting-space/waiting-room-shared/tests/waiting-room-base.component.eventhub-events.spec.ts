@@ -1,5 +1,5 @@
-import { fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
+import { ActivatedRoute, convertToParamMap, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
 import {
     ConferenceResponse,
@@ -60,15 +60,30 @@ import { Room } from '../../../shared/models/room';
 import { RoomTransfer } from '../../../shared/models/room-transfer';
 import { ElementRef } from '@angular/core';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
-import { ConsultationInvitation } from '../../services/consultation-invitation.service';
+import { ConsultationInvitation, ConsultationInvitationService } from '../../services/consultation-invitation.service';
 import { Participant } from 'src/app/shared/models/participant';
 import { CallSetup } from '../../models/video-call-models';
+import { VideoWebService } from 'src/app/services/api/video-web.service';
+import { EventsService } from 'src/app/services/events.service';
+import { Logger } from 'src/app/services/logging/logger-base';
+import { ErrorService } from 'src/app/services/error.service';
+import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
+import { VideoCallService } from '../../services/video-call.service';
+import { DeviceTypeService } from 'src/app/services/device-type.service';
+import { ConsultationService } from 'src/app/services/api/consultation.service';
+import { UserMediaService } from 'src/app/services/user-media.service';
+import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
+import { NotificationSoundsService } from '../../services/notification-sounds.service';
+import { NotificationToastrService } from '../../services/notification-toastr.service';
+import { RoomClosingToastrService } from '../../services/room-closing-toast.service';
+import { ClockService } from 'src/app/services/clock.service';
 
 describe('WaitingRoomComponent EventHub Call', () => {
     function spyPropertyGetter<T, K extends keyof T>(spyObj: jasmine.SpyObj<T>, propName: K): jasmine.Spy<() => T[K]> {
         return Object.getOwnPropertyDescriptor(spyObj, propName)?.get as jasmine.Spy<() => T[K]>;
     }
 
+    let fixture: ComponentFixture<WRTestComponent>;
     let component: WRTestComponent;
 
     const participantStatusSubject = participantStatusSubjectMock;
@@ -96,25 +111,38 @@ describe('WaitingRoomComponent EventHub Call', () => {
         activatedRoute = <any>{
             snapshot: { data: { loggedUser: logged }, paramMap: convertToParamMap({ conferenceId: globalConference.id }) }
         };
-        component = new WRTestComponent(
-            activatedRoute,
-            videoWebService,
-            eventsService,
-            logger,
-            errorService,
-            heartbeatModelMapper,
-            videoCallService,
-            deviceTypeService,
-            router,
-            consultationService,
-            userMediaService,
-            userMediaStreamService,
-            notificationSoundsService,
-            notificationToastrService,
-            roomClosingToastrService,
-            clockService,
-            consultationInvitiationService
-        );
+
+        TestBed.configureTestingModule({
+            declarations: [WRTestComponent],
+            // declarations: [ErrorComponent, ContactUsFoldingComponent, Mock1Component, Mock2Component, TranslatePipeMock],
+            // imports: [
+            //     RouterTestingModule.withRoutes([
+            //         { path: 'testUrl-test-error1', component: Mock1Component },
+            //         { path: 'testUrl-test-error2', component: Mock2Component }
+            //     ])
+            // ],
+            providers: [
+                { provide: ActivatedRoute, useValue: activatedRoute },
+                { provide: VideoWebService, useValue: videoWebService },
+                { provide: EventsService, useValue: eventsService },
+                { provide: Logger, useValue: logger },
+                { provide: ErrorService, useValue: errorService },
+                { provide: HeartbeatModelMapper, useValue: heartbeatModelMapper },
+                { provide: VideoCallService, useValue: videoWebService },
+                { provide: DeviceTypeService, useValue: deviceTypeService },
+                { provide: Router, useValue: router },
+                { provide: ConsultationService, useValue: consultationService },
+                { provide: UserMediaService, useValue: userMediaService },
+                { provide: UserMediaStreamService, useValue: userMediaStreamService },
+                { provide: NotificationSoundsService, useValue: notificationSoundsService },
+                { provide: NotificationToastrService, useValue: notificationToastrService },
+                { provide: RoomClosingToastrService, useValue: roomClosingToastrService },
+                { provide: ClockService, useValue: clockService },
+                { provide: ConsultationInvitationService, useValue: consultationInvitiationService }
+            ]
+        });
+        fixture = TestBed.createComponent(WRTestComponent);
+        component = fixture.componentInstance;
 
         const conference = new ConferenceResponse(Object.assign({}, globalConference));
         const participant = new ParticipantResponse(Object.assign({}, globalParticipant));
@@ -132,6 +160,37 @@ describe('WaitingRoomComponent EventHub Call', () => {
         if (component.callbackTimeout) {
             clearTimeout(component.callbackTimeout);
         }
+    });
+
+    describe('event hub status changes', () => {
+        beforeEach(() => {
+            spyOn(component, 'callAndUpdateView');
+        });
+
+        afterEach(() => {
+            expect(component.callAndUpdateView).toHaveBeenCalledTimes(1);
+        });
+
+        it('should call and update video when event hub is ready', fakeAsync(() => {
+            onEventsHubReadySubjectMock.next(true);
+        }));
+
+        it('should call and update video when event hub reconnects', async () => {
+            eventHubReconnectSubjectMock.next(true);
+        });
+    });
+
+    it('callAndUpdateView', done => {
+        spyOn(component, 'call').and.returnValue(Promise.resolve());
+        spyOn(component, 'getConference').and.returnValue(Promise.resolve());
+        spyOn(component, 'updateShowVideo');
+
+        component.callAndUpdateView().then(res => {
+            expect(component.call).toHaveBeenCalledTimes(1);
+            expect(component.getConference).toHaveBeenCalledTimes(1);
+            expect(component.updateShowVideo).toHaveBeenCalledTimes(1);
+            done();
+        });
     });
 
     it('should not display vho consultation request when participant is unavailable', fakeAsync(() => {
@@ -284,6 +343,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
     }));
 
     it('should get conference when disconnected from eventhub less than 7 times', fakeAsync(() => {
+        spyOn(component, 'disconnect');
         component.participant.status = ParticipantStatus.InHearing;
         component.conference.status = ConferenceStatus.InSession;
 
@@ -305,6 +365,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         eventHubDisconnectSubject.next(6);
 
         flushMicrotasks();
+        expect(component.disconnect).toHaveBeenCalledTimes(6);
         expect(videoWebService.getConferenceById).toHaveBeenCalledTimes(6);
         expect(videoWebService.getAllowedEndpointsForConference).toHaveBeenCalledTimes(6);
         expect(component.participant.status).toBe(newParticipantStatus);

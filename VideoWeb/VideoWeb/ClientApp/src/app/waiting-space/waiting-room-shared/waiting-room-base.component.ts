@@ -426,7 +426,7 @@ export abstract class WaitingRoomBaseDirective {
                     conference: this.conferenceId,
                     participant: this.participant.id
                 });
-                await this.call().then(() => this.getConference().then(() => this.updateShowVideo()));
+                await this.callAndUpdateView();
             })
         );
 
@@ -436,7 +436,7 @@ export abstract class WaitingRoomBaseDirective {
                     conference: this.conferenceId,
                     participant: this.participant.id
                 });
-                await this.call().then(() => this.getConference().then(() => this.updateShowVideo()));
+                await this.callAndUpdateView();
             })
         );
 
@@ -1207,7 +1207,8 @@ export abstract class WaitingRoomBaseDirective {
         this.streamInMain = !this.streamInMain;
     }
 
-    private async callAndUpdateView(): Promise<void> {
-        return this.call().then(() => this.getConference().then(() => this.updateShowVideo()));
+    async callAndUpdateView(): Promise<void> {
+        await this.call();
+        this.getConference().then(() => this.updateShowVideo());
     }
 }
