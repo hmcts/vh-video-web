@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using NUnit.Framework;
+using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers;
 using VideoWeb.EventHub.Models;
@@ -69,7 +70,7 @@ namespace VideoWeb.UnitTests.EventHandlers
                 ParticipantId = participantForEvent.Id,
                 TimeStampUtc = DateTime.UtcNow,
                 IsParticipantInVmr = true,
-                IsConferenceInSession = true
+                ConferenceStatus = ConferenceState.InSession
             };
 
             await _eventHandler.HandleAsync(callbackEvent);
@@ -103,8 +104,8 @@ namespace VideoWeb.UnitTests.EventHandlers
                 ParticipantId = participantForEvent.Id,
                 TimeStampUtc = DateTime.UtcNow,
                 IsParticipantInVmr = false,
-                IsConferenceInSession = false,
-                ParticipantStatus = ParticipantStatus.InConsultation
+                ConferenceStatus = ConferenceState.Paused,
+                IsOtherParticipantsInConsultationRoom = true
             };
 
             await _eventHandler.HandleAsync(callbackEvent);

@@ -17,15 +17,20 @@ namespace VideoWeb.Extensions
 
         public static bool IsParticipantInVmr(this ConferenceEventRequest request, Conference conference)
         {
-            return conference.CivilianRooms.First(x => x.Id.ToString() == request.ParticipantRoomId)
+            return conference.CivilianRooms.Any(x => x.Id.ToString() == request.ParticipantRoomId) && conference
+                .CivilianRooms.First(x => x.Id.ToString() == request.ParticipantRoomId)
                 .Participants.Any(x => x.ToString() == request.ParticipantId);
         }
-        public static ParticipantStatus GetParticipantsStatus(this ConferenceEventRequest request, Conference conference)
+        public static IEnumerable<Participant> GetOtherParticipantsInVmr(this ConferenceEventRequest request, Conference conference)
         {
-            var participant = conference.Participants.Single(x =>
-                x.Id.ToString() == request.ParticipantId);
-
-            return participant.ParticipantStatus;
+            if (conference.CivilianRooms.Any(x => x.Id.ToString() == request.ParticipantRoomId))
+            {
+                var participantIds = conference.CivilianRooms.First(x => x.Id.ToString() == request.ParticipantRoomId)
+                    .Participants.FindAll(x => x.ToString() != request.ParticipantId);
+            
+                return conference.Participants.Where(x => participantIds.Contains(x.Id));
+            }
+            return new List<Participant>();
         }
 
         public static bool IsParticipantAVmr(this ConferenceEventRequest request, Conference conference,

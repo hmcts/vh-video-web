@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
+using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
-using VideoWeb.EventHub.Enums;
+using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.EventHub.Models
 {
@@ -18,9 +20,9 @@ namespace VideoWeb.EventHub.Models
 
         public string Reason { get; set; }
         public bool IsParticipantInVmr { get; set; }
-        public bool IsConferenceInSession { get; set; }
-        public ParticipantStatus ParticipantStatus { get; set; }
-
+        public ConferenceState ConferenceStatus { get; set; }
+        public IEnumerable<Participant> OtherParticipantsInVmr { get; set; }
+        public bool IsOtherParticipantsInConsultationRoom { get; set; }
 
     }
 }

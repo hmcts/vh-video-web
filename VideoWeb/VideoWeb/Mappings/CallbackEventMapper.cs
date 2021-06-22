@@ -37,8 +37,8 @@ namespace VideoWeb.Mappings
                 TimeStampUtc = request.TimeStampUtc,
                 ParticipantId = participantId,
                 IsParticipantInVmr = request.IsParticipantInVmr(conference),
-                IsConferenceInSession = conference.CurrentStatus == ConferenceState.InSession,
-                ParticipantStatus = request.GetParticipantsStatus(conference)
+                ConferenceStatus = conference.CurrentStatus,
+                OtherParticipantsInVmr = request.GetOtherParticipantsInVmr(conference),
             };
             
             if (IsEndpointJoined(callbackEvent, conference))
@@ -56,6 +56,7 @@ namespace VideoWeb.Mappings
                 callbackEvent.EventType = EventType.EndpointTransfer;
             }
 
+            callbackEvent. IsOtherParticipantsInConsultationRoom = IsOtherParticipantInConsultation(callbackEvent);
             return callbackEvent;
         }
 
@@ -75,6 +76,11 @@ namespace VideoWeb.Mappings
         {
             return callbackEvent.EventType == EventType.Transfer &&
                    conference.Endpoints.Any(x => x.Id == callbackEvent.ParticipantId);
+        }
+        private bool IsOtherParticipantInConsultation(CallbackEvent callbackEvent)
+        {
+            return callbackEvent.OtherParticipantsInVmr.Any(
+                p => p.ParticipantStatus == ParticipantStatus.InConsultation);
         }
     }
 }
