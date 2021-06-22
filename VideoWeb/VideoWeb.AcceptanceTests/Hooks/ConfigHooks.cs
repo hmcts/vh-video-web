@@ -42,6 +42,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             RegisterDefaultData(context);
             RegisterIsLive(context);
             RegisterUsingEjud(context);
+            RegisterValidEjudDIdDomains(context);
             RegisterHearingServices(context);
             RegisterWowzaSettings(context);
             RegisterSauceLabsSettings(context);
@@ -105,6 +106,14 @@ namespace VideoWeb.AcceptanceTests.Hooks
         private void RegisterUsingEjud(TestContext context)
         {
             context.VideoWebConfig.UsingEjud = _configRoot.GetValue<bool>("UsingEjud");
+        }
+
+        private void RegisterValidEjudDIdDomains (TestContext context)
+        {
+            var all = _configRoot.GetSection("ValidEjudDIdDomains").Get<List<string>>();
+            context.VideoWebConfig.ValidEjudDIdDomains = _configRoot.GetSection("ValidEjudDIdDomains").Get<List<string>>();
+            NUnit.Framework.TestContext.WriteLine($"config is {all}");
+            //context.VideoWebConfig.ValidEjudDIdDomains = _configRoot.GetSection("ValidEjudDIdDomains");
         }
 
         private void RegisterHearingServices(TestContext context)

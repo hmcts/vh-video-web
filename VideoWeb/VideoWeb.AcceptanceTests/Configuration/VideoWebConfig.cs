@@ -1,4 +1,7 @@
 using AcceptanceTests.Common.Configuration;
+
+using System.Collections.Generic;
+
 using VideoWeb.Common.Configuration;
 using VideoWeb.Common.Security.HashGen;
 
@@ -14,5 +17,6 @@ namespace VideoWeb.AcceptanceTests.Configuration
         public SauceLabsSettingsConfig SauceLabsConfiguration { get; set; }
         public WowzaConfiguration Wowza { get; set; }
         public bool UsingEjud { get; set; }
+        public List<string> ValidEjudDIdDomains { get; set; }
     }
 }

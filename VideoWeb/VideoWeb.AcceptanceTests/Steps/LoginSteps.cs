@@ -1,10 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using AcceptanceTests.Common.Driver.Drivers;
 using AcceptanceTests.Common.Driver.Enums;
-using AcceptanceTests.Common.Driver.Helpers;
 using AcceptanceTests.Common.PageObject.Pages;
 using AcceptanceTests.Common.Test.Steps;
-using FluentAssertions;
 using TechTalk.SpecFlow;
 using VideoWeb.AcceptanceTests.Helpers;
 using TestApi.Contract.Dtos;
@@ -65,8 +64,10 @@ namespace VideoWeb.AcceptanceTests.Steps
 
         private bool IsAnEjudUser()
         {
+            bool isEjud = _c.VideoWebConfig.ValidEjudDIdDomains.Any(_c.CurrentUser.ContactEmail.Contains);
+            NUnit.Framework.TestContext.WriteLine($"Check for Ejud user: {_c.CurrentUser.DisplayName} is {_c.CurrentUser.GetType()} ID: {_c.CurrentUser.Id} User name: {_c.CurrentUser.Username} user type: {_c.CurrentUser.UserType} Email: {_c.CurrentUser.ContactEmail} and ejud is {isEjud}");
             return _c.VideoWebConfig.UsingEjud &&
-                    //_c.CurrentUser.ContactEmail.Contains("judiciarystaging") &&      -- Just tried this to see tests are passing. It is passing, but Need amendment to make it a proper implementation. 
+                    isEjud &&
                     (_c.CurrentUser.UserType == UserType.Judge ||
                     _c.CurrentUser.UserType == UserType.PanelMember ||
                     _c.CurrentUser.UserType == UserType.Winger);
