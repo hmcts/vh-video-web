@@ -426,7 +426,7 @@ export abstract class WaitingRoomBaseDirective {
                     conference: this.conferenceId,
                     participant: this.participant.id
                 });
-                await this.callAndUpdateView();
+                await this.callAndUpdateShowVideo();
             })
         );
 
@@ -436,7 +436,7 @@ export abstract class WaitingRoomBaseDirective {
                     conference: this.conferenceId,
                     participant: this.participant.id
                 });
-                await this.callAndUpdateView();
+                await this.callAndUpdateShowVideo();
             })
         );
 
@@ -860,7 +860,7 @@ export abstract class WaitingRoomBaseDirective {
         if (!this.hearing.isPastClosedTime()) {
             this.logger.warn(`${this.loggerPrefix} Attempting to reconnect to pexip in ${this.CALL_TIMEOUT}ms`);
             this.callbackTimeout = setTimeout(async () => {
-                await this.callAndUpdateView();
+                await this.callAndUpdateShowVideo();
             }, this.CALL_TIMEOUT);
         }
     }
@@ -1207,7 +1207,7 @@ export abstract class WaitingRoomBaseDirective {
         this.streamInMain = !this.streamInMain;
     }
 
-    async callAndUpdateView(): Promise<void> {
+    async callAndUpdateShowVideo(): Promise<void> {
         await this.call();
         this.getConference().then(() => this.updateShowVideo());
     }
