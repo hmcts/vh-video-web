@@ -12,7 +12,8 @@ import {
     ParticipantResponse,
     ParticipantStatus,
     Role,
-    RoomSummaryResponse
+    RoomSummaryResponse,
+    TokenResponse
 } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { SelectedUserMediaDevice } from 'src/app/shared/models/selected-user-media-device';
@@ -436,17 +437,33 @@ describe('WaitingRoomComponent message and clock', () => {
             jasmine.getEnv().allowRespy(false);
         });
 
-        it('should not call when event hub is not connected', async () => {
-            videoCallService.makeCall.calls.reset();
-            spyOnProperty(eventsServiceSpy, 'eventHubIsConnected').and.returnValue(false);
-            await component.call();
+        describe('failing scenarios', () => {
+            beforeEach(() => {
+                videoCallService.makeCall.calls.reset();
+                spyOnProperty(eventsServiceSpy, 'eventHubIsConnected').and.returnValue(false);
+                component.token = undefined;
+            });
 
-            expect(videoCallService.makeCall).not.toHaveBeenCalled();
+            it('should not call when event hub is not connected and token is not set', () => {});
+
+            it('should not call when event hub is not connected and token is set', () => {
+                component.token = new TokenResponse();
+            });
+
+            it('should not call when event hub is connected and token is not set', () => {
+                spyOnProperty(eventsServiceSpy, 'eventHubIsConnected').and.returnValue(true);
+            });
+
+            afterEach(async () => {
+                await component.call();
+                expect(videoCallService.makeCall).not.toHaveBeenCalled();
+            });
         });
 
-        describe('when eventHubIsConnected', () => {
+        describe('when eventHubIsConnected and token is set', () => {
             beforeEach(() => {
                 spyOnProperty(eventsServiceSpy, 'eventHubIsConnected').and.returnValue(true);
+                component.token = new TokenResponse();
             });
             it('should use interpreter room when participant has links', async () => {
                 component.participant.linked_participants = [

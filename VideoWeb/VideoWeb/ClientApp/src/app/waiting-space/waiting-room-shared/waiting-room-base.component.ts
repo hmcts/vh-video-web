@@ -708,7 +708,7 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     async call() {
-        if (!this.eventService.eventHubIsConnected) {
+        if (!this.eventService.eventHubIsConnected || !this.token) {
             return;
         }
 
