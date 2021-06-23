@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { filter, take, timeout } from 'rxjs/operators';
+import { filter, take, tap, timeout } from 'rxjs/operators';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
@@ -41,12 +41,10 @@ export class VideoControlService {
                 conferenceId: this.conferenceService.currentConferenceId,
                 participantOrVmrId: participantOrVmr.id,
                 pexipId: participantOrVmr.pexipId,
-                participantOrVmr: participantOrVmr,
                 responseTimeoutInMSForReturnedObservable: responseTimeoutInMS
             }
         );
 
-        // const pexipId = this.participantService.getPexipIdForParticipant(participantId);
         this.videoCallService.spotlightParticipant(
             participantOrVmr.pexipId,
             spotlightStatus,
@@ -62,20 +60,19 @@ export class VideoControlService {
 
         let onResponse$ = this.videoCallService.onParticipantUpdated().pipe(
             filter(x => x.pexipDisplayName.includes(participantOrVmr.id)),
-            take(1)
+            take(1),
+            tap(update => {
+                this.logger.info(`${this.loggerPrefix} Update received. Attempting to update cache.`, {
+                    requestedValue: spotlightStatus,
+                    updatedValue: update.isSpotlighted,
+                    wasValueChangedPerRequest: spotlightStatus === update.isSpotlighted,
+                    conferenceId: conferenceId,
+                    participantId: participantOrVmr.id
+                });
+
+                this.videoControlCacheService.setSpotlightStatus(conferenceId, participantOrVmr.id, update.isSpotlighted);
+            })
         );
-
-        onResponse$.subscribe(updatedParticipant => {
-            this.logger.info(`${this.loggerPrefix} Update received. Attempting to update cache.`, {
-                requestedValue: spotlightStatus,
-                updatedValue: updatedParticipant.isSpotlighted,
-                wasValueChangedPerRequest: spotlightStatus === updatedParticipant.isSpotlighted,
-                conferenceId: conferenceId,
-                participantId: participantOrVmr.id
-            });
-
-            this.videoControlCacheService.setSpotlightStatus(conferenceId, participantOrVmr.id, updatedParticipant.isSpotlighted);
-        });
 
         if (responseTimeoutInMS > 0) {
             onResponse$ = onResponse$.pipe(timeout(responseTimeoutInMS));
@@ -99,9 +96,16 @@ export class VideoControlService {
         return participantIds;
     }
 
-    restoreParticipantSpotlightState(participantId: string, pexipId: string) {
+    restoreParticipantSpotlightState(participantOrVmr: ParticipantModel | VirtualMeetingRoomModel) {
         const conferenceId = this.conferenceService.currentConferenceId;
-        const isSpotlighted = this.videoControlCacheService.getSpotlightStatus(conferenceId, participantId);
-        this.videoCallService.spotlightParticipant(pexipId, isSpotlighted, conferenceId, participantId);
+        const isSpotlighted = this.videoControlCacheService.getSpotlightStatus(conferenceId, participantOrVmr.id);
+
+        this.logger.info(`${this.loggerPrefix} restoring participant spotlight state.`, {
+            participantOrVmrId: participantOrVmr.id,
+            participantOrVmrDisplayName: participantOrVmr.displayName,
+            spotlightState: isSpotlighted
+        });
+
+        this.setSpotlightStatus(participantOrVmr, isSpotlighted);
     }
 }

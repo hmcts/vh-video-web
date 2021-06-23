@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { combineLatest, Observable, Subject, Subscription } from 'rxjs';
-import { filter, map, take } from 'rxjs/operators';
+import { Observable, Subject, Subscription, zip } from 'rxjs';
+import { filter, map, take, tap } from 'rxjs/operators';
 import { IParticipantHearingState, ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
-import { ApiClient, ConferenceResponse } from '../clients/api-client';
+import { ApiClient, ConferenceResponse, ParticipantStatus } from '../clients/api-client';
 import { EventsService } from '../events.service';
 import { LoggerService } from '../logging/logger.service';
 import { ParticipantStatusMessage } from '../models/participant-status-message';
@@ -18,7 +18,7 @@ export const InvalidNumberOfNonEndpointParticipantsError = () => new Error('Inva
     providedIn: 'root'
 })
 export class ParticipantService {
-    private loggingPrefix = '[ParticipantService] -';
+    private loggerPrefix = '[ParticipantService] -';
     private conferenceSubscriptions: Subscription[] = [];
 
     private _participants: ParticipantModel[] = [];
@@ -95,24 +95,31 @@ export class ParticipantService {
         private eventsService: EventsService,
         private logger: LoggerService
     ) {
+        this.logger.warn(`${this.loggerPrefix} Constructor called.`);
         this.initialise();
     }
 
     getParticipantOrVirtualMeetingRoomById(participantOrVmrId: string | Guid): ParticipantModel | VirtualMeetingRoomModel {
-        this.logger.info(`${this.loggingPrefix} getting participant or VMR by ID.`, {
-            participantOrVmrId: participantOrVmrId
+        this.logger.info(`${this.loggerPrefix} getting participant or VMR by ID.`, {
+            participantOrVmrId: participantOrVmrId ?? null
         });
 
         if (Guid.isGuid(participantOrVmrId)) {
-            this.logger.info(`${this.loggingPrefix} getting participant or VMR by ID - ID was a participants ID.`, {
-                participantOrVmrId: participantOrVmrId
+            const participant = this.participants.find(x => x.id === participantOrVmrId.toString());
+            this.logger.info(`${this.loggerPrefix} getting participant or VMR by ID - ID was a participants ID.`, {
+                participantOrVmrId: participantOrVmrId,
+                participant: participant ?? null,
+                participants: this.participants ?? null
             });
-            return this.participants.find(x => x.id === participantOrVmrId.toString());
+            return participant;
         } else {
-            this.logger.info(`${this.loggingPrefix} getting participant or VMR by ID - ID was a VMR ID.`, {
-                participantOrVmrId: participantOrVmrId
+            const vmr = this.virtualMeetingRooms.find(x => x.id === participantOrVmrId);
+            this.logger.info(`${this.loggerPrefix} getting participant or VMR by ID - ID was a VMR ID.`, {
+                participantOrVmrId: participantOrVmrId,
+                virtualMeetingRoom: vmr ?? null,
+                virtualMeetingRooms: this.virtualMeetingRooms ?? null
             });
-            return this.virtualMeetingRooms.find(x => x.id === participantOrVmrId);
+            return vmr;
         }
     }
 
@@ -124,19 +131,23 @@ export class ParticipantService {
     }
 
     getParticipantsForConference(conferenceId: Guid | string): Observable<ParticipantModel[]> {
-        this.logger.info(`${this.loggingPrefix} getting participants for conference.`);
+        this.logger.info(`${this.loggerPrefix} getting participants for conference.`);
 
-        return this.apiClient
-            .getParticipantsByConferenceId(conferenceId.toString())
-            .pipe(
-                map(participants =>
-                    participants.map(participantResponse => ParticipantModel.fromParticipantForUserResponse(participantResponse))
+        return this.apiClient.getParticipantsByConferenceId(conferenceId.toString()).pipe(
+            tap(val =>
+                console.log(
+                    `${this.loggerPrefix} getParticipantsForConference - `,
+                    val.map(x => x.interpreter_room)
                 )
-            );
+            ),
+            map(participants =>
+                participants.map(participantResponse => ParticipantModel.fromParticipantForUserResponse(participantResponse))
+            )
+        );
     }
 
     getEndpointsForConference(conferenceId: Guid | string): Observable<ParticipantModel[]> {
-        this.logger.info(`${this.loggingPrefix} getting endpoints for conference.`);
+        this.logger.info(`${this.loggerPrefix} getting endpoints for conference.`);
 
         return this.apiClient
             .getVideoEndpointsForConference(conferenceId.toString())
@@ -156,17 +167,14 @@ export class ParticipantService {
             vmr.pexipId = update.uuid;
             this.vmrConnectedToPexipSubject.next(vmr);
 
-            this.logger.warn(
-                `${this.loggingPrefix} not updating VMR participants hearing state, restoring cached values instead, as it was their first pexip id`,
-                {
-                    vmrId: vmr.id,
-                    participantUpdate: update
-                }
-            );
+            this.logger.warn(`${this.loggerPrefix} not updating VMR participants hearing state as it was their first pexip id`, {
+                vmrId: vmr.id,
+                participantUpdate: update
+            });
 
             return;
         } else if (vmr.pexipId !== update.uuid) {
-            this.logger.info(`${this.loggingPrefix} updating VMRs pexip ID`, {
+            this.logger.info(`${this.loggerPrefix} updating VMRs pexip ID`, {
                 vmrId: vmr.id,
                 oldValue: vmr.pexipId,
                 newValue: update.uuid
@@ -184,14 +192,11 @@ export class ParticipantService {
             participant.pexipId = update.uuid;
             this.participantConnectedToPexipSubject.next(participant);
 
-            this.logger.warn(
-                `${this.loggingPrefix} not updating participants hearing state, restoring cached values instead, as it was their first pexip id`,
-                {
-                    participantId: participant.id,
-                    participantsHearingState: participant as IParticipantHearingState,
-                    participantUpdate: update
-                }
-            );
+            this.logger.warn(`${this.loggerPrefix} not updating participants hearing state as it was their first pexip id`, {
+                participantId: participant.id,
+                participantsHearingState: participant as IParticipantHearingState,
+                participantUpdate: update
+            });
 
             return;
         }
@@ -202,9 +207,8 @@ export class ParticipantService {
     private updateParticipantHearingState(participants: ParticipantModel[], update: ParticipantUpdated) {
         for (const participant of participants) {
             if (participant.pexipId !== update.uuid) {
-                this.logger.info(`${this.loggingPrefix} participant pexip ID changed.`, {
+                this.logger.info(`${this.loggerPrefix} participant pexip ID changed.`, {
                     participantId: participant.id,
-                    participantsHearingState: participant as IParticipantHearingState,
                     participantUpdate: update
                 });
 
@@ -213,7 +217,7 @@ export class ParticipantService {
             }
 
             if (participant.isSpotlighted != update.isSpotlighted) {
-                this.logger.info(`${this.loggingPrefix} updating participants spotlight status`, {
+                this.logger.info(`${this.loggerPrefix} updating participants spotlight status`, {
                     participantId: participant.id,
                     pexipDisplayName: update.pexipDisplayName,
                     oldValue: participant.isSpotlighted,
@@ -225,7 +229,7 @@ export class ParticipantService {
             }
 
             if (participant.isRemoteMuted != update.isRemoteMuted) {
-                this.logger.info(`${this.loggingPrefix} updating participants remote muted status`, {
+                this.logger.info(`${this.loggerPrefix} updating participants remote muted status`, {
                     participantId: participant.id,
                     pexipDisplayName: update.pexipDisplayName,
                     oldValue: participant.isRemoteMuted,
@@ -237,7 +241,7 @@ export class ParticipantService {
             }
 
             if (participant.isHandRaised != update.handRaised) {
-                this.logger.info(`${this.loggingPrefix} updating participants hand raised status`, {
+                this.logger.info(`${this.loggerPrefix} updating participants hand raised status`, {
                     participantId: participant.id,
                     pexipDisplayName: update.pexipDisplayName,
                     oldValue: participant.isHandRaised,
@@ -251,7 +255,7 @@ export class ParticipantService {
     }
 
     handlePexipUpdate(update: ParticipantUpdated): void {
-        this.logger.info(`${this.loggingPrefix} handling pexip update`, {
+        this.logger.info(`${this.loggerPrefix} handling pexip update`, {
             participantUpdate: update
         });
 
@@ -261,15 +265,19 @@ export class ParticipantService {
         } else if (participantOrVmr) {
             this.handlePexipParticipantUpdate(participantOrVmr, update);
         }
+
+        console.log(`${this.loggerPrefix} handled pexip update`);
+        console.table(this.participants);
+        console.table(this.virtualMeetingRooms);
     }
 
     handleParticipantStatusUpdate(participantStatusMessage: ParticipantStatusMessage) {
-        this.logger.info(`${this.loggingPrefix} handling participant status update`);
+        this.logger.info(`${this.loggerPrefix} handling participant status update`);
 
         const participant = this.participants.find(x => x.id === participantStatusMessage.participantId);
 
         if (!participant) {
-            this.logger.warn(`${this.loggingPrefix} Cannot find participant in conference. Failed to updated status.`, {
+            this.logger.warn(`${this.loggerPrefix} Cannot find participant in conference. Failed to updated status.`, {
                 conferenceId: participantStatusMessage.conferenceId,
                 participantId: participantStatusMessage.participantId,
                 status: participantStatusMessage.status
@@ -279,7 +287,7 @@ export class ParticipantService {
         }
 
         if (participant.status !== participantStatusMessage.status) {
-            this.logger.info(`${this.loggingPrefix} updating participants status`, {
+            this.logger.info(`${this.loggerPrefix} updating participants status`, {
                 participantId: participant.id,
                 oldValue: participant.status,
                 newValue: participantStatusMessage.status
@@ -288,6 +296,10 @@ export class ParticipantService {
             participant.status = participantStatusMessage.status;
             this.participantStatusChangedSubject.next(participant);
         }
+
+        console.log(`${this.loggerPrefix} handled participant status update`);
+        console.table(this.participants);
+        console.table(this.virtualMeetingRooms);
     }
 
     // private getParticipantOrVmrParticipantsFromPexipId(pexipDisplayName: string): ParticipantModel[] {
@@ -307,39 +319,71 @@ export class ParticipantService {
 
     private initialise() {
         this.conferenceService.currentConference$.subscribe(conference => {
-            this.logger.info(`${this.loggingPrefix} new conference recieved`, {
+            this.logger.info(`${this.loggerPrefix} new conference recieved`, {
                 conference: conference
             });
 
             this._participants = [];
             this._virtualMeetingRooms = [];
-            this.logger.info(`${this.loggingPrefix} fetching new participant list`);
-            combineLatest([this.getParticipantsForConference(conference.id), this.getEndpointsForConference(conference.id)])
-                .pipe(
-                    take(1), // Ensure this observable also completes
-                    map(participantLists => participantLists[0].concat(participantLists[1]))
-                )
-                .subscribe(participants => {
-                    this.logger.info(`${this.loggingPrefix} new participant list retrieved`, {
-                        oldValue: this.participants,
-                        newValue: participants
-                    });
-
-                    this._participants = participants;
-                    this.participantsLoadedSubject.next(this.participants);
-
-                    this.populateVirtualMeetingRooms();
-                });
-
+            this.loadParticipantsAndVmrs();
             this.subscribeToConferenceEvents(conference);
         });
 
         this.videoCallService.onParticipantUpdated().subscribe(updatedParticipant => this.handlePexipUpdate(updatedParticipant));
     }
 
+    private subscribeToConferenceEvents(conference: ConferenceResponse) {
+        this.conferenceSubscriptions.forEach(x => x.unsubscribe());
+        this.conferenceSubscriptions = [];
+
+        this.conferenceSubscriptions.push(
+            this.eventsService
+                .getParticipantStatusMessage()
+                .pipe(
+                    filter(x => x.conferenceId === conference.id),
+                    tap(participantStatusMessage => {
+                        if (participantStatusMessage.status === ParticipantStatus.Available) this.loadParticipantsAndVmrs();
+                    })
+                )
+                .subscribe(participantStatusMessage => this.handleParticipantStatusUpdate(participantStatusMessage))
+        );
+    }
+
+    private loadParticipantsAndVmrs() {
+        this.logger.info(`${this.loggerPrefix} loading participants and VMRs`);
+
+        const conferenceId = this.conferenceService.currentConferenceId;
+        zip(this.getParticipantsForConference(conferenceId), this.getEndpointsForConference(conferenceId))
+            .pipe(
+                tap(val => console.log(`${this.loggerPrefix} zip`, val)),
+                take(1), // Ensure this observable also completes
+                map(participantLists => participantLists[0].concat(participantLists[1]))
+            )
+            .subscribe(participants => {
+                this.logger.info(`${this.loggerPrefix} new participant list retrieved`, {
+                    oldValue: this.participants,
+                    newValue: participants
+                });
+
+                this._participants = [];
+                this._virtualMeetingRooms = [];
+                this._participants = participants;
+                this.populateVirtualMeetingRooms();
+
+                this.participantsLoadedSubject.next(this.participants);
+
+                console.log(`${this.loggerPrefix} loaded participants and VMRs`);
+                console.table(this.participants);
+                console.table(this.virtualMeetingRooms);
+            });
+    }
+
     private populateVirtualMeetingRooms() {
-        const oldValue = [...this.virtualMeetingRooms];
-        for (const participant of this.participants.filter(x => !!x.virtualMeetingRoomSummary)) {
+        this.logger.info(`${this.loggerPrefix} populating VMRs`, {
+            currentValue: this.virtualMeetingRooms ?? null
+        });
+
+        for (const participant of this.participants.filter(x => x.virtualMeetingRoomSummary)) {
             const existingVmr = this._virtualMeetingRooms.find(x => x.id === participant.virtualMeetingRoomSummary?.id);
             if (existingVmr) {
                 existingVmr.participants.push(participant);
@@ -353,29 +397,17 @@ export class ParticipantService {
 
                 this._virtualMeetingRooms.push(vmr);
             }
+        }
 
-            this.logger.info(`${this.loggingPrefix} populated VMRs`, {
-                oldValue: oldValue,
-                newValue: this.virtualMeetingRooms.map(x => {
+        this.logger.info(`${this.loggerPrefix} populated VMRs`, {
+            newValue:
+                this.virtualMeetingRooms.map(x => {
                     return {
                         id: x.id,
                         displayName: x.displayName,
                         locked: x.locked
                     };
-                })
-            });
-        }
-    }
-
-    private subscribeToConferenceEvents(conference: ConferenceResponse) {
-        this.conferenceSubscriptions.forEach(x => x.unsubscribe());
-        this.conferenceSubscriptions = [];
-
-        this.conferenceSubscriptions.push(
-            this.eventsService
-                .getParticipantStatusMessage()
-                .pipe(filter(x => x.conferenceId === conference.id))
-                .subscribe(participantStatusMessage => this.handleParticipantStatusUpdate(participantStatusMessage))
-        );
+                }) ?? null
+        });
     }
 }

@@ -318,17 +318,23 @@ fdescribe('VideoControlService', () => {
     describe('restoreParticipantState', () => {
         it('should retore spotlight state for a participent', () => {
             // Arrange
-            const participantId = 'participant-id';
-            const pexipId = 'pexip-id';
             const spotlightState = true;
 
             videoControlCacheServiceSpy.getSpotlightStatus.and.returnValue(spotlightState);
 
+            participantOne.id = participantOneId;
+            participantOne.pexipId = participantOnePeixpId;
+
             // Act
-            sut.restoreParticipantSpotlightState(participantId, pexipId);
+            sut.restoreParticipantSpotlightState(participantOne);
 
             // Assert
-            expect(videoCallServiceSpy.spotlightParticipant).toHaveBeenCalledOnceWith(pexipId, spotlightState, conferenceId, participantId);
+            expect(videoCallServiceSpy.spotlightParticipant).toHaveBeenCalledOnceWith(
+                participantOnePeixpId,
+                spotlightState,
+                conferenceId,
+                participantOneId
+            );
         });
     });
 });

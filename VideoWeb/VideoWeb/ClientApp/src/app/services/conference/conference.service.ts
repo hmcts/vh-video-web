@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, ParamMap, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
-import { Observable, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject, Subscription } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
-import { ApiClient, ConferenceResponse } from '../clients/api-client';
+import { ApiClient, ConferenceResponse, ConferenceStatus } from '../clients/api-client';
+import { EventsService } from '../events.service';
+import { ConferenceStatusMessage } from '../models/conference-status-message';
 
 @Injectable({
     providedIn: 'root'
@@ -11,7 +13,8 @@ import { ApiClient, ConferenceResponse } from '../clients/api-client';
 export class ConferenceService {
     private loggerPrefix = '[ConferenceService] -';
 
-    constructor(router: Router, private activatedRoute: ActivatedRoute, private apiClient: ApiClient) {
+    private subscriptions: Subscription[] = [];
+    constructor(router: Router, private activatedRoute: ActivatedRoute, private eventService: EventsService, private apiClient: ApiClient) {
         router.events
             .pipe(
                 filter(x => x instanceof NavigationEnd),
@@ -37,6 +40,13 @@ export class ConferenceService {
     private currentConferenceSubject: ReplaySubject<ConferenceResponse> = new ReplaySubject<ConferenceResponse>();
     get currentConference$(): Observable<ConferenceResponse> {
         return this.currentConferenceSubject.asObservable();
+    }
+
+    private onCurrentConferenceStatusChangedSubject: BehaviorSubject<ConferenceStatus> = new BehaviorSubject<ConferenceStatus>(
+        this.currentConference?.status
+    );
+    get onCurrentConferenceStatusChanged$() {
+        return this.onCurrentConferenceStatusChangedSubject.asObservable();
     }
 
     private _currentConferenceId: string;
@@ -76,6 +86,31 @@ export class ConferenceService {
 
                 this._currentConference = conference;
                 this.currentConferenceSubject.next(conference);
+
+                this.setupConferenceSubscriptions();
             });
+    }
+
+    setupConferenceSubscriptions() {
+        this.subscriptions.forEach(subscription => subscription.unsubscribe());
+        this.subscriptions = [];
+        this.subscriptions.push(
+            this.eventService
+                .getHearingStatusMessage()
+                .pipe(filter(conferenceStatusMessage => conferenceStatusMessage.conferenceId === this.currentConferenceId))
+                .subscribe(hearingStatusMessage => this.handleConferenceStatusChange(hearingStatusMessage))
+        );
+    }
+
+    private handleConferenceStatusChange(conferenceStatusMessage: ConferenceStatusMessage): void {
+        if (this.currentConference.status !== conferenceStatusMessage.status) {
+            console.log(`${this.loggerPrefix} updating conference status`, {
+                oldValue: this.currentConference.status,
+                newValue: conferenceStatusMessage.status
+            });
+
+            this.currentConference.status = conferenceStatusMessage.status;
+            this.onCurrentConferenceStatusChangedSubject.next(this.currentConference.status);
+        }
     }
 }
