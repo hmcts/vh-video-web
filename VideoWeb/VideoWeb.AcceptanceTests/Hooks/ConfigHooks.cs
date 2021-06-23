@@ -110,9 +110,9 @@ namespace VideoWeb.AcceptanceTests.Hooks
 
         private void RegisterValidEjudDIdDomains (TestContext context)
         {
-            var all = _configRoot.GetSection("ValidEjudDIdDomains").Get<List<string>>();
-            NUnit.Framework.TestContext.WriteLine($"valid ejud in config is {string.Join(", ", all)}");
-            context.VideoWebConfig.ValidEjudDIdDomains = all;
+            var eJudDomains = _configRoot.GetSection("ValidEjudDIdDomains").Get<List<string>>();
+            NUnit.Framework.TestContext.WriteLine($"valid ejud in config is {string.Join(", ", eJudDomains)}");
+            context.VideoWebConfig.ValidEjudDIdDomains = eJudDomains;
         }
 
         private void RegisterHearingServices(TestContext context)
