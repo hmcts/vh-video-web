@@ -354,7 +354,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             component.audioRecordingStreamCheckIntervalSeconds = currentAudioRecordingStreamCheckIntervalSeconds;
         });
 
-        it('should accumulate when participant is in session', async () => {
+        it('should accumulate when conference is in session', async () => {
             component.conference.status = ConferenceStatus.InSession;
             await component.retrieveAudioStreamInfo(globalConference.id);
             expect(component.conferenceRecordingInSessionForSeconds).toBe(
@@ -362,7 +362,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             );
         });
 
-        it('should reset when participant is not in session', async () => {
+        it('should reset when conference is not in session', async () => {
             component.conference.status = ConferenceStatus.Paused;
             await component.retrieveAudioStreamInfo(globalConference.id);
             expect(component.conferenceRecordingInSessionForSeconds).toBe(0);
