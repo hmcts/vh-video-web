@@ -444,7 +444,9 @@ describe('WaitingRoomComponent message and clock', () => {
                 component.token = undefined;
             });
 
-            it('should not call when event hub is not connected and token is not set', () => {});
+            it('should not call when event hub is not connected and token is not set', () => {
+                // Setup handled in beforeEach. Left blank intentionally.
+            });
 
             it('should not call when event hub is not connected and token is set', () => {
                 component.token = new TokenResponse();

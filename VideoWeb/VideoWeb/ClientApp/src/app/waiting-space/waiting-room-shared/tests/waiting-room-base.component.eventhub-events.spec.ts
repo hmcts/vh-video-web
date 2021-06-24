@@ -51,7 +51,6 @@ import {
     router,
     userMediaService,
     userMediaStreamService,
-    videoCallService,
     videoWebService
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
@@ -61,8 +60,6 @@ import { RoomTransfer } from '../../../shared/models/room-transfer';
 import { ElementRef } from '@angular/core';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { ConsultationInvitation, ConsultationInvitationService } from '../../services/consultation-invitation.service';
-import { Participant } from 'src/app/shared/models/participant';
-import { CallSetup } from '../../models/video-call-models';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
