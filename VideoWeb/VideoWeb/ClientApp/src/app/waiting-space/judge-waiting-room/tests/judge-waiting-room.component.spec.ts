@@ -367,6 +367,13 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             await component.retrieveAudioStreamInfo(globalConference.id);
             expect(component.conferenceRecordingInSessionForSeconds).toBe(0);
         });
+
+        it('should switch the continueWithNoRecording flag to false when conference is not in session', async () => {
+            component.conference.status = ConferenceStatus.Paused;
+            component.continueWithNoRecording = true;
+            await component.retrieveAudioStreamInfo(globalConference.id);
+            expect(component.continueWithNoRecording).toBe(false);
+        });
     });
 
     it('should init audio recording interval', () => {
