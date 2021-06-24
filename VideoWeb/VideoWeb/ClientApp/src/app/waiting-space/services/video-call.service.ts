@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { Observable, Subject } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
 import { ConfigService } from 'src/app/services/api/config.service';
 import { ApiClient, HearingLayout, SharedParticipantRoom, StartHearingRequest } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -35,6 +36,12 @@ export class VideoCallService {
     readonly callTypeAudioOnly = 'audioonly';
 
     private onSetupSubject = new Subject<CallSetup>();
+    get onConferenceStarted() {
+        return this.onConferenceUpdatedSubject.asObservable().pipe(
+            filter(conferenceUpdate => conferenceUpdate.guestedMuted === false),
+            take(1)
+        );
+    }
     private onConnectedSubject = new Subject<ConnectedCall>();
     private onDisconnected = new Subject<DisconnectedCall>();
     private onErrorSubject = new Subject<CallError>();
@@ -103,6 +110,7 @@ export class VideoCallService {
         };
 
         this.pexipAPI.onConferenceUpdate = function (conferenceUpdate) {
+            console.log('[ROB] onConferenceUpdate', conferenceUpdate);
             self.onConferenceUpdatedSubject.next(new ConferenceUpdated(conferenceUpdate.guests_muted));
         };
 

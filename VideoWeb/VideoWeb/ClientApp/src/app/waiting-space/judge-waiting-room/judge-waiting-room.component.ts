@@ -1,12 +1,14 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription, merge } from 'rxjs';
+import { merge } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
+import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { VirtualMeetingRoomModel } from 'src/app/services/conference/models/virtual-meeting-room.model';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
@@ -72,6 +74,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected clockService: ClockService,
         protected translateService: TranslateService,
         protected consultationInvitiationService: ConsultationInvitationService,
+        protected conferenceService: ConferenceService,
         protected participantService: ParticipantService,
         protected videoControlService: VideoControlService
     ) {
@@ -103,13 +106,33 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.logger.debug(`${this.loggerPrefixJudge} Loading judge waiting room`);
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
 
-        this.onParticipantOrVmrPexipConnectedOrIdUpdatedSubscription = merge<ParticipantModel | VirtualMeetingRoomModel>(
-            this.participantService.onParticipantConnectedToPexip$,
-            this.participantService.onParticipantPexipIdChanged$,
-            this.participantService.onVmrConnectedToPexip$,
-            this.participantService.onVmrPexipIdChanged$
-        ).subscribe(participantOrVmr => {
-            this.videoControlService.restoreParticipantSpotlightState(participantOrVmr);
+        this.eventService.getHearingCountdownCompleteMessage().subscribe(() => {
+            this.conferenceService.onCurrentConferenceStatusChanged$.subscribe(conferenceStatus => {
+                if (conferenceStatus === ConferenceStatus.InSession) {
+                    this.participantService.participants.forEach(participant => {
+                        if (!participant.virtualMeetingRoomSummary) this.videoControlService.restoreParticipantSpotlightState(participant);
+                    });
+
+                    this.participantService.virtualMeetingRooms.forEach(vmr => {
+                        this.videoControlService.restoreParticipantSpotlightState(vmr);
+                    });
+                }
+            });
+
+            this.onParticipantOrVmrPexipConnectedOrIdUpdatedSubscription = merge<ParticipantModel | VirtualMeetingRoomModel>(
+                this.participantService.onParticipantConnectedToPexip$,
+                this.participantService.onParticipantPexipIdChanged$,
+                this.participantService.onVmrConnectedToPexip$,
+                this.participantService.onVmrPexipIdChanged$
+            ).subscribe(participantOrVmr => {
+                this.participantService.participants.forEach(participant => {
+                    if (!participant.virtualMeetingRoomSummary) this.videoControlService.restoreParticipantSpotlightState(participant);
+                });
+
+                this.participantService.virtualMeetingRooms.forEach(vmr => {
+                    this.videoControlService.restoreParticipantSpotlightState(vmr);
+                });
+            });
         });
 
         this.userMediaService

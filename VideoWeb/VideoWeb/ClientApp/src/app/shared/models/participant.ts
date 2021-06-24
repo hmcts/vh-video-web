@@ -14,15 +14,17 @@ import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
 export interface IParticipantHearingState {
     id: string;
-    pexipId: string;
+    pexipId: string | null;
     isSpotlighted: boolean;
     isRemoteMuted: boolean;
+    isLocallyAudioMuted: boolean;
+    isLocallyVideoMuted: boolean;
     isHandRaised: boolean;
 }
 
 export interface IParticipantConferenceState {
     id: string;
-    currentRoom: RoomSummaryResponse;
+    currentRoom: RoomSummaryResponse | null;
 }
 
 export interface IParticipantDetails {
@@ -56,10 +58,12 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
         public virtualMeetingRoomSummary: RoomSummaryResponse,
         public linkedParticipants: LinkedParticipantResponse[],
         public status: ParticipantStatus = ParticipantStatus.None,
-        public currentRoom: RoomSummaryResponse = null,
-        public pexipId: string = null,
+        public currentRoom: RoomSummaryResponse | null = null,
+        public pexipId: string | null = null,
         public isSpotlighted: boolean = false,
         public isRemoteMuted: boolean = false,
+        public isLocallyAudioMuted: boolean = false,
+        public isLocallyVideoMuted: boolean = false,
         public isHandRaised: boolean = false
     ) {
         if (typeof pexipDisplayName === 'string') {
@@ -74,7 +78,7 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
             participant.id,
             participant.name,
             participant.display_name,
-            participant.tiled_display_name, // = pexip_display_name
+            participant.tiled_display_name, // same as pexip_display_name
             CaseTypeGroup[participant.case_type_group],
             participant.role,
             HearingRole[participant.hearing_role],
@@ -103,7 +107,7 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
             videoEndpointResponse.id,
             videoEndpointResponse.defence_advocate_username,
             videoEndpointResponse.display_name,
-            videoEndpointResponse.pexip_display_name, // = tiled_display_name
+            videoEndpointResponse.pexip_display_name, // same as tiled_display_name
             null,
             null,
             null,

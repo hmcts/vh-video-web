@@ -104,6 +104,10 @@ export class ParticipantService {
             participantOrVmrId: participantOrVmrId ?? null
         });
 
+        console.log(`${this.loggerPrefix} getParticipantOrVirtualMeetingRoomById`);
+        console.table(this.participants);
+        console.table(this.virtualMeetingRooms);
+
         if (Guid.isGuid(participantOrVmrId)) {
             const participant = this.participants.find(x => x.id === participantOrVmrId.toString());
             this.logger.info(`${this.loggerPrefix} getting participant or VMR by ID - ID was a participants ID.`, {
@@ -124,6 +128,9 @@ export class ParticipantService {
     }
 
     private getParticipantOrVirtualMeetingRoomByPexipDisplayName(pexipDisplayName: string): ParticipantModel | VirtualMeetingRoomModel {
+        console.log(`${this.loggerPrefix} getParticipantOrVirtualMeetingRoomByPexipDisplayName`);
+        console.table(this.participants);
+        console.table(this.virtualMeetingRooms);
         return (
             this.participants.find(x => pexipDisplayName.includes(x.id)) ??
             this.virtualMeetingRooms.find(x => pexipDisplayName.includes(x.id))
@@ -325,41 +332,7 @@ export class ParticipantService {
 
             this._participants = [];
             this._virtualMeetingRooms = [];
-            this.loadParticipantsAndVmrs();
-            this.subscribeToConferenceEvents(conference);
-        });
-
-        this.videoCallService.onParticipantUpdated().subscribe(updatedParticipant => this.handlePexipUpdate(updatedParticipant));
-    }
-
-    private subscribeToConferenceEvents(conference: ConferenceResponse) {
-        this.conferenceSubscriptions.forEach(x => x.unsubscribe());
-        this.conferenceSubscriptions = [];
-
-        this.conferenceSubscriptions.push(
-            this.eventsService
-                .getParticipantStatusMessage()
-                .pipe(
-                    filter(x => x.conferenceId === conference.id),
-                    tap(participantStatusMessage => {
-                        if (participantStatusMessage.status === ParticipantStatus.Available) this.loadParticipantsAndVmrs();
-                    })
-                )
-                .subscribe(participantStatusMessage => this.handleParticipantStatusUpdate(participantStatusMessage))
-        );
-    }
-
-    private loadParticipantsAndVmrs() {
-        this.logger.info(`${this.loggerPrefix} loading participants and VMRs`);
-
-        const conferenceId = this.conferenceService.currentConferenceId;
-        zip(this.getParticipantsForConference(conferenceId), this.getEndpointsForConference(conferenceId))
-            .pipe(
-                tap(val => console.log(`${this.loggerPrefix} zip`, val)),
-                take(1), // Ensure this observable also completes
-                map(participantLists => participantLists[0].concat(participantLists[1]))
-            )
-            .subscribe(participants => {
+            this.loadParticipantsAndVmrs().subscribe(participants => {
                 this.logger.info(`${this.loggerPrefix} new participant list retrieved`, {
                     oldValue: this.participants,
                     newValue: participants
@@ -376,6 +349,52 @@ export class ParticipantService {
                 console.table(this.participants);
                 console.table(this.virtualMeetingRooms);
             });
+            this.subscribeToConferenceEvents(conference);
+        });
+
+        this.videoCallService.onParticipantUpdated().subscribe(updatedParticipant => this.handlePexipUpdate(updatedParticipant));
+    }
+
+    private subscribeToConferenceEvents(conference: ConferenceResponse) {
+        this.conferenceSubscriptions.forEach(x => x.unsubscribe());
+        this.conferenceSubscriptions = [];
+
+        this.conferenceSubscriptions.push(
+            this.eventsService
+                .getParticipantStatusMessage()
+                .pipe(
+                    filter(x => x.conferenceId === conference.id),
+                    tap(participantStatusMessage => {
+                        if (participantStatusMessage.status === ParticipantStatus.Available)
+                            this.loadParticipantsAndVmrs().subscribe(participants => {
+                                participants.forEach(upToDateParticipant => {
+                                    const participant = this.participants.find(p => p.id === upToDateParticipant.id);
+                                    if (upToDateParticipant.status !== participant.status) {
+                                        participant.status = upToDateParticipant.status;
+                                    }
+
+                                    if (upToDateParticipant.virtualMeetingRoomSummary?.id !== participant.virtualMeetingRoomSummary?.id) {
+                                        participant.virtualMeetingRoomSummary = upToDateParticipant.virtualMeetingRoomSummary;
+                                    }
+                                });
+
+                                this.populateVirtualMeetingRooms();
+                            });
+                    })
+                )
+                .subscribe(participantStatusMessage => this.handleParticipantStatusUpdate(participantStatusMessage))
+        );
+    }
+
+    private loadParticipantsAndVmrs(): Observable<ParticipantModel[]> {
+        this.logger.info(`${this.loggerPrefix} loading participants and VMRs`);
+
+        const conferenceId = this.conferenceService.currentConferenceId;
+        return zip(this.getParticipantsForConference(conferenceId), this.getEndpointsForConference(conferenceId)).pipe(
+            tap(val => console.log(`${this.loggerPrefix} zip`, val)),
+            take(1), // Ensure this observable also completes
+            map(participantLists => participantLists[0].concat(participantLists[1]))
+        );
     }
 
     private populateVirtualMeetingRooms() {

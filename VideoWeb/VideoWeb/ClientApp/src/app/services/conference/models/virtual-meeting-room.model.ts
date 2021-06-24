@@ -3,14 +3,14 @@ import { RoomSummaryResponse } from '../../clients/api-client';
 import { PexipDisplayNameModel } from './pexip-display-name.model';
 
 export class VirtualMeetingRoomModel {
-    public pexipDisplayName: PexipDisplayNameModel;
+    public pexipDisplayName: PexipDisplayNameModel | null;
     constructor(
         public id: string,
         public displayName: string,
         public locked: boolean,
         public participants: ParticipantModel[] = [],
-        public pexipId: string = null,
-        pexipDisplayName: string | PexipDisplayNameModel = null
+        public pexipId: string | null = null,
+        pexipDisplayName: string | PexipDisplayNameModel | null = null
     ) {
         if (typeof pexipDisplayName === 'string') {
             this.pexipDisplayName = PexipDisplayNameModel.fromString(pexipDisplayName as string);

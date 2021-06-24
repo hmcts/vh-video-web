@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { filter, take, tap, timeout } from 'rxjs/operators';
+import { delay, filter, map, retryWhen, take, tap, timeout } from 'rxjs/operators';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
@@ -59,8 +59,31 @@ export class VideoControlService {
         });
 
         let onResponse$ = this.videoCallService.onParticipantUpdated().pipe(
-            filter(x => x.pexipDisplayName.includes(participantOrVmr.id)),
-            take(1),
+            filter(update => update.pexipDisplayName.includes(participantOrVmr.id)),
+            map(update => {
+                if (update.isSpotlighted !== spotlightStatus) throw new Error('update.isSpotlighted !== spotlightStatus');
+
+                return update;
+            }),
+            retryWhen(errors =>
+                errors.pipe(
+                    tap(() => {
+                        this.logger.warn(`${this.loggerPrefix} Retrying call to pexip to update spotlight status.`, {
+                            spotlightStatus: spotlightStatus,
+                            conferenceId: conferenceId,
+                            participantId: participantOrVmr.id
+                        });
+
+                        this.videoCallService.spotlightParticipant(
+                            participantOrVmr.pexipId,
+                            spotlightStatus,
+                            this.conferenceService.currentConferenceId,
+                            participantOrVmr.id
+                        );
+                    }),
+                    delay(500)
+                )
+            ),
             tap(update => {
                 this.logger.info(`${this.loggerPrefix} Update received. Attempting to update cache.`, {
                     requestedValue: spotlightStatus,
@@ -71,7 +94,8 @@ export class VideoControlService {
                 });
 
                 this.videoControlCacheService.setSpotlightStatus(conferenceId, participantOrVmr.id, update.isSpotlighted);
-            })
+            }),
+            take(1)
         );
 
         if (responseTimeoutInMS > 0) {

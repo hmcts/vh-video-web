@@ -62,6 +62,21 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.getParticipantsList().then(() => {
             this.setupVideoCallSubscribers();
             this.setupEventhubSubscribers();
+            // this.videoCallService.onConferenceStarted.subscribe(() => {
+            //     const participant = this.participantsService.participants.find(p => p.role === Role.Judge);
+            //     if (!participant.pexipId) {
+            //         this.participantsService.onParticipantConnectedToPexip$
+            //             .pipe(
+            //                 filter(p => p.role === Role.Judge),
+            //                 take(1)
+            //             )
+            //             .subscribe(p => {
+            //                 this.videoControlService.setSpotlightStatus(p, true);
+            //             });
+            //     } else {
+            //         this.videoControlService.setSpotlightStatus(participant, true);
+            //     }
+            // });
         });
     }
 
@@ -211,7 +226,11 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         if (participant instanceof LinkedParticipantPanelModel) {
             participant.updateParticipant(updatedParticipant.isRemoteMuted, null, updatedParticipant.isSpotlighted);
         } else {
-            participant.updateParticipant(updatedParticipant.isRemoteMuted, updatedParticipant.handRaised, participant.hasSpotlight());
+            participant.updateParticipant(
+                updatedParticipant.isRemoteMuted,
+                updatedParticipant.handRaised,
+                updatedParticipant.isSpotlighted
+            );
         }
 
         if (participant instanceof LinkedParticipantPanelModel) {
@@ -303,11 +322,19 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         const p = this.participants.find(x => x.id === participant.id);
         this.logger.info(`${this.loggerPrefix} Judge is attempting to toggle spotlight for participant`, {
             conferenceId: this.conferenceId,
+            unusedParticipantId: participant?.id ?? null,
             participantId: p.id ?? null,
             pexipId: p.pexipId ?? null,
             current: p.hasSpotlight(),
             new: !p.hasSpotlight()
         });
+
+        if (!p?.pexipId && !p?.id) {
+            this.logger.warn(`${this.loggerPrefix} Cannot spotlight participant as they could not be found or do not have an ID`, {
+                participant: p,
+                participants: this.participants
+            });
+        }
 
         this.videoControlService
             .setSpotlightStatus(this.participantsService.getParticipantOrVirtualMeetingRoomById(p.id), !p.hasSpotlight())
