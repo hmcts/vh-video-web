@@ -70,7 +70,6 @@ export class EventsHubService {
         configService.getClientSettings().subscribe(clientSettings => {
             this._connection = this.buildConnection(clientSettings.event_hub_path);
             this.configureConnection();
-
             connectionStatusService.onConnectionStatusChange().subscribe(isConnected => this.handleConnectionStatusChanged(isConnected));
         });
     }
@@ -112,6 +111,7 @@ export class EventsHubService {
                 .then(() => {
                     this.logger.info('[EventsService] - Successfully connected to EventHub');
                     this._reconnectionAttempt = 0;
+                    this.onEventHubReconnected();
                 })
                 .catch(async error => {
                     this.logger.warn(`[EventsService] - Failed to connect to EventHub ${error}`);
