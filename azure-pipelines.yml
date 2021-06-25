@@ -204,6 +204,8 @@ parameters:
             secret: true
           - name: VhServices:VideoApiUrl
             value: $(video_api_url)
+          - name: VhServices:EmailReformDomain
+            value: $(EmailReformDomain)
 
 variables:
     - group: vh-domains-and-urls
