@@ -120,6 +120,7 @@ describe('WaitingRoomComponent Video Call', () => {
     it('should define outgoing stream when video call has been setup', () => {
         const outgoingStream = <any>{};
         const payload = new CallSetup(outgoingStream);
+
         onSetupSubject.next(payload);
 
         expect(videoCallService.connect).toHaveBeenCalledWith('', null);

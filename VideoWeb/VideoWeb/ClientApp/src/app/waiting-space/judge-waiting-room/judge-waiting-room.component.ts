@@ -227,7 +227,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     }
 
     async retrieveAudioStreamInfo(hearingId): Promise<void> {
-        if (this.conference.status === ConferenceStatus.InSession || this.participant.status === ParticipantStatus.InConsultation) {
+        if (this.conference.status === ConferenceStatus.InSession) {
             this.conferenceRecordingInSessionForSeconds += this.audioRecordingStreamCheckIntervalSeconds;
         } else {
             this.conferenceRecordingInSessionForSeconds = 0;
