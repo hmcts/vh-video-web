@@ -31,7 +31,8 @@ namespace VideoWeb.Common.Caching
                 Participants = participants,
                 HearingVenueName = conferenceResponse.HearingVenueName,
                 Endpoints = endpoints,
-                CivilianRooms = civilianRooms
+                CivilianRooms = civilianRooms,
+                CurrentStatus = conferenceResponse.CurrentStatus
             };
             return conference;
         }
