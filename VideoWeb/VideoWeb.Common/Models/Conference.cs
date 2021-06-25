@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using VideoApi.Contract.Enums;
 
 namespace VideoWeb.Common.Models
 {
@@ -19,6 +20,7 @@ namespace VideoWeb.Common.Models
         public List<Endpoint> Endpoints { get; set; }
         public List<CivilianRoom> CivilianRooms { get; set; }
         public string HearingVenueName { get; set; }
+        public ConferenceState CurrentStatus { get; set; }
 
         public Participant GetJudge()
         {
