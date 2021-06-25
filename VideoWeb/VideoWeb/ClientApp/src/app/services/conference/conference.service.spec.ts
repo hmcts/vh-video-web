@@ -3,6 +3,7 @@ import { ActivatedRoute, ActivatedRouteSnapshot, convertToParamMap, Event, Navig
 import { Observable, Subject } from 'rxjs';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { ApiClient, ConferenceResponse } from '../clients/api-client';
+import { EventsService } from '../events.service';
 import { Logger } from '../logging/logger-base';
 
 import { ConferenceService } from './conference.service';
@@ -12,7 +13,7 @@ fdescribe('ConferenceService', () => {
 
     let routerSpy: jasmine.SpyObj<Router>;
     let eventsSubject: Subject<Event>;
-
+    let eventsServiceSpy: jasmine.SpyObj<EventsService>;
     let activatedRouteSpy: jasmine.SpyObj<ActivatedRoute>;
     let activatedRouteFirstChildSpy: jasmine.SpyObj<ActivatedRoute>;
     let apiClientSpy: jasmine.SpyObj<ApiClient>;
@@ -24,6 +25,8 @@ fdescribe('ConferenceService', () => {
         eventsSubject = new Subject<Event>();
         getSpiedPropertyGetter(routerSpy, 'events').and.returnValue(eventsSubject.asObservable());
 
+        eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', ['getServiceReconnected']);
+
         activatedRouteSpy = jasmine.createSpyObj<ActivatedRoute>('ActivatedRoute', ['toString'], ['firstChild', 'snapshot', 'paramsMap']);
         activatedRouteFirstChildSpy = jasmine.createSpyObj<ActivatedRoute>('ActivatedRoute', ['toString'], ['paramMap']);
 
@@ -33,7 +36,7 @@ fdescribe('ConferenceService', () => {
 
         loggerSpy = jasmine.createSpyObj<Logger>('Logger', ['warn', 'info']);
 
-        sut = new ConferenceService(routerSpy, activatedRouteSpy, apiClientSpy);
+        sut = new ConferenceService(routerSpy, activatedRouteSpy, eventsServiceSpy, apiClientSpy);
     });
 
     describe('construction', () => {
@@ -50,7 +53,7 @@ fdescribe('ConferenceService', () => {
             getSpiedPropertyGetter(routerSpy, 'events').and.returnValue(events$);
 
             // Act
-            new ConferenceService(routerSpy, activatedRouteSpy, apiClientSpy);
+            new ConferenceService(routerSpy, activatedRouteSpy, eventsServiceSpy, apiClientSpy);
 
             // Assert
             expect(events$.subscribe).toHaveBeenCalledTimes(1);

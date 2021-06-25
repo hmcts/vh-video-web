@@ -62,21 +62,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.getParticipantsList().then(() => {
             this.setupVideoCallSubscribers();
             this.setupEventhubSubscribers();
-            // this.videoCallService.onConferenceStarted.subscribe(() => {
-            //     const participant = this.participantsService.participants.find(p => p.role === Role.Judge);
-            //     if (!participant.pexipId) {
-            //         this.participantsService.onParticipantConnectedToPexip$
-            //             .pipe(
-            //                 filter(p => p.role === Role.Judge),
-            //                 take(1)
-            //             )
-            //             .subscribe(p => {
-            //                 this.videoControlService.setSpotlightStatus(p, true);
-            //             });
-            //     } else {
-            //         this.videoControlService.setSpotlightStatus(participant, true);
-            //     }
-            // });
         });
     }
 

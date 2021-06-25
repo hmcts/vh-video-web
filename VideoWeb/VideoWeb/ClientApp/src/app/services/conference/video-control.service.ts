@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { delay, filter, map, retryWhen, take, tap, timeout } from 'rxjs/operators';
+import { filter, map, retryWhen, take, tap, timeout } from 'rxjs/operators';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
@@ -62,7 +62,6 @@ export class VideoControlService {
             filter(update => update.pexipDisplayName.includes(participantOrVmr.id)),
             map(update => {
                 if (update.isSpotlighted !== spotlightStatus) throw new Error('update.isSpotlighted !== spotlightStatus');
-
                 return update;
             }),
             retryWhen(errors =>
@@ -80,23 +79,23 @@ export class VideoControlService {
                             this.conferenceService.currentConferenceId,
                             participantOrVmr.id
                         );
-                    }),
-                    delay(500)
+                    })
                 )
             ),
-            tap(update => {
-                this.logger.info(`${this.loggerPrefix} Update received. Attempting to update cache.`, {
-                    requestedValue: spotlightStatus,
-                    updatedValue: update.isSpotlighted,
-                    wasValueChangedPerRequest: spotlightStatus === update.isSpotlighted,
-                    conferenceId: conferenceId,
-                    participantId: participantOrVmr.id
-                });
-
-                this.videoControlCacheService.setSpotlightStatus(conferenceId, participantOrVmr.id, update.isSpotlighted);
-            }),
             take(1)
         );
+
+        onResponse$.subscribe(update => {
+            this.logger.info(`${this.loggerPrefix} Update received. Attempting to update cache.`, {
+                requestedValue: spotlightStatus,
+                updatedValue: update.isSpotlighted,
+                wasValueChangedPerRequest: spotlightStatus === update.isSpotlighted,
+                conferenceId: conferenceId,
+                participantId: participantOrVmr.id
+            });
+
+            this.videoControlCacheService.setSpotlightStatus(conferenceId, participantOrVmr.id, update.isSpotlighted);
+        });
 
         if (responseTimeoutInMS > 0) {
             onResponse$ = onResponse$.pipe(timeout(responseTimeoutInMS));

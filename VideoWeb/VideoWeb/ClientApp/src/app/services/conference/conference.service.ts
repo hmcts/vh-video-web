@@ -42,9 +42,13 @@ export class ConferenceService {
         return this.currentConferenceSubject.asObservable();
     }
 
-    private onCurrentConferenceStatusChangedSubject: BehaviorSubject<ConferenceStatus> = new BehaviorSubject<ConferenceStatus>(
-        this.currentConference?.status
-    );
+    private onCurrentConferenceStatusChangedSubject: BehaviorSubject<{
+        oldStatus: ConferenceStatus;
+        newStatus: ConferenceStatus;
+    }> = new BehaviorSubject<{ oldStatus: ConferenceStatus; newStatus: ConferenceStatus }>({
+        oldStatus: this.currentConference?.status,
+        newStatus: null
+    });
     get onCurrentConferenceStatusChanged$() {
         return this.onCurrentConferenceStatusChangedSubject.asObservable();
     }
@@ -104,13 +108,14 @@ export class ConferenceService {
 
     private handleConferenceStatusChange(conferenceStatusMessage: ConferenceStatusMessage): void {
         if (this.currentConference.status !== conferenceStatusMessage.status) {
+            const oldValue = this.currentConference.status;
             console.log(`${this.loggerPrefix} updating conference status`, {
-                oldValue: this.currentConference.status,
+                oldValue: oldValue,
                 newValue: conferenceStatusMessage.status
             });
 
             this.currentConference.status = conferenceStatusMessage.status;
-            this.onCurrentConferenceStatusChangedSubject.next(this.currentConference.status);
+            this.onCurrentConferenceStatusChangedSubject.next({ oldStatus: oldValue, newStatus: this.currentConference.status });
         }
     }
 }

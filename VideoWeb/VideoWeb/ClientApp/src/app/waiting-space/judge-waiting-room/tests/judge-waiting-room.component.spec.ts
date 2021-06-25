@@ -36,12 +36,10 @@ import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { ConsultationInvitation } from '../../services/consultation-invitation.service';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
-import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
-import { Subject } from 'rxjs';
 import { Guid } from 'guid-typescript';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
-import { VideoCallService } from '../../services/video-call.service';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
+import { ConferenceService } from 'src/app/services/conference/conference.service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     let component: JudgeWaitingRoomComponent;
@@ -50,6 +48,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     let logged: LoggedParticipantResponse;
     const translateService = translateServiceSpy;
     let consultationInvitiation: ConsultationInvitation;
+    let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
     let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
     let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
 
@@ -69,6 +68,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             snapshot: { data: { loggedUser: logged }, paramMap: convertToParamMap({ conferenceId: globalConference.id }) }
         };
 
+        conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>('ConferenceService', ['getConferenceById']);
         participantServiceSpy = jasmine.createSpyObj<ParticipantService>('ParticipantService', ['getPexipIdForParticipant']);
         videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
             'setSpotlightStatus',
@@ -96,6 +96,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             clockService,
             translateService,
             consultationInvitiationService,
+            conferenceServiceSpy,
             participantServiceSpy,
             videoControlServiceSpy
         );

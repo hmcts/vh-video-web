@@ -11,6 +11,7 @@ import { LoggerService } from '../logging/logger.service';
 import { ParticipantStatusMessage } from '../models/participant-status-message';
 import { ConferenceService } from './conference.service';
 import { VirtualMeetingRoomModel } from './models/virtual-meeting-room.model';
+import { VideoControlCacheService } from './video-control-cache.service';
 
 export const InvalidNumberOfNonEndpointParticipantsError = () => new Error('Invalid number of non-endpoint participants.');
 
@@ -93,6 +94,7 @@ export class ParticipantService {
         private conferenceService: ConferenceService,
         private videoCallService: VideoCallService,
         private eventsService: EventsService,
+        private videoControlCacheService: VideoControlCacheService,
         private logger: LoggerService
     ) {
         this.logger.warn(`${this.loggerPrefix} Constructor called.`);
@@ -293,10 +295,12 @@ export class ParticipantService {
             return;
         }
 
-        if (participant.status !== participantStatusMessage.status) {
+        const oldValue = participant.status;
+
+        if (oldValue !== participantStatusMessage.status) {
             this.logger.info(`${this.loggerPrefix} updating participants status`, {
                 participantId: participant.id,
-                oldValue: participant.status,
+                oldValue: oldValue,
                 newValue: participantStatusMessage.status
             });
 
@@ -341,7 +345,10 @@ export class ParticipantService {
                 this._participants = [];
                 this._virtualMeetingRooms = [];
                 this._participants = participants;
+
                 this.populateVirtualMeetingRooms();
+
+                this.restoreCachedVideoControlState();
 
                 this.participantsLoadedSubject.next(this.participants);
 
@@ -353,6 +360,24 @@ export class ParticipantService {
         });
 
         this.videoCallService.onParticipantUpdated().subscribe(updatedParticipant => this.handlePexipUpdate(updatedParticipant));
+    }
+
+    restoreCachedVideoControlState() {
+        const conferenceState = this.videoControlCacheService.getStateForConference(this.conferenceService.currentConferenceId);
+
+        if (conferenceState !== null) {
+            this.participants.forEach(participant => {
+                if (conferenceState.participantStates[participant.id])
+                    participant.isSpotlighted = conferenceState.participantStates[participant.id].isSpotlighted;
+            });
+
+            this.virtualMeetingRooms.forEach(vmr => {
+                if (conferenceState.participantStates[vmr.id])
+                    vmr.participants.forEach(
+                        participant => (participant.isSpotlighted = conferenceState.participantStates[vmr.id].isSpotlighted)
+                    );
+            });
+        }
     }
 
     private subscribeToConferenceEvents(conference: ConferenceResponse) {
@@ -390,11 +415,13 @@ export class ParticipantService {
         this.logger.info(`${this.loggerPrefix} loading participants and VMRs`);
 
         const conferenceId = this.conferenceService.currentConferenceId;
-        return zip(this.getParticipantsForConference(conferenceId), this.getEndpointsForConference(conferenceId)).pipe(
+        const participants = zip(this.getParticipantsForConference(conferenceId), this.getEndpointsForConference(conferenceId)).pipe(
             tap(val => console.log(`${this.loggerPrefix} zip`, val)),
             take(1), // Ensure this observable also completes
             map(participantLists => participantLists[0].concat(participantLists[1]))
         );
+
+        return participants;
     }
 
     private populateVirtualMeetingRooms() {
