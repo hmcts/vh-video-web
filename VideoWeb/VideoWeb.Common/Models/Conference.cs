@@ -54,9 +54,5 @@ namespace VideoWeb.Common.Models
 
             return room;
         }
-        public bool IsConferenceInSession()
-        {
-            return CurrentStatus == ConferenceState.InSession;
-        }
     }
 }

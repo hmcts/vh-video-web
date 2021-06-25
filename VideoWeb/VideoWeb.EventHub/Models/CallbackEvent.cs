@@ -21,7 +21,6 @@ namespace VideoWeb.EventHub.Models
         public string Reason { get; set; }
         public bool IsParticipantInVmr { get; set; }
         public ConferenceState ConferenceStatus { get; set; }
-        public IEnumerable<Participant> OtherParticipantsInVmr { get; set; }
         public bool IsOtherParticipantsInConsultationRoom { get; set; }
 
     }

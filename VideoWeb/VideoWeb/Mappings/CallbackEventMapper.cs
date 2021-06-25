@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
@@ -24,6 +26,8 @@ namespace VideoWeb.Mappings
             };
             var eventType = Enum.Parse<EventType>(request.EventType.ToString());
             var conferenceId = Guid.Parse(request.ConferenceId);
+            var otherParticipantsInVmr = request.GetOtherParticipantsInVmr(conference);
+
             Guid.TryParse(request.ParticipantId, out var participantId);
             
             var callbackEvent = new CallbackEvent
@@ -38,7 +42,6 @@ namespace VideoWeb.Mappings
                 ParticipantId = participantId,
                 IsParticipantInVmr = request.IsParticipantInVmr(conference),
                 ConferenceStatus = conference.CurrentStatus,
-                OtherParticipantsInVmr = request.GetOtherParticipantsInVmr(conference),
             };
             
             if (IsEndpointJoined(callbackEvent, conference))
@@ -56,7 +59,7 @@ namespace VideoWeb.Mappings
                 callbackEvent.EventType = EventType.EndpointTransfer;
             }
 
-            callbackEvent. IsOtherParticipantsInConsultationRoom = IsOtherParticipantInConsultation(callbackEvent);
+            callbackEvent. IsOtherParticipantsInConsultationRoom = IsOtherParticipantInConsultation(otherParticipantsInVmr);
             return callbackEvent;
         }
 
@@ -77,9 +80,9 @@ namespace VideoWeb.Mappings
             return callbackEvent.EventType == EventType.Transfer &&
                    conference.Endpoints.Any(x => x.Id == callbackEvent.ParticipantId);
         }
-        private bool IsOtherParticipantInConsultation(CallbackEvent callbackEvent)
+        private bool IsOtherParticipantInConsultation(IEnumerable<Participant> otherParticipantsInVmr)
         {
-            return callbackEvent.OtherParticipantsInVmr.Any(
+            return otherParticipantsInVmr.Any(
                 p => p.ParticipantStatus == ParticipantStatus.InConsultation);
         }
     }
