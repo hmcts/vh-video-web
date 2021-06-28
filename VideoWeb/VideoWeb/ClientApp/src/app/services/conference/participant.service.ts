@@ -5,7 +5,7 @@ import { filter, map, take, tap } from 'rxjs/operators';
 import { IParticipantHearingState, ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
-import { ApiClient, ConferenceResponse, ParticipantStatus } from '../clients/api-client';
+import { ApiClient, ConferenceResponse, ConferenceStatus, ParticipantStatus } from '../clients/api-client';
 import { EventsService } from '../events.service';
 import { LoggerService } from '../logging/logger.service';
 import { ParticipantStatusMessage } from '../models/participant-status-message';
@@ -385,6 +385,30 @@ export class ParticipantService {
         this.conferenceSubscriptions = [];
 
         this.conferenceSubscriptions.push(
+            this.conferenceService.onCurrentConferenceStatusChanged$.subscribe(update => {
+                if (update.newStatus === ConferenceStatus.InSession) {
+                    this.participants
+                        .filter(x => !x.virtualMeetingRoomSummary)
+                        .forEach(participant => {
+                            if (participant.status === ParticipantStatus.Disconnected) {
+                                this.videoControlCacheService.setSpotlightStatus(
+                                    this.conferenceService.currentConferenceId,
+                                    participant.id,
+                                    false
+                                );
+                            }
+                        });
+
+                    this.virtualMeetingRooms.forEach(vmr => {
+                        if (vmr.participants.every(x => x.status === ParticipantStatus.Disconnected)) {
+                            this.videoControlCacheService.setSpotlightStatus(this.conferenceService.currentConferenceId, vmr.id, false);
+                        }
+                    });
+                }
+            })
+        );
+
+        this.conferenceSubscriptions.push(
             this.eventsService
                 .getParticipantStatusMessage()
                 .pipe(
@@ -405,6 +429,51 @@ export class ParticipantService {
 
                                 this.populateVirtualMeetingRooms();
                             });
+                    }),
+                    tap(participantStatusMessage => {
+                        if (
+                            participantStatusMessage.status === ParticipantStatus.Disconnected &&
+                            this.conferenceService.currentConference.status === ConferenceStatus.InSession
+                        ) {
+                            this.logger.info(`${this.loggerPrefix} Participant disconnected while conference is in session`, {
+                                message: participantStatusMessage
+                            });
+
+                            let participantOrVmr = this.getParticipantOrVirtualMeetingRoomById(participantStatusMessage.participantId);
+                            if (participantOrVmr instanceof ParticipantModel) {
+                                if (participantOrVmr.virtualMeetingRoomSummary) {
+                                    const vmr = this.virtualMeetingRooms.find(
+                                        x => x.id === (participantOrVmr as ParticipantModel).virtualMeetingRoomSummary.id
+                                    );
+
+                                    this.logger.info(`${this.loggerPrefix} Participant belongs to a VMR`, {
+                                        vmr: vmr
+                                    });
+
+                                    if (vmr.participants.some(x => x.status === ParticipantStatus.InHearing)) {
+                                        this.logger.info(
+                                            `${this.loggerPrefix} Some participants are still in hearing. Not going to unspotlight the VMR.`,
+                                            {
+                                                vmr: vmr
+                                            }
+                                        );
+                                        return;
+                                    }
+
+                                    participantOrVmr = vmr;
+                                }
+                            }
+
+                            this.logger.info(`${this.loggerPrefix} Unspotlighting the participant or VMR.`, {
+                                participantOrVmr: participantOrVmr
+                            });
+
+                            this.videoControlCacheService.setSpotlightStatus(
+                                participantStatusMessage.conferenceId,
+                                participantOrVmr.id,
+                                false
+                            );
+                        }
                     })
                 )
                 .subscribe(participantStatusMessage => this.handleParticipantStatusUpdate(participantStatusMessage))
@@ -432,6 +501,15 @@ export class ParticipantService {
         for (const participant of this.participants.filter(x => x.virtualMeetingRoomSummary)) {
             const existingVmr = this._virtualMeetingRooms.find(x => x.id === participant.virtualMeetingRoomSummary?.id);
             if (existingVmr) {
+                if (existingVmr.participants.find(x => x.id === participant.id) !== participant) {
+                    this.logger.warn(`${this.loggerPrefix} Participants are different instances`);
+                    continue;
+                }
+
+                if (existingVmr.participants.find(x => x.id === participant.id)) {
+                    continue;
+                }
+
                 existingVmr.participants.push(participant);
             } else {
                 const vmr = new VirtualMeetingRoomModel(
