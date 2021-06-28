@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
-import { Observable, Subject, Subscription, zip } from 'rxjs';
-import { filter, map, take, tap } from 'rxjs/operators';
+import { Observable, ReplaySubject, Subject, Subscription, zip } from 'rxjs';
+import { filter, map, mergeMap, take, tap } from 'rxjs/operators';
 import { IParticipantHearingState, ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
@@ -27,9 +27,13 @@ export class ParticipantService {
         return this._participants;
     }
 
+    private _loggedInParticipant: ReplaySubject<ParticipantModel> = new ReplaySubject<ParticipantModel>();
+    get loggedInParticipant(): Observable<ParticipantModel> {
+        return this._loggedInParticipant.asObservable();
+    }
+
     public get nonEndpointParticipants(): ParticipantModel[] {
         const participants = this.participants.filter(x => !x.isEndPoint);
-
         if (participants.length < 1) throw InvalidNumberOfNonEndpointParticipantsError();
 
         return participants;
@@ -136,6 +140,16 @@ export class ParticipantService {
         return (
             this.participants.find(x => pexipDisplayName.includes(x.id)) ??
             this.virtualMeetingRooms.find(x => pexipDisplayName.includes(x.id))
+        );
+    }
+
+    getLoggedInParticipantForConference(conferenceId: Guid | string): Observable<ParticipantModel> {
+        return this.getParticipantsForConference(conferenceId).pipe(
+            mergeMap(participants =>
+                this.apiClient
+                    .getCurrentParticipant(conferenceId.toString())
+                    .pipe(map(response => participants.find(participant => participant.id === response.participant_id)))
+            )
         );
     }
 
@@ -356,6 +370,9 @@ export class ParticipantService {
                 console.table(this.participants);
                 console.table(this.virtualMeetingRooms);
             });
+
+            this.getLoggedInParticipantForConference(conference.id).subscribe(participant => this._loggedInParticipant.next(participant));
+
             this.subscribeToConferenceEvents(conference);
         });
 
@@ -485,7 +502,6 @@ export class ParticipantService {
 
         const conferenceId = this.conferenceService.currentConferenceId;
         const participants = zip(this.getParticipantsForConference(conferenceId), this.getEndpointsForConference(conferenceId)).pipe(
-            tap(val => console.log(`${this.loggerPrefix} zip`, val)),
             take(1), // Ensure this observable also completes
             map(participantLists => participantLists[0].concat(participantLists[1]))
         );

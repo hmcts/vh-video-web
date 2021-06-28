@@ -1,7 +1,9 @@
 import { EventEmitter, Injectable, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
+import { filter, tap } from 'rxjs/operators';
 import { ParticipantResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -42,17 +44,22 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     remoteMuted: boolean;
     selfViewOpen: boolean;
     displayConfirmPopup: boolean;
+    loggedInUserSubscription: Subscription;
+    participantSpotlightUpdateSubscription: Subscription;
+    isSpotlighted: boolean;
 
     protected constructor(
         protected videoCallService: VideoCallService,
         protected eventService: EventsService,
         protected deviceTypeService: DeviceTypeService,
         protected logger: Logger,
+        protected participantService: ParticipantService,
         protected translateService: TranslateService
     ) {
         this.handRaised = false;
         this.remoteMuted = false;
         this.selfViewOpen = false;
+        this.isSpotlighted = false;
         this.displayConfirmPopup = false;
     }
 
@@ -85,6 +92,26 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.logger.info(`${this.loggerPrefix} initialising hearing controls`, this.logPayload);
         this.setupVideoCallSubscribers();
         this.setupEventhubSubscribers();
+
+        this.loggedInUserSubscription = this.participantService.loggedInParticipant
+            .pipe(
+                filter(participant => participant && participant.role === Role.Judge),
+                tap(x => console.log('[ROB] logged user', x))
+            )
+            .subscribe(participant => {
+                this.isSpotlighted = participant.isSpotlighted;
+
+                this.participantSpotlightUpdateSubscription?.unsubscribe();
+                this.participantSpotlightUpdateSubscription = this.participantService.onParticipantSpotlightStatusChanged$
+                    .pipe(
+                        tap(x => console.log('[ROB] status', x)),
+                        filter(updatedParticipant => updatedParticipant.id === participant.id)
+                    )
+                    .subscribe(updatedParticipant => {
+                        this.isSpotlighted = updatedParticipant.isSpotlighted;
+                    });
+            });
+
         if (this.isJudge) {
             this.toggleView();
         }
@@ -125,6 +152,13 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     ngOnDestroy(): void {
+        console.log('[ROB] destroy');
+        this.participantSpotlightUpdateSubscription?.unsubscribe();
+        this.participantSpotlightUpdateSubscription = null;
+
+        this.loggedInUserSubscription?.unsubscribe();
+        this.loggedInUserSubscription = null;
+
         this.videoCallSubscription$.unsubscribe();
         this.eventhubSubscription$.unsubscribe();
     }

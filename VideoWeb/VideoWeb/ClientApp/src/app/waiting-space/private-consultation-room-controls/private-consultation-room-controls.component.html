@@ -193,9 +193,9 @@
   </div>
 </div>
 
-<div class="outgoing-video-container">
+<div [ngClass]="{'outgoing-video-container': true}">
   <video
-    [ngClass]="{ 'vh-fade-in': selfViewOpen, 'vh-fade-out': !selfViewOpen }"
+    [ngClass]="{ 'vh-fade-in': selfViewOpen, 'vh-fade-out': !selfViewOpen, 'vh-spotlight-self-view-outline': isSpotlighted }"
     id="outgoingFeedVideo"
     [muted]="true"
     [srcObject]="this.outgoingStream"

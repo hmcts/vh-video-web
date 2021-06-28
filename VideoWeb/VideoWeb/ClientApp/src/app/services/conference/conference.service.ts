@@ -20,6 +20,7 @@ export class ConferenceService {
                 filter(x => x instanceof NavigationEnd),
                 map(() => activatedRoute.snapshot),
                 map(route => {
+                    console.log('[ROB] CONF', route);
                     while (route && !route.paramMap?.has('conferenceId')) {
                         route = route?.firstChild;
                     }
