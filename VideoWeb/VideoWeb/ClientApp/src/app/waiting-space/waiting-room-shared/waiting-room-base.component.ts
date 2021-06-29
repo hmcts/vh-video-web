@@ -697,7 +697,7 @@ export abstract class WaitingRoomBaseDirective {
         this.logger.warn(`${this.loggerPrefix} Presentation disconnected`, logPayload);
         this.presentationStream = null;
         this.videoCallService.stopPresentation();
-        }
+    }
     handlePresentationConnected(connectedPresentation: ConnectedPresentation): void {
         const logPayload = {
             conference: this.conferenceId,
@@ -706,7 +706,7 @@ export abstract class WaitingRoomBaseDirective {
         this.logger.debug(`${this.loggerPrefix} Successfully connected to presentation`, logPayload);
         this.presentationStream = connectedPresentation.stream;
     }
-    
+
     async call() {
         if (!this.eventService.eventHubIsConnected || !this.token) {
             return;
