@@ -22,16 +22,7 @@ export class VideoControlService {
         private logger: LoggerService
     ) {}
 
-    private onParticipantsSpotlightStatusChangedSubject: Subject<boolean>;
-    get onParticipantsSpotlightStatusChanged$(): Observable<boolean> {
-        return this.onParticipantsSpotlightStatusChangedSubject.asObservable();
-    }
-
-    setSpotlightStatus(
-        participantOrVmr: ParticipantModel | VirtualMeetingRoomModel,
-        spotlightStatus: boolean,
-        responseTimeoutInMS: number = 0
-    ): Observable<ParticipantUpdated> {
+    setSpotlightStatus(participantOrVmr: ParticipantModel | VirtualMeetingRoomModel, spotlightStatus: boolean) {
         const conferenceId = this.conferenceService.currentConferenceId;
 
         this.logger.info(
@@ -40,8 +31,7 @@ export class VideoControlService {
                 spotlightStatus: spotlightStatus,
                 conferenceId: this.conferenceService.currentConferenceId,
                 participantOrVmrId: participantOrVmr.id,
-                pexipId: participantOrVmr.pexipId,
-                responseTimeoutInMSForReturnedObservable: responseTimeoutInMS
+                pexipId: participantOrVmr.pexipId
             }
         );
 
@@ -58,51 +48,49 @@ export class VideoControlService {
             participantId: participantOrVmr.id
         });
 
-        let onResponse$ = this.videoCallService.onParticipantUpdated().pipe(
-            filter(update => update.pexipDisplayName.includes(participantOrVmr.id)),
-            map(update => {
-                if (update.isSpotlighted !== spotlightStatus) throw new Error('update.isSpotlighted !== spotlightStatus');
-                return update;
-            }),
-            retryWhen(errors =>
-                errors.pipe(
-                    tap(() => {
-                        this.logger.warn(`${this.loggerPrefix} Retrying call to pexip to update spotlight status.`, {
-                            spotlightStatus: spotlightStatus,
-                            conferenceId: conferenceId,
-                            participantId: participantOrVmr.id
-                        });
+        this.videoCallService
+            .onParticipantUpdated()
+            .pipe(
+                filter(update => update.pexipDisplayName.includes(participantOrVmr.id)),
+                map(update => {
+                    if (update.isSpotlighted !== spotlightStatus) {
+                        console.log('[ROB] not correct');
+                        throw new Error('update.isSpotlighted !== spotlightStatus');
+                    }
+                    return update;
+                }),
+                retryWhen(errors =>
+                    errors.pipe(
+                        delay(200),
+                        tap(() => {
+                            this.logger.warn(`${this.loggerPrefix} Retrying call to pexip to update spotlight status.`, {
+                                spotlightStatus: spotlightStatus,
+                                conferenceId: conferenceId,
+                                participantId: participantOrVmr.id
+                            });
 
-                        this.videoCallService.spotlightParticipant(
-                            participantOrVmr.pexipId,
-                            spotlightStatus,
-                            this.conferenceService.currentConferenceId,
-                            participantOrVmr.id
-                        );
-                    })
-                )
-            ),
-            delay(200),
-            take(1)
-        );
+                            this.videoCallService.spotlightParticipant(
+                                participantOrVmr.pexipId,
+                                spotlightStatus,
+                                this.conferenceService.currentConferenceId,
+                                participantOrVmr.id
+                            );
+                        })
+                    )
+                ),
+                take(1)
+            )
+            .subscribe(update => {
+                this.logger.info(`${this.loggerPrefix} Update received. Attempting to update cache.`, {
+                    requestedValue: spotlightStatus,
+                    updatedValue: update.isSpotlighted,
+                    wasValueChangedPerRequest: spotlightStatus === update.isSpotlighted,
+                    conferenceId: conferenceId,
+                    participantId: participantOrVmr.id
+                });
 
-        onResponse$.subscribe(update => {
-            this.logger.info(`${this.loggerPrefix} Update received. Attempting to update cache.`, {
-                requestedValue: spotlightStatus,
-                updatedValue: update.isSpotlighted,
-                wasValueChangedPerRequest: spotlightStatus === update.isSpotlighted,
-                conferenceId: conferenceId,
-                participantId: participantOrVmr.id
+                this.videoControlCacheService.setSpotlightStatus(conferenceId, participantOrVmr.id, update.isSpotlighted);
             });
-
-            this.videoControlCacheService.setSpotlightStatus(conferenceId, participantOrVmr.id, update.isSpotlighted);
-        });
-
-        if (responseTimeoutInMS > 0) {
-            onResponse$ = onResponse$.pipe(timeout(responseTimeoutInMS));
-        }
-
-        return onResponse$;
     }
 
     isParticipantSpotlighted(participantId: string): boolean {
