@@ -350,7 +350,7 @@ export class ParticipantService {
 
             this._participants = [];
             this._virtualMeetingRooms = [];
-            this.loadParticipantsAndVmrs().subscribe(participants => {
+            this.loadParticipants().subscribe(participants => {
                 this.logger.info(`${this.loggerPrefix} new participant list retrieved`, {
                     oldValue: this.participants,
                     newValue: participants
@@ -432,7 +432,7 @@ export class ParticipantService {
                     filter(x => x.conferenceId === conference.id),
                     tap(participantStatusMessage => {
                         if (participantStatusMessage.status === ParticipantStatus.Available)
-                            this.loadParticipantsAndVmrs().subscribe(participants => {
+                            this.loadParticipants().subscribe(participants => {
                                 participants.forEach(upToDateParticipant => {
                                     const participant = this.participants.find(p => p.id === upToDateParticipant.id);
                                     if (upToDateParticipant.status !== participant.status) {
@@ -497,7 +497,7 @@ export class ParticipantService {
         );
     }
 
-    private loadParticipantsAndVmrs(): Observable<ParticipantModel[]> {
+    private loadParticipants(): Observable<ParticipantModel[]> {
         this.logger.info(`${this.loggerPrefix} loading participants and VMRs`);
 
         const conferenceId = this.conferenceService.currentConferenceId;
