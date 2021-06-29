@@ -11,6 +11,7 @@ import { ClockService } from 'src/app/services/clock.service';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { VirtualMeetingRoomModel } from 'src/app/services/conference/models/virtual-meeting-room.model';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
+import { VideoControlCacheService } from 'src/app/services/conference/video-control-cache.service';
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
@@ -53,6 +54,10 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     unreadMessageCount = 0;
     audioErrorToast: VhToastComponent;
     onParticipantOrVmrPexipConnectedOrIdUpdatedSubscription: Subscription;
+    hearingCountdownFinishedSubscription: Subscription;
+    conferenceStatusChangedSubscription: Subscription;
+    participantStatusChangedSubscription: Subscription;
+    onConferenceStatusChangedSubscription: Subscription;
 
     constructor(
         protected route: ActivatedRoute,
@@ -76,7 +81,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected consultationInvitiationService: ConsultationInvitationService,
         protected conferenceService: ConferenceService,
         protected participantService: ParticipantService,
-        protected videoControlService: VideoControlService
+        protected videoControlService: VideoControlService,
+        protected videoControlCacheService: VideoControlCacheService
     ) {
         super(
             route,
@@ -106,51 +112,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.logger.debug(`${this.loggerPrefixJudge} Loading judge waiting room`);
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
 
-        this.eventService.getHearingCountdownCompleteMessage().subscribe(() => {
-            this.conferenceService.onCurrentConferenceStatusChanged$.subscribe(conferenceStatus => {
-                if (conferenceStatus.newStatus === ConferenceStatus.InSession) {
-                    this.logger.info(`${this.loggerPrefixJudge} spotlighting judge as it is the start of the hearing`);
-
-                    if (conferenceStatus.oldStatus === ConferenceStatus.NotStarted) {
-                        this.videoControlService.setSpotlightStatus(
-                            this.participantService.participants.find(p => p.role === Role.Judge),
-                            true
-                        );
-
-                        this.participantService.participants
-                            .filter(participant => participant.role !== Role.Judge)
-                            .forEach(participant => {
-                                if (!participant.virtualMeetingRoomSummary)
-                                    this.videoControlService.restoreParticipantSpotlightState(participant);
-                            });
-                    } else {
-                        this.participantService.participants.forEach(participant => {
-                            if (!participant.virtualMeetingRoomSummary)
-                                this.videoControlService.restoreParticipantSpotlightState(participant);
-                        });
-                    }
-
-                    this.participantService.virtualMeetingRooms.forEach(vmr => {
-                        this.videoControlService.restoreParticipantSpotlightState(vmr);
-                    });
-                }
-            });
-
-            this.onParticipantOrVmrPexipConnectedOrIdUpdatedSubscription = merge<ParticipantModel | VirtualMeetingRoomModel>(
-                this.participantService.onParticipantConnectedToPexip$,
-                this.participantService.onParticipantPexipIdChanged$,
-                this.participantService.onVmrConnectedToPexip$,
-                this.participantService.onVmrPexipIdChanged$
-            ).subscribe(() => {
-                this.participantService.participants.forEach(participant => {
-                    if (!participant.virtualMeetingRoomSummary) this.videoControlService.restoreParticipantSpotlightState(participant);
-                });
-
-                this.participantService.virtualMeetingRooms.forEach(vmr => {
-                    this.videoControlService.restoreParticipantSpotlightState(vmr);
-                });
-            });
-        });
+        this.initialiseVideoControlCacheLogic();
 
         this.userMediaService
             .setDefaultDevicesInCache()
@@ -173,10 +135,145 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             });
     }
 
+    private initialiseVideoControlCacheLogic() {
+        this.hearingCountdownFinishedSubscription = this.eventService.getHearingCountdownCompleteMessage().subscribe(() => {
+            this.conferenceStatusChangedSubscription?.unsubscribe();
+            this.conferenceStatusChangedSubscription = this.conferenceService.onCurrentConferenceStatusChanged$.subscribe(
+                conferenceStatus => {
+                    if (conferenceStatus.newStatus === ConferenceStatus.InSession) {
+                        this.logger.info(`${this.loggerPrefixJudge} spotlighting judge as it is the start of the hearing`);
+
+                        if (conferenceStatus.oldStatus === ConferenceStatus.NotStarted) {
+                            this.videoControlService.setSpotlightStatus(
+                                this.participantService.participants.find(p => p.role === Role.Judge),
+                                true
+                            );
+
+                            this.participantService.participants
+                                .filter(participant => participant.role !== Role.Judge)
+                                .forEach(participant => {
+                                    if (!participant.virtualMeetingRoomSummary)
+                                        this.videoControlService.restoreParticipantSpotlightState(participant);
+                                });
+                        } else {
+                            this.participantService.participants.forEach(participant => {
+                                if (!participant.virtualMeetingRoomSummary)
+                                    this.videoControlService.restoreParticipantSpotlightState(participant);
+                            });
+                        }
+
+                        this.participantService.virtualMeetingRooms.forEach(vmr => {
+                            this.videoControlService.restoreParticipantSpotlightState(vmr);
+                        });
+                    }
+                }
+            );
+
+            this.onParticipantOrVmrPexipConnectedOrIdUpdatedSubscription?.unsubscribe();
+            this.onParticipantOrVmrPexipConnectedOrIdUpdatedSubscription = merge<ParticipantModel | VirtualMeetingRoomModel>(
+                this.participantService.onParticipantConnectedToPexip$,
+                this.participantService.onParticipantPexipIdChanged$,
+                this.participantService.onVmrConnectedToPexip$,
+                this.participantService.onVmrPexipIdChanged$
+            ).subscribe(() => {
+                this.participantService.participants.forEach(participant => {
+                    if (!participant.virtualMeetingRoomSummary) this.videoControlService.restoreParticipantSpotlightState(participant);
+                });
+
+                this.participantService.virtualMeetingRooms.forEach(vmr => {
+                    this.videoControlService.restoreParticipantSpotlightState(vmr);
+                });
+            });
+        });
+
+        this.participantStatusChangedSubscription = this.participantService.onParticipantStatusChanged$.subscribe(participant =>
+            this.updateSpotlightStateOnParticipantDisconnectDuringConference(participant)
+        );
+
+        this.onConferenceStatusChangedSubscription = this.conferenceService.onCurrentConferenceStatusChanged$.subscribe(update => {
+            if (update.newStatus === ConferenceStatus.InSession) {
+                this.participantService.participants
+                    .filter(x => !x.virtualMeetingRoomSummary)
+                    .forEach(participant => {
+                        if (participant.status === ParticipantStatus.Disconnected) {
+                            this.videoControlCacheService.setSpotlightStatus(
+                                this.conferenceService.currentConferenceId,
+                                participant.id,
+                                false
+                            );
+                        }
+                    });
+
+                this.participantService.virtualMeetingRooms.forEach(vmr => {
+                    if (vmr.participants.every(x => x.status === ParticipantStatus.Disconnected)) {
+                        this.videoControlCacheService.setSpotlightStatus(this.conferenceService.currentConferenceId, vmr.id, false);
+                    }
+                });
+            }
+        });
+    }
+
+    private cleanupVideoControlCacheLogic() {
+        this.hearingCountdownFinishedSubscription?.unsubscribe();
+        this.hearingCountdownFinishedSubscription = null;
+
+        this.conferenceStatusChangedSubscription?.unsubscribe();
+        this.conferenceStatusChangedSubscription = null;
+
+        this.onParticipantOrVmrPexipConnectedOrIdUpdatedSubscription?.unsubscribe();
+        this.onParticipantOrVmrPexipConnectedOrIdUpdatedSubscription = null;
+
+        this.participantStatusChangedSubscription?.unsubscribe();
+        this.participantStatusChangedSubscription = null;
+
+        this.onConferenceStatusChangedSubscription?.unsubscribe();
+        this.onConferenceStatusChangedSubscription = null;
+    }
+
+    private updateSpotlightStateOnParticipantDisconnectDuringConference(participant: ParticipantModel) {
+        if (
+            participant.status === ParticipantStatus.Disconnected &&
+            this.conferenceService.currentConference.status === ConferenceStatus.InSession
+        ) {
+            this.logger.info(`${this.loggerPrefixJudge} Participant disconnected while conference is in session`, {
+                message: participant
+            });
+
+            let participantOrVmr: ParticipantModel | VirtualMeetingRoomModel = participant;
+            if (participant.virtualMeetingRoomSummary) {
+                const vmr = this.participantService.virtualMeetingRooms.find(
+                    x => x.id === (participantOrVmr as ParticipantModel).virtualMeetingRoomSummary.id
+                );
+
+                this.logger.info(`${this.loggerPrefixJudge} Participant belongs to a VMR`, {
+                    vmr: vmr
+                });
+
+                if (vmr.participants.some(x => x.status === ParticipantStatus.InHearing)) {
+                    this.logger.info(
+                        `${this.loggerPrefixJudge} Some participants are still in hearing. Not going to unspotlight the VMR.`,
+                        {
+                            vmr: vmr
+                        }
+                    );
+                    return;
+                }
+
+                participantOrVmr = vmr;
+            }
+
+            this.logger.info(`${this.loggerPrefixJudge} Unspotlighting the participant or VMR.`, {
+                participantOrVmr: participantOrVmr
+            });
+
+            this.videoControlCacheService.setSpotlightStatus(this.conferenceService.currentConferenceId, participantOrVmr.id, false);
+        }
+    }
+
     @HostListener('window:beforeunload')
     async ngOnDestroy(): Promise<void> {
-        this.onParticipantOrVmrPexipConnectedOrIdUpdatedSubscription?.unsubscribe();
         clearInterval(this.audioRecordingInterval);
+        this.cleanupVideoControlCacheLogic();
         this.executeWaitingRoomCleanup();
     }
 
