@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import { Observable, ReplaySubject, Subject, Subscription, zip } from 'rxjs';
-import { filter, map, mergeMap, take, tap } from 'rxjs/operators';
+import { filter, map, take, tap } from 'rxjs/operators';
 import { IParticipantHearingState, ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
-import { ApiClient, ConferenceResponse, ParticipantStatus } from '../clients/api-client';
+import { ConferenceResponse, ParticipantStatus } from '../clients/api-client';
 import { EventsService } from '../events.service';
 import { LoggerService } from '../logging/logger.service';
 import { ParticipantStatusMessage } from '../models/participant-status-message';
@@ -97,7 +97,6 @@ export class ParticipantService {
     //#endregion
 
     constructor(
-        private apiClient: ApiClient,
         private conferenceService: ConferenceService,
         private videoCallService: VideoCallService,
         private eventsService: EventsService,
@@ -106,40 +105,6 @@ export class ParticipantService {
     ) {
         this.logger.warn(`${this.loggerPrefix} Constructor called.`);
         this.initialise();
-    }
-
-    getParticipantsForConference(conferenceId: Guid | string): Observable<ParticipantModel[]> {
-        this.logger.info(`${this.loggerPrefix} getting participants for conference.`);
-
-        return this.apiClient
-            .getParticipantsByConferenceId(conferenceId.toString())
-            .pipe(
-                map(participants =>
-                    participants.map(participantResponse => ParticipantModel.fromParticipantForUserResponse(participantResponse))
-                )
-            );
-    }
-
-    getLoggedInParticipantForConference(conferenceId: Guid | string): Observable<ParticipantModel> {
-        return this.getParticipantsForConference(conferenceId).pipe(
-            mergeMap(participants =>
-                this.apiClient
-                    .getCurrentParticipant(conferenceId.toString())
-                    .pipe(map(response => participants.find(participant => participant.id === response.participant_id)))
-            )
-        );
-    }
-
-    getEndpointsForConference(conferenceId: Guid | string): Observable<ParticipantModel[]> {
-        this.logger.info(`${this.loggerPrefix} getting endpoints for conference.`);
-
-        return this.apiClient
-            .getVideoEndpointsForConference(conferenceId.toString())
-            .pipe(
-                map(participants =>
-                    participants.map(videoEndpointResponse => ParticipantModel.fromVideoEndpointResponse(videoEndpointResponse))
-                )
-            );
     }
 
     getParticipantOrVirtualMeetingRoomById(participantOrVmrId: string | Guid): ParticipantModel | VirtualMeetingRoomModel {
@@ -233,7 +198,10 @@ export class ParticipantService {
         this.logger.info(`${this.loggerPrefix} loading participants and VMRs`);
 
         const conferenceId = this.conferenceService.currentConferenceId;
-        const participants = zip(this.getParticipantsForConference(conferenceId), this.getEndpointsForConference(conferenceId)).pipe(
+        const participants = zip(
+            this.conferenceService.getParticipantsForConference(conferenceId),
+            this.conferenceService.getEndpointsForConference(conferenceId)
+        ).pipe(
             take(1), // Ensure this observable also completes
             map(participantLists => participantLists[0].concat(participantLists[1]))
         );
@@ -288,7 +256,9 @@ export class ParticipantService {
         this.conferenceSubscriptions = [];
 
         this.conferenceSubscriptions.push(
-            this.getLoggedInParticipantForConference(conference.id).subscribe(participant => this._loggedInParticipant.next(participant))
+            this.conferenceService
+                .getLoggedInParticipantForConference(conference.id)
+                .subscribe(participant => this._loggedInParticipant.next(participant))
         );
 
         this.conferenceSubscriptions.push(

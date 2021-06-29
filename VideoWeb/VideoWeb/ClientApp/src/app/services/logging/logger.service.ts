@@ -11,7 +11,7 @@ export const LOG_ADAPTER = new InjectionToken<LogAdapter>('LogAdapter');
 export class LoggerService implements Logger {
     static currentConferenceIdPropertyKey = 'currentConferenceId';
 
-    private conferenceService: ConferenceService;
+    public conferenceService: ConferenceService;
     constructor(@Inject(LOG_ADAPTER) private adapters: LogAdapter[]) {}
 
     debug(message: string, properties?: any): void {
