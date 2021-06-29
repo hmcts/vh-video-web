@@ -450,10 +450,9 @@ export abstract class WaitingRoomBaseDirective {
 
         this.eventHubSubscription$.add(
             this.eventService.getParticipantAdded().subscribe(async participant => {
-                console.log('ParticipantAdded WaitingRoomBase');
+                this.logger.debug(`[WR] - Participant Added`, participant);
                 this.notificationToastrService.showParticipantAdded(participant, this.participant.status === ParticipantStatus.InHearing);
                 this.getConference();
-                console.log(this.conference);
             })
         );
     }

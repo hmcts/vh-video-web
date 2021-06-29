@@ -40,6 +40,7 @@ namespace VideoWeb.Controllers
     [Produces("application/json")]
     [ApiController]
     [Route("internalevent")]
+    [Authorize(AuthenticationSchemes = "InternalEvent")]
     public class InternalEventsController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;

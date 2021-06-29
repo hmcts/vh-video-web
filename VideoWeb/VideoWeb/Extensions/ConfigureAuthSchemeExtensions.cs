@@ -25,6 +25,7 @@ namespace VideoWeb.Extensions
             var azureAdConfiguration = configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
             var eJudAdConfiguration = configuration.GetSection("EJudAd").Get<EJudAdConfiguration>();
             var kinlyCallbackSecret = Convert.FromBase64String(kinlyConfiguration.CallbackSecret);
+            var internalEventSecret = Convert.FromBase64String(configuration.GetValue<string>("InternalEventsSecret"));
 
             var providerSchemes = new List<IProviderSchemes>
             {
@@ -44,12 +45,16 @@ namespace VideoWeb.Extensions
                         {
                             return "Callback";
                         }
+                        else if (context.Request.Path.StartsWithSegments("/internalevent"))
+                        {
+                            return "InternalEvent";
+                        }
 
                         var isEventHubRequest = context.Request.Path.StartsWithSegments("/eventhub");
                         var provider = GetProviderFromRequest(context.Request, providerSchemes);
                         return providerSchemes.Single(s => s.Provider == provider).GetScheme(isEventHubRequest);
                     };
-                })                
+                })
                 .AddJwtBearer("Callback", options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -57,6 +62,15 @@ namespace VideoWeb.Extensions
                         ValidateIssuer = false,
                         ValidateAudience = false,
                         IssuerSigningKey = new SymmetricSecurityKey(kinlyCallbackSecret)
+                    };
+                })
+                .AddJwtBearer("InternalEvent", options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        IssuerSigningKey = new SymmetricSecurityKey(internalEventSecret)
                     };
                 });
 
