@@ -173,10 +173,10 @@ fdescribe('VideoControlCacheService', () => {
             const participantId = 'participant-id';
 
             sut.hearingControlStates = {};
-            sut.hearingControlStates[conferenceId] = {
+            sut.hearingControlStates['not-conference-id'] = {
                 participantStates: {}
             };
-            sut.hearingControlStates[conferenceId].participantStates['not-conference-id'] = {
+            sut.hearingControlStates['not-conference-id'].participantStates[participantId] = {
                 isSpotlighted: false
             };
 
