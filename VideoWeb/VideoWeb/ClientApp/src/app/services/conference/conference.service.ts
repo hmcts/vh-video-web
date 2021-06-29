@@ -86,16 +86,6 @@ export class ConferenceService {
             );
     }
 
-    getLoggedInParticipantForConference(conferenceId: Guid | string): Observable<ParticipantModel> {
-        return this.getParticipantsForConference(conferenceId).pipe(
-            mergeMap(participants =>
-                this.apiClient
-                    .getCurrentParticipant(conferenceId.toString())
-                    .pipe(map(response => participants.find(participant => participant.id === response.participant_id)))
-            )
-        );
-    }
-
     getEndpointsForConference(conferenceId: Guid | string): Observable<ParticipantModel[]> {
         this.logger.info(`${this.loggerPrefix} getting endpoints for conference.`);
 
@@ -106,6 +96,16 @@ export class ConferenceService {
                     participants.map(videoEndpointResponse => ParticipantModel.fromVideoEndpointResponse(videoEndpointResponse))
                 )
             );
+    }
+
+    getLoggedInParticipantForConference(conferenceId: Guid | string): Observable<ParticipantModel> {
+        return this.getParticipantsForConference(conferenceId).pipe(
+            mergeMap(participants =>
+                this.apiClient
+                    .getCurrentParticipant(conferenceId.toString())
+                    .pipe(map(response => participants.find(participant => participant.id === response.participant_id)))
+            )
+        );
     }
 
     setupConferenceSubscriptions() {
