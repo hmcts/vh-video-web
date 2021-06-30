@@ -1,9 +1,13 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using VideoApi.Contract.Enums;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Models;
 using VideoWeb.Mappings.Interfaces;
 using VideoApi.Contract.Requests;
+using VideoWeb.Extensions;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 
 namespace VideoWeb.Mappings
@@ -22,6 +26,8 @@ namespace VideoWeb.Mappings
             };
             var eventType = Enum.Parse<EventType>(request.EventType.ToString());
             var conferenceId = Guid.Parse(request.ConferenceId);
+            var otherParticipantsInVmr = request.GetOtherParticipantsInVmr(conference);
+
             Guid.TryParse(request.ParticipantId, out var participantId);
             
             var callbackEvent = new CallbackEvent
@@ -33,7 +39,9 @@ namespace VideoWeb.Mappings
                 TransferTo = request.TransferTo,
                 TransferFrom = request.TransferFrom,
                 TimeStampUtc = request.TimeStampUtc,
-                ParticipantId = participantId
+                ParticipantId = participantId,
+                IsParticipantInVmr = request.IsParticipantInVmr(conference),
+                ConferenceStatus = conference.CurrentStatus,
             };
             
             if (IsEndpointJoined(callbackEvent, conference))
@@ -51,6 +59,7 @@ namespace VideoWeb.Mappings
                 callbackEvent.EventType = EventType.EndpointTransfer;
             }
 
+            callbackEvent. IsOtherParticipantsInConsultationRoom = IsOtherParticipantInConsultation(otherParticipantsInVmr);
             return callbackEvent;
         }
 
@@ -70,6 +79,11 @@ namespace VideoWeb.Mappings
         {
             return callbackEvent.EventType == EventType.Transfer &&
                    conference.Endpoints.Any(x => x.Id == callbackEvent.ParticipantId);
+        }
+        private bool IsOtherParticipantInConsultation(IEnumerable<Participant> otherParticipantsInVmr)
+        {
+            return otherParticipantsInVmr.Any(
+                p => p.ParticipantStatus == ParticipantStatus.InConsultation);
         }
     }
 }

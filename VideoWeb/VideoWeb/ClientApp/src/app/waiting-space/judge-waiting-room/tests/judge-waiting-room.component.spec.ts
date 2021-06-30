@@ -489,6 +489,46 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.audioErrorToastOpen).toBeTruthy();
     });
 
+    describe('conferenceRecordingInSessionForSeconds property', () => {
+        const currentConferenceRecordingInSessionForSeconds = 10;
+        const currentAudioRecordingStreamCheckIntervalSeconds = 30;
+
+        beforeEach(() => {
+            audioRecordingService.getAudioStreamInfo.and.returnValue(Promise.resolve(false));
+            component.continueWithNoRecording = false;
+            component.conferenceRecordingInSessionForSeconds = currentConferenceRecordingInSessionForSeconds;
+            component.audioRecordingStreamCheckIntervalSeconds = currentAudioRecordingStreamCheckIntervalSeconds;
+        });
+
+        it('should accumulate when conference is in session', async () => {
+            component.conference.status = ConferenceStatus.InSession;
+            await component.retrieveAudioStreamInfo(globalConference.id);
+            expect(component.conferenceRecordingInSessionForSeconds).toBe(
+                currentConferenceRecordingInSessionForSeconds + currentAudioRecordingStreamCheckIntervalSeconds
+            );
+        });
+
+        it('should reset when conference is not in session', async () => {
+            component.conference.status = ConferenceStatus.Paused;
+            await component.retrieveAudioStreamInfo(globalConference.id);
+            expect(component.conferenceRecordingInSessionForSeconds).toBe(0);
+        });
+
+        it('should switch the continueWithNoRecording flag to false when conference is not in session', async () => {
+            component.conference.status = ConferenceStatus.Paused;
+            component.continueWithNoRecording = true;
+            await component.retrieveAudioStreamInfo(globalConference.id);
+            expect(component.continueWithNoRecording).toBe(false);
+        });
+
+        it('should not switch the continueWithNoRecording flag when conference is in session', async () => {
+            component.conference.status = ConferenceStatus.InSession;
+            component.continueWithNoRecording = true;
+            await component.retrieveAudioStreamInfo(globalConference.id);
+            expect(component.continueWithNoRecording).toBe(true);
+        });
+    });
+
     it('should init audio recording interval', () => {
         spyOn(component, 'retrieveAudioStreamInfo');
         component.initAudioRecordingInterval();

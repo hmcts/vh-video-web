@@ -41,8 +41,8 @@ namespace VideoWeb.AcceptanceTests.Hooks
             RegisterTestUserSecrets(context);
             RegisterDefaultData(context);
             RegisterIsLive(context);
-            // Switch this ON when EJud is reinstated
-            // RegisterUsingEjud(context);
+            RegisterUsingEjud(context);
+            RegisterValidEjudDIdDomains(context);
             RegisterHearingServices(context);
             RegisterWowzaSettings(context);
             RegisterSauceLabsSettings(context);
@@ -106,6 +106,13 @@ namespace VideoWeb.AcceptanceTests.Hooks
         private void RegisterUsingEjud(TestContext context)
         {
             context.VideoWebConfig.UsingEjud = _configRoot.GetValue<bool>("UsingEjud");
+        }
+
+        private void RegisterValidEjudDIdDomains (TestContext context)
+        {
+            var eJudDomains = _configRoot.GetSection("ValidEjudDIdDomains").Get<List<string>>();
+            NUnit.Framework.TestContext.WriteLine($"valid ejud in config is {string.Join(", ", eJudDomains)}");
+            context.VideoWebConfig.ValidEjudDIdDomains = eJudDomains;
         }
 
         private void RegisterHearingServices(TestContext context)

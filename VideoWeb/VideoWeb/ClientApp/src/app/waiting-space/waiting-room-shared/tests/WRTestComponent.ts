@@ -15,7 +15,12 @@ import { WaitingRoomBaseDirective } from '../waiting-room-base.component';
 import { NotificationToastrService } from 'src/app/waiting-space/services/notification-toastr.service';
 import { RoomClosingToastrService } from 'src/app/waiting-space/services/room-closing-toast.service';
 import { ConsultationInvitationService } from '../../services/consultation-invitation.service';
+import { Component } from '@angular/core';
 
+@Component({
+    selector: 'app-test-waiting-room',
+    template: ''
+})
 export class WRTestComponent extends WaitingRoomBaseDirective {
     constructor(
         protected route: ActivatedRoute,

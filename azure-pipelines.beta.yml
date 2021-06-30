@@ -247,6 +247,9 @@ stages:
             secret: true
           - name: VhServices:VideoApiUrl
             value: $(video_api_url)
+          - name: VhServices:EmailReformDomain
+            value: $(EmailReformDomain)
+
         acceptanceTestSettings:
           - name: ConnectionStrings:SignalR
             value: signalr-connection-str

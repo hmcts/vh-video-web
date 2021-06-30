@@ -14,6 +14,9 @@ using VideoApi.Contract.Responses;
 using VideoApi.Contract.Requests;
 using VideoWeb.UnitTests.Builders;
 using VideoWeb.Common.Caching;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using VideoWeb.Common.Configuration;
 
 namespace VideoWeb.UnitTests.Hub
 {
