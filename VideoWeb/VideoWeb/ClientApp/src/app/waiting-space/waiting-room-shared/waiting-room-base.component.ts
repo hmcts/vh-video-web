@@ -165,32 +165,30 @@ export abstract class WaitingRoomBaseDirective {
         return str.replace(/\s/g, '-').toLowerCase();
     }
 
-    getConference() {
-        return this.videoWebService
-            .getConferenceById(this.conferenceId)
-            .then((data: ConferenceResponse) => {
-                this.errorCount = 0;
-                this.loadingData = false;
-                this.countdownComplete = data.status === ConferenceStatus.InSession;
-                this.hearing = new Hearing(data);
-                this.conference = this.hearing.getConference();
-                this.videoWebService.getAllowedEndpointsForConference(this.conferenceId).then((endpoints: AllowedEndpointResponse[]) => {
-                    this.participantEndpoints = endpoints;
-                });
-
-                this.participant = this.getLoggedParticipant();
-                this.logger.debug(`${this.loggerPrefix} Getting conference details`, {
-                    conference: this.conferenceId,
-                    participant: this.participant.id
-                });
-            })
-            .catch(error => {
-                this.logger.error(`${this.loggerPrefix} There was an error getting a conference ${this.conferenceId}`, error, {
-                    conference: this.conferenceId
-                });
-                this.loadingData = false;
-                this.errorService.handleApiError(error);
+    async getConference(): Promise<void> {
+        try {
+            const data = await this.videoWebService.getConferenceById(this.conferenceId);
+            this.errorCount = 0;
+            this.loadingData = false;
+            this.countdownComplete = data.status === ConferenceStatus.InSession;
+            this.hearing = new Hearing(data);
+            this.conference = this.hearing.getConference();
+            this.videoWebService.getAllowedEndpointsForConference(this.conferenceId).then((endpoints: AllowedEndpointResponse[]) => {
+                this.participantEndpoints = endpoints;
             });
+
+            this.participant = this.getLoggedParticipant();
+            this.logger.debug(`${this.loggerPrefix} Getting conference details`, {
+                conference: this.conferenceId,
+                participant: this.participant.id
+            });
+        } catch (error) {
+            this.logger.error(`${this.loggerPrefix} There was an error getting a conference ${this.conferenceId}`, error, {
+                conference: this.conferenceId
+            });
+            this.loadingData = false;
+            this.errorService.handleApiError(error);
+        }
     }
 
     async getConferenceClosedTime(conferenceId: string): Promise<void> {
@@ -424,12 +422,22 @@ export abstract class WaitingRoomBaseDirective {
 
         this.logger.debug(`${this.loggerPrefix} Subscribing to EventHub reconnects`);
         this.eventHubSubscription$.add(
-            this.eventService.getServiceReconnected().subscribe(() => {
+            this.eventService.getServiceReconnected().subscribe(async () => {
                 this.logger.info(`${this.loggerPrefix} EventHub re-connected`, {
                     conference: this.conferenceId,
                     participant: this.participant.id
                 });
-                this.getConference().then(() => this.updateShowVideo());
+                await this.callAndUpdateShowVideo();
+            })
+        );
+
+        this.eventHubSubscription$.add(
+            this.eventService.onEventsHubReady().subscribe(async () => {
+                this.logger.info(`${this.loggerPrefix} EventHub ready`, {
+                    conference: this.conferenceId,
+                    participant: this.participant.id
+                });
+                await this.callAndUpdateShowVideo();
             })
         );
 
@@ -459,6 +467,7 @@ export abstract class WaitingRoomBaseDirective {
             })
         );
     }
+
     resolveParticipant(participantId: any): Participant {
         if (participantId === Guid.EMPTY) {
             return new Participant(new ParticipantResponseVho({ display_name: 'a Video Hearings Officer' }));
@@ -576,6 +585,8 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     async handleEventHubDisconnection(reconnectionAttempt: number) {
+        this.disconnect();
+
         const logPayload = {
             conference: this.conferenceId,
             participant: this.participant.id,
@@ -708,6 +719,10 @@ export abstract class WaitingRoomBaseDirective {
     }
 
     async call() {
+        if (!this.eventService.eventHubIsConnected || !this.token) {
+            return;
+        }
+
         const logPayload = {
             conference: this.conferenceId,
             participant: this.participant.id
@@ -811,6 +826,7 @@ export abstract class WaitingRoomBaseDirective {
             conference: this.conferenceId,
             participant: this.participant.id
         };
+
         this.logger.debug(`${this.loggerPrefix} Conference has setup`, logPayload);
         this.videoCallService.connect('', null);
         this.outgoingStream = callSetup.stream;
@@ -855,7 +871,7 @@ export abstract class WaitingRoomBaseDirective {
         if (!this.hearing.isPastClosedTime()) {
             this.logger.warn(`${this.loggerPrefix} Attempting to reconnect to pexip in ${this.CALL_TIMEOUT}ms`);
             this.callbackTimeout = setTimeout(async () => {
-                await this.call();
+                await this.callAndUpdateShowVideo();
             }, this.CALL_TIMEOUT);
         }
     }
@@ -880,7 +896,7 @@ export abstract class WaitingRoomBaseDirective {
         }
         this.hearing.getConference().status = message.status;
         this.conference.status = message.status;
-
+        this.presentationStream = null;
         if (message.status === ConferenceStatus.InSession) {
             this.countdownComplete = false;
         }
@@ -1200,5 +1216,10 @@ export abstract class WaitingRoomBaseDirective {
 
     switchStreamWindows(): void {
         this.streamInMain = !this.streamInMain;
+    }
+
+    async callAndUpdateShowVideo(): Promise<void> {
+        await this.call();
+        this.getConference().then(() => this.updateShowVideo());
     }
 }

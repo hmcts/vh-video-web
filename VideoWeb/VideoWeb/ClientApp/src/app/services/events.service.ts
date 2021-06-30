@@ -247,6 +247,14 @@ export class EventsService {
         this._handlersRegistered = false;
     }
 
+    get eventHubIsConnected(): boolean {
+        return this.eventsHubService.isConnectedToHub;
+    }
+
+    onEventsHubReady(): Observable<any> {
+        return this.eventsHubService.onEventsHubReady;
+    }
+
     getServiceReconnected(): Observable<any> {
         return this.eventsHubService.getServiceReconnected();
     }

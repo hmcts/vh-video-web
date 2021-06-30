@@ -11,6 +11,7 @@ namespace VideoWeb.Common.Configuration
         public string UserApiUrl { get; set; }
         public string UserApiResourceId { get; set; }
         public string EventHubPath { get; set; }
+        public string EmailReformDomain { get; set; }
         public string InternalEventSecret { get; set; }
     }
 }

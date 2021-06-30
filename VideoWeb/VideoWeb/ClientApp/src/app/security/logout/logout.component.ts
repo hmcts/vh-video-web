@@ -13,7 +13,7 @@ import { VhoStorageKeys } from '../../vh-officer/services/models/session-keys';
 @Injectable()
 export class LogoutComponent implements OnInit {
     private readonly judgeAllocationStorage: SessionStorage<string[]>;
-    readonly loginPath = '../' + pageUrls.Login;
+    readonly loginPath = '../' + pageUrls.IdpSelection;
     constructor(private oidcSecurityService: OidcSecurityService, private profileService: ProfileService) {
         this.judgeAllocationStorage = new SessionStorage<string[]>(VhoStorageKeys.VENUE_ALLOCATIONS_KEY);
     }

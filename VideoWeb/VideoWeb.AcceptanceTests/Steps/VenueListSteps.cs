@@ -28,7 +28,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         
         public void ProgressToNextPage()
         {
-            SelectVenues(_c.Test.Conference.Participants.First(x => x.UserRole == UserRole.Judge).FirstName);
+            SelectVenues(_c.Test.Conference.HearingVenueName);
             ConfirmVenue();
         }
         

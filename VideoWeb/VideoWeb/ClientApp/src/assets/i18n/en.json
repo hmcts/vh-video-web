@@ -17,11 +17,10 @@
   "footer": {
     "privacy-policy": "Privacy policy",
     "accessibility": "Accessibility",
-    "translate-to": "",
-    "translate-to-test": "",
+    "translate-to": "Gweld y gwasanaeth hwn yn Gymraeg",
     "all-content-availabe-under": "All content is available under the ",
     "open-government-license": "Open Government Licence v3.0",
-    "except": ", except where otherwise stated",
+    "except": " except where otherwise stated",
     "copyright": "© Crown copyright"
   },
   "login": {
@@ -1008,6 +1007,11 @@
         "waiting-multiple": "Waiting for {{number}} other participants to accept the invitation from {{invitedBy}}.",
         "rejected": "{{rejector}} rejected the invitation from {{invitedBy}}.",
         "button-close": "Close"
+    },
+    "participant-added": {
+      "title": "{{name}}",
+      "message": "{{role}} has been added to the hearing.",
+      "dismiss": "Dismiss"
     },
     "poor-connection": {
       "title": "Alert",

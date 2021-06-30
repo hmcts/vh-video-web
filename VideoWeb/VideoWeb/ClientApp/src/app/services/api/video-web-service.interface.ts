@@ -12,7 +12,7 @@ import {
     TokenResponse,
     UpdateParticipantDisplayNameRequest,
     UpdateParticipantStatusEventRequest,
-    JudgeNameListResponse,
+    HearingVenueResponse,
     ParticipantForUserResponse,
     VideoEndpointResponse
 } from '../clients/api-client';
@@ -32,7 +32,7 @@ export interface IVideoWebApiService {
     getObfuscatedName(displayName: string): string;
     getConferenceChatHistory(conferenceId: string, participantId: string): Promise<ChatResponse[]>;
     updateParticipantDetails(conferenceId: string, participantId: string, updateParticipantRequest: UpdateParticipantDisplayNameRequest);
-    getDistinctJudgeNames(): Promise<JudgeNameListResponse>;
+    getVenues(): Observable<HearingVenueResponse[]>;
     getParticipantsByConferenceId(conferenceId: string): Promise<ParticipantForUserResponse[]>;
     getEndpointsForConference(conferenceId: string): Promise<VideoEndpointResponse[]>;
 }

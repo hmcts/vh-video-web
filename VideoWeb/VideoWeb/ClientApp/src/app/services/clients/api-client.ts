@@ -722,16 +722,16 @@ export class ApiClient {
 
     /**
      * Get conferences for user
-     * @param userNames (optional)
+     * @param hearingVenueNames (optional)
      * @return Success
      */
-    getConferencesForVhOfficer(userNames: string[] | undefined): Observable<ConferenceForVhOfficerResponse[]> {
+    getConferencesForVhOfficer(hearingVenueNames: string[] | undefined): Observable<ConferenceForVhOfficerResponse[]> {
         let url_ = this.baseUrl + '/conferences/vhofficer?';
-        if (userNames === null) throw new Error("The parameter 'userNames' cannot be null.");
-        else if (userNames !== undefined)
-            userNames &&
-                userNames.forEach(item => {
-                    url_ += 'UserNames=' + encodeURIComponent('' + item) + '&';
+        if (hearingVenueNames === null) throw new Error("The parameter 'hearingVenueNames' cannot be null.");
+        else if (hearingVenueNames !== undefined)
+            hearingVenueNames &&
+                hearingVenueNames.forEach(item => {
+                    url_ += 'HearingVenueNames=' + encodeURIComponent('' + item) + '&';
                 });
         url_ = url_.replace(/[?&]$/, '');
 
@@ -3741,16 +3741,16 @@ export class ApiClient {
 
     /**
      * Get Court rooms accounts (judges)
-     * @param userNames (optional)
+     * @param hearingVenueNames (optional)
      * @return Success
      */
-    getCourtRoomAccounts(userNames: string[] | undefined): Observable<CourtRoomsAccountResponse[]> {
+    getCourtRoomAccounts(hearingVenueNames: string[] | undefined): Observable<CourtRoomsAccountResponse[]> {
         let url_ = this.baseUrl + '/api/accounts/courtrooms?';
-        if (userNames === null) throw new Error("The parameter 'userNames' cannot be null.");
-        else if (userNames !== undefined)
-            userNames &&
-                userNames.forEach(item => {
-                    url_ += 'UserNames=' + encodeURIComponent('' + item) + '&';
+        if (hearingVenueNames === null) throw new Error("The parameter 'hearingVenueNames' cannot be null.");
+        else if (hearingVenueNames !== undefined)
+            hearingVenueNames &&
+                hearingVenueNames.forEach(item => {
+                    url_ += 'HearingVenueNames=' + encodeURIComponent('' + item) + '&';
                 });
         url_ = url_.replace(/[?&]$/, '');
 
@@ -3833,13 +3833,12 @@ export class ApiClient {
     }
 
     /**
-     * Get Judge names
+     * Get available courts
      * @return Success
      */
-    getDistinctJudgeNames(): Observable<JudgeNameListResponse> {
-        let url_ = this.baseUrl + '/hearing-venues';
+    getVenues(): Observable<HearingVenueResponse[]> {
+        let url_ = this.baseUrl + '/hearing-venues/courts';
         url_ = url_.replace(/[?&]$/, '');
-
         let options_: any = {
             observe: 'response',
             responseType: 'blob',
@@ -3847,32 +3846,29 @@ export class ApiClient {
                 Accept: 'application/json'
             })
         };
-
         return this.http
             .request('get', url_, options_)
             .pipe(
                 _observableMergeMap((response_: any) => {
-                    return this.processGetDistinctJudgeNames(response_);
+                    return this.processGetVenues(response_);
                 })
             )
             .pipe(
                 _observableCatch((response_: any) => {
                     if (response_ instanceof HttpResponseBase) {
                         try {
-                            return this.processGetDistinctJudgeNames(<any>response_);
+                            return this.processGetVenues(<any>response_);
                         } catch (e) {
-                            return <Observable<JudgeNameListResponse>>(<any>_observableThrow(e));
+                            return <Observable<HearingVenueResponse[]>>(<any>_observableThrow(e));
                         }
-                    } else return <Observable<JudgeNameListResponse>>(<any>_observableThrow(response_));
+                    } else return <Observable<HearingVenueResponse[]>>(<any>_observableThrow(response_));
                 })
             );
     }
-
-    protected processGetDistinctJudgeNames(response: HttpResponseBase): Observable<JudgeNameListResponse> {
+    protected processGetVenues(response: HttpResponseBase): Observable<HearingVenueResponse[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body : (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
         let _headers: any = {};
         if (response.headers) {
             for (let key of response.headers.keys()) {
@@ -3884,17 +3880,22 @@ export class ApiClient {
                 _observableMergeMap(_responseText => {
                     let result200: any = null;
                     let resultData200 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result200 = JudgeNameListResponse.fromJS(resultData200);
+                    if (Array.isArray(resultData200)) {
+                        result200 = [] as any;
+                        for (let item of resultData200) result200!.push(HearingVenueResponse.fromJS(item));
+                    } else {
+                        result200 = <any>null;
+                    }
                     return _observableOf(result200);
                 })
             );
-        } else if (status === 400) {
+        } else if (status === 404) {
             return blobToText(responseBlob).pipe(
                 _observableMergeMap(_responseText => {
-                    let result400: any = null;
-                    let resultData400 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                    result400 = ProblemDetails.fromJS(resultData400);
-                    return throwException('Bad Request', status, _responseText, _headers, result400);
+                    let result404: any = null;
+                    let resultData404 = _responseText === '' ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                    result404 = ProblemDetails.fromJS(resultData404);
+                    return throwException('Not Found', status, _responseText, _headers, result404);
                 })
             );
         } else if (status === 401) {
@@ -3910,7 +3911,7 @@ export class ApiClient {
                 })
             );
         }
-        return _observableOf<JudgeNameListResponse>(<any>null);
+        return _observableOf<HearingVenueResponse[]>(<any>null);
     }
 
     /**
@@ -6763,45 +6764,38 @@ export interface ICourtRoomsAccountResponse {
     court_rooms?: string[] | undefined;
 }
 
-export class JudgeNameListResponse implements IJudgeNameListResponse {
-    first_names?: string[] | undefined;
-
-    constructor(data?: IJudgeNameListResponse) {
+export class HearingVenueResponse implements IHearingVenueResponse {
+    id?: number;
+    name?: string | undefined;
+    constructor(data?: IHearingVenueResponse) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property)) (<any>this)[property] = (<any>data)[property];
             }
         }
     }
-
     init(_data?: any) {
         if (_data) {
-            if (Array.isArray(_data['first_names'])) {
-                this.first_names = [] as any;
-                for (let item of _data['first_names']) this.first_names!.push(item);
-            }
+            this.id = _data['id'];
+            this.name = _data['name'];
         }
     }
-
-    static fromJS(data: any): JudgeNameListResponse {
+    static fromJS(data: any): HearingVenueResponse {
         data = typeof data === 'object' ? data : {};
-        let result = new JudgeNameListResponse();
+        let result = new HearingVenueResponse();
         result.init(data);
         return result;
     }
-
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.first_names)) {
-            data['first_names'] = [];
-            for (let item of this.first_names) data['first_names'].push(item);
-        }
+        data['id'] = this.id;
+        data['name'] = this.name;
         return data;
     }
 }
-
-export interface IJudgeNameListResponse {
-    first_names?: string[] | undefined;
+export interface IHearingVenueResponse {
+    id?: number;
+    name?: string | undefined;
 }
 
 export class ConferenceEventRequest implements IConferenceEventRequest {

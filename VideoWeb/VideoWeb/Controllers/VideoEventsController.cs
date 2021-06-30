@@ -46,7 +46,7 @@ namespace VideoWeb.Controllers
             _logger = logger;
             _mapperFactory = mapperFactory;
         }
-        
+
         [HttpPost]
         [SwaggerOperation(OperationId = "SendEvent")]
         [ProducesResponseType((int) HttpStatusCode.NoContent)]
@@ -70,7 +70,7 @@ namespace VideoWeb.Controllers
                     request.ParticipantId = null;
                     events = request.CreateEventsForParticipantsInRoom(conference, roomId);
                 }
-                
+
                 var callbackEvents = events.Select(e => TransformAndMapRequest(e, conference)).ToList();
 
                 // DO NOT USE Task.WhenAll because the handlers are not thread safe and will overwrite Source<Variable> for each run

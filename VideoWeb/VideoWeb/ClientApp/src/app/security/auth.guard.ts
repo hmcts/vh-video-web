@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
+import { pageUrls } from '../shared/page-url.constants';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -14,7 +15,7 @@ export class AuthGuard implements CanActivate {
                 console.log('AuthorizationGuard, canActivate isAuthorized: ' + isAuthorized);
 
                 if (!isAuthorized) {
-                    this.router.navigate(['/login']);
+                    this.router.navigate([`/${pageUrls.IdpSelection}`]);
                     return false;
                 }
                 return true;

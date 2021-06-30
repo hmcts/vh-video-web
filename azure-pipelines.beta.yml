@@ -220,7 +220,7 @@ stages:
           - name: KinlyConfiguration:CallbackSecret
             value: $(CallbackKey)
           - name: KinlyConfiguration:ApiSecret
-            value: $(KinlyApiKey)
+            value: $(KinlyHeartBeatApiKey)
           - name: KinlyConfiguration:SelfTestApiSecret
             value: $(SelfTestApiKey)
           - name: KinlyConfiguration:JoinByPhoneFromDate
@@ -248,8 +248,11 @@ stages:
             secret: true
           - name: VhServices:VideoApiUrl
             value: $(video_api_url)
+          - name: VhServices:EmailReformDomain
+            value: $(EmailReformDomain)
           - name: VhServices:InternalEventSecret
             value: $(internal_event_secret)
+
         acceptanceTestSettings:
           - name: ConnectionStrings:SignalR
             value: signalr-connection-str
@@ -319,7 +322,7 @@ stages:
           - name: KinlyConfiguration:CallbackSecret
             value: $(CallbackKey)
           - name: KinlyConfiguration:ApiSecret
-            value: $(KinlyApiKey)
+            value: $(KinlyHeartBeatApiKey)
           - name: KinlyConfiguration:SelfTestApiSecret
             value: $(SelfTestApiKey)
           - name: KinlyConfiguration:JoinByPhoneFromDate

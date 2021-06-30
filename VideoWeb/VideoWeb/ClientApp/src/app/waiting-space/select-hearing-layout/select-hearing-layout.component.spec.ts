@@ -1,10 +1,10 @@
-import { ConferenceResponse } from 'src/app/services/clients/api-client';
-import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
-import { HearingLayout } from 'src/app/services/clients/api-client';
-import { SelectHearingLayoutComponent } from './select-hearing-layout.component';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { fakeAsync, tick } from '@angular/core/testing';
+import { LangChangeEvent } from '@ngx-translate/core';
+import { ConferenceResponse, HearingLayout } from 'src/app/services/clients/api-client';
+import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
+import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
+import { SelectHearingLayoutComponent } from './select-hearing-layout.component';
 
 describe('SelectHearingLayoutComponent', () => {
     let component: SelectHearingLayoutComponent;
@@ -13,6 +13,8 @@ describe('SelectHearingLayoutComponent', () => {
     const translateService = translateServiceSpy;
     const headingButton = document.createElement('button');
     const textButton = document.createElement('button');
+    const buttonContentKeyWhenOpen = 'open-all';
+    const buttonContentKeyWhenClosed = 'close-all';
 
     beforeEach(() => {
         conference = new ConferenceTestData().getConferenceDetailNow();
@@ -34,6 +36,7 @@ describe('SelectHearingLayoutComponent', () => {
         videoCallService.getPreferredLayout.and.returnValue(layout);
         component.ngOnInit();
         expect(component.selectedLayout).toBe(layout);
+        expect(component.currentButtonContentKey).toBe(buttonContentKeyWhenOpen);
     });
 
     it('should translate button text on text click', () => {
@@ -41,6 +44,7 @@ describe('SelectHearingLayoutComponent', () => {
         textButton.innerHTML = 'Close all';
         textButton.click();
         expect(textButton.innerHTML).toBe('<span>select-hearing-layout.close-all</span>');
+        expect(component.currentButtonContentKey).toBe(buttonContentKeyWhenClosed);
     });
 
     it('should translate button text on header click', () => {
@@ -48,6 +52,7 @@ describe('SelectHearingLayoutComponent', () => {
         textButton.innerHTML = 'Close all';
         headingButton.click();
         expect(textButton.innerHTML).toBe('<span>select-hearing-layout.close-all</span>');
+        expect(component.currentButtonContentKey).toBe(buttonContentKeyWhenClosed);
     });
 
     it('should translate button text on after time for header click', fakeAsync(() => {
@@ -56,6 +61,7 @@ describe('SelectHearingLayoutComponent', () => {
         textButton.innerHTML = 'Close all';
         tick(10);
         expect(textButton.innerHTML).toBe('<span>select-hearing-layout.close-all</span>');
+        expect(component.currentButtonContentKey).toBe(buttonContentKeyWhenClosed);
     }));
 
     it('should use recommended layout when cached layout preference is empty on init', () => {
@@ -144,5 +150,39 @@ describe('SelectHearingLayoutComponent', () => {
         expect(component.recommendDynamic).toBeFalsy();
         expect(component.recommend1Plus7).toBeTruthy();
         expect(component.recommend2Plus21).toBeFalsy();
+    });
+
+    describe('onLangChange event', () => {
+        it('should show translated text on open accordion button', () => {
+            const expectedTranslatedContentForButton = 'this is translated for open all button';
+            component.currentButtonContentKey = buttonContentKeyWhenOpen;
+            translateServiceSpy.instant
+                .withArgs(`select-hearing-layout.${component.currentButtonContentKey}`)
+                .and.returnValue('initial content');
+            component.ngOnInit();
+            translateServiceSpy.instant
+                .withArgs(`select-hearing-layout.${component.currentButtonContentKey}`)
+                .and.returnValue(expectedTranslatedContentForButton);
+            translateServiceSpy.onLangChange.emit({ lang: 'tl' } as LangChangeEvent);
+            expect(component.accordionOpenAllElement.innerHTML).toContain(expectedTranslatedContentForButton);
+        });
+
+        it('should show translated text on open/close toggle button', () => {
+            const expectedTranslatedContentForHeader = 'this is translated for the accordion header';
+            translateServiceSpy.instant
+                .withArgs(`select-hearing-layout.${component.currentButtonContentKey}`)
+                .and.returnValue('initial content');
+            component.ngOnInit();
+            translateServiceSpy.instant
+                .withArgs('select-hearing-layout.choose-hearing-layout')
+                .and.returnValue(expectedTranslatedContentForHeader);
+            translateServiceSpy.onLangChange.emit({ lang: 'tl' } as LangChangeEvent);
+            expect(headingButton.innerHTML).toContain(expectedTranslatedContentForHeader);
+        });
+
+        it('should unsubscribe from onLangChange', () => {
+            component.ngOnDestroy();
+            expect(translateServiceSpy.onLangChange.closed).toBeTruthy();
+        });
     });
 });
