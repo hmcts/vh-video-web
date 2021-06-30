@@ -321,11 +321,10 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             });
         }
 
-        this.videoControlService
-            .setSpotlightStatus(this.participantsService.getParticipantOrVirtualMeetingRoomById(p.id), !p.hasSpotlight())
-            .subscribe(updatedParticipant =>
-                p.updateParticipant(p.isMicRemoteMuted(), p.hasHandRaised(), updatedParticipant.isSpotlighted)
-            );
+        this.videoControlService.setSpotlightStatus(
+            this.participantsService.getParticipantOrVirtualMeetingRoomById(p.id),
+            !p.hasSpotlight()
+        );
     }
 
     toggleMuteParticipant(participant: PanelModel) {

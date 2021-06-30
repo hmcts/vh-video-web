@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { delay, filter, map, retryWhen, take, tap, timeout } from 'rxjs/operators';
+import { delay, filter, map, retryWhen, take, tap } from 'rxjs/operators';
 import { ParticipantModel } from 'src/app/shared/models/participant';
-import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import { LoggerService } from '../logging/logger.service';
 import { ConferenceService } from './conference.service';
