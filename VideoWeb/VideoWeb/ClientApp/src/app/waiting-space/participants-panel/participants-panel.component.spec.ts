@@ -39,10 +39,9 @@ import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.serv
 import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { ParticipantModel } from 'src/app/shared/models/participant';
-import { PanelModel } from '../models/panel-model-base';
 import { CaseTypeGroup } from '../models/case-type-group';
 
-fdescribe('ParticipantsPanelComponent', () => {
+describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
     const conferenceId = '1111-1111-1111';
     let participants = testData.getListOfParticipants();
