@@ -304,26 +304,31 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     toggleSpotlightParticipant(participant: PanelModel) {
-        const p = this.participants.find(x => x.id === participant.id);
+        const panelModel = this.participants.find(x => x.id === participant.id);
         this.logger.info(`${this.loggerPrefix} Judge is attempting to toggle spotlight for participant`, {
             conferenceId: this.conferenceId,
             unusedParticipantId: participant?.id ?? null,
-            participantId: p.id ?? null,
-            pexipId: p.pexipId ?? null,
-            current: p.hasSpotlight(),
-            new: !p.hasSpotlight()
+            participantId: panelModel?.id ?? null,
+            pexipId: panelModel?.pexipId ?? null,
+            current: panelModel?.hasSpotlight(),
+            new: !panelModel?.hasSpotlight()
         });
 
-        if (!p?.pexipId && !p?.id) {
+        if (!panelModel) {
+            return;
+        }
+
+        if (!panelModel.pexipId && !panelModel.id) {
             this.logger.warn(`${this.loggerPrefix} Cannot spotlight participant as they could not be found or do not have an ID`, {
-                participant: p,
+                participant: panelModel,
                 participants: this.participants
             });
+            return;
         }
 
         this.videoControlService.setSpotlightStatus(
-            this.participantsService.getParticipantOrVirtualMeetingRoomById(p.id),
-            !p.hasSpotlight()
+            this.participantsService.getParticipantOrVirtualMeetingRoomById(panelModel.id),
+            !panelModel.hasSpotlight()
         );
     }
 
