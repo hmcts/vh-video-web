@@ -133,70 +133,71 @@ describe('EventsService', () => {
         });
     });
 
-    describe('registerHandlers', () => {
-        it('should register the handlers if they are NOT already registered', () => {
-            // Arrange
-            const expectedNumberOfRegisterations = 16;
+    describe('handlers', () => {
+        const expectedNumberOfRegisterations = 17;
 
-            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
-            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
+        describe('registerHandlers', () => {
+            it('should register the handlers if they are NOT already registered', () => {
+                // Arrange
 
-            // Act
-            serviceUnderTest.registerHandlers();
+                const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
+                spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
 
-            // Assert
+                // Act
+                serviceUnderTest.registerHandlers();
 
-            expect(serviceUnderTest.handlersRegistered).toBeTrue();
-            expect(hubConnectionSpy.on).toHaveBeenCalledTimes(expectedNumberOfRegisterations);
+                // Assert
+
+                expect(serviceUnderTest.handlersRegistered).toBeTrue();
+                expect(hubConnectionSpy.on).toHaveBeenCalledTimes(expectedNumberOfRegisterations);
+            });
+
+            it('should NOT register the handlers if they are NOT already registered', () => {
+                // Arrange
+                const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
+                spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
+
+                spyOnProperty(serviceUnderTest, 'handlersRegistered', 'get').and.returnValue(true);
+
+                // Act
+                serviceUnderTest.registerHandlers();
+
+                // Assert
+                expect(hubConnectionSpy.on).not.toHaveBeenCalled();
+            });
         });
 
-        it('should NOT register the handlers if they are NOT already registered', () => {
-            // Arrange
-            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
-            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
+        describe('deregisterHandlers', () => {
+            it('should deregister the handlers if they are already registered', () => {
+                // Arrange
+                spyOnProperty(serviceUnderTest, 'handlersRegistered', 'get').and.returnValue(true);
 
-            spyOnProperty(serviceUnderTest, 'handlersRegistered', 'get').and.returnValue(true);
+                const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['off']);
+                spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
 
-            // Act
-            serviceUnderTest.registerHandlers();
+                // Act
+                serviceUnderTest.deregisterHandlers();
 
-            // Assert
-            expect(hubConnectionSpy.on).not.toHaveBeenCalled();
+                // Assert
+                expect(serviceUnderTest.handlersRegistered).toBeTrue();
+                expect(hubConnectionSpy.off).toHaveBeenCalledTimes(expectedNumberOfRegisterations);
+            });
+
+            it('should NOT deregister the handlers if they are NOT already registered', () => {
+                // Arrange
+                const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['off']);
+                spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
+
+                spyOnProperty(serviceUnderTest, 'handlersRegistered', 'get').and.returnValue(false);
+
+                // Act
+                serviceUnderTest.deregisterHandlers();
+
+                // Assert
+                expect(hubConnectionSpy.off).not.toHaveBeenCalled();
+            });
         });
     });
-
-    describe('deregisterHandlers', () => {
-        it('should deregister the handlers if they are already registered', () => {
-            // Arrange
-            const expectedNumberOfDeregisterations = 16;
-            spyOnProperty(serviceUnderTest, 'handlersRegistered', 'get').and.returnValue(true);
-
-            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['off']);
-            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
-
-            // Act
-            serviceUnderTest.deregisterHandlers();
-
-            // Assert
-            expect(serviceUnderTest.handlersRegistered).toBeTrue();
-            expect(hubConnectionSpy.off).toHaveBeenCalledTimes(expectedNumberOfDeregisterations);
-        });
-
-        it('should NOT deregister the handlers if they are NOT already registered', () => {
-            // Arrange
-            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['off']);
-            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
-
-            spyOnProperty(serviceUnderTest, 'handlersRegistered', 'get').and.returnValue(false);
-
-            // Act
-            serviceUnderTest.deregisterHandlers();
-
-            // Assert
-            expect(hubConnectionSpy.off).not.toHaveBeenCalled();
-        });
-    });
-
     describe('send message functions', () => {
         it('sendMessage (instant) - should call send on the hub connection', fakeAsync(() => {
             // Arrange

@@ -1,4 +1,5 @@
 import { Subject } from 'rxjs';
+import { ParticipantResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { ConferenceMessageAnswered } from 'src/app/services/models/conference-message-answered';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
@@ -34,6 +35,7 @@ export const participantHandRaisedStatusSubjectMock = new Subject<ParticipantHan
 export const roomUpdateSubjectMock = new Subject<Room>();
 export const roomTransferSubjectMock = new Subject<RoomTransfer>();
 export const adminAnsweredChatSubjectMock = new Subject<ConferenceMessageAnswered>();
+export const getParticipantAddedSubjectMock = new Subject<ParticipantResponse>();
 
 eventsServiceSpy = jasmine.createSpyObj<EventsService>(
     'EventsService',
@@ -62,7 +64,8 @@ eventsServiceSpy = jasmine.createSpyObj<EventsService>(
         'getParticipantRemoteMuteStatusMessage',
         'getParticipantHandRaisedMessage',
         'publishParticipantHandRaisedStatus',
-        'publishRemoteMuteStatus'
+        'publishRemoteMuteStatus',
+        'getParticipantAdded'
     ],
     {}
 );
@@ -84,3 +87,4 @@ eventsServiceSpy.getParticipantHandRaisedMessage.and.returnValue(participantHand
 eventsServiceSpy.getRoomUpdate.and.returnValue(roomUpdateSubjectMock.asObservable());
 eventsServiceSpy.getRoomTransfer.and.returnValue(roomTransferSubjectMock.asObservable());
 eventsServiceSpy.getAdminAnsweredChat.and.returnValue(adminAnsweredChatSubjectMock.asObservable());
+eventsServiceSpy.getParticipantAdded.and.returnValue(getParticipantAddedSubjectMock.asObservable());
