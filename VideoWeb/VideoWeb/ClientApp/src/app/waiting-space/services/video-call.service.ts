@@ -36,12 +36,6 @@ export class VideoCallService {
     readonly callTypeAudioOnly = 'audioonly';
 
     private onSetupSubject = new Subject<CallSetup>();
-    get onConferenceStarted() {
-        return this.onConferenceUpdatedSubject.asObservable().pipe(
-            filter(conferenceUpdate => conferenceUpdate.guestedMuted === false),
-            take(1)
-        );
-    }
     private onConnectedSubject = new Subject<ConnectedCall>();
     private onDisconnected = new Subject<DisconnectedCall>();
     private onErrorSubject = new Subject<CallError>();
