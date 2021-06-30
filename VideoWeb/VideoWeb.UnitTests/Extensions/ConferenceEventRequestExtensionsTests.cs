@@ -14,11 +14,13 @@ namespace VideoWeb.UnitTests.Extensions
     public class ConferenceEventRequestExtensionsTests
     {
         private Conference _testConference;
+        private static long _participantRoomId;
         
         [SetUp]
         public void Setup()
         {
             _testConference = BuildConferenceForTest();
+            _participantRoomId = 1234;
         }
 
         [TestCase(EventType.Joined, EventType.RoomParticipantJoined)]
@@ -78,8 +80,9 @@ namespace VideoWeb.UnitTests.Extensions
                 HearingVenueName = "Hearing Venue Test",
                 CivilianRooms = new List<CivilianRoom>
                 {
-                    new CivilianRoom {Id = 1, RoomLabel = "Interpreter1", Participants = new List<Guid>()}
-                }
+                    new CivilianRoom {Id = _participantRoomId, RoomLabel = "Interpreter1", Participants = new List<Guid>()}
+                },
+                CurrentStatus = ConferenceState.InSession,
             };
 
 

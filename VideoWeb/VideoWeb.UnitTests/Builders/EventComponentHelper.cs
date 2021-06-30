@@ -109,7 +109,12 @@ namespace VideoWeb.UnitTests.Builders
                         .With(x => x.Id = Guid.NewGuid()).Build(),
                     Builder<Participant>.CreateNew().With(x => x.Role = Role.Representative)
                         .With(x => x.Id = Guid.NewGuid()).Build()
+                },
+                CivilianRooms = new List<CivilianRoom>
+                {
+                    new CivilianRoom {Id = 1, RoomLabel = "Interpreter1", Participants = {Guid.NewGuid(), Guid.NewGuid()}}
                 }
+                
             };
         }
     }
