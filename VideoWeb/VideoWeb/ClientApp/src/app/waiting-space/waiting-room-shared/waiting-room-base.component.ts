@@ -885,7 +885,7 @@ export abstract class WaitingRoomBaseDirective {
         }
         this.hearing.getConference().status = message.status;
         this.conference.status = message.status;
-
+        this.presentationStream = null;
         if (message.status === ConferenceStatus.InSession) {
             this.countdownComplete = false;
         }
