@@ -110,7 +110,6 @@ export class VideoCallService {
         };
 
         this.pexipAPI.onConferenceUpdate = function (conferenceUpdate) {
-            console.log('[ROB] onConferenceUpdate', conferenceUpdate);
             self.onConferenceUpdatedSubject.next(new ConferenceUpdated(conferenceUpdate.guests_muted));
         };
 

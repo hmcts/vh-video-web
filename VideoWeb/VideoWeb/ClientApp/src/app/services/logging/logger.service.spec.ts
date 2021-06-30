@@ -5,26 +5,23 @@ import { LogAdapter } from './log-adapter';
 import { ConferenceService } from '../conference/conference.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 
-fdescribe('LoggerService', () => {
-    const logAdapter = jasmine.createSpyObj<LogAdapter>(['trackException', 'trackEvent', 'info']);
+describe('LoggerService', () => {
+    let logAdapter: jasmine.SpyObj<LogAdapter>;
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
+    let service: LoggerService;
 
     beforeEach(() => {
+        logAdapter = jasmine.createSpyObj<LogAdapter>(['trackException', 'trackEvent', 'info']);
         conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>('ConferenceService', ['getConferenceById'], ['currentConferenceId']);
-
-        TestBed.configureTestingModule({
-            providers: [
-                { provide: LOG_ADAPTER, useValue: logAdapter, multi: true },
-                { provide: ConferenceService, useValue: conferenceServiceSpy }
-            ]
-        });
+        service = new LoggerService([logAdapter]);
+        service.conferenceService = conferenceServiceSpy;
     });
 
-    it('should be created', inject([LoggerService], (service: LoggerService) => {
+    it('should be created', () => {
         expect(service).toBeTruthy();
-    }));
+    });
 
-    it('should log events to all adapters', inject([LoggerService], (service: LoggerService) => {
+    it('should log events to all adapters', () => {
         // Arrange
         const message = 'msg';
         const properties = {
@@ -44,9 +41,9 @@ fdescribe('LoggerService', () => {
 
         // Assert
         expect(logAdapter.trackEvent).toHaveBeenCalledWith(message, expectedProperties);
-    }));
+    });
 
-    it('should log errors to all adapters', inject([LoggerService], (service: LoggerService) => {
+    it('should log errors to all adapters', () => {
         // Arrange
         const error = new Error();
         const message = 'msg';
@@ -67,9 +64,9 @@ fdescribe('LoggerService', () => {
 
         // Assert
         expect(logAdapter.trackException).toHaveBeenCalledWith(message, error, expectedProperties);
-    }));
+    });
 
-    it('should add conference id to the properties', inject([LoggerService], (service: LoggerService) => {
+    it('should add conference id to the properties', () => {
         // Arrange
         const message = 'msg';
         const properties = {
@@ -89,9 +86,9 @@ fdescribe('LoggerService', () => {
 
         // Assert
         expect(logAdapter.info).toHaveBeenCalledWith(message, expectedProperties);
-    }));
+    });
 
-    it('should add conference id to the properties when no properties are provided', inject([LoggerService], (service: LoggerService) => {
+    it('should add conference id to the properties when no properties are provided', () => {
         // Arrange
         const message = 'msg';
         const properties = {
@@ -111,5 +108,5 @@ fdescribe('LoggerService', () => {
 
         // Assert
         expect(logAdapter.info).toHaveBeenCalledWith(message, expectedProperties);
-    }));
+    });
 });

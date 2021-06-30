@@ -13,7 +13,7 @@ import { ConferenceService } from './conference.service';
 import { VirtualMeetingRoomModel } from './models/virtual-meeting-room.model';
 import { VideoControlCacheService } from './video-control-cache.service';
 
-export const InvalidNumberOfNonEndpointParticipantsError = () => new Error('Invalid number of non-endpoint participants.');
+export const invalidNumberOfNonEndpointParticipantsError = () => new Error('Invalid number of non-endpoint participants.');
 
 @Injectable({
     providedIn: 'root'
@@ -35,7 +35,9 @@ export class ParticipantService {
 
     public get nonEndpointParticipants(): ParticipantModel[] {
         const participants = this.participants.filter(x => !x.isEndPoint);
-        if (participants.length < 1) throw InvalidNumberOfNonEndpointParticipantsError();
+        if (participants.length < 1) {
+            throw invalidNumberOfNonEndpointParticipantsError();
+        }
 
         return participants;
     }
@@ -136,9 +138,6 @@ export class ParticipantService {
     }
 
     private getParticipantOrVirtualMeetingRoomByPexipDisplayName(pexipDisplayName: string): ParticipantModel | VirtualMeetingRoomModel {
-        console.log(`${this.loggerPrefix} getParticipantOrVirtualMeetingRoomByPexipDisplayName`);
-        console.table(this.participants);
-        console.table(this.virtualMeetingRooms);
         return (
             this.participants.find(x => pexipDisplayName.includes(x.id)) ??
             this.virtualMeetingRooms.find(x => pexipDisplayName.includes(x.id))
@@ -159,7 +158,6 @@ export class ParticipantService {
                     newValue: participants
                 });
 
-                this._participants = [];
                 this._virtualMeetingRooms = [];
                 this._participants = participants;
 
@@ -179,17 +177,19 @@ export class ParticipantService {
     private restoreCachedVideoControlState() {
         const conferenceState = this.videoControlCacheService.getStateForConference(this.conferenceService.currentConferenceId);
 
-        if (conferenceState !== null) {
+        if (conferenceState) {
             this.participants.forEach(participant => {
-                if (conferenceState.participantStates[participant.id])
+                if (conferenceState.participantStates[participant.id]) {
                     participant.isSpotlighted = conferenceState.participantStates[participant.id].isSpotlighted;
+                }
             });
 
             this.virtualMeetingRooms.forEach(vmr => {
-                if (conferenceState.participantStates[vmr.id])
+                if (conferenceState.participantStates[vmr.id]) {
                     vmr.participants.forEach(
                         participant => (participant.isSpotlighted = conferenceState.participantStates[vmr.id].isSpotlighted)
                     );
+                }
             });
         }
     }
@@ -202,7 +202,7 @@ export class ParticipantService {
             this.conferenceService.getParticipantsForConference(conferenceId),
             this.conferenceService.getEndpointsForConference(conferenceId)
         ).pipe(
-            take(1), // Ensure this observable also completes
+            take(1),
             map(participantLists => participantLists[0].concat(participantLists[1]))
         );
 
@@ -215,14 +215,12 @@ export class ParticipantService {
         });
 
         for (const participant of this.participants.filter(x => x.virtualMeetingRoomSummary)) {
-            const existingVmr = this._virtualMeetingRooms.find(x => x.id === participant.virtualMeetingRoomSummary?.id);
+            const existingVmr = this.virtualMeetingRooms.find(x => x.id === participant.virtualMeetingRoomSummary?.id);
             if (existingVmr) {
-                if (existingVmr.participants.find(x => x.id === participant.id) !== participant) {
-                    this.logger.warn(`${this.loggerPrefix} Participants are different instances`);
-                    continue;
-                }
-
                 if (existingVmr.participants.find(x => x.id === participant.id)) {
+                    this.logger.warn(`${this.loggerPrefix} Participant is already registered in VMR`, {
+                        areSameInstance: participant === existingVmr.participants.find(x => x.id === participant.id)
+                    });
                     continue;
                 }
 
@@ -235,7 +233,7 @@ export class ParticipantService {
                     [participant]
                 );
 
-                this._virtualMeetingRooms.push(vmr);
+                this.virtualMeetingRooms.push(vmr);
             }
         }
 
@@ -272,7 +270,7 @@ export class ParticipantService {
         );
     }
 
-    private handlePexipUpdate(update: ParticipantUpdated): void {
+    handlePexipUpdate(update: ParticipantUpdated): void {
         this.logger.info(`${this.loggerPrefix} handling pexip update`, {
             participantUpdate: update
         });
@@ -339,7 +337,7 @@ export class ParticipantService {
                 this.participantPexipIdChangedSubject.next(participant);
             }
 
-            if (participant.isSpotlighted != update.isSpotlighted) {
+            if (participant.isSpotlighted !== update.isSpotlighted) {
                 this.logger.info(`${this.loggerPrefix} updating participants spotlight status`, {
                     participantId: participant.id,
                     pexipDisplayName: update.pexipDisplayName,
@@ -351,7 +349,7 @@ export class ParticipantService {
                 this.participantSpotlightStatusChangedSubject.next(participant);
             }
 
-            if (participant.isRemoteMuted != update.isRemoteMuted) {
+            if (participant.isRemoteMuted !== update.isRemoteMuted) {
                 this.logger.info(`${this.loggerPrefix} updating participants remote muted status`, {
                     participantId: participant.id,
                     pexipDisplayName: update.pexipDisplayName,
@@ -363,7 +361,7 @@ export class ParticipantService {
                 this.participantRemoteMuteStatusChangedSubject.next(participant);
             }
 
-            if (participant.isHandRaised != update.handRaised) {
+            if (participant.isHandRaised !== update.handRaised) {
                 this.logger.info(`${this.loggerPrefix} updating participants hand raised status`, {
                     participantId: participant.id,
                     pexipDisplayName: update.pexipDisplayName,
@@ -377,7 +375,7 @@ export class ParticipantService {
         }
     }
 
-    private handleParticipantStatusUpdate(participantStatusMessage: ParticipantStatusMessage) {
+    handleParticipantStatusUpdate(participantStatusMessage: ParticipantStatusMessage) {
         this.logger.info(`${this.loggerPrefix} handling participant status update`);
 
         const participant = this.participants.find(x => x.id === participantStatusMessage.participantId);
@@ -407,13 +405,10 @@ export class ParticipantService {
     }
 
     private checkForNewVmrsOnParticipantAvailable(participantStatusMessage: ParticipantStatusMessage) {
-        if (participantStatusMessage.status === ParticipantStatus.Available)
+        if (participantStatusMessage.status === ParticipantStatus.Available) {
             this.loadParticipants().subscribe(participants => {
                 participants.forEach(upToDateParticipant => {
                     const participant = this.participants.find(p => p.id === upToDateParticipant.id);
-                    if (upToDateParticipant.status !== participant.status) {
-                        participant.status = upToDateParticipant.status;
-                    }
 
                     if (upToDateParticipant.virtualMeetingRoomSummary?.id !== participant.virtualMeetingRoomSummary?.id) {
                         participant.virtualMeetingRoomSummary = upToDateParticipant.virtualMeetingRoomSummary;
@@ -422,5 +417,6 @@ export class ParticipantService {
 
                 this.populateVirtualMeetingRooms();
             });
+        }
     }
 }

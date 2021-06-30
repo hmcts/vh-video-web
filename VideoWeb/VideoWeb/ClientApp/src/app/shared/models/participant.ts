@@ -41,8 +41,6 @@ export interface IParticipantDetails {
     linkedParticipants: LinkedParticipantResponse[];
 }
 
-export interface IEndpointDetails {}
-
 export class ParticipantModel implements IParticipantDetails, IParticipantConferenceState, IParticipantHearingState {
     public pexipDisplayName: PexipDisplayNameModel;
 
@@ -121,9 +119,15 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
 }
 
 export class Participant {
-    private participant: ParticipantResponse | ParticipantResponseVho | ParticipantForUserResponse;
+    private participant: ParticipantResponseVho;
 
-    constructor(participant: ParticipantResponse | ParticipantResponseVho | ParticipantForUserResponse) {
+    constructor(participant: ParticipantResponseVho) {
+        const isVhResponse = participant instanceof ParticipantResponseVho;
+        const isParticipantResponse = participant instanceof ParticipantResponse;
+
+        if (!(isVhResponse || isParticipantResponse)) {
+            throw new Error('Object not a ParticipantResponseVho or ParticipantResponse');
+        }
         this.participant = participant;
     }
 

@@ -3,7 +3,7 @@ import { LoggerService } from '../logging/logger.service';
 
 import { IHearingControlsState, IHearingControlStates, VideoControlCacheService } from './video-control-cache.service';
 
-fdescribe('VideoControlCacheService', () => {
+describe('VideoControlCacheService', () => {
     let sut: VideoControlCacheService;
     let loggerSpy: jasmine.SpyObj<LoggerService>;
 
@@ -22,7 +22,7 @@ fdescribe('VideoControlCacheService', () => {
         // Arrange
         const conferenceIdOne = 'conference-id-one';
         const conferenceIdTwo = 'conference-id-two';
-        var hearingStates: IHearingControlStates = {};
+        const hearingStates: IHearingControlStates = {};
         hearingStates[conferenceIdOne] = {
             participantStates: {
                 'participant-id': {
@@ -53,7 +53,7 @@ fdescribe('VideoControlCacheService', () => {
             // Arrange
             const conferenceId = 'conference-id';
 
-            var hearingState: { [conferenceId: string]: IHearingControlsState } = {};
+            const hearingState: { [conferenceId: string]: IHearingControlsState } = {};
             hearingState[conferenceId] = {
                 participantStates: {
                     'participant-id': {
@@ -84,7 +84,7 @@ fdescribe('VideoControlCacheService', () => {
             // Arrange
             const conferenceId = 'conference-id';
 
-            var hearingState: { [conferenceId: string]: IHearingControlsState } = {};
+            const hearingState: { [conferenceId: string]: IHearingControlsState } = {};
             hearingState['not-conference-id'] = {
                 participantStates: {
                     'participant-id': {

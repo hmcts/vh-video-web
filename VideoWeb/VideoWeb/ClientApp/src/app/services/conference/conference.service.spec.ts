@@ -137,7 +137,7 @@ describe('ConferenceService', () => {
             getSpiedPropertyGetter(routerSpy, 'events').and.returnValue(events$);
 
             // Act
-            new ConferenceService(routerSpy, activatedRouteSpy, eventsServiceSpy, apiClientSpy, loggerSpy);
+            const _ = new ConferenceService(routerSpy, activatedRouteSpy, eventsServiceSpy, apiClientSpy, loggerSpy);
 
             // Assert
             expect(events$.subscribe).toHaveBeenCalledTimes(1);
@@ -295,7 +295,7 @@ describe('ConferenceService', () => {
             };
             let result = null;
 
-            sut.onCurrentConferenceStatusChanged$.subscribe(statusUpdate => (result = statusUpdate));
+            sut.onCurrentConferenceStatusChanged$.subscribe(update => (result = update));
 
             sut.setupConferenceSubscriptions();
 
@@ -330,7 +330,7 @@ describe('ConferenceService', () => {
             };
             let result = null;
 
-            sut.onCurrentConferenceStatusChanged$.subscribe(statusUpdate => (result = statusUpdate));
+            sut.onCurrentConferenceStatusChanged$.subscribe(update => (result = update));
 
             sut.setupConferenceSubscriptions();
 

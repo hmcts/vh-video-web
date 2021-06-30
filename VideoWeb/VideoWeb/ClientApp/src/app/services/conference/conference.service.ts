@@ -29,7 +29,6 @@ export class ConferenceService {
                 filter(x => x instanceof NavigationEnd),
                 map(() => activatedRoute.snapshot),
                 map(route => {
-                    console.log('[ROB] CONF', route);
                     while (route && !route.paramMap?.has('conferenceId')) {
                         route = route?.firstChild;
                     }
@@ -69,7 +68,7 @@ export class ConferenceService {
     }
 
     getConferenceById(conferenceId: string | Guid): Observable<ConferenceResponse> {
-        console.log(`${this.loggerPrefix} getting conference by ID: ${conferenceId}`);
+        this.logger.info(`${this.loggerPrefix} getting conference by ID: ${conferenceId}`);
 
         return this.apiClient.getConferenceById(conferenceId.toString());
     }
@@ -77,34 +76,34 @@ export class ConferenceService {
     getParticipantsForConference(conferenceId: Guid | string): Observable<ParticipantModel[]> {
         this.logger.info(`${this.loggerPrefix} getting participants for conference.`);
 
-        return this.apiClient
-            .getParticipantsByConferenceId(conferenceId.toString())
-            .pipe(
-                map(participants =>
-                    participants.map(participantResponse => ParticipantModel.fromParticipantForUserResponse(participantResponse))
-                )
-            );
+        return this.apiClient.getParticipantsByConferenceId(conferenceId.toString()).pipe(
+            map(participants =>
+                participants.map(participantResponse => ParticipantModel.fromParticipantForUserResponse(participantResponse))
+            ),
+            take(1)
+        );
     }
 
     getEndpointsForConference(conferenceId: Guid | string): Observable<ParticipantModel[]> {
         this.logger.info(`${this.loggerPrefix} getting endpoints for conference.`);
 
-        return this.apiClient
-            .getVideoEndpointsForConference(conferenceId.toString())
-            .pipe(
-                map(participants =>
-                    participants.map(videoEndpointResponse => ParticipantModel.fromVideoEndpointResponse(videoEndpointResponse))
-                )
-            );
+        return this.apiClient.getVideoEndpointsForConference(conferenceId.toString()).pipe(
+            map(participants =>
+                participants.map(videoEndpointResponse => ParticipantModel.fromVideoEndpointResponse(videoEndpointResponse))
+            ),
+            take(1)
+        );
     }
 
     getLoggedInParticipantForConference(conferenceId: Guid | string): Observable<ParticipantModel> {
         return this.getParticipantsForConference(conferenceId).pipe(
             mergeMap(participants =>
-                this.apiClient
-                    .getCurrentParticipant(conferenceId.toString())
-                    .pipe(map(response => participants.find(participant => participant.id === response.participant_id)))
-            )
+                this.apiClient.getCurrentParticipant(conferenceId.toString()).pipe(
+                    map(response => participants.find(participant => participant.id === response.participant_id)),
+                    take(1)
+                )
+            ),
+            take(1)
         );
     }
 
@@ -122,7 +121,7 @@ export class ConferenceService {
     private handleConferenceStatusChange(conferenceStatusMessage: ConferenceStatusMessage): void {
         if (this.currentConference.status !== conferenceStatusMessage.status) {
             const oldValue = this.currentConference.status;
-            console.log(`${this.loggerPrefix} updating conference status`, {
+            this.logger.info(`${this.loggerPrefix} updating conference status`, {
                 oldValue: oldValue,
                 newValue: conferenceStatusMessage.status
             });
@@ -135,23 +134,23 @@ export class ConferenceService {
     private onRouteParamsChanged(params: ParamMap): void {
         this._currentConferenceId = params?.get('conferenceId');
 
-        console.log(`${this.loggerPrefix} New route - Conference ID: ${this._currentConferenceId}`, {
+        this.logger.info(`${this.loggerPrefix} New route - Conference ID: ${this._currentConferenceId}`, {
             routeParams: params
         });
 
         if (!this._currentConferenceId) {
-            console.warn(`${this.loggerPrefix} Could not get conference id from the route parameters: ${params?.get('conferenceId')}`, {
+            this.logger.warn(`${this.loggerPrefix} Could not get conference id from the route parameters: ${params?.get('conferenceId')}`, {
                 routeParams: params,
                 route: this.activatedRoute
             });
             return;
         }
 
-        console.log(`${this.loggerPrefix} attempting to get conference details.`);
+        this.logger.info(`${this.loggerPrefix} attempting to get conference details.`);
         this.getConferenceById(this.currentConferenceId)
             .pipe(take(1))
             .subscribe(conference => {
-                console.log(`${this.loggerPrefix} conference details retrieved.`, {
+                this.logger.info(`${this.loggerPrefix} conference details retrieved.`, {
                     oldDetails: this.currentConference,
                     newDetails: conference
                 });

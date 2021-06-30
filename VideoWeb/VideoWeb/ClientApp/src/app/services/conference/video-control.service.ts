@@ -54,7 +54,6 @@ export class VideoControlService {
                 filter(update => update.pexipDisplayName.includes(participantOrVmr.id)),
                 map(update => {
                     if (update.isSpotlighted !== spotlightStatus) {
-                        console.log('[ROB] not correct');
                         throw new Error('update.isSpotlighted !== spotlightStatus');
                     }
                     return update;
@@ -98,11 +97,13 @@ export class VideoControlService {
     }
 
     getSpotlightedParticipants(): string[] {
-        var hearingControlState = this.videoControlCacheService.getStateForConference(this.conferenceService.currentConferenceId);
+        const hearingControlState = this.videoControlCacheService.getStateForConference(this.conferenceService.currentConferenceId);
 
         const participantIds = [];
-        for (var participantId in hearingControlState.participantStates) {
-            if (hearingControlState.participantStates[participantId].isSpotlighted) participantIds.push(participantId);
+        for (const participantId in hearingControlState.participantStates) {
+            if (hearingControlState.participantStates[participantId].isSpotlighted) {
+                participantIds.push(participantId);
+            }
         }
 
         return participantIds;

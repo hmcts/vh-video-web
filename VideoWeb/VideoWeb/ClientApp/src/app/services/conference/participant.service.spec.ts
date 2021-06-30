@@ -1,14 +1,12 @@
 import { fakeAsync, flush } from '@angular/core/testing';
 import { Guid } from 'guid-typescript';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { FindValueSubscriber } from 'rxjs/internal/operators/find';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 import { ParticipantUpdated } from 'src/app/waiting-space/models/video-call-models';
 import { VideoCallService } from 'src/app/waiting-space/services/video-call.service';
 import {
-    ApiClient,
     ConferenceResponse,
     EndpointStatus,
     ParticipantForUserResponse,
@@ -22,12 +20,15 @@ import { LoggerService } from '../logging/logger.service';
 import { ParticipantStatusMessage } from '../models/participant-status-message';
 import { ConferenceService } from './conference.service';
 import { VirtualMeetingRoomModel } from './models/virtual-meeting-room.model';
-import { InvalidNumberOfNonEndpointParticipantsError, ParticipantService } from './participant.service';
-import { VideoControlService } from './video-control.service';
+import { invalidNumberOfNonEndpointParticipantsError, ParticipantService } from './participant.service';
+import { IHearingControlsState, IParticipantControlsState, VideoControlCacheService } from './video-control-cache.service';
 
-fdescribe('ParticipantService', () => {
-    const asParticipantModels = (participants: ParticipantForUserResponse[]) =>
+describe('ParticipantService', () => {
+    const asParticipantModelsFromUserResponse = (participants: ParticipantForUserResponse[]) =>
         participants.map(x => ParticipantModel.fromParticipantForUserResponse(x));
+
+    const asParticipantModelsFromEndpointResponse = (participants: VideoEndpointResponse[]) =>
+        participants.map(x => ParticipantModel.fromVideoEndpointResponse(x));
 
     const participantOneId = Guid.create().toString();
     const participantOne = new ParticipantForUserResponse({
@@ -122,11 +123,11 @@ fdescribe('ParticipantService', () => {
         pexip_display_name: `CIVILIAN;ENDPOINT;${endpointTwoId}`
     });
 
-    let apiClientSpy: jasmine.SpyObj<ApiClient>;
-    let getParticipantsByConferenceIdSubject: Subject<ParticipantForUserResponse[]>;
-    let getEndpointsByConferenceIdSubject: Subject<VideoEndpointResponse[]>;
-
     let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
+    let getParticipantsForConferenceSubject: Subject<ParticipantModel[]>;
+    let getEndpointsForConferenceSubject: Subject<ParticipantModel[]>;
+    let getLoggedInParticipantForConferenceSubject: Subject<ParticipantModel>;
+    let getLoggedInParticipantForConference$: Observable<ParticipantModel>;
     let currentConferenceSubject: Subject<ConferenceResponse>;
     let currentConference$: Observable<ConferenceResponse>;
 
@@ -136,20 +137,25 @@ fdescribe('ParticipantService', () => {
 
     let eventsServiceSpy: jasmine.SpyObj<EventsService>;
     let participantStatusUpdateSubject: Subject<ParticipantStatusMessage>;
+    let videoControlCacheServiceSpy: jasmine.SpyObj<VideoControlCacheService>;
 
     let loggerSpy: jasmine.SpyObj<LoggerService>;
 
     let sut: ParticipantService;
 
     beforeEach(() => {
-        apiClientSpy = jasmine.createSpyObj<ApiClient>('ApiClient', ['getParticipantsByConferenceId', 'getVideoEndpointsForConference']);
-
-        getParticipantsByConferenceIdSubject = new Subject<ParticipantForUserResponse[]>();
-        getEndpointsByConferenceIdSubject = new Subject<VideoEndpointResponse[]>();
-        apiClientSpy.getParticipantsByConferenceId.and.returnValue(getParticipantsByConferenceIdSubject.asObservable());
-        apiClientSpy.getVideoEndpointsForConference.and.returnValue(getEndpointsByConferenceIdSubject.asObservable());
-
-        conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>('ConferenceService', ['getConferenceById'], ['currentConference$']);
+        conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>(
+            'ConferenceService',
+            ['getConferenceById', 'getParticipantsForConference', 'getEndpointsForConference', 'getLoggedInParticipantForConference'],
+            ['currentConference$', 'currentConference', 'currentConferenceId']
+        );
+        getParticipantsForConferenceSubject = new Subject<ParticipantModel[]>();
+        conferenceServiceSpy.getParticipantsForConference.and.returnValue(getParticipantsForConferenceSubject.asObservable());
+        getEndpointsForConferenceSubject = new Subject<ParticipantModel[]>();
+        conferenceServiceSpy.getEndpointsForConference.and.returnValue(getEndpointsForConferenceSubject.asObservable());
+        getLoggedInParticipantForConferenceSubject = new Subject<ParticipantModel>();
+        getLoggedInParticipantForConference$ = getLoggedInParticipantForConferenceSubject.asObservable();
+        conferenceServiceSpy.getLoggedInParticipantForConference.and.returnValue(getLoggedInParticipantForConference$);
 
         currentConferenceSubject = new Subject<ConferenceResponse>();
         currentConference$ = currentConferenceSubject.asObservable();
@@ -168,11 +174,11 @@ fdescribe('ParticipantService', () => {
         participantStatusUpdateSubject = new Subject<ParticipantStatusMessage>();
         eventsServiceSpy.getParticipantStatusMessage.and.returnValue(participantStatusUpdateSubject.asObservable());
 
+        videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', ['getStateForConference']);
+
         loggerSpy = jasmine.createSpyObj<LoggerService>('Logger', ['error', 'warn', 'info']);
 
-        sut = new ParticipantService(apiClientSpy, conferenceServiceSpy, videoCallServiceSpy, eventsServiceSpy, loggerSpy);
-
-        apiClientSpy.getParticipantsByConferenceId.calls.reset();
+        sut = new ParticipantService(conferenceServiceSpy, videoCallServiceSpy, eventsServiceSpy, videoControlCacheServiceSpy, loggerSpy);
     });
 
     describe('construction', () => {
@@ -189,11 +195,8 @@ fdescribe('ParticipantService', () => {
             conference.id = 'conference-id';
             currentConferenceSubject.next(conference);
             flush();
-
-            getParticipantsByConferenceIdSubject.next(participantResponses);
-            flush();
-
-            getEndpointsByConferenceIdSubject.next(endpointResponses);
+            getParticipantsForConferenceSubject.next(asParticipantModelsFromUserResponse(participantResponses));
+            getEndpointsForConferenceSubject.next(asParticipantModelsFromEndpointResponse(endpointResponses));
             flush();
 
             // Assert
@@ -209,13 +212,65 @@ fdescribe('ParticipantService', () => {
             ]);
         }));
 
+        it('restore the cached video state for a participant', fakeAsync(() => {
+            // Arrange
+            const participantResponses = [participantOne, participantTwo];
+            const endpointResponses = [endpointOne, endpointTwo];
+
+            const conference = new ConferenceResponse();
+            conference.id = 'conference-id';
+
+            const state = { participantStates: {} } as IHearingControlsState;
+            state.participantStates[participantOneId] = {
+                isSpotlighted: true
+            } as IParticipantControlsState;
+            videoControlCacheServiceSpy.getStateForConference.and.returnValue(state as IHearingControlsState);
+
+            // Act
+            currentConferenceSubject.next(conference);
+            flush();
+            getParticipantsForConferenceSubject.next(asParticipantModelsFromUserResponse(participantResponses));
+            getEndpointsForConferenceSubject.next(asParticipantModelsFromEndpointResponse(endpointResponses));
+            flush();
+
+            // Assert
+            expect(sut.participants.find(p => p.id === participantOneId).isSpotlighted).toBeTrue();
+        }));
+
+        it('restore the cached video state for a vmr', fakeAsync(() => {
+            // Arrange
+            const participantResponses = [vmrParticipantOne, vmrParticipantTwo, participantTwo];
+            const endpointResponses = [endpointOne, endpointTwo];
+
+            const conference = new ConferenceResponse();
+            conference.id = 'conference-id';
+
+            const state = { participantStates: {} } as IHearingControlsState;
+            state.participantStates[vmrId] = {
+                isSpotlighted: true
+            } as IParticipantControlsState;
+            videoControlCacheServiceSpy.getStateForConference.and.returnValue(state as IHearingControlsState);
+
+            // Act
+            currentConferenceSubject.next(conference);
+            flush();
+            getParticipantsForConferenceSubject.next(asParticipantModelsFromUserResponse(participantResponses));
+            getEndpointsForConferenceSubject.next(asParticipantModelsFromEndpointResponse(endpointResponses));
+            flush();
+
+            // Assert
+            expect(sut.participants.find(p => p.id === vmrParticipantOneId).isSpotlighted).toBeTrue();
+            expect(sut.participants.find(p => p.id === vmrParticipantTwoId).isSpotlighted).toBeTrue();
+        }));
+
         it('should subscribe to onParticipantUpdated', fakeAsync(() => {
             // Arrange
             videoCallServiceSpy.onParticipantUpdated.and.returnValue(participantUpdated$);
 
             // Act
             const participantResponses = [participantOne, participantTwo];
-            getParticipantsByConferenceIdSubject.next(participantResponses);
+            getParticipantsForConferenceSubject.next(asParticipantModelsFromUserResponse(participantResponses));
+            getEndpointsForConferenceSubject.next(asParticipantModelsFromEndpointResponse([]));
             flush();
 
             // Assert
@@ -265,7 +320,7 @@ fdescribe('ParticipantService', () => {
             spyOnProperty(sut, 'participants', 'get').and.returnValue(endpointParticipants);
 
             // Act & Assert
-            expect(() => sut.nonEndpointParticipants).toThrow(InvalidNumberOfNonEndpointParticipantsError());
+            expect(() => sut.nonEndpointParticipants).toThrow(invalidNumberOfNonEndpointParticipantsError());
         });
 
         it('should only return endpoints', () => {
@@ -288,9 +343,16 @@ fdescribe('ParticipantService', () => {
         it('should call get participants and end points and subscribe to the relevant conference events', fakeAsync(() => {
             // Arrange
             const participantStatusUpdate$ = new Observable<ParticipantStatusMessage>();
-            const expectedUnsubscribed = [jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe'])];
-            const expectedSubscriptions = [jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe'])];
-            spyOn(participantStatusUpdate$, 'subscribe').and.returnValues(...expectedUnsubscribed, ...expectedSubscriptions);
+            const expectedUnsubscribed = [
+                jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
+                jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe'])
+            ];
+            const expectedSubscriptions = [
+                jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
+                jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe'])
+            ];
+            spyOn(participantStatusUpdate$, 'subscribe').and.returnValues(expectedUnsubscribed[0], expectedSubscriptions[0]);
+            spyOn(getLoggedInParticipantForConference$, 'subscribe').and.returnValues(expectedUnsubscribed[1], expectedSubscriptions[1]);
 
             spyOn(participantStatusUpdateSubject, 'asObservable').and.returnValue(participantStatusUpdate$);
             eventsServiceSpy.getParticipantStatusMessage.and.returnValue(participantStatusUpdateSubject.asObservable());
@@ -309,14 +371,6 @@ fdescribe('ParticipantService', () => {
             flush();
 
             // Assert
-            expect(apiClientSpy.getParticipantsByConferenceId).toHaveBeenCalledTimes(2);
-            expect(apiClientSpy.getParticipantsByConferenceId).toHaveBeenCalledWith(conferenceIdOne);
-            expect(apiClientSpy.getParticipantsByConferenceId).toHaveBeenCalledWith(conferenceIdTwo);
-
-            expect(apiClientSpy.getVideoEndpointsForConference).toHaveBeenCalledTimes(2);
-            expect(apiClientSpy.getVideoEndpointsForConference).toHaveBeenCalledWith(conferenceIdOne);
-            expect(apiClientSpy.getVideoEndpointsForConference).toHaveBeenCalledWith(conferenceIdTwo);
-
             expectedUnsubscribed.forEach(x => expect(x.unsubscribe).toHaveBeenCalledTimes(1));
             expect(sut['conferenceSubscriptions'].length).toEqual(expectedSubscriptions.length);
             expect(participantStatusUpdate$.subscribe).toHaveBeenCalledTimes(2);
@@ -349,89 +403,27 @@ fdescribe('ParticipantService', () => {
             currentConferenceSubject.next(conference);
             flush();
 
-            getParticipantsByConferenceIdSubject.next(nonVmrParticipants.concat(vmrParticipants));
-            flush();
-
             expect(sut.participants.length).toEqual(0);
             expect(sut.virtualMeetingRooms.length).toEqual(0);
 
-            getEndpointsByConferenceIdSubject.next(nonVmrEndpoints);
+            getParticipantsForConferenceSubject.next(asParticipantModelsFromUserResponse([...nonVmrParticipants, ...vmrParticipants]));
+            getEndpointsForConferenceSubject.next(asParticipantModelsFromEndpointResponse(nonVmrEndpoints));
             flush();
-
-            // Assert
-            expect(apiClientSpy.getParticipantsByConferenceId).toHaveBeenCalledOnceWith(conferenceIdOne);
-            expect(apiClientSpy.getVideoEndpointsForConference).toHaveBeenCalledOnceWith(conferenceIdOne);
 
             expect(sut.participants.length).toEqual(expectedParticipants.length);
             // We can't do a deep comparison due to the link Participant <-> VMR
-            expectedParticipants.forEach(x => expect(sut.participants.find(y => y.id == x.id)).toBeTruthy());
+            expectedParticipants.forEach(x => expect(sut.participants.find(y => y.id === x.id)).toBeTruthy());
 
             expect(sut.virtualMeetingRooms.length).toEqual(expectedVmrs.length);
             // We can't do a deep comparison due to the link Participant <-> VMR
             // Check if all the vmrs are there
             expectedVmrs.forEach(x => expect(sut.virtualMeetingRooms.find(y => y.id === x.id)).toBeTruthy());
+
             // Check the participants where linked
             sut.virtualMeetingRooms.forEach(x => {
-                const expectedX = expectedVmrs.find(y => y.id == x.id);
+                const expectedX = expectedVmrs.find(y => y.id === x.id);
                 expectedX.participants.forEach(p => expect(x.participants.find(z => z.id === p.id)).toBeTruthy());
             });
-        }));
-    });
-
-    describe('getParticipantsForConference', () => {
-        it('should return the participants from VideoWebService', fakeAsync(() => {
-            // Arrange
-            const conferenceId = 'conference-id';
-            const participantResponses = [participantOne, participantTwo];
-
-            let result: ParticipantModel[];
-
-            // Act
-            sut.getParticipantsForConference(conferenceId).subscribe(participants => (result = participants));
-            getParticipantsByConferenceIdSubject.next(participantResponses);
-            flush();
-
-            // Assert
-            expect(apiClientSpy.getParticipantsByConferenceId).toHaveBeenCalledOnceWith(conferenceId);
-            expect(result).toEqual(
-                participantResponses.map(participantResponse => ParticipantModel.fromParticipantForUserResponse(participantResponse))
-            );
-        }));
-
-        it('should return the participants from VideoWebService when called with a GUID', fakeAsync(() => {
-            // Arrange
-            const participantResponses = [participantOne, participantTwo];
-            const conferenceId = Guid.create();
-
-            let result: ParticipantModel[];
-
-            // Act
-            sut.getParticipantsForConference(conferenceId).subscribe(participants => (result = participants));
-            getParticipantsByConferenceIdSubject.next(participantResponses);
-            flush();
-
-            // Assert
-            expect(apiClientSpy.getParticipantsByConferenceId).toHaveBeenCalledOnceWith(conferenceId.toString());
-            expect(result).toEqual(
-                participantResponses.map(participantResponse => ParticipantModel.fromParticipantForUserResponse(participantResponse))
-            );
-        }));
-
-        it('should return an empty array if no particiapnts are returned from VideoWebService', fakeAsync(() => {
-            // Arrange
-            const conferenceId = 'conference-id';
-            const participantResponses: ParticipantForUserResponse[] = [];
-
-            let result: ParticipantModel[];
-
-            // Act
-            sut.getParticipantsForConference(conferenceId).subscribe(participants => (result = participants));
-            getParticipantsByConferenceIdSubject.next(participantResponses);
-            flush();
-
-            // Assert
-            expect(apiClientSpy.getParticipantsByConferenceId).toHaveBeenCalledOnceWith(conferenceId);
-            expect(result).toEqual([]);
         }));
     });
 
@@ -537,8 +529,6 @@ fdescribe('ParticipantService', () => {
                 // Arrange
                 const pexipIdOne = 'pexip-id-one';
                 const pexipIdTwo = 'pexip-id-two';
-                const participantOneId = participantOne.id;
-                const participantTwoId = participantTwo.id;
                 const pexipNameOne = `pexip-name-${participantOneId}`;
                 const pexipNameTwo = `pexip-name-${participantTwoId}`;
 
@@ -552,7 +542,9 @@ fdescribe('ParticipantService', () => {
                     uuid: pexipIdTwo
                 } as unknown) as ParticipantUpdated;
 
-                spyOnProperty(sut, 'participants', 'get').and.returnValue(asParticipantModels([participantOne, participantTwo]));
+                spyOnProperty(sut, 'participants', 'get').and.returnValue(
+                    asParticipantModelsFromUserResponse([participantOne, participantTwo])
+                );
 
                 // Act
                 sut.handlePexipUpdate(participantUpdatedOne);
@@ -568,8 +560,6 @@ fdescribe('ParticipantService', () => {
                 const pexipIdOne = 'pexip-id-one';
                 const pexipIdTwo = 'pexip-id-two';
                 const pexipIdThree = 'pexip-id-three';
-                const participantOneId = participantOne.id;
-                const participantTwoId = participantTwo.id;
                 const pexipNameOne = `pexip-name-${participantOneId}`;
                 const pexipNameTwo = `pexip-name-${participantTwoId}`;
 
@@ -588,7 +578,9 @@ fdescribe('ParticipantService', () => {
                     uuid: pexipIdThree
                 } as unknown) as ParticipantUpdated;
 
-                spyOnProperty(sut, 'participants', 'get').and.returnValue(asParticipantModels([participantOne, participantTwo]));
+                spyOnProperty(sut, 'participants', 'get').and.returnValue(
+                    asParticipantModelsFromUserResponse([participantOne, participantTwo])
+                );
 
                 // Act
                 sut.handlePexipUpdate(participantUpdatedOne);
@@ -612,7 +604,9 @@ fdescribe('ParticipantService', () => {
 
                 const expectedValue: { [participantId: string]: string } = {};
 
-                spyOnProperty(sut, 'participants', 'get').and.returnValue(asParticipantModels([participantOne, participantTwo]));
+                spyOnProperty(sut, 'participants', 'get').and.returnValue(
+                    asParticipantModelsFromUserResponse([participantOne, participantTwo])
+                );
                 spyOnProperty(sut, 'virtualMeetingRooms', 'get').and.returnValue([]);
 
                 // Act
@@ -632,7 +626,12 @@ fdescribe('ParticipantService', () => {
                     uuid: pexipId
                 } as unknown) as ParticipantUpdated;
 
-                const participants = asParticipantModels([participantOne, participantTwo, vmrParticipantOne, vmrParticipantTwo]);
+                const participants = asParticipantModelsFromUserResponse([
+                    participantOne,
+                    participantTwo,
+                    vmrParticipantOne,
+                    vmrParticipantTwo
+                ]);
                 const vmr = VirtualMeetingRoomModel.fromRoomSummaryResponse(participants[2].virtualMeetingRoomSummary);
                 vmr.pexipId = pexipId;
                 vmr.participants = [participants[2], participants[3]];
@@ -665,10 +664,10 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
 
                 let connectedResult = null;
-                sut.onParticipantConnectedToPexip$.subscribe(participant => (connectedResult = participant));
+                sut.onParticipantConnectedToPexip$.subscribe(connectedParticipant => (connectedResult = connectedParticipant));
 
                 let changedResult = null;
-                sut.onParticipantPexipIdChanged$.subscribe(participant => (changedResult = participant));
+                sut.onParticipantPexipIdChanged$.subscribe(changedParticipant => (changedResult = changedParticipant));
 
                 // Act
                 sut.handlePexipUpdate(participantUpdated);
@@ -695,10 +694,10 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'participants', 'get').and.returnValue([participant]);
 
                 let connectedResult = null;
-                sut.onParticipantConnectedToPexip$.subscribe(participant => (connectedResult = participant));
+                sut.onParticipantConnectedToPexip$.subscribe(connectedParticipant => (connectedResult = connectedParticipant));
 
                 let changedResult = null;
-                sut.onParticipantPexipIdChanged$.subscribe(participant => (changedResult = participant));
+                sut.onParticipantPexipIdChanged$.subscribe(changedParticipant => (changedResult = changedParticipant));
 
                 // Act
                 sut.handlePexipUpdate(participantUpdated);
@@ -719,7 +718,12 @@ fdescribe('ParticipantService', () => {
                     uuid: pexipId
                 } as unknown) as ParticipantUpdated;
 
-                const participants = asParticipantModels([participantOne, participantTwo, vmrParticipantOne, vmrParticipantTwo]);
+                const participants = asParticipantModelsFromUserResponse([
+                    participantOne,
+                    participantTwo,
+                    vmrParticipantOne,
+                    vmrParticipantTwo
+                ]);
                 const vmr = VirtualMeetingRoomModel.fromRoomSummaryResponse(participants[2].virtualMeetingRoomSummary);
                 vmr.pexipId = null;
                 vmr.participants = [participants[2], participants[3]];
@@ -728,18 +732,18 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'virtualMeetingRooms', 'get').and.returnValue([vmr]);
 
                 let i = 0;
-                let participantConnectedResults = [null, null];
+                const participantConnectedResults = [null, null];
                 sut.onParticipantConnectedToPexip$.subscribe(participant => (participantConnectedResults[i++] = participant));
 
                 let j = 0;
-                let participantChangedResults = [null, null];
+                const participantChangedResults = [null, null];
                 sut.onParticipantPexipIdChanged$.subscribe(participant => (participantChangedResults[j++] = participant));
 
                 let vmrConnectedResult = null;
-                sut.onVmrConnectedToPexip$.subscribe(vmr => (vmrConnectedResult = vmr));
+                sut.onVmrConnectedToPexip$.subscribe(connectedVmr => (vmrConnectedResult = connectedVmr));
 
                 let vmrChangedResult = null;
-                sut.onVmrPexipIdChanged$.subscribe(vmr => (vmrChangedResult = vmr));
+                sut.onVmrPexipIdChanged$.subscribe(changedVmr => (vmrChangedResult = changedVmr));
 
                 // Act
                 sut.handlePexipUpdate(participantUpdated);
@@ -765,7 +769,12 @@ fdescribe('ParticipantService', () => {
                     uuid: pexipId
                 } as unknown) as ParticipantUpdated;
 
-                const participants = asParticipantModels([participantOne, participantTwo, vmrParticipantOne, vmrParticipantTwo]);
+                const participants = asParticipantModelsFromUserResponse([
+                    participantOne,
+                    participantTwo,
+                    vmrParticipantOne,
+                    vmrParticipantTwo
+                ]);
                 const vmr = VirtualMeetingRoomModel.fromRoomSummaryResponse(participants[2].virtualMeetingRoomSummary);
                 vmr.pexipId = 'existing-pexip-id';
                 vmr.participants = [participants[2], participants[3]];
@@ -775,18 +784,18 @@ fdescribe('ParticipantService', () => {
                 spyOnProperty(sut, 'virtualMeetingRooms', 'get').and.returnValue([vmr]);
 
                 let i = 0;
-                let participantConnectedResults = [null, null];
+                const participantConnectedResults = [null, null];
                 sut.onParticipantConnectedToPexip$.subscribe(participant => (participantConnectedResults[i++] = participant));
 
                 let j = 0;
-                let participantChangedResults = [null, null];
+                const participantChangedResults = [null, null];
                 sut.onParticipantPexipIdChanged$.subscribe(participant => (participantChangedResults[j++] = participant));
 
                 let vmrConnectedResult = null;
-                sut.onVmrConnectedToPexip$.subscribe(vmr => (vmrConnectedResult = vmr));
+                sut.onVmrConnectedToPexip$.subscribe(connectedVmr => (vmrConnectedResult = connectedVmr));
 
                 let vmrChangedResult = null;
-                sut.onVmrPexipIdChanged$.subscribe(vmr => (vmrChangedResult = vmr));
+                sut.onVmrPexipIdChanged$.subscribe(changedVmr => (vmrChangedResult = changedVmr));
 
                 // Act
                 sut.handlePexipUpdate(participantUpdated);
@@ -818,8 +827,8 @@ fdescribe('ParticipantService', () => {
                 } as unknown) as ParticipantUpdated;
 
                 let result: ParticipantModel = null;
-                const subscriber = sut.onParticipantSpotlightStatusChanged$.subscribe(participant => {
-                    result = participant;
+                const subscriber = sut.onParticipantSpotlightStatusChanged$.subscribe(spotlightUpdate => {
+                    result = spotlightUpdate;
                 });
 
                 participant.isSpotlighted = false;
@@ -851,8 +860,8 @@ fdescribe('ParticipantService', () => {
                 } as unknown) as ParticipantUpdated;
 
                 let result: ParticipantModel = null;
-                const subscriber = sut.onParticipantSpotlightStatusChanged$.subscribe(participant => {
-                    result = participant;
+                const subscriber = sut.onParticipantSpotlightStatusChanged$.subscribe(spotlightUpdate => {
+                    result = spotlightUpdate;
                 });
 
                 participant.isSpotlighted = true;
@@ -881,8 +890,8 @@ fdescribe('ParticipantService', () => {
                 } as unknown) as ParticipantUpdated;
 
                 let result: ParticipantModel = null;
-                const subscriber = sut.onParticipantHandRaisedStatusChanged$.subscribe(participant => {
-                    result = participant;
+                const subscriber = sut.onParticipantHandRaisedStatusChanged$.subscribe(spotlightUpdate => {
+                    result = spotlightUpdate;
                 });
 
                 participant.isSpotlighted = true;
@@ -913,8 +922,8 @@ fdescribe('ParticipantService', () => {
                 } as unknown) as ParticipantUpdated;
 
                 let result: ParticipantModel = null;
-                const subscriber = sut.onParticipantRemoteMuteStatusChanged$.subscribe(participant => {
-                    result = participant;
+                const subscriber = sut.onParticipantRemoteMuteStatusChanged$.subscribe(spotlightUpdate => {
+                    result = spotlightUpdate;
                 });
 
                 participant.isRemoteMuted = false;
@@ -946,8 +955,8 @@ fdescribe('ParticipantService', () => {
                 } as unknown) as ParticipantUpdated;
 
                 let result: ParticipantModel = null;
-                const subscriber = sut.onParticipantRemoteMuteStatusChanged$.subscribe(participant => {
-                    result = participant;
+                const subscriber = sut.onParticipantRemoteMuteStatusChanged$.subscribe(spotlightUpdate => {
+                    result = spotlightUpdate;
                 });
 
                 participant.isRemoteMuted = true;
@@ -976,8 +985,8 @@ fdescribe('ParticipantService', () => {
                 } as unknown) as ParticipantUpdated;
 
                 let result: ParticipantModel = null;
-                const subscriber = sut.onParticipantHandRaisedStatusChanged$.subscribe(participant => {
-                    result = participant;
+                const subscriber = sut.onParticipantHandRaisedStatusChanged$.subscribe(spotlightUpdate => {
+                    result = spotlightUpdate;
                 });
 
                 participant.isRemoteMuted = true;
@@ -1008,8 +1017,8 @@ fdescribe('ParticipantService', () => {
                 } as unknown) as ParticipantUpdated;
 
                 let result: ParticipantModel = null;
-                const subscriber = sut.onParticipantRemoteMuteStatusChanged$.subscribe(participant => {
-                    result = participant;
+                const subscriber = sut.onParticipantRemoteMuteStatusChanged$.subscribe(spotlightUpdate => {
+                    result = spotlightUpdate;
                 });
 
                 participant.isHandRaised = false;
@@ -1041,8 +1050,8 @@ fdescribe('ParticipantService', () => {
                 } as unknown) as ParticipantUpdated;
 
                 let result: ParticipantModel = null;
-                const subscriber = sut.onParticipantHandRaisedStatusChanged$.subscribe(participant => {
-                    result = participant;
+                const subscriber = sut.onParticipantHandRaisedStatusChanged$.subscribe(spotlightUpdate => {
+                    result = spotlightUpdate;
                 });
 
                 participant.isHandRaised = true;
@@ -1071,8 +1080,8 @@ fdescribe('ParticipantService', () => {
                 } as unknown) as ParticipantUpdated;
 
                 let result: ParticipantModel = null;
-                const subscriber = sut.onParticipantHandRaisedStatusChanged$.subscribe(participant => {
-                    result = participant;
+                const subscriber = sut.onParticipantHandRaisedStatusChanged$.subscribe(spotlightUpdate => {
+                    result = spotlightUpdate;
                 });
 
                 participant.isHandRaised = true;
@@ -1103,7 +1112,7 @@ fdescribe('ParticipantService', () => {
 
             let result = null;
             // Act
-            sut.onParticipantStatusChanged$.subscribe(participant => (result = participant));
+            sut.onParticipantStatusChanged$.subscribe(spotlightUpdate => (result = spotlightUpdate));
             sut.handleParticipantStatusUpdate(participantStatusMessage);
             flush();
 
@@ -1126,7 +1135,7 @@ fdescribe('ParticipantService', () => {
 
             let result = null;
             // Act
-            sut.onParticipantStatusChanged$.subscribe(participant => (result = participant));
+            sut.onParticipantStatusChanged$.subscribe(spotlightUpdate => (result = spotlightUpdate));
             sut.handleParticipantStatusUpdate(participantStatusMessage);
             flush();
 
@@ -1146,7 +1155,7 @@ fdescribe('ParticipantService', () => {
 
             let result = null;
             // Act
-            sut.onParticipantStatusChanged$.subscribe(participant => (result = participant));
+            sut.onParticipantStatusChanged$.subscribe(spotlightUpdate => (result = spotlightUpdate));
             sut.handleParticipantStatusUpdate(participantStatusMessage);
             flush();
 
@@ -1160,7 +1169,7 @@ fdescribe('ParticipantService', () => {
             // Arrange
             const participantId = Guid.create().toString();
             participantOne.id = participantId.toString();
-            const participants = asParticipantModels([participantOne, participantTwo]);
+            const participants = asParticipantModelsFromUserResponse([participantOne, participantTwo]);
             spyOnProperty(sut, 'participants').and.returnValue(participants);
 
             const vmrs = [VirtualMeetingRoomModel.fromRoomSummaryResponse(vmrParticipantOne.interpreter_room)];
@@ -1177,7 +1186,7 @@ fdescribe('ParticipantService', () => {
             // Arrange
             const participantId = Guid.create().toString();
             participantOne.id = participantId.toString();
-            const participants = asParticipantModels([participantOne, participantTwo]);
+            const participants = asParticipantModelsFromUserResponse([participantOne, participantTwo]);
             spyOnProperty(sut, 'participants').and.returnValue(participants);
 
             const vmrs = [VirtualMeetingRoomModel.fromRoomSummaryResponse(vmrParticipantOne.interpreter_room)];

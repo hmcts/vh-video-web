@@ -8,6 +8,7 @@ import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
+import { ParticipantModel } from 'src/app/shared/models/participant';
 import { ParticipantHandRaisedMessage } from 'src/app/shared/models/participant-hand-raised-message';
 import { ParticipantMediaStatus } from 'src/app/shared/models/participant-media-status';
 import { ParticipantRemoteMuteMessage } from 'src/app/shared/models/participant-remote-mute-message';
@@ -94,28 +95,24 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
         this.setupEventhubSubscribers();
 
         this.loggedInUserSubscription = this.participantService.loggedInParticipant
-            .pipe(
-                filter(participant => participant && participant.role === Role.Judge),
-                tap(x => console.log('[ROB] logged user', x))
-            )
-            .subscribe(participant => {
-                this.isSpotlighted = participant.isSpotlighted;
-
-                this.participantSpotlightUpdateSubscription?.unsubscribe();
-                this.participantSpotlightUpdateSubscription = this.participantService.onParticipantSpotlightStatusChanged$
-                    .pipe(
-                        tap(x => console.log('[ROB] status', x)),
-                        filter(updatedParticipant => updatedParticipant.id === participant.id)
-                    )
-                    .subscribe(updatedParticipant => {
-                        this.isSpotlighted = updatedParticipant.isSpotlighted;
-                    });
-            });
+            .pipe(filter(participant => participant && participant.role === Role.Judge))
+            .subscribe(participant => this.onLoggedInParticipantChanged(participant));
 
         if (this.isJudge) {
             this.toggleView();
         }
         this.initialiseMuteStatus();
+    }
+
+    onLoggedInParticipantChanged(participant: ParticipantModel): void {
+        this.isSpotlighted = participant.isSpotlighted;
+
+        this.participantSpotlightUpdateSubscription?.unsubscribe();
+        this.participantSpotlightUpdateSubscription = this.participantService.onParticipantSpotlightStatusChanged$
+            .pipe(filter(updatedParticipant => updatedParticipant.id === participant.id))
+            .subscribe(updatedParticipant => {
+                this.isSpotlighted = updatedParticipant.isSpotlighted;
+            });
     }
 
     initialiseMuteStatus() {
@@ -152,7 +149,6 @@ export abstract class HearingControlsBaseComponent implements OnInit, OnDestroy 
     }
 
     ngOnDestroy(): void {
-        console.log('[ROB] destroy');
         this.participantSpotlightUpdateSubscription?.unsubscribe();
         this.participantSpotlightUpdateSubscription = null;
 
