@@ -887,6 +887,7 @@ export abstract class WaitingRoomBaseDirective {
         this.conference.status = message.status;
         this.presentationStream = null;
         this.videoCallService.stopScreenShare();
+
         if (message.status === ConferenceStatus.InSession) {
             this.countdownComplete = false;
         }
