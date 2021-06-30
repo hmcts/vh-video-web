@@ -235,10 +235,6 @@ namespace VideoWeb.Controllers
                     conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
                     return conference;
                 });
-
-                
-                
-                // conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
             }
             catch (VideoApiException e)
             {
