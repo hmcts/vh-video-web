@@ -142,7 +142,7 @@ namespace VideoWeb.EventHub.Handlers.Core
             foreach (var participant in SourceConference.Participants)
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
-                    .ParticipantAdded(SourceConference.Id, participantAdded);
+                    .ParticipantAddedMessage(SourceConference.Id, participantAdded);
                 Logger.LogTrace("{UserName} | Role: {Role}", participant.Username,
                     participant.Role);
             }

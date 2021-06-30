@@ -27,7 +27,6 @@ namespace VideoWeb.UnitTests.EventHandlers
             EventType eventType, Type typeOfEventHandler)
         {
             var eventHandlerFactory = new EventHandlerFactory(EventHandlersList);
-            // TODO
             var eventHandler = eventHandlerFactory.Get(eventType);
             eventHandler.Should().BeOfType(typeOfEventHandler);
         }

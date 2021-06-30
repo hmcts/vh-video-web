@@ -9,6 +9,7 @@ using VideoApi.Client;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
 using VideoWeb.Contract.Responses;
+using VideoWeb.EventHub.Mappers;
 
 namespace VideoWeb.EventHub.Handlers
 {
@@ -24,7 +25,6 @@ namespace VideoWeb.EventHub.Handlers
 
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            // var participantAdded = SourceConference.Participants.Find(participant => participant.Id == callbackEvent.ParticipantId);
             var participantAdded = callbackEvent.ParticipantAdded;
             var participantResponse = new ParticipantResponse() { DisplayName = participantAdded.DisplayName, Role = participantAdded.Role, HearingRole = participantAdded.HearingRole };
             return PublishParticipantAddedMessage(participantResponse);
