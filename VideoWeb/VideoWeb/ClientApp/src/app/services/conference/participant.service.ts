@@ -198,15 +198,13 @@ export class ParticipantService {
         this.logger.info(`${this.loggerPrefix} loading participants and VMRs`);
 
         const conferenceId = this.conferenceService.currentConferenceId;
-        const participants = zip(
+        return zip(
             this.conferenceService.getParticipantsForConference(conferenceId),
             this.conferenceService.getEndpointsForConference(conferenceId)
         ).pipe(
             take(1),
             map(participantLists => participantLists[0].concat(participantLists[1]))
         );
-
-        return participants;
     }
 
     private populateVirtualMeetingRooms() {

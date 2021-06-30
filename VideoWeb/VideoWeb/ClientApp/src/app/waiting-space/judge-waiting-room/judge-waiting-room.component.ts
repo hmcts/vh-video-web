@@ -1,8 +1,7 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { merge } from 'rxjs';
-import { Subscription } from 'rxjs';
+import { merge, Subscription } from 'rxjs';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -163,26 +162,22 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         if (conferenceStatus.newStatus === ConferenceStatus.InSession) {
             this.logger.info(`${this.loggerPrefixJudge} spotlighting judge as it is the start of the hearing`);
 
+            let participants = this.participantService.participants;
+
             if (conferenceStatus.oldStatus === ConferenceStatus.NotStarted) {
                 this.videoControlService.setSpotlightStatus(
-                    this.participantService.participants.find(p => p.role === Role.Judge),
+                    participants.find(p => p.role === Role.Judge),
                     true
                 );
 
-                this.participantService.participants
-                    .filter(participant => participant.role !== Role.Judge)
-                    .forEach(participant => {
-                        if (!participant.virtualMeetingRoomSummary) {
-                            this.videoControlService.restoreParticipantSpotlightState(participant);
-                        }
-                    });
-            } else {
-                this.participantService.participants.forEach(participant => {
-                    if (!participant.virtualMeetingRoomSummary) {
-                        this.videoControlService.restoreParticipantSpotlightState(participant);
-                    }
-                });
+                participants = participants.filter(participant => participant.role !== Role.Judge);
             }
+
+            participants.forEach(participant => {
+                if (!participant.virtualMeetingRoomSummary) {
+                    this.videoControlService.restoreParticipantSpotlightState(participant);
+                }
+            });
 
             this.participantService.virtualMeetingRooms.forEach(vmr => {
                 this.videoControlService.restoreParticipantSpotlightState(vmr);

@@ -13,7 +13,7 @@ export class VirtualMeetingRoomModel {
         pexipDisplayName: string | PexipDisplayNameModel | null = null
     ) {
         if (typeof pexipDisplayName === 'string') {
-            this.pexipDisplayName = PexipDisplayNameModel.fromString(pexipDisplayName as string);
+            this.pexipDisplayName = PexipDisplayNameModel.fromString(pexipDisplayName);
         } else {
             this.pexipDisplayName = pexipDisplayName;
         }

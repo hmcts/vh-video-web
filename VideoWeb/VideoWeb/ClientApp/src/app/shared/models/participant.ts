@@ -65,7 +65,7 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
         public isHandRaised: boolean = false
     ) {
         if (typeof pexipDisplayName === 'string') {
-            this.pexipDisplayName = PexipDisplayNameModel.fromString(pexipDisplayName as string);
+            this.pexipDisplayName = PexipDisplayNameModel.fromString(pexipDisplayName);
         } else {
             this.pexipDisplayName = pexipDisplayName;
         }
