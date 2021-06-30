@@ -51,6 +51,7 @@ import {
     router,
     userMediaService,
     userMediaStreamService,
+    videoCallService,
     videoWebService
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
@@ -76,10 +77,6 @@ import { RoomClosingToastrService } from '../../services/room-closing-toast.serv
 import { ClockService } from 'src/app/services/clock.service';
 
 describe('WaitingRoomComponent EventHub Call', () => {
-    function spyPropertyGetter<T, K extends keyof T>(spyObj: jasmine.SpyObj<T>, propName: K): jasmine.Spy<() => T[K]> {
-        return Object.getOwnPropertyDescriptor(spyObj, propName)?.get as jasmine.Spy<() => T[K]>;
-    }
-
     let fixture: ComponentFixture<WRTestComponent>;
     let component: WRTestComponent;
 
@@ -118,7 +115,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
                 { provide: Logger, useValue: logger },
                 { provide: ErrorService, useValue: errorService },
                 { provide: HeartbeatModelMapper, useValue: heartbeatModelMapper },
-                { provide: VideoCallService, useValue: videoWebService },
+                { provide: VideoCallService, useValue: videoCallService },
                 { provide: DeviceTypeService, useValue: deviceTypeService },
                 { provide: Router, useValue: router },
                 { provide: ConsultationService, useValue: consultationService },
