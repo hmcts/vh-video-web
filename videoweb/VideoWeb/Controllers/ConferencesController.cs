@@ -231,10 +231,10 @@ namespace VideoWeb.Controllers
             {
                 await _conferenceCache.GetOrAddConferenceAsync(conferenceId, async () =>
                 {
-                   _logger.LogTrace("Retrieving conference details for conference: {ConferenceId}", conferenceId);
-                   conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
-                   return conference;
-                });                
+                    _logger.LogTrace("Retrieving conference details for conference: {ConferenceId}", conferenceId);
+                    conference = await _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
+                    return conference;
+                });
             }
             catch (VideoApiException e)
             {

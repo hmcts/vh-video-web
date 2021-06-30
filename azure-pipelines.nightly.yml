@@ -106,6 +106,7 @@ variables:
   - group: vh-domains-and-urls
   - group: vh-apps-settings-generic
   - group: vh-video-web
+  - group: vh-video-web-nonprod
   - group: vh test users
   - group: Saucelabs
   - ${{ if containsValue(parameters.prodEnvs, parameters.environment) }}:
@@ -284,6 +285,8 @@ stages:
             secret: true
           - name: VhServices:VideoApiUrl
             value: $(video_api_url)
+          - name: VhServices:InternalEventSecret
+            value: $(internal_event_secret)
         acceptanceTestSettings:
           - name: ConnectionStrings:SignalR
             value: signalr-connection-str

@@ -20,12 +20,14 @@ namespace VideoWeb.Extensions
     {
         public static void RegisterAuthSchemes(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
-            var eventhubPath = configuration.GetValue<string>("VhServices:EventHubPath");
             var kinlyConfiguration = configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
             var azureAdConfiguration = configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
             var eJudAdConfiguration = configuration.GetSection("EJudAd").Get<EJudAdConfiguration>();
             var kinlyCallbackSecret = Convert.FromBase64String(kinlyConfiguration.CallbackSecret);
-            var internalEventSecret = Convert.FromBase64String(configuration.GetValue<string>("InternalEventsSecret"));
+         
+            var videoHearingServicesConfiguration = configuration.GetSection("VhServices").Get<HearingServicesConfiguration>();
+            var eventhubPath = videoHearingServicesConfiguration.EventHubPath;
+            var internalEventSecret = Convert.FromBase64String(videoHearingServicesConfiguration.InternalEventSecret);
 
             var providerSchemes = new List<IProviderSchemes>
             {
