@@ -293,7 +293,7 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
-    showParticipantAdded(participant: ParticipantResponse, inHearing: boolean = false) {
+    showParticipantAdded(participant: ParticipantResponse, inHearing: boolean = false): VhToastComponent {
         let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant(
             'notification-toastr.participant-added.title',
             {
@@ -325,5 +325,7 @@ export class NotificationToastrService {
                 }
             ]
         };
+
+        return toast.toastRef.componentInstance as VhToastComponent;
     }
 }

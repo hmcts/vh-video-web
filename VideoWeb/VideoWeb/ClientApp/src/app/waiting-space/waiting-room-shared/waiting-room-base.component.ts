@@ -29,6 +29,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { HearingTransfer, TransferDirection } from 'src/app/services/models/hearing-transfer';
+import { ParticipantAddedMessage } from 'src/app/services/models/participant-added-message';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
@@ -449,10 +450,12 @@ export abstract class WaitingRoomBaseDirective {
         );
 
         this.eventHubSubscription$.add(
-            this.eventService.getParticipantAdded().subscribe(async participant => {
-                this.logger.debug(`[WR] - Participant Added`, participant);
-                this.notificationToastrService.showParticipantAdded(participant, this.participant.status === ParticipantStatus.InHearing);
-                this.getConference();
+            this.eventService.getParticipantAdded().subscribe(async participantAddedMessage => {
+                this.logger.debug(`[WR] - Participant Added`, participantAddedMessage);
+                this.notificationToastrService.showParticipantAdded(
+                    participantAddedMessage.participant,
+                    this.participant.status === ParticipantStatus.InHearing
+                );
             })
         );
     }

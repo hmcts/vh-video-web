@@ -1,5 +1,4 @@
 import { Subject } from 'rxjs';
-import { ParticipantResponse } from 'src/app/services/clients/api-client';
 import { EventsService } from 'src/app/services/events.service';
 import { ConferenceMessageAnswered } from 'src/app/services/models/conference-message-answered';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
@@ -7,6 +6,7 @@ import { ConsultationRequestResponseMessage } from 'src/app/services/models/cons
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
 import { HearingTransfer } from 'src/app/services/models/hearing-transfer';
 import { InstantMessage } from 'src/app/services/models/instant-message';
+import { ParticipantAddedMessage } from 'src/app/services/models/participant-added-message';
 import { ParticipantHeartbeat } from 'src/app/services/models/participant-heartbeat';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
@@ -35,7 +35,7 @@ export const participantHandRaisedStatusSubjectMock = new Subject<ParticipantHan
 export const roomUpdateSubjectMock = new Subject<Room>();
 export const roomTransferSubjectMock = new Subject<RoomTransfer>();
 export const adminAnsweredChatSubjectMock = new Subject<ConferenceMessageAnswered>();
-export const getParticipantAddedSubjectMock = new Subject<ParticipantResponse>();
+export const getParticipantAddedSubjectMock = new Subject<ParticipantAddedMessage>();
 
 eventsServiceSpy = jasmine.createSpyObj<EventsService>(
     'EventsService',

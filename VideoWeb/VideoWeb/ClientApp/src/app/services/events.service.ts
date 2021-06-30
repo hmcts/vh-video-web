@@ -42,7 +42,7 @@ export class EventsService {
     private participantStatusSubject = new Subject<ParticipantStatusMessage>();
     private endpointStatusSubject = new Subject<EndpointStatusMessage>();
     private hearingStatusSubject = new Subject<ConferenceStatusMessage>();
-    private participantAddedSubject = new Subject<ParticipantResponse>();
+    private participantAddedSubject = new Subject<ParticipantAddedMessage>();
 
     private hearingCountdownCompleteSubject = new Subject<string>();
     private helpMessageSubject = new Subject<HelpMessage>();
@@ -83,10 +83,8 @@ export class EventsService {
 
         ParticipantAdded: (conferenceId: string, participant: ParticipantResponse) => {
             const message = new ParticipantAddedMessage(conferenceId, participant);
-            console.log('ParticipantAdded EventsService');
-            console.log('participant', participant);
             this.logger.debug('[EventsService] - ParticipantAddedMessage received', message);
-            this.participantAddedSubject.next(participant);
+            this.participantAddedSubject.next(message);
         },
 
         CountdownFinished: (conferenceId: string) => {
@@ -316,7 +314,7 @@ export class EventsService {
         return this.roomTransferSubject.asObservable();
     }
 
-    getParticipantAdded(): Observable<ParticipantResponse> {
+    getParticipantAdded(): Observable<ParticipantAddedMessage> {
         return this.participantAddedSubject.asObservable();
     }
 

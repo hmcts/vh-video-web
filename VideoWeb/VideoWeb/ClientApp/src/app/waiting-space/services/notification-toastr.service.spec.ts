@@ -1,5 +1,5 @@
 import { ActiveToast } from 'ngx-toastr';
-import { ConsultationAnswer } from 'src/app/services/clients/api-client';
+import { ConsultationAnswer, ParticipantResponse } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Participant } from 'src/app/shared/models/participant';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
@@ -688,5 +688,124 @@ describe('NotificationToastrService', () => {
 
         // Assert
         expect(service.activeHeartbeatReport.length).toBe(23);
+    });
+
+    describe('showParticipantAdded', () => {
+        let mockToast: ActiveToast<VhToastComponent>;
+        const expectedToastId = 2;
+        const testParticipant = new ParticipantResponse();
+        testParticipant.display_name = 'TestParticipantDisplayName';
+        testParticipant.hearing_role = 'TestParticipantHearingRole';
+        const translatedNameMessage = 'TranslatedNameMessage';
+        const translatedRoleMessage = 'TranslatedRoleMessage';
+
+        const expectedButtonTranslationString = 'notification-toastr.participant-added.dismiss';
+        const expectedInHearingColor = 'white';
+        const expectedNotInHearingColor = 'black';
+
+        beforeEach(() => {
+            toastrService.show.calls.reset();
+            toastrService.remove.calls.reset();
+            translateServiceSpy.instant.calls.reset();
+            mockToast = {
+                toastId: expectedToastId,
+                toastRef: {
+                    componentInstance: {}
+                }
+            } as ActiveToast<VhToastComponent>;
+
+            translateServiceSpy.instant
+                .withArgs('notification-toastr.participant-added.title', {
+                    name: testParticipant.display_name
+                })
+                .and.returnValue(translatedNameMessage);
+
+            translateServiceSpy.instant
+                .withArgs('notification-toastr.participant-added.message', {
+                    role: testParticipant.hearing_role
+                })
+                .and.returnValue(translatedRoleMessage);
+        });
+
+        it('should call toastr.show with the correct parameters', () => {
+            toastrService.show.and.returnValue(mockToast);
+
+            // Act
+            service.showParticipantAdded(testParticipant, true);
+
+            // Assert
+            expect(toastrService.show).toHaveBeenCalledOnceWith('', '', {
+                timeOut: 0,
+                tapToDismiss: false,
+                toastComponent: VhToastComponent
+            });
+        });
+
+        it('should have a button to close the toast', () => {
+            // Arrange
+            const expectedHoverColor = 'green';
+            toastrService.show.and.returnValue(mockToast);
+
+            // Act
+            const toastComponentInstance = service.showParticipantAdded(testParticipant, true);
+
+            // Assert
+            expect(toastComponentInstance.vhToastOptions.buttons.length).toBe(1);
+            expect(toastComponentInstance.vhToastOptions.buttons[0]).toBeTruthy();
+            expect(toastComponentInstance.vhToastOptions.buttons[0].hoverColour).toBe(expectedHoverColor);
+            expect(toastComponentInstance.vhToastOptions.buttons[0].label).toBe(expectedButtonTranslationString);
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith(expectedButtonTranslationString);
+        });
+
+        it('should call toastr.remove with the toast id when the button action is triggered', () => {
+            // Arrange
+            toastrService.show.and.returnValue(mockToast);
+
+            const toastComponentInstance = service.showParticipantAdded(testParticipant, true);
+            const button = toastComponentInstance.vhToastOptions.buttons[0];
+
+            // Act
+            button.action();
+
+            // Assert
+            expect(toastrService.remove).toHaveBeenCalledOnceWith(expectedToastId);
+        });
+
+        it('should NOT call toastr.remove with the toast id when the NO action is triggered', () => {
+            // Arrange
+            toastrService.show.and.returnValue(mockToast);
+            const toastComponentInstance = service.showParticipantAdded(testParticipant, true);
+
+            // Act
+            toastComponentInstance.vhToastOptions.onNoAction();
+
+            // Assert
+            expect(toastrService.remove).not.toHaveBeenCalled();
+        });
+
+        it('should set the body to the message', () => {
+            // Act
+            const toastComponentInstance = service.showParticipantAdded(testParticipant, true);
+
+            // Assert
+            expect(toastComponentInstance.vhToastOptions.htmlBody).toContain(translatedNameMessage);
+            expect(toastComponentInstance.vhToastOptions.htmlBody).toContain(translatedRoleMessage);
+        });
+
+        it('should have the color black when NOT in hearing', () => {
+            // Act
+            const toastComponentInstance = service.showParticipantAdded(testParticipant, false);
+
+            // Assert
+            expect(toastComponentInstance.vhToastOptions.color).toBe(expectedNotInHearingColor);
+        });
+
+        it('should have the color white when in hearing', () => {
+            // Act
+            const toastComponentInstance = service.showParticipantAdded(testParticipant, true);
+
+            // Assert
+            expect(toastComponentInstance.vhToastOptions.color).toBe(expectedInHearingColor);
+        });
     });
 });
