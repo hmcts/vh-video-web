@@ -11,29 +11,12 @@ using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Models;
-using VideoWeb.Extensions;
 using VideoWeb.Mappings;
 using VideoApi.Client;
-using VideoApi.Contract.Enums;
 using VideoApi.Contract.Requests;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
-using VideoApi.Client;
-using VideoWeb.Common.Caching;
-using VideoWeb.Common.Models;
-using VideoWeb.EventHub.Exceptions;
-using VideoWeb.EventHub.Hub;
-using VideoWeb.EventHub.Models;
-using EndpointState = VideoWeb.EventHub.Enums.EndpointState;
 using EventType = VideoWeb.EventHub.Enums.EventType;
-using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
 using Task = System.Threading.Tasks.Task;
-using VideoWeb.Contract.Responses;
-using VideoWeb.EventHub.Models;
-using VideoWeb.EventHub.Enums;
+
 
 namespace VideoWeb.Controllers
 {
@@ -41,19 +24,19 @@ namespace VideoWeb.Controllers
     [ApiController]
     [Route("internalevent")]
     [Authorize(AuthenticationSchemes = "InternalEvent")]
-    public class InternalEventsController : ControllerBase
+    public class InternalEventController : ControllerBase
     {
         private readonly IVideoApiClient _videoApiClient;
         private readonly IEventHandlerFactory _eventHandlerFactory;
         private readonly IConferenceCache _conferenceCache;
-        private readonly ILogger<InternalEventsController> _logger;
+        private readonly ILogger<InternalEventController> _logger;
         private readonly IMapperFactory _mapperFactory;
 
-        public InternalEventsController(
+        public InternalEventController(
             IVideoApiClient videoApiClient,
             IEventHandlerFactory eventHandlerFactory,
             IConferenceCache conferenceCache,
-            ILogger<InternalEventsController> logger,
+            ILogger<InternalEventController> logger,
             IMapperFactory mapperFactory)
         {
             _videoApiClient = videoApiClient;
