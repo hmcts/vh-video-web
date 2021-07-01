@@ -289,7 +289,6 @@ stages:
             value: $(EmailReformDomain)
           - name: VhServices:InternalEventSecret
             value: $(internal_event_secret)
-            secret: true
 
         acceptanceTestSettings:
           - name: ConnectionStrings:SignalR
