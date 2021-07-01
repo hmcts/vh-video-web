@@ -52,7 +52,7 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> ParticipantsAdded(Guid conferenceId, AddParticipantsToConferenceRequest request)
         {
-            var participantMapper = _mapperFactory.Get<ParticipantRequest, Participant>(); //TODO inject directly?? Or create in constructor?
+            var participantMapper = _mapperFactory.Get<ParticipantRequest, Participant>();
             List<Participant> participantsAdded = request.Participants.Select(participant => participantMapper.Map(participant)).ToList();
 
             try
