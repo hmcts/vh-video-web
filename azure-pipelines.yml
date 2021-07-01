@@ -208,6 +208,7 @@ parameters:
             value: $(EmailReformDomain)
           - name: VhServices:InternalEventSecret
             value: $(internal_event_secret)
+            secret: true
 
 variables:
     - group: vh-domains-and-urls
