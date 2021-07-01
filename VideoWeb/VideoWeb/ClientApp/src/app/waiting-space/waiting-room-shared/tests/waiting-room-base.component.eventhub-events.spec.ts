@@ -76,7 +76,7 @@ import { NotificationToastrService } from '../../services/notification-toastr.se
 import { RoomClosingToastrService } from '../../services/room-closing-toast.service';
 import { ClockService } from 'src/app/services/clock.service';
 
-fdescribe('WaitingRoomComponent EventHub Call', () => {
+describe('WaitingRoomComponent EventHub Call', () => {
     function spyPropertyGetter<T, K extends keyof T>(spyObj: jasmine.SpyObj<T>, propName: K): jasmine.Spy<() => T[K]> {
         return Object.getOwnPropertyDescriptor(spyObj, propName)?.get as jasmine.Spy<() => T[K]>;
     }
@@ -249,6 +249,7 @@ fdescribe('WaitingRoomComponent EventHub Call', () => {
         tick();
         flushMicrotasks();
 
+        expect(videoCallService.stopScreenShare).toHaveBeenCalledTimes(1);
         expect(component.hearing.status).toBe(status);
         expect(component.conference.status).toBe(status);
         expect(component.showVideo).toBeTruthy();
@@ -271,6 +272,7 @@ fdescribe('WaitingRoomComponent EventHub Call', () => {
         expect(component.hearing.status).toBe(status);
         expect(component.conference.status).toBe(status);
         expect(component.showVideo).toBeFalsy();
+        expect(videoCallService.stopScreenShare).toHaveBeenCalledTimes(1);
         expect(videoWebService.getConferenceById).toHaveBeenCalledWith(globalConference.id);
     }));
 
@@ -381,6 +383,7 @@ fdescribe('WaitingRoomComponent EventHub Call', () => {
         tick();
         flushMicrotasks();
 
+        expect(videoCallService.stopScreenShare).toHaveBeenCalledTimes(1);
         expect(component.hearing.status).toBe(status);
         expect(component.conference.status).toBe(status);
         expect(component.showVideo).toBeFalsy();
