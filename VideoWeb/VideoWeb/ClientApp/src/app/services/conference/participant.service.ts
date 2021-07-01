@@ -51,27 +51,27 @@ export class ParticipantService {
         return this._virtualMeetingRooms;
     }
 
-    private participantsLoadedSubject: Subject<ParticipantModel[]> = new Subject<ParticipantModel[]>();
+    private participantsLoadedSubject = new Subject<ParticipantModel[]>();
     get onParticipantsLoaded$(): Observable<ParticipantModel[]> {
         return this.participantsLoadedSubject.asObservable();
     }
 
-    private participantConnectedToPexipSubject: Subject<ParticipantModel> = new Subject<ParticipantModel>();
+    private participantConnectedToPexipSubject = new Subject<ParticipantModel>();
     get onParticipantConnectedToPexip$(): Observable<ParticipantModel> {
         return this.participantConnectedToPexipSubject.asObservable();
     }
 
-    private participantPexipIdChangedSubject: Subject<ParticipantModel> = new Subject<ParticipantModel>();
+    private participantPexipIdChangedSubject = new Subject<ParticipantModel>();
     get onParticipantPexipIdChanged$(): Observable<ParticipantModel> {
         return this.participantPexipIdChangedSubject.asObservable();
     }
 
-    private vmrConnectedToPexipSubject: Subject<VirtualMeetingRoomModel> = new Subject<VirtualMeetingRoomModel>();
+    private vmrConnectedToPexipSubject = new Subject<VirtualMeetingRoomModel>();
     get onVmrConnectedToPexip$(): Observable<VirtualMeetingRoomModel> {
         return this.vmrConnectedToPexipSubject.asObservable();
     }
 
-    private vmrPexipIdChangedSubject: Subject<VirtualMeetingRoomModel> = new Subject<VirtualMeetingRoomModel>();
+    private vmrPexipIdChangedSubject = new Subject<VirtualMeetingRoomModel>();
     get onVmrPexipIdChanged$(): Observable<VirtualMeetingRoomModel> {
         return this.vmrPexipIdChangedSubject.asObservable();
     }
@@ -81,17 +81,17 @@ export class ParticipantService {
         return this.participantStatusChangedSubject.asObservable();
     }
 
-    private participantSpotlightStatusChangedSubject: Subject<ParticipantModel> = new Subject<ParticipantModel>();
+    private participantSpotlightStatusChangedSubject = new Subject<ParticipantModel>();
     get onParticipantSpotlightStatusChanged$(): Observable<ParticipantModel> {
         return this.participantSpotlightStatusChangedSubject.asObservable();
     }
 
-    private participantRemoteMuteStatusChangedSubject: Subject<ParticipantModel> = new Subject<ParticipantModel>();
+    private participantRemoteMuteStatusChangedSubject = new Subject<ParticipantModel>();
     get onParticipantRemoteMuteStatusChanged$(): Observable<ParticipantModel> {
         return this.participantRemoteMuteStatusChangedSubject.asObservable();
     }
 
-    private participantHandRaisedStatusChangedSubject: Subject<ParticipantModel> = new Subject<ParticipantModel>();
+    private participantHandRaisedStatusChangedSubject = new Subject<ParticipantModel>();
     get onParticipantHandRaisedStatusChanged$(): Observable<ParticipantModel> {
         return this.participantHandRaisedStatusChangedSubject.asObservable();
     }

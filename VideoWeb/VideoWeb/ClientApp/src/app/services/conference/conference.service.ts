@@ -46,15 +46,12 @@ export class ConferenceService {
         return this._currentConference;
     }
 
-    private currentConferenceSubject: ReplaySubject<ConferenceResponse> = new ReplaySubject<ConferenceResponse>();
+    private currentConferenceSubject = new ReplaySubject<ConferenceResponse>();
     get currentConference$(): Observable<ConferenceResponse> {
         return this.currentConferenceSubject.asObservable();
     }
 
-    private onCurrentConferenceStatusChangedSubject: BehaviorSubject<{
-        oldStatus: ConferenceStatus;
-        newStatus: ConferenceStatus;
-    }> = new BehaviorSubject<{ oldStatus: ConferenceStatus; newStatus: ConferenceStatus }>({
+    private onCurrentConferenceStatusChangedSubject = new BehaviorSubject<{ oldStatus: ConferenceStatus; newStatus: ConferenceStatus }>({
         oldStatus: this.currentConference?.status,
         newStatus: null
     });

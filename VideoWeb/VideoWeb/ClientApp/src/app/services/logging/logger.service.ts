@@ -14,47 +14,37 @@ export class LoggerService implements Logger {
     public conferenceService: ConferenceService;
     constructor(@Inject(LOG_ADAPTER) private adapters: LogAdapter[]) {}
 
-    debug(message: string, properties?: any): void {
+    addConferenceIdToProperties(properties?: any, conferenceIdKey: string = LoggerService.currentConferenceIdPropertyKey) {
+        properties = properties ?? {};
         if (typeof properties === 'object') {
-            properties = properties ?? {};
-            properties[LoggerService.currentConferenceIdPropertyKey] = this.conferenceService?.currentConferenceId;
+            properties[conferenceIdKey] = this.conferenceService?.currentConferenceId;
         }
 
+        return properties;
+    }
+
+    debug(message: string, properties?: any): void {
+        properties = this.addConferenceIdToProperties(properties);
         this.adapters.forEach(logger => logger.debug(message, properties));
     }
 
     info(message: string, properties?: any): void {
-        if (typeof properties === 'object') {
-            properties = properties ?? {};
-            properties[LoggerService.currentConferenceIdPropertyKey] = this.conferenceService?.currentConferenceId;
-        }
-
+        properties = this.addConferenceIdToProperties(properties);
         this.adapters.forEach(logger => logger.info(message, properties));
     }
 
     warn(message: string, properties?: any): void {
-        if (typeof properties === 'object') {
-            properties = properties ?? {};
-            properties[LoggerService.currentConferenceIdPropertyKey] = this.conferenceService?.currentConferenceId;
-        }
-
+        properties = this.addConferenceIdToProperties(properties);
         this.adapters.forEach(logger => logger.warn(message, properties));
     }
 
     error(message: string, err: Error, properties?: any) {
-        if (typeof properties === 'object') {
-            properties = properties ?? {};
-            properties[LoggerService.currentConferenceIdPropertyKey] = this.conferenceService?.currentConferenceId;
-        }
+        properties = this.addConferenceIdToProperties(properties);
         this.adapters.forEach(logger => logger.trackException(message, err, properties));
     }
 
     event(event: string, properties?: any) {
-        if (typeof properties === 'object') {
-            properties = properties ?? {};
-            properties[LoggerService.currentConferenceIdPropertyKey] = this.conferenceService?.currentConferenceId;
-        }
-
+        properties = this.addConferenceIdToProperties(properties);
         this.adapters.forEach(logger => logger.trackEvent(event, properties));
     }
 }

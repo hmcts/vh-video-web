@@ -14,10 +14,6 @@ describe('VideoControlCacheService', () => {
         window.localStorage.clear();
     });
 
-    it('should be created', () => {
-        expect(sut).toBeTruthy();
-    });
-
     it('should load settings from local storage when constructed', () => {
         // Arrange
         const conferenceIdOne = 'conference-id-one';

@@ -63,10 +63,6 @@ describe('VideoControlService', () => {
         sut = new VideoControlService(conferenceServiceSpy, videoCallServiceSpy, videoControlCacheServiceSpy, loggerSpy);
     });
 
-    it('should be created', () => {
-        expect(sut).toBeTruthy();
-    });
-
     describe('setSpotlightStatus', () => {
         // Arrange test cases
         const participantId = Guid.create().toString();

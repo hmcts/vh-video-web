@@ -109,4 +109,35 @@ describe('LoggerService', () => {
         // Assert
         expect(logAdapter.info).toHaveBeenCalledWith(message, expectedProperties);
     });
+
+    describe('addConferenceIdToProperties', () => {
+        it('should add conference id to properties if they are an object', () => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const conferenceIdPropertyKey = 'conference-id';
+            let properties = {};
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+
+            // Act
+            properties = service.addConferenceIdToProperties(properties, conferenceIdPropertyKey);
+
+            // Assert
+            expect(properties[conferenceIdPropertyKey]).toEqual(conferenceId);
+        });
+
+        it('should NOT add conference id to properties if they are NOT an object', () => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const conferenceIdPropertyKey = 'conference-id';
+            let properties = 'hello';
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+
+            // Act
+            properties = service.addConferenceIdToProperties(properties, conferenceIdPropertyKey);
+
+            // Assert
+            expect(properties).toEqual(properties);
+            expect(properties[conferenceIdPropertyKey]).toBeFalsy();
+        });
+    });
 });

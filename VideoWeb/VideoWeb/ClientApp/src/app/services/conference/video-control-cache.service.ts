@@ -25,7 +25,7 @@ export class VideoControlCacheService {
     }
 
     constructor(private logger: LoggerService) {
-        this.initialise();
+        this.loadFromLocalStorage();
     }
 
     setSpotlightStatus(conferenceId: string, participantId: string, spotlightValue: boolean) {
@@ -59,10 +59,6 @@ export class VideoControlCacheService {
 
     getStateForConference(conferenceId: string): IHearingControlsState {
         return this.hearingControlStates[conferenceId] ?? { participantStates: {} };
-    }
-
-    private initialise() {
-        this.loadFromLocalStorage();
     }
 
     private loadFromLocalStorage(): IHearingControlStates {
