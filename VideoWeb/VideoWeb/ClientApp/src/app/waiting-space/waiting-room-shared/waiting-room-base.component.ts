@@ -885,7 +885,6 @@ export abstract class WaitingRoomBaseDirective {
         }
         this.hearing.getConference().status = message.status;
         this.conference.status = message.status;
-        this.presentationStream = null;
         if (message.status === ConferenceStatus.InSession) {
             this.countdownComplete = false;
         }
@@ -893,6 +892,8 @@ export abstract class WaitingRoomBaseDirective {
         if (message.status === ConferenceStatus.Closed) {
             this.getConferenceClosedTime(this.hearing.id);
         }
+        this.presentationStream = null;
+        this.videoCallService.stopScreenShare();
     }
 
     shouldMuteHearing(): boolean {
