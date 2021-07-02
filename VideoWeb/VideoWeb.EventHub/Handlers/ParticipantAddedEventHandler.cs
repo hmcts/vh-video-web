@@ -26,7 +26,7 @@ namespace VideoWeb.EventHub.Handlers
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
             var participantAdded = callbackEvent.ParticipantAdded;
-            var participantResponse = new ParticipantResponse() { DisplayName = participantAdded.DisplayName, Role = participantAdded.Role, HearingRole = participantAdded.HearingRole };
+            var participantResponse = new ParticipantResponse() { Name = participantAdded.Name, Role = participantAdded.Role, HearingRole = participantAdded.HearingRole };
             return PublishParticipantAddedMessage(participantResponse);
         }
     }

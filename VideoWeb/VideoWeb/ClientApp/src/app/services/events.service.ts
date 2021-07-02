@@ -81,7 +81,7 @@ export class EventsService {
             this.hearingStatusSubject.next(message);
         },
 
-        ParticipantAdded: (conferenceId: string, participant: ParticipantResponse) => {
+        ParticipantAddedMessage: (conferenceId: string, participant: ParticipantResponse) => {
             const message = new ParticipantAddedMessage(conferenceId, participant);
             this.logger.debug('[EventsService] - ParticipantAddedMessage received', message);
             this.participantAddedSubject.next(message);

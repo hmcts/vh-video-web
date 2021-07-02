@@ -4,7 +4,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ToastrService } from 'ngx-toastr';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { ConsultationAnswer, ParticipantResponse, VideoEndpointResponse } from 'src/app/services/clients/api-client';
+import { ConsultationAnswer, ParticipantResponse, Role, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 import { NotificationSoundsService } from './notification-sounds.service';
 import { Guid } from 'guid-typescript';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
@@ -294,14 +294,16 @@ export class NotificationToastrService {
     }
 
     showParticipantAdded(participant: ParticipantResponse, inHearing: boolean = false): VhToastComponent {
+        console.log('Faz', participant);
         let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant(
             'notification-toastr.participant-added.title',
             {
-                name: participant.display_name
+                name: participant.name
             }
         )}</span>`;
         message += `<br/>${this.translateService.instant('notification-toastr.participant-added.message', {
-            role: participant.hearing_role
+            role: this.translateHearingRole(participant.hearing_role),
+            party: this.translateCaseRole(participant.role)
         })}<br/>`;
 
         const toast = this.toastr.show('', '', {
@@ -327,5 +329,17 @@ export class NotificationToastrService {
         };
 
         return toast.toastRef.componentInstance as VhToastComponent;
+    }
+
+    private translateHearingRole(hearingRoleEnglish: string) {
+        return this.translateService.instant('hearing-role.' + this.stringToTranslateId(hearingRoleEnglish));
+    }
+
+    private translateCaseRole(role: Role) {
+        return this.translateService.instant('case-role.' + this.stringToTranslateId(role));
+    }
+
+    private stringToTranslateId(str: string) {
+        return str?.replace(/\s/g, '-').toLowerCase();
     }
 }

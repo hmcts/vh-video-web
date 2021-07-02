@@ -201,7 +201,7 @@ describe('EventsService', () => {
         });
 
         describe('ParticipantAdded', () => {
-            const eventString = 'ParticipantAdded';
+            const eventString = 'ParticipantAddedMessage';
 
             it('should be registered', () => {
                 // Arrange

@@ -1,5 +1,5 @@
 import { ActiveToast } from 'ngx-toastr';
-import { ConsultationAnswer, ParticipantResponse } from 'src/app/services/clients/api-client';
+import { ConsultationAnswer, ParticipantResponse, Role } from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Participant } from 'src/app/shared/models/participant';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
@@ -696,8 +696,12 @@ describe('NotificationToastrService', () => {
         const testParticipant = new ParticipantResponse();
         testParticipant.display_name = 'TestParticipantDisplayName';
         testParticipant.hearing_role = 'TestParticipantHearingRole';
+        testParticipant.role = Role.Individual;
+
         const translatedNameMessage = 'TranslatedNameMessage';
         const translatedRoleMessage = 'TranslatedRoleMessage';
+        const translatedHearingRole = 'TranslatedHearingRole';
+        const translatedRole = 'TranslatedRole';
 
         const expectedButtonTranslationString = 'notification-toastr.participant-added.dismiss';
         const expectedInHearingColor = 'white';
@@ -715,16 +719,17 @@ describe('NotificationToastrService', () => {
             } as ActiveToast<VhToastComponent>;
 
             translateServiceSpy.instant
+                .withArgs('notification-toastr.participant-added.message', jasmine.any(Object))
+                .and.returnValue(translatedRoleMessage);
+
+            translateServiceSpy.instant
                 .withArgs('notification-toastr.participant-added.title', {
-                    name: testParticipant.display_name
+                    name: testParticipant.name
                 })
                 .and.returnValue(translatedNameMessage);
 
-            translateServiceSpy.instant
-                .withArgs('notification-toastr.participant-added.message', {
-                    role: testParticipant.hearing_role
-                })
-                .and.returnValue(translatedRoleMessage);
+            translateServiceSpy.instant.withArgs(jasmine.stringMatching(/^hearing-role./)).and.returnValue(translatedHearingRole);
+            translateServiceSpy.instant.withArgs(jasmine.stringMatching(/^case-role./)).and.returnValue(translatedRole);
         });
 
         it('should call toastr.show with the correct parameters', () => {
@@ -781,6 +786,19 @@ describe('NotificationToastrService', () => {
 
             // Assert
             expect(toastrService.remove).not.toHaveBeenCalled();
+        });
+
+        it('should set the role message with correct values', () => {
+            // Act
+            service.showParticipantAdded(testParticipant, true);
+
+            // Assert
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith(jasmine.stringMatching(/^hearing-role./));
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith(jasmine.stringMatching(/^case-role./));
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith('notification-toastr.participant-added.message', {
+                role: translatedHearingRole,
+                party: translatedRole
+            });
         });
 
         it('should set the body to the message', () => {
