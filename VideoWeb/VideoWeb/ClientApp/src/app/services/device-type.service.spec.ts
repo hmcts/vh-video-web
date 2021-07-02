@@ -1,7 +1,7 @@
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { DeviceTypeService } from './device-type.service';
 
-fdescribe('DeviceType', () => {
+describe('DeviceType', () => {
     let service: DeviceTypeService;
     let deviceDetectorService: jasmine.SpyObj<DeviceDetectorService>;
 
