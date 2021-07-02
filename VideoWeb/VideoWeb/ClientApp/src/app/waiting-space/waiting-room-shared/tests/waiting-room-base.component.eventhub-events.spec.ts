@@ -144,6 +144,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         await component.startEventHubSubscribers();
         videoWebService.getConferenceById.calls.reset();
         videoWebService.getAllowedEndpointsForConference.calls.reset();
+        videoCallService.stopScreenShare.calls.reset();
     });
 
     afterEach(() => {
@@ -249,7 +250,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         tick();
         flushMicrotasks();
 
-        expect(videoCallService.stopScreenShare).toHaveBeenCalled();
+        expect(videoCallService.stopScreenShare).toHaveBeenCalledTimes(1);
         expect(component.hearing.status).toBe(status);
         expect(component.conference.status).toBe(status);
         expect(component.showVideo).toBeTruthy();
@@ -272,7 +273,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         expect(component.hearing.status).toBe(status);
         expect(component.conference.status).toBe(status);
         expect(component.showVideo).toBeFalsy();
-        expect(videoCallService.stopScreenShare).toHaveBeenCalled();
+        expect(videoCallService.stopScreenShare).toHaveBeenCalledTimes(1);
         expect(videoWebService.getConferenceById).toHaveBeenCalledWith(globalConference.id);
     }));
 
@@ -383,7 +384,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         tick();
         flushMicrotasks();
 
-        expect(videoCallService.stopScreenShare).toHaveBeenCalled();
+        expect(videoCallService.stopScreenShare).toHaveBeenCalledTimes(1);
         expect(component.hearing.status).toBe(status);
         expect(component.conference.status).toBe(status);
         expect(component.showVideo).toBeFalsy();
