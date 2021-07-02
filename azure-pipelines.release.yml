@@ -155,6 +155,11 @@ stages:
           - group: vh-video-web-prod
             env:
              - Prod
+          - name: VanityUrl
+            value: $(video_web_domain_prod)
+            env:
+              - Prod
+              - Preprod
         appSettings:
           - name: ApplicationInsights:InstrumentationKey
             value: vh-core-infra-AppInsightsKey

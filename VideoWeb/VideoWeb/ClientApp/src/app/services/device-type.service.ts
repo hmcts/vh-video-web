@@ -22,7 +22,7 @@ export class DeviceTypeService {
     isIpad(): boolean {
         return (
             this.deviceDetectorService.isTablet() &&
-            this.deviceDetectorService.os.toLowerCase() === 'mac' &&
+            (this.deviceDetectorService.os.toLowerCase() === 'mac' || this.deviceDetectorService.os.toLowerCase() === 'ios') &&
             this.deviceDetectorService.browser.toLowerCase() === 'safari'
         );
     }
