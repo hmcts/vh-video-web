@@ -123,29 +123,8 @@ describe('ConferenceService', () => {
         sut = new ConferenceService(routerSpy, activatedRouteSpy, eventsServiceSpy, apiClientSpy, loggerSpy);
     });
 
-    describe('construction', () => {
-        it('should be created', () => {
-            expect(sut).toBeTruthy();
-        });
-
-        it('should subscribe to the first child param map on construction', () => {
-            // Arrange
-            const events$ = new Observable<Event>();
-            spyOn(events$, 'pipe').and.returnValue(events$);
-            spyOn(events$, 'subscribe').and.callThrough();
-
-            getSpiedPropertyGetter(routerSpy, 'events').and.returnValue(events$);
-
-            // Act
-            const _ = new ConferenceService(routerSpy, activatedRouteSpy, eventsServiceSpy, apiClientSpy, loggerSpy);
-
-            // Assert
-            expect(events$.subscribe).toHaveBeenCalledTimes(1);
-        });
-    });
-
     describe('handle navigation end', () => {
-        it('should call getConferenceId when the router navigation ends and conference id is in the param map', fakeAsync(() => {
+        it('should call getConferenceById when the router navigation ends and conference id is in the param map', fakeAsync(() => {
             // Arrange
             const conferenceId = 'conference-id';
             const routeSnapshot = new ActivatedRouteSnapshot();
@@ -162,25 +141,33 @@ describe('ConferenceService', () => {
             spyOn(getConference$, 'subscribe').and.callThrough();
             apiClientSpy.getConferenceById.and.returnValue(getConference$);
 
-            const expectedConference = new ConferenceResponse({
-                id: conferenceId
+            const expectedConferenceResult = new ConferenceResponse({
+                id: conferenceId,
+                status: ConferenceStatus.NotStarted
             });
 
-            let result = null;
-            sut.currentConference$.subscribe(conference => (result = conference));
+            const expectedConferenceStatusResult = { newStatus: expectedConferenceResult.status, oldStatus: null };
+
+            let currentConferenceResult = null;
+            sut.currentConference$.subscribe(conference => (currentConferenceResult = conference));
+            let conferenceStatusResult = null;
+            sut.onCurrentConferenceStatusChanged$.subscribe(update => (conferenceStatusResult = update));
 
             // Act
             eventsSubject.next(new NavigationEnd(0, 'url', 'url-redirects'));
             flush();
 
-            getConferenceSubject.next(expectedConference);
+            getConferenceSubject.next(expectedConferenceResult);
             flush();
 
             // Assert
             expect(apiClientSpy.getConferenceById).toHaveBeenCalledOnceWith(conferenceId);
             expect(getConference$.subscribe).toHaveBeenCalledTimes(1);
-            expect(result).toBeTruthy();
-            expect(result).toBe(expectedConference);
+            expect(currentConferenceResult).toBeTruthy();
+            expect(sut.currentConference).toEqual(expectedConferenceResult);
+            expect(sut.currentConferenceId).toEqual(expectedConferenceResult.id);
+            expect(currentConferenceResult).toEqual(expectedConferenceResult);
+            expect(conferenceStatusResult).toEqual(expectedConferenceStatusResult);
         }));
 
         it('should NOT call getConferenceId when the router navigation ends and conference id is NOT in the param map', fakeAsync(() => {
@@ -241,13 +228,12 @@ describe('ConferenceService', () => {
     });
 
     describe('handle conference status updates', () => {
-        it('should not handle the update if the update is not for this current conference', fakeAsync(() => {
+        it('should NOT handle the update if the update is NOT for this current conference', fakeAsync(() => {
             // Arrange
             const conferenceId = 'conference-id';
 
             const existingStatus = ConferenceStatus.InSession;
-            const expectedStatus = ConferenceStatus.Closed;
-            const statusUpdate = new ConferenceStatusMessage(conferenceId, expectedStatus);
+            const statusUpdate = new ConferenceStatusMessage(conferenceId, ConferenceStatus.Closed);
 
             const expectedConference = new ConferenceResponse({
                 id: 'not-conference-id',
@@ -255,9 +241,9 @@ describe('ConferenceService', () => {
             });
 
             spyOnProperty(sut, 'currentConference', 'get').and.returnValue(expectedConference);
-            spyOnProperty(sut, 'currentConferenceId', 'get').and.returnValue(conferenceId);
+            spyOnProperty(sut, 'currentConferenceId', 'get').and.returnValue(expectedConference.id);
 
-            const expectedResult = { oldStatus: existingStatus, newStatus: expectedStatus };
+            const expectedResult = null;
             let result = null;
 
             sut.onCurrentConferenceStatusChanged$.subscribe(update => (result = update));
@@ -270,28 +256,27 @@ describe('ConferenceService', () => {
             flush();
 
             // Assert
-            expect(sut.currentConference.status).toEqual(expectedStatus);
+            expect(sut.currentConference.status).toEqual(existingStatus);
             expect(result).toEqual(expectedResult);
         }));
 
         it('should update the current conference status and emit a message if the status is different', fakeAsync(() => {
             // Arrange
             const conferenceId = 'conference-id';
+            const existingStatus = ConferenceStatus.InSession;
             const statusUpdate = new ConferenceStatusMessage(conferenceId, ConferenceStatus.Closed);
 
-            const expectedStatus = statusUpdate.status;
             const expectedConference = new ConferenceResponse({
                 id: conferenceId,
-                status: expectedStatus
+                status: existingStatus
             });
 
-            sut['_currentConference'] = expectedConference;
-            sut['_currentConferenceId'] = conferenceId;
+            spyOnProperty(sut, 'currentConference', 'get').and.returnValue(expectedConference);
+            spyOnProperty(sut, 'currentConferenceId', 'get').and.returnValue(expectedConference.id);
 
-            // Default result from behaviour subject
             const expectedResult = {
-                oldStatus: undefined,
-                newStatus: null
+                oldStatus: existingStatus,
+                newStatus: statusUpdate.status
             };
             let result = null;
 
@@ -305,29 +290,25 @@ describe('ConferenceService', () => {
             flush();
 
             // Assert
-            expect(sut.currentConference.status).toEqual(expectedStatus);
+            expect(sut.currentConference.status).toEqual(statusUpdate.status);
             expect(result).toEqual(expectedResult);
         }));
 
         it('should NOT update the current conference status and NOT emit a message if the status is NOT different', fakeAsync(() => {
             // Arrange
             const conferenceId = 'conference-id';
-            const expectedStatus = ConferenceStatus.Closed;
-            const statusUpdate = new ConferenceStatusMessage(conferenceId, expectedStatus);
+            const existingStatus = ConferenceStatus.Closed;
+            const statusUpdate = new ConferenceStatusMessage(conferenceId, existingStatus);
 
             const expectedConference = new ConferenceResponse({
                 id: conferenceId,
-                status: expectedStatus
+                status: existingStatus
             });
 
-            sut['_currentConference'] = expectedConference;
-            sut['_currentConferenceId'] = conferenceId;
+            spyOnProperty(sut, 'currentConference', 'get').and.returnValue(expectedConference);
+            spyOnProperty(sut, 'currentConferenceId', 'get').and.returnValue(expectedConference.id);
 
-            // Default result from behaviour subject
-            const expectedResult = {
-                oldStatus: undefined,
-                newStatus: null
-            };
+            const expectedResult = null;
             let result = null;
 
             sut.onCurrentConferenceStatusChanged$.subscribe(update => (result = update));
@@ -340,7 +321,7 @@ describe('ConferenceService', () => {
             flush();
 
             // Assert
-            expect(sut.currentConference.status).toEqual(expectedStatus);
+            expect(sut.currentConference.status).toEqual(existingStatus);
             expect(result).toEqual(expectedResult);
         }));
     });

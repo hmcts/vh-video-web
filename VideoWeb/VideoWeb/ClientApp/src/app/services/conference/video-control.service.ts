@@ -97,12 +97,20 @@ export class VideoControlService {
     restoreParticipantSpotlightState(participantOrVmr: ParticipantModel | VirtualMeetingRoomModel) {
         const isSpotlighted = this.videoControlCacheService.getSpotlightStatus(participantOrVmr.id);
 
-        this.logger.info(`${this.loggerPrefix} restoring participant spotlight state.`, {
-            participantOrVmrId: participantOrVmr.id,
-            participantOrVmrDisplayName: participantOrVmr.displayName,
-            spotlightState: isSpotlighted
-        });
+        if (isSpotlighted) {
+            this.logger.info(`${this.loggerPrefix} restoring participant spotlight state.`, {
+                participantOrVmrId: participantOrVmr.id,
+                participantOrVmrDisplayName: participantOrVmr.displayName,
+                spotlightState: isSpotlighted
+            });
 
-        this.setSpotlightStatus(participantOrVmr, isSpotlighted);
+            this.setSpotlightStatus(participantOrVmr, isSpotlighted);
+        } else {
+            this.logger.warn(`${this.loggerPrefix} NOT restoring participant spotlight state as they are not spotlighted.`, {
+                participantOrVmrId: participantOrVmr.id,
+                participantOrVmrDisplayName: participantOrVmr.displayName,
+                spotlightState: isSpotlighted
+            });
+        }
     }
 }

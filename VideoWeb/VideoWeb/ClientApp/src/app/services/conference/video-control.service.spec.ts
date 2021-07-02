@@ -265,7 +265,7 @@ describe('VideoControlService', () => {
             videoCallServiceSpy.onParticipantUpdated.and.returnValue(onParticipantUpdated$);
         });
 
-        it('should retore spotlight state for a participent', () => {
+        it('should restore spotlight state for a participant if the state is true', () => {
             // Arrange
             const spotlightState = true;
 
@@ -284,6 +284,22 @@ describe('VideoControlService', () => {
                 conferenceId,
                 participantOneId
             );
+        });
+
+        it('should NOT restore spotlight state for a participant if the state is false', () => {
+            // Arrange
+            const spotlightState = false;
+
+            videoControlCacheServiceSpy.getSpotlightStatus.and.returnValue(spotlightState);
+
+            participantOne.id = participantOneId;
+            participantOne.pexipId = participantOnePeixpId;
+
+            // Act
+            sut.restoreParticipantSpotlightState(participantOne);
+
+            // Assert
+            expect(videoCallServiceSpy.spotlightParticipant).not.toHaveBeenCalled();
         });
     });
 });

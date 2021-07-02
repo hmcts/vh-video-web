@@ -9,6 +9,11 @@ import { EventsService } from '../events.service';
 import { LoggerService } from '../logging/logger.service';
 import { ConferenceStatusMessage } from '../models/conference-status-message';
 
+type ConferenceStatusChanged = {
+    oldStatus: ConferenceStatus;
+    newStatus: ConferenceStatus;
+};
+
 @Injectable({
     providedIn: 'root'
 })
@@ -46,15 +51,12 @@ export class ConferenceService {
         return this._currentConference;
     }
 
-    private currentConferenceSubject = new ReplaySubject<ConferenceResponse>();
+    private currentConferenceSubject = new ReplaySubject<ConferenceResponse>(1);
     get currentConference$(): Observable<ConferenceResponse> {
         return this.currentConferenceSubject.asObservable();
     }
 
-    private onCurrentConferenceStatusChangedSubject = new BehaviorSubject<{ oldStatus: ConferenceStatus; newStatus: ConferenceStatus }>({
-        oldStatus: this.currentConference?.status,
-        newStatus: null
-    });
+    private onCurrentConferenceStatusChangedSubject = new ReplaySubject<ConferenceStatusChanged>(1);
     get onCurrentConferenceStatusChanged$() {
         return this.onCurrentConferenceStatusChangedSubject.asObservable();
     }
@@ -85,21 +87,21 @@ export class ConferenceService {
     getEndpointsForConference(conferenceId: Guid | string): Observable<ParticipantModel[]> {
         this.logger.info(`${this.loggerPrefix} getting endpoints for conference.`);
 
-        return this.apiClient.getVideoEndpointsForConference(conferenceId.toString()).pipe(
-            map(participants =>
-                participants.map(videoEndpointResponse => ParticipantModel.fromVideoEndpointResponse(videoEndpointResponse))
-            ),
-            take(1)
-        );
+        return this.apiClient
+            .getVideoEndpointsForConference(conferenceId.toString())
+            .pipe(
+                map(participants =>
+                    participants.map(videoEndpointResponse => ParticipantModel.fromVideoEndpointResponse(videoEndpointResponse))
+                )
+            );
     }
 
     getLoggedInParticipantForConference(conferenceId: Guid | string): Observable<ParticipantModel> {
         return this.getParticipantsForConference(conferenceId).pipe(
             mergeMap(participants =>
-                this.apiClient.getCurrentParticipant(conferenceId.toString()).pipe(
-                    map(response => participants.find(participant => participant.id === response.participant_id)),
-                    take(1)
-                )
+                this.apiClient
+                    .getCurrentParticipant(conferenceId.toString())
+                    .pipe(map(response => participants.find(participant => participant.id === response.participant_id)))
             ),
             take(1)
         );
@@ -144,19 +146,18 @@ export class ConferenceService {
             return;
         }
 
-        this.logger.info(`${this.loggerPrefix} attempting to get conference details.`);
-        this.getConferenceById(this.currentConferenceId)
-            .pipe(take(1))
-            .subscribe(conference => {
-                this.logger.info(`${this.loggerPrefix} conference details retrieved.`, {
-                    oldDetails: this.currentConference,
-                    newDetails: conference
-                });
-
-                this._currentConference = conference;
-                this.currentConferenceSubject.next(conference);
-
-                this.setupConferenceSubscriptions();
+        console.log(`${this.loggerPrefix} attempting to get conference details.`);
+        this.getConferenceById(this.currentConferenceId).subscribe(conference => {
+            this.logger.info(`${this.loggerPrefix} conference details retrieved.`, {
+                oldDetails: this.currentConference,
+                newDetails: conference
             });
+
+            this._currentConference = conference;
+            this.currentConferenceSubject.next(conference);
+            this.onCurrentConferenceStatusChangedSubject.next({ newStatus: conference.status, oldStatus: null });
+
+            this.setupConferenceSubscriptions();
+        });
     }
 }
