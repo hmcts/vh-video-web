@@ -1,7 +1,7 @@
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { DeviceTypeService } from './device-type.service';
 
-describe('DeviceType', () => {
+fdescribe('DeviceType', () => {
     let service: DeviceTypeService;
     let deviceDetectorService: jasmine.SpyObj<DeviceDetectorService>;
 
@@ -55,6 +55,8 @@ describe('DeviceType', () => {
         { isTablet: true, os: 'Mac', browser: 'Firefox', expected: false },
         { isTablet: false, os: 'Mac', browser: 'Chrome', expected: false },
         { isTablet: false, os: 'Mac', browser: 'Firefox', expected: false },
+        { isTablet: true, os: 'ios', browser: 'Safari', expected: true },
+        { isTablet: true, os: 'ios', browser: 'Chrome', expected: false },
         { isTablet: false, os: 'Windows', browser: 'Firefox', expected: false },
         { isTablet: false, os: 'Windows', browser: 'Chrome', expected: false },
         { isTablet: false, os: 'Windows', browser: 'MS-Edge-Chromium', expected: false }
