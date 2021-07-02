@@ -3,7 +3,6 @@ import { ConsultationAnswer, ParticipantResponse, Role } from 'src/app/services/
 import { Logger } from 'src/app/services/logging/logger-base';
 import { Participant } from 'src/app/shared/models/participant';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
-import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
 import { HeartbeatHealth, ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
 import {
@@ -18,19 +17,22 @@ import {
 } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { NotificationToastrService } from './notification-toastr.service';
 import { ConsultationInvitation } from './consultation-invitation.service';
+import { TranslateService } from '@ngx-translate/core';
 
 describe('NotificationToastrService', () => {
     let service: NotificationToastrService;
     const logger: Logger = new MockLogger();
     let roomLabel: string;
-    const translateService = translateServiceSpy;
+    let translateServiceSpy: jasmine.SpyObj<TranslateService>;
 
     beforeAll(() => {
         initAllWRDependencies();
     });
 
     beforeEach(() => {
-        service = new NotificationToastrService(logger, toastrService, consultationService, notificationSoundsService, translateService);
+        translateServiceSpy = jasmine.createSpyObj<TranslateService>('TranslateService', ['instant']);
+        translateServiceSpy.instant.and.callFake(k => k);
+        service = new NotificationToastrService(logger, toastrService, consultationService, notificationSoundsService, translateServiceSpy);
         roomLabel = 'Meeting room 1';
         consultationService.respondToConsultationRequest.calls.reset();
         notificationSoundsService.playConsultationRequestRingtone.calls.reset();
@@ -403,7 +405,6 @@ describe('NotificationToastrService', () => {
         beforeEach(() => {
             toastrService.show.calls.reset();
             toastrService.remove.calls.reset();
-            translateServiceSpy.instant.calls.reset();
             mockToast = jasmine.createSpyObj<VhToastComponent>('VhToastCompoenet', ['remove']);
         });
 
