@@ -303,7 +303,7 @@ export class NotificationToastrService {
         )}</span>`;
         message += `<br/>${this.translateService.instant('notification-toastr.participant-added.message', {
             role: this.translateHearingRole(participant.hearing_role),
-            party: this.translateCaseRole(participant.role)
+            party: this.translateCaseRole(participant.case_type_group)
         })}<br/>`;
 
         const toast = this.toastr.show('', '', {
@@ -331,12 +331,12 @@ export class NotificationToastrService {
         return toast.toastRef.componentInstance as VhToastComponent;
     }
 
-    private translateHearingRole(hearingRoleEnglish: string) {
-        return this.translateService.instant('hearing-role.' + this.stringToTranslateId(hearingRoleEnglish));
+    private translateHearingRole(hearingRole: string) {
+        return this.translateService.instant('hearing-role.' + this.stringToTranslateId(hearingRole));
     }
 
-    private translateCaseRole(role: Role) {
-        return this.translateService.instant('case-role.' + this.stringToTranslateId(role));
+    private translateCaseRole(caseTypeGroup: string) {
+        return this.translateService.instant('case-type-group.' + this.stringToTranslateId(caseTypeGroup));
     }
 
     private stringToTranslateId(str: string) {
