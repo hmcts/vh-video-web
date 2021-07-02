@@ -26,7 +26,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             var conference = TestConference;
             var participantForEvent = new Participant();
             participantForEvent.Id = new Guid();
-            participantForEvent.DisplayName = "TestDisplayName";
+            participantForEvent.Name = "TestName";
             participantForEvent.Role = Role.Individual;
             participantForEvent.HearingRole = "TestHearingRole";
 
@@ -46,7 +46,7 @@ namespace VideoWeb.UnitTests.EventHandlers
             EventHubClientMock.Verify(
                 x => x.ParticipantAddedMessage(conference.Id, It.Is<ParticipantResponse>(participant => 
                 participant.Role == participantForEvent.Role 
-                && participant.DisplayName == participantForEvent.DisplayName 
+                && participant.Name == participantForEvent.Name
                 && participant.HearingRole == participantForEvent.HearingRole)), Times.Exactly(participantCount));
         }
     }
