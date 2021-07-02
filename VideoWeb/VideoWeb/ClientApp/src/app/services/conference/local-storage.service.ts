@@ -35,7 +35,9 @@ export class LocalStorageService {
     load<T extends object>(key: string): T {
         const valueJson = window.localStorage.getItem(key);
 
-        if (!valueJson) return undefined;
+        if (!valueJson) {
+            return undefined;
+        }
 
         return JSON.parse(valueJson) as T;
     }
