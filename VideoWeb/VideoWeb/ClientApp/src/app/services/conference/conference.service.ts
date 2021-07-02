@@ -9,10 +9,10 @@ import { EventsService } from '../events.service';
 import { LoggerService } from '../logging/logger.service';
 import { ConferenceStatusMessage } from '../models/conference-status-message';
 
-type ConferenceStatusChanged = {
+interface ConferenceStatusChanged {
     oldStatus: ConferenceStatus;
     newStatus: ConferenceStatus;
-};
+}
 
 @Injectable({
     providedIn: 'root'
