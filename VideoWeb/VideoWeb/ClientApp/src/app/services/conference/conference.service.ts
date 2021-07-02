@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, ParamMap, Router } from '@angular/router';
 import { Guid } from 'guid-typescript';
-import { BehaviorSubject, Observable, ReplaySubject, Subscription } from 'rxjs';
+import { Observable, ReplaySubject, Subscription } from 'rxjs';
 import { filter, map, mergeMap, take } from 'rxjs/operators';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { ApiClient, ConferenceResponse, ConferenceStatus } from '../clients/api-client';
