@@ -16,7 +16,7 @@ using VideoApi.Client;
 using VideoApi.Contract.Requests;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using Task = System.Threading.Tasks.Task;
-
+using VideoWeb.Contract.Responses;
 
 namespace VideoWeb.Controllers
 {
@@ -53,6 +53,7 @@ namespace VideoWeb.Controllers
         public async Task<IActionResult> ParticipantsAdded(Guid conferenceId, AddParticipantsToConferenceRequest request)
         {
             var participantMapper = _mapperFactory.Get<ParticipantRequest, Participant>();
+            var participantResponseMapper = _mapperFactory.Get<Participant, ParticipantResponse>();
             List<Participant> participantsAdded = request.Participants.Select(participant => participantMapper.Map(participant)).ToList();
 
             try
@@ -81,7 +82,7 @@ namespace VideoWeb.Controllers
                         ConferenceId = conferenceId, 
                         EventType = EventType.ParticipantAdded, 
                         TimeStampUtc = DateTime.UtcNow, 
-                        ParticipantAdded = participant 
+                        ParticipantAdded = participantResponseMapper.Map(participant)
                     };
 
                     await PublishEventToUi(callbackEvent);

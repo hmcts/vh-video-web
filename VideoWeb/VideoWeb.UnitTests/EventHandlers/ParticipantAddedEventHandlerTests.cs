@@ -24,7 +24,7 @@ namespace VideoWeb.UnitTests.EventHandlers
                 LoggerMock.Object, VideoApiClientMock.Object);
 
             var conference = TestConference;
-            var participantForEvent = new Participant();
+            var participantForEvent = new ParticipantResponse();
             participantForEvent.Id = new Guid();
             participantForEvent.Name = "TestName";
             participantForEvent.Role = Role.Individual;

@@ -14,6 +14,7 @@ using VideoApi.Contract.Requests;
 using VideoApi.Contract.Responses;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Responses;
 using VideoWeb.Controllers;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Handlers;
@@ -53,6 +54,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
 
 
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantRequest, Participant>()).Returns(_mocker.Create<ParticipantRequestMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, ParticipantResponse>()).Returns(_mocker.Create<ParticipantResponseForEventMapper>(parameters));
 
             _controller = _mocker.Create<InternalEventController>();
             _controller.ControllerContext = context;
@@ -85,14 +87,12 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
 
             var participantAdded1 = new ParticipantRequest()
             {
-                ParticipantRefId = Guid.NewGuid(),
-                DisplayName = "ParticipantAdded1",
+                Name = "ParticipantAdded1",
             };
 
             var participantAdded2 = new ParticipantRequest()
             {
-                ParticipantRefId = Guid.NewGuid(),
-                DisplayName = "ParticipantAdded1",
+                Name = "ParticipantAdded2",
             };
 
             var participantsAdded = new List<ParticipantRequest>
@@ -113,7 +113,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
 
             foreach(var participant in participantsAdded)
             {
-                _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.ParticipantAdded && c.ConferenceId == testConferenceId && c.ParticipantAdded.RefId == participant.ParticipantRefId)), Times.Once);
+                _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.ParticipantAdded && c.ConferenceId == testConferenceId && c.ParticipantAdded.Name == participant.Name)), Times.Once);
             }
         }
     }
