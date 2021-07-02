@@ -14,7 +14,7 @@ describe('VideoControlCacheService', () => {
     let currentConferenceSubject: Subject<ConferenceResponse>;
     let currentConference$: Observable<ConferenceResponse>;
 
-    let videoControlCacheStorageServiceSpy: jasmine.SpyObj<IVideoControlCacheStorageService>;
+    let videoControlCacheStorageServiceSpy: jasmine.SpyObj<VideoControlCacheLocalStorageService>;
     let loadHearingStateForConferenceSubject: Subject<IHearingControlsState>;
     let loadHearingStateForConference$: Observable<IHearingControlsState>;
 
