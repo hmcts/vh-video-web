@@ -67,6 +67,8 @@ parameters:
           - name: VhServices:BookingsApiResourceId
             value: vh-bookings-api-identifieruris
             secret: true
+          - name: VhServices:InternalEventSecret
+            value: $(internal_event_secret)
 
           # AzureAd
           - name: AzureAd:TenantId
