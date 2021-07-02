@@ -697,12 +697,12 @@ describe('NotificationToastrService', () => {
         const testParticipant = new ParticipantResponse();
         testParticipant.display_name = 'TestParticipantDisplayName';
         testParticipant.hearing_role = 'TestParticipantHearingRole';
-        testParticipant.role = Role.Individual;
+        testParticipant.case_type_group = 'TestParticipantCaseTypeGroup';
 
         const translatedNameMessage = 'TranslatedNameMessage';
         const translatedRoleMessage = 'TranslatedRoleMessage';
         const translatedHearingRole = 'TranslatedHearingRole';
-        const translatedRole = 'TranslatedRole';
+        const translatedCaseTypeGroup = 'TranslatedCaseTypeGroup';
 
         const expectedButtonTranslationString = 'notification-toastr.participant-added.dismiss';
         const expectedInHearingColor = 'white';
@@ -730,7 +730,7 @@ describe('NotificationToastrService', () => {
                 .and.returnValue(translatedNameMessage);
 
             translateServiceSpy.instant.withArgs(jasmine.stringMatching(/^hearing-role./)).and.returnValue(translatedHearingRole);
-            translateServiceSpy.instant.withArgs(jasmine.stringMatching(/^case-role./)).and.returnValue(translatedRole);
+            translateServiceSpy.instant.withArgs(jasmine.stringMatching(/^case-type-group./)).and.returnValue(translatedCaseTypeGroup);
         });
 
         it('should call toastr.show with the correct parameters', () => {
@@ -795,10 +795,10 @@ describe('NotificationToastrService', () => {
 
             // Assert
             expect(translateServiceSpy.instant).toHaveBeenCalledWith(jasmine.stringMatching(/^hearing-role./));
-            expect(translateServiceSpy.instant).toHaveBeenCalledWith(jasmine.stringMatching(/^case-role./));
+            expect(translateServiceSpy.instant).toHaveBeenCalledWith(jasmine.stringMatching(/^case-type-group./));
             expect(translateServiceSpy.instant).toHaveBeenCalledWith('notification-toastr.participant-added.message', {
                 role: translatedHearingRole,
-                party: translatedRole
+                party: translatedCaseTypeGroup
             });
         });
 
