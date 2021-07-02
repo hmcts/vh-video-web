@@ -328,7 +328,7 @@ export class NotificationToastrService {
             ]
         };
 
-        return toast.toastRef.componentInstance as VhToastComponent;-
+        return toast.toastRef.componentInstance as VhToastComponent;
     }
 
     private translateHearingRole(hearingRole: string) {
