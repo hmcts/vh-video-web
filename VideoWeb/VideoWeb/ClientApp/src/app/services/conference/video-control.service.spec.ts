@@ -275,7 +275,7 @@ describe('VideoControlService', () => {
             participantOne.pexipId = participantOnePeixpId;
 
             // Act
-            sut.restoreParticipantSpotlightState(participantOne);
+            sut.restoreParticipantsSpotlight(participantOne);
 
             // Assert
             expect(videoCallServiceSpy.spotlightParticipant).toHaveBeenCalledOnceWith(
@@ -296,7 +296,7 @@ describe('VideoControlService', () => {
             participantOne.pexipId = participantOnePeixpId;
 
             // Act
-            sut.restoreParticipantSpotlightState(participantOne);
+            sut.restoreParticipantsSpotlight(participantOne);
 
             // Assert
             expect(videoCallServiceSpy.spotlightParticipant).not.toHaveBeenCalled();

@@ -193,7 +193,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
             'setSpotlightStatus',
-            'restoreParticipantSpotlightState'
+            'restoreParticipantsSpotlight'
         ]);
         videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', ['setSpotlightStatus']);
 
@@ -649,11 +649,9 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
             // Assert
             expect(videoControlServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(judgeParticipant, true);
-            expect(videoControlServiceSpy.restoreParticipantSpotlightState).toHaveBeenCalledTimes(
-                nonJudgeParticipants.length + vmrs.length
-            );
-            nonJudgeParticipants.forEach(x => expect(videoControlServiceSpy.restoreParticipantSpotlightState).toHaveBeenCalledWith(x));
-            vmrs.forEach(x => expect(videoControlServiceSpy.restoreParticipantSpotlightState).toHaveBeenCalledWith(x));
+            expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledTimes(nonJudgeParticipants.length + vmrs.length);
+            nonJudgeParticipants.forEach(x => expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledWith(x));
+            vmrs.forEach(x => expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledWith(x));
         });
 
         it('should restore all other participant states if it is NOT first time the conference has started', () => {
@@ -673,9 +671,9 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
             // Assert
             expect(videoControlServiceSpy.setSpotlightStatus).not.toHaveBeenCalled();
-            expect(videoControlServiceSpy.restoreParticipantSpotlightState).toHaveBeenCalledTimes(nonVmrParticipants.length + vmrs.length);
-            nonVmrParticipants.forEach(x => expect(videoControlServiceSpy.restoreParticipantSpotlightState).toHaveBeenCalledWith(x));
-            vmrs.forEach(x => expect(videoControlServiceSpy.restoreParticipantSpotlightState).toHaveBeenCalledWith(x));
+            expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledTimes(nonVmrParticipants.length + vmrs.length);
+            nonVmrParticipants.forEach(x => expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledWith(x));
+            vmrs.forEach(x => expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledWith(x));
         });
 
         it('should do nothing if the new status is not in session', () => {
@@ -692,7 +690,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
             // Assert
             expect(videoControlServiceSpy.setSpotlightStatus).not.toHaveBeenCalled();
-            expect(videoControlServiceSpy.restoreParticipantSpotlightState).not.toHaveBeenCalled();
+            expect(videoControlServiceSpy.restoreParticipantsSpotlight).not.toHaveBeenCalled();
         });
     });
 
@@ -710,9 +708,9 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             component.restoreSpotlightState();
 
             // Assert
-            expect(videoControlServiceSpy.restoreParticipantSpotlightState).toHaveBeenCalledTimes(nonVmrParticipants.length + vmrs.length);
-            nonVmrParticipants.forEach(x => expect(videoControlServiceSpy.restoreParticipantSpotlightState).toHaveBeenCalledWith(x));
-            vmrs.forEach(x => expect(videoControlServiceSpy.restoreParticipantSpotlightState).toHaveBeenCalledWith(x));
+            expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledTimes(nonVmrParticipants.length + vmrs.length);
+            nonVmrParticipants.forEach(x => expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledWith(x));
+            vmrs.forEach(x => expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledWith(x));
         });
     });
 

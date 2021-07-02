@@ -175,12 +175,12 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
             participants.forEach(participant => {
                 if (!participant.virtualMeetingRoomSummary) {
-                    this.videoControlService.restoreParticipantSpotlightState(participant);
+                    this.videoControlService.restoreParticipantsSpotlight(participant);
                 }
             });
 
             this.participantService.virtualMeetingRooms.forEach(vmr => {
-                this.videoControlService.restoreParticipantSpotlightState(vmr);
+                this.videoControlService.restoreParticipantsSpotlight(vmr);
             });
         }
     }
@@ -188,12 +188,12 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
     restoreSpotlightState(): void {
         this.participantService.participants.forEach(participant => {
             if (!participant.virtualMeetingRoomSummary) {
-                this.videoControlService.restoreParticipantSpotlightState(participant);
+                this.videoControlService.restoreParticipantsSpotlight(participant);
             }
         });
 
         this.participantService.virtualMeetingRooms.forEach(vmr => {
-            this.videoControlService.restoreParticipantSpotlightState(vmr);
+            this.videoControlService.restoreParticipantsSpotlight(vmr);
         });
     }
 

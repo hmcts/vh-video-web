@@ -94,7 +94,7 @@ export class VideoControlService {
         return this.videoControlCacheService.getSpotlightStatus(participantId);
     }
 
-    restoreParticipantSpotlightState(participantOrVmr: ParticipantModel | VirtualMeetingRoomModel) {
+    restoreParticipantsSpotlight(participantOrVmr: ParticipantModel | VirtualMeetingRoomModel) {
         const isSpotlighted = this.videoControlCacheService.getSpotlightStatus(participantOrVmr.id);
 
         if (isSpotlighted) {
