@@ -86,30 +86,16 @@ export class VideoControlService {
                     participantId: participantOrVmr.id
                 });
 
-                this.videoControlCacheService.setSpotlightStatus(conferenceId, participantOrVmr.id, update.isSpotlighted);
+                this.videoControlCacheService.setSpotlightStatus(participantOrVmr.id, update.isSpotlighted);
             });
     }
 
     isParticipantSpotlighted(participantId: string): boolean {
-        return this.videoControlCacheService.getSpotlightStatus(this.conferenceService.currentConferenceId, participantId);
-    }
-
-    getSpotlightedParticipants(): string[] {
-        const hearingControlState = this.videoControlCacheService.getStateForConference(this.conferenceService.currentConferenceId);
-
-        const participantIds = [];
-        for (const participantId in hearingControlState.participantStates) {
-            if (hearingControlState.participantStates[participantId].isSpotlighted) {
-                participantIds.push(participantId);
-            }
-        }
-
-        return participantIds;
+        return this.videoControlCacheService.getSpotlightStatus(participantId);
     }
 
     restoreParticipantSpotlightState(participantOrVmr: ParticipantModel | VirtualMeetingRoomModel) {
-        const conferenceId = this.conferenceService.currentConferenceId;
-        const isSpotlighted = this.videoControlCacheService.getSpotlightStatus(conferenceId, participantOrVmr.id);
+        const isSpotlighted = this.videoControlCacheService.getSpotlightStatus(participantOrVmr.id);
 
         this.logger.info(`${this.loggerPrefix} restoring participant spotlight state.`, {
             participantOrVmrId: participantOrVmr.id,

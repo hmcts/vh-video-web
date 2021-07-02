@@ -175,23 +175,13 @@ export class ParticipantService {
     }
 
     private restoreCachedVideoControlState() {
-        const conferenceState = this.videoControlCacheService.getStateForConference(this.conferenceService.currentConferenceId);
+        this.participants.forEach(participant => {
+            participant.isSpotlighted = this.videoControlCacheService.getSpotlightStatus(participant.id);
+        });
 
-        if (conferenceState) {
-            this.participants.forEach(participant => {
-                if (conferenceState.participantStates[participant.id]) {
-                    participant.isSpotlighted = conferenceState.participantStates[participant.id].isSpotlighted;
-                }
-            });
-
-            this.virtualMeetingRooms.forEach(vmr => {
-                if (conferenceState.participantStates[vmr.id]) {
-                    vmr.participants.forEach(
-                        participant => (participant.isSpotlighted = conferenceState.participantStates[vmr.id].isSpotlighted)
-                    );
-                }
-            });
-        }
+        this.virtualMeetingRooms.forEach(vmr => {
+            vmr.participants.forEach(participant => (participant.isSpotlighted = this.videoControlCacheService.getSpotlightStatus(vmr.id)));
+        });
     }
 
     private loadParticipants(): Observable<ParticipantModel[]> {

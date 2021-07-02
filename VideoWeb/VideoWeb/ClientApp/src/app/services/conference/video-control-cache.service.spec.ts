@@ -1,241 +1,204 @@
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, flush } from '@angular/core/testing';
+import { Subject } from 'rxjs';
+import { Observable } from 'rxjs';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { ConferenceResponse } from '../clients/api-client';
 import { LoggerService } from '../logging/logger.service';
-
-import { IHearingControlsState, IHearingControlStates, VideoControlCacheService } from './video-control-cache.service';
+import { ConferenceService } from './conference.service';
+import { VideoControlCacheLocalStorageService } from './video-control-cache-local-storage.service';
+import { IHearingControlsState, IVideoControlCacheStorageService } from './video-control-cache-storage.service.interface';
+import { VideoControlCacheService } from './video-control-cache.service';
 
 describe('VideoControlCacheService', () => {
-    let sut: VideoControlCacheService;
-    let loggerSpy: jasmine.SpyObj<LoggerService>;
+    let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
+    let currentConferenceSubject: Subject<ConferenceResponse>;
+    let currentConference$: Observable<ConferenceResponse>;
+
+    let videoControlCacheStorageServiceSpy: jasmine.SpyObj<IVideoControlCacheStorageService>;
+    let loadHearingStateForConferenceSubject: Subject<IHearingControlsState>;
+    let loadHearingStateForConference$: Observable<IHearingControlsState>;
+
+    let loggerServiceSpy: jasmine.SpyObj<LoggerService>;
+
+    let service: VideoControlCacheService;
 
     beforeEach(() => {
-        loggerSpy = jasmine.createSpyObj<LoggerService>('LoggerService', ['warn', 'info']);
-        sut = new VideoControlCacheService(loggerSpy);
+        conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>(
+            'ConferenceService',
+            ['getConferenceById'],
+            ['currentConference$', 'currentConferenceId']
+        );
 
-        window.localStorage.clear();
+        currentConferenceSubject = new Subject<ConferenceResponse>();
+        currentConference$ = currentConferenceSubject.asObservable();
+        getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference$').and.returnValue(currentConference$);
+
+        videoControlCacheStorageServiceSpy = jasmine.createSpyObj<VideoControlCacheLocalStorageService>(
+            'VideoControlCacheLocalStorageService',
+            ['saveHearingStateForConference', 'loadHearingStateForConference']
+        );
+
+        loadHearingStateForConferenceSubject = new Subject<IHearingControlsState>();
+        loadHearingStateForConference$ = loadHearingStateForConferenceSubject.asObservable();
+        videoControlCacheStorageServiceSpy.loadHearingStateForConference.and.returnValue(loadHearingStateForConference$);
+
+        loggerServiceSpy = jasmine.createSpyObj<LoggerService>('LoggerService', ['info', 'warn']);
+
+        service = new VideoControlCacheService(conferenceServiceSpy, videoControlCacheStorageServiceSpy, loggerServiceSpy);
     });
 
-    it('should load settings from local storage when constructed', () => {
-        // Arrange
-        const conferenceIdOne = 'conference-id-one';
-        const conferenceIdTwo = 'conference-id-two';
-        const hearingStates: IHearingControlStates = {};
-        hearingStates[conferenceIdOne] = {
-            participantStates: {
-                'participant-id': {
-                    isSpotlighted: false
-                }
-            }
-        };
-
-        hearingStates[conferenceIdTwo] = {
-            participantStates: {
-                'participant-id': {
-                    isSpotlighted: false
-                }
-            }
-        };
-
-        window.localStorage.setItem(sut.localStorageKey, JSON.stringify(hearingStates));
-
-        // Act
-        const service = new VideoControlCacheService(loggerSpy);
-
-        // Assert
-        expect(service.hearingControlStates).toEqual(hearingStates);
-    });
-
-    describe('getStateForConference', () => {
-        it('should return the conference from session storage', () => {
+    describe('initialisation', () => {
+        it('should load the hearing state for the current conference', fakeAsync(() => {
             // Arrange
             const conferenceId = 'conference-id';
+            const conference = { id: conferenceId } as ConferenceResponse;
 
-            const hearingState: { [conferenceId: string]: IHearingControlsState } = {};
-            hearingState[conferenceId] = {
-                participantStates: {
-                    'participant-id': {
-                        isSpotlighted: false
-                    }
-                }
-            };
-
-            hearingState['not-conference-id'] = {
-                participantStates: {
-                    'participant-id': {
-                        isSpotlighted: false
-                    }
-                }
-            };
-
-            window.localStorage.setItem(sut.localStorageKey, JSON.stringify(hearingState));
+            const hearingControlsState: IHearingControlsState = { participantStates: {} };
 
             // Act
-            sut['loadFromLocalStorage']();
-            const result = sut.getStateForConference(conferenceId);
+            currentConferenceSubject.next(conference);
+            flush();
+            loadHearingStateForConferenceSubject.next(hearingControlsState);
+            flush();
+
+            // Assert
+            expect(videoControlCacheStorageServiceSpy.loadHearingStateForConference).toHaveBeenCalledOnceWith(conferenceId);
+            expect(service['hearingControlStates']).toEqual(hearingControlsState);
+        }));
+    });
+
+    describe('setSpotlightStatus', () => {
+        it('should add new value in the hearingControlStates and should update the cache', () => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const participantId = 'participant-id';
+            const spotlight = true;
+
+            const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
+
+            const expectedHearingControlsState: IHearingControlsState = { participantStates: {} };
+            expectedHearingControlsState.participantStates[participantId] = { isSpotlighted: spotlight };
+
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+
+            service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            expect(result).toEqual(hearingState[conferenceId]);
+            service.setSpotlightStatus(participantId, spotlight);
+
+            // Assert
+            expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
+            expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).toHaveBeenCalledOnceWith(
+                conferenceId,
+                expectedHearingControlsState
+            );
         });
 
-        it('should return an empty result if the conference could not be found', () => {
+        it('should update the value in the hearingControlStates and should update the cache', () => {
             // Arrange
             const conferenceId = 'conference-id';
+            const participantId = 'participant-id';
+            const spotlight = true;
 
-            const hearingState: { [conferenceId: string]: IHearingControlsState } = {};
-            hearingState['not-conference-id'] = {
-                participantStates: {
-                    'participant-id': {
-                        isSpotlighted: false
-                    }
-                }
-            };
+            const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
+            initialHearingControlsState.participantStates[participantId] = { isSpotlighted: !spotlight };
 
-            window.localStorage.setItem(sut.localStorageKey, JSON.stringify(hearingState));
+            const expectedHearingControlsState: IHearingControlsState = { participantStates: {} };
+            expectedHearingControlsState.participantStates[participantId] = { isSpotlighted: spotlight };
 
-            // Act
-            sut['loadFromLocalStorage']();
-            const result = sut.getStateForConference(conferenceId);
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+
+            service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            expect(result).toEqual({
-                participantStates: {}
-            } as IHearingControlsState);
+            service.setSpotlightStatus(participantId, spotlight);
+
+            // Assert
+            expect(service['hearingControlStates']).toEqual(expectedHearingControlsState);
+            expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).toHaveBeenCalledOnceWith(
+                conferenceId,
+                expectedHearingControlsState
+            );
+        });
+
+        it('should do nothing if the hearing control state is not initialised', () => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const participantId = 'participant-id';
+            const spotlight = true;
+
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+
+            service['hearingControlStates'] = null;
+
+            // Act
+            service.setSpotlightStatus(participantId, spotlight);
+
+            // Assert
+            expect(service['hearingControlStates']).toEqual(null);
+            expect(videoControlCacheStorageServiceSpy.saveHearingStateForConference).not.toHaveBeenCalled();
         });
     });
 
     describe('getSpotlightStatus', () => {
-        it('should return true when the participants spotlight status is true', () => {
+        it('should return the value for the participant (false)', () => {
             // Arrange
-            const conferenceId = 'conference-id';
             const participantId = 'participant-id';
+            const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
+            initialHearingControlsState.participantStates[participantId] = { isSpotlighted: false };
 
-            sut.hearingControlStates = {};
-            sut.hearingControlStates[conferenceId] = {
-                participantStates: {}
-            };
-            sut.hearingControlStates[conferenceId].participantStates[participantId] = {
-                isSpotlighted: true
-            };
+            service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            const result = sut.getSpotlightStatus(conferenceId, participantId);
+            const result = service.getSpotlightStatus(participantId);
+
+            // Assert
+            expect(result).toBeFalse();
+        });
+
+        it('should return the value for the participant (false)', () => {
+            // Arrange
+            const participantId = 'participant-id';
+            const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
+            initialHearingControlsState.participantStates[participantId] = { isSpotlighted: true };
+
+            service['hearingControlStates'] = initialHearingControlsState;
+
+            // Act
+            const result = service.getSpotlightStatus(participantId);
 
             // Assert
             expect(result).toBeTrue();
         });
 
-        it('should return false when the participants spotlight status is false', () => {
+        it('should return false if the participant cannot be found', () => {
             // Arrange
-            const conferenceId = 'conference-id';
             const participantId = 'participant-id';
+            const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
+            initialHearingControlsState.participantStates[participantId] = { isSpotlighted: true };
 
-            sut.hearingControlStates = {};
-            sut.hearingControlStates[conferenceId] = {
-                participantStates: {}
-            };
-            sut.hearingControlStates[conferenceId].participantStates[participantId] = {
-                isSpotlighted: false
-            };
+            service['hearingControlStates'] = initialHearingControlsState;
 
             // Act
-            const result = sut.getSpotlightStatus(conferenceId, participantId);
+            const result = service.getSpotlightStatus('not' + participantId);
 
             // Assert
             expect(result).toBeFalse();
         });
 
-        it('should return false when the participant cannot be found', () => {
+        it('should return false if the state has NOT being retrieved', () => {
             // Arrange
-            const conferenceId = 'conference-id';
             const participantId = 'participant-id';
+            const initialHearingControlsState: IHearingControlsState = { participantStates: {} };
+            initialHearingControlsState.participantStates[participantId] = { isSpotlighted: true };
 
-            sut.hearingControlStates = {};
-            sut.hearingControlStates[conferenceId] = {
-                participantStates: {}
-            };
-            sut.hearingControlStates[conferenceId].participantStates['not-participant-id'] = {
-                isSpotlighted: false
-            };
+            service['hearingControlStates'] = null;
 
             // Act
-            const result = sut.getSpotlightStatus(conferenceId, participantId);
+            const result = service.getSpotlightStatus(participantId);
 
             // Assert
             expect(result).toBeFalse();
-        });
-
-        it('should return false when the conference cannot be found', () => {
-            // Arrange
-            const conferenceId = 'conference-id';
-            const participantId = 'participant-id';
-
-            sut.hearingControlStates = {};
-            sut.hearingControlStates['not-conference-id'] = {
-                participantStates: {}
-            };
-            sut.hearingControlStates['not-conference-id'].participantStates[participantId] = {
-                isSpotlighted: false
-            };
-
-            // Act
-            const result = sut.getSpotlightStatus(conferenceId, participantId);
-
-            // Assert
-            expect(result).toBeFalse();
-        });
-    });
-
-    describe('setSpotlightStatus', () => {
-        it('should set the participants spotlight value to true and save it to the local session storage', () => {
-            // Arrange
-            const conferenceId = 'conference-id';
-            const participantId = 'participant-id';
-            // Act
-            sut.setSpotlightStatus(conferenceId, participantId, true);
-
-            // Assert
-            expect(sut.hearingControlStates[conferenceId].participantStates[participantId].isSpotlighted).toBeTrue();
-            expect(
-                JSON.parse(window.localStorage.getItem(sut.localStorageKey))[conferenceId].participantStates[participantId].isSpotlighted
-            ).toBeTrue();
-        });
-
-        it('should set the participants spotlight value to false and save it to the local session storage', () => {
-            // Arrange
-            const conferenceId = 'conference-id';
-            const participantId = 'participant-id';
-
-            // Act
-            sut.setSpotlightStatus(conferenceId, participantId, false);
-
-            // Assert
-            expect(sut.hearingControlStates[conferenceId].participantStates[participantId].isSpotlighted).toBeFalse();
-            expect(
-                JSON.parse(window.localStorage.getItem(sut.localStorageKey))[conferenceId].participantStates[participantId].isSpotlighted
-            ).toBeFalse();
-        });
-
-        it('should update the participants spotlight value and save it to the local session storage', () => {
-            // Arrange
-            const conferenceId = 'conference-id';
-            const participantId = 'participant-id';
-
-            sut.hearingControlStates = {};
-            sut.hearingControlStates[conferenceId] = {
-                participantStates: {}
-            };
-            sut.hearingControlStates[conferenceId].participantStates[participantId] = {
-                isSpotlighted: true
-            };
-
-            // Act
-            sut.setSpotlightStatus(conferenceId, participantId, false);
-
-            // Assert
-            expect(sut.hearingControlStates[conferenceId].participantStates[participantId].isSpotlighted).toBeFalse();
-
-            expect(
-                JSON.parse(window.localStorage.getItem(sut.localStorageKey))[conferenceId].participantStates[participantId].isSpotlighted
-            ).toBeFalse();
         });
     });
 });

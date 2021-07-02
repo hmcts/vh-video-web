@@ -1,17 +1,8 @@
 import { Injectable } from '@angular/core';
 import { LoggerService } from '../logging/logger.service';
-
-export interface IHearingControlsState {
-    participantStates: { [participantId: string]: IParticipantControlsState };
-}
-
-export interface IParticipantControlsState {
-    isSpotlighted: boolean;
-}
-
-export interface IHearingControlStates {
-    [conferenceId: string]: IHearingControlsState;
-}
+import { ConferenceService } from './conference.service';
+import { VideoControlCacheLocalStorageService } from './video-control-cache-local-storage.service';
+import { IHearingControlsState } from './video-control-cache-storage.service.interface';
 
 @Injectable({
     providedIn: 'root'
@@ -19,79 +10,42 @@ export interface IHearingControlStates {
 export class VideoControlCacheService {
     private loggerPrefix = '[VideoControlCacheService] -';
 
-    hearingControlStates: IHearingControlStates = {};
-    get localStorageKey() {
-        return 'conferenceControlStates';
+    private hearingControlStates: IHearingControlsState | null = null;
+
+    constructor(
+        private conferenceService: ConferenceService,
+        private storageService: VideoControlCacheLocalStorageService,
+        private logger: LoggerService
+    ) {
+        this.conferenceService.currentConference$.subscribe(conference => {
+            this.storageService.loadHearingStateForConference(conference.id).subscribe(state => {
+                this.hearingControlStates = state;
+            });
+        });
     }
 
-    constructor(private logger: LoggerService) {
-        this.loadFromLocalStorage();
-    }
-
-    setSpotlightStatus(conferenceId: string, participantId: string, spotlightValue: boolean) {
+    setSpotlightStatus(participantId: string, spotlightValue: boolean) {
         this.logger.info(`${this.loggerPrefix} Setting spotlight status.`, {
-            conferenceId: conferenceId,
             participantId: participantId,
-            oldValue: this.hearingControlStates[conferenceId]?.participantStates[participantId]?.isSpotlighted,
+            oldValue: this.hearingControlStates?.participantStates[participantId]?.isSpotlighted ?? null,
             newValue: spotlightValue
         });
 
-        if (!this.hearingControlStates[conferenceId]) {
-            this.hearingControlStates[conferenceId] = {
-                participantStates: {}
-            };
+        if (!this.hearingControlStates?.participantStates) {
+            this.logger.warn(`${this.loggerPrefix} Cannot set spotlight status as hearing control states is not initialised.`);
+            return;
         }
 
-        if (!this.hearingControlStates[conferenceId].participantStates[participantId]) {
-            this.hearingControlStates[conferenceId].participantStates[participantId] = {
-                isSpotlighted: spotlightValue
-            };
+        if (!this.hearingControlStates.participantStates[participantId]) {
+            this.hearingControlStates.participantStates[participantId] = { isSpotlighted: spotlightValue };
         } else {
-            this.hearingControlStates[conferenceId].participantStates[participantId].isSpotlighted = spotlightValue;
+            this.hearingControlStates.participantStates[participantId].isSpotlighted = spotlightValue;
         }
 
-        this.saveToLocalStorage();
+        this.storageService.saveHearingStateForConference(this.conferenceService.currentConferenceId, this.hearingControlStates);
     }
 
-    getSpotlightStatus(conferenceId: string, participantId: string): boolean {
-        return this.hearingControlStates[conferenceId]?.participantStates[participantId]?.isSpotlighted ?? false;
-    }
-
-    getStateForConference(conferenceId: string): IHearingControlsState {
-        return this.hearingControlStates[conferenceId] ?? { participantStates: {} };
-    }
-
-    private loadFromLocalStorage(): IHearingControlStates {
-        this.logger.info(`${this.loggerPrefix} Loading video control states from local storage.`, {
-            localStorageKey: this.localStorageKey
-        });
-
-        const hearingControlStatesJson = window.localStorage.getItem(this.localStorageKey);
-
-        if (!hearingControlStatesJson) {
-            this.logger.warn(`${this.loggerPrefix} Failed to load hearing control states from local storage.`, {
-                localStorageKey: this.localStorageKey
-            });
-
-            return null;
-        }
-
-        this.hearingControlStates = JSON.parse(hearingControlStatesJson);
-
-        this.logger.info(`${this.loggerPrefix} Loaded video control states from local storage.`, {
-            localStorageKey: this.localStorageKey,
-            hearingControlStates: this.hearingControlStates
-        });
-
-        return this.hearingControlStates;
-    }
-
-    private saveToLocalStorage() {
-        this.logger.info(`${this.loggerPrefix} Saving video control states to local storage.`, {
-            localStorageKey: this.localStorageKey,
-            hearingControlStates: this.hearingControlStates
-        });
-
-        window.localStorage.setItem(this.localStorageKey, JSON.stringify(this.hearingControlStates));
+    getSpotlightStatus(participantId: string): boolean {
+        return this.hearingControlStates?.participantStates[participantId]?.isSpotlighted ?? false;
     }
 }

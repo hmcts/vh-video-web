@@ -193,7 +193,6 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
 
         videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
             'setSpotlightStatus',
-            'getSpotlightedParticipants',
             'restoreParticipantSpotlightState'
         ]);
         videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', ['setSpotlightStatus']);
@@ -752,7 +751,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             });
 
             // Assert
-            expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(conferenceId, participantOneId, false);
+            expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(participantOneId, false);
         });
 
         it('should set spotlight status in cache to false for a VMR if all participants are disconnected', () => {
@@ -776,7 +775,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             });
 
             // Assert
-            expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(conferenceId, vmr.id, false);
+            expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(vmr.id, false);
         });
     });
 
@@ -835,7 +834,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             component.updateSpotlightStateOnParticipantDisconnectDuringConference(participants[0]);
 
             // Assert
-            expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(conferenceId, vmr.id, false);
+            expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(vmr.id, false);
         });
 
         it('should NOT set spotlight status of vmr in cache to false if some participants are in the hearing', () => {
@@ -880,7 +879,7 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             component.updateSpotlightStateOnParticipantDisconnectDuringConference(participant);
 
             // Assert
-            expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(conferenceId, participant.id, false);
+            expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(participant.id, false);
         });
     });
 });

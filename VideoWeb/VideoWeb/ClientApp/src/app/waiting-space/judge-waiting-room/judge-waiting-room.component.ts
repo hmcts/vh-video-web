@@ -203,13 +203,13 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 .filter(x => !x.virtualMeetingRoomSummary)
                 .forEach(participant => {
                     if (participant.status === ParticipantStatus.Disconnected) {
-                        this.videoControlCacheService.setSpotlightStatus(this.conferenceService.currentConferenceId, participant.id, false);
+                        this.videoControlCacheService.setSpotlightStatus(participant.id, false);
                     }
                 });
 
             this.participantService.virtualMeetingRooms.forEach(vmr => {
                 if (vmr.participants.every(x => x.status === ParticipantStatus.Disconnected)) {
-                    this.videoControlCacheService.setSpotlightStatus(this.conferenceService.currentConferenceId, vmr.id, false);
+                    this.videoControlCacheService.setSpotlightStatus(vmr.id, false);
                 }
             });
         }
@@ -251,7 +251,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
                 participantOrVmr: participantOrVmr
             });
 
-            this.videoControlCacheService.setSpotlightStatus(this.conferenceService.currentConferenceId, participantOrVmr.id, false);
+            this.videoControlCacheService.setSpotlightStatus(participantOrVmr.id, false);
         }
     }
 

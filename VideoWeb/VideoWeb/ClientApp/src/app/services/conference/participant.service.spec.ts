@@ -21,7 +21,8 @@ import { ParticipantStatusMessage } from '../models/participant-status-message';
 import { ConferenceService } from './conference.service';
 import { VirtualMeetingRoomModel } from './models/virtual-meeting-room.model';
 import { invalidNumberOfNonEndpointParticipantsError, ParticipantService } from './participant.service';
-import { IHearingControlsState, IParticipantControlsState, VideoControlCacheService } from './video-control-cache.service';
+import { IHearingControlsState, IParticipantControlsState } from './video-control-cache-storage.service.interface';
+import { VideoControlCacheService } from './video-control-cache.service';
 
 describe('ParticipantService', () => {
     const asParticipantModelsFromUserResponse = (participants: ParticipantForUserResponse[]) =>
@@ -174,7 +175,10 @@ describe('ParticipantService', () => {
         participantStatusUpdateSubject = new Subject<ParticipantStatusMessage>();
         eventsServiceSpy.getParticipantStatusMessage.and.returnValue(participantStatusUpdateSubject.asObservable());
 
-        videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', ['getStateForConference']);
+        videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', [
+            'setSpotlightStatus',
+            'getSpotlightStatus'
+        ]);
 
         loggerSpy = jasmine.createSpyObj<LoggerService>('Logger', ['error', 'warn', 'info']);
 
@@ -189,6 +193,8 @@ describe('ParticipantService', () => {
 
             let result = [];
             sut.onParticipantsLoaded$.subscribe(participants => (result = participants));
+
+            videoControlCacheServiceSpy.getSpotlightStatus.and.returnValue(false);
 
             // Act
             const conference = new ConferenceResponse();
@@ -220,11 +226,8 @@ describe('ParticipantService', () => {
             const conference = new ConferenceResponse();
             conference.id = 'conference-id';
 
-            const state = { participantStates: {} } as IHearingControlsState;
-            state.participantStates[participantOneId] = {
-                isSpotlighted: true
-            } as IParticipantControlsState;
-            videoControlCacheServiceSpy.getStateForConference.and.returnValue(state as IHearingControlsState);
+            videoControlCacheServiceSpy.getSpotlightStatus.withArgs(participantOneId).and.returnValue(true);
+            videoControlCacheServiceSpy.getSpotlightStatus.and.returnValue(false);
 
             // Act
             currentConferenceSubject.next(conference);
@@ -245,11 +248,8 @@ describe('ParticipantService', () => {
             const conference = new ConferenceResponse();
             conference.id = 'conference-id';
 
-            const state = { participantStates: {} } as IHearingControlsState;
-            state.participantStates[vmrId] = {
-                isSpotlighted: true
-            } as IParticipantControlsState;
-            videoControlCacheServiceSpy.getStateForConference.and.returnValue(state as IHearingControlsState);
+            videoControlCacheServiceSpy.getSpotlightStatus.withArgs(vmrId).and.returnValue(true);
+            videoControlCacheServiceSpy.getSpotlightStatus.and.returnValue(false);
 
             // Act
             currentConferenceSubject.next(conference);
