@@ -73,12 +73,13 @@ export class ConferenceService {
     getParticipantsForConference(conferenceId: Guid | string): Observable<ParticipantModel[]> {
         this.logger.info(`${this.loggerPrefix} getting participants for conference.`);
 
-        return this.apiClient.getParticipantsByConferenceId(conferenceId.toString()).pipe(
-            map(participants =>
-                participants.map(participantResponse => ParticipantModel.fromParticipantForUserResponse(participantResponse))
-            ),
-            take(1)
-        );
+        return this.apiClient
+            .getParticipantsByConferenceId(conferenceId.toString())
+            .pipe(
+                map(participants =>
+                    participants.map(participantResponse => ParticipantModel.fromParticipantForUserResponse(participantResponse))
+                )
+            );
     }
 
     getEndpointsForConference(conferenceId: Guid | string): Observable<ParticipantModel[]> {

@@ -51,8 +51,8 @@ import {
     router,
     userMediaService,
     userMediaStreamService,
-    videoCallService,
-    videoWebService
+    videoWebService,
+    videoCallService
 } from './waiting-room-base-setup';
 import { WRTestComponent } from './WRTestComponent';
 import { RequestedConsultationMessage } from 'src/app/services/models/requested-consultation-message';
@@ -140,6 +140,7 @@ describe('WaitingRoomComponent EventHub Call', () => {
         await component.startEventHubSubscribers();
         videoWebService.getConferenceById.calls.reset();
         videoWebService.getAllowedEndpointsForConference.calls.reset();
+        videoCallService.stopScreenShare.calls.reset();
     });
 
     afterEach(() => {
@@ -242,8 +243,10 @@ describe('WaitingRoomComponent EventHub Call', () => {
         const message = new ConferenceStatusMessage(globalConference.id, status);
         notificationSoundsService.playHearingAlertSound.calls.reset();
         hearingStatusSubject.next(message);
+        tick();
         flushMicrotasks();
 
+        expect(videoCallService.stopScreenShare).toHaveBeenCalledTimes(1);
         expect(component.hearing.status).toBe(status);
         expect(component.conference.status).toBe(status);
         expect(component.showVideo).toBeTruthy();
@@ -260,11 +263,13 @@ describe('WaitingRoomComponent EventHub Call', () => {
         const message = new ConferenceStatusMessage(globalConference.id, status);
 
         hearingStatusSubject.next(message);
+        tick();
         flushMicrotasks();
 
         expect(component.hearing.status).toBe(status);
         expect(component.conference.status).toBe(status);
         expect(component.showVideo).toBeFalsy();
+        expect(videoCallService.stopScreenShare).toHaveBeenCalledTimes(1);
         expect(videoWebService.getConferenceById).toHaveBeenCalledWith(globalConference.id);
     }));
 
@@ -372,8 +377,10 @@ describe('WaitingRoomComponent EventHub Call', () => {
         notificationSoundsService.playHearingAlertSound.calls.reset();
 
         hearingStatusSubject.next(message);
+        tick();
         flushMicrotasks();
 
+        expect(videoCallService.stopScreenShare).toHaveBeenCalledTimes(1);
         expect(component.hearing.status).toBe(status);
         expect(component.conference.status).toBe(status);
         expect(component.showVideo).toBeFalsy();
