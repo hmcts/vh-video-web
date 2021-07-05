@@ -1,5 +1,11 @@
 import { Guid } from 'guid-typescript';
-import { ConferenceResponse, ParticipantStatus, Role, RoomSummaryResponse } from 'src/app/services/clients/api-client';
+import {
+    ConferenceResponse,
+    ParticipantForUserResponse,
+    ParticipantStatus,
+    Role,
+    RoomSummaryResponse
+} from 'src/app/services/clients/api-client';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -20,8 +26,29 @@ import { ConnectedScreenshare, ParticipantUpdated, StoppedScreenshare } from '..
 import { deviceTypeService } from '../waiting-room-shared/tests/waiting-room-base-setup';
 import { PrivateConsultationRoomControlsComponent } from './private-consultation-room-controls.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { ParticipantService } from 'src/app/services/conference/participant.service';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { BehaviorSubject, of } from 'rxjs';
+import { HearingRole } from '../models/hearing-role-model';
+import { ParticipantModel } from 'src/app/shared/models/participant';
 
 describe('PrivateConsultationRoomControlsComponent', () => {
+    const participantOneId = Guid.create().toString();
+    const participantOne = new ParticipantForUserResponse({
+        id: participantOneId,
+        status: ParticipantStatus.NotSignedIn,
+        display_name: 'Interpreter',
+        role: Role.Individual,
+        representee: null,
+        case_type_group: 'applicant',
+        tiled_display_name: `CIVILIAN;Interpreter;${participantOneId}`,
+        hearing_role: HearingRole.INTERPRETER,
+        first_name: 'Interpreter',
+        last_name: 'Doe',
+        interpreter_room: null,
+        linked_participants: []
+    });
+
     let component: PrivateConsultationRoomControlsComponent;
     const gloalConference = new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse;
     const globalParticipant = gloalConference.participants.filter(x => x.role === Role.Individual)[0];
@@ -39,13 +66,27 @@ describe('PrivateConsultationRoomControlsComponent', () => {
     const testData = new VideoCallTestData();
     const translateService = translateServiceSpy;
 
+    let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
+
     beforeEach(() => {
         translateService.instant.calls.reset();
+
+        participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
+            'ParticipantService',
+            ['getParticipantOrVirtualMeetingRoomById'],
+            ['loggedInParticipant']
+        );
+        const loggedInParticipantSubject = new BehaviorSubject<ParticipantModel>(
+            ParticipantModel.fromParticipantForUserResponse(participantOne)
+        );
+        getSpiedPropertyGetter(participantServiceSpy, 'loggedInParticipant').and.returnValue(loggedInParticipantSubject.asObservable());
+
         component = new PrivateConsultationRoomControlsComponent(
             videoCallService,
             eventsService,
             deviceTypeService,
             logger,
+            participantServiceSpy,
             translateService
         );
         component.participant = globalParticipant;

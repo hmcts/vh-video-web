@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using VideoApi.Client;
 using VideoWeb.Common.Caching;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Exceptions;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
@@ -54,7 +55,7 @@ namespace VideoWeb.EventHub.Handlers.Core
             await PublishStatusAsync(callbackEvent);
         }
 
-        private async Task<Conference> GetConference(Guid conferenceId)
+        protected async Task<Conference> GetConference(Guid conferenceId)
         {
             var conference = await _conferenceCache.GetOrAddConferenceAsync(conferenceId,
                 () => _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId));
@@ -134,6 +135,17 @@ namespace VideoWeb.EventHub.Handlers.Core
             await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
                 .RoomTransfer(roomTransfer);
             Logger.LogTrace("RoomTransfer sent to group: {Group}", Hub.EventHub.VhOfficersGroupName);
+        }
+
+        protected async Task PublishParticipantAddedMessage(ParticipantResponse participantAdded)
+        {
+            foreach (var participant in SourceConference.Participants)
+            {
+                await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
+                    .ParticipantAddedMessage(SourceConference.Id, participantAdded);
+                Logger.LogTrace("{UserName} | Role: {Role}", participant.Username,
+                    participant.Role);
+            }
         }
 
         protected abstract Task PublishStatusAsync(CallbackEvent callbackEvent);

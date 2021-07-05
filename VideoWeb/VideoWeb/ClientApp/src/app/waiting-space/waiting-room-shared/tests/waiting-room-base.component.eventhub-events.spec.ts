@@ -28,7 +28,9 @@ import {
     roomUpdateSubjectMock,
     roomTransferSubjectMock,
     hearingCountdownCompleteSubjectMock,
-    onEventsHubReadySubjectMock
+    onEventsHubReadySubjectMock,
+    eventsServiceSpy,
+    getParticipantAddedSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import {
     clockService,
@@ -75,12 +77,11 @@ import { NotificationSoundsService } from '../../services/notification-sounds.se
 import { NotificationToastrService } from '../../services/notification-toastr.service';
 import { RoomClosingToastrService } from '../../services/room-closing-toast.service';
 import { ClockService } from 'src/app/services/clock.service';
+import { Participant } from 'src/app/shared/models/participant';
+import { ParticipantAddedMessage } from 'src/app/services/models/participant-added-message';
+import { createTrue } from 'typescript';
 
 describe('WaitingRoomComponent EventHub Call', () => {
-    function spyPropertyGetter<T, K extends keyof T>(spyObj: jasmine.SpyObj<T>, propName: K): jasmine.Spy<() => T[K]> {
-        return Object.getOwnPropertyDescriptor(spyObj, propName)?.get as jasmine.Spy<() => T[K]>;
-    }
-
     let fixture: ComponentFixture<WRTestComponent>;
     let component: WRTestComponent;
 
@@ -1469,5 +1470,35 @@ describe('WaitingRoomComponent EventHub Call', () => {
             // Assert
             expect(component.onTransferingToConsultation).toHaveBeenCalledOnceWith(expectedConsultationRoomLabel);
         }));
+    });
+
+    describe('getParticipantAdded', () => {
+        const testConferenceId = 'TestConferenceId';
+        const testParticipant = new ParticipantResponse();
+        testParticipant.id = 'TestId';
+        testParticipant.display_name = 'TestDisplayName';
+        const testParticipantMessage = new ParticipantAddedMessage(testConferenceId, testParticipant);
+
+        it('should show toast for in hearing', () => {
+            // Arrange
+            component.participant.status = ParticipantStatus.InHearing;
+
+            // Act
+            getParticipantAddedSubjectMock.next(testParticipantMessage);
+
+            // Assert
+            expect(notificationToastrService.showParticipantAdded).toHaveBeenCalledWith(testParticipant, true);
+        });
+
+        it('should show toast for not in hearing', () => {
+            // Arrange
+            component.participant.status = ParticipantStatus.Available;
+
+            // Act
+            getParticipantAddedSubjectMock.next(testParticipantMessage);
+
+            // Assert
+            expect(notificationToastrService.showParticipantAdded).toHaveBeenCalledWith(testParticipant, false);
+        });
     });
 });

@@ -125,7 +125,8 @@ export function initAllWRDependencies() {
         'showConsultationRejectedByLinkedParticipant',
         'showWaitingForLinkedParticipantsToAccept',
         'reportPoorConnection',
-        'showAudioRecordingError'
+        'showAudioRecordingError',
+        'showParticipantAdded'
     ]);
     toastrService = jasmine.createSpyObj<ToastrService>('ToastrService', ['show', 'clear', 'remove']);
     roomClosingToastrService = jasmine.createSpyObj<RoomClosingToastrService>('RoomClosingToastrService', [
