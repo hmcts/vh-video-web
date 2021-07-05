@@ -70,7 +70,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"they attempt to start a private consultation with no other participants")]
         public void WhenUserTriesToOpenPrivateConsultationWithoutOthers()
         {
+            NUnit.Framework.TestContext.WriteLine($"Waiting for Please wait element to disappear at {DateTime.Now}");
+            _browsers[_c.CurrentUser].WaitForElementToNotExist(WaitingRoomPage.Pleasewait);
+            NUnit.Framework.TestContext.WriteLine($"Click start private meeting at {DateTime.Now}");
             _browsers[_c.CurrentUser].Click(WaitingRoomPage.StartPrivateMeetingButton);
+            NUnit.Framework.TestContext.WriteLine($"Click continue button at {DateTime.Now}");
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.ContinueButton);
         }
 
