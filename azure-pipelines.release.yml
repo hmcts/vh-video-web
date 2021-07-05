@@ -141,6 +141,20 @@ stages:
             value: $(AppUri_Prod)
             env:
              - Prod
+          - group: vh-video-web-nonprod
+            env:
+             - Preview
+             - Dev
+             - AAT
+             - Sandbox
+             - Test1
+             - Test2
+          - group: vh-video-web-preprod
+            env:
+             - Preprod
+          - group: vh-video-web-prod
+            env:
+             - Prod
           - name: VanityUrl
             value: $(video_web_domain_prod)
             env:
@@ -234,7 +248,9 @@ stages:
             value: $(video_api_url)
           - name: VhServices:EmailReformDomain
             value: $(EmailReformDomain)
-
+          - name: VhServices:InternalEventSecret
+            value: $(internal_event_secret)
+            
         acceptanceTestSettings:
           - name: ConnectionStrings:SignalR
             value: signalr-connection-str
@@ -265,7 +281,7 @@ stages:
             value: $(video_web_url)
           - name: VhServices:VideoWebUrl
             value: $(video_web_url)
-
+            
           # AzureAd
           - name: AzureAd:TenantId
             value: tenantid

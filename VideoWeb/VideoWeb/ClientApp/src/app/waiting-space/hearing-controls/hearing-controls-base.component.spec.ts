@@ -1,5 +1,5 @@
 import { Guid } from 'guid-typescript';
-import { ConferenceResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
+import { ConferenceResponse, ParticipantForUserResponse, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ParticipantStatusMessage } from 'src/app/services/models/participant-status-message';
@@ -21,8 +21,30 @@ import { ParticipantUpdated } from '../models/video-call-models';
 import { PrivateConsultationRoomControlsComponent } from '../private-consultation-room-controls/private-consultation-room-controls.component';
 import { HearingControlsBaseComponent } from './hearing-controls-base.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { ParticipantService } from 'src/app/services/conference/participant.service';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { ParticipantModel } from 'src/app/shared/models/participant';
+import { fakeAsync, flush } from '@angular/core/testing';
+import { Subject } from 'rxjs';
 
 describe('HearingControlsBaseComponent', () => {
+    const participantOneId = Guid.create().toString();
+    const participantOne = new ParticipantForUserResponse({
+        id: participantOneId,
+        status: ParticipantStatus.NotSignedIn,
+        display_name: 'Interpreter',
+        role: Role.Individual,
+        representee: null,
+        case_type_group: 'applicant',
+        tiled_display_name: `CIVILIAN;Interpreter;${participantOneId}`,
+        hearing_role: HearingRole.INTERPRETER,
+        first_name: 'Interpreter',
+        last_name: 'Doe',
+        interpreter_room: null,
+        linked_participants: []
+    });
+
     let component: HearingControlsBaseComponent;
     const gloalConference = new ConferenceTestData().getConferenceDetailPast() as ConferenceResponse;
     const globalParticipant = gloalConference.participants.filter(x => x.role === Role.Individual)[0];
@@ -46,13 +68,27 @@ describe('HearingControlsBaseComponent', () => {
 
     const testData = new VideoCallTestData();
 
+    let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
+
     beforeEach(() => {
         translateService.instant.calls.reset();
+
+        participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
+            'ParticipantService',
+            ['getParticipantOrVirtualMeetingRoomById'],
+            ['loggedInParticipant', 'onParticipantSpotlightStatusChanged$']
+        );
+        const loggedInParticipantSubject = new BehaviorSubject<ParticipantModel>(
+            ParticipantModel.fromParticipantForUserResponse(participantOne)
+        );
+        getSpiedPropertyGetter(participantServiceSpy, 'loggedInParticipant').and.returnValue(loggedInParticipantSubject.asObservable());
+
         component = new PrivateConsultationRoomControlsComponent(
             videoCallService,
             eventsService,
             deviceTypeService,
             logger,
+            participantServiceSpy,
             translateService
         );
         component.participant = globalParticipant;
@@ -64,6 +100,73 @@ describe('HearingControlsBaseComponent', () => {
 
     afterEach(() => {
         component.ngOnDestroy();
+    });
+
+    describe('onLoggedInParticipantChanged', () => {
+        it('should unsubscribe from the existing subscription and resubscribe', fakeAsync(() => {
+            // Arrange
+            const firstSubscription = new Subscription();
+            spyOn(firstSubscription, 'unsubscribe');
+            const secondSubscription = new Subscription();
+            spyOn(secondSubscription, 'unsubscribe');
+            const observable = new Observable<ParticipantModel>();
+            getSpiedPropertyGetter(participantServiceSpy, 'onParticipantSpotlightStatusChanged$').and.returnValue(observable);
+            spyOn(observable, 'pipe').and.returnValue(observable);
+            spyOn(observable, 'subscribe').and.returnValues(firstSubscription, secondSubscription);
+
+            // Act
+            component.onLoggedInParticipantChanged(ParticipantModel.fromParticipantForUserResponse(participantOne));
+            flush();
+            component.onLoggedInParticipantChanged(ParticipantModel.fromParticipantForUserResponse(participantOne));
+            flush();
+
+            // Assert
+            expect(firstSubscription.unsubscribe).toHaveBeenCalledTimes(1);
+            expect(secondSubscription.unsubscribe).not.toHaveBeenCalledTimes(1);
+            expect(component['participantSpotlightUpdateSubscription']).toBe(secondSubscription);
+        }));
+
+        it('should update isSpotlighted when spotlight changed event is emitted', fakeAsync(() => {
+            // Arrange
+            const spotlightChangedSubject = new Subject<ParticipantModel>();
+            const spotlightChanged$ = spotlightChangedSubject.asObservable();
+            getSpiedPropertyGetter(participantServiceSpy, 'onParticipantSpotlightStatusChanged$').and.returnValue(spotlightChanged$);
+            spyOn(spotlightChanged$, 'pipe').and.returnValue(spotlightChanged$);
+
+            const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
+            participant.isSpotlighted = false;
+
+            // Act
+            component.onLoggedInParticipantChanged(participant);
+            flush();
+
+            participant.isSpotlighted = true;
+            spotlightChangedSubject.next(participant);
+
+            // Assert
+            expect(component.isSpotlighted).toBeTrue();
+        }));
+
+        it('should NOT update isSpotlighted when spotlight changed event is emitted if the participant IDs dont match', fakeAsync(() => {
+            // Arrange
+            const spotlightChangedSubject = new Subject<ParticipantModel>();
+            const spotlightChanged$ = spotlightChangedSubject.asObservable();
+            getSpiedPropertyGetter(participantServiceSpy, 'onParticipantSpotlightStatusChanged$').and.returnValue(spotlightChanged$);
+            spyOn(spotlightChanged$, 'pipe').and.returnValue(spotlightChanged$);
+
+            const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
+            participant.isSpotlighted = false;
+
+            // Act
+            component.onLoggedInParticipantChanged(participant);
+            flush();
+
+            participant.id = Guid.create().toString();
+            spotlightChangedSubject.next(participant);
+
+            // Assert
+            expect(component.isSpotlighted).toBeFalse();
+        }));
     });
 
     it('should open self-view by default for judge', () => {

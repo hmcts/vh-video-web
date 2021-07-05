@@ -67,6 +67,8 @@ parameters:
           - name: VhServices:BookingsApiResourceId
             value: vh-bookings-api-identifieruris
             secret: true
+          - name: VhServices:InternalEventSecret
+            value: $(internal_event_secret)
 
           # AzureAd
           - name: AzureAd:TenantId
@@ -206,11 +208,14 @@ parameters:
             value: $(video_api_url)
           - name: VhServices:EmailReformDomain
             value: $(EmailReformDomain)
+          - name: VhServices:InternalEventSecret
+            value: $(internal_event_secret)
 
 variables:
     - group: vh-domains-and-urls
     - group: vh-apps-settings-generic
     - group: vh-video-web
+    - group: vh-video-web-nonprod
     - group: vh-preview
     - group: vh test users
     - group: Saucelabs

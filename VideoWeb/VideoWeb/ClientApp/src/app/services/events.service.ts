@@ -5,7 +5,7 @@ import { Room } from '../shared/models/room';
 import { ParticipantMediaStatus } from '../shared/models/participant-media-status';
 import { ParticipantMediaStatusMessage } from '../shared/models/participant-media-status-message';
 import { ConferenceMessageAnswered } from './models/conference-message-answered';
-import { ConferenceStatus, ConsultationAnswer, EndpointStatus, ParticipantStatus } from './clients/api-client';
+import { ConferenceStatus, ConsultationAnswer, EndpointStatus, ParticipantResponse, ParticipantStatus } from './clients/api-client';
 import { Logger } from './logging/logger-base';
 
 import { ConsultationRequestResponseMessage } from './models/consultation-request-response-message';
@@ -22,6 +22,7 @@ import { RoomTransfer } from '../shared/models/room-transfer';
 import { ParticipantHandRaisedMessage } from '../shared/models/participant-hand-raised-message';
 import { ParticipantRemoteMuteMessage } from '../shared/models/participant-remote-mute-message';
 import { EventsHubService } from './events-hub.service';
+import { ParticipantAddedMessage } from './models/participant-added-message';
 
 @Injectable({
     providedIn: 'root'
@@ -41,6 +42,8 @@ export class EventsService {
     private participantStatusSubject = new Subject<ParticipantStatusMessage>();
     private endpointStatusSubject = new Subject<EndpointStatusMessage>();
     private hearingStatusSubject = new Subject<ConferenceStatusMessage>();
+    private participantAddedSubject = new Subject<ParticipantAddedMessage>();
+
     private hearingCountdownCompleteSubject = new Subject<string>();
     private helpMessageSubject = new Subject<HelpMessage>();
 
@@ -76,6 +79,12 @@ export class EventsService {
             const message = new ConferenceStatusMessage(conferenceId, status);
             this.logger.debug('[EventsService] - ConferenceStatusMessage received', message);
             this.hearingStatusSubject.next(message);
+        },
+
+        ParticipantAddedMessage: (conferenceId: string, participant: ParticipantResponse) => {
+            const message = new ParticipantAddedMessage(conferenceId, participant);
+            this.logger.debug('[EventsService] - ParticipantAddedMessage received', message);
+            this.participantAddedSubject.next(message);
         },
 
         CountdownFinished: (conferenceId: string) => {
@@ -311,6 +320,10 @@ export class EventsService {
     }
     getRoomTransfer(): Observable<RoomTransfer> {
         return this.roomTransferSubject.asObservable();
+    }
+
+    getParticipantAdded(): Observable<ParticipantAddedMessage> {
+        return this.participantAddedSubject.asObservable();
     }
 
     async sendMessage(instantMessage: InstantMessage) {
