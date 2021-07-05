@@ -70,13 +70,7 @@ namespace VideoWeb.Controllers
                 foreach (var participant in participantsAdded)
                 {
                     conference.AddParticipant(participant);
-                }
 
-                await _conferenceCache.UpdateConferenceAsync(conference);
-
-                
-                foreach (var participant in participantsAdded)
-                {
                     CallbackEvent callbackEvent = new CallbackEvent() 
                     { 
                         ConferenceId = conferenceId, 
@@ -84,9 +78,10 @@ namespace VideoWeb.Controllers
                         TimeStampUtc = DateTime.UtcNow, 
                         ParticipantAdded = participantResponseMapper.Map(participant)
                     };
-
                     await PublishEventToUi(callbackEvent);
                 }
+
+                await _conferenceCache.UpdateConferenceAsync(conference);
 
                 return NoContent();
             }
