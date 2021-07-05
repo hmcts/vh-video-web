@@ -294,7 +294,6 @@ export class NotificationToastrService {
     }
 
     showParticipantAdded(participant: ParticipantResponse, inHearing: boolean = false): VhToastComponent {
-        console.log('Faz', participant);
         let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant(
             'notification-toastr.participant-added.title',
             {

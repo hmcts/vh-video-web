@@ -1,4 +1,4 @@
-import { fakeAsync, flushMicrotasks, tick } from '@angular/core/testing';
+import { fakeAsync, flush, flushMicrotasks, tick } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import {
@@ -6,8 +6,11 @@ import {
     ConferenceStatus,
     HearingLayout,
     LoggedParticipantResponse,
+    ParticipantForUserResponse,
     ParticipantResponse,
-    ParticipantStatus
+    ParticipantStatus,
+    Role,
+    RoomSummaryResponse
 } from 'src/app/services/clients/api-client';
 import { Hearing } from 'src/app/shared/models/hearing';
 import { pageUrls } from 'src/app/shared/page-url.constants';
@@ -36,14 +39,103 @@ import { JudgeWaitingRoomComponent } from '../judge-waiting-room.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 import { ConsultationInvitation } from '../../services/consultation-invitation.service';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
+import { Guid } from 'guid-typescript';
+import { ParticipantService } from 'src/app/services/conference/participant.service';
+import { VideoControlService } from 'src/app/services/conference/video-control.service';
+import { ConferenceService } from 'src/app/services/conference/conference.service';
+import { VideoControlCacheService } from 'src/app/services/conference/video-control-cache.service';
+import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
+import { Observable } from 'rxjs';
+import { ParticipantModel } from 'src/app/shared/models/participant';
+import { VirtualMeetingRoomModel } from 'src/app/services/conference/models/virtual-meeting-room.model';
+import { HearingRole } from '../../models/hearing-role-model';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
+    const participantOneId = Guid.create().toString();
+    const participantOne = new ParticipantForUserResponse({
+        id: participantOneId,
+        status: ParticipantStatus.NotSignedIn,
+        display_name: 'Judge',
+        role: Role.Judge,
+        representee: null,
+        case_type_group: 'judge',
+        tiled_display_name: `CIVILIAN;Judge;${participantOneId}`,
+        hearing_role: HearingRole.JUDGE,
+        first_name: 'Judge',
+        last_name: 'Doe',
+        interpreter_room: null,
+        linked_participants: []
+    });
+
+    const participantTwoId = Guid.create().toString();
+    const participantTwo = new ParticipantForUserResponse({
+        id: participantTwoId,
+        status: ParticipantStatus.NotSignedIn,
+        display_name: 'Interpretee',
+        role: Role.Individual,
+        representee: null,
+        case_type_group: 'applicant',
+        tiled_display_name: `CIVILIAN;Interpretee;${participantTwoId}`,
+        hearing_role: HearingRole.LITIGANT_IN_PERSON,
+        first_name: 'Interpretee',
+        last_name: 'Doe',
+        interpreter_room: null,
+        linked_participants: []
+    });
+
+    const vmrId = '1234';
+    const vmrLabel = 'vmr-label';
+    const vmrLocked = false;
+    const vmrParticipantOneId = Guid.create().toString();
+    const vmrParticipantOne = new ParticipantForUserResponse({
+        id: vmrParticipantOneId,
+        status: ParticipantStatus.NotSignedIn,
+        display_name: 'PanelMember 1',
+        role: Role.JudicialOfficeHolder,
+        representee: null,
+        case_type_group: 'PanelMember',
+        tiled_display_name: `JOH;PannelMember;${vmrParticipantOneId}`,
+        hearing_role: HearingRole.PANEL_MEMBER,
+        first_name: 'PanelMember',
+        last_name: 'One',
+        interpreter_room: new RoomSummaryResponse({
+            id: vmrId,
+            label: vmrLabel,
+            locked: vmrLocked
+        }),
+        linked_participants: []
+    });
+
+    const vmrParticipantTwoId = Guid.create().toString();
+    const vmrParticipantTwo = new ParticipantForUserResponse({
+        id: vmrParticipantTwoId,
+        status: ParticipantStatus.NotSignedIn,
+        display_name: 'PanelMember 2',
+        role: Role.JudicialOfficeHolder,
+        representee: null,
+        case_type_group: 'PanelMember',
+        tiled_display_name: `JOH;PannelMember;${vmrParticipantTwoId}`,
+        hearing_role: HearingRole.PANEL_MEMBER,
+        first_name: 'PanelMember',
+        last_name: 'Two',
+        interpreter_room: new RoomSummaryResponse({
+            id: vmrId,
+            label: vmrLabel,
+            locked: vmrLocked
+        }),
+        linked_participants: []
+    });
+
     let component: JudgeWaitingRoomComponent;
     let audioRecordingService: jasmine.SpyObj<AudioRecordingService>;
     let activatedRoute: ActivatedRoute;
     let logged: LoggedParticipantResponse;
     const translateService = translateServiceSpy;
     let consultationInvitiation: ConsultationInvitation;
+    let conferenceServiceSpy: jasmine.SpyObj<ConferenceService>;
+    let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
+    let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
+    let videoControlCacheServiceSpy: jasmine.SpyObj<VideoControlCacheService>;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -60,6 +152,50 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         activatedRoute = <any>{
             snapshot: { data: { loggedUser: logged }, paramMap: convertToParamMap({ conferenceId: globalConference.id }) }
         };
+
+        conferenceServiceSpy = jasmine.createSpyObj<ConferenceService>(
+            'ConferenceService',
+            ['getConferenceById'],
+            ['onCurrentConferenceStatusChanged$', 'currentConferenceId', 'currentConference']
+        );
+        getSpiedPropertyGetter(conferenceServiceSpy, 'onCurrentConferenceStatusChanged$').and.returnValue(
+            jasmine.createSpyObj<Observable<{ oldStatus: ConferenceStatus; newStatus: ConferenceStatus }>>('Observable', ['subscribe'])
+        );
+
+        participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
+            'ParticipantService',
+            ['getPexipIdForParticipant'],
+            [
+                'onParticipantConnectedToPexip$',
+                'onParticipantPexipIdChanged$',
+                'onVmrConnectedToPexip$',
+                'onVmrPexipIdChanged$',
+                'onParticipantStatusChanged$',
+                'participants',
+                'virtualMeetingRooms'
+            ]
+        );
+        getSpiedPropertyGetter(participantServiceSpy, 'onParticipantConnectedToPexip$').and.returnValue(
+            jasmine.createSpyObj<Observable<ParticipantModel>>('Observable', ['subscribe'])
+        );
+        getSpiedPropertyGetter(participantServiceSpy, 'onParticipantPexipIdChanged$').and.returnValue(
+            jasmine.createSpyObj<Observable<ParticipantModel>>('Observable', ['subscribe'])
+        );
+        getSpiedPropertyGetter(participantServiceSpy, 'onParticipantStatusChanged$').and.returnValue(
+            jasmine.createSpyObj<Observable<ParticipantModel>>('Observable', ['subscribe'])
+        );
+        getSpiedPropertyGetter(participantServiceSpy, 'onVmrConnectedToPexip$').and.returnValue(
+            jasmine.createSpyObj<Observable<VirtualMeetingRoomModel>>('Observable', ['subscribe'])
+        );
+        getSpiedPropertyGetter(participantServiceSpy, 'onVmrPexipIdChanged$').and.returnValue(
+            jasmine.createSpyObj<Observable<VirtualMeetingRoomModel>>('Observable', ['subscribe'])
+        );
+
+        videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', [
+            'setSpotlightStatus',
+            'restoreParticipantsSpotlight'
+        ]);
+        videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', ['setSpotlightStatus']);
 
         userMediaService.setDefaultDevicesInCache.and.returnValue(Promise.resolve());
         component = new JudgeWaitingRoomComponent(
@@ -81,7 +217,11 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             roomClosingToastrService,
             clockService,
             translateService,
-            consultationInvitiationService
+            consultationInvitiationService,
+            conferenceServiceSpy,
+            participantServiceSpy,
+            videoControlServiceSpy,
+            videoControlCacheServiceSpy
         );
 
         consultationInvitiationService.getInvitation.and.returnValue(consultationInvitiation);
@@ -106,6 +246,11 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             clearInterval(component.callbackTimeout);
         }
     });
+
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
+
     it('should init hearing alert and setup Client', fakeAsync(() => {
         videoWebService.getJwToken.calls.reset();
         component.ngOnInit();
@@ -414,21 +559,48 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         expect(component.displayConfirmStartHearingPopup).toBeTruthy();
     });
 
-    it('should start hearing when confirmation answered no', () => {
+    it('should NOT start hearing when confirmation answered no', fakeAsync(() => {
+        // Arrange
         component.displayConfirmStartHearingPopup = true;
         videoCallService.startHearing.calls.reset();
-        component.onStartConfirmAnswered(false);
-        expect(component.displayConfirmStartHearingPopup).toBeFalsy();
-        expect(videoCallService.startHearing).toHaveBeenCalledTimes(0);
-    });
+        videoCallService.startHearing.and.resolveTo();
 
-    it('should start hearing when confirmation answered yes', () => {
+        // Act
+        component.onStartConfirmAnswered(false);
+        flush();
+
+        // Assert
+        expect(component.displayConfirmStartHearingPopup).toBeFalsy();
+        expect(videoCallService.startHearing).not.toHaveBeenCalled();
+    }));
+
+    it('should start hearing when confirmation answered yes', fakeAsync(() => {
+        // Arrange
+        videoCallService.getPreferredLayout.calls.reset();
+
         component.displayConfirmStartHearingPopup = true;
         videoCallService.startHearing.calls.reset();
+        videoCallService.startHearing.and.resolveTo();
+
+        const conferenceId = Guid.create().toString();
+        component.conference.id = conferenceId;
+        spyOnProperty(component, 'conferenceId', 'get').and.returnValue(conferenceId);
+
+        const hearingLayout = HearingLayout.Dynamic;
+        videoCallService.getPreferredLayout.and.returnValue(hearingLayout);
+
+        const hearingId = Guid.create();
+        spyOnProperty(component.hearing, 'id', 'get').and.returnValue(hearingId);
+
+        // Act
         component.onStartConfirmAnswered(true);
+        flush();
+
+        // Assert
+        expect(videoCallService.getPreferredLayout).toHaveBeenCalledOnceWith(conferenceId);
         expect(component.displayConfirmStartHearingPopup).toBeFalsy();
-        expect(videoCallService.startHearing).toHaveBeenCalled();
-    });
+        expect(videoCallService.startHearing).toHaveBeenCalledOnceWith(hearingId, hearingLayout);
+    }));
 
     it('should not enable IM when hearing has not been initalised', () => {
         component.hearing = null;
@@ -455,5 +627,257 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
         deviceTypeService.isIpad.and.returnValue(true);
         component.showVideo = true;
         expect(component.defineIsIMEnabled()).toBeFalsy();
+    });
+
+    describe('onConferenceStatusChanged', () => {
+        it('should spotlight judge on conference start and restore all other participant states if it is first time the conference has started', () => {
+            // Arrange
+            const judgeParticipant = ParticipantModel.fromParticipantForUserResponse(participantOne);
+            const nonJudgeParticipants = [participantTwo].map(x => ParticipantModel.fromParticipantForUserResponse(x));
+            const nonVmrParticipants = [judgeParticipant, ...nonJudgeParticipants];
+            const vmrs = [VirtualMeetingRoomModel.fromRoomSummaryResponse(vmrParticipantOne.interpreter_room)];
+            const participants = [ParticipantModel.fromParticipantForUserResponse(vmrParticipantOne), ...nonVmrParticipants];
+
+            getSpiedPropertyGetter(participantServiceSpy, 'participants').and.returnValue(participants);
+            getSpiedPropertyGetter(participantServiceSpy, 'virtualMeetingRooms').and.returnValue(vmrs);
+
+            // Act
+            component.onConferenceStatusChanged({
+                oldStatus: ConferenceStatus.NotStarted,
+                newStatus: ConferenceStatus.InSession
+            });
+
+            // Assert
+            expect(videoControlServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(judgeParticipant, true);
+            expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledTimes(nonJudgeParticipants.length + vmrs.length);
+            nonJudgeParticipants.forEach(x => expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledWith(x));
+            vmrs.forEach(x => expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledWith(x));
+        });
+
+        it('should restore all other participant states if it is NOT first time the conference has started', () => {
+            // Arrange
+            const nonVmrParticipants = [participantOne, participantTwo].map(x => ParticipantModel.fromParticipantForUserResponse(x));
+            const vmrs = [VirtualMeetingRoomModel.fromRoomSummaryResponse(vmrParticipantOne.interpreter_room)];
+            const participants = [ParticipantModel.fromParticipantForUserResponse(vmrParticipantOne), ...nonVmrParticipants];
+
+            getSpiedPropertyGetter(participantServiceSpy, 'participants').and.returnValue(participants);
+            getSpiedPropertyGetter(participantServiceSpy, 'virtualMeetingRooms').and.returnValue(vmrs);
+
+            // Act
+            component.onConferenceStatusChanged({
+                oldStatus: ConferenceStatus.Paused,
+                newStatus: ConferenceStatus.InSession
+            });
+
+            // Assert
+            expect(videoControlServiceSpy.setSpotlightStatus).not.toHaveBeenCalled();
+            expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledTimes(nonVmrParticipants.length + vmrs.length);
+            nonVmrParticipants.forEach(x => expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledWith(x));
+            vmrs.forEach(x => expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledWith(x));
+        });
+
+        it('should do nothing if the new status is not in session', () => {
+            // Arrange
+            const participants = [];
+
+            getSpiedPropertyGetter(participantServiceSpy, 'participants').and.returnValue(participants);
+
+            // Act
+            component.onConferenceStatusChanged({
+                oldStatus: ConferenceStatus.Paused,
+                newStatus: ConferenceStatus.Closed
+            });
+
+            // Assert
+            expect(videoControlServiceSpy.setSpotlightStatus).not.toHaveBeenCalled();
+            expect(videoControlServiceSpy.restoreParticipantsSpotlight).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('restoreSpotlightState', () => {
+        it('should restore all other participant/vmrs states if it is NOT first time the conference has started', () => {
+            // Arrange
+            const nonVmrParticipants = [participantOne, participantTwo].map(x => ParticipantModel.fromParticipantForUserResponse(x));
+            const vmrs = [VirtualMeetingRoomModel.fromRoomSummaryResponse(vmrParticipantOne.interpreter_room)];
+            const participants = [ParticipantModel.fromParticipantForUserResponse(vmrParticipantOne), ...nonVmrParticipants];
+
+            getSpiedPropertyGetter(participantServiceSpy, 'participants').and.returnValue(participants);
+            getSpiedPropertyGetter(participantServiceSpy, 'virtualMeetingRooms').and.returnValue(vmrs);
+
+            // Act
+            component.restoreSpotlightState();
+
+            // Assert
+            expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledTimes(nonVmrParticipants.length + vmrs.length);
+            nonVmrParticipants.forEach(x => expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledWith(x));
+            vmrs.forEach(x => expect(videoControlServiceSpy.restoreParticipantsSpotlight).toHaveBeenCalledWith(x));
+        });
+    });
+
+    describe('onConferenceInSessionCheckForDisconnectedParticipants', () => {
+        it('should do nothing if the conference is not in session', () => {
+            // Arrange
+            const participants = [];
+
+            getSpiedPropertyGetter(participantServiceSpy, 'participants').and.returnValue(participants);
+
+            // Act
+            component.onConferenceInSessionCheckForDisconnectedParticipants({
+                oldStatus: ConferenceStatus.Paused,
+                newStatus: ConferenceStatus.Closed
+            });
+
+            // Assert
+            expect(videoControlCacheServiceSpy.setSpotlightStatus).not.toHaveBeenCalled();
+        });
+
+        it('should set spotlight status in cache to false for all disconnected participants', () => {
+            // Arrange
+            const participants = [participantOne, participantTwo].map(x => ParticipantModel.fromParticipantForUserResponse(x));
+            participants[0].status = ParticipantStatus.Disconnected;
+
+            const conferenceId = 'conference-id';
+
+            getSpiedPropertyGetter(participantServiceSpy, 'participants').and.returnValue(participants);
+            getSpiedPropertyGetter(participantServiceSpy, 'virtualMeetingRooms').and.returnValue([]);
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+
+            // Act
+            component.onConferenceInSessionCheckForDisconnectedParticipants({
+                oldStatus: ConferenceStatus.Paused,
+                newStatus: ConferenceStatus.InSession
+            });
+
+            // Assert
+            expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(participantOneId, false);
+        });
+
+        it('should set spotlight status in cache to false for a VMR if all participants are disconnected', () => {
+            // Arrange
+            const participants = [vmrParticipantOne, vmrParticipantTwo].map(x => ParticipantModel.fromParticipantForUserResponse(x));
+            participants[0].status = ParticipantStatus.Disconnected;
+            participants[1].status = ParticipantStatus.Disconnected;
+            const vmr = VirtualMeetingRoomModel.fromRoomSummaryResponse(participants[0].virtualMeetingRoomSummary);
+            vmr.participants = participants;
+
+            const conferenceId = 'conference-id';
+
+            getSpiedPropertyGetter(participantServiceSpy, 'participants').and.returnValue(participants);
+            getSpiedPropertyGetter(participantServiceSpy, 'virtualMeetingRooms').and.returnValue([vmr]);
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+
+            // Act
+            component.onConferenceInSessionCheckForDisconnectedParticipants({
+                oldStatus: ConferenceStatus.Paused,
+                newStatus: ConferenceStatus.InSession
+            });
+
+            // Assert
+            expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(vmr.id, false);
+        });
+    });
+
+    describe('updateSpotlightStateOnParticipantDisconnectDuringConference', () => {
+        it('should do nothing if the conference is not in session', () => {
+            // Arrange
+            const participant = ParticipantModel.fromParticipantForUserResponse(participantOne);
+
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference').and.returnValue({
+                status: ConferenceStatus.Closed
+            } as ConferenceResponse);
+
+            // Act
+            component.updateSpotlightStateOnParticipantDisconnectDuringConference(participant);
+
+            // Assert
+            expect(videoControlCacheServiceSpy.setSpotlightStatus).not.toHaveBeenCalled();
+        });
+
+        it('should do nothing if the updated participant status is not disconnected', () => {
+            // Arrange
+            const participant = ParticipantModel.fromParticipantForUserResponse(participantTwo);
+            participant.status = ParticipantStatus.Available;
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference').and.returnValue({
+                status: ConferenceStatus.InSession
+            } as ConferenceResponse);
+
+            // Act
+            component.updateSpotlightStateOnParticipantDisconnectDuringConference(participant);
+
+            // Assert
+            expect(videoControlCacheServiceSpy.setSpotlightStatus).not.toHaveBeenCalled();
+        });
+
+        it('should set spotlight status of vmr in cache to false if all participants are disconnected', () => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const participants = [
+                ParticipantModel.fromParticipantForUserResponse(vmrParticipantOne),
+                ParticipantModel.fromParticipantForUserResponse(vmrParticipantTwo)
+            ];
+
+            participants[0].status = ParticipantStatus.Disconnected;
+            participants[1].status = ParticipantStatus.Disconnected;
+
+            const vmr = VirtualMeetingRoomModel.fromRoomSummaryResponse(participants[0].virtualMeetingRoomSummary);
+            vmr.participants = participants;
+
+            getSpiedPropertyGetter(participantServiceSpy, 'virtualMeetingRooms').and.returnValue([vmr]);
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference').and.returnValue({
+                status: ConferenceStatus.InSession
+            } as ConferenceResponse);
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+
+            // Act
+            component.updateSpotlightStateOnParticipantDisconnectDuringConference(participants[0]);
+
+            // Assert
+            expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(vmr.id, false);
+        });
+
+        it('should NOT set spotlight status of vmr in cache to false if some participants are in the hearing', () => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const participants = [
+                ParticipantModel.fromParticipantForUserResponse(vmrParticipantOne),
+                ParticipantModel.fromParticipantForUserResponse(vmrParticipantTwo)
+            ];
+
+            participants[0].status = ParticipantStatus.Disconnected;
+            participants[1].status = ParticipantStatus.InHearing;
+
+            const vmr = VirtualMeetingRoomModel.fromRoomSummaryResponse(participants[0].virtualMeetingRoomSummary);
+            vmr.participants = participants;
+
+            getSpiedPropertyGetter(participantServiceSpy, 'virtualMeetingRooms').and.returnValue([vmr]);
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference').and.returnValue({
+                status: ConferenceStatus.InSession
+            } as ConferenceResponse);
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+
+            // Act
+            component.updateSpotlightStateOnParticipantDisconnectDuringConference(participants[0]);
+
+            // Assert
+            expect(videoControlCacheServiceSpy.setSpotlightStatus).not.toHaveBeenCalled();
+        });
+
+        it('should set spotlight status of participant if they are not a member of a VMR', () => {
+            // Arrange
+            const conferenceId = 'conference-id';
+            const participant = ParticipantModel.fromParticipantForUserResponse(participantTwo);
+            participant.status = ParticipantStatus.Disconnected;
+
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConference').and.returnValue({
+                status: ConferenceStatus.InSession
+            } as ConferenceResponse);
+            getSpiedPropertyGetter(conferenceServiceSpy, 'currentConferenceId').and.returnValue(conferenceId);
+
+            // Act
+            component.updateSpotlightStateOnParticipantDisconnectDuringConference(participant);
+
+            // Assert
+            expect(videoControlCacheServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(participant.id, false);
+        });
     });
 });

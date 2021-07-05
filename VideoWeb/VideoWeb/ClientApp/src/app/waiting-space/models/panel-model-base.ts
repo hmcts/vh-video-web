@@ -32,7 +32,7 @@ export abstract class PanelModel {
     public pexipId: string;
 
     /**
-     * The tiled display name provided to pexip on call (<Tile Position>;<Display Name>;<Participant Id>)
+     * The tiled display name provided to pexip on call (<Role>;<Display Name>;<Participant Id>)
      */
     public pexipDisplayName: string;
     public orderInTheList: number;

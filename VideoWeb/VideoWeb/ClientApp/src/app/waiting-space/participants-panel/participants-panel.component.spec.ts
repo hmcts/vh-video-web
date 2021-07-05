@@ -28,7 +28,7 @@ import {
 } from 'src/app/testing/mocks/mock-events-service';
 import { onConferenceUpdatedMock, onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
-import { EndpointStatus, ParticipantStatus, Role } from '../../services/clients/api-client';
+import { EndpointStatus, ParticipantResponse, ParticipantStatus, Role } from '../../services/clients/api-client';
 import { HearingRole } from '../models/hearing-role-model';
 import { LinkedParticipantPanelModel } from '../models/linked-participant-panel-model';
 import { ParticipantPanelModel } from '../models/participant-panel-model';
@@ -36,6 +36,10 @@ import { ConferenceUpdated, ParticipantUpdated } from '../models/video-call-mode
 import { VideoEndpointPanelModel } from '../models/video-endpoint-panel-model';
 import { ParticipantsPanelComponent } from './participants-panel.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { VideoControlService } from 'src/app/services/conference/video-control.service';
+import { ParticipantService } from 'src/app/services/conference/participant.service';
+import { ParticipantModel } from 'src/app/shared/models/participant';
+import { CaseTypeGroup } from '../models/case-type-group';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -53,16 +57,24 @@ describe('ParticipantsPanelComponent', () => {
     const eventService = eventsServiceSpy;
     const logger = new MockLogger();
     const translateService = translateServiceSpy;
+    let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
+    let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
 
     let component: ParticipantsPanelComponent;
 
     beforeEach(() => {
+        videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', ['setSpotlightStatus']);
+
+        participantServiceSpy = jasmine.createSpyObj<ParticipantService>('ParticipantService', ['getParticipantOrVirtualMeetingRoomById']);
+
         component = new ParticipantsPanelComponent(
             videoWebServiceSpy,
             activatedRoute,
             videocallService,
+            videoControlServiceSpy,
             eventService,
             logger,
+            participantServiceSpy,
             translateService
         );
         component.participants = new ParticipantPanelModelMapper().mapFromParticipantUserResponse(participants);
@@ -442,11 +454,38 @@ describe('ParticipantsPanelComponent', () => {
         expect(videocallService.muteParticipant).toHaveBeenCalledWith(pat.pexipId, false, component.conferenceId, pat.id);
     });
 
-    it('should spotlight participant', () => {
-        const pat = component.participants[1];
-        pat.updateParticipant(false, false, false);
-        component.toggleSpotlightParticipant(pat);
-        expect(videocallService.spotlightParticipant).toHaveBeenCalledWith(pat.pexipId, true, component.conferenceId, pat.id);
+    describe('toggleSpotlightParticipant', () => {
+        it('should call video control service set spotlight status', () => {
+            // Arrange
+            const panelModel = component.participants[1];
+            panelModel.updateParticipant(false, false, false);
+
+            const participantModel = new ParticipantModel('', '', '', '', null, null, null, false, null, null);
+
+            participantServiceSpy.getParticipantOrVirtualMeetingRoomById.and.returnValue(participantModel);
+
+            // Act
+            component.toggleSpotlightParticipant(panelModel);
+
+            // Assert
+            expect(videoControlServiceSpy.setSpotlightStatus).toHaveBeenCalledOnceWith(participantModel, true);
+        });
+
+        it('should NOT call video control service set spotlight status if the participant cannot be found', () => {
+            // Arrange
+            const participant = new ParticipantPanelModel({
+                id: Guid.create().toString(),
+                role: Role.Individual,
+                hearing_role: HearingRole.LITIGANT_IN_PERSON,
+                case_type_group: CaseTypeGroup.PANEL_MEMBER
+            } as ParticipantResponse);
+
+            // Act
+            component.toggleSpotlightParticipant(participant);
+
+            // Assert
+            expect(videoControlServiceSpy.setSpotlightStatus).not.toHaveBeenCalled();
+        });
     });
 
     it('should not mute conference when any of the second last participant is unmuted manually', () => {

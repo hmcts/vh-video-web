@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
@@ -29,9 +30,10 @@ export class PrivateConsultationRoomControlsComponent extends HearingControlsBas
         protected eventService: EventsService,
         protected deviceTypeService: DeviceTypeService,
         protected logger: Logger,
+        protected participantService: ParticipantService,
         protected translateService: TranslateService
     ) {
-        super(videoCallService, eventService, deviceTypeService, logger, translateService);
+        super(videoCallService, eventService, deviceTypeService, logger, participantService, translateService);
     }
 
     canCloseOrPauseHearing() {

@@ -4,6 +4,8 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ParticipantResponse } from 'src/app/services/clients/api-client';
+import { ParticipantService } from 'src/app/services/conference/participant.service';
+import { VideoControlService } from 'src/app/services/conference/video-control.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { EndpointStatusMessage } from 'src/app/services/models/EndpointStatusMessage';
@@ -48,8 +50,10 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private videoWebService: VideoWebService,
         private route: ActivatedRoute,
         private videoCallService: VideoCallService,
+        private videoControlService: VideoControlService,
         private eventService: EventsService,
         private logger: Logger,
+        private participantsService: ParticipantService,
         protected translateService: TranslateService
     ) {}
 
@@ -145,6 +149,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             })
         );
     }
+
     handleParticipantHandRaiseChange(message: ParticipantHandRaisedMessage) {
         const participant = this.participants.find(x => x.hasParticipant(message.participantId));
         if (!participant) {
@@ -299,15 +304,32 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     }
 
     toggleSpotlightParticipant(participant: PanelModel) {
-        const p = this.participants.find(x => x.id === participant.id);
-        this.logger.debug(`${this.loggerPrefix} Judge is attempting to toggle spotlight for participant`, {
-            conference: this.conferenceId,
-            participant: p.id,
-            pexipParticipant: p.pexipId,
-            current: p.hasSpotlight(),
-            new: !p.hasSpotlight()
+        const panelModel = this.participants.find(x => x.id === participant.id);
+        this.logger.info(`${this.loggerPrefix} Judge is attempting to toggle spotlight for participant`, {
+            conferenceId: this.conferenceId,
+            unusedParticipantId: participant?.id ?? null,
+            participantId: panelModel?.id ?? null,
+            pexipId: panelModel?.pexipId ?? null,
+            current: panelModel?.hasSpotlight(),
+            new: !panelModel?.hasSpotlight()
         });
-        this.videoCallService.spotlightParticipant(p.pexipId, !p.hasSpotlight(), this.conferenceId, p.id);
+
+        if (!panelModel) {
+            return;
+        }
+
+        if (!panelModel.pexipId && !panelModel.id) {
+            this.logger.warn(`${this.loggerPrefix} Cannot spotlight participant as they could not be found or do not have an ID`, {
+                participant: panelModel,
+                participants: this.participants
+            });
+            return;
+        }
+
+        this.videoControlService.setSpotlightStatus(
+            this.participantsService.getParticipantOrVirtualMeetingRoomById(panelModel.id),
+            !panelModel.hasSpotlight()
+        );
     }
 
     toggleMuteParticipant(participant: PanelModel) {

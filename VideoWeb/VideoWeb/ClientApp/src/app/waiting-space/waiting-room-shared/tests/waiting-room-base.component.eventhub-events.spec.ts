@@ -82,10 +82,6 @@ import { ParticipantAddedMessage } from 'src/app/services/models/participant-add
 import { createTrue } from 'typescript';
 
 describe('WaitingRoomComponent EventHub Call', () => {
-    function spyPropertyGetter<T, K extends keyof T>(spyObj: jasmine.SpyObj<T>, propName: K): jasmine.Spy<() => T[K]> {
-        return Object.getOwnPropertyDescriptor(spyObj, propName)?.get as jasmine.Spy<() => T[K]>;
-    }
-
     let fixture: ComponentFixture<WRTestComponent>;
     let component: WRTestComponent;
 
