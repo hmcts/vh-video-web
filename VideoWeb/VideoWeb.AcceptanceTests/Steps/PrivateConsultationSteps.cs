@@ -20,7 +20,7 @@ namespace VideoWeb.AcceptanceTests.Steps
     {
         private const int SecondsWaitForTheLinkToAppear = 5;
         private const int SecondsWaitToCallAndAnswer = 15;
-        private const int SecondsWaitForTransfer = 5;
+        private const int SecondsWaitForTransfer = 15;
         private const int ExtraTimeToConnectTheParticipantsInSaucelabs = 300;
         private readonly Dictionary<UserDto, UserBrowser> _browsers;
         private readonly TestContext _c;
@@ -162,9 +162,13 @@ namespace VideoWeb.AcceptanceTests.Steps
         [Then(@"the (.*) and (?:the|their) (.*) will be in the same private consultation room")]
         public void ThenTheUsersWillBeAbleToSeeEachOther(string user1, string user2)
         {
+            NUnit.Framework.TestContext.WriteLine($"Checking that user {user1} and user {user2} are in the same room");
             var user = Users.GetUserFromText(user1, _c.Test.Users);
             var otherUser = Users.GetUserFromText(user2, _c.Test.Users);
+            NUnit.Framework.TestContext.WriteLine($"First user {user1} is {user.DisplayName}, {user.Username} and second user {user2} is {otherUser.DisplayName}, {otherUser.Username}");
             Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitForTransfer));
+            NUnit.Framework.TestContext.WriteLine($"User {user1} is in meeting room {TheMeetingRoomUserIsIn(user1)}");
+            NUnit.Framework.TestContext.WriteLine($"User {user2} is in meeting room {TheMeetingRoomUserIsIn(user2)}");
             TheMeetingRoomUserIsIn(user1).Should().Be(TheMeetingRoomUserIsIn(user2));
             TheUsersListedInTheMeetingRoomSeenBy(user1).Should().Contain(user.DisplayName, otherUser.DisplayName);
             TheUsersListedInTheMeetingRoomSeenBy(user2).Should().Contain(user.DisplayName, otherUser.DisplayName);
