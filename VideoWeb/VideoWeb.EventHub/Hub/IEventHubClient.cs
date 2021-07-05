@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using VideoWeb.Common.Models;
+using VideoWeb.Contract.Responses;
 using VideoWeb.EventHub.Enums;
 using VideoWeb.EventHub.Models;
 
@@ -24,5 +25,6 @@ namespace VideoWeb.EventHub.Hub
         Task AdminAnsweredChat(Guid conferenceId, string username);
         Task ReceiveHeartbeat(Guid conferenceId, Guid participantId, HeartbeatHealth heartbeatHealth, string browserName, string browserVersion, string osName, string osVersion);
         Task HearingTransfer(Guid conferenceId, Guid participantId, TransferDirection transferDirection);
+        Task ParticipantAddedMessage(Guid conferenceId, ParticipantResponse participant);
     }
 }

@@ -4,7 +4,7 @@ import { Logger } from 'src/app/services/logging/logger-base';
 import { ToastrService } from 'ngx-toastr';
 import { VhToastComponent } from 'src/app/shared/toast/vh-toast.component';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
-import { ConsultationAnswer, VideoEndpointResponse } from 'src/app/services/clients/api-client';
+import { ConsultationAnswer, ParticipantResponse, VideoEndpointResponse } from 'src/app/services/clients/api-client';
 import { NotificationSoundsService } from './notification-sounds.service';
 import { Guid } from 'guid-typescript';
 import { ParticipantHeartbeat } from '../../services/models/participant-heartbeat';
@@ -291,5 +291,55 @@ export class NotificationToastrService {
             ]
         };
         return toast.toastRef.componentInstance as VhToastComponent;
+    }
+
+    showParticipantAdded(participant: ParticipantResponse, inHearing: boolean = false): VhToastComponent {
+        console.log('Faz', participant);
+        let message = `<span class="govuk-!-font-weight-bold">${this.translateService.instant(
+            'notification-toastr.participant-added.title',
+            {
+                name: participant.name
+            }
+        )}</span>`;
+        message += `<br/>${this.translateService.instant('notification-toastr.participant-added.message', {
+            role: this.translateHearingRole(participant.hearing_role),
+            party: this.translateCaseRole(participant.case_type_group)
+        })}<br/>`;
+
+        const toast = this.toastr.show('', '', {
+            timeOut: 0,
+            tapToDismiss: false,
+            toastComponent: VhToastComponent
+        });
+        (toast.toastRef.componentInstance as VhToastComponent).vhToastOptions = {
+            color: inHearing ? 'white' : 'black',
+            htmlBody: message,
+            onNoAction: async () => {
+                this.logger.info(`${this.loggerPrefix} No action called on participant added alert`);
+            },
+            buttons: [
+                {
+                    label: this.translateService.instant('notification-toastr.participant-added.dismiss'),
+                    hoverColour: 'green',
+                    action: async () => {
+                        this.toastr.remove(toast.toastId);
+                    }
+                }
+            ]
+        };
+
+        return toast.toastRef.componentInstance as VhToastComponent;
+    }
+
+    private translateHearingRole(hearingRole: string) {
+        return this.translateService.instant('hearing-role.' + this.stringToTranslateId(hearingRole));
+    }
+
+    private translateCaseRole(caseTypeGroup: string) {
+        return this.translateService.instant('case-type-group.' + this.stringToTranslateId(caseTypeGroup));
+    }
+
+    private stringToTranslateId(str: string) {
+        return str?.replace(/\s/g, '-').toLowerCase();
     }
 }

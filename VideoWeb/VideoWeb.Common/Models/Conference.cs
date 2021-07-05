@@ -45,6 +45,11 @@ namespace VideoWeb.Common.Models
             }
         }
 
+        public void AddParticipant(Participant participant)
+        {
+            Participants.Add(participant);
+        }
+
         private CivilianRoom GetOrCreateCivilianRoom(long roomId)
         {
             var room = CivilianRooms.FirstOrDefault(x => x.Id == roomId);
