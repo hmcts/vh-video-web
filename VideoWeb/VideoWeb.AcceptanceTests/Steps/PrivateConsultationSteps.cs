@@ -115,6 +115,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var user2MeetingRoom = TheMeetingRoomUserIsIn(user2);
             _browserSteps.GivenInTheUsersBrowser(user1);
+            _browsers[_c.CurrentUser].WaitForElementToNotExist(WaitingRoomPage.Pleasewait);
             _browsers[_c.CurrentUser].Click(WaitingRoomPage.JoinPrivateMeetingButton);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.ContinueButton);
             _browsers[_c.CurrentUser].ClickRadioButton(WaitingRoomPage.MeetingRoomRadioButtonFor(user2MeetingRoom));
@@ -266,6 +267,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var user2MeetingRoom = TheMeetingRoomUserIsIn(user2);
             _browserSteps.GivenInTheUsersBrowser(user1);
+            _browsers[_c.CurrentUser].WaitForElementToNotExist(WaitingRoomPage.Pleasewait);
             _browsers[_c.CurrentUser].Click(WaitingRoomPage.JoinPrivateMeetingButton);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.ContinueButton);
             _browsers[_c.CurrentUser].Driver.FindElement(WaitingRoomPage.MeetingRoomRadioButtonFor(user2MeetingRoom)).Enabled.Should().BeFalse();
