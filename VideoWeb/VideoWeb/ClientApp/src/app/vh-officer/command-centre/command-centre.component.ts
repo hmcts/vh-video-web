@@ -243,7 +243,11 @@ export class CommandCentreComponent implements OnInit, OnDestroy {
     }
 
     isJoinByPhone(hearing: HearingSummary): boolean {
-        const datePhone = this.configSettings.join_by_phone_from_date;
+        if (!this.configSettings) {
+            this.logger.warn(`${this.loggerPrefix} (isJoinByPhone) config settings is falsey`);
+        }
+
+        const datePhone = this.configSettings?.join_by_phone_from_date;
         this.logger.debug(`${this.loggerPrefix} Join by date from settings is: ${datePhone}`);
 
         if (!datePhone || datePhone.length === 0) {
