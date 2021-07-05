@@ -12,7 +12,7 @@ import {
     providedIn: 'root'
 })
 export class VideoControlCacheLocalStorageService implements IVideoControlCacheStorageService {
-    private loggerPrefix: string = '[VideoControlCacheLocalStorageService] -';
+    private loggerPrefix = '[VideoControlCacheLocalStorageService] -';
 
     constructor(private localStorageService: LocalStorageService, private logger: LoggerService) {}
 
