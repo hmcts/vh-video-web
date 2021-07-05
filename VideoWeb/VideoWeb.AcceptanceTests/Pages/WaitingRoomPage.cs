@@ -14,7 +14,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly By DelayedText = CommonLocators.ElementContainingText("We're sorry for the delay");
         public static readonly string DelayedBgColour = "#ffdd00";
         public static readonly By ScheduledHeader = CommonLocators.ElementContainingText("Your video hearing");
-        public static readonly By ScheduledText = CommonLocators.ElementContainingText("Please wait"); 
+        public static readonly By ScheduledText = CommonLocators.ElementContainingText("Please wait");
         public const string ScheduledBgColour = "#1d70b8";
         public static readonly By TimePanel = By.XPath("(//div[contains(@class,'govuk-panel')])[1]");
         public static readonly By PausedTitle = CommonLocators.ElementContainingText("Your video hearing is paused");
@@ -23,6 +23,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static readonly By StartPrivateMeetingButton = By.Id("openStartPCButton");
         public static readonly By JoinPrivateMeetingButton = By.Id("openJoinPCButton");
         public static readonly By EnabledParticipants = By.CssSelector("input[type=checkbox]:enabled");
+        public static readonly By Pleasewait = CommonLocators.ElementContainingText(" Please wait while we connect you...");
         public static By MeetingRoomRadioButtonFor(string room) => By.XPath($"//input[./following-sibling::label/span[contains(text(),'{room.ToLower()}')]]");
         public static By InviteCheckboxFor(string displayName) => By.XPath($"//input[@type='checkbox' and ./following-sibling::label/span[text()='{displayName}']]");
         public static readonly By ContinueButton = By.Id("continue-btn");

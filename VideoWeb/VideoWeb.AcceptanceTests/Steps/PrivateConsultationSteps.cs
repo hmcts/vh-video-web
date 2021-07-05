@@ -60,6 +60,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var user = Users.GetUserFromText(user2, _c.Test.Users);
             var participant = _c.Test.ConferenceParticipants.First(x => x.Username.ToLower().Contains(user.Username.ToLower()));
             WaitForUserToBeInState(participant.Username, ParticipantState.Available, ParticipantState.InConsultation);
+            _browsers[_c.CurrentUser].WaitForElementToNotExist(WaitingRoomPage.Pleasewait);
             _browsers[_c.CurrentUser].Click(WaitingRoomPage.StartPrivateMeetingButton);
             _browsers[_c.CurrentUser].ClickCheckbox(WaitingRoomPage.InviteCheckboxFor(participant.DisplayName));
             _browsers[_c.CurrentUser].Click(WaitingRoomPage.ContinueButton);
@@ -69,7 +70,11 @@ namespace VideoWeb.AcceptanceTests.Steps
         [When(@"they attempt to start a private consultation with no other participants")]
         public void WhenUserTriesToOpenPrivateConsultationWithoutOthers()
         {
+            NUnit.Framework.TestContext.WriteLine($"Waiting for Please wait element to disappear at {DateTime.Now}");
+            _browsers[_c.CurrentUser].WaitForElementToNotExist(WaitingRoomPage.Pleasewait);
+            NUnit.Framework.TestContext.WriteLine($"Click start private meeting at {DateTime.Now}");
             _browsers[_c.CurrentUser].Click(WaitingRoomPage.StartPrivateMeetingButton);
+            NUnit.Framework.TestContext.WriteLine($"Click continue button at {DateTime.Now}");
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.ContinueButton);
         }
 
@@ -110,6 +115,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var user2MeetingRoom = TheMeetingRoomUserIsIn(user2);
             _browserSteps.GivenInTheUsersBrowser(user1);
+            _browsers[_c.CurrentUser].WaitForElementToNotExist(WaitingRoomPage.Pleasewait);
             _browsers[_c.CurrentUser].Click(WaitingRoomPage.JoinPrivateMeetingButton);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.ContinueButton);
             _browsers[_c.CurrentUser].ClickRadioButton(WaitingRoomPage.MeetingRoomRadioButtonFor(user2MeetingRoom));
@@ -261,6 +267,7 @@ namespace VideoWeb.AcceptanceTests.Steps
         {
             var user2MeetingRoom = TheMeetingRoomUserIsIn(user2);
             _browserSteps.GivenInTheUsersBrowser(user1);
+            _browsers[_c.CurrentUser].WaitForElementToNotExist(WaitingRoomPage.Pleasewait);
             _browsers[_c.CurrentUser].Click(WaitingRoomPage.JoinPrivateMeetingButton);
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.ContinueButton);
             _browsers[_c.CurrentUser].Driver.FindElement(WaitingRoomPage.MeetingRoomRadioButtonFor(user2MeetingRoom)).Enabled.Should().BeFalse();
