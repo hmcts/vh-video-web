@@ -60,6 +60,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             var user = Users.GetUserFromText(user2, _c.Test.Users);
             var participant = _c.Test.ConferenceParticipants.First(x => x.Username.ToLower().Contains(user.Username.ToLower()));
             WaitForUserToBeInState(participant.Username, ParticipantState.Available, ParticipantState.InConsultation);
+            _browsers[_c.CurrentUser].WaitForElementToNotExist(WaitingRoomPage.Pleasewait);
             _browsers[_c.CurrentUser].Click(WaitingRoomPage.StartPrivateMeetingButton);
             _browsers[_c.CurrentUser].ClickCheckbox(WaitingRoomPage.InviteCheckboxFor(participant.DisplayName));
             _browsers[_c.CurrentUser].Click(WaitingRoomPage.ContinueButton);
