@@ -20,11 +20,14 @@ namespace VideoWeb.Extensions
     {
         public static void RegisterAuthSchemes(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
-            var eventhubPath = configuration.GetValue<string>("VhServices:EventHubPath");
             var kinlyConfiguration = configuration.GetSection("KinlyConfiguration").Get<KinlyConfiguration>();
             var azureAdConfiguration = configuration.GetSection("AzureAd").Get<AzureAdConfiguration>();
             var eJudAdConfiguration = configuration.GetSection("EJudAd").Get<EJudAdConfiguration>();
             var kinlyCallbackSecret = Convert.FromBase64String(kinlyConfiguration.CallbackSecret);
+         
+            var videoHearingServicesConfiguration = configuration.GetSection("VhServices").Get<HearingServicesConfiguration>();
+            var eventhubPath = videoHearingServicesConfiguration.EventHubPath;
+            var internalEventSecret = Convert.FromBase64String(videoHearingServicesConfiguration.InternalEventSecret);
 
             var providerSchemes = new List<IProviderSchemes>
             {
@@ -44,12 +47,16 @@ namespace VideoWeb.Extensions
                         {
                             return "Callback";
                         }
+                        else if (context.Request.Path.StartsWithSegments("/internalevent"))
+                        {
+                            return "InternalEvent";
+                        }
 
                         var isEventHubRequest = context.Request.Path.StartsWithSegments("/eventhub");
                         var provider = GetProviderFromRequest(context.Request, providerSchemes);
                         return providerSchemes.Single(s => s.Provider == provider).GetScheme(isEventHubRequest);
                     };
-                })                
+                })
                 .AddJwtBearer("Callback", options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -57,6 +64,15 @@ namespace VideoWeb.Extensions
                         ValidateIssuer = false,
                         ValidateAudience = false,
                         IssuerSigningKey = new SymmetricSecurityKey(kinlyCallbackSecret)
+                    };
+                })
+                .AddJwtBearer("InternalEvent", options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        IssuerSigningKey = new SymmetricSecurityKey(internalEventSecret)
                     };
                 });
 

@@ -10,6 +10,7 @@ import { EventsHubService } from './events-hub.service';
 import { Heartbeat } from '../shared/models/heartbeat';
 import { TransferDirection } from './models/hearing-transfer';
 import { ParticipantMediaStatus } from '../shared/models/participant-media-status';
+import { ParticipantResponse } from './clients/api-client';
 
 describe('EventsService', () => {
     function spyPropertyGetter<T, K extends keyof T>(spyObj: jasmine.SpyObj<T>, propName: K): jasmine.Spy<() => T[K]> {
@@ -62,6 +63,7 @@ describe('EventsService', () => {
         subscription$.add(serviceUnderTest.getHeartbeat().subscribe());
         subscription$.add(serviceUnderTest.getServiceReconnected().subscribe());
         subscription$.add(serviceUnderTest.getServiceDisconnected().subscribe());
+        subscription$.add(serviceUnderTest.getParticipantAdded().subscribe());
 
         // Assert
         expect(subscription$).toBeTruthy();
@@ -133,70 +135,113 @@ describe('EventsService', () => {
         });
     });
 
-    describe('registerHandlers', () => {
-        it('should register the handlers if they are NOT already registered', () => {
-            // Arrange
-            const expectedNumberOfRegisterations = 16;
+    describe('handlers', () => {
+        const expectedNumberOfRegisterations = 17;
 
-            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
-            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
+        describe('registerHandlers', () => {
+            it('should register the handlers if they are NOT already registered', () => {
+                // Arrange
 
-            // Act
-            serviceUnderTest.registerHandlers();
+                const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
+                spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
 
-            // Assert
+                // Act
+                serviceUnderTest.registerHandlers();
 
-            expect(serviceUnderTest.handlersRegistered).toBeTrue();
-            expect(hubConnectionSpy.on).toHaveBeenCalledTimes(expectedNumberOfRegisterations);
+                // Assert
+
+                expect(serviceUnderTest.handlersRegistered).toBeTrue();
+                expect(hubConnectionSpy.on).toHaveBeenCalledTimes(expectedNumberOfRegisterations);
+            });
+
+            it('should NOT register the handlers if they are already registered', () => {
+                // Arrange
+                const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
+                spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
+
+                spyOnProperty(serviceUnderTest, 'handlersRegistered', 'get').and.returnValue(true);
+
+                // Act
+                serviceUnderTest.registerHandlers();
+
+                // Assert
+                expect(hubConnectionSpy.on).not.toHaveBeenCalled();
+            });
         });
 
-        it('should NOT register the handlers if they are NOT already registered', () => {
-            // Arrange
-            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
-            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
+        describe('deregisterHandlers', () => {
+            it('should deregister the handlers if they are already registered', () => {
+                // Arrange
+                spyOnProperty(serviceUnderTest, 'handlersRegistered', 'get').and.returnValue(true);
 
-            spyOnProperty(serviceUnderTest, 'handlersRegistered', 'get').and.returnValue(true);
+                const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['off']);
+                spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
 
-            // Act
-            serviceUnderTest.registerHandlers();
+                // Act
+                serviceUnderTest.deregisterHandlers();
 
-            // Assert
-            expect(hubConnectionSpy.on).not.toHaveBeenCalled();
+                // Assert
+                expect(serviceUnderTest.handlersRegistered).toBeTrue();
+                expect(hubConnectionSpy.off).toHaveBeenCalledTimes(expectedNumberOfRegisterations);
+            });
+
+            it('should NOT deregister the handlers if they are NOT already registered', () => {
+                // Arrange
+                const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['off']);
+                spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
+
+                spyOnProperty(serviceUnderTest, 'handlersRegistered', 'get').and.returnValue(false);
+
+                // Act
+                serviceUnderTest.deregisterHandlers();
+
+                // Assert
+                expect(hubConnectionSpy.off).not.toHaveBeenCalled();
+            });
+        });
+
+        describe('ParticipantAdded', () => {
+            const eventString = 'ParticipantAddedMessage';
+
+            it('should be registered', () => {
+                // Arrange
+
+                const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
+                spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
+
+                // Act
+                serviceUnderTest.registerHandlers();
+
+                // Assert
+
+                expect(serviceUnderTest.handlersRegistered).toBeTrue();
+                expect(hubConnectionSpy.on).toHaveBeenCalledWith(eventString, jasmine.any(Function));
+            });
+
+            it('should set the correct next value of participantAddedSubject when function is called', doneCallback => {
+                const testConferenceId = 'TestConferenceId';
+                const testParticipant = new ParticipantResponse();
+                testParticipant.id = 'TestParticipantId';
+                testParticipant.display_name = 'TestParticipantDisplayName';
+
+                const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
+                hubConnectionSpy.on.withArgs(jasmine.any(String), jasmine.any(Function)).and.callFake((eventType: string, func: any) => {
+                    if (eventType === eventString) {
+                        func(testConferenceId, testParticipant);
+                    }
+                });
+
+                serviceUnderTest.getParticipantAdded().subscribe(message => {
+                    expect(message.conferenceId).toBe(testConferenceId);
+                    expect(message.participant).toBe(testParticipant);
+                    doneCallback();
+                });
+
+                spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
+                serviceUnderTest.registerHandlers();
+            });
         });
     });
-
-    describe('deregisterHandlers', () => {
-        it('should deregister the handlers if they are already registered', () => {
-            // Arrange
-            const expectedNumberOfDeregisterations = 16;
-            spyOnProperty(serviceUnderTest, 'handlersRegistered', 'get').and.returnValue(true);
-
-            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['off']);
-            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
-
-            // Act
-            serviceUnderTest.deregisterHandlers();
-
-            // Assert
-            expect(serviceUnderTest.handlersRegistered).toBeTrue();
-            expect(hubConnectionSpy.off).toHaveBeenCalledTimes(expectedNumberOfDeregisterations);
-        });
-
-        it('should NOT deregister the handlers if they are NOT already registered', () => {
-            // Arrange
-            const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['off']);
-            spyPropertyGetter(eventsHubServiceSpy, 'connection').and.returnValue(hubConnectionSpy);
-
-            spyOnProperty(serviceUnderTest, 'handlersRegistered', 'get').and.returnValue(false);
-
-            // Act
-            serviceUnderTest.deregisterHandlers();
-
-            // Assert
-            expect(hubConnectionSpy.off).not.toHaveBeenCalled();
-        });
-    });
-
     describe('send message functions', () => {
         it('sendMessage (instant) - should call send on the hub connection', fakeAsync(() => {
             // Arrange

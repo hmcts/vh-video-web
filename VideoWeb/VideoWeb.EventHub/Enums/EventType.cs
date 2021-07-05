@@ -21,6 +21,7 @@ namespace VideoWeb.EventHub.Enums
         CountdownFinished,
         EndpointJoined,
         EndpointDisconnected,
-        EndpointTransfer
+        EndpointTransfer,
+        ParticipantAdded
     }
 }

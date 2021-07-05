@@ -560,7 +560,7 @@
     },
     "participant-added": {
       "title": "Mae {{name}}",
-      "message": "{{role}} wedi cael ei (h)ychwanegu at y gwrandawiad.",
+      "message": "{{role}}({{party}}) wedi cael ei (h)ychwanegu at y gwrandawiad.",
       "dismiss": "Gwrthod"
     }
   },
