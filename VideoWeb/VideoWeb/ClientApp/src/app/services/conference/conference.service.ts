@@ -4,15 +4,11 @@ import { Guid } from 'guid-typescript';
 import { Observable, ReplaySubject, Subscription } from 'rxjs';
 import { filter, map, mergeMap, take } from 'rxjs/operators';
 import { ParticipantModel } from 'src/app/shared/models/participant';
-import { ApiClient, ConferenceResponse, ConferenceStatus } from '../clients/api-client';
+import { ApiClient, ConferenceResponse } from '../clients/api-client';
 import { EventsService } from '../events.service';
 import { LoggerService } from '../logging/logger.service';
 import { ConferenceStatusMessage } from '../models/conference-status-message';
-
-interface ConferenceStatusChanged {
-    oldStatus: ConferenceStatus;
-    newStatus: ConferenceStatus;
-}
+import { ConferenceStatusChanged } from './models/conference-status-changed.model';
 
 @Injectable({
     providedIn: 'root'

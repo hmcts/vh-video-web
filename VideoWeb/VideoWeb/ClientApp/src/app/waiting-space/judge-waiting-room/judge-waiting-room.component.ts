@@ -8,6 +8,7 @@ import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus, ParticipantStatus, Role } from 'src/app/services/clients/api-client';
 import { ClockService } from 'src/app/services/clock.service';
 import { ConferenceService } from 'src/app/services/conference/conference.service';
+import { ConferenceStatusChanged } from 'src/app/services/conference/models/conference-status-changed.model';
 import { VirtualMeetingRoomModel } from 'src/app/services/conference/models/virtual-meeting-room.model';
 import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { VideoControlCacheService } from 'src/app/services/conference/video-control-cache.service';
@@ -158,7 +159,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         );
     }
 
-    onConferenceStatusChanged(conferenceStatus: { oldStatus: ConferenceStatus; newStatus: ConferenceStatus }): void {
+    onConferenceStatusChanged(conferenceStatus: ConferenceStatusChanged): void {
         if (conferenceStatus.newStatus === ConferenceStatus.InSession) {
             this.logger.info(`${this.loggerPrefixJudge} spotlighting judge as it is the start of the hearing`);
 
@@ -174,9 +175,7 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
             }
 
             participants.forEach(participant => {
-                if (!participant.virtualMeetingRoomSummary) {
-                    this.videoControlService.restoreParticipantsSpotlight(participant);
-                }
+                this.restoreSpotlightIfParticipantIsNotInAVMR(participant);
             });
 
             this.participantService.virtualMeetingRooms.forEach(vmr => {
@@ -187,14 +186,18 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
 
     restoreSpotlightState(): void {
         this.participantService.participants.forEach(participant => {
-            if (!participant.virtualMeetingRoomSummary) {
-                this.videoControlService.restoreParticipantsSpotlight(participant);
-            }
+            this.restoreSpotlightIfParticipantIsNotInAVMR(participant);
         });
 
         this.participantService.virtualMeetingRooms.forEach(vmr => {
             this.videoControlService.restoreParticipantsSpotlight(vmr);
         });
+    }
+
+    private restoreSpotlightIfParticipantIsNotInAVMR(participant: ParticipantModel) {
+        if (!participant.virtualMeetingRoomSummary) {
+            this.videoControlService.restoreParticipantsSpotlight(participant);
+        }
     }
 
     onConferenceInSessionCheckForDisconnectedParticipants(update: { oldStatus: ConferenceStatus; newStatus: ConferenceStatus }): void {

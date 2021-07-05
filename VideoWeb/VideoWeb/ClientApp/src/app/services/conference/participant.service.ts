@@ -28,7 +28,7 @@ export class ParticipantService {
         return this._participants;
     }
 
-    private _loggedInParticipant: ReplaySubject<ParticipantModel> = new ReplaySubject<ParticipantModel>();
+    private _loggedInParticipant: ReplaySubject<ParticipantModel> = new ReplaySubject<ParticipantModel>(1);
     get loggedInParticipant(): Observable<ParticipantModel> {
         return this._loggedInParticipant.asObservable();
     }

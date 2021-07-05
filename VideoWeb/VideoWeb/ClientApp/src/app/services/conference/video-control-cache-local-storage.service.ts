@@ -12,15 +12,19 @@ import {
     providedIn: 'root'
 })
 export class VideoControlCacheLocalStorageService implements IVideoControlCacheStorageService {
-    constructor(private localStorageService: LocalStorageService, private logger: LoggerService) {
-        this.logger.info('');
-    }
+    private loggerPrefix: string = '[VideoControlCacheLocalStorageService] -';
+
+    constructor(private localStorageService: LocalStorageService, private logger: LoggerService) {}
 
     get localStorageKey() {
         return 'conferenceControlStates';
     }
 
     saveHearingStateForConference(conferenceId: string, hearingControlStates: IHearingControlsState) {
+        this.logger.info(`${this.loggerPrefix} saving state for the conference`, {
+            state: hearingControlStates
+        });
+
         const state = this.localStorageService.load<IHearingControlStates>(this.localStorageKey) ?? {};
         state[conferenceId] = hearingControlStates;
 
@@ -30,6 +34,11 @@ export class VideoControlCacheLocalStorageService implements IVideoControlCacheS
 
     loadHearingStateForConference(conferenceId: string): Observable<IHearingControlsState> {
         const state = this.localStorageService.load<IHearingControlStates>(this.localStorageKey) ?? {};
+
+        this.logger.info(`${this.loggerPrefix} loading state for the conference`, {
+            state: state
+        });
+
         return of(state[conferenceId] ?? { participantStates: {} });
     }
 }
