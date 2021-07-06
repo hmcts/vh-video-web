@@ -84,6 +84,14 @@ describe('WaitingRoom ParticipantList Base', () => {
         component.ngOnDestroy();
     });
 
+    it('should call initParticipants when there are changes to input', () => {
+        spyOn(component, 'initParticipants');
+
+        component.ngOnChanges(null);
+
+        expect(component.initParticipants).toHaveBeenCalledTimes(1);
+    });
+
     it('should group type of participants', () => {
         expect(component.judge).toBeDefined();
         expect(component.nonJudgeParticipants).toBeDefined();

@@ -146,6 +146,9 @@ namespace VideoWeb.EventHub.Handlers.Core
                 Logger.LogTrace("{UserName} | Role: {Role}", participant.Username,
                     participant.Role);
             }
+
+            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
+                .ParticipantAddedMessage(SourceConference.Id, participantAdded);
         }
 
         protected abstract Task PublishStatusAsync(CallbackEvent callbackEvent);

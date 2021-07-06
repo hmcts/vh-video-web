@@ -96,6 +96,16 @@ export class ParticipantStatusComponent implements OnInit {
                 await this.refreshConferenceDataDuringDisconnect();
             })
         );
+
+        this.eventHubSubscriptions.add(
+            this.eventService.getParticipantAdded().subscribe(participantAddedMessage => {
+                this.logger.debug(`[WR] - Participant Added`, participantAddedMessage);
+                if (this.conferenceId === participantAddedMessage.conferenceId) {
+                    this.logger.debug(`[WR] - Participant Added to current conference, updating list`);
+                    this.loadData();
+                }
+            })
+        );
     }
 
     handleParticipantStatusChange(message: ParticipantStatusMessage): Promise<void> {
