@@ -83,3 +83,8 @@ Scenario: Participant unable to join a locked private consultation
   When the second individual user has progressed to the Waiting Room page for the existing hearing
   Then the second individual will not be able to join the meeting room containing the first individual
   And the first individual and the first representative can both leave the private consultation room
+
+Scenario: Participants can enter private consultation after the hearing has closed
+  Given the first individual and the first representative are in a private consultation room
+  When the hearing has been closed
+  Then the first individual and the first representative will be in the same private consultation room
