@@ -463,6 +463,7 @@ export abstract class WaitingRoomBaseDirective {
                     participantAddedMessage.participant,
                     this.participant.status === ParticipantStatus.InHearing
                 );
+                this.getConference();
             })
         );
     }

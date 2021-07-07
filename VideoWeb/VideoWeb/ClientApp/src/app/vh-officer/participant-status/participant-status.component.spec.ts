@@ -1,8 +1,14 @@
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
-import { ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
+import { ParticipantAddedMessage } from 'src/app/services/models/participant-added-message';
 import { Participant } from 'src/app/shared/models/participant';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
-import { eventHubDisconnectSubjectMock, eventsServiceSpy, participantStatusSubjectMock } from 'src/app/testing/mocks/mock-events-service';
+import {
+    eventHubDisconnectSubjectMock,
+    eventsServiceSpy,
+    getParticipantAddedSubjectMock,
+    participantStatusSubjectMock
+} from 'src/app/testing/mocks/mock-events-service';
 import { VideoWebService } from '../../services/api/video-web.service';
 import { ErrorService } from '../../services/error.service';
 import { ParticipantStatusMessage } from '../../services/models/participant-status-message';
@@ -164,6 +170,33 @@ describe('ParticipantStatusComponent', () => {
 
         expect(component.participants[0].status).toBe(ParticipantStatus.NotSignedIn);
         expect(component.participants[0].statusText).toBe('Unavailable');
+    });
+
+    describe('participantAdded', () => {
+        const conferenceId = 'conferenceId';
+        beforeEach(() => {
+            component.conferenceId = conferenceId;
+            spyOn(component, 'loadData');
+        });
+
+        it('should update participants when participant added event occurs for current conference', () => {
+            component.setupEventHubSubscribers();
+
+            const message = new ParticipantAddedMessage(conferenceId, new ParticipantResponse());
+            getParticipantAddedSubjectMock.next(message);
+
+            expect(component.loadData).toHaveBeenCalledTimes(1);
+        });
+
+        it('should not update participants when participant added event occurs for another conference', () => {
+            const otherConferenceId = 'otherConferenceId';
+            component.setupEventHubSubscribers();
+
+            const message = new ParticipantAddedMessage(otherConferenceId, new ParticipantResponse());
+            getParticipantAddedSubjectMock.next(message);
+
+            expect(component.loadData).toHaveBeenCalledTimes(0);
+        });
     });
 
     it('should return "available" class', () => {

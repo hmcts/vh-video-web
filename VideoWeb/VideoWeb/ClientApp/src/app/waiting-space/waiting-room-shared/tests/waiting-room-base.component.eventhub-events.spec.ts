@@ -1500,5 +1500,16 @@ describe('WaitingRoomComponent EventHub Call', () => {
             // Assert
             expect(notificationToastrService.showParticipantAdded).toHaveBeenCalledWith(testParticipant, false);
         });
+
+        it('should update conference', () => {
+            // Arrange
+            spyOn(component, 'getConference');
+
+            // Act
+            getParticipantAddedSubjectMock.next(testParticipantMessage);
+
+            // Assert
+            expect(component.getConference).toHaveBeenCalledTimes(1);
+        });
     });
 });
