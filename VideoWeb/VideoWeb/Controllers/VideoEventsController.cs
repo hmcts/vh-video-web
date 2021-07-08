@@ -149,21 +149,42 @@ namespace VideoWeb.Controllers
                 return;
             }
 
-            var roomId = long.Parse(request.ParticipantRoomId);
+            var vmrId = long.Parse(request.ParticipantRoomId);
             var participantId = Guid.Parse(request.ParticipantId);
 
             switch (request.EventType)
             {
                 case EventType.Joined:
-                    conference.AddParticipantToRoom(roomId, participantId);
+                    conference.AddParticipantToRoom(vmrId, participantId);
+                    await _conferenceCache.UpdateConferenceAsync(conference);
+
+                    var vmr = conference.CivilianRooms.FirstOrDefault(x => x.Id == vmrId);
+                    var linkedParticipantInConsultation = vmr?.Participants.Where(x => x != participantId)
+                        .Select(x => conference.Participants.FirstOrDefault(y => x == y.Id))
+                        .FirstOrDefault(z => z?.ParticipantStatus == ParticipantStatus.InConsultation);
+                    if (vmr != null && linkedParticipantInConsultation != null)
+                    {
+                        var room = (await _videoApiClient.GetParticipantsByConferenceIdAsync(conference.Id)).FirstOrDefault(x => x.Id == linkedParticipantInConsultation.Id)?.CurrentRoom;
+                        if (room != null)
+                        {
+                            await SendHearingEventAsync(new ConferenceEventRequest
+                            {
+                                ConferenceId = conference.Id.ToString(),
+                                EventId = Guid.NewGuid().ToString(),
+                                EventType = EventType.Transfer,
+                                ParticipantId = vmrId.ToString(),
+                                TransferFrom = "WaitingRoom",
+                                TransferTo = room.Label
+                            });
+                        }
+                    }
                     break;
                 case EventType.Disconnected:
-                    conference.RemoveParticipantFromRoom(roomId, participantId);
+                    conference.RemoveParticipantFromRoom(vmrId, participantId);
+                    await _conferenceCache.UpdateConferenceAsync(conference);
                     break;
                 default: return;
             }
-
-            await _conferenceCache.UpdateConferenceAsync(conference);
         }
     }
 }
