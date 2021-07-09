@@ -68,22 +68,26 @@ namespace VideoWeb.Extensions
                 .ToList();
         }
 
+        public static ConferenceEventRequest Clone(this ConferenceEventRequest originalRequest)
+        {
+            return new ConferenceEventRequest
+            {
+                ConferenceId = originalRequest.ConferenceId,
+                Phone = originalRequest.Phone,
+                Reason = originalRequest.Reason,
+                EventId = originalRequest.EventId,
+                EventType = originalRequest.EventType,
+                ParticipantId = originalRequest.ParticipantId,
+                TransferFrom = originalRequest.TransferFrom,
+                TransferTo = originalRequest.TransferTo,
+                ParticipantRoomId = originalRequest.ParticipantRoomId,
+                TimeStampUtc = originalRequest.TimeStampUtc
+            };
+        }
+        
         public static ConferenceEventRequest UpdateEventTypeForVideoApi(this ConferenceEventRequest request)
         {
-            var videoApiRequest = new ConferenceEventRequest
-            {
-                ConferenceId = request.ConferenceId,
-                Phone = request.Phone,
-                Reason = request.Reason,
-                EventId = request.EventId,
-                EventType = request.EventType,
-                ParticipantId = request.ParticipantId,
-                TransferFrom = request.TransferFrom,
-                TransferTo = request.TransferTo,
-                ParticipantRoomId = request.ParticipantRoomId,
-                TimeStampUtc = request.TimeStampUtc
-            };
-                
+            var videoApiRequest = request.Clone();
             videoApiRequest.EventType = request.EventType switch
             {
                 EventType.Joined when !request.ParticipantRoomId.IsNullOrEmpty() => EventType.RoomParticipantJoined,
@@ -92,7 +96,7 @@ namespace VideoWeb.Extensions
                 EventType.Transfer when !request.ParticipantRoomId.IsNullOrEmpty() => EventType.RoomParticipantTransfer,
                 _ => request.EventType
             };
-            
+
             return videoApiRequest;
         }
     }
