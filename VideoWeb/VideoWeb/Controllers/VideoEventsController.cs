@@ -181,12 +181,12 @@ namespace VideoWeb.Controllers
                 var participantId = Guid.Parse(request.ParticipantId);
             
                 var vmr = conference.CivilianRooms.FirstOrDefault(x => x.Id == vmrId);
-                var linkedParticipantInConsultation = vmr?.Participants.Where(x => x != participantId)
-                    .Select(x => conference.Participants.FirstOrDefault(y => x == y.Id))
-                    .FirstOrDefault(z => z?.ParticipantStatus == ParticipantStatus.InConsultation);
-                if (vmr != null && linkedParticipantInConsultation != null)
+                var linkedParticipantInConsultation = vmr?.Participants.Where(participantGuid => participantGuid != participantId)
+                    .Select(participantGuid => conference.Participants.FirstOrDefault(y => participantGuid == y.Id))
+                    .FirstOrDefault(participant => participant?.ParticipantStatus == ParticipantStatus.InConsultation);
+                if (linkedParticipantInConsultation != null)
                 {
-                    var room = (await _videoApiClient.GetParticipantsByConferenceIdAsync(conference.Id)).FirstOrDefault(x => x.Id == linkedParticipantInConsultation.Id)?.CurrentRoom;
+                    var room = (await _videoApiClient.GetParticipantsByConferenceIdAsync(conference.Id)).FirstOrDefault(participant => participant.Id == linkedParticipantInConsultation.Id)?.CurrentRoom;
                     if (room != null)
                     {
                         await SendHearingEventAsync(new ConferenceEventRequest
