@@ -12,6 +12,7 @@ import {
 } from 'src/app/shared/models/participant-event';
 import { ElementRef } from '@angular/core';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { ParticipantPanelModelMapper } from 'src/app/shared/mappers/participant-panel-model-mapper';
 
 describe('JudgeContextMenuComponent', () => {
     const participants = new ConferenceTestData().getListOfParticipants();
@@ -22,17 +23,19 @@ describe('JudgeContextMenuComponent', () => {
     let component: JudgeContextMenuComponent;
     const translateService = translateServiceSpy;
 
+    const mapper = new ParticipantPanelModelMapper();
+
     beforeEach(() => {
         nativeElement = document.createElement('div');
         elementRef = new ElementRef<HTMLDivElement>(nativeElement);
         component = new JudgeContextMenuComponent(logger, elementRef, translateService);
-        component.participant = new ParticipantPanelModel(participants[0]);
+        component.participant = mapper.mapFromParticipantUserResponse(participants[0]);
     });
 
     it('should getAdditionalText return displayname as default', () => {
         const p = participants[0];
         p.status = ParticipantStatus.InHearing;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(participants[0]);
         component.participant = model;
         expect(component.getAdditionalText()).toContain(``);
     });
