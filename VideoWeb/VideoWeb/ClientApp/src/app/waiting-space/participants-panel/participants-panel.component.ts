@@ -153,7 +153,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
         this.eventhubSubscription$.add(
             this.participantsService.onParticipantsUpdated$.subscribe(() => {
-                console.log('Faz - Panel onParticipantsUpdated', this.participantsService.nonEndpointParticipants);
                 const mapper = new ParticipantPanelModelMapper();
                 this.nonEndpointParticipants = this.participantsService.nonEndpointParticipants.map(x => mapper.mapFromParticipantModel(x));
                 this.setParticipants();
