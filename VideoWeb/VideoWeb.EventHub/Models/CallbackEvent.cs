@@ -23,7 +23,6 @@ namespace VideoWeb.EventHub.Models
         public ConferenceState ConferenceStatus { get; set; }
         public bool IsOtherParticipantsInConsultationRoom { get; set; }
 
-        // public ParticipantsUpdated ParticipantsUpdated { get; set; }
         public List<ParticipantResponse> Participants { get; set; }
     }
 }

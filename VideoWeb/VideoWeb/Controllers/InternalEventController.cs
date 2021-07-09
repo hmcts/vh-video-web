@@ -32,7 +32,6 @@ namespace VideoWeb.Controllers
         private readonly IConferenceCache _conferenceCache;
         private readonly ILogger<InternalEventController> _logger;
         private readonly IMapperFactory _mapperFactory;
-        // private readonly ConferenceUpdater _conferenceUpdater;
 
         public InternalEventController(
             IVideoApiClient videoApiClient,
@@ -46,7 +45,6 @@ namespace VideoWeb.Controllers
             _conferenceCache = conferenceCache;
             _logger = logger;
             _mapperFactory = mapperFactory;
-            // _conferenceUpdater = conferenceUpdater;
         }
 
         [HttpPost("ParticipantsUpdated")]
@@ -92,7 +90,6 @@ namespace VideoWeb.Controllers
                     ConferenceId = conferenceId, 
                     EventType = EventType.ParticipantsUpdated, 
                     TimeStampUtc = DateTime.UtcNow,
-                    // ParticipantsUpdated = participantsUpdatedMapper.Map(request)
                     Participants = conference.Participants.Select(x => participantsMapper.Map(x)).ToList()
                 };
 
