@@ -16,8 +16,7 @@ export class UnsupportedBrowserComponent implements OnInit {
         this.supportedBrowsers.push(new SupportedBrowserModel('Chrome', 'Chrome for Windows/Mac'));
         this.supportedBrowsers.push(new SupportedBrowserModel('Firefox', 'Firefox for Windows/Mac'));
         this.supportedBrowsers.push(new SupportedBrowserModel('Safari', 'Safari for Mac/iPad'));
-        this.supportedBrowsers.push(new SupportedBrowserModel('Edge Chromium', 'Edge Chromium for Windows'));
-        this.supportedBrowsers.push(new SupportedBrowserModel('Edge', 'Edge for Windows'));
+        this.supportedBrowsers.push(new SupportedBrowserModel('Edge Chromium', 'Edge for Windows'));
     }
 
     ngOnInit() {}
