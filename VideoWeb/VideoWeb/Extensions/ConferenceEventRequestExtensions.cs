@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Castle.Core.Internal;
@@ -69,7 +70,21 @@ namespace VideoWeb.Extensions
 
         public static ConferenceEventRequest UpdateEventTypeForVideoApi(this ConferenceEventRequest request)
         {
-            request.EventType = request.EventType switch
+            var videoApiRequest = new ConferenceEventRequest
+            {
+                ConferenceId = request.ConferenceId,
+                Phone = request.Phone,
+                Reason = request.Reason,
+                EventId = request.EventId,
+                EventType = request.EventType,
+                ParticipantId = request.ParticipantId,
+                TransferFrom = request.TransferFrom,
+                TransferTo = request.TransferTo,
+                ParticipantRoomId = request.ParticipantRoomId,
+                TimeStampUtc = request.TimeStampUtc
+            };
+                
+            videoApiRequest.EventType = request.EventType switch
             {
                 EventType.Joined when !request.ParticipantRoomId.IsNullOrEmpty() => EventType.RoomParticipantJoined,
                 EventType.Disconnected when !request.ParticipantRoomId.IsNullOrEmpty() => EventType
@@ -77,7 +92,8 @@ namespace VideoWeb.Extensions
                 EventType.Transfer when !request.ParticipantRoomId.IsNullOrEmpty() => EventType.RoomParticipantTransfer,
                 _ => request.EventType
             };
-            return request;
+            
+            return videoApiRequest;
         }
     }
 }
