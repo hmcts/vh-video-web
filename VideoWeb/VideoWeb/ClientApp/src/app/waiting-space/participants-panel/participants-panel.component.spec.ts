@@ -77,7 +77,7 @@ describe('ParticipantsPanelComponent', () => {
             participantServiceSpy,
             translateService
         );
-        component.participants = new ParticipantPanelModelMapper().mapFromParticipantUserResponse(participants);
+        component.participants = new ParticipantPanelModelMapper().mapFromParticipantUserResponseArray(participants);
         component.conferenceId = conferenceId;
         component.witnessTransferTimeout = {};
 

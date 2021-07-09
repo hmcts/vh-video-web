@@ -38,6 +38,8 @@ import { VideoCallService } from '../services/video-call.service';
 export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     private readonly loggerPrefix = '[ParticipantsPanel] -';
     participants: PanelModel[] = [];
+    nonEndpointParticipants: PanelModel[] = [];
+    endpointParticipants: PanelModel[] = [];
     isMuteAll = false;
     conferenceId: string;
 
@@ -146,6 +148,15 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.eventhubSubscription$.add(
             this.eventService.getParticipantHandRaisedMessage().subscribe(async message => {
                 this.handleParticipantHandRaiseChange(message);
+            })
+        );
+
+        this.eventhubSubscription$.add(
+            this.participantsService.onParticipantsUpdated$.subscribe(() => {
+                console.log('Faz - Panel onParticipantsUpdated', this.participantsService.nonEndpointParticipants);
+                const mapper = new ParticipantPanelModelMapper();
+                this.nonEndpointParticipants = this.participantsService.nonEndpointParticipants.map(x => mapper.mapFromParticipantModel(x));
+                this.setParticipants();
             })
         );
     }
@@ -265,17 +276,17 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             const pats = await this.videoWebService.getParticipantsByConferenceId(this.conferenceId);
             const eps = this.videoWebService.getEndpointsForConference(this.conferenceId);
 
-            this.participants = this.participants.concat(new ParticipantPanelModelMapper().mapFromParticipantUserResponse(pats));
+            this.nonEndpointParticipants = new ParticipantPanelModelMapper().mapFromParticipantUserResponseArray(pats);
+
+            // this.participants = this.participants.concat(new ParticipantPanelModelMapper().mapFromParticipantUserResponse(pats));
 
             this.logger.debug(`${this.loggerPrefix} Retrieved participants in conference`, { conference: this.conferenceId });
             (await eps).forEach(x => {
                 const endpoint = new VideoEndpointPanelModel(x);
-                this.participants.push(endpoint);
+                this.endpointParticipants.push(endpoint);
             });
             this.logger.debug(`${this.loggerPrefix} Retrieved endpoints in conference`, { conference: this.conferenceId });
-            this.participants.sort((x, z) => {
-                return x.orderInTheList === z.orderInTheList ? 0 : +(x.orderInTheList > z.orderInTheList) || -1;
-            });
+            this.setParticipants();
         } catch (err) {
             this.logger.error(`${this.loggerPrefix} Failed to get participants / endpoints`, err, { conference: this.conferenceId });
         }
@@ -546,5 +557,13 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
             participant.caseTypeGroup.toLowerCase() === 'endpoint'
             ? false
             : true;
+    }
+
+    private setParticipants() {
+        const combined = [...this.nonEndpointParticipants, ...this.endpointParticipants];
+        combined.sort((x, z) => {
+            return x.orderInTheList === z.orderInTheList ? 0 : +(x.orderInTheList > z.orderInTheList) || -1;
+        });
+        this.participants = combined;
     }
 }

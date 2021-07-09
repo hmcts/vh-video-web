@@ -98,10 +98,13 @@ export class ParticipantStatusComponent implements OnInit {
         );
 
         this.eventHubSubscriptions.add(
-            this.eventService.getParticipantAdded().subscribe(participantAddedMessage => {
-                this.logger.debug(`[WR] - Participant Added`, participantAddedMessage);
-                if (this.conferenceId === participantAddedMessage.conferenceId) {
-                    this.logger.debug(`[WR] - Participant Added to current conference, updating list`);
+            this.eventService.getParticipantsUpdated().subscribe(participantsUpdatedMessage => {
+                console.log('Faz - participantsUpdatedMessage', participantsUpdatedMessage);
+                this.logger.debug(`[WR] - Participants Updated`, participantsUpdatedMessage);
+                console.log('Faz - this.conferenceId', this.conferenceId);
+                if (this.conferenceId === participantsUpdatedMessage.conferenceId) {
+                    this.logger.debug(`[WR] - Participants updated for current conference, updating list`);
+                    console.log('Faz - loadData');
                     this.loadData();
                 }
             })

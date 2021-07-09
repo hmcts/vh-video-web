@@ -457,13 +457,20 @@ export abstract class WaitingRoomBaseDirective {
         );
 
         this.eventHubSubscription$.add(
-            this.eventService.getParticipantAdded().subscribe(async participantAddedMessage => {
-                this.logger.debug(`[WR] - Participant Added`, participantAddedMessage);
-                this.notificationToastrService.showParticipantAdded(
-                    participantAddedMessage.participant,
-                    this.participant.status === ParticipantStatus.InHearing
+            this.eventService.getParticipantsUpdated().subscribe(async participantsUpdatedMessage => {
+                this.logger.debug(`[WR] - Participant Updated`, participantsUpdatedMessage);
+                const newParticipants = participantsUpdatedMessage.participants.filter(
+                    x => !this.conference.participants.find(y => y.id === x.id)
                 );
-                this.getConference();
+                newParticipants.forEach(participant => {
+                    this.notificationToastrService.showParticipantAdded(
+                        participant,
+                        this.participant.status === ParticipantStatus.InHearing
+                    );
+                });
+
+                this.hearing.getConference().participants = participantsUpdatedMessage.participants;
+                this.conference = this.hearing.getConference();
             })
         );
     }

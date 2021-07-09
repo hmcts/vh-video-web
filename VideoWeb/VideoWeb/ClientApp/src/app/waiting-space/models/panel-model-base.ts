@@ -72,6 +72,7 @@ export abstract class PanelModel {
         this.pexipDisplayName = pexipDisplayName;
         this.hearingRole = hearingRole;
         this.representee = representee;
+        console.log('Faz - PanelModel', this);
         this.orderInTheList = this.setOrderInTheList();
     }
 

@@ -53,8 +53,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
                 .Build();
 
 
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantRequest, Participant>()).Returns(_mocker.Create<ParticipantRequestMapper>(parameters));
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, ParticipantResponse>()).Returns(_mocker.Create<ParticipantResponseForEventMapper>(parameters));
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<UpdateConferenceParticipantsRequest, ParticipantsUpdated>()).Returns(_mocker.Create<ParticipantsUpdatedMapper>(parameters));
 
             _controller = _mocker.Create<InternalEventController>();
             _controller.ControllerContext = context;
@@ -81,7 +80,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
                 .ReturnsAsync(conference);
 
             _mocker.Mock<IEventHandlerFactory>()
-                .Setup(x => x.Get(It.Is<EventType>(eventType => eventType == EventType.ParticipantAdded)))
+                .Setup(x => x.Get(It.Is<EventType>(eventType => eventType == EventType.ParticipantsUpdated)))
                 .Returns(_mocker.Mock<IEventHandler>().Object);
 
 
@@ -101,20 +100,15 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
                 participantAdded2,
             };
 
-            var addParticipantsRequest = new AddParticipantsToConferenceRequest()
+            var updateParticipantsRequest = new UpdateConferenceParticipantsRequest()
             {
-                Participants = participantsAdded,
+                NewParticipants = participantsAdded,
             };
 
-            var result = await _controller.ParticipantsAdded(conference.Id, addParticipantsRequest);
+            var result = await _controller.ParticipantsUpdated(conference.Id, updateParticipantsRequest);
             result.Should().BeOfType<NoContentResult>();
 
-            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.ParticipantAdded && c.ConferenceId == testConferenceId)), Times.Exactly(participantsAdded.Count));
-
-            foreach(var participant in participantsAdded)
-            {
-                _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.ParticipantAdded && c.ConferenceId == testConferenceId && c.ParticipantAdded.Name == participant.Name)), Times.Once);
-            }
+            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.ParticipantsUpdated && c.ConferenceId == testConferenceId)), Times.Exactly(participantsAdded.Count));
         }
     }
 }
