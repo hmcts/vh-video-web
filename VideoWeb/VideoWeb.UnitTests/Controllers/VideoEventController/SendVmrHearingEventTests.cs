@@ -26,7 +26,7 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             // Arrange
             var request = CreateRequest();
             request.ParticipantRoomId = TestConference.CivilianRooms.First().Id.ToString();
-
+            
             // Act
             var result = await Sut.SendHearingEventAsync(request);
 
@@ -60,6 +60,32 @@ namespace VideoWeb.UnitTests.Controllers.VideoEventController
             var newCacheRoom = TestConference.CivilianRooms.FirstOrDefault(x => x.Id == roomId);
             newCacheRoom.Should().NotBeNull();
             newCacheRoom?.Participants.Any(x => x == participantId).Should().BeTrue();
+        }
+
+        [Test]
+        public async Task should_raise_transfer_event_when_participant_joins_and_other_vmr_participants_are_in_consultation()
+        {
+            // Arrange
+            var room = TestConference.CivilianRooms.First(x => x.Participants.Any());
+            var roomId = room.Id;
+            var participantId = TestConference.Participants.Last().Id;
+            var request = CreateRequest();
+            request.EventType = EventType.Joined;
+            request.ParticipantRoomId = roomId.ToString();
+            request.ParticipantId = participantId.ToString();
+
+            // Act
+            var result = await Sut.SendHearingEventAsync(request);
+
+            // Assert
+            result.Should().BeOfType<NoContentResult>();
+            var typedResult = (NoContentResult)result;
+            typedResult.Should().NotBeNull();
+
+            //Mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.IsAny<CallbackEvent>()),
+                //Times.Exactly(participantCount));
+            Mocker.Mock<IVideoApiClient>().Verify(x => x.RaiseVideoEventAsync(It.IsAny<ConferenceEventRequest>()),
+                Times.Exactly(participantCount));
         }
 
         [Test]
