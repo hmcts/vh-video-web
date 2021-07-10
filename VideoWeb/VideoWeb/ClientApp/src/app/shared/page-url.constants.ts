@@ -15,6 +15,7 @@ export const pageUrls = {
     ParticipantSelfTestVideo: 'practice-video-hearing',
     UnsupportedDevice: 'unsupported-device',
     Introduction: 'introduction',
+    MagicLinks: 'quickjoin/:hearingId',
     // judge
     JudgeHearingList: 'judge/hearing-list',
     JudgeWaitingRoom: 'judge/waiting-room',

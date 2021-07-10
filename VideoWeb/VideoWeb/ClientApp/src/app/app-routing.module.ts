@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { AdminGuard } from './security/admin.guard';
 import { AuthGuard } from './security/auth.guard';
 import { NavigatorComponent } from './home/navigator/navigator.component';
+import { MagicLinksComponent } from './on-the-day/magic-links/magic-links.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: `${pageUrls.Navigator}`, pathMatch: 'full' },
@@ -15,6 +16,7 @@ export const routes: Routes = [
         loadChildren: () => import('./vh-officer/vh-officer.module').then(m => m.VhOfficerModule)
     },
     { path: `${pageUrls.Home}`, component: HomeComponent },
+    { path: `${pageUrls.MagicLinks}`, component: MagicLinksComponent },
     { path: `${pageUrls.Navigator}`, component: NavigatorComponent, canActivate: [AuthGuard] },
     { path: '**', redirectTo: `${pageUrls.NotFound}`, pathMatch: 'full' }
 ];
