@@ -287,80 +287,47 @@ describe('ParticipantService', () => {
             expect(currentConference$.subscribe).toHaveBeenCalledTimes(1);
         }));
     });
-
-    describe('get endpointParticipants', () => {
-        it('should return an empty array if there are no endpoints', () => {
+    describe('get Participants ', () => {
+        it ('should return combination of endpoint and non-endpoint participants', () => {
             // Arrange
-            const participants = [participantOne, participantTwo].map(x => ParticipantModel.fromParticipantForUserResponse(x));
-            spyOnProperty(sut, 'participants', 'get').and.returnValue(participants);
 
-            // Act
-            const result = sut.endpointParticipants;
-
-            // Assert
-            expect(result.length).toEqual(0);
-        });
-
-        it('should only return endpoints', () => {
-            // Arrange
             const participants = [participantOne, participantTwo].map(x => ParticipantModel.fromParticipantForUserResponse(x));
             const endpointParticipants = [endpointOne, endpointTwo].map(x => ParticipantModel.fromVideoEndpointResponse(x));
+            const allParticipants = [...participants, ...endpointParticipants];
             spyOnProperty(sut, 'endpointParticipants', 'get').and.returnValue(endpointParticipants);
+            spyOnProperty(sut, 'nonEndpointParticipants', 'get').and.returnValue(participants);
 
             // Act
-            const result = sut.endpointParticipants;
+            const result = sut.participants;
 
-            // Assert
-            expect(result.length).toEqual(endpointParticipants.length);
-            participants.forEach(x => expect(result).not.toContain(x));
-            endpointParticipants.forEach(x => expect(result).toContain(x));
+            expect(result.length).toEqual(allParticipants.length);
+            expect(result).toEqual(allParticipants);
         });
     });
-
-    describe('get nonEndpointParticipants', () => {
-        it('should throw if there are no non-endpoints as this should NOT be possible', () => {
-            // Arrange
-            const endpointParticipants = [endpointOne, endpointTwo].map(x => ParticipantModel.fromVideoEndpointResponse(x));
-            spyOnProperty(sut, 'endpointParticipants', 'get').and.returnValue(endpointParticipants);
-
-            // Act & Assert
-            expect(() => sut.nonEndpointParticipants).toThrow(invalidNumberOfNonEndpointParticipantsError());
-        });
-
-        it('should only return endpoints', () => {
-            // Arrange
-            const participants = [participantOne, participantTwo].map(x => ParticipantModel.fromParticipantForUserResponse(x));
-            const endpointParticipants = [endpointOne, endpointTwo].map(x => ParticipantModel.fromVideoEndpointResponse(x));
-            spyOnProperty(sut, 'participants', 'get').and.returnValue(participants.concat(endpointParticipants));
-
-            // Act
-            const result = sut.nonEndpointParticipants;
-
-            // Assert
-            expect(result.length).toEqual(participants.length);
-            participants.forEach(x => expect(result).toContain(x));
-            endpointParticipants.forEach(x => expect(result).not.toContain(x));
-        });
-    });
-
     describe('handle current conference changed', () => {
         it('should call get participants and end points and subscribe to the relevant conference events', fakeAsync(() => {
             // Arrange
             const participantStatusUpdate$ = new Observable<ParticipantStatusMessage>();
+            const participantsUpdated$ = new Observable<ParticipantsUpdatedMessage>();
             const expectedUnsubscribed = [
+                jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
                 jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
                 jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe'])
             ];
             const expectedSubscriptions = [
                 jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
+                jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
                 jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe'])
             ];
             spyOn(participantStatusUpdate$, 'subscribe').and.returnValues(expectedUnsubscribed[0], expectedSubscriptions[0]);
             spyOn(getLoggedInParticipantForConference$, 'subscribe').and.returnValues(expectedUnsubscribed[1], expectedSubscriptions[1]);
+            spyOn(participantsUpdated$, 'subscribe').and.returnValues(expectedUnsubscribed[2], expectedSubscriptions[2]);
 
             spyOn(participantStatusUpdateSubject, 'asObservable').and.returnValue(participantStatusUpdate$);
             eventsServiceSpy.getParticipantStatusMessage.and.returnValue(participantStatusUpdateSubject.asObservable());
 
+            spyOn(participantsUpdatedSubject, 'asObservable').and.returnValue(participantsUpdated$);
+            eventsServiceSpy.getParticipantsUpdated.and.returnValue(participantsUpdatedSubject.asObservable());
             const conferenceIdOne = 'conference-id-one';
             const conferenceIdTwo = 'conference-id-two';
             const conference = new ConferenceResponse();

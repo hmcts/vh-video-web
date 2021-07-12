@@ -24,7 +24,7 @@ export class ParticipantService {
 
     //#region Getters and Event Observables
     public get participants(): ParticipantModel[] {
-        return [...this._nonEndpointParticipants, ...this._endpointParticipants];
+        return [...this.nonEndpointParticipants, ...this.endpointParticipants];
     }
 
     private _loggedInParticipant: ReplaySubject<ParticipantModel> = new ReplaySubject<ParticipantModel>(1);
@@ -34,10 +34,6 @@ export class ParticipantService {
 
     private _nonEndpointParticipants: ParticipantModel[] = [];
     public get nonEndpointParticipants(): ParticipantModel[] {
-        if (this._nonEndpointParticipants.length < 1) {
-            throw invalidNumberOfNonEndpointParticipantsError();
-        }
-
         return this._nonEndpointParticipants;
     }
 
