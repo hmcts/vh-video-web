@@ -4,13 +4,14 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { HearingRole } from './hearing-role-model';
 import { LinkedParticipantPanelModel } from './linked-participant-panel-model';
 import { ParticipantPanelModel } from './participant-panel-model';
+import { ParticipantPanelModelMapper } from '../../shared/mappers/participant-panel-model-mapper';
 
 describe('LinkedParticipantPanelModel', () => {
     let model: LinkedParticipantPanelModel;
     let participants: ParticipantForUserResponse[];
     let johs: ParticipantForUserResponse[];
     const testData = new ConferenceTestData();
-
+    const mapper = new ParticipantPanelModelMapper();
     beforeEach(() => {
         participants = testData.getListOfLinkedParticipants();
         johs = testData.getListOfParticipants().filter(x => x.role === Role.JudicialOfficeHolder);
@@ -164,14 +165,14 @@ describe('LinkedParticipantPanelModel', () => {
     });
 
     function createLinkedModel() {
-        const pats = participants.map(p => new ParticipantPanelModel(p));
+        const pats = participants.map(p => mapper.mapFromParticipantUserResponse(p));
         const roomLabel = 'Interpreter1';
         const roomId = '787';
         model = LinkedParticipantPanelModel.fromListOfPanelModels(pats, roomLabel, roomId);
     }
 
     function createLinkedJohs() {
-        const pats = johs.map(p => new ParticipantPanelModel(p));
+        const pats = johs.map(p => mapper.mapFromParticipantUserResponse(p));
         const roomLabel = 'PanelMember1';
         const roomId = '788';
         model = LinkedParticipantPanelModel.forJudicialHolders(pats, roomLabel, roomId);
@@ -181,7 +182,7 @@ describe('LinkedParticipantPanelModel', () => {
 describe('LinkedParticipantPanelModel - witness & interpreter', () => {
     let model: LinkedParticipantPanelModel;
     let participants: ParticipantForUserResponse[];
-
+    const mapper = new ParticipantPanelModelMapper();
     beforeEach(() => {
         participants = new ConferenceTestData().getListOfLinkedParticipants(true);
     });
@@ -200,7 +201,7 @@ describe('LinkedParticipantPanelModel - witness & interpreter', () => {
     });
 
     function createLinkedModel() {
-        const pats = participants.map(p => new ParticipantPanelModel(p));
+        const pats = participants.map(p => mapper.mapFromParticipantUserResponse(p));
         const roomLabel = 'Witness1';
         const roomId = '788';
         model = LinkedParticipantPanelModel.fromListOfPanelModels(pats, roomLabel, roomId);

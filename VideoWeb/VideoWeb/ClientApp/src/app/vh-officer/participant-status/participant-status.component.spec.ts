@@ -6,7 +6,7 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import {
     eventHubDisconnectSubjectMock,
     eventsServiceSpy,
-    getParticipantAddedSubjectMock,
+    getParticipantsUpdatedSubjectMock,
     participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import { VideoWebService } from '../../services/api/video-web.service';
@@ -16,6 +16,7 @@ import { ParticipantContactDetails } from '../../shared/models/participant-conta
 import { ParticipantStatusReader } from '../../shared/models/participant-status-reader';
 import { MockLogger } from '../../testing/mocks/mock-logger';
 import { ParticipantStatusComponent } from './participant-status.component';
+import { ParticipantsUpdatedMessage } from '../../shared/models/participants-updated-message';
 
 describe('ParticipantStatusComponent', () => {
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
@@ -182,8 +183,8 @@ describe('ParticipantStatusComponent', () => {
         it('should update participants when participant added event occurs for current conference', () => {
             component.setupEventHubSubscribers();
 
-            const message = new ParticipantAddedMessage(conferenceId, new ParticipantResponse());
-            getParticipantAddedSubjectMock.next(message);
+            const message = new ParticipantsUpdatedMessage(conferenceId,  [new ParticipantResponse()]);
+            getParticipantsUpdatedSubjectMock.next(message);
 
             expect(component.loadData).toHaveBeenCalledTimes(1);
         });
@@ -192,8 +193,8 @@ describe('ParticipantStatusComponent', () => {
             const otherConferenceId = 'otherConferenceId';
             component.setupEventHubSubscribers();
 
-            const message = new ParticipantAddedMessage(otherConferenceId, new ParticipantResponse());
-            getParticipantAddedSubjectMock.next(message);
+            const message = new ParticipantsUpdatedMessage(otherConferenceId, [new ParticipantResponse()]);
+            getParticipantsUpdatedSubjectMock.next(message);
 
             expect(component.loadData).toHaveBeenCalledTimes(0);
         });
