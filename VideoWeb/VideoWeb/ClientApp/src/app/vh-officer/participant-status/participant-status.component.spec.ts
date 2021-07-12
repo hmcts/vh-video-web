@@ -17,6 +17,7 @@ import { ParticipantContactDetails } from '../../shared/models/participant-conta
 import { ParticipantStatusReader } from '../../shared/models/participant-status-reader';
 import { MockLogger } from '../../testing/mocks/mock-logger';
 import { ParticipantStatusComponent } from './participant-status.component';
+import { ParticipantsUpdatedMessage } from '../../shared/models/participants-updated-message';
 
 describe('ParticipantStatusComponent', () => {
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
