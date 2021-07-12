@@ -18,29 +18,33 @@ namespace VideoWeb.UnitTests.EventHandlers
         private ParticipantsUpdatedEventHandler _eventHandler;
 
         [Test]
-        public async Task Should_send_participant_added_message_to_participants()
+        public async Task Should_send_participants_updated_message_to_participants()
         {
             _eventHandler = new ParticipantsUpdatedEventHandler(EventHubContextMock.Object, ConferenceCache,
                 LoggerMock.Object, VideoApiClientMock.Object);
 
             var conference = TestConference;
-            var participantsUpdatedResponse = new ParticipantsUpdated();
 
             var participantCount = conference.Participants.Count;
+            var participants = new List<ParticipantResponse>() {
+                new ParticipantResponse(),
+                new ParticipantResponse(),
+                new ParticipantResponse()
+            };
 
-            //var callbackEvent = new CallbackEvent
-            //{
-            //    EventType = EventType.Joined,
-            //    EventId = Guid.NewGuid().ToString(),
-            //    ConferenceId = conference.Id,
-            //    ParticipantsUpdated = participantsUpdatedResponse,
-            //    TimeStampUtc = DateTime.UtcNow
-            //};
+            var callbackEvent = new CallbackEvent
+            {
+                EventType = EventType.ParticipantsUpdated,
+                EventId = Guid.NewGuid().ToString(),
+                ConferenceId = conference.Id,
+                Participants = participants,
+                TimeStampUtc = DateTime.UtcNow
+            };
 
-            //await _eventHandler.HandleAsync(callbackEvent);
+            await _eventHandler.HandleAsync(callbackEvent);
 
-            //EventHubClientMock.Verify(
-            //    x => x.ParticipantsUpdatedMessage(conference.Id, participantsUpdatedResponse), Times.Once);
+            EventHubClientMock.Verify(
+                x => x.ParticipantsUpdatedMessage(conference.Id, participants), Times.Exactly(participantCount + 1));
         }
     }
 }

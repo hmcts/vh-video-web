@@ -31,6 +31,12 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
         private AutoMock _mocker;
         protected InternalEventController _controller;
 
+        private Guid testConferenceId;
+        private Guid existingParticipantId;
+
+        Mock<Conference> mockConference;
+
+
         [SetUp]
         public void Setup()
         {
@@ -53,62 +59,42 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
                 .Build();
 
 
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<UpdateConferenceParticipantsRequest, ParticipantsUpdated>()).Returns(_mocker.Create<ParticipantsUpdatedMapper>(parameters));
-
             _controller = _mocker.Create<InternalEventController>();
             _controller.ControllerContext = context;
-        }
 
+            testConferenceId = Guid.NewGuid();
+            existingParticipantId = Guid.NewGuid();
 
-        [Test]
-        public async Task Should_send_event_for_each_participant_added()
-        {
-            var testConferenceId = Guid.NewGuid();
-            var existingParticipantId = Guid.NewGuid();
-
-            Conference conference = new Conference();
-            conference.Id = testConferenceId;
-            conference.Participants.Add(new Participant()
-            {
-                Id = existingParticipantId,
-                Username = ClaimsPrincipalBuilder.Username
-            });
+            mockConference = _mocker.Mock<Conference>();
+            mockConference.Object.Id = testConferenceId;
 
             _mocker.Mock<IConferenceCache>()
                 .Setup(x => x.GetOrAddConferenceAsync(It.Is<Guid>(id => id == testConferenceId),
                     It.IsAny<Func<Task<ConferenceDetailsResponse>>>()))
-                .ReturnsAsync(conference);
+                .ReturnsAsync(mockConference.Object);
 
             _mocker.Mock<IEventHandlerFactory>()
                 .Setup(x => x.Get(It.Is<EventType>(eventType => eventType == EventType.ParticipantsUpdated)))
                 .Returns(_mocker.Mock<IEventHandler>().Object);
 
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantRequest, Participant>()).Returns(_mocker.Create<ParticipantRequestMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, ParticipantResponse>()).Returns(_mocker.Create<ParticipantToParticipantResponseMapper>());
+        }
 
-            var participantAdded1 = new ParticipantRequest()
-            {
-                Name = "ParticipantAdded1",
-            };
 
-            var participantAdded2 = new ParticipantRequest()
-            {
-                Name = "ParticipantAdded2",
-            };
+        [Test]
+        public async Task Should_send_event()
+        {
+            // Arrange
+            var updateParticipantsRequest = new UpdateConferenceParticipantsRequest();
 
-            var participantsAdded = new List<ParticipantRequest>
-            {
-                participantAdded1,
-                participantAdded2,
-            };
+            // Act
+            var result = await _controller.ParticipantsUpdated(testConferenceId, updateParticipantsRequest);
 
-            var updateParticipantsRequest = new UpdateConferenceParticipantsRequest()
-            {
-                NewParticipants = participantsAdded,
-            };
-
-            var result = await _controller.ParticipantsUpdated(conference.Id, updateParticipantsRequest);
+            // Assert
             result.Should().BeOfType<NoContentResult>();
 
-            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.ParticipantsUpdated && c.ConferenceId == testConferenceId)), Times.Exactly(participantsAdded.Count));
+            _mocker.Mock<IEventHandler>().Verify(x => x.HandleAsync(It.Is<CallbackEvent>(c => c.EventType == EventType.ParticipantsUpdated && c.ConferenceId == testConferenceId && c.Participants == c.Participants)), Times.Once);
         }
     }
 }

@@ -55,8 +55,8 @@ namespace VideoWeb.Controllers
         {
             _logger.LogDebug("ParticipantsUpdated called. ConferenceId: {ConferenceId}", conferenceId);
 
-            var participantsUpdatedMapper = _mapperFactory.Get<UpdateConferenceParticipantsRequest, ParticipantsUpdated>();
-            var participantsMapper = _mapperFactory.Get<Participant, ParticipantResponse>();
+            var requestToParticipantMapper = _mapperFactory.Get<ParticipantRequest, Participant>();
+            var participantsToResponseMapper = _mapperFactory.Get<Participant, ParticipantResponse>();
 
             try
             {
@@ -66,11 +66,9 @@ namespace VideoWeb.Controllers
                     return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
                 });
 
-                // TODO refactor out of controller
-                var mapper = _mapperFactory.Get<ParticipantRequest, Participant>();
                 request.NewParticipants.ToList().ForEach(participant =>
                 {
-                    var mappedParticipant = mapper.Map(participant);
+                    var mappedParticipant = requestToParticipantMapper.Map(participant);
                     conference.AddParticipant(mappedParticipant);
                 });
 
@@ -90,7 +88,7 @@ namespace VideoWeb.Controllers
                     ConferenceId = conferenceId, 
                     EventType = EventType.ParticipantsUpdated, 
                     TimeStampUtc = DateTime.UtcNow,
-                    Participants = conference.Participants.Select(x => participantsMapper.Map(x)).ToList()
+                    Participants = conference.Participants.Select(x => participantsToResponseMapper.Map(x)).ToList()
                 };
 
                 await _conferenceCache.UpdateConferenceAsync(conference);
