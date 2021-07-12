@@ -2,11 +2,12 @@ import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
 import { ParticipantAddedMessage } from 'src/app/services/models/participant-added-message';
 import { Participant } from 'src/app/shared/models/participant';
+import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import {
     eventHubDisconnectSubjectMock,
     eventsServiceSpy,
-    getParticipantAddedSubjectMock,
+    getParticipantsUpdatedSubjectMock,
     participantStatusSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import { VideoWebService } from '../../services/api/video-web.service';
@@ -172,7 +173,7 @@ describe('ParticipantStatusComponent', () => {
         expect(component.participants[0].statusText).toBe('Unavailable');
     });
 
-    describe('participantAdded', () => {
+    describe('participantsUpdated', () => {
         const conferenceId = 'conferenceId';
         beforeEach(() => {
             component.conferenceId = conferenceId;
@@ -182,8 +183,8 @@ describe('ParticipantStatusComponent', () => {
         it('should update participants when participant added event occurs for current conference', () => {
             component.setupEventHubSubscribers();
 
-            const message = new ParticipantAddedMessage(conferenceId, new ParticipantResponse());
-            getParticipantAddedSubjectMock.next(message);
+            const message = new ParticipantsUpdatedMessage(conferenceId, [new ParticipantResponse()]);
+            getParticipantsUpdatedSubjectMock.next(message);
 
             expect(component.loadData).toHaveBeenCalledTimes(1);
         });
@@ -192,8 +193,8 @@ describe('ParticipantStatusComponent', () => {
             const otherConferenceId = 'otherConferenceId';
             component.setupEventHubSubscribers();
 
-            const message = new ParticipantAddedMessage(otherConferenceId, new ParticipantResponse());
-            getParticipantAddedSubjectMock.next(message);
+            const message = new ParticipantsUpdatedMessage(otherConferenceId, [new ParticipantResponse()]);
+            getParticipantsUpdatedSubjectMock.next(message);
 
             expect(component.loadData).toHaveBeenCalledTimes(0);
         });
