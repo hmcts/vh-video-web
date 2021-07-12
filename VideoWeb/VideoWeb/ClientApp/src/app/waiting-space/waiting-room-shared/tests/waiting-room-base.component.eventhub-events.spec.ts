@@ -30,7 +30,7 @@ import {
     hearingCountdownCompleteSubjectMock,
     onEventsHubReadySubjectMock,
     eventsServiceSpy,
-    getParticipantAddedSubjectMock
+    getParticipantsUpdatedSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import {
     clockService,
@@ -78,8 +78,8 @@ import { NotificationToastrService } from '../../services/notification-toastr.se
 import { RoomClosingToastrService } from '../../services/room-closing-toast.service';
 import { ClockService } from 'src/app/services/clock.service';
 import { Participant } from 'src/app/shared/models/participant';
-import { ParticipantAddedMessage } from 'src/app/services/models/participant-added-message';
 import { createTrue } from 'typescript';
+import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 
 describe('WaitingRoomComponent EventHub Call', () => {
     let fixture: ComponentFixture<WRTestComponent>;
@@ -1477,14 +1477,14 @@ describe('WaitingRoomComponent EventHub Call', () => {
         const testParticipant = new ParticipantResponse();
         testParticipant.id = 'TestId';
         testParticipant.display_name = 'TestDisplayName';
-        const testParticipantMessage = new ParticipantAddedMessage(testConferenceId, testParticipant);
+        const testParticipantMessage = new ParticipantsUpdatedMessage(testConferenceId, [testParticipant]);
 
         it('should show toast for in hearing', () => {
             // Arrange
             component.participant.status = ParticipantStatus.InHearing;
 
             // Act
-            getParticipantAddedSubjectMock.next(testParticipantMessage);
+            getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
 
             // Assert
             expect(notificationToastrService.showParticipantAdded).toHaveBeenCalledWith(testParticipant, true);
@@ -1495,21 +1495,10 @@ describe('WaitingRoomComponent EventHub Call', () => {
             component.participant.status = ParticipantStatus.Available;
 
             // Act
-            getParticipantAddedSubjectMock.next(testParticipantMessage);
+            getParticipantsUpdatedSubjectMock.next(testParticipantMessage);
 
             // Assert
             expect(notificationToastrService.showParticipantAdded).toHaveBeenCalledWith(testParticipant, false);
-        });
-
-        it('should update conference', () => {
-            // Arrange
-            spyOn(component, 'getConference');
-
-            // Act
-            getParticipantAddedSubjectMock.next(testParticipantMessage);
-
-            // Assert
-            expect(component.getConference).toHaveBeenCalledTimes(1);
         });
     });
 });
