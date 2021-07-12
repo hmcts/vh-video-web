@@ -288,7 +288,7 @@ describe('ParticipantService', () => {
         }));
     });
     describe('get Participants ', () => {
-        it ('should return combination of endpoint and non-endpoint participants', () => {
+        it('should return combination of endpoint and non-endpoint participants', () => {
             // Arrange
 
             const participants = [participantOne, participantTwo].map(x => ParticipantModel.fromParticipantForUserResponse(x));
