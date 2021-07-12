@@ -24,6 +24,7 @@ import { WRParticipantStatusListDirective } from './wr-participant-list-shared.c
 import { HearingRole } from '../models/hearing-role-model';
 import { TranslateService } from '@ngx-translate/core';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
+import { Participant } from 'src/app/shared/models/participant';
 
 class WrParticipantStatusListTest extends WRParticipantStatusListDirective implements OnInit, OnDestroy {
     constructor(
@@ -84,12 +85,26 @@ describe('WaitingRoom ParticipantList Base', () => {
         component.ngOnDestroy();
     });
 
-    it('should call initParticipants when there are changes to input', () => {
-        spyOn(component, 'initParticipants');
+    describe('DoCheck', () => {
+        const testParticipants = [new ParticipantResponse(), new ParticipantResponse()];
+        beforeEach(() => {
+            spyOn(component, 'initParticipants');
+            component.conference.participants = testParticipants;
+        });
 
-        component.ngOnChanges(null);
+        it('should not call initParticipants when there are no changes to list', () => {
+            component.ngDoCheck();
 
-        expect(component.initParticipants).toHaveBeenCalledTimes(1);
+            expect(component.initParticipants).not.toHaveBeenCalled();
+        });
+
+        it('should call initParticipants when there are changes to list', () => {
+            component.conference.participants = [new ParticipantResponse()];
+
+            component.ngDoCheck();
+
+            expect(component.initParticipants).toHaveBeenCalledTimes(1);
+        });
     });
 
     it('should group type of participants', () => {
