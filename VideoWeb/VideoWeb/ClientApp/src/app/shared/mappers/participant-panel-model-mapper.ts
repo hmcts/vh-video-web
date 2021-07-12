@@ -61,11 +61,6 @@ export class ParticipantPanelModelMapper {
         });
         const allMapped = linked.map(l => new ParticipantPanelModel(l));
         allMapped.push(new ParticipantPanelModel(participant));
-
-        //console.table(allMapped);
-        //console.table(allMapped.filter(x => x.hearingRole === HearingRole.INTERPRETER));        
-        //alert();
-        //return allMapped;
         return [...allMapped.filter(x => x.hearingRole !== HearingRole.INTERPRETER), ...allMapped.filter(x => x.hearingRole === HearingRole.INTERPRETER)];
     }
 }
