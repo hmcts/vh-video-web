@@ -1,6 +1,5 @@
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { ParticipantResponse, ParticipantStatus } from 'src/app/services/clients/api-client';
-import { ParticipantAddedMessage } from 'src/app/services/models/participant-added-message';
 import { Participant } from 'src/app/shared/models/participant';
 import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
@@ -17,7 +16,6 @@ import { ParticipantContactDetails } from '../../shared/models/participant-conta
 import { ParticipantStatusReader } from '../../shared/models/participant-status-reader';
 import { MockLogger } from '../../testing/mocks/mock-logger';
 import { ParticipantStatusComponent } from './participant-status.component';
-import { ParticipantsUpdatedMessage } from '../../shared/models/participants-updated-message';
 
 describe('ParticipantStatusComponent', () => {
     let videoWebServiceSpy: jasmine.SpyObj<VideoWebService>;
