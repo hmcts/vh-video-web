@@ -48,6 +48,7 @@ export abstract class WRParticipantStatusListDirective implements DoCheck {
     ) {}
 
     ngDoCheck(): void {
+        console.log('Faz', this.displayedParticipants);
         if (this.displayedParticipants !== this.conference.participants) {
             this.initParticipants();
             this.displayedParticipants = this.conference.participants;

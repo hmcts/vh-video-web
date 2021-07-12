@@ -45,6 +45,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
     videoCallSubscription$ = new Subscription();
     eventhubSubscription$ = new Subscription();
+    participantsSubscription$ = new Subscription();
 
     witnessTransferTimeout: { [id: string]: NodeJS.Timeout } = {};
 
@@ -64,6 +65,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.getParticipantsList().then(() => {
             this.setupVideoCallSubscribers();
             this.setupEventhubSubscribers();
+            this.setupParticipantsSubscribers();
         });
     }
 
@@ -90,6 +92,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.videoCallSubscription$.unsubscribe();
         this.eventhubSubscription$.unsubscribe();
+        this.participantsSubscription$.unsubscribe();
         this.resetAllWitnessTransferTimeouts();
     }
 
@@ -150,8 +153,10 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                 this.handleParticipantHandRaiseChange(message);
             })
         );
+    }
 
-        this.eventhubSubscription$.add(
+    setupParticipantsSubscribers() {
+        this.participantsSubscription$.add(
             this.participantsService.onParticipantsUpdated$.subscribe(() => {
                 const mapper = new ParticipantPanelModelMapper();
                 this.nonEndpointParticipants = this.participantsService.nonEndpointParticipants.map(x => mapper.mapFromParticipantModel(x));

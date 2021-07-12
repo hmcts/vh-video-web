@@ -24,7 +24,8 @@ import {
     hearingTransferSubjectMock,
     participantHandRaisedStatusSubjectMock,
     participantMediaStatusSubjectMock,
-    participantStatusSubjectMock
+    participantStatusSubjectMock,
+    getParticipantsUpdatedSubjectMock
 } from 'src/app/testing/mocks/mock-events-service';
 import { onConferenceUpdatedMock, onParticipantUpdatedMock, videoCallServiceSpy } from 'src/app/testing/mocks/mock-video-call.service';
 import { MockLogger } from 'src/app/testing/mocks/mock-logger';
@@ -40,6 +41,7 @@ import { VideoControlService } from 'src/app/services/conference/video-control.s
 import { ParticipantService } from 'src/app/services/conference/participant.service';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { CaseTypeGroup } from '../models/case-type-group';
+import { Subject } from 'rxjs';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -62,11 +64,23 @@ describe('ParticipantsPanelComponent', () => {
 
     let component: ParticipantsPanelComponent;
     const mapper = new ParticipantPanelModelMapper();
+    const participantsUpdatedSubject = new Subject<boolean>();
 
+    beforeAll(() => {
+        jasmine.getEnv().allowRespy(true);
+    });
+    afterAll(() => {
+        jasmine.getEnv().allowRespy(false);
+    });
     beforeEach(() => {
         videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', ['setSpotlightStatus']);
 
-        participantServiceSpy = jasmine.createSpyObj<ParticipantService>('ParticipantService', ['getParticipantOrVirtualMeetingRoomById']);
+        participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
+            'ParticipantService',
+            ['getParticipantOrVirtualMeetingRoomById'],
+            ['onParticipantsUpdated$']
+        );
+        spyOnProperty(participantServiceSpy, 'onParticipantsUpdated$').and.returnValue(participantsUpdatedSubject.asObservable());
 
         component = new ParticipantsPanelComponent(
             videoWebServiceSpy,
