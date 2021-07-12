@@ -201,7 +201,7 @@ describe('EventsService', () => {
         });
 
         describe('ParticipantAdded', () => {
-            const eventString = 'ParticipantAddedMessage';
+            const eventString = 'ParticipantsUpdatedMessage';
 
             it('should be registered', () => {
                 // Arrange
@@ -223,17 +223,17 @@ describe('EventsService', () => {
                 const testParticipant = new ParticipantResponse();
                 testParticipant.id = 'TestParticipantId';
                 testParticipant.display_name = 'TestParticipantDisplayName';
-
+                const testParticipantArr = [testParticipant];
                 const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
                 hubConnectionSpy.on.withArgs(jasmine.any(String), jasmine.any(Function)).and.callFake((eventType: string, func: any) => {
                     if (eventType === eventString) {
-                        func(testConferenceId, [testParticipant]);
+                        func(testConferenceId, testParticipantArr);
                     }
                 });
 
                 serviceUnderTest.getParticipantsUpdated().subscribe(message => {
                     expect(message.conferenceId).toBe(testConferenceId);
-                    expect(message.participants).toBe([testParticipant]);
+                    expect(message.participants).toEqual(testParticipantArr);
                     doneCallback();
                 });
 

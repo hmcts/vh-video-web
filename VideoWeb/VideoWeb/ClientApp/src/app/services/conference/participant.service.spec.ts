@@ -23,6 +23,7 @@ import { VirtualMeetingRoomModel } from './models/virtual-meeting-room.model';
 import { invalidNumberOfNonEndpointParticipantsError, ParticipantService } from './participant.service';
 import { IHearingControlsState, IParticipantControlsState } from './video-control-cache-storage.service.interface';
 import { VideoControlCacheService } from './video-control-cache.service';
+import { ParticipantsUpdatedMessage } from '../../shared/models/participants-updated-message';
 
 describe('ParticipantService', () => {
     const asParticipantModelsFromUserResponse = (participants: ParticipantForUserResponse[]) =>
@@ -138,6 +139,7 @@ describe('ParticipantService', () => {
 
     let eventsServiceSpy: jasmine.SpyObj<EventsService>;
     let participantStatusUpdateSubject: Subject<ParticipantStatusMessage>;
+    let participantsUpdatedSubject: Subject<ParticipantsUpdatedMessage>;
     let videoControlCacheServiceSpy: jasmine.SpyObj<VideoControlCacheService>;
 
     let loggerSpy: jasmine.SpyObj<LoggerService>;
@@ -170,10 +172,12 @@ describe('ParticipantService', () => {
         spyOn(participantUpdated$, 'subscribe').and.callThrough();
         videoCallServiceSpy.onParticipantUpdated.and.returnValue(participantUpdated$);
 
-        eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', ['getParticipantStatusMessage']);
+        eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', ['getParticipantStatusMessage', 'getParticipantsUpdated']);
 
         participantStatusUpdateSubject = new Subject<ParticipantStatusMessage>();
         eventsServiceSpy.getParticipantStatusMessage.and.returnValue(participantStatusUpdateSubject.asObservable());
+        participantsUpdatedSubject = new Subject<ParticipantsUpdatedMessage>();
+        eventsServiceSpy.getParticipantsUpdated.and.returnValue(participantsUpdatedSubject.asObservable());
 
         videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', [
             'setSpotlightStatus',
