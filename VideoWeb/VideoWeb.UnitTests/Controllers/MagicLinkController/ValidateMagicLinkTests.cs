@@ -54,9 +54,8 @@ namespace VideoWeb.UnitTests.Controllers.MagicLinkController
         public async Task Should_return_false_ok_result_if_hearing_does_not_exist()
         {
             //Arrange
-            _conference = null;
             _videoApiClientMock.Setup(x => x.GetConferenceByHearingRefIdAsync(_hearingId, It.IsAny<bool>()))
-                .ReturnsAsync(_conference);
+                .ThrowsAsync(new VideoApiException("", 404, "", null, null));
 
             //Act
             var result = await _controller.ValidateMagicLink(_hearingId) as OkObjectResult;
@@ -64,6 +63,23 @@ namespace VideoWeb.UnitTests.Controllers.MagicLinkController
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.False((bool)result.Value);
+        }
+
+        [Test]
+        public async Task Should_return_error_status_code_if_video_api_call_fails()
+        {
+            //Arrange
+            var exception = new VideoApiException("", 500, "response", null, null);
+            _videoApiClientMock.Setup(x => x.GetConferenceByHearingRefIdAsync(_hearingId, It.IsAny<bool>()))
+                .ThrowsAsync(exception);
+
+            //Act
+            var result = await _controller.ValidateMagicLink(_hearingId) as ObjectResult;
+
+            //Assert
+            Assert.IsInstanceOf<ObjectResult>(result);
+            Assert.AreEqual(result.Value, exception.Response);
+            Assert.AreEqual(result.StatusCode, exception.StatusCode);
         }
 
         [Test]

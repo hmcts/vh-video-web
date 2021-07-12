@@ -32,12 +32,22 @@ namespace VideoWeb.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ValidateMagicLink(Guid hearingId)
         {
-            var conference = await _videoApiClient.GetConferenceByHearingRefIdAsync(hearingId, includeClosed: true);
+            try
+            {
+                var conference = await _videoApiClient.GetConferenceByHearingRefIdAsync(hearingId, includeClosed: true);
 
-            if (conference == null || conference.CurrentStatus == ConferenceState.Closed)
-                return Ok(false);
+                if (conference.CurrentStatus == ConferenceState.Closed)
+                    return Ok(false);
+                return Ok(true);
+            }
+            catch(VideoApiException e)
+            {
+                if (e.StatusCode == 404)
+                    return Ok(false);
 
-            return Ok(true);
+                _logger.LogError(e, $"Unable to get conference with hearing id: {hearingId}");
+                return StatusCode(e.StatusCode, e.Response);
+            }
         }
     }
 }
