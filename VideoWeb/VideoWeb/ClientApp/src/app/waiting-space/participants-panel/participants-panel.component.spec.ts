@@ -61,6 +61,7 @@ describe('ParticipantsPanelComponent', () => {
     let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
 
     let component: ParticipantsPanelComponent;
+    const mapper = new ParticipantPanelModelMapper();
 
     beforeEach(() => {
         videoControlServiceSpy = jasmine.createSpyObj<VideoControlService>('VideoControlService', ['setSpotlightStatus']);
@@ -205,14 +206,14 @@ describe('ParticipantsPanelComponent', () => {
     it('should return true when participant is in hearing', () => {
         const p = participants[0];
         p.status = ParticipantStatus.InHearing;
-        const pat = new ParticipantPanelModel(p);
+        const pat = mapper.mapFromParticipantUserResponse(p);
         expect(component.isParticipantInHearing(pat)).toBeTruthy();
     });
 
     it('should return false when participant is not in hearing', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Disconnected;
-        const pat = new ParticipantPanelModel(p);
+        const pat = mapper.mapFromParticipantUserResponse(p);
         expect(component.isParticipantInHearing(pat)).toBeFalsy();
     });
 
@@ -224,7 +225,7 @@ describe('ParticipantsPanelComponent', () => {
         const p = participants[0];
         p.hearing_role = HearingRole.WITNESS;
         p.status = ParticipantStatus.Available;
-        const pat = new ParticipantPanelModel(p);
+        const pat = mapper.mapFromParticipantUserResponse(p);
         await component.initiateTransfer(pat);
         expect(logger.error).toHaveBeenCalled();
     });
@@ -234,7 +235,7 @@ describe('ParticipantsPanelComponent', () => {
         const p = participants[0];
         p.hearing_role = HearingRole.WITNESS;
         p.status = ParticipantStatus.Available;
-        const pat = new ParticipantPanelModel(p);
+        const pat = mapper.mapFromParticipantUserResponse(p);
         await component.initiateTransfer(pat);
         expect(videocallService.callParticipantIntoHearing).toHaveBeenCalledWith(component.conferenceId, p.id);
     });
@@ -243,7 +244,7 @@ describe('ParticipantsPanelComponent', () => {
         const p = participants[0];
         p.hearing_role = HearingRole.LITIGANT_IN_PERSON;
         p.status = ParticipantStatus.Available;
-        const pat = new ParticipantPanelModel(p);
+        const pat = mapper.mapFromParticipantUserResponse(p);
         await component.callWitnessIntoHearing(pat);
         expect(component.witnessTransferTimeout[p.id]).toBeUndefined();
     });
@@ -252,7 +253,7 @@ describe('ParticipantsPanelComponent', () => {
         const p = participants[0];
         p.hearing_role = HearingRole.WITNESS;
         p.status = ParticipantStatus.NotSignedIn;
-        const pat = new ParticipantPanelModel(p);
+        const pat = mapper.mapFromParticipantUserResponse(p);
         await component.callWitnessIntoHearing(pat);
         expect(component.witnessTransferTimeout[p.id]).toBeUndefined();
     });
@@ -294,7 +295,7 @@ describe('ParticipantsPanelComponent', () => {
         const p = participants[0];
         p.hearing_role = HearingRole.LITIGANT_IN_PERSON;
         p.status = ParticipantStatus.Available;
-        const pat = new ParticipantPanelModel(p);
+        const pat = mapper.mapFromParticipantUserResponse(p);
         await component.callWitnessIntoHearing(pat);
         expect(component.witnessTransferTimeout[p.id]).toBeUndefined();
     });
@@ -303,7 +304,7 @@ describe('ParticipantsPanelComponent', () => {
         const p = participants[0];
         p.hearing_role = HearingRole.WITNESS;
         p.status = ParticipantStatus.NotSignedIn;
-        const pat = new ParticipantPanelModel(p);
+        const pat = mapper.mapFromParticipantUserResponse(p);
         await component.callWitnessIntoHearing(pat);
         expect(component.witnessTransferTimeout[p.id]).toBeUndefined();
     });
@@ -473,7 +474,7 @@ describe('ParticipantsPanelComponent', () => {
 
         it('should NOT call video control service set spotlight status if the participant cannot be found', () => {
             // Arrange
-            const participant = new ParticipantPanelModel({
+            const participant = mapper.mapFromParticipantUserResponse({
                 id: Guid.create().toString(),
                 role: Role.Individual,
                 hearing_role: HearingRole.LITIGANT_IN_PERSON,
@@ -592,19 +593,19 @@ describe('ParticipantsPanelComponent', () => {
     it('should return true when participant is disconnected', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Disconnected;
-        const pat = new ParticipantPanelModel(p);
+        const pat = mapper.mapFromParticipantUserResponse(p);
         expect(component.isParticipantDisconnected(pat)).toBeTruthy();
     });
     it('should return false when participant is not disconnected', () => {
         const p = participants[0];
         p.status = ParticipantStatus.InHearing;
-        const pat = new ParticipantPanelModel(p);
+        const pat = mapper.mapFromParticipantUserResponse(p);
         expect(component.isParticipantDisconnected(pat)).toBeFalsy();
     });
     it('should map the participant panel model to the participant response model', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Disconnected;
-        const ppm = new ParticipantPanelModel(p);
+        const ppm = mapper.mapFromParticipantUserResponse(p);
         const pr = component.mapParticipantToParticipantResponse(ppm);
         expect(pr.id).toBe(ppm.id);
         expect(pr.role).toBe(ppm.role);
@@ -635,31 +636,31 @@ describe('ParticipantsPanelComponent', () => {
     it('should getPanelRowTooltipText return "Joining" for available participant', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Available;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         expect(component.getPanelRowTooltipText(model)).toContain(p.display_name + ': participants-panel.joining');
     });
     it('should getPanelRowTooltipText return "Not Joined" for participant not joined', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Joining;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         expect(component.getPanelRowTooltipText(model)).toContain(p.display_name + ': participants-panel.not-joined');
     });
     it('should getPanelRowTooltipText return "DISCONNECTED" for disconnected participant', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Disconnected;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         expect(component.getPanelRowTooltipText(model)).toContain(p.display_name + ': participants-panel.disconnected');
     });
     it('should getPanelRowTooltipText return displayname as default', () => {
         const p = participants[0];
         p.status = ParticipantStatus.InHearing;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         expect(component.getPanelRowTooltipText(model)).toContain(p.display_name);
     });
     it('should getPanelRowTooltipAdditionalText return hearing role and case role for an individual', () => {
         const p = participants[1];
         p.status = ParticipantStatus.InHearing;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         expect(component.getPanelRowTooltipText(model)).toEqual(
             `${p.display_name}<br/>hearing-role.litigant-in-person<br/>case-type-group.applicant`
         );
@@ -667,7 +668,7 @@ describe('ParticipantsPanelComponent', () => {
     it('should getPanelRowTooltipAdditionalText return hearing role and case role for a representative', () => {
         const p = participants[0];
         p.status = ParticipantStatus.InHearing;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         expect(component.getPanelRowTooltipText(model)).toEqual(
             `${p.display_name}<br/>hearing-role.witness participants-panel.for ${p.representee}<br/>case-type-group.applicant`
         );
@@ -675,50 +676,50 @@ describe('ParticipantsPanelComponent', () => {
     it('should getPanelRowTooltipAdditionalText return hearing role and case role for an observer', () => {
         const p = participants[5];
         p.status = ParticipantStatus.InHearing;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>hearing-role.observer`);
     });
     it('should getPanelRowTooltipAdditionalText return hearing role and case role for a panel member', () => {
         const p = participants[6];
         p.status = ParticipantStatus.InHearing;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         expect(component.getPanelRowTooltipText(model)).toEqual(`${p.display_name}<br/>hearing-role.panel-member`);
     });
     it('should getPanelRowTooltipAdditionalText return display name for judge', () => {
         const p = participants[2];
         p.status = ParticipantStatus.InHearing;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         expect(component.getPanelRowTooltipText(model)).toEqual(p.display_name);
     });
     it('should get red tooltip when participant is disconnected', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Disconnected;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         expect(component.getPanelRowTooltipColour(model)).toBe('red');
     });
     it('should get blue tooltip when participant is available', () => {
         const p = participants[0];
         p.status = ParticipantStatus.Available;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         expect(component.getPanelRowTooltipColour(model)).toBe('blue');
     });
     it('should get blue tooltip when participant is in hearing', () => {
         const p = participants[0];
         p.status = ParticipantStatus.InHearing;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         expect(component.getPanelRowTooltipColour(model)).toBe('blue');
     });
     it('should get grey tooltip as default', () => {
         const p = participants[0];
         p.status = ParticipantStatus.NotSignedIn;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         expect(component.getPanelRowTooltipColour(model)).toBe('grey');
     });
 
     it('should toggle mute participant on event', () => {
         // Arrange
         const p = participants[0];
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         spyOn(component, 'toggleMuteParticipant');
 
         // Act
@@ -731,7 +732,7 @@ describe('ParticipantsPanelComponent', () => {
     it('should toggle spotlight participant on event', () => {
         // Arrange
         const p = participants[0];
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         spyOn(component, 'toggleSpotlightParticipant');
 
         // Act
@@ -744,7 +745,7 @@ describe('ParticipantsPanelComponent', () => {
     it('should lower participants hand on event', () => {
         // Arrange
         const p = participants[0];
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         spyOn(component, 'lowerParticipantHand');
 
         // Act
@@ -757,7 +758,7 @@ describe('ParticipantsPanelComponent', () => {
     it('should call witness into hearing on event', () => {
         // Arrange
         const p = participants[0];
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         spyOn(component, 'callWitnessIntoHearing');
 
         // Act
@@ -770,7 +771,7 @@ describe('ParticipantsPanelComponent', () => {
     it('should dismiss witness from hearing on event', () => {
         // Arrange
         const p = participants[0];
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         spyOn(component, 'dismissWitnessFromHearing');
 
         // Act
