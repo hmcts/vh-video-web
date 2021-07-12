@@ -85,6 +85,7 @@ namespace VideoWeb.Controllers
                     await PublishEventToUi(cb);
                 }
 
+                await GenerateTransferEventOnVmrParticipantJoining(conference, request);
                 return NoContent();
             }
             catch (VideoApiException e)
@@ -149,21 +150,57 @@ namespace VideoWeb.Controllers
                 return;
             }
 
-            var roomId = long.Parse(request.ParticipantRoomId);
+            var vmrId = long.Parse(request.ParticipantRoomId);
             var participantId = Guid.Parse(request.ParticipantId);
 
             switch (request.EventType)
             {
                 case EventType.Joined:
-                    conference.AddParticipantToRoom(roomId, participantId);
+                    conference.AddParticipantToRoom(vmrId, participantId);
                     break;
+                
                 case EventType.Disconnected:
-                    conference.RemoveParticipantFromRoom(roomId, participantId);
+                    conference.RemoveParticipantFromRoom(vmrId, participantId);
                     break;
                 default: return;
             }
-
+            
             await _conferenceCache.UpdateConferenceAsync(conference);
+        }
+
+        private async Task GenerateTransferEventOnVmrParticipantJoining(Conference conference, ConferenceEventRequest request)
+        {
+            if (!request.IsParticipantAndVmrEvent())
+            {
+                return;
+            }
+            
+            if (request.EventType == EventType.Joined)
+            {
+                var vmrId = long.Parse(request.ParticipantRoomId);
+                var participantId = Guid.Parse(request.ParticipantId);
+            
+                var vmr = conference.CivilianRooms.FirstOrDefault(room => room.Id == vmrId);
+                var linkedParticipantInConsultation = vmr?.Participants.Where(participantGuid => participantGuid != participantId)
+                    .Select(participantGuid => conference.Participants.FirstOrDefault(y => participantGuid == y.Id))
+                    .FirstOrDefault(participant => participant?.ParticipantStatus == ParticipantStatus.InConsultation);
+                if (linkedParticipantInConsultation != null)
+                {
+                    var room = (await _videoApiClient.GetParticipantsByConferenceIdAsync(conference.Id)).FirstOrDefault(participant => participant.Id == linkedParticipantInConsultation.Id)?.CurrentRoom;
+                    if (room != null)
+                    {
+                        await SendHearingEventAsync(new ConferenceEventRequest
+                        {
+                            ConferenceId = conference.Id.ToString(),
+                            EventId = Guid.NewGuid().ToString(),
+                            EventType = EventType.Transfer,
+                            ParticipantId = vmrId.ToString(),
+                            TransferFrom = "WaitingRoom",
+                            TransferTo = room.Label
+                        });
+                    }
+                } 
+            }
         }
     }
 }
