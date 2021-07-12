@@ -21,35 +21,15 @@
             </ng-container>
         </ng-container>
         <ng-container  *ngFor="let participant of getPrivateConsultationParticipants(); trackBy: trackParticipant">
-            <div class="language-icon"
-                *ngIf="participant.interpreter">
-                <span class="far fa-language"></span>
-            </div>           
-            <div  class="endpoint-row participant-row">
-                <div class="header-left" [class]="getRowClasses(participant)">
-                    <app-invite-participant
-                        *ngIf="!isParticipantInCurrentRoom(participant) && isParticipantAvailable(participant) && canInvite"
-                        [participantId]="participant.id"
-                        [conferenceId]="conference.id"
-                        [roomLabel]="roomLabel">
-                    </app-invite-participant>
-                    <span *ngIf="isParticipantInCurrentRoom(participant)"
-                        class="fas fa-check"
-                        aria-hidden="true"></span>
-                </div>
-                <div [class]="getRowClasses(participant)">
-                    <span [class]="participantNameClass(participant)">{{participant.display_name}}</span>
-                    <ng-container *ngIf="participant.interpreter">
-                        <br>
-                        {{participant.interpreter.display_name}}
-                    </ng-container>
-                </div>
-                <div [class]="getRowClasses(participant)"
-                    class="text-right">
-                    <span [class]="getParticipantStatusClasses(participant)"
-                        [innerHTML]="getParticipantStatus(participant)"></span>                    
-                </div>
-            </div>
+            <app-participant-item
+                            [participant]="participant"
+                            [interpreter]="participant?.interpreter"
+                            [conferenceId]="conference.id"
+                            [roomLabel]="roomLabel"
+                            [participantCallStatuses]="participantCallStatuses"
+                            [canInvite]="canInvite"
+                            >
+            </app-participant-item>
         </ng-container>
 
 
