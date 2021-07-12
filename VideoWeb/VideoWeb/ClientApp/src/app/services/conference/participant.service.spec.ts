@@ -305,7 +305,7 @@ describe('ParticipantService', () => {
             // Arrange
             const participants = [participantOne, participantTwo].map(x => ParticipantModel.fromParticipantForUserResponse(x));
             const endpointParticipants = [endpointOne, endpointTwo].map(x => ParticipantModel.fromVideoEndpointResponse(x));
-            spyOnProperty(sut, 'participants', 'get').and.returnValue(participants.concat(endpointParticipants));
+            spyOnProperty(sut, 'endpointParticipants', 'get').and.returnValue(endpointParticipants);
 
             // Act
             const result = sut.endpointParticipants;
@@ -321,7 +321,7 @@ describe('ParticipantService', () => {
         it('should throw if there are no non-endpoints as this should NOT be possible', () => {
             // Arrange
             const endpointParticipants = [endpointOne, endpointTwo].map(x => ParticipantModel.fromVideoEndpointResponse(x));
-            spyOnProperty(sut, 'participants', 'get').and.returnValue(endpointParticipants);
+            spyOnProperty(sut, 'endpointParticipants', 'get').and.returnValue(endpointParticipants);
 
             // Act & Assert
             expect(() => sut.nonEndpointParticipants).toThrow(invalidNumberOfNonEndpointParticipantsError());
