@@ -43,7 +43,7 @@ describe('JudgeContextMenuComponent', () => {
     it('should getAdditionalText return hearing role and case role for an individual', () => {
         const p = participants[1];
         p.status = ParticipantStatus.InHearing;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
         expect(component.getAdditionalText()).toEqual(`<br/>${p.hearing_role}<br/>${p.case_type_group}`);
     });
@@ -51,7 +51,7 @@ describe('JudgeContextMenuComponent', () => {
     it('should getAdditionalText return hearing role and case role for a representative', () => {
         const p = participants[0];
         p.status = ParticipantStatus.InHearing;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
         expect(component.getAdditionalText()).toEqual(`<br/>${p.hearing_role} for ${p.representee}<br/>${p.case_type_group}`);
     });
@@ -59,7 +59,7 @@ describe('JudgeContextMenuComponent', () => {
     it('should getAdditionalText return hearing role and case role for an observer', () => {
         const p = participants[5];
         p.status = ParticipantStatus.InHearing;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
         expect(component.getAdditionalText()).toEqual(`<br/>${p.hearing_role}`);
     });
@@ -67,7 +67,7 @@ describe('JudgeContextMenuComponent', () => {
     it('should getAdditionalText return hearing role and case role for a panel member', () => {
         const p = participants[6];
         p.status = ParticipantStatus.InHearing;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
         expect(component.getAdditionalText()).toEqual(`<br/>${p.hearing_role}`);
     });
@@ -75,7 +75,7 @@ describe('JudgeContextMenuComponent', () => {
     it('should getAdditionalText return display name for judge', () => {
         const p = participants[2];
         p.status = ParticipantStatus.InHearing;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
         expect(component.getAdditionalText()).toEqual(``);
     });
@@ -84,7 +84,7 @@ describe('JudgeContextMenuComponent', () => {
         // Arrange
         const p = participants[0];
         p.status = ParticipantStatus.InHearing;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
         spyOn(component.lowerParticipantHandEvent, 'emit');
 
@@ -100,7 +100,7 @@ describe('JudgeContextMenuComponent', () => {
         // Arrange
         const p = participants[0];
         p.status = ParticipantStatus.InHearing;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
         spyOn(component.toggleSpotlightParticipantEvent, 'emit');
 
@@ -116,7 +116,7 @@ describe('JudgeContextMenuComponent', () => {
         // Arrange
         const p = participants[0];
         p.status = ParticipantStatus.InHearing;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
         spyOn(component.toggleMuteParticipantEvent, 'emit');
 
@@ -132,7 +132,7 @@ describe('JudgeContextMenuComponent', () => {
         // Arrange
         const p = participants[0];
         p.status = ParticipantStatus.InHearing;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
         spyOn(component.callWitnessIntoHearingEvent, 'emit');
 
@@ -148,7 +148,7 @@ describe('JudgeContextMenuComponent', () => {
         // Arrange
         const p = participants[0];
         p.status = ParticipantStatus.InHearing;
-        const model = new ParticipantPanelModel(p);
+        const model = mapper.mapFromParticipantUserResponse(p);
         component.participant = model;
         spyOn(component.dismissWitnessFromHearingEvent, 'emit');
 
