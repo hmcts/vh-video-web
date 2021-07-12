@@ -88,8 +88,10 @@ describe('WaitingRoom ParticipantList Base', () => {
     describe('DoCheck', () => {
         const testParticipants = [new ParticipantResponse(), new ParticipantResponse()];
         beforeEach(() => {
-            spyOn(component, 'initParticipants');
+            const spy = spyOn(component, 'initParticipants');
             component.conference.participants = testParticipants;
+            component.ngDoCheck();
+            spy.calls.reset();
         });
 
         it('should not call initParticipants when there are no changes to list', () => {
