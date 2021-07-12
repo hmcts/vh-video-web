@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Castle.Core.Internal;
@@ -67,9 +68,27 @@ namespace VideoWeb.Extensions
                 .ToList();
         }
 
+        public static ConferenceEventRequest Clone(this ConferenceEventRequest originalRequest)
+        {
+            return new ConferenceEventRequest
+            {
+                ConferenceId = originalRequest.ConferenceId,
+                Phone = originalRequest.Phone,
+                Reason = originalRequest.Reason,
+                EventId = originalRequest.EventId,
+                EventType = originalRequest.EventType,
+                ParticipantId = originalRequest.ParticipantId,
+                TransferFrom = originalRequest.TransferFrom,
+                TransferTo = originalRequest.TransferTo,
+                ParticipantRoomId = originalRequest.ParticipantRoomId,
+                TimeStampUtc = originalRequest.TimeStampUtc
+            };
+        }
+        
         public static ConferenceEventRequest UpdateEventTypeForVideoApi(this ConferenceEventRequest request)
         {
-            request.EventType = request.EventType switch
+            var videoApiRequest = request.Clone();
+            videoApiRequest.EventType = request.EventType switch
             {
                 EventType.Joined when !request.ParticipantRoomId.IsNullOrEmpty() => EventType.RoomParticipantJoined,
                 EventType.Disconnected when !request.ParticipantRoomId.IsNullOrEmpty() => EventType
@@ -77,7 +96,8 @@ namespace VideoWeb.Extensions
                 EventType.Transfer when !request.ParticipantRoomId.IsNullOrEmpty() => EventType.RoomParticipantTransfer,
                 _ => request.EventType
             };
-            return request;
+
+            return videoApiRequest;
         }
     }
 }
