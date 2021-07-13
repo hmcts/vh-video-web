@@ -16,9 +16,7 @@ export class ParticipantItemComponent {
     @Input() conferenceId: string;
     @Input() canInvite: boolean;
 
-    constructor(private translateService: TranslateService, private consultationService: ConsultationService) {
-        console.table(this.participant);
-    }
+    constructor(private translateService: TranslateService, private consultationService: ConsultationService) {}
 
     getRowClasses(participant: any): string {
         if (this.isParticipantInCurrentRoom(participant)) {

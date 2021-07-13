@@ -6,22 +6,9 @@
                 <div  class="language-icon">
                     <img  class="small-crest" src="/assets/images/UkGovCrestWhite.png"[attr.alt]="'private-consultation-participants.crest-icon-alt' | translate" />                    
                 </div>
-                <div class="panel-member-group">
+                <div class="member-group">
                     <ng-container *ngFor="let participant of geMemberParticipantsByRole(groupMember); trackBy: trackParticipant">        
-                        <app-joh-participant-item
-                            [participant]="participant"
-                            [conferenceId]="conference.id"
-                            [roomLabel]="roomLabel"
-                            [participantCallStatuses]="participantCallStatuses"
-                            [canInvite]="canInvite"
-                            >
-                        </app-joh-participant-item>                                
-                    </ng-container>
-                </div>
-            </ng-container>
-        </ng-container>
-        <ng-container  *ngFor="let participant of getPrivateConsultationParticipants(); trackBy: trackParticipant">
-            <app-participant-item
+                        <app-participant-item
                             [participant]="participant"
                             [interpreter]="participant?.interpreter"
                             [conferenceId]="conference.id"
@@ -29,7 +16,23 @@
                             [participantCallStatuses]="participantCallStatuses"
                             [canInvite]="canInvite"
                             >
-            </app-participant-item>
+                         </app-participant-item>                              
+                    </ng-container>
+                </div>
+            </ng-container>
+        </ng-container>
+        <ng-container  *ngFor="let participant of getPrivateConsultationParticipants(); trackBy: trackParticipant">
+            <div  class="member-group">
+                <app-participant-item
+                                [participant]="participant"
+                                [interpreter]="participant?.interpreter"
+                                [conferenceId]="conference.id"
+                                [roomLabel]="roomLabel"
+                                [participantCallStatuses]="participantCallStatuses"
+                                [canInvite]="canInvite"
+                                >
+                </app-participant-item>
+            </div>
         </ng-container>
 
 
