@@ -1,14 +1,28 @@
 @import '~govuk-frontend/govuk/base';
 
-:host {
+.participant-endpoint-row {
   display: flex;
-  border-bottom: 0.5px none;
   padding-top: 0.5em;
-  padding-bottom: 0.5em;
+  padding-bottom: 0.1em;
 
   > div {
     margin-right: 0.5em;
   }
+}
+
+.individual-endpoint-row {
+  display: flex;
+  padding-top: 0.1em;
+  padding-bottom: 0.1em;
+
+  > div {
+    margin-right: 0.5em;
+  }
+}
+.language-icon {
+  margin: 0 0 0em 1em;
+  font-size: 1.5em;
+  padding-bottom: 0;
 }
 
 .header-left {
