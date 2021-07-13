@@ -15,12 +15,11 @@ import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-d
 import { consultationServiceSpyFactory } from 'src/app/testing/mocks/mock-consultation.service';
 import { eventsServiceSpy } from 'src/app/testing/mocks/mock-events-service';
 import { MockOidcSecurityService } from 'src/app/testing/mocks/mock-oidc-security.service';
-import { JohParticipantItemComponent } from './joh-participant-item.component';
+import { ParticipantItemComponent } from './participant-item.component';
 import { translateServiceSpy } from 'src/app/testing/mocks/mock-translation.service';
 
-describe('JohParticipantItemComponent', () => {
-    let component: JohParticipantItemComponent;
-    // let component: PrivateConsultationParticipantsComponent;
+describe('ParticipantItemComponent', () => {
+    let component: ParticipantItemComponent;
     let conference: ConferenceResponse;
     const mockOidcSecurityService = new MockOidcSecurityService();
     const eventsService = eventsServiceSpy;
@@ -28,7 +27,6 @@ describe('JohParticipantItemComponent', () => {
     let consultationService: jasmine.SpyObj<ConsultationService>;
     let logger: jasmine.SpyObj<Logger>;
     let videoWebService: jasmine.SpyObj<VideoWebService>;
-    const invitationId = 'invitation-id';
 
     let logged: LoggedParticipantResponse;
     let activatedRoute: ActivatedRoute;
@@ -60,7 +58,7 @@ describe('JohParticipantItemComponent', () => {
         activatedRoute = <any>{
             snapshot: { data: { loggedUser: logged } }
         };
-        component = new JohParticipantItemComponent(translateService, consultationService);
+        component = new ParticipantItemComponent(translateService, consultationService);
 
         component.conferenceId = conference.id;
 
