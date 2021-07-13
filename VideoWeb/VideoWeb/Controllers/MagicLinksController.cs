@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using VideoApi.Client;
 using VideoApi.Contract.Enums;
+using VideoWeb.Common.Models;
 
 namespace VideoWeb.Controllers
 {
@@ -25,11 +27,24 @@ namespace VideoWeb.Controllers
 
         }
 
+        [HttpGet("GetMagicLinkParticipantRoles")]
+        [AllowAnonymous]
+        [SwaggerOperation(OperationId = "GetMagicLinkParticipantRoles")]
+        [ProducesResponseType(typeof(List<UserRole>), StatusCodes.Status200OK)]
+        public IActionResult GetMagicLinkParticipantRoles()
+        {
+            var magicParticipantRoles = new List<Role>
+            {
+                Role.MagicLinkParticipant, Role.MagicLinkObserver
+            };
+
+            return Ok(magicParticipantRoles);
+        }
+
         [HttpGet("ValidateMagicLink/{hearingId}")]
         [AllowAnonymous]
         [SwaggerOperation(OperationId = "ValidateMagicLink")]
         [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ValidateMagicLink(Guid hearingId)
         {
             try

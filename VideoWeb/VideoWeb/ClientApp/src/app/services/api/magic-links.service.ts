@@ -1,6 +1,6 @@
 import { Inject, Injectable, Optional } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { API_BASE_URL } from 'src/app/services/clients/api-client';
+import { API_BASE_URL, Role } from 'src/app/services/clients/api-client';
 import { Observable } from 'rxjs';
 import { BaseApiService } from './base-api.service';
 
@@ -10,6 +10,11 @@ import { BaseApiService } from './base-api.service';
 export class MagicLinksService extends BaseApiService {
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         super(http, baseUrl);
+    }
+
+    getMagicLinkParticipantRoles(): Observable<Role[]> {
+        const url = `${this.baseUrl}/quickjoin/GetMagicLinkParticipantRoles`;
+        return this.http.get<Role[]>(url);
     }
 
     validateMagicLink(hearingId: string): Observable<boolean> {

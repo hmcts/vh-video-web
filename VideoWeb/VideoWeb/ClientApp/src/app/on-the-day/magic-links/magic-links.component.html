@@ -1,1 +1,49 @@
-<p>magic-links works!</p>
+<h1 class="govuk-heading-xl govuk-!-margin-top-8">Enter your details to join your hearing</h1>  
+
+<p>Please tell us your name and your role in the hearing.</p>
+
+<form class="govuk-form-group">
+  <div>
+    <label class="govuk-label" for="full-name">
+      Your full name
+    </label>
+    <input class="govuk-input" id="full-name" name="full-name" type="text" spellcheck="false" autocomplete="name">
+  </div>
+
+  <p>What is your role in the hearing?</p>
+
+  <div *ngFor="let magicLinkParticipantRole of magicLinkParticipantRoles" class="govuk-radios__item">
+    <ng-container [ngSwitch]="magicLinkParticipantRole">
+      <ng-container *ngSwitchCase="role.MagicLinkParticipant">
+        <input [id]="magicLinkParticipantRole" class="govuk-radios__input" name="magicLinkParticipantRole" type="radio" [attr.aria-describedby]="magicLinkParticipantRole + '-item-hint'">
+        <label class="govuk-label govuk-radios__label" [attr.for]="magicLinkParticipantRole">
+            Participant
+        </label>
+        <div [id]="magicLinkParticipantRole + '-item-hint'"  class="govuk-hint govuk-radios__hint">
+            You have been called to take part in the hearing.
+        </div>
+      </ng-container>
+      <ng-container *ngSwitchCase="role.MagicLinkObserver">
+        <input [id]="magicLinkParticipantRole" class="govuk-radios__input" name="magicLinkParticipantRole" type="radio" [attr.aria-describedby]="magicLinkParticipantRole + '-item-hint'">
+        <label class="govuk-label govuk-radios__label" [attr.for]="magicLinkParticipantRole">
+            Observer
+        </label>
+        <div [id]="magicLinkParticipantRole + '-item-hint'"  class="govuk-hint govuk-radios__hint">
+            You are observing the hearing, but not taking part.
+        </div>
+      </ng-container>
+    </ng-container>
+  </div>
+
+  <button
+    id="continue-btn"
+    class="govuk-button govuk-!-margin-top-6"
+    data-module="govuk-button"
+    type="button"
+    [attr.aria-label]="'camera-check.continue' | translate"
+  >
+  {{ 'camera-check.continue' | translate }}
+  </button>
+</form>
+
+<app-contact-us-folding></app-contact-us-folding>

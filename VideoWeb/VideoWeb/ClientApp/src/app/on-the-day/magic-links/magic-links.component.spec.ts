@@ -17,6 +17,7 @@ describe('MagicLinksComponent', () => {
             goToServiceError: () => {}
         });
         magicLinksServiceSpy = jasmine.createSpyObj('magicLinksService', {
+            getMagicLinkParticipantRoles: () => {},
             validateMagicLink: of(true)
         });
 
@@ -58,14 +59,19 @@ describe('MagicLinksComponent', () => {
             expect(magicLinksServiceSpy.validateMagicLink.calls.count()).toBe(1);
         });
 
-        fit('should call error service if the magic link is invalid', async () => {
+        it('should call magic links service to get participant roles if magic link is valid', () => {
+            expect(magicLinksServiceSpy.getMagicLinkParticipantRoles.calls.count()).toBe(1);
+        });
+
+        it('should call error service if the magic link is invalid', async () => {
             magicLinksServiceSpy.validateMagicLink.and.returnValue(of(false));
             component.ngOnInit();
 
             expect(errorServiceSpy.goToServiceError.calls.count()).toBe(1);
             expect(errorServiceSpy.goToServiceError).toHaveBeenCalledWith(
                 `The link you've used can't be recognised`,
-                `Please check the link you were sent. If it still doesn't work, call 0300 303 0655 for immediate contact with a video hearings officer.`
+                `Please check the link you were sent. If it still doesn't work, call 0300 303 0655 for immediate contact with a video hearings officer.`,
+                false
             );
         });
     });

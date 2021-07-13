@@ -4209,7 +4209,9 @@ export enum Role {
     Judge = 'Judge',
     Individual = 'Individual',
     Representative = 'Representative',
-    JudicialOfficeHolder = 'JudicialOfficeHolder'
+    JudicialOfficeHolder = 'JudicialOfficeHolder',
+    MagicLinkParticipant = 'MagicLinkParticipant',
+    MagicLinkObserver = 'MagicLinkObserver'
 }
 
 export class ParticipantForJudgeResponse implements IParticipantForJudgeResponse {
