@@ -1,11 +1,8 @@
 using Autofac.Extras.Moq;
-using Bogus;
 using FluentAssertions;
-using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
