@@ -27,7 +27,6 @@ export class ParticipantPanelModelMapper {
                 participants.push(participant);
             }
         });
-        
         return participants;
     }
 
