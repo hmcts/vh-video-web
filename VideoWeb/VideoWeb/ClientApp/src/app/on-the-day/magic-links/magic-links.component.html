@@ -2,12 +2,12 @@
 
 <p>Please tell us your name and your role in the hearing.</p>
 
-<form class="govuk-form-group">
+<form [formGroup]="magicLinkForm" class="govuk-form-group" (ngSubmit)="onSubmit()">
   <div>
     <label class="govuk-label" for="full-name">
       Your full name
     </label>
-    <input class="govuk-input" id="full-name" name="full-name" type="text" spellcheck="false" autocomplete="name">
+    <input formControlName="name" class="govuk-input" id="full-name" name="full-name" type="text" spellcheck="false" autocomplete="name">
   </div>
 
   <p>What is your role in the hearing?</p>
@@ -15,7 +15,14 @@
   <div *ngFor="let magicLinkParticipantRole of magicLinkParticipantRoles" class="govuk-radios__item">
     <ng-container [ngSwitch]="magicLinkParticipantRole">
       <ng-container *ngSwitchCase="role.MagicLinkParticipant">
-        <input [id]="magicLinkParticipantRole" class="govuk-radios__input" name="magicLinkParticipantRole" type="radio" [attr.aria-describedby]="magicLinkParticipantRole + '-item-hint'">
+        <input 
+          [id]="magicLinkParticipantRole"
+          formControlName="magicLinkParticipantRole"
+          class="govuk-radios__input"
+          name="magicLinkParticipantRole"
+          type="radio"
+          [value]="magicLinkParticipantRole"
+          [attr.aria-describedby]="magicLinkParticipantRole + '-item-hint'">
         <label class="govuk-label govuk-radios__label" [attr.for]="magicLinkParticipantRole">
             Participant
         </label>
@@ -24,7 +31,15 @@
         </div>
       </ng-container>
       <ng-container *ngSwitchCase="role.MagicLinkObserver">
-        <input [id]="magicLinkParticipantRole" class="govuk-radios__input" name="magicLinkParticipantRole" type="radio" [attr.aria-describedby]="magicLinkParticipantRole + '-item-hint'">
+        
+        <input 
+          [id]="magicLinkParticipantRole"
+          formControlName="magicLinkParticipantRole"
+          class="govuk-radios__input"
+          name="magicLinkParticipantRole"
+          type="radio"
+          [value]="magicLinkParticipantRole"
+          [attr.aria-describedby]="magicLinkParticipantRole + '-item-hint'">
         <label class="govuk-label govuk-radios__label" [attr.for]="magicLinkParticipantRole">
             Observer
         </label>
@@ -40,6 +55,7 @@
     class="govuk-button govuk-!-margin-top-6"
     data-module="govuk-button"
     type="button"
+    (click)="onSubmit()"
     [attr.aria-label]="'camera-check.continue' | translate"
   >
   {{ 'camera-check.continue' | translate }}
