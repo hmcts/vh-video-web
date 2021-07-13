@@ -282,8 +282,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
 
             this.nonEndpointParticipants = new ParticipantPanelModelMapper().mapFromParticipantUserResponseArray(pats);
 
-            // this.participants = this.participants.concat(new ParticipantPanelModelMapper().mapFromParticipantUserResponse(pats));
-
             this.logger.debug(`${this.loggerPrefix} Retrieved participants in conference`, { conference: this.conferenceId });
             (await eps).forEach(x => {
                 const endpoint = new VideoEndpointPanelModel(x);
