@@ -26,7 +26,7 @@ using Endpoint = VideoWeb.Common.Models.Endpoint;
 
 namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
 {
-    public class ParticipantsAddedTests
+    public class ParticipantsUpdatedTests
     {
         private AutoMock _mocker;
         protected InternalEventController _controller;

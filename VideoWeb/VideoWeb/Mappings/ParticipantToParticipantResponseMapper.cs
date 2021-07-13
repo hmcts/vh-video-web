@@ -10,14 +10,14 @@ namespace VideoWeb.Mappings
 {
     public class ParticipantToParticipantResponseMapper : IMapTo<Participant, ParticipantResponse>
     {
-        private readonly IMapperFactory _mapperFactory;
+        private readonly IMapTo<LinkedParticipant, LinkedParticipantResponse> linkedParticipantMapper;
         public ParticipantToParticipantResponseMapper(IMapperFactory mapperFactory)
         {
-            _mapperFactory = mapperFactory;
+            linkedParticipantMapper = mapperFactory.Get<LinkedParticipant, LinkedParticipantResponse>();
         }
         public ParticipantResponse Map(Participant input)
         {
-            var linkedParticipantMapper = _mapperFactory.Get<LinkedParticipant, LinkedParticipantResponse>();
+            
             return new ParticipantResponse()
             {
                 CaseTypeGroup = input.CaseTypeGroup,
