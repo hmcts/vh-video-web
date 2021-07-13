@@ -264,7 +264,7 @@ export class ParticipantService {
             this.eventsService
                 .getParticipantsUpdated()
                 .pipe(
-                    filter(x => x.conferenceId === conference.id),
+                    filter(message => message.conferenceId === conference.id),
                     map(message => message.participants.map(x => ParticipantModel.fromParticipantResponseVho(x)))
                 )
                 .subscribe(participants => {

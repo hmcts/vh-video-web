@@ -10,6 +10,7 @@ import {
     ConferenceResponse,
     EndpointStatus,
     ParticipantForUserResponse,
+    ParticipantResponse,
     ParticipantStatus,
     Role,
     RoomSummaryResponse,
@@ -24,6 +25,7 @@ import { invalidNumberOfNonEndpointParticipantsError, ParticipantService } from 
 import { IHearingControlsState, IParticipantControlsState } from './video-control-cache-storage.service.interface';
 import { VideoControlCacheService } from './video-control-cache.service';
 import { ParticipantsUpdatedMessage } from '../../shared/models/participants-updated-message';
+import { component } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 
 describe('ParticipantService', () => {
     const asParticipantModelsFromUserResponse = (participants: ParticipantForUserResponse[]) =>
@@ -396,6 +398,89 @@ describe('ParticipantService', () => {
                 expectedX.participants.forEach(p => expect(x.participants.find(z => z.id === p.id)).toBeTruthy());
             });
         }));
+    });
+
+    describe('handle participants updated', () => {
+        const conference = new ConferenceResponse();
+        conference.id = 'TestId';
+
+        const participantResponse1 = new ParticipantResponse();
+        participantResponse1.id = 'TestId1';
+        const participantResponse2 = new ParticipantResponse();
+        participantResponse2.id = 'TestId2';
+        const participants = [participantResponse1, participantResponse2];
+
+        const participantModel1 = new ParticipantModel(
+            'TestId1',
+            'TestName1',
+            'TestDisplayName1',
+            'TestPexipDisplayName1',
+            'TestCaseGroup1',
+            Role.JudicialOfficeHolder,
+            'TestHearingRole1',
+            true,
+            new RoomSummaryResponse(),
+            [],
+            ParticipantStatus.Available,
+            new RoomSummaryResponse(),
+            'TestPexipId1',
+            true,
+            true,
+            true,
+            true,
+            true
+        );
+        const participantModel2 = new ParticipantModel(
+            'TestId2',
+            'TestName2',
+            'TestDisplayName2',
+            'TestPexipDisplayName2',
+            'TestCaseGroup2',
+            Role.JudicialOfficeHolder,
+            'TestHearingRole2',
+            false,
+            new RoomSummaryResponse(),
+            [],
+            ParticipantStatus.Available,
+            new RoomSummaryResponse(),
+            'TestPexipId2',
+            false,
+            false,
+            false,
+            false,
+            false
+        );
+
+        let originalNonEndpointParticipants: ParticipantModel[];
+        const particpantModels = [participantModel1, participantModel2];
+
+        let participantsUpdatedEmitted: boolean;
+        beforeEach(() => {
+            currentConferenceSubject.next(conference);
+            participantsUpdatedEmitted = false;
+            sut.onParticipantsUpdated$.subscribe(x => {
+                participantsUpdatedEmitted = true;
+            });
+            spyOn(ParticipantModel, 'fromParticipantResponseVho')
+                .withArgs(participantResponse1)
+                .and.returnValue(participantModel1)
+                .withArgs(participantResponse2)
+                .and.returnValue(participantModel2);
+            originalNonEndpointParticipants = sut.nonEndpointParticipants;
+        });
+        it('should set participants with updated value', () => {
+            const message = new ParticipantsUpdatedMessage(conference.id, participants);
+            participantsUpdatedSubject.next(message);
+            expect(participantsUpdatedEmitted).toBe(true);
+            expect(sut.nonEndpointParticipants).toEqual(particpantModels);
+        });
+
+        it('should not set participants when conference id does not match', () => {
+            const message = new ParticipantsUpdatedMessage('Something Else', participants);
+            participantsUpdatedSubject.next(message);
+            expect(participantsUpdatedEmitted).toBe(false);
+            expect(sut.nonEndpointParticipants).toBe(originalNonEndpointParticipants);
+        });
     });
 
     describe('getPexipIdForParticipant', () => {
