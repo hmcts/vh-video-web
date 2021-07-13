@@ -23,7 +23,7 @@ Scenario: Judge pauses and closes hearing
 	And the Judge resumes the hearing
 	Then the user is on the Countdown page
 	When the countdown finishes
-	Then the user is on the Hearing Room page
+	Then the user is on the Waiting Room page
 	When in the first Individual's browser
 	Then the participant is back in the hearing
   And the participant is on the Hearing Room page for 1 minute
@@ -92,7 +92,6 @@ Scenario: Audio Recording
   When the Judge closes the hearing
 	Then the user is on the Waiting Room page
 	And the hearing status changed to Closed
-  And an audio recording of the hearing has been created
 
 @HearingTest @Smoketest-Extended @DisableLogging
 Scenario: VHO Monitors Hearing
