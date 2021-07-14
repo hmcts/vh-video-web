@@ -11,23 +11,26 @@ namespace VideoWeb.Helpers
         {
             foreach (var participant in participants)
             {
-                if (participant.Role == Role.Judge)
-                {
-                    participant.TiledDisplayName = GetTiledDisplayName(participant, "JUDGE");
-                }
-                else if (participant.HearingRole.ToLower().Trim() == "witness")
-                {
-                    participant.TiledDisplayName = GetTiledDisplayName(participant, "WITNESS");
-                }
-                else if (participant.Role != Role.VideoHearingsOfficer)
-                {
-                    participant.TiledDisplayName = GetTiledDisplayName(participant, "CIVILIAN");
-                }
+                participant.TiledDisplayName = GetTiledDisplayName(participant);
             }        
         }
 
-        private static string GetTiledDisplayName(ParticipantResponse participant, string prefix)
+        public static string GetTiledDisplayName(ParticipantResponse participant)
         {
+            var prefix = "";
+            if (participant.Role == Role.Judge)
+            {
+                prefix = "JUDGE";
+            }
+            else if (participant.HearingRole.ToLower().Trim() == "witness")
+            {
+                prefix = "WITNESS";
+            }
+            else if (participant.Role != Role.VideoHearingsOfficer)
+            {
+                prefix = "CIVILIAN";
+            }
+
             return $"{prefix};{participant.DisplayName};{participant.Id}";
         }
     }

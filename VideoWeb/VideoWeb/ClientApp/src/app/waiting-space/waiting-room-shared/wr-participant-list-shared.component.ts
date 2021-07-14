@@ -1,4 +1,4 @@
-import { Directive, Input } from '@angular/core';
+import { Directive, DoCheck, Input } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
@@ -20,7 +20,7 @@ import { ParticipantStatusMessage } from 'src/app/services/models/participant-st
 import { HearingRole } from '../models/hearing-role-model';
 
 @Directive()
-export abstract class WRParticipantStatusListDirective {
+export abstract class WRParticipantStatusListDirective implements DoCheck {
     @Input() conference: ConferenceResponse;
     @Input() participantEndpoints: AllowedEndpointResponse[];
 
@@ -37,6 +37,8 @@ export abstract class WRParticipantStatusListDirective {
     loggedInUser: LoggedParticipantResponse;
     loggerPrefix = '[WRParticipantStatusListDirective] -';
 
+    private displayedParticipants: ParticipantResponse[] = null;
+
     protected constructor(
         protected consultationService: ConsultationService,
         protected eventService: EventsService,
@@ -44,6 +46,13 @@ export abstract class WRParticipantStatusListDirective {
         protected logger: Logger,
         protected translateService: TranslateService
     ) {}
+
+    ngDoCheck(): void {
+        if (this.displayedParticipants !== this.conference.participants) {
+            this.initParticipants();
+            this.displayedParticipants = this.conference.participants;
+        }
+    }
 
     initParticipants() {
         this.filterNonJudgeParticipants();

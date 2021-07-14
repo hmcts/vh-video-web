@@ -15,39 +15,36 @@ namespace VideoWeb.UnitTests.EventHandlers
 {
     class ParticipantAddedEventHandlerTests : EventHandlerTestBase
     {
-        private ParticipantAddedEventHandler _eventHandler;
+        private ParticipantsUpdatedEventHandler _eventHandler;
 
         [Test]
-        public async Task Should_send_participant_added_message_to_participants()
+        public async Task Should_send_participants_updated_message_to_participants()
         {
-            _eventHandler = new ParticipantAddedEventHandler(EventHubContextMock.Object, ConferenceCache,
+            _eventHandler = new ParticipantsUpdatedEventHandler(EventHubContextMock.Object, ConferenceCache,
                 LoggerMock.Object, VideoApiClientMock.Object);
 
             var conference = TestConference;
-            var participantForEvent = new ParticipantResponse();
-            participantForEvent.Id = new Guid();
-            participantForEvent.Name = "TestName";
-            participantForEvent.Role = Role.Individual;
-            participantForEvent.HearingRole = "TestHearingRole";
 
             var participantCount = conference.Participants.Count;
+            var participants = new List<ParticipantResponse>() {
+                new ParticipantResponse(),
+                new ParticipantResponse(),
+                new ParticipantResponse()
+            };
 
             var callbackEvent = new CallbackEvent
             {
-                EventType = EventType.Joined,
+                EventType = EventType.ParticipantsUpdated,
                 EventId = Guid.NewGuid().ToString(),
                 ConferenceId = conference.Id,
-                ParticipantAdded = participantForEvent,
+                Participants = participants,
                 TimeStampUtc = DateTime.UtcNow
             };
 
             await _eventHandler.HandleAsync(callbackEvent);
 
             EventHubClientMock.Verify(
-                x => x.ParticipantAddedMessage(conference.Id, It.Is<ParticipantResponse>(participant => 
-                participant.Role == participantForEvent.Role 
-                && participant.Name == participantForEvent.Name
-                && participant.HearingRole == participantForEvent.HearingRole)), Times.Exactly(participantCount));
+                x => x.ParticipantsUpdatedMessage(conference.Id, participants), Times.Exactly(participantCount + 1));
         }
     }
 }

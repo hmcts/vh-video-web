@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
@@ -137,15 +138,18 @@ namespace VideoWeb.EventHub.Handlers.Core
             Logger.LogTrace("RoomTransfer sent to group: {Group}", Hub.EventHub.VhOfficersGroupName);
         }
 
-        protected async Task PublishParticipantAddedMessage(ParticipantResponse participantAdded)
+        protected async Task PublishParticipantsUpdatedMessage(List<ParticipantResponse> participants)
         {
             foreach (var participant in SourceConference.Participants)
             {
                 await HubContext.Clients.Group(participant.Username.ToLowerInvariant())
-                    .ParticipantAddedMessage(SourceConference.Id, participantAdded);
+                    .ParticipantsUpdatedMessage(SourceConference.Id, participants);
                 Logger.LogTrace("{UserName} | Role: {Role}", participant.Username,
                     participant.Role);
             }
+
+            await HubContext.Clients.Group(Hub.EventHub.VhOfficersGroupName)
+                .ParticipantsUpdatedMessage(SourceConference.Id, participants);
         }
 
         protected abstract Task PublishStatusAsync(CallbackEvent callbackEvent);

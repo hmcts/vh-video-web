@@ -9,7 +9,6 @@ import {
     VideoEndpointResponse
 } from 'src/app/services/clients/api-client';
 import { PexipDisplayNameModel } from 'src/app/services/conference/models/pexip-display-name.model';
-import { CaseTypeGroup } from 'src/app/waiting-space/models/case-type-group';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
 export interface IParticipantHearingState {
@@ -32,9 +31,9 @@ export interface IParticipantDetails {
     name: string;
     displayName: string;
     pexipDisplayName: PexipDisplayNameModel;
-    caseGroup: CaseTypeGroup;
+    caseGroup: string;
     role: Role;
-    hearingRole: HearingRole;
+    hearingRole: string;
     status: ParticipantStatus;
     isEndPoint: boolean;
     virtualMeetingRoomSummary: RoomSummaryResponse;
@@ -49,9 +48,9 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
         public name: string,
         public displayName: string,
         pexipDisplayName: string | PexipDisplayNameModel,
-        public caseGroup: CaseTypeGroup,
+        public caseGroup: string,
         public role: Role,
-        public hearingRole: HearingRole,
+        public hearingRole: string,
         public isEndPoint: boolean,
         public virtualMeetingRoomSummary: RoomSummaryResponse,
         public linkedParticipants: LinkedParticipantResponse[],
@@ -77,9 +76,9 @@ export class ParticipantModel implements IParticipantDetails, IParticipantConfer
             participant.name,
             participant.display_name,
             participant.tiled_display_name, // same as pexip_display_name
-            CaseTypeGroup[participant.case_type_group],
+            participant.case_type_group,
             participant.role,
-            HearingRole[participant.hearing_role],
+            participant.hearing_role,
             false,
             participant.interpreter_room,
             participant.linked_participants,

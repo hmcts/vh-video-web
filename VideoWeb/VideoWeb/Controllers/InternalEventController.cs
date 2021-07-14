@@ -17,6 +17,7 @@ using VideoApi.Contract.Requests;
 using EventType = VideoWeb.EventHub.Enums.EventType;
 using Task = System.Threading.Tasks.Task;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Helpers;
 
 namespace VideoWeb.Controllers
 {
@@ -46,15 +47,16 @@ namespace VideoWeb.Controllers
             _mapperFactory = mapperFactory;
         }
 
-        [HttpPost("ParticipantsAdded")]
-        [SwaggerOperation(OperationId = "ParticipantsAdded")]
+        [HttpPost("ParticipantsUpdated")]
+        [SwaggerOperation(OperationId = "ParticipantsUpdated")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> ParticipantsAdded(Guid conferenceId, AddParticipantsToConferenceRequest request)
+        public async Task<IActionResult> ParticipantsUpdated(Guid conferenceId, UpdateConferenceParticipantsRequest request)
         {
-            var participantMapper = _mapperFactory.Get<ParticipantRequest, Participant>();
-            var participantResponseMapper = _mapperFactory.Get<Participant, ParticipantResponse>();
-            List<Participant> participantsAdded = request.Participants.Select(participant => participantMapper.Map(participant)).ToList();
+            _logger.LogDebug("ParticipantsUpdated called. ConferenceId: {ConferenceId}", conferenceId);
+
+            var requestToParticipantMapper = _mapperFactory.Get<ParticipantRequest, Participant>();
+            var participantsToResponseMapper = _mapperFactory.Get<Participant, ParticipantResponse>();
 
             try
             {
@@ -63,26 +65,36 @@ namespace VideoWeb.Controllers
                     _logger.LogTrace("Retrieving conference details for conference: {ConferenceId}", conferenceId);
                     return _videoApiClient.GetConferenceDetailsByIdAsync(conferenceId);
                 });
-                _logger.LogDebug("ParticipantsAdded called. ConferenceId: {ConferenceId}, ParticipantCount: {ParticipantCount}",
-                    conferenceId, request.Participants.Count);
 
-                
-                foreach (var participant in participantsAdded)
+                request.NewParticipants.ToList().ForEach(participant =>
                 {
-                    conference.AddParticipant(participant);
+                    var mappedParticipant = requestToParticipantMapper.Map(participant);
+                    conference.AddParticipant(mappedParticipant);
+                });
 
-                    CallbackEvent callbackEvent = new CallbackEvent() 
-                    { 
-                        ConferenceId = conferenceId, 
-                        EventType = EventType.ParticipantAdded, 
-                        TimeStampUtc = DateTime.UtcNow, 
-                        ParticipantAdded = participantResponseMapper.Map(participant)
-                    };
-                    await PublishEventToUi(callbackEvent);
-                }
+                request.RemovedParticipants.ToList().ForEach(referenceId =>
+                {
+                    conference.RemoveParticipant(referenceId);
+                });
+
+                request.ExistingParticipants.ToList().ForEach(updateRequest =>
+                {
+                    conference.UpdateParticipant(updateRequest);
+                });
+
+
+                CallbackEvent callbackEvent = new CallbackEvent() 
+                { 
+                    ConferenceId = conferenceId, 
+                    EventType = EventType.ParticipantsUpdated, 
+                    TimeStampUtc = DateTime.UtcNow,
+                    Participants = conference.Participants.Select(x => participantsToResponseMapper.Map(x)).ToList()
+                };
 
                 await _conferenceCache.UpdateConferenceAsync(conference);
 
+                await PublishEventToUi(callbackEvent);
+                
                 return NoContent();
             }
             catch (VideoApiException e)

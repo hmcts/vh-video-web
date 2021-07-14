@@ -10,6 +10,7 @@ import {
     ConferenceResponse,
     EndpointStatus,
     ParticipantForUserResponse,
+    ParticipantResponse,
     ParticipantStatus,
     Role,
     RoomSummaryResponse,
@@ -23,6 +24,8 @@ import { VirtualMeetingRoomModel } from './models/virtual-meeting-room.model';
 import { invalidNumberOfNonEndpointParticipantsError, ParticipantService } from './participant.service';
 import { IHearingControlsState, IParticipantControlsState } from './video-control-cache-storage.service.interface';
 import { VideoControlCacheService } from './video-control-cache.service';
+import { ParticipantsUpdatedMessage } from '../../shared/models/participants-updated-message';
+import { component } from 'src/app/waiting-space/waiting-room-shared/tests/waiting-room-base-setup';
 
 describe('ParticipantService', () => {
     const asParticipantModelsFromUserResponse = (participants: ParticipantForUserResponse[]) =>
@@ -138,6 +141,7 @@ describe('ParticipantService', () => {
 
     let eventsServiceSpy: jasmine.SpyObj<EventsService>;
     let participantStatusUpdateSubject: Subject<ParticipantStatusMessage>;
+    let participantsUpdatedSubject: Subject<ParticipantsUpdatedMessage>;
     let videoControlCacheServiceSpy: jasmine.SpyObj<VideoControlCacheService>;
 
     let loggerSpy: jasmine.SpyObj<LoggerService>;
@@ -170,10 +174,12 @@ describe('ParticipantService', () => {
         spyOn(participantUpdated$, 'subscribe').and.callThrough();
         videoCallServiceSpy.onParticipantUpdated.and.returnValue(participantUpdated$);
 
-        eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', ['getParticipantStatusMessage']);
+        eventsServiceSpy = jasmine.createSpyObj<EventsService>('EventsService', ['getParticipantStatusMessage', 'getParticipantsUpdated']);
 
         participantStatusUpdateSubject = new Subject<ParticipantStatusMessage>();
         eventsServiceSpy.getParticipantStatusMessage.and.returnValue(participantStatusUpdateSubject.asObservable());
+        participantsUpdatedSubject = new Subject<ParticipantsUpdatedMessage>();
+        eventsServiceSpy.getParticipantsUpdated.and.returnValue(participantsUpdatedSubject.asObservable());
 
         videoControlCacheServiceSpy = jasmine.createSpyObj<VideoControlCacheService>('VideoControlCacheService', [
             'setSpotlightStatus',
@@ -283,80 +289,47 @@ describe('ParticipantService', () => {
             expect(currentConference$.subscribe).toHaveBeenCalledTimes(1);
         }));
     });
-
-    describe('get endpointParticipants', () => {
-        it('should return an empty array if there are no endpoints', () => {
+    describe('get Participants ', () => {
+        it('should return combination of endpoint and non-endpoint participants', () => {
             // Arrange
-            const participants = [participantOne, participantTwo].map(x => ParticipantModel.fromParticipantForUserResponse(x));
-            spyOnProperty(sut, 'participants', 'get').and.returnValue(participants);
 
-            // Act
-            const result = sut.endpointParticipants;
-
-            // Assert
-            expect(result.length).toEqual(0);
-        });
-
-        it('should only return endpoints', () => {
-            // Arrange
             const participants = [participantOne, participantTwo].map(x => ParticipantModel.fromParticipantForUserResponse(x));
             const endpointParticipants = [endpointOne, endpointTwo].map(x => ParticipantModel.fromVideoEndpointResponse(x));
-            spyOnProperty(sut, 'participants', 'get').and.returnValue(participants.concat(endpointParticipants));
+            const allParticipants = [...participants, ...endpointParticipants];
+            spyOnProperty(sut, 'endpointParticipants', 'get').and.returnValue(endpointParticipants);
+            spyOnProperty(sut, 'nonEndpointParticipants', 'get').and.returnValue(participants);
 
             // Act
-            const result = sut.endpointParticipants;
+            const result = sut.participants;
 
-            // Assert
-            expect(result.length).toEqual(endpointParticipants.length);
-            participants.forEach(x => expect(result).not.toContain(x));
-            endpointParticipants.forEach(x => expect(result).toContain(x));
+            expect(result.length).toEqual(allParticipants.length);
+            expect(result).toEqual(allParticipants);
         });
     });
-
-    describe('get nonEndpointParticipants', () => {
-        it('should throw if there are no non-endpoints as this should NOT be possible', () => {
-            // Arrange
-            const endpointParticipants = [endpointOne, endpointTwo].map(x => ParticipantModel.fromVideoEndpointResponse(x));
-            spyOnProperty(sut, 'participants', 'get').and.returnValue(endpointParticipants);
-
-            // Act & Assert
-            expect(() => sut.nonEndpointParticipants).toThrow(invalidNumberOfNonEndpointParticipantsError());
-        });
-
-        it('should only return endpoints', () => {
-            // Arrange
-            const participants = [participantOne, participantTwo].map(x => ParticipantModel.fromParticipantForUserResponse(x));
-            const endpointParticipants = [endpointOne, endpointTwo].map(x => ParticipantModel.fromVideoEndpointResponse(x));
-            spyOnProperty(sut, 'participants', 'get').and.returnValue(participants.concat(endpointParticipants));
-
-            // Act
-            const result = sut.nonEndpointParticipants;
-
-            // Assert
-            expect(result.length).toEqual(participants.length);
-            participants.forEach(x => expect(result).toContain(x));
-            endpointParticipants.forEach(x => expect(result).not.toContain(x));
-        });
-    });
-
     describe('handle current conference changed', () => {
         it('should call get participants and end points and subscribe to the relevant conference events', fakeAsync(() => {
             // Arrange
             const participantStatusUpdate$ = new Observable<ParticipantStatusMessage>();
+            const participantsUpdated$ = new Observable<ParticipantsUpdatedMessage>();
             const expectedUnsubscribed = [
+                jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
                 jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
                 jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe'])
             ];
             const expectedSubscriptions = [
                 jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
+                jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe']),
                 jasmine.createSpyObj<Subscription>('Subscription', ['unsubscribe'])
             ];
             spyOn(participantStatusUpdate$, 'subscribe').and.returnValues(expectedUnsubscribed[0], expectedSubscriptions[0]);
             spyOn(getLoggedInParticipantForConference$, 'subscribe').and.returnValues(expectedUnsubscribed[1], expectedSubscriptions[1]);
+            spyOn(participantsUpdated$, 'subscribe').and.returnValues(expectedUnsubscribed[2], expectedSubscriptions[2]);
 
             spyOn(participantStatusUpdateSubject, 'asObservable').and.returnValue(participantStatusUpdate$);
             eventsServiceSpy.getParticipantStatusMessage.and.returnValue(participantStatusUpdateSubject.asObservable());
 
+            spyOn(participantsUpdatedSubject, 'asObservable').and.returnValue(participantsUpdated$);
+            eventsServiceSpy.getParticipantsUpdated.and.returnValue(participantsUpdatedSubject.asObservable());
             const conferenceIdOne = 'conference-id-one';
             const conferenceIdTwo = 'conference-id-two';
             const conference = new ConferenceResponse();
@@ -425,6 +398,89 @@ describe('ParticipantService', () => {
                 expectedX.participants.forEach(p => expect(x.participants.find(z => z.id === p.id)).toBeTruthy());
             });
         }));
+    });
+
+    describe('handle participants updated', () => {
+        const conference = new ConferenceResponse();
+        conference.id = 'TestId';
+
+        const participantResponse1 = new ParticipantResponse();
+        participantResponse1.id = 'TestId1';
+        const participantResponse2 = new ParticipantResponse();
+        participantResponse2.id = 'TestId2';
+        const participants = [participantResponse1, participantResponse2];
+
+        const participantModel1 = new ParticipantModel(
+            'TestId1',
+            'TestName1',
+            'TestDisplayName1',
+            'TestPexipDisplayName1',
+            'TestCaseGroup1',
+            Role.JudicialOfficeHolder,
+            'TestHearingRole1',
+            true,
+            new RoomSummaryResponse(),
+            [],
+            ParticipantStatus.Available,
+            new RoomSummaryResponse(),
+            'TestPexipId1',
+            true,
+            true,
+            true,
+            true,
+            true
+        );
+        const participantModel2 = new ParticipantModel(
+            'TestId2',
+            'TestName2',
+            'TestDisplayName2',
+            'TestPexipDisplayName2',
+            'TestCaseGroup2',
+            Role.JudicialOfficeHolder,
+            'TestHearingRole2',
+            false,
+            new RoomSummaryResponse(),
+            [],
+            ParticipantStatus.Available,
+            new RoomSummaryResponse(),
+            'TestPexipId2',
+            false,
+            false,
+            false,
+            false,
+            false
+        );
+
+        let originalNonEndpointParticipants: ParticipantModel[];
+        const particpantModels = [participantModel1, participantModel2];
+
+        let participantsUpdatedEmitted: boolean;
+        beforeEach(() => {
+            currentConferenceSubject.next(conference);
+            participantsUpdatedEmitted = false;
+            sut.onParticipantsUpdated$.subscribe(x => {
+                participantsUpdatedEmitted = true;
+            });
+            spyOn(ParticipantModel, 'fromParticipantResponseVho')
+                .withArgs(participantResponse1)
+                .and.returnValue(participantModel1)
+                .withArgs(participantResponse2)
+                .and.returnValue(participantModel2);
+            originalNonEndpointParticipants = sut.nonEndpointParticipants;
+        });
+        it('should set participants with updated value', () => {
+            const message = new ParticipantsUpdatedMessage(conference.id, participants);
+            participantsUpdatedSubject.next(message);
+            expect(participantsUpdatedEmitted).toBe(true);
+            expect(sut.nonEndpointParticipants).toEqual(particpantModels);
+        });
+
+        it('should not set participants when conference id does not match', () => {
+            const message = new ParticipantsUpdatedMessage('Something Else', participants);
+            participantsUpdatedSubject.next(message);
+            expect(participantsUpdatedEmitted).toBe(false);
+            expect(sut.nonEndpointParticipants).toBe(originalNonEndpointParticipants);
+        });
     });
 
     describe('getPexipIdForParticipant', () => {
