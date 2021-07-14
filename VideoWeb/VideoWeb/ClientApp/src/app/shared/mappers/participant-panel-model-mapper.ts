@@ -2,6 +2,7 @@ import { ParticipantForUserResponse, Role, RoomSummaryResponse } from 'src/app/s
 import { LinkedParticipantPanelModel } from 'src/app/waiting-space/models/linked-participant-panel-model';
 import { PanelModel } from 'src/app/waiting-space/models/panel-model-base';
 import { ParticipantPanelModel } from 'src/app/waiting-space/models/participant-panel-model';
+import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
 export class ParticipantPanelModelMapper {
     mapFromParticipantUserResponse(pats: ParticipantForUserResponse[]): PanelModel[] {
@@ -59,6 +60,9 @@ export class ParticipantPanelModelMapper {
         });
         const allMapped = linked.map(l => new ParticipantPanelModel(l));
         allMapped.push(new ParticipantPanelModel(participant));
-        return allMapped;
+        return [
+            ...allMapped.filter(x => x.hearingRole !== HearingRole.INTERPRETER),
+            ...allMapped.filter(x => x.hearingRole === HearingRole.INTERPRETER)
+        ];
     }
 }
