@@ -27,7 +27,7 @@ namespace VideoWeb.AcceptanceTests.Pages
         public static By MeetingRoomRadioButtonFor(string room) => By.XPath($"//input[./following-sibling::label/span[contains(text(),'{room.ToLower()}')]]");
         public static By InviteCheckboxFor(string displayName) => By.XPath($"//input[@type='checkbox' and ./following-sibling::label/span[text()='{displayName}']]");
         public static readonly By ContinueButton = By.Id("continue-btn");
-        public static readonly By ConsultationRoomText = CommonLocators.ElementContainingText("The consultation room is available for up to 30 minutes after the hearing has finished.");
+        public static readonly By ConsultationRoomText = CommonLocators.ElementContainingText("The consultation room is available for up to ");
         public static By ConsultationRoomCloseText(string closeTime) => CommonLocators.ElementContainingText($"The consultation room will close at {closeTime}");
     }
 }
