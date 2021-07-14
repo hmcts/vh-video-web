@@ -3,51 +3,55 @@
 <p>Please tell us your name and your role in the hearing.</p>
 
 <form [formGroup]="magicLinkForm" class="govuk-form-group" (ngSubmit)="onSubmit()">
-  <div>
+  <div [ngClass]="{ 'govuk-form-group--error': error.nameError }" class="govuk-!-margin-bottom-5">
+    <p *ngIf="error.nameError" class="govuk-error-message">Please enter your full name</p>
     <label class="govuk-label" for="full-name">
       Your full name
     </label>
     <input formControlName="name" class="govuk-input" id="full-name" name="full-name" type="text" spellcheck="false" autocomplete="name">
   </div>
 
-  <p>What is your role in the hearing?</p>
+  <div [ngClass]="{ 'govuk-form-group--error': error.roleError }">
+    <p *ngIf="error.roleError" class="govuk-error-message">Please choose your role in the hearing</p>
+    <p>What is your role in the hearing?</p>
 
-  <div *ngFor="let magicLinkParticipantRole of magicLinkParticipantRoles" class="govuk-radios__item">
-    <ng-container [ngSwitch]="magicLinkParticipantRole">
-      <ng-container *ngSwitchCase="role.MagicLinkParticipant">
-        <input 
-          [id]="magicLinkParticipantRole"
-          formControlName="magicLinkParticipantRole"
-          class="govuk-radios__input"
-          name="magicLinkParticipantRole"
-          type="radio"
-          [value]="magicLinkParticipantRole"
-          [attr.aria-describedby]="magicLinkParticipantRole + '-item-hint'">
-        <label class="govuk-label govuk-radios__label" [attr.for]="magicLinkParticipantRole">
-            Participant
-        </label>
-        <div [id]="magicLinkParticipantRole + '-item-hint'"  class="govuk-hint govuk-radios__hint">
-            You have been called to take part in the hearing.
-        </div>
+    <div *ngFor="let magicLinkParticipantRole of magicLinkParticipantRoles" class="govuk-radios__item">
+      <ng-container [ngSwitch]="magicLinkParticipantRole">
+        <ng-container *ngSwitchCase="role.MagicLinkParticipant">
+          <input 
+            [id]="magicLinkParticipantRole"
+            formControlName="magicLinkParticipantRole"
+            class="govuk-radios__input"
+            name="magicLinkParticipantRole"
+            type="radio"
+            [value]="magicLinkParticipantRole"
+            [attr.aria-describedby]="magicLinkParticipantRole + '-item-hint'">
+          <label class="govuk-label govuk-radios__label" [attr.for]="magicLinkParticipantRole">
+              Participant
+          </label>
+          <div [id]="magicLinkParticipantRole + '-item-hint'"  class="govuk-hint govuk-radios__hint">
+              You have been called to take part in the hearing.
+          </div>
+        </ng-container>
+        <ng-container *ngSwitchCase="role.MagicLinkObserver">
+          
+          <input 
+            [id]="magicLinkParticipantRole"
+            formControlName="magicLinkParticipantRole"
+            class="govuk-radios__input"
+            name="magicLinkParticipantRole"
+            type="radio"
+            [value]="magicLinkParticipantRole"
+            [attr.aria-describedby]="magicLinkParticipantRole + '-item-hint'">
+          <label class="govuk-label govuk-radios__label" [attr.for]="magicLinkParticipantRole">
+              Observer
+          </label>
+          <div [id]="magicLinkParticipantRole + '-item-hint'"  class="govuk-hint govuk-radios__hint">
+              You are observing the hearing, but not taking part.
+          </div>
+        </ng-container>
       </ng-container>
-      <ng-container *ngSwitchCase="role.MagicLinkObserver">
-        
-        <input 
-          [id]="magicLinkParticipantRole"
-          formControlName="magicLinkParticipantRole"
-          class="govuk-radios__input"
-          name="magicLinkParticipantRole"
-          type="radio"
-          [value]="magicLinkParticipantRole"
-          [attr.aria-describedby]="magicLinkParticipantRole + '-item-hint'">
-        <label class="govuk-label govuk-radios__label" [attr.for]="magicLinkParticipantRole">
-            Observer
-        </label>
-        <div [id]="magicLinkParticipantRole + '-item-hint'"  class="govuk-hint govuk-radios__hint">
-            You are observing the hearing, but not taking part.
-        </div>
-      </ng-container>
-    </ng-container>
+    </div>
   </div>
 
   <button

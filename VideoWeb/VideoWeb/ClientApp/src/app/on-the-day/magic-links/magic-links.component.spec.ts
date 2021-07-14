@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { MagicLinksService } from 'src/app/services/api/magic-links.service';
@@ -8,10 +8,10 @@ import { ErrorService } from 'src/app/services/error.service';
 import { MagicLinksComponent } from './magic-links.component';
 import { TranslatePipeMock } from '../..//testing/mocks/mock-translation-pipe';
 import { Role } from 'src/app/services/clients/api-client';
+import { ContactUsFoldingComponent } from 'src/app/shared/contact-us-folding/contact-us-folding.component';
 
 describe('MagicLinksComponent', () => {
     const magicLinkParticipantRoles = [Role.MagicLinkObserver, Role.MagicLinkParticipant];
-    const formBuilder = new FormBuilder();
 
     let component: MagicLinksComponent;
     let fixture: ComponentFixture<MagicLinksComponent>;
@@ -28,7 +28,7 @@ describe('MagicLinksComponent', () => {
         });
 
         await TestBed.configureTestingModule({
-            declarations: [MagicLinksComponent, TranslatePipeMock],
+            declarations: [MagicLinksComponent, ContactUsFoldingComponent, TranslatePipeMock],
             providers: [
                 {
                     provide: ActivatedRoute,
@@ -51,7 +51,8 @@ describe('MagicLinksComponent', () => {
                     provide: MagicLinksService,
                     useValue: magicLinksServiceSpy
                 }
-            ]
+            ],
+            imports: [ReactiveFormsModule]
         }).compileComponents();
     });
 
@@ -62,6 +63,12 @@ describe('MagicLinksComponent', () => {
     });
 
     describe('ngOnInit', () => {
+        it('should call method to initialise errors', () => {
+            const spy = spyOn(component, 'resetErrors');
+            component.ngOnInit();
+            expect(spy.calls.count()).toBe(1);
+        });
+
         it('should call method to initialise the form', () => {
             const spy = spyOn(component, 'initialiseForm');
             component.ngOnInit();
@@ -92,10 +99,73 @@ describe('MagicLinksComponent', () => {
 
     describe('initialiseForm', () => {
         it('should initialise the form', () => {
+            component.initialiseForm();
+
             expect(component.magicLinkForm.controls['name'].value).toBe('');
             expect(component.magicLinkForm.controls['name'].valid).toBeFalse();
             expect(component.magicLinkForm.controls['magicLinkParticipantRole'].value).toBe('');
             expect(component.magicLinkForm.controls['magicLinkParticipantRole'].valid).toBeFalse();
+        });
+    });
+
+    describe('validateForm', () => {
+        it('should set name error and mark form as invalid if name is not populated', () => {
+            component.isFormValid = true;
+            component.error.nameError = '';
+            component.magicLinkForm.controls['name'].setValue('');
+
+            component.validateForm();
+
+            expect(component.isFormValid).toBeFalse();
+            expect(component.error.nameError).toBe('Please enter your full name');
+        });
+
+        it('should set role error and mark form as invalid if name is not populated', () => {
+            component.isFormValid = true;
+            component.error.roleError = '';
+            component.magicLinkForm.controls['magicLinkParticipantRole'].setValue('');
+
+            component.validateForm();
+
+            expect(component.isFormValid).toBeFalse();
+            expect(component.error.roleError).toBe('Please choose your role in the hearing');
+        });
+
+        it('should mark form as valid if form validations are all passed', () => {
+            component.isFormValid = false;
+            component.magicLinkForm.controls['name'].setValue('name');
+            component.magicLinkForm.controls['magicLinkParticipantRole'].setValue('magicLinkParticipantRole');
+
+            component.validateForm();
+
+            expect(component.isFormValid).toBeTrue();
+        });
+    });
+
+    describe('resetErrors', () => {
+        it('should resets errors', () => {
+            component.error.nameError = component.error.roleError = 'error';
+            component.resetErrors();
+            expect(component.error.nameError).toBe('');
+            expect(component.error.nameError).toBe('');
+        });
+    });
+
+    describe('onSubmit', () => {
+        it('should reset errors', () => {
+            const spy = spyOn(component, 'resetErrors');
+
+            component.onSubmit();
+
+            expect(spy).toHaveBeenCalledTimes(1);
+        });
+
+        it('should validate the form', () => {
+            const spy = spyOn(component, 'validateForm');
+
+            component.onSubmit();
+
+            expect(spy).toHaveBeenCalledTimes(1);
         });
     });
 });
