@@ -5,7 +5,7 @@ using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
 {
-    public class LinkedParticipantRequestToLinkedParticipantResponse : IMapTo<LinkedParticipantRequest, LinkedParticipant>
+    public class LinkedParticipantRequestToLinkedParticipantMapper : IMapTo<LinkedParticipantRequest, LinkedParticipant>
     {
         public LinkedParticipant Map(LinkedParticipantRequest input)
         {

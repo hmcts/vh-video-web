@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
 using VideoWeb.Mappings;
+using VideoWeb.Mappings.Interfaces;
+using Moq;
 
 namespace VideoWeb.UnitTests.Mappings
 {
@@ -13,25 +15,37 @@ namespace VideoWeb.UnitTests.Mappings
     {
         protected AutoMock _mocker;
         protected ParticipantToParticipantResponseMapper _sut;
+        private Mock<IMapTo<LinkedParticipant, LinkedParticipantResponse>> linkedParticipantMapperMock;
+
+        private LinkedParticipant linkedParticipant1;
+        private LinkedParticipant linkedParticipant2;
+        private List<LinkedParticipant> linkedParticipants;
+
+        private LinkedParticipantResponse linkedParticipantResponse1;
+        private LinkedParticipantResponse linkedParticipantResponse2;
+
 
         [SetUp]
         public void Setup()
         {
+            linkedParticipant1 = new LinkedParticipant() { LinkedId = Guid.NewGuid() };
+            linkedParticipant2 = new LinkedParticipant() { LinkedId = Guid.NewGuid() };
+            linkedParticipants = new List<LinkedParticipant>() { linkedParticipant1, linkedParticipant2 };
+            linkedParticipantResponse1 = new LinkedParticipantResponse() { LinkedId = linkedParticipant1.LinkedId };
+            linkedParticipantResponse2 = new LinkedParticipantResponse() { LinkedId = linkedParticipant2.LinkedId };
+            linkedParticipantMapperMock = new Mock<IMapTo<LinkedParticipant, LinkedParticipantResponse>>();
+            linkedParticipantMapperMock.Setup(mapper => mapper.Map(linkedParticipant1)).Returns(linkedParticipantResponse1);
+            linkedParticipantMapperMock.Setup(mapper => mapper.Map(linkedParticipant2)).Returns(linkedParticipantResponse2);
+
             _mocker = AutoMock.GetLoose();
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<LinkedParticipant, LinkedParticipantResponse>()).Returns(_mocker.Create<LinkedParticipantToLinkedParticipantResponseMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<LinkedParticipant, LinkedParticipantResponse>()).Returns(linkedParticipantMapperMock.Object);
             _sut = _mocker.Create<ParticipantToParticipantResponseMapper>();
         }
 
         [Test]
         public void Should_map_correctly()
         {
-            var linkedParticipant1 = new LinkedParticipant();
-            var linkedParticipant2 = new LinkedParticipant();
-            var linkedParticipants = new List<LinkedParticipant>()
-                {
-                    linkedParticipant1,
-                    linkedParticipant2
-                };
+
 
             var testParticipant = new Participant()
             {
@@ -49,6 +63,7 @@ namespace VideoWeb.UnitTests.Mappings
                 Representee = "TestRepresentee",
                 Role = Role.JudicialOfficeHolder,
                 Id = Guid.NewGuid(),
+                Username = "TestUsername",
             };
 
             var mapped = _sut.Map(testParticipant);
@@ -63,8 +78,10 @@ namespace VideoWeb.UnitTests.Mappings
             mapped.Representee.Should().Be(testParticipant.Representee);
             mapped.Role.Should().Be(testParticipant.Role);
             mapped.Id.Should().Be(testParticipant.Id);
+            mapped.LinkedParticipants.Should().BeEquivalentTo(new List<LinkedParticipantResponse>() { linkedParticipantResponse1, linkedParticipantResponse2 });
 
-
+            linkedParticipants.ForEach(linkedParticipant => linkedParticipantMapperMock.Verify(mapper => mapper.Map(linkedParticipant), Times.Once));
+            linkedParticipantMapperMock.Verify(mapper => mapper.Map(It.IsAny<LinkedParticipant>()), Times.Exactly(linkedParticipants.Count));
         }
     }
 }

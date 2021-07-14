@@ -16,7 +16,7 @@ namespace VideoWeb.Mappings
         {
             return new Participant
             {
-                Id = request.ParticipantRefId,
+                Id = request.Id,
                 Name = request.Name,
                 Role = (Role)request.UserRole,
                 HearingRole = request.HearingRole,
