@@ -881,9 +881,8 @@
   },
   "unsupported-browser": {
     "using-unsupported-browser": "Rydych wedi mewngofnodi gan ddefnyddio porwr nas gefnogir",
-    "it-looks-like": "Mae'n ymddangos eich bod wedi mewngofnodi gan ddefnyddio",
     "unfortunately-this-browser": "Yn anffodus, ni chefnogir y porwr hwn ar hyn o bryd.",
-    "please-sign-out": "Allgofnodwch os gwelwch yn dda, a mewngofnodwch unwaith eto gan ddefnyddio un o'r canlynol.",
+    "please-try-again": "Allgofnodwch os gwelwch yn dda, a mewngofnodwch unwaith eto gan ddefnyddio un o'r canlynol.",
     "supported-browser-alt": "{{browserName}} logo'r porwr"
   },
   "unsupported-device": {
