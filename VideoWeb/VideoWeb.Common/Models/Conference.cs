@@ -67,7 +67,7 @@ namespace VideoWeb.Common.Models
             participant.ContactEmail = participantRequest.ContactEmail;
             participant.ContactTelephone = participantRequest.ContactTelephone;
             participant.Username = participantRequest.Username;
-            participant.LinkedParticipants = participantRequest.LinkedParticipants.Select(x => new LinkedParticipant() { LinkedId = x.LinkedRefId, LinkType = (LinkType)x.Type }).ToList(); // TODO specific mapper
+            participant.LinkedParticipants = participantRequest.LinkedParticipants.Select(x => new LinkedParticipant() { LinkedId = x.LinkedRefId, LinkType = (LinkType)x.Type }).ToList();
         }
 
         private CivilianRoom GetOrCreateCivilianRoom(long roomId)
