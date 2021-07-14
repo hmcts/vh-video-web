@@ -1,3 +1,4 @@
+using System;
 using VideoApi.Contract.Requests;
 using VideoWeb.Common.Models;
 using VideoWeb.Mappings.Interfaces;
@@ -11,7 +12,7 @@ namespace VideoWeb.Mappings
             return new LinkedParticipant()
             {
                 LinkedId = input.LinkedRefId,
-                LinkType = (LinkType)input.Type
+                LinkType = Enum.Parse<LinkType>(input.Type.ToString())
             };
         }
     }
