@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using VideoWeb.Common.Models;
 using VideoWeb.Contract.Responses;
+using VideoWeb.Helpers;
 using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.Mappings
@@ -18,7 +19,7 @@ namespace VideoWeb.Mappings
         public ParticipantResponse Map(Participant input)
         {
             
-            return new ParticipantResponse()
+            var response = new ParticipantResponse()
             {
                 CaseTypeGroup = input.CaseTypeGroup,
                 CurrentRoom = null,
@@ -32,9 +33,12 @@ namespace VideoWeb.Mappings
                 Representee = input.Representee,
                 Role = input.Role,
                 Status = input.ParticipantStatus,
-                TiledDisplayName = input.DisplayName, // TODO where does this come from? normally
                 LinkedParticipants = input.LinkedParticipants.Select(x => linkedParticipantMapper.Map(x)).ToList(),
             };
+
+            response.TiledDisplayName = ParticipantTilePositionHelper.GetTiledDisplayName(response);
+
+            return response;
         }
     }
 }
