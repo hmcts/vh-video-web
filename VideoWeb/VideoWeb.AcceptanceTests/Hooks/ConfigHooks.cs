@@ -41,7 +41,7 @@ namespace VideoWeb.AcceptanceTests.Hooks
             RegisterTestUserSecrets(context);
             RegisterDefaultData(context);
             RegisterIsLive(context);
-            RegisterUsingEjud(context);
+            RegisterLocals(context);
             RegisterValidEjudDIdDomains(context);
             RegisterHearingServices(context);
             RegisterWowzaSettings(context);
@@ -103,9 +103,10 @@ namespace VideoWeb.AcceptanceTests.Hooks
             context.VideoWebConfig.IsLive = _configRoot.GetValue<bool>("IsLive");
         }
 
-        private void RegisterUsingEjud(TestContext context)
+        private void RegisterLocals(TestContext context)
         {
             context.VideoWebConfig.UsingEjud = _configRoot.GetValue<bool>("UsingEjud");
+            context.VideoWebConfig.consultationRoomTimeout =double.Parse(_configRoot.GetValue<string>("consultationRoomTimeout"));
         }
 
         private void RegisterValidEjudDIdDomains (TestContext context)

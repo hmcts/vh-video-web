@@ -18,5 +18,6 @@ namespace VideoWeb.AcceptanceTests.Configuration
         public WowzaConfiguration Wowza { get; set; }
         public bool UsingEjud { get; set; }
         public List<string> ValidEjudDIdDomains { get; set; }
+        public double consultationRoomTimeout { get; set; }
     }
 }
