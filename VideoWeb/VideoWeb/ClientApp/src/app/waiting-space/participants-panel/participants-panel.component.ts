@@ -66,7 +66,6 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         this.getParticipantsList().then(() => {
             this.setupVideoCallSubscribers();
             this.setupEventhubSubscribers();
-            this.setupParticipantsSubscribers();
         });
     }
 
@@ -154,15 +153,13 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
                 this.handleParticipantHandRaiseChange(message);
             })
         );
-    }
 
-    setupParticipantsSubscribers() {
-        this.participantsSubscription$.add(
-            this.participantsService.onParticipantsUpdated$.subscribe(() => {
-                this.nonEndpointParticipants = this.participantsService.nonEndpointParticipants.map(x => {
-                    return this.mapper.mapFromParticipantModel(x);
-                });
-                this.setParticipants();
+        this.eventhubSubscription$.add(
+            this.eventService.getParticipantsUpdated().subscribe(async message => {
+                if (message.conferenceId === this.conferenceId) {
+                    this.nonEndpointParticipants = this.mapper.mapFromParticipantUserResponseArray(message.participants);
+                    this.setParticipants();
+                }
             })
         );
     }
