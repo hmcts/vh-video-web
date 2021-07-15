@@ -61,6 +61,7 @@ describe('ParticipantsPanelComponent', () => {
     const translateService = translateServiceSpy;
     let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
     let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
+    let participantPanelModelMapperSpy: jasmine.SpyObj<ParticipantPanelModelMapper>;
 
     let component: ParticipantsPanelComponent;
     const mapper = new ParticipantPanelModelMapper();
@@ -78,8 +79,13 @@ describe('ParticipantsPanelComponent', () => {
         participantServiceSpy = jasmine.createSpyObj<ParticipantService>(
             'ParticipantService',
             ['getParticipantOrVirtualMeetingRoomById'],
-            ['onParticipantsUpdated$']
+            ['onParticipantsUpdated$', 'nonEndpointParticipants']
         );
+
+        participantPanelModelMapperSpy = jasmine.createSpyObj<ParticipantPanelModelMapper>('ParticipantPanelModelMapper', [
+            'mapFromParticipantModel',
+            'mapFromParticipantUserResponseArray'
+        ]);
         spyOnProperty(participantServiceSpy, 'onParticipantsUpdated$').and.returnValue(participantsUpdatedSubject.asObservable());
 
         component = new ParticipantsPanelComponent(
@@ -90,8 +96,10 @@ describe('ParticipantsPanelComponent', () => {
             eventService,
             logger,
             participantServiceSpy,
-            translateService
+            translateService,
+            participantPanelModelMapperSpy
         );
+
         component.participants = new ParticipantPanelModelMapper().mapFromParticipantUserResponseArray(participants);
         component.conferenceId = conferenceId;
         component.witnessTransferTimeout = {};
@@ -108,6 +116,8 @@ describe('ParticipantsPanelComponent', () => {
     });
 
     it('should get participant sorted list, the judge is first, then panel members and finally observers are the last one', fakeAsync(() => {
+        const mappedParticipants = mapper.mapFromParticipantUserResponseArray(participants);
+        participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedParticipants);
         const allJOHs = participants.filter(x => x.role === Role.JudicialOfficeHolder);
         const expectedCount = endpoints.length + participants.length - 2 - (allJOHs.length - 1); // take away 2 interpreters and additional joh
 
@@ -843,5 +853,91 @@ describe('ParticipantsPanelComponent', () => {
         participantHandRaisedStatusSubjectMock.next(message);
         const updatedHandRaiseCount = component.participants.filter(x => x.hasHandRaised()).length;
         expect(updatedHandRaiseCount).toBe(0);
+    });
+
+    it('should update participants', () => {
+        component.nonEndpointParticipants = [];
+        const updatedParticipant1 = new ParticipantModel(
+            'TestId1',
+            'TestName1',
+            'TestDisplayName1',
+            'TestPexipDisplayName1',
+            'TestCaseGroup1',
+            Role.JudicialOfficeHolder,
+            'TestHearingRole1',
+            true,
+            null,
+            [],
+            ParticipantStatus.Available,
+            null,
+            'TestPexipId1',
+            true,
+            true,
+            true,
+            true,
+            true
+        );
+
+        const updatedParticipant2 = new ParticipantModel(
+            'TestId2',
+            'TestName2',
+            'TestDisplayName2',
+            'TestPexipDisplayName2',
+            'TestCaseGroup2',
+            Role.JudicialOfficeHolder,
+            'TestHearingRole2',
+            true,
+            null,
+            [],
+            ParticipantStatus.Available,
+            null,
+            'TestPexipId2',
+            true,
+            true,
+            true,
+            true,
+            true
+        );
+
+        const mappedParticipant1 = new ParticipantPanelModel(
+            'MappedId1',
+            'MappedDisplayName1',
+            Role.VideoHearingsOfficer,
+            'MappedCaseTypeGroup',
+            'MappedPexipDisplayName',
+            'MappedHearingRole',
+            'MappedRepresentee',
+            ParticipantStatus.Disconnected
+        );
+        const mappedParticipant2 = new ParticipantPanelModel(
+            'MappedId2',
+            'MappedDisplayName2',
+            Role.VideoHearingsOfficer,
+            'MappedCaseTypeGroup',
+            'MappedPexipDisplayName',
+            'MappedHearingRole',
+            'MappedRepresentee',
+            ParticipantStatus.Disconnected
+        );
+
+        participantPanelModelMapperSpy.mapFromParticipantModel
+            .withArgs(updatedParticipant1)
+            .and.returnValue(mappedParticipant1)
+            .withArgs(updatedParticipant2)
+            .and.returnValue(mappedParticipant2);
+
+        const updatedParticipants = [updatedParticipant1, updatedParticipant2];
+        spyOnProperty(participantServiceSpy, 'nonEndpointParticipants', 'get').and.returnValue(updatedParticipants);
+        component.setupParticipantsSubscribers();
+
+        participantsUpdatedSubject.next(true);
+
+        updatedParticipants.forEach(participant => {
+            expect(participantPanelModelMapperSpy.mapFromParticipantModel).toHaveBeenCalledWith(participant);
+        });
+        expect(participantPanelModelMapperSpy.mapFromParticipantModel).toHaveBeenCalledTimes(updatedParticipants.length);
+        expect(component.nonEndpointParticipants.length).toBe(updatedParticipants.length);
+        expect(component.nonEndpointParticipants).toContain(mappedParticipant1);
+        expect(component.nonEndpointParticipants).toContain(mappedParticipant2);
     });
 });

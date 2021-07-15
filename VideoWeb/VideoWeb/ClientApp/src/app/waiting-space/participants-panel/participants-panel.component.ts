@@ -57,7 +57,8 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         private eventService: EventsService,
         private logger: Logger,
         private participantsService: ParticipantService,
-        protected translateService: TranslateService
+        protected translateService: TranslateService,
+        private mapper: ParticipantPanelModelMapper
     ) {}
 
     ngOnInit() {
@@ -158,8 +159,9 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
     setupParticipantsSubscribers() {
         this.participantsSubscription$.add(
             this.participantsService.onParticipantsUpdated$.subscribe(() => {
-                const mapper = new ParticipantPanelModelMapper();
-                this.nonEndpointParticipants = this.participantsService.nonEndpointParticipants.map(x => mapper.mapFromParticipantModel(x));
+                this.nonEndpointParticipants = this.participantsService.nonEndpointParticipants.map(x => {
+                    return this.mapper.mapFromParticipantModel(x);
+                });
                 this.setParticipants();
             })
         );
@@ -279,8 +281,7 @@ export class ParticipantsPanelComponent implements OnInit, OnDestroy {
         try {
             const pats = await this.videoWebService.getParticipantsByConferenceId(this.conferenceId);
             const eps = this.videoWebService.getEndpointsForConference(this.conferenceId);
-
-            this.nonEndpointParticipants = new ParticipantPanelModelMapper().mapFromParticipantUserResponseArray(pats);
+            this.nonEndpointParticipants = this.mapper.mapFromParticipantUserResponseArray(pats);
 
             this.logger.debug(`${this.loggerPrefix} Retrieved participants in conference`, { conference: this.conferenceId });
             (await eps).forEach(x => {
