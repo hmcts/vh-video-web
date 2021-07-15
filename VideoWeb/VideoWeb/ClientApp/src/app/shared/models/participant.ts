@@ -121,12 +121,6 @@ export class Participant {
     private participant: ParticipantResponseVho;
 
     constructor(participant: ParticipantResponseVho) {
-        const isVhResponse = participant instanceof ParticipantResponseVho;
-        const isParticipantResponse = participant instanceof ParticipantResponse;
-
-        if (!(isVhResponse || isParticipantResponse)) {
-            throw new Error('Object not a ParticipantResponseVho or ParticipantResponse');
-        }
         this.participant = participant;
     }
 

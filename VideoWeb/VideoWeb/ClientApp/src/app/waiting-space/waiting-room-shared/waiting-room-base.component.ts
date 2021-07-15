@@ -469,8 +469,7 @@ export abstract class WaitingRoomBaseDirective {
                     );
                 });
 
-                this.hearing.getConference().participants = participantsUpdatedMessage.participants;
-                this.conference = this.hearing.getConference();
+                this.conference.participants = participantsUpdatedMessage.participants;
             })
         );
     }
