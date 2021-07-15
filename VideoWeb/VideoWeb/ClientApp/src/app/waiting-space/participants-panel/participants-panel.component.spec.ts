@@ -42,6 +42,7 @@ import { ParticipantService } from 'src/app/services/conference/participant.serv
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { CaseTypeGroup } from '../models/case-type-group';
 import { Subject } from 'rxjs';
+import { ParticipantsUpdatedMessage } from 'src/app/shared/models/participants-updated-message';
 
 describe('ParticipantsPanelComponent', () => {
     const testData = new ConferenceTestData();
@@ -857,87 +858,14 @@ describe('ParticipantsPanelComponent', () => {
 
     it('should update participants', () => {
         component.nonEndpointParticipants = [];
-        const updatedParticipant1 = new ParticipantModel(
-            'TestId1',
-            'TestName1',
-            'TestDisplayName1',
-            'TestPexipDisplayName1',
-            'TestCaseGroup1',
-            Role.JudicialOfficeHolder,
-            'TestHearingRole1',
-            true,
-            null,
-            [],
-            ParticipantStatus.Available,
-            null,
-            'TestPexipId1',
-            true,
-            true,
-            true,
-            true,
-            true
-        );
+        const mappedParticipants = mapper.mapFromParticipantUserResponseArray(participants);
+        participantPanelModelMapperSpy.mapFromParticipantUserResponseArray.and.returnValue(mappedParticipants);
 
-        const updatedParticipant2 = new ParticipantModel(
-            'TestId2',
-            'TestName2',
-            'TestDisplayName2',
-            'TestPexipDisplayName2',
-            'TestCaseGroup2',
-            Role.JudicialOfficeHolder,
-            'TestHearingRole2',
-            true,
-            null,
-            [],
-            ParticipantStatus.Available,
-            null,
-            'TestPexipId2',
-            true,
-            true,
-            true,
-            true,
-            true
-        );
+        component.setupEventhubSubscribers();
+        const message = new ParticipantsUpdatedMessage(conferenceId, participants);
 
-        const mappedParticipant1 = new ParticipantPanelModel(
-            'MappedId1',
-            'MappedDisplayName1',
-            Role.VideoHearingsOfficer,
-            'MappedCaseTypeGroup',
-            'MappedPexipDisplayName',
-            'MappedHearingRole',
-            'MappedRepresentee',
-            ParticipantStatus.Disconnected
-        );
-        const mappedParticipant2 = new ParticipantPanelModel(
-            'MappedId2',
-            'MappedDisplayName2',
-            Role.VideoHearingsOfficer,
-            'MappedCaseTypeGroup',
-            'MappedPexipDisplayName',
-            'MappedHearingRole',
-            'MappedRepresentee',
-            ParticipantStatus.Disconnected
-        );
+        getParticipantsUpdatedSubjectMock.next(message);
 
-        participantPanelModelMapperSpy.mapFromParticipantModel
-            .withArgs(updatedParticipant1)
-            .and.returnValue(mappedParticipant1)
-            .withArgs(updatedParticipant2)
-            .and.returnValue(mappedParticipant2);
-
-        const updatedParticipants = [updatedParticipant1, updatedParticipant2];
-        spyOnProperty(participantServiceSpy, 'nonEndpointParticipants', 'get').and.returnValue(updatedParticipants);
-        component.setupParticipantsSubscribers();
-
-        participantsUpdatedSubject.next(true);
-
-        updatedParticipants.forEach(participant => {
-            expect(participantPanelModelMapperSpy.mapFromParticipantModel).toHaveBeenCalledWith(participant);
-        });
-        expect(participantPanelModelMapperSpy.mapFromParticipantModel).toHaveBeenCalledTimes(updatedParticipants.length);
-        expect(component.nonEndpointParticipants.length).toBe(updatedParticipants.length);
-        expect(component.nonEndpointParticipants).toContain(mappedParticipant1);
-        expect(component.nonEndpointParticipants).toContain(mappedParticipant2);
+        expect(component.nonEndpointParticipants).toEqual(mappedParticipants);
     });
 });
