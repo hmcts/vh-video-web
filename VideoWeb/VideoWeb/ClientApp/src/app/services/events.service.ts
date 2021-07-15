@@ -83,7 +83,7 @@ export class EventsService {
         },
 
         ParticipantsUpdatedMessage: (conferenceId: string, participants: ParticipantResponse[]) => {
-            const message = new ParticipantsUpdatedMessage(conferenceId, participants );
+            const message = new ParticipantsUpdatedMessage(conferenceId, participants);
             this.logger.debug('[EventsService] - ParticipantUpdatedMessage received', message);
             this.participantsUpdatedSubject.next(message);
         },
