@@ -85,6 +85,7 @@
     "karma-jasmine": "~4.0.1",
     "karma-jasmine-html-reporter": "^1.5.4",
     "karma-junit-reporter": "^2.0.1",
+    "ng-mocks": "^12.3.1",
     "nswag": "^13.10.8",
     "prettier": "^2.2.1",
     "puppeteer": "^8.0.0",

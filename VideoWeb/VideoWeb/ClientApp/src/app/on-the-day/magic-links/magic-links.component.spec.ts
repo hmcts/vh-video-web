@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { of } from 'rxjs';
 import { MagicLinksService } from 'src/app/services/api/magic-links.service';
 import { ErrorService } from 'src/app/services/error.service';
+import { MockComponent, MockPipe } from 'ng-mocks';
 
 import { MagicLinksComponent } from './magic-links.component';
 import { TranslatePipeMock } from '../..//testing/mocks/mock-translation-pipe';
@@ -28,7 +29,7 @@ describe('MagicLinksComponent', () => {
         });
 
         await TestBed.configureTestingModule({
-            declarations: [MagicLinksComponent, ContactUsFoldingComponent, TranslatePipeMock],
+            declarations: [MagicLinksComponent, MockComponent(ContactUsFoldingComponent), MockPipe(TranslatePipeMock)],
             providers: [
                 {
                     provide: ActivatedRoute,
