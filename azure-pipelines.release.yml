@@ -37,17 +37,22 @@ variables:
   - group: vh-apps-settings-generic
   - group: vh-video-web
   - group: vh test users
+  - group: vh-video-web-nonprod
   - group: Saucelabs
   - ${{ if ne(variables['Build.Reason'], 'ResourceTrigger') }}:
     - ${{ if containsValue(parameters.prodEnvs, parameters.environment) }}:
       - group: vh-prod
+      - group: vh-video-web-prod
     - ${{ if not(containsValue(parameters.prodEnvs, parameters.environment)) }}:
       - group: vh-preview
+      - group: vh-video-web-preprod
   - ${{ if eq(variables['Build.Reason'], 'ResourceTrigger') }}:
     - ${{ if or(startswith(variables['Build.SourceBranch'], 'refs/heads/release/'), startswith(variables['Build.SourceBranch'], 'refs/heads/hotfix/')) }}:
       - group: vh-prod
+      - group: vh-video-web-prod
     - ${{ if not(or(startswith(variables['Build.SourceBranch'], 'refs/heads/release/'), startswith(variables['Build.SourceBranch'], 'refs/heads/hotfix/'))) }}:
       - group: vh-preview
+      - group: vh-video-web-preprod
 
 trigger: none
 pr: none
