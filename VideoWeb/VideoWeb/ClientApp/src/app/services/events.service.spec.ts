@@ -63,7 +63,7 @@ describe('EventsService', () => {
         subscription$.add(serviceUnderTest.getHeartbeat().subscribe());
         subscription$.add(serviceUnderTest.getServiceReconnected().subscribe());
         subscription$.add(serviceUnderTest.getServiceDisconnected().subscribe());
-        subscription$.add(serviceUnderTest.getParticipantAdded().subscribe());
+        subscription$.add(serviceUnderTest.getParticipantsUpdated().subscribe());
 
         // Assert
         expect(subscription$).toBeTruthy();
@@ -201,7 +201,7 @@ describe('EventsService', () => {
         });
 
         describe('ParticipantAdded', () => {
-            const eventString = 'ParticipantAddedMessage';
+            const eventString = 'ParticipantsUpdatedMessage';
 
             it('should be registered', () => {
                 // Arrange
@@ -223,17 +223,17 @@ describe('EventsService', () => {
                 const testParticipant = new ParticipantResponse();
                 testParticipant.id = 'TestParticipantId';
                 testParticipant.display_name = 'TestParticipantDisplayName';
-
+                const testParticipantArr = [testParticipant];
                 const hubConnectionSpy = jasmine.createSpyObj<signalR.HubConnection>('HubConnection', ['on']);
                 hubConnectionSpy.on.withArgs(jasmine.any(String), jasmine.any(Function)).and.callFake((eventType: string, func: any) => {
                     if (eventType === eventString) {
-                        func(testConferenceId, testParticipant);
+                        func(testConferenceId, testParticipantArr);
                     }
                 });
 
-                serviceUnderTest.getParticipantAdded().subscribe(message => {
+                serviceUnderTest.getParticipantsUpdated().subscribe(message => {
                     expect(message.conferenceId).toBe(testConferenceId);
-                    expect(message.participant).toBe(testParticipant);
+                    expect(message.participants).toEqual(testParticipantArr);
                     doneCallback();
                 });
 

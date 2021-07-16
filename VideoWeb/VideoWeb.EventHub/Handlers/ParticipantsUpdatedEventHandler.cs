@@ -1,31 +1,28 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
+using VideoApi.Client;
 using VideoWeb.Common.Caching;
 using VideoWeb.EventHub.Handlers.Core;
 using VideoWeb.EventHub.Hub;
 using VideoWeb.EventHub.Models;
-using VideoApi.Client;
 using EventType = VideoWeb.EventHub.Enums.EventType;
-using ParticipantState = VideoWeb.EventHub.Enums.ParticipantState;
-using VideoWeb.Contract.Responses;
-using VideoWeb.EventHub.Mappers;
 
 namespace VideoWeb.EventHub.Handlers
 {
-    public class ParticipantAddedEventHandler : EventHandlerBase
+    public class ParticipantsUpdatedEventHandler : EventHandlerBase
     {
-        public ParticipantAddedEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
+        public ParticipantsUpdatedEventHandler(IHubContext<Hub.EventHub, IEventHubClient> hubContext,
             IConferenceCache conferenceCache, ILogger<EventHandlerBase> logger, IVideoApiClient videoApiClient) : base(
             hubContext, conferenceCache, logger, videoApiClient)
         {
         }
 
-        public override EventType EventType => EventType.ParticipantAdded;
-
+        public override EventType EventType => EventType.ParticipantsUpdated;
+         
         protected override Task PublishStatusAsync(CallbackEvent callbackEvent)
         {
-            return PublishParticipantAddedMessage(callbackEvent.ParticipantAdded);
+            return PublishParticipantsUpdatedMessage(callbackEvent.Participants);
         }
     }
 }
