@@ -458,6 +458,7 @@ export abstract class WaitingRoomBaseDirective {
 
         this.eventHubSubscription$.add(
             this.eventService.getParticipantsUpdated().subscribe(async participantsUpdatedMessage => {
+                console.log('Faz Test');
                 this.logger.debug(`[WR] - Participant Updated`, participantsUpdatedMessage);
                 const newParticipants = participantsUpdatedMessage.participants.filter(
                     x => !this.conference.participants.find(y => y.id === x.id)
@@ -469,7 +470,20 @@ export abstract class WaitingRoomBaseDirective {
                     );
                 });
 
-                this.conference.participants = participantsUpdatedMessage.participants;
+                const updatedParticipants = [...participantsUpdatedMessage.participants];
+                console.log('Faz - updatedParticipants before map', updatedParticipants);
+                console.log('Faz - currentParticipants', this.conference.participants);
+                updatedParticipants.map(updatedParticipant => {
+                    console.log(
+                        'Faz - found',
+                        this.conference.participants.find(currentParticipant => currentParticipant.id === updatedParticipant.id)
+                    );
+                    updatedParticipant.current_room = this.conference.participants.find(
+                        currentParticipant => currentParticipant.id === updatedParticipant.id
+                    )?.current_room;
+                });
+                console.log('Faz - updatedParticipants after map', updatedParticipants);
+                this.conference.participants = updatedParticipants;
             })
         );
     }
