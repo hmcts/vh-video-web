@@ -2,10 +2,11 @@ import { ParticipantForUserResponse, Role, RoomSummaryResponse } from 'src/app/s
 import { LinkedParticipantPanelModel } from 'src/app/waiting-space/models/linked-participant-panel-model';
 import { PanelModel } from 'src/app/waiting-space/models/panel-model-base';
 import { ParticipantPanelModel } from 'src/app/waiting-space/models/participant-panel-model';
+import { ParticipantModel } from '../models/participant';
 import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
 export class ParticipantPanelModelMapper {
-    mapFromParticipantUserResponse(pats: ParticipantForUserResponse[]): PanelModel[] {
+    mapFromParticipantUserResponseArray(pats: ParticipantForUserResponse[]): PanelModel[] {
         const participants: PanelModel[] = [];
         pats.forEach(x => {
             if (x.linked_participants?.length > 0) {
@@ -23,11 +24,37 @@ export class ParticipantPanelModelMapper {
                     participants.push(participant);
                 }
             } else {
-                const participant = new ParticipantPanelModel(x);
+                const participant = this.mapFromParticipantUserResponse(x);
                 participants.push(participant);
             }
         });
         return participants;
+    }
+
+    mapFromParticipantUserResponse(participant: ParticipantForUserResponse): ParticipantPanelModel {
+        return new ParticipantPanelModel(
+            participant.id,
+            participant.display_name,
+            participant.role,
+            participant.case_type_group,
+            participant.tiled_display_name,
+            participant.hearing_role,
+            participant.representee,
+            participant.status
+        );
+    }
+
+    mapFromParticipantModel(participant: ParticipantModel): PanelModel {
+        return new ParticipantPanelModel(
+            participant.id,
+            participant.displayName,
+            participant.role,
+            participant.caseGroup,
+            participant.pexipDisplayName.displayName,
+            participant.hearingRole,
+            null,
+            participant.status
+        );
     }
 
     private getParticipantRoom(linkedParticipants: ParticipantPanelModel[], pats: ParticipantForUserResponse[]): RoomSummaryResponse {
@@ -48,7 +75,7 @@ export class ParticipantPanelModelMapper {
 
     private mapJohs(pats: ParticipantForUserResponse[]): ParticipantPanelModel[] {
         const johs = pats.filter(x => x.role === Role.JudicialOfficeHolder);
-        return johs.map(j => new ParticipantPanelModel(j));
+        return johs.map(j => this.mapFromParticipantUserResponse(j));
     }
 
     private mapLinkedParticipant(participant: ParticipantForUserResponse, pats: ParticipantForUserResponse[]): ParticipantPanelModel[] {
@@ -58,8 +85,8 @@ export class ParticipantPanelModelMapper {
                 linked.push(p);
             }
         });
-        const allMapped = linked.map(l => new ParticipantPanelModel(l));
-        allMapped.push(new ParticipantPanelModel(participant));
+        const allMapped = linked.map(l => this.mapFromParticipantUserResponse(l));
+        allMapped.push(this.mapFromParticipantUserResponse(participant));
         return [
             ...allMapped.filter(x => x.hearingRole !== HearingRole.INTERPRETER),
             ...allMapped.filter(x => x.hearingRole === HearingRole.INTERPRETER)

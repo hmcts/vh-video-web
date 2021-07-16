@@ -20,7 +20,7 @@ describe('ParticipantPanelModelMapper', () => {
         const expectedCount = participants.length - 1 - (allJOHs.length - 1); // take away 1 for interpreter and 1 for additional joh
 
         // act
-        const result = mapper.mapFromParticipantUserResponse(participants);
+        const result = mapper.mapFromParticipantUserResponseArray(participants);
 
         // assert
         expect(result.length).toBe(expectedCount);
@@ -39,7 +39,7 @@ describe('ParticipantPanelModelMapper', () => {
         const expectedCount = participants.length - 2 - (allJOHs.length - 1); // take away 2 for interpreters and 1 additional joh
 
         // act
-        const result = mapper.mapFromParticipantUserResponse(participants);
+        const result = mapper.mapFromParticipantUserResponseArray(participants);
         // assert
         expect(result.length).toBe(expectedCount);
         const linked = result.filter(p => p instanceof LinkedParticipantPanelModel) as LinkedParticipantPanelModel[];
@@ -53,7 +53,7 @@ describe('ParticipantPanelModelMapper', () => {
         const expectedCount = participants.length - (allJOHs.length - 1); // take away additional joh
 
         // act
-        const result = mapper.mapFromParticipantUserResponse(participants);
+        const result = mapper.mapFromParticipantUserResponseArray(participants);
 
         // assert
         expect(result.length).toBe(expectedCount);
@@ -70,7 +70,7 @@ describe('ParticipantPanelModelMapper', () => {
         const witnessLinkedParticipants = testData.getListOfLinkedParticipants(true);
         participants = participants.concat(linkedParticipants).concat(witnessLinkedParticipants);
         // act
-        const result = mapper.mapFromParticipantUserResponse(participants);
+        const result = mapper.mapFromParticipantUserResponseArray(participants);
 
         const linked = result.filter(p => p instanceof LinkedParticipantPanelModel) as LinkedParticipantPanelModel[];
 
