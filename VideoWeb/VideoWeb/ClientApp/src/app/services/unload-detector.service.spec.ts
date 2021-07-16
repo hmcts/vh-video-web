@@ -1,5 +1,5 @@
 import { Renderer2, RendererFactory2 } from '@angular/core';
-import { fakeAsync } from '@angular/core/testing';
+import { fakeAsync, flush } from '@angular/core/testing';
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { Logger } from './logging/logger-base';
 import { UnloadDetectorService } from './unload-detector.service';
@@ -17,7 +17,7 @@ class Renderer2Mock {
     }
 }
 
-fdescribe('UnloadDetectorService', () => {
+describe('UnloadDetectorService', () => {
     let service: UnloadDetectorService;
     let deviceDetectorServiceSpy: jasmine.SpyObj<DeviceDetectorService>;
     let renderer2FactorySpy: jasmine.SpyObj<RendererFactory2>;
@@ -60,6 +60,7 @@ fdescribe('UnloadDetectorService', () => {
 
             // Act
             renderer2Mock.beforeUnloadCallback(undefined);
+            flush();
 
             // Assert
             expect(wasCalled).toBeTrue();
@@ -91,6 +92,7 @@ fdescribe('UnloadDetectorService', () => {
 
             // Act
             renderer2Mock.visibiltyChangeCallback(undefined);
+            flush();
 
             // Assert
             expect(wasCalled).toBeTrue();
