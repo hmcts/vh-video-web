@@ -655,7 +655,7 @@
     "winger": "Winger",
     "witness": "Witness",
     "intermediary": "Intermediary",
-    "video-access-point":"Video access point"
+    "video-access-point": "Video access point"
   },
   "case-role": {
     "appellant": "Appellant",
@@ -1003,10 +1003,10 @@
       "decline": "Decline"
     },
     "linked-participants": {
-        "waiting-single": "Waiting for {{name}} to accept the invitation from {{invitedBy}}.",
-        "waiting-multiple": "Waiting for {{number}} other participants to accept the invitation from {{invitedBy}}.",
-        "rejected": "{{rejector}} rejected the invitation from {{invitedBy}}.",
-        "button-close": "Close"
+      "waiting-single": "Waiting for {{name}} to accept the invitation from {{invitedBy}}.",
+      "waiting-multiple": "Waiting for {{number}} other participants to accept the invitation from {{invitedBy}}.",
+      "rejected": "{{rejector}} rejected the invitation from {{invitedBy}}.",
+      "button-close": "Close"
     },
     "poor-connection": {
       "title": "Alert",
@@ -1039,5 +1039,22 @@
     "next": "Next",
     "error-title": "There is a problem:",
     "select-a-provider": "Select an account type to continue."
+  },
+  "magic-participant-landing-page": {
+    "page-title": "Enter your details to join your hearing",
+    "paragraph1": "Please tell us your name and your role in the hearing.",
+    "name-label": "Your full name",
+    "name-error": "Please enter your full name",
+    "role-label": "What is your role in the hearing?",
+    "role-error": "Please choose your role in the hearing",
+    "participant": {
+      "role": "Participant",
+      "description": "You have been called to take part in the hearing."
+    },
+    "observer": {
+      "role": "Observer",
+      "description": "You are observing the hearing, but not taking part."
+    },
+    "button-continue": "Continue"
   }
 }

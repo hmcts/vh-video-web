@@ -1,19 +1,19 @@
-<h1 class="govuk-heading-xl govuk-!-margin-top-8">Enter your details to join your hearing</h1>  
+<h1 class="govuk-heading-xl govuk-!-margin-top-8">{{ 'magic-participant-landing-page.page-title' | translate }}</h1>  
 
-<p>Please tell us your name and your role in the hearing.</p>
+<p>{{ 'magic-participant-landing-page.paragraph1' | translate }}</p>
 
 <form [formGroup]="magicLinkForm" class="govuk-form-group" (ngSubmit)="onSubmit()">
   <div [ngClass]="{ 'govuk-form-group--error': error.nameError }" class="govuk-!-margin-bottom-5">
-    <p *ngIf="error.nameError" class="govuk-error-message">Please enter your full name</p>
+    <p *ngIf="error.nameError" class="govuk-error-message">{{ 'magic-participant-landing-page.name-error' | translate }}</p>
     <label class="govuk-label" for="full-name">
-      Your full name
+      {{ 'magic-participant-landing-page.name-label' | translate }}
     </label>
     <input formControlName="name" class="govuk-input" id="full-name" name="full-name" type="text" spellcheck="false" autocomplete="name">
   </div>
 
   <div [ngClass]="{ 'govuk-form-group--error': error.roleError }">
-    <p *ngIf="error.roleError" class="govuk-error-message">Please choose your role in the hearing</p>
-    <p>What is your role in the hearing?</p>
+    <p *ngIf="error.roleError" class="govuk-error-message">{{ 'magic-participant-landing-page.role-error' | translate }}</p>
+    <p>{{ 'magic-participant-landing-page.role-label' | translate }}</p>
 
     <div *ngFor="let magicLinkParticipantRole of magicLinkParticipantRoles" class="govuk-radios__item">
       <ng-container [ngSwitch]="magicLinkParticipantRole">
@@ -27,10 +27,10 @@
             [value]="magicLinkParticipantRole"
             [attr.aria-describedby]="magicLinkParticipantRole + '-item-hint'">
           <label class="govuk-label govuk-radios__label" [attr.for]="magicLinkParticipantRole">
-              Participant
+            {{ 'magic-participant-landing-page.participant.role' | translate }}
           </label>
           <div [id]="magicLinkParticipantRole + '-item-hint'"  class="govuk-hint govuk-radios__hint">
-              You have been called to take part in the hearing.
+            {{ 'magic-participant-landing-page.participant.description' | translate }}
           </div>
         </ng-container>
         <ng-container *ngSwitchCase="role.MagicLinkObserver">
@@ -44,10 +44,10 @@
             [value]="magicLinkParticipantRole"
             [attr.aria-describedby]="magicLinkParticipantRole + '-item-hint'">
           <label class="govuk-label govuk-radios__label" [attr.for]="magicLinkParticipantRole">
-              Observer
+            {{ 'magic-participant-landing-page.observer.role' | translate }}
           </label>
           <div [id]="magicLinkParticipantRole + '-item-hint'"  class="govuk-hint govuk-radios__hint">
-              You are observing the hearing, but not taking part.
+            {{ 'magic-participant-landing-page.observer.description' | translate }}
           </div>
         </ng-container>
       </ng-container>
@@ -60,9 +60,9 @@
     data-module="govuk-button"
     type="button"
     (click)="onSubmit()"
-    [attr.aria-label]="'camera-check.continue' | translate"
+    [attr.aria-label]="'magic-participant-landing-page.button-continue' | translate"
   >
-  {{ 'camera-check.continue' | translate }}
+  {{ 'magic-participant-landing-page.button-continue' | translate }}
   </button>
 </form>
 
