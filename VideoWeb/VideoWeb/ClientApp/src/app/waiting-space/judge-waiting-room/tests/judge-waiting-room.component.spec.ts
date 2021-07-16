@@ -45,10 +45,11 @@ import { VideoControlService } from 'src/app/services/conference/video-control.s
 import { ConferenceService } from 'src/app/services/conference/conference.service';
 import { VideoControlCacheService } from 'src/app/services/conference/video-control-cache.service';
 import { getSpiedPropertyGetter } from 'src/app/shared/jasmine-helpers/property-helpers';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { ParticipantModel } from 'src/app/shared/models/participant';
 import { VirtualMeetingRoomModel } from 'src/app/services/conference/models/virtual-meeting-room.model';
 import { HearingRole } from '../../models/hearing-role-model';
+import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 
 describe('JudgeWaitingRoomComponent when conference exists', () => {
     const participantOneId = Guid.create().toString();
@@ -136,6 +137,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     let participantServiceSpy: jasmine.SpyObj<ParticipantService>;
     let videoControlServiceSpy: jasmine.SpyObj<VideoControlService>;
     let videoControlCacheServiceSpy: jasmine.SpyObj<VideoControlCacheService>;
+    let unloadDetectorServiceSpy: jasmine.SpyObj<UnloadDetectorService>;
+    let shouldUnloadSubject: Subject<void>;
 
     beforeAll(() => {
         initAllWRDependencies();
@@ -143,6 +146,10 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
     });
 
     beforeEach(async () => {
+        unloadDetectorServiceSpy = jasmine.createSpyObj<UnloadDetectorService>('UnloadDetectorService', [], ['shouldUnload']);
+        shouldUnloadSubject = new Subject<void>();
+        getSpiedPropertyGetter(unloadDetectorServiceSpy, 'shouldUnload').and.returnValue(shouldUnloadSubject.asObservable());
+
         consultationInvitiation = {} as ConsultationInvitation;
         logged = new LoggedParticipantResponse({
             participant_id: globalParticipant.id,
@@ -221,7 +228,8 @@ describe('JudgeWaitingRoomComponent when conference exists', () => {
             conferenceServiceSpy,
             participantServiceSpy,
             videoControlServiceSpy,
-            videoControlCacheServiceSpy
+            videoControlCacheServiceSpy,
+            unloadDetectorServiceSpy
         );
 
         consultationInvitiationService.getInvitation.and.returnValue(consultationInvitiation);
