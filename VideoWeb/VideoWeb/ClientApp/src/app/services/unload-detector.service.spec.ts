@@ -17,7 +17,7 @@ class Renderer2Mock {
     }
 }
 
-describe('UnloadDetectorService', () => {
+fdescribe('UnloadDetectorService', () => {
     let service: UnloadDetectorService;
     let deviceDetectorServiceSpy: jasmine.SpyObj<DeviceDetectorService>;
     let renderer2FactorySpy: jasmine.SpyObj<RendererFactory2>;
