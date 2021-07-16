@@ -70,7 +70,7 @@ describe('ParticipantPanelModelMapper', () => {
         const witnessLinkedParticipants = testData.getListOfLinkedParticipants(true);
         participants = participants.concat(linkedParticipants).concat(witnessLinkedParticipants);
         // act
-        const result = mapper.mapFromParticipantUserResponse(participants);
+        const result = mapper.mapFromParticipantUserResponseArray(participants);
 
         const linked = result.filter(p => p instanceof LinkedParticipantPanelModel) as LinkedParticipantPanelModel[];
 
