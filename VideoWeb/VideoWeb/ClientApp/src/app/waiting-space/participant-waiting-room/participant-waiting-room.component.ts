@@ -1,6 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus, ParticipantResponse, Role } from 'src/app/services/clients/api-client';
@@ -22,6 +22,8 @@ import { VideoCallService } from '../services/video-call.service';
 import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-base.component';
 import { TranslateService } from '@ngx-translate/core';
 import { ConsultationInvitationService } from '../services/consultation-invitation.service';
+import { takeUntil } from 'rxjs/operators';
+import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 
 @Component({
     selector: 'app-participant-waiting-room',
@@ -29,6 +31,9 @@ import { ConsultationInvitationService } from '../services/consultation-invitati
     styleUrls: ['../waiting-room-global-styles.scss', './participant-waiting-room.component.scss']
 })
 export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
+    private readonly loggerPrefixParticipant = '[Participant WR] -';
+    private destroyedSubject = new Subject();
+
     currentTime: Date;
     hearingStartingAnnounced: boolean;
 
@@ -52,7 +57,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
         protected translateService: TranslateService,
-        protected consultationInvitiationService: ConsultationInvitationService
+        protected consultationInvitiationService: ConsultationInvitationService,
+        private unloadDetectorService: UnloadDetectorService
     ) {
         super(
             route,
@@ -76,6 +82,8 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     ngOnInit() {
+        this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.cleanUp());
+
         this.audioOnly = this.videoCallService.retrieveVideoCallPreferences().audioOnly;
         this.errorCount = 0;
         this.logger.debug('[Participant WR] - Loading participant waiting room');
@@ -89,12 +97,19 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
         });
     }
 
-    @HostListener('window:beforeunload')
     ngOnDestroy(): void {
-        this.logger.debug('[Participant WR] - Clearing intervals and subscriptions for participant waiting room', {
+        this.cleanUp();
+    }
+
+    private cleanUp() {
+        this.logger.debug(`${this.loggerPrefixParticipant} Clearing intervals and subscriptions for JOH waiting room`, {
             conference: this.conference?.id
         });
+
         this.executeWaitingRoomCleanup();
+
+        this.destroyedSubject.next();
+        this.destroyedSubject.complete();
     }
 
     subscribeToClock(): void {

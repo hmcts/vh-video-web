@@ -1,6 +1,8 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
@@ -10,6 +12,7 @@ import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { ConferenceStatusMessage } from 'src/app/services/models/conference-status-message';
+import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
@@ -27,6 +30,7 @@ import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-ba
 })
 export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     private readonly loggerPrefixJOH = '[JOH WR] -';
+    private destroyedSubject = new Subject();
 
     constructor(
         protected route: ActivatedRoute,
@@ -46,7 +50,8 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         protected roomClosingToastrService: RoomClosingToastrService,
         protected clockService: ClockService,
         protected translateService: TranslateService,
-        protected consultationInvitiationService: ConsultationInvitationService
+        protected consultationInvitiationService: ConsultationInvitationService,
+        private unloadDetectorService: UnloadDetectorService
     ) {
         super(
             route,
@@ -75,6 +80,9 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         this.logger.debug(`${this.loggerPrefixJOH} Loading JOH waiting room`);
         this.connected = false;
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
+
+        this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.cleanUp());
+
         this.notificationSoundsService.initHearingAlertSound();
         this.getConference().then(() => {
             this.subscribeToClock();
@@ -115,11 +123,18 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         }
     }
 
-    @HostListener('window:beforeunload')
     ngOnDestroy(): void {
+        this.cleanUp();
+    }
+
+    private cleanUp() {
         this.logger.debug(`${this.loggerPrefixJOH} Clearing intervals and subscriptions for JOH waiting room`, {
             conference: this.conference?.id
         });
+
         this.executeWaitingRoomCleanup();
+
+        this.destroyedSubject.next();
+        this.destroyedSubject.complete();
     }
 }

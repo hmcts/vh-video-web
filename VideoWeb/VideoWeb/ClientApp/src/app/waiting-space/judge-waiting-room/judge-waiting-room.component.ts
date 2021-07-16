@@ -1,7 +1,8 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { merge, Subscription } from 'rxjs';
+import { merge, Subject, Subscription } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AudioRecordingService } from 'src/app/services/api/audio-recording.service';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
@@ -17,6 +18,7 @@ import { DeviceTypeService } from 'src/app/services/device-type.service';
 import { ErrorService } from 'src/app/services/error.service';
 import { EventsService } from 'src/app/services/events.service';
 import { Logger } from 'src/app/services/logging/logger-base';
+import { UnloadDetectorService } from 'src/app/services/unload-detector.service';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { UserMediaService } from 'src/app/services/user-media.service';
 import { HeartbeatModelMapper } from 'src/app/shared/mappers/heartbeat-model-mapper';
@@ -38,6 +40,8 @@ import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-ba
 })
 export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     private readonly loggerPrefixJudge = '[Judge WR] -';
+    private destroyedSubject = new Subject();
+
     audioRecordingInterval: NodeJS.Timer;
     isRecording: boolean;
     continueWithNoRecording = false;
@@ -82,7 +86,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         protected conferenceService: ConferenceService,
         protected participantService: ParticipantService,
         protected videoControlService: VideoControlService,
-        protected videoControlCacheService: VideoControlCacheService
+        protected videoControlCacheService: VideoControlCacheService,
+        private unloadDetectorService: UnloadDetectorService
     ) {
         super(
             route,
@@ -111,6 +116,8 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.errorCount = 0;
         this.logger.debug(`${this.loggerPrefixJudge} Loading judge waiting room`);
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
+
+        this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.cleanUp());
 
         this.initialiseVideoControlCacheLogic();
 
@@ -275,11 +282,21 @@ export class JudgeWaitingRoomComponent extends WaitingRoomBaseDirective implemen
         this.onConferenceStatusChangedSubscription = null;
     }
 
-    @HostListener('window:beforeunload')
-    async ngOnDestroy(): Promise<void> {
+    ngOnDestroy(): void {
+        this.cleanUp();
+    }
+
+    private cleanUp() {
+        this.logger.debug(`${this.loggerPrefixJudge} Clearing intervals and subscriptions for JOH waiting room`, {
+            conference: this.conference?.id
+        });
+
         clearInterval(this.audioRecordingInterval);
         this.cleanupVideoControlCacheLogic();
         this.executeWaitingRoomCleanup();
+
+        this.destroyedSubject.next();
+        this.destroyedSubject.complete();
     }
 
     getConferenceStatusText() {
