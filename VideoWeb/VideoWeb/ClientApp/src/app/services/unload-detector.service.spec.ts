@@ -53,7 +53,7 @@ describe('UnloadDetectorService', () => {
             expect(renderer2Mock.listen).toHaveBeenCalledOnceWith('window', 'beforeunload', jasmine.anything());
         });
 
-        it('should emit an event when the visibilitychange event is recieved with the isHidden as true', fakeAsync(() => {
+        it('should emit an event when the before unload callback is recieved', fakeAsync(() => {
             // Arrange
             let wasCalled = false;
             service.shouldUnload.subscribe(() => (wasCalled = true));
@@ -90,12 +90,29 @@ describe('UnloadDetectorService', () => {
             let wasCalled = false;
             service.shouldUnload.subscribe(() => (wasCalled = true));
 
+            spyOnProperty(document, 'hidden', 'get').and.returnValue(true);
+
             // Act
             renderer2Mock.visibiltyChangeCallback(undefined);
             flush();
 
             // Assert
             expect(wasCalled).toBeTrue();
+        }));
+
+        it('should NOT emit an event when the visibilitychange event is recieved with the isHidden as false', fakeAsync(() => {
+            // Arrange
+            let wasCalled = false;
+            service.shouldUnload.subscribe(() => (wasCalled = true));
+
+            spyOnProperty(document, 'hidden', 'get').and.returnValue(false);
+
+            // Act
+            renderer2Mock.visibiltyChangeCallback(undefined);
+            flush();
+
+            // Assert
+            expect(wasCalled).toBeFalse();
         }));
     });
 });
