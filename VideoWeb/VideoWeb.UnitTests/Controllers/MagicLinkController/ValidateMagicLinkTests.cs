@@ -16,7 +16,6 @@ namespace VideoWeb.UnitTests.Controllers.MagicLinkController
 {
     public class ValidateMagicLinkTests
     {
-        private ConferenceDetailsResponse _conference;
         private Guid _hearingId;
 
         private MagicLinksController _controller;
@@ -29,40 +28,32 @@ namespace VideoWeb.UnitTests.Controllers.MagicLinkController
             _videoApiClientMock = new Mock<IVideoApiClient>();
 
             _hearingId = Guid.NewGuid();
-            _conference = Builder<ConferenceDetailsResponse>.CreateNew()
-                .With(x => x.HearingId = _hearingId)
-                .With(x => x.CurrentStatus = ConferenceState.NotStarted)
-                .Build();
-            _videoApiClientMock.Setup(x => x.GetConferenceByHearingRefIdAsync(_hearingId, It.IsAny<bool>()))
-                .ReturnsAsync(_conference);
+            _videoApiClientMock.Setup(x => x.ValidateMagicLinkAsync(_hearingId))
+                .ReturnsAsync(true);
 
             _mockLogger = new Mock<ILogger<MagicLinksController>>();
             _controller = new MagicLinksController(_videoApiClientMock.Object, _mockLogger.Object);
         }
 
         [Test]
-        public async Task Should_call_video_api_to_retrieve_conference()
+        public async Task Should_call_video_api_to_validate_magic_link()
         {
             //Arrange/Act
             await _controller.ValidateMagicLink(_hearingId);
 
             //Assert
-            _videoApiClientMock.Verify(x => x.GetConferenceByHearingRefIdAsync(_hearingId, true), Times.Once);
+            _videoApiClientMock.Verify(x => x.ValidateMagicLinkAsync(_hearingId), Times.Once);
         }
 
         [Test]
-        public async Task Should_return_false_ok_result_if_hearing_does_not_exist()
+        public async Task Should_return_ok_result_if_video_api_call_returns_successful()
         {
-            //Arrange
-            _videoApiClientMock.Setup(x => x.GetConferenceByHearingRefIdAsync(_hearingId, It.IsAny<bool>()))
-                .ThrowsAsync(new VideoApiException("", 404, "", null, null));
-
-            //Act
+            //Arrange/Act
             var result = await _controller.ValidateMagicLink(_hearingId) as OkObjectResult;
 
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.False((bool)result.Value);
+            Assert.True((bool)result.Value);
         }
 
         [Test]
@@ -70,7 +61,7 @@ namespace VideoWeb.UnitTests.Controllers.MagicLinkController
         {
             //Arrange
             var exception = new VideoApiException("", 500, "response", null, null);
-            _videoApiClientMock.Setup(x => x.GetConferenceByHearingRefIdAsync(_hearingId, It.IsAny<bool>()))
+            _videoApiClientMock.Setup(x => x.ValidateMagicLinkAsync(_hearingId))
                 .ThrowsAsync(exception);
 
             //Act
@@ -80,33 +71,6 @@ namespace VideoWeb.UnitTests.Controllers.MagicLinkController
             Assert.IsInstanceOf<ObjectResult>(result);
             Assert.AreEqual(result.Value, exception.Response);
             Assert.AreEqual(result.StatusCode, exception.StatusCode);
-        }
-
-        [Test]
-        public async Task Should_return_false_ok_result_if_hearing_is_closed()
-        {
-            //Arrange
-            _conference.CurrentStatus = ConferenceState.Closed;
-            _videoApiClientMock.Setup(x => x.GetConferenceByHearingRefIdAsync(_hearingId, It.IsAny<bool>()))
-                .ReturnsAsync(_conference);
-
-            //Act
-            var result = await _controller.ValidateMagicLink(_hearingId) as OkObjectResult;
-
-            //Assert
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.False((bool)result.Value);
-        }
-
-        [Test]
-        public async Task Should_return_true_ok_result()
-        {
-            //Arrange/Act
-            var result = await _controller.ValidateMagicLink(_hearingId) as OkObjectResult;
-
-            //Assert
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.True((bool)result.Value);
         }
     }
 }

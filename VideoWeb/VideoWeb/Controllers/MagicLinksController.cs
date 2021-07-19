@@ -49,20 +49,15 @@ namespace VideoWeb.Controllers
         {
             try
             {
-                var conference = await _videoApiClient.GetConferenceByHearingRefIdAsync(hearingId, includeClosed: true);
-
-                if (conference.CurrentStatus == ConferenceState.Closed)
-                    return Ok(false);
-                return Ok(true);
+                var response = await _videoApiClient.ValidateMagicLinkAsync(hearingId);
+                return Ok(response);
             }
             catch(VideoApiException e)
             {
-                if (e.StatusCode == 404)
-                    return Ok(false);
-
                 _logger.LogError(e, $"Unable to get conference with hearing id: {hearingId}");
                 return StatusCode(e.StatusCode, e.Response);
             }
         }
+
     }
 }
