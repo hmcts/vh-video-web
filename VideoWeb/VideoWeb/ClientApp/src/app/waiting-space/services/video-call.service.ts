@@ -153,11 +153,15 @@ export class VideoCallService {
         const preferredCam = await this.userMediaService.getPreferredCamera();
         if (preferredCam) {
             this.updateCameraForCall(preferredCam);
+        } else {
+            this.logger.warn(`${this.loggerPrefix} prefered camera was falsey.`);
         }
 
         const preferredMic = await this.userMediaService.getPreferredMicrophone();
         if (preferredMic) {
             this.updateMicrophoneForCall(preferredMic);
+        } else {
+            this.logger.warn(`${this.loggerPrefix} prefered mic was falsey.`);
         }
     }
 

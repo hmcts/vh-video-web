@@ -6,6 +6,8 @@ import { UserMediaDevice } from 'src/app/shared/models/user-media-device';
 import { UserMediaStreamService } from 'src/app/services/user-media-stream.service';
 import { Logger } from 'src/app/services/logging/logger-base';
 import { TranslateService } from '@ngx-translate/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
     selector: 'app-select-media-devices',
@@ -30,6 +32,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
 
     selectedMediaDevicesForm: FormGroup;
     deviceIsChanged = false;
+    private destroyedSubject = new Subject();
 
     constructor(
         private userMediaService: UserMediaService,
@@ -62,7 +65,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         this.availableCameraDevices = await this.userMediaService.getListOfVideoDevices();
         this.availableMicrophoneDevices = await this.userMediaService.getListOfMicrophoneDevices();
 
-        this.userMediaService.connectedDevices.subscribe(async () => {
+        this.userMediaService.connectedDevices.pipe(takeUntil(this.destroyedSubject)).subscribe(async () => {
             this.availableCameraDevices = await this.userMediaService.getListOfVideoDevices();
             this.availableMicrophoneDevices = await this.userMediaService.getListOfMicrophoneDevices();
             this.selectedMediaDevicesForm = await this.initNewDeviceSelectionForm();
@@ -166,11 +169,11 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
     }
 
     private subscribeToDeviceSelectionChange() {
-        this.selectedCamera.valueChanges.subscribe(newCamera => {
+        this.selectedCamera.valueChanges.pipe(takeUntil(this.destroyedSubject)).subscribe(newCamera => {
             this.updateCameraStream(newCamera);
         });
 
-        this.selectedMicrophone.valueChanges.subscribe(newMicrophone => {
+        this.selectedMicrophone.valueChanges.pipe(takeUntil(this.destroyedSubject)).subscribe(newMicrophone => {
             this.updateMicrophoneStream(newMicrophone);
         });
     }
@@ -205,6 +208,8 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
 
     ngOnDestroy() {
         this.logger.debug(`${this.loggerPrefix} Closing select media device change`);
+        this.destroyedSubject.next();
+        this.destroyedSubject.complete();
         if (this.preferredCameraStream) {
             this.logger.debug(`${this.loggerPrefix} Closing camera stream`);
             this.userMediaStreamService.stopStream(this.preferredCameraStream);
