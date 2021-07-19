@@ -15,8 +15,7 @@ namespace VideoWeb.Mappings
             return new RoomSummaryResponse
             {
                 Id = input.Id.ToString(),
-                Label = input.RoomLabel,
-                // TODO Locked status?
+                Label = input.RoomLabel
             };
         }
     }
