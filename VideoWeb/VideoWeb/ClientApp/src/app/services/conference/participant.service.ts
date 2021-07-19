@@ -42,7 +42,7 @@ export class ParticipantService {
         return this._endpointParticipants;
     }
 
-    private _virtualMeetingRooms: VirtualMeetingRoomModel[];
+    private _virtualMeetingRooms: VirtualMeetingRoomModel[] = [];
     public get virtualMeetingRooms(): VirtualMeetingRoomModel[] {
         return this._virtualMeetingRooms;
     }
@@ -279,7 +279,7 @@ export class ParticipantService {
             participantUpdate: update
         });
 
-        const participantOrVmr = this.getParticipantOrVirtualMeetingRoomByPexipDisplayName(update.pexipDisplayName);
+        if (this.participants) const participantOrVmr = this.getParticipantOrVirtualMeetingRoomByPexipDisplayName(update.pexipDisplayName);
         if (participantOrVmr instanceof VirtualMeetingRoomModel) {
             this.handlePexipVmrUpdate(participantOrVmr, update);
         } else if (participantOrVmr) {
