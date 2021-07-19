@@ -60,7 +60,7 @@ export class JudgeParticipantStatusListComponent extends WRParticipantStatusList
     initParticipants() {
         super.initParticipants();
         this.filterRepresentatives();
-        this.isUserJudge = this.loggedInUser.role === Role.Judge;
+        this.isUserJudge = this.loggedInUser?.role === Role.Judge;
     }
 
     getParticipantStatus(participant: ParticipantResponse): string {

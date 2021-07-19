@@ -2,6 +2,7 @@ import { Role } from 'src/app/services/clients/api-client';
 import { ConferenceTestData } from 'src/app/testing/mocks/data/conference-test-data';
 import { LinkedParticipantPanelModel } from 'src/app/waiting-space/models/linked-participant-panel-model';
 import { ParticipantPanelModelMapper } from './participant-panel-model-mapper';
+import { HearingRole } from 'src/app/waiting-space/models/hearing-role-model';
 
 describe('ParticipantPanelModelMapper', () => {
     let mapper: ParticipantPanelModelMapper;
@@ -19,7 +20,7 @@ describe('ParticipantPanelModelMapper', () => {
         const expectedCount = participants.length - 1 - (allJOHs.length - 1); // take away 1 for interpreter and 1 for additional joh
 
         // act
-        const result = mapper.mapFromParticipantUserResponse(participants);
+        const result = mapper.mapFromParticipantUserResponseArray(participants);
 
         // assert
         expect(result.length).toBe(expectedCount);
@@ -38,7 +39,7 @@ describe('ParticipantPanelModelMapper', () => {
         const expectedCount = participants.length - 2 - (allJOHs.length - 1); // take away 2 for interpreters and 1 additional joh
 
         // act
-        const result = mapper.mapFromParticipantUserResponse(participants);
+        const result = mapper.mapFromParticipantUserResponseArray(participants);
         // assert
         expect(result.length).toBe(expectedCount);
         const linked = result.filter(p => p instanceof LinkedParticipantPanelModel) as LinkedParticipantPanelModel[];
@@ -52,12 +53,33 @@ describe('ParticipantPanelModelMapper', () => {
         const expectedCount = participants.length - (allJOHs.length - 1); // take away additional joh
 
         // act
-        const result = mapper.mapFromParticipantUserResponse(participants);
+        const result = mapper.mapFromParticipantUserResponseArray(participants);
 
         // assert
         expect(result.length).toBe(expectedCount);
         const linked = result.find(p => p instanceof LinkedParticipantPanelModel && p.isJudicalOfficeHolder) as LinkedParticipantPanelModel;
         const johIds = allJOHs.map(j => j.id);
         expect(linked.participants.every(lp => johIds.includes(lp.id)));
+    });
+
+    it('should map linked participants interpreter/interpretee in specific order when available', () => {
+        // arrange
+        let participants = testData.getListOfParticipants().filter(x => x.role === Role.Individual);
+
+        const linkedParticipants = testData.getListOfLinkedParticipants();
+        const witnessLinkedParticipants = testData.getListOfLinkedParticipants(true);
+        participants = participants.concat(linkedParticipants).concat(witnessLinkedParticipants);
+        // act
+        const result = mapper.mapFromParticipantUserResponseArray(participants);
+
+        const linked = result.filter(p => p instanceof LinkedParticipantPanelModel) as LinkedParticipantPanelModel[];
+
+        linked.forEach(x => {
+            expect(x.participants[0].hearingRole !== HearingRole.INTERPRETER).toBeTruthy();
+            expect(x.participants[1].hearingRole === HearingRole.INTERPRETER).toBeTruthy();
+            expect(x.participants.length).toBe(2);
+        });
+
+        expect(linked.length).toBe(2); // two linked
     });
 });

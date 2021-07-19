@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using VideoApi.Contract.Enums;
+using VideoApi.Contract.Requests;
 
 namespace VideoWeb.Common.Models
 {
@@ -48,6 +49,25 @@ namespace VideoWeb.Common.Models
         public void AddParticipant(Participant participant)
         {
             Participants.Add(participant);
+        }
+
+        public void RemoveParticipant(Guid referenceId)
+        {
+            Participants.RemoveAll(x => x.RefId == referenceId);
+        }
+
+        public void UpdateParticipant(UpdateParticipantRequest participantRequest)
+        {
+            var participant = Participants.FirstOrDefault(x => x.RefId == participantRequest.ParticipantRefId);
+            participant.Name = participantRequest.Fullname;
+            participant.FirstName = participantRequest.FirstName;
+            participant.LastName = participantRequest.LastName;
+            participant.DisplayName = participantRequest.DisplayName;
+            participant.Representee = participantRequest.Representee;
+            participant.ContactEmail = participantRequest.ContactEmail;
+            participant.ContactTelephone = participantRequest.ContactTelephone;
+            participant.Username = participantRequest.Username;
+            participant.LinkedParticipants = participantRequest.LinkedParticipants.Select(x => new LinkedParticipant() { LinkedId = x.LinkedRefId, LinkType = (LinkType)x.Type }).ToList();
         }
 
         private CivilianRoom GetOrCreateCivilianRoom(long roomId)
