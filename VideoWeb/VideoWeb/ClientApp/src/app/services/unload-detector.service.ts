@@ -1,7 +1,6 @@
 import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 import { DeviceDetectorService } from 'ngx-device-detector';
-import { Observable } from 'rxjs';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
 import { Logger } from './logging/logger-base';
 
