@@ -80,7 +80,7 @@ namespace VideoWeb.Common.Models
             return room;
         }
 
-        public CivilianRoom GetCurrentRoom(Guid participantId)
+        public CivilianRoom GetRoom(Guid participantId)
         {
             return CivilianRooms.FirstOrDefault(room => room.Participants.Contains(participantId));
         }

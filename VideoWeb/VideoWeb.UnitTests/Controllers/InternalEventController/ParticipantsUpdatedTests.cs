@@ -78,7 +78,7 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
                 .Returns(_mocker.Mock<IEventHandler>().Object);
 
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantRequest, Participant>()).Returns(_mocker.Create<ParticipantRequestMapper>());
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, ParticipantResponse>()).Returns(_mocker.Create<ParticipantToParticipantResponseMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, Conference, ParticipantResponse>()).Returns(_mocker.Create<ParticipantToParticipantResponseMapper>());
         }
 
 

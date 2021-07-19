@@ -29,7 +29,7 @@ namespace VideoWeb.Mappings
                 FirstName = participant.FirstName,
                 HearingRole = participant.HearingRole,
                 Id = participant.Id,
-                InterpreterRoom = roomMapper.Map(conference.GetCurrentRoom(participant.Id)),
+                InterpreterRoom = roomMapper.Map(conference.GetRoom(participant.Id)),
                 LastName = participant.LastName,
                 Name = participant.Name,
                 Representee = participant.Representee,
