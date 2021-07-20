@@ -16,7 +16,7 @@ namespace VideoWeb.UnitTests.Mappings
             var result = _sut.Map(null);
             result.Should().BeNull();
         }
-
+        [Test]
         public void Should_map_correctly()
         {
             var room = new CivilianRoom()
