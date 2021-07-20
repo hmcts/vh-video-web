@@ -12,11 +12,16 @@ namespace VideoWeb.Mappings
     {
         public RoomSummaryResponse Map(CivilianRoom input)
         {
-            return new RoomSummaryResponse
+            if(input != null)
             {
-                Id = input.Id.ToString(),
-                Label = input.RoomLabel
-            };
+                return new RoomSummaryResponse
+                {
+                    Id = input.Id.ToString(),
+                    Label = input.RoomLabel
+                };
+            }
+
+            return null;
         }
     }
 }
