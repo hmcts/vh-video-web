@@ -55,8 +55,9 @@ namespace VideoWeb.Controllers
         {
             _logger.LogDebug("ParticipantsUpdated called. ConferenceId: {ConferenceId}", conferenceId);
 
-            var requestToParticipantMapper = _mapperFactory.Get<ParticipantRequest, Participant>();
-            var participantsToResponseMapper = _mapperFactory.Get<Participant, ParticipantResponse>();
+            var requestToParticipantMapper = _mapperFactory.Get<ParticipantRequest, IEnumerable<Participant>, Participant>();
+            var updateParticipantRequestToUpdateParticipantMapper = _mapperFactory.Get<UpdateParticipantRequest, IEnumerable<Participant>, UpdateParticipant>();
+            var participantsToResponseMapper = _mapperFactory.Get<Participant, Conference, ParticipantResponse>();
 
             try
             {
@@ -68,7 +69,7 @@ namespace VideoWeb.Controllers
 
                 request.NewParticipants.ToList().ForEach(participant =>
                 {
-                    var mappedParticipant = requestToParticipantMapper.Map(participant);
+                    var mappedParticipant = requestToParticipantMapper.Map(participant, conference.Participants);
                     conference.AddParticipant(mappedParticipant);
                 });
 
@@ -79,7 +80,8 @@ namespace VideoWeb.Controllers
 
                 request.ExistingParticipants.ToList().ForEach(updateRequest =>
                 {
-                    conference.UpdateParticipant(updateRequest);
+                    var mappedUpdateParticipant = updateParticipantRequestToUpdateParticipantMapper.Map(updateRequest, conference.Participants);
+                    conference.UpdateParticipant(mappedUpdateParticipant);
                 });
 
 
@@ -88,7 +90,7 @@ namespace VideoWeb.Controllers
                     ConferenceId = conferenceId, 
                     EventType = EventType.ParticipantsUpdated, 
                     TimeStampUtc = DateTime.UtcNow,
-                    Participants = conference.Participants.Select(x => participantsToResponseMapper.Map(x)).ToList()
+                    Participants = conference.Participants.Select(participant => participantsToResponseMapper.Map(participant, conference)).ToList()
                 };
 
                 await _conferenceCache.UpdateConferenceAsync(conference);

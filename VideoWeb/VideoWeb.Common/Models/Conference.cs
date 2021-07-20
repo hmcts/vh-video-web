@@ -56,18 +56,18 @@ namespace VideoWeb.Common.Models
             Participants.RemoveAll(x => x.RefId == referenceId);
         }
 
-        public void UpdateParticipant(UpdateParticipantRequest participantRequest)
+        public void UpdateParticipant(UpdateParticipant updateParticipant)
         {
-            var participant = Participants.FirstOrDefault(x => x.RefId == participantRequest.ParticipantRefId);
-            participant.Name = participantRequest.Fullname;
-            participant.FirstName = participantRequest.FirstName;
-            participant.LastName = participantRequest.LastName;
-            participant.DisplayName = participantRequest.DisplayName;
-            participant.Representee = participantRequest.Representee;
-            participant.ContactEmail = participantRequest.ContactEmail;
-            participant.ContactTelephone = participantRequest.ContactTelephone;
-            participant.Username = participantRequest.Username;
-            participant.LinkedParticipants = participantRequest.LinkedParticipants.Select(x => new LinkedParticipant() { LinkedId = x.LinkedRefId, LinkType = (LinkType)x.Type }).ToList();
+            var participant = Participants.FirstOrDefault(x => x.RefId == updateParticipant.ParticipantRefId);
+            participant.Name = updateParticipant.Fullname;
+            participant.FirstName = updateParticipant.FirstName;
+            participant.LastName = updateParticipant.LastName;
+            participant.DisplayName = updateParticipant.DisplayName;
+            participant.Representee = updateParticipant.Representee;
+            participant.ContactEmail = updateParticipant.ContactEmail;
+            participant.ContactTelephone = updateParticipant.ContactTelephone;
+            participant.Username = updateParticipant.Username;
+            participant.LinkedParticipants = updateParticipant.LinkedParticipants;
         }
 
         private CivilianRoom GetOrCreateCivilianRoom(long roomId)
