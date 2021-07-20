@@ -279,7 +279,7 @@ export class ParticipantService {
             participantUpdate: update
         });
 
-        if (this.participants) const participantOrVmr = this.getParticipantOrVirtualMeetingRoomByPexipDisplayName(update.pexipDisplayName);
+        const participantOrVmr = this.getParticipantOrVirtualMeetingRoomByPexipDisplayName(update.pexipDisplayName);
         if (participantOrVmr instanceof VirtualMeetingRoomModel) {
             this.handlePexipVmrUpdate(participantOrVmr, update);
         } else if (participantOrVmr) {
