@@ -742,7 +742,7 @@ describe('NotificationToastrService', () => {
             // Assert
             expect(toastrService.show).toHaveBeenCalledOnceWith('', '', {
                 timeOut: 0,
-                extendedTimeout: 0,
+                extendedTimeOut: 0,
                 tapToDismiss: false,
                 toastComponent: VhToastComponent
             });
