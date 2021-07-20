@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { take, takeUntil } from 'rxjs/operators';
 import { ConsultationService } from 'src/app/services/api/consultation.service';
 import { VideoWebService } from 'src/app/services/api/video-web.service';
 import { ConferenceStatus } from 'src/app/services/clients/api-client';
@@ -30,7 +30,7 @@ import { WaitingRoomBaseDirective } from '../waiting-room-shared/waiting-room-ba
 })
 export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     private readonly loggerPrefixJOH = '[JOH WR] -';
-    private destroyedSubject = new Subject();
+    private destroyedSubject;
 
     constructor(
         protected route: ActivatedRoute,
@@ -75,6 +75,16 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
     }
 
     ngOnInit(): void {
+        this.init();
+    }
+
+    private onReload() {
+        this.init();
+    }
+
+    private init() {
+        this.destroyedSubject = new Subject();
+
         this.audioOnly = false;
         this.errorCount = 0;
         this.logger.debug(`${this.loggerPrefixJOH} Loading JOH waiting room`);
@@ -82,6 +92,7 @@ export class JohWaitingRoomComponent extends WaitingRoomBaseDirective implements
         this.loggedInUser = this.route.snapshot.data['loggedUser'];
 
         this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.cleanUp());
+        this.unloadDetectorService.shouldReload.pipe(take(1)).subscribe(() => this.onReload());
 
         this.notificationSoundsService.initHearingAlertSound();
         this.getConference().then(() => {

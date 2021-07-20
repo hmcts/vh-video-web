@@ -149,6 +149,7 @@ export class SelectMediaDevicesComponent implements OnInit, OnDestroy {
         // close dialog and stop streams
         this.userMediaStreamService.stopStream(this.preferredCameraStream);
         this.userMediaStreamService.stopStream(this.preferredMicrophoneStream);
+        this.saveSelectedDevices();
         this.logger.debug(`${this.loggerPrefix} Cancelling media device change`);
         this.cancelMediaDeviceChange.emit();
     }

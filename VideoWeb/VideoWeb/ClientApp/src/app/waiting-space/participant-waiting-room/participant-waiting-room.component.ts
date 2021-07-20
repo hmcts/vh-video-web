@@ -32,7 +32,7 @@ import { UnloadDetectorService } from 'src/app/services/unload-detector.service'
 })
 export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective implements OnInit, OnDestroy {
     private readonly loggerPrefixParticipant = '[Participant WR] -';
-    private destroyedSubject = new Subject();
+    private destroyedSubject;
 
     currentTime: Date;
     hearingStartingAnnounced: boolean;
@@ -82,7 +82,18 @@ export class ParticipantWaitingRoomComponent extends WaitingRoomBaseDirective im
     }
 
     ngOnInit() {
+        this.init();
+    }
+
+    private onReload() {
+        this.init();
+    }
+
+    private init() {
+        this.destroyedSubject = new Subject();
+
         this.unloadDetectorService.shouldUnload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.cleanUp());
+        this.unloadDetectorService.shouldReload.pipe(takeUntil(this.destroyedSubject)).subscribe(() => this.onReload());
 
         this.audioOnly = this.videoCallService.retrieveVideoCallPreferences().audioOnly;
         this.errorCount = 0;
