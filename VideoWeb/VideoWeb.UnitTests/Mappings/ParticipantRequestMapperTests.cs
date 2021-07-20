@@ -13,7 +13,7 @@ using VideoWeb.Mappings.Interfaces;
 
 namespace VideoWeb.UnitTests.Mappings
 {
-    class ParticipantRequestMapperTests
+    public class ParticipantRequestMapperTests
     {
         protected AutoMock _mocker;
         protected ParticipantRequestMapper _sut;
@@ -66,10 +66,10 @@ namespace VideoWeb.UnitTests.Mappings
         }
 
         [Test]
-        public void When_Should_map_correctly()
+        public void Should_map_correctly()
         {
             var existingParticipants = new List<Participant>() { new Participant() { Id = Guid.NewGuid() } };
-            var mapped = _sut.Map(testParticipant, new List<Participant>());
+            var mapped = _sut.Map(testParticipant, existingParticipants);
 
             mapped.CaseTypeGroup.Should().Be(testParticipant.CaseTypeGroup);
             mapped.ContactEmail.Should().Be(testParticipant.ContactEmail);
