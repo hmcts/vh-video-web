@@ -14,12 +14,10 @@ export class FooterComponent implements OnInit {
     hideContactUsLink = false;
     privacyPolicyUri = pageUrls.PrivacyPolicy;
     accessibilityUri = pageUrls.Accessibility;
-    hideLinksForUnsupportedBrowser = false;
 
     constructor(private router: Router, private translate: TranslateService, private logger: Logger) {
         this.router.events.pipe(filter((event: RouterEvent) => event instanceof NavigationEnd)).subscribe(x => {
             this.hideContactUs();
-            this.hideLinks();
         });
     }
 
@@ -29,10 +27,6 @@ export class FooterComponent implements OnInit {
 
     hideContactUs() {
         this.hideContactUsLink = this.router.url === '/contact-us';
-    }
-
-    hideLinks() {
-        this.hideLinksForUnsupportedBrowser = this.router.url === `/${pageUrls.UnsupportedBrowser}`;
     }
 
     switchLaguage() {

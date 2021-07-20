@@ -881,8 +881,8 @@
   },
   "unsupported-browser": {
     "using-unsupported-browser": "Rydych wedi mewngofnodi gan ddefnyddio porwr nas gefnogir",
-    "unfortunately-this-browser": "Yn anffodus, ni chefnogir y porwr hwn ar hyn o bryd.",
-    "please-try-again": "Allgofnodwch os gwelwch yn dda, a mewngofnodwch unwaith eto gan ddefnyddio un o'r canlynol.",
+    "unfortunately-this-browser": "Rydych yn defnyddio porwr nas gefnogir gan y gwasanaeth gwrandawiadau fideo.",
+    "please-try-again": "Rhowch gynnig arall arni gan ddefnyddio un o’r porwyr a restrir isod. Os ydych dal i gael problemau, cysylltwch â’r tîm gwrandawiadau fideo.",
     "supported-browser-alt": "{{browserName}} logo'r porwr"
   },
   "unsupported-device": {
