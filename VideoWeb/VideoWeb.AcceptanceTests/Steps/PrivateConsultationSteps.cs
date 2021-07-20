@@ -73,6 +73,7 @@ namespace VideoWeb.AcceptanceTests.Steps
             NUnit.Framework.TestContext.WriteLine($"Waiting for Please wait element to disappear at {DateTime.Now}");
             _browsers[_c.CurrentUser].WaitForElementToNotExist(WaitingRoomPage.Pleasewait);
             NUnit.Framework.TestContext.WriteLine($"Click start private meeting at {DateTime.Now}");
+            _browsers[_c.CurrentUser].WaitForElementToNotExist(WaitingRoomPage.Pleasewait);
             _browsers[_c.CurrentUser].Click(WaitingRoomPage.StartPrivateMeetingButton);
             NUnit.Framework.TestContext.WriteLine($"Click continue button at {DateTime.Now}");
             _browsers[_c.CurrentUser].Driver.WaitUntilVisible(WaitingRoomPage.ContinueButton);
@@ -104,7 +105,6 @@ namespace VideoWeb.AcceptanceTests.Steps
         public void WhenTheUserDeclinesThePrivateConsultation(string user, string from)
         {
             _browserSteps.GivenInTheUsersBrowser(user);
-            Thread.Sleep(TimeSpan.FromSeconds(SecondsWaitToCallAndAnswer));
             var fromUser = Users.GetUserFromText(from, _c.Test.Users);
             _browsers[_c.CurrentUser].TextOf(PrivateCallPopupPage.IncomingCallMessage).Should().Contain(fromUser.DisplayName);
             _browsers[_c.CurrentUser].Click(PrivateCallPopupPage.DeclinePrivateCall);
