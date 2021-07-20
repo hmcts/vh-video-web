@@ -77,7 +77,8 @@ namespace VideoWeb.UnitTests.Controllers.InternalEventControllerTests
                 .Setup(x => x.Get(It.Is<EventType>(eventType => eventType == EventType.ParticipantsUpdated)))
                 .Returns(_mocker.Mock<IEventHandler>().Object);
 
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantRequest, Participant>()).Returns(_mocker.Create<ParticipantRequestMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<ParticipantRequest, IEnumerable<Participant>, Participant>()).Returns(_mocker.Create<ParticipantRequestMapper>());
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<UpdateParticipantRequest, IEnumerable<Participant>, UpdateParticipant>()).Returns(_mocker.Create<UpdateParticipantRequestToUpdateParticipantMapper>());
             _mocker.Mock<IMapperFactory>().Setup(x => x.Get<Participant, Conference, ParticipantResponse>()).Returns(_mocker.Create<ParticipantToParticipantResponseMapper>());
         }
 

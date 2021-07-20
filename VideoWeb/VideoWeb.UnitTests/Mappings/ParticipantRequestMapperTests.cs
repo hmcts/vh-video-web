@@ -18,7 +18,7 @@ namespace VideoWeb.UnitTests.Mappings
         protected AutoMock _mocker;
         protected ParticipantRequestMapper _sut;
 
-        private Mock<IMapTo<LinkedParticipantRequest, LinkedParticipant>> linkedParticipantMapperMock;
+        private Mock<IMapTo<LinkedParticipantRequest, IEnumerable<Participant>, LinkedParticipant>> linkedParticipantMapperMock;
 
         private LinkedParticipantRequest linkedParticipantRequest1;
         private LinkedParticipantRequest linkedParticipantRequest2;
@@ -26,6 +26,8 @@ namespace VideoWeb.UnitTests.Mappings
 
         private LinkedParticipant linkedParticipant1;
         private LinkedParticipant linkedParticipant2;
+
+        private ParticipantRequest testParticipant;
 
         [SetUp]
         public void Setup()
@@ -35,19 +37,15 @@ namespace VideoWeb.UnitTests.Mappings
             linkedParticipantRequests = new List<LinkedParticipantRequest>() { linkedParticipantRequest1, linkedParticipantRequest2 };
             linkedParticipant1 = new LinkedParticipant() { LinkedId = linkedParticipantRequest1.LinkedRefId };
             linkedParticipant2 = new LinkedParticipant() { LinkedId = linkedParticipantRequest2.LinkedRefId };
-            linkedParticipantMapperMock = new Mock<IMapTo<LinkedParticipantRequest, LinkedParticipant>>();
-            linkedParticipantMapperMock.Setup(mapper => mapper.Map(linkedParticipantRequest1)).Returns(linkedParticipant1);
-            linkedParticipantMapperMock.Setup(mapper => mapper.Map(linkedParticipantRequest2)).Returns(linkedParticipant2);
+            linkedParticipantMapperMock = new Mock<IMapTo<LinkedParticipantRequest, IEnumerable<Participant>, LinkedParticipant>>();
+            linkedParticipantMapperMock.Setup(mapper => mapper.Map(linkedParticipantRequest1, It.IsAny<IEnumerable<Participant>>())).Returns(linkedParticipant1);
+            linkedParticipantMapperMock.Setup(mapper => mapper.Map(linkedParticipantRequest2, It.IsAny<IEnumerable<Participant>>())).Returns(linkedParticipant2);
 
             _mocker = AutoMock.GetLoose();
-            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<LinkedParticipantRequest, LinkedParticipant>()).Returns(linkedParticipantMapperMock.Object);
+            _mocker.Mock<IMapperFactory>().Setup(x => x.Get<LinkedParticipantRequest, IEnumerable<Participant>, LinkedParticipant>()).Returns(linkedParticipantMapperMock.Object);
             _sut = _mocker.Create<ParticipantRequestMapper>();
-        }
 
-        [Test]
-        public void Should_map_correctly()
-        {
-            var testParticipant = new ParticipantRequest()
+            testParticipant = new ParticipantRequest()
             {
                 CaseTypeGroup = "TestCaseTypeGroup",
                 ContactEmail = "TestContactEmail",
@@ -65,7 +63,13 @@ namespace VideoWeb.UnitTests.Mappings
                 Id = Guid.NewGuid(),
             };
 
-            var mapped = _sut.Map(testParticipant);
+        }
+
+        [Test]
+        public void When_Should_map_correctly()
+        {
+            var existingParticipants = new List<Participant>() { new Participant() { Id = Guid.NewGuid() } };
+            var mapped = _sut.Map(testParticipant, new List<Participant>());
 
             mapped.CaseTypeGroup.Should().Be(testParticipant.CaseTypeGroup);
             mapped.ContactEmail.Should().Be(testParticipant.ContactEmail);
@@ -80,8 +84,8 @@ namespace VideoWeb.UnitTests.Mappings
             mapped.Id.Should().Be(testParticipant.Id);
 
             mapped.LinkedParticipants.Should().BeEquivalentTo(new List<LinkedParticipant>() { linkedParticipant1, linkedParticipant2 });
-            linkedParticipantRequests.ForEach(linkedParticipant => linkedParticipantMapperMock.Verify(mapper => mapper.Map(linkedParticipant), Times.Once));
-            linkedParticipantMapperMock.Verify(mapper => mapper.Map(It.IsAny<LinkedParticipantRequest>()), Times.Exactly(linkedParticipantRequests.Count));
+            linkedParticipantRequests.ForEach(linkedParticipant => linkedParticipantMapperMock.Verify(mapper => mapper.Map(linkedParticipant, existingParticipants), Times.Once));
+            linkedParticipantMapperMock.Verify(mapper => mapper.Map(It.IsAny<LinkedParticipantRequest>(), existingParticipants), Times.Exactly(linkedParticipantRequests.Count));
         }
     }
 }
